@@ -100,6 +100,11 @@ namespace Molten.UI
         public Rectangle RenderBounds => BaseData.RenderBounds;
 
         /// <summary>
+        /// Gets or sets whether clipping is enabled.
+        /// </summary>
+        public ref bool IsClipEnabled => ref BaseData.IsClipEnabled;
+
+        /// <summary>
         /// Gets a read-only list of child components attached to the current <see cref="UIComponent"/>.
         /// </summary>
         public IReadOnlyList<UIComponent> Children { get; }
@@ -177,8 +182,18 @@ namespace Molten.UI
         {
             _data.Render(sb, BaseData);
 
-            foreach (UIComponent child in Children)
-                child.Render(sb);
+            if (BaseData.IsClipEnabled)
+            {
+                sb.PushClip(BaseData.RenderBounds);
+                foreach (UIComponent child in Children)
+                    child.Render(sb);
+                sb.PopClip();
+            }
+            else
+            {
+                foreach (UIComponent child in Children)
+                    child.Render(sb);
+            }
         }
 
         public ref EP Properties => ref _data;

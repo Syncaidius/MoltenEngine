@@ -10,7 +10,8 @@ namespace Molten.Graphics
     public unsafe class RenderSurface : Texture2DDX11, IRenderSurface
     {
         /// <summary>The viewport which represents the current render surface.</summary>
-        internal ViewportF VP;
+        ViewportF _vp;
+        Rectangle _vpBounds;
 
         internal RenderSurface(
             RendererDX11 renderer,
@@ -23,7 +24,8 @@ namespace Molten.Graphics
             TextureFlags flags = TextureFlags.None, string name = null)
             : base(renderer, width, height, format, mipCount, arraySize, flags, sampleCount)
         {
-            VP = new ViewportF(0, 0, width, height);
+            Viewport = new ViewportF(0, 0, width, height);
+
             Name = $"Surface_{name ?? GetType().Name}";
             RTV = new RenderTargetView(renderer.Device)
             {
@@ -85,8 +87,7 @@ namespace Molten.Graphics
             _description.Format = newFormat;
             //_description.MipLevels = newMipMapCount; // NOTE: Do we set this on render targets?
 
-            VP.Width = newWidth;
-            VP.Height = newHeight;
+            Viewport = new ViewportF(_vp.X, _vp.Y, newWidth, newHeight);
         }
 
         public void Clear(Color color)
@@ -106,11 +107,16 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the viewport that defines the default renderable area of the render target.</summary>
-        public ViewportF Viewport => VP;
+        public ViewportF Viewport
+        {
+            get => _vp;
+            protected set => _vp = value;
+        }
 
         /// <summary>
         /// Gets the DX11 render target view (RTV) for the current render surface.
         /// </summary>
         internal RenderTargetView RTV { get; }
+
     }
 }

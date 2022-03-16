@@ -30,15 +30,20 @@ namespace Molten.Graphics
             public SpriteFormat Format;
             public ITexture2D Texture;
             public IMaterial Material;
+            public int ClipID;
         }
 
+        protected Rectangle[] Clips;
         protected SpriteItem[] Sprites;
         protected uint NextID;
+
         Color[] _singleColorList;
+        int _curClipID;
 
         public SpriteBatcher(uint initialCapacity)
         {
             Sprites = new SpriteItem[initialCapacity];
+            Clips = new Rectangle[256];
             _singleColorList = new Color[1];
         }
 
@@ -47,8 +52,24 @@ namespace Molten.Graphics
             if (NextID == Sprites.Length) // Increase length by 50%
                 Array.Resize(ref Sprites, Sprites.Length + (Sprites.Length / 2));
 
-            //Sprites[NextID] = Sprites[NextID] ?? new SpriteItem();
+            Sprites[NextID].ClipID = _curClipID;
             return ref Sprites[NextID++];
+        }
+
+        public void PushClip(Rectangle bounds)
+        {
+            if (_curClipID == Clips.Length)
+                Array.Resize(ref Clips, Clips.Length * 2);
+
+            Clips[++_curClipID] = bounds;
+        }
+
+        public void PopClip()
+        {
+            if (_curClipID == 0)
+                throw new Exception("There are no clips available to pop");
+
+            _curClipID--;
         }
 
         /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data.</summary>

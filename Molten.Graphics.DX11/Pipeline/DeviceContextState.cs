@@ -299,7 +299,7 @@ namespace Molten.Graphics
             _scissorRectsDirty = true;
         }
 
-        public void SetScissorRectangles(Rectangle[] rects)
+        public void SetScissorRectangles(params Rectangle[] rects)
         {
             for (int i = 0; i < rects.Length; i++)
                 _scissorRects[i] = rects[i];

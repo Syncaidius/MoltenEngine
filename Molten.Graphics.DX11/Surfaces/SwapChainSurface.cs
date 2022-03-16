@@ -89,7 +89,7 @@ namespace Molten.Graphics
 
                 res = (ID3D11Resource*)NativeTexture;
                 RTV.Create(res);
-                VP = new ViewportF(0, 0, Width, Height);
+                Viewport = new ViewportF(0, 0, Width, Height);
             }
             else
             {

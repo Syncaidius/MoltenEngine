@@ -16,6 +16,7 @@ namespace Molten.Graphics
             public ITexture2D Texture;
             public IMaterial Material;
             public SpriteFormat Format;
+            public int ClipID;
         }
 
         BufferSegment _segment;
@@ -24,6 +25,7 @@ namespace Molten.Graphics
         uint _spriteCapacity;
         Action<DeviceContext, RenderCamera, Range, ObjectRenderData>[] _flushFuncs;
         SpriteVertex[] _vertices;
+        Rectangle _vpBounds;
 
         Material _defaultMaterial;
         Material _defaultNoTextureMaterial;
@@ -66,6 +68,7 @@ namespace Molten.Graphics
 
             Range range;
 
+            _vpBounds = (Rectangle)camera.OutputSurface.Viewport.Bounds;
             pipe.State.VertexBuffers[0].Value = _segment;
 
             // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.            
@@ -84,6 +87,7 @@ namespace Molten.Graphics
                 range.Format = item.Format;
                 range.Texture = item.Texture;
                 range.Material = item.Material;
+                range.ClipID = item.ClipID;
 
                 uint v = 0;
                 for (; i < end; i++)
@@ -94,7 +98,8 @@ namespace Molten.Graphics
                     // If the current item does not match that of the current range, start a new range.
                     if (item.Texture != range.Texture ||
                         item.Material != range.Material ||
-                        item.Format != range.Format)
+                        item.Format != range.Format ||
+                        item.ClipID != range.ClipID)
                     {
                         range.VertexCount = i - range.Start;
                         range.End = i;
@@ -105,6 +110,7 @@ namespace Molten.Graphics
                         range.Format = item.Format;
                         range.Texture = item.Texture;
                         range.Material = item.Material;
+                        range.ClipID = item.ClipID;
                     }
                 }
 
@@ -117,14 +123,14 @@ namespace Molten.Graphics
                 }
 
                 if (_curRange > 0)
-                    FlushBuffer(pipe, camera, data);
+                    FlushBuffer(pipe, camera, data, v);
             }
             
             // Reset
             NextID = 0;
         }
 
-        private void FlushBuffer(DeviceContext pipe, RenderCamera camera, ObjectRenderData data)
+        private void FlushBuffer(DeviceContext pipe, RenderCamera camera, ObjectRenderData data, uint vertexCount)
         {
             Range range;
             uint writeIndex = 0;
@@ -164,6 +170,11 @@ namespace Molten.Graphics
             {
                 mat = mat ?? _defaultNoTextureMaterial;
             }
+
+            if (range.ClipID <= 0)
+                pipe.State.SetScissorRectangles(_vpBounds);
+            else
+                pipe.State.SetScissorRectangles(Clips[range.ClipID]);
 
             mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
             pipe.Draw(mat, range.VertexCount, VertexTopology.PointList, range.Start);
