@@ -24,7 +24,7 @@ namespace Molten.Graphics
             Circle = 3, // Untextured circles - Uses a geometry shader to handle this
         }
 
-        protected class SpriteItem
+        protected struct SpriteItem
         {
             public SpriteVertex Vertex;
             public SpriteFormat Format;
@@ -42,13 +42,13 @@ namespace Molten.Graphics
             _singleColorList = new Color[1];
         }
 
-        protected SpriteItem GetItem()
+        protected ref SpriteItem GetItem()
         {
             if (NextID == Sprites.Length) // Increase length by 50%
                 Array.Resize(ref Sprites, Sprites.Length + (Sprites.Length / 2));
 
-            Sprites[NextID] = Sprites[NextID] ?? new SpriteItem();
-            return Sprites[NextID++];
+            //Sprites[NextID] = Sprites[NextID] ?? new SpriteItem();
+            return ref Sprites[NextID++];
         }
 
         /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data.</summary>
@@ -83,7 +83,7 @@ namespace Molten.Graphics
             {
                 SpriteFont.GlyphCache cache = font.GetCharGlyph(text[i]);
 
-                SpriteItem item = GetItem();
+                ref SpriteItem item = ref GetItem();
                 item.Texture = font.UnderlyingTexture;
                 item.Material = null;
                 item.Format = SpriteFormat.Sprite;
@@ -167,7 +167,7 @@ namespace Molten.Graphics
 
                 for (int i = 0; i < pieces; i++)
                 {
-                    SpriteItem item = GetItem();
+                    ref SpriteItem item = ref GetItem();
                     item.Texture = null;
                     item.Material = null;
                     item.Format = SpriteFormat.Circle;
@@ -186,7 +186,7 @@ namespace Molten.Graphics
             }
             else
             {
-                SpriteItem item = GetItem();
+                ref SpriteItem item = ref GetItem();
                 item.Texture = null;
                 item.Material = null;
                 item.Format = SpriteFormat.Circle;
@@ -208,7 +208,7 @@ namespace Molten.Graphics
         /// <param name="color">The color of the triangle.</param>
         public void DrawTriangle(Vector2F p1, Vector2F p2, Vector2F p3, Color color)
         {
-            SpriteItem item = GetItem();
+            ref SpriteItem item = ref GetItem();
             item.Texture = null;
             item.Material = null;
             item.Format = SpriteFormat.Triangle;
@@ -241,7 +241,7 @@ namespace Molten.Graphics
             {
                 int colID = i / 3;
 
-                SpriteItem item = GetItem();
+                ref SpriteItem item = ref GetItem();
                 item.Texture = null;
                 item.Material = null;
                 item.Format = SpriteFormat.Triangle;
@@ -324,7 +324,7 @@ namespace Molten.Graphics
                     p1 = points[i];
                     p2 = points[i2];
 
-                    SpriteItem item = GetItem();
+                    ref SpriteItem item = ref GetItem();
                     item.Texture = null;
                     item.Material = null;
                     item.Format = SpriteFormat.Line;
@@ -413,7 +413,7 @@ namespace Molten.Graphics
                     p1 = points[i];
                     p2 = points[next];
 
-                    SpriteItem item = GetItem();
+                    ref SpriteItem item = ref GetItem();
                     item.Texture = null;
                     item.Material = null;
                     item.Format = SpriteFormat.Line;
@@ -461,7 +461,7 @@ namespace Molten.Graphics
         /// <param name="thickness">The thickness of the line in pixels.</param>
         public void DrawLine(Vector2F p1, Vector2F p2, Color color1, Color color2, float thickness)
         {
-            SpriteItem item = GetItem();
+            ref SpriteItem item = ref GetItem();
             item.Texture = null;
             item.Material = null;
             item.Format = SpriteFormat.Line;
@@ -497,7 +497,7 @@ namespace Molten.Graphics
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
         public void DrawRect(RectangleF destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
         {
-            SpriteItem item = GetItem();
+            ref SpriteItem item = ref GetItem();
             item.Texture = null;
             item.Material = material;
             item.Format = SpriteFormat.Sprite;
@@ -616,7 +616,7 @@ namespace Molten.Graphics
             IMaterial material,
             float arraySlice)
         {
-            SpriteItem item = GetItem();
+            ref SpriteItem item = ref GetItem();
             item.Texture = texture;
             item.Material = material;
             item.Format = SpriteFormat.Sprite;

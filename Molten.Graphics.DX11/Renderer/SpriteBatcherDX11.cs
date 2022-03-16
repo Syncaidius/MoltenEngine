@@ -68,64 +68,58 @@ namespace Molten.Graphics
 
             pipe.State.VertexBuffers[0].Value = _segment;
 
-            // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.
-            // Use pointers to reduce array indexing overhead. We're potentially iterating over thousands of sprites here.
-            fixed (SpriteVertex* vertexFixedPtr = _vertices)
+            // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.            
+            uint i = 0;
+            while (i < NextID)
             {
-                SpriteVertex* vertexPtr = vertexFixedPtr;
-                SpriteItem item;
+                // Reset vertex array pointer and ranges, so we can prepare the next batch of vertices.
+                uint remaining = NextID - i;
+                uint end = i + Math.Min(remaining, _spriteCapacity);
 
-                uint i = 0;
-                while(i < NextID)
+                _curRange = 0;
+                range = _ranges[_curRange];
+                range.Start = i;
+
+                ref SpriteItem item = ref Sprites[i];
+                range.Format = item.Format;
+                range.Texture = item.Texture;
+                range.Material = item.Material;
+
+                uint v = 0;
+                for (; i < end; i++)
                 {
-                    // Reset vertex array pointer and ranges, so we can prepare the next batch of vertices.
-                    uint remaining = NextID - i;
-                    uint end = i + Math.Min(remaining, _spriteCapacity);
+                    item = ref Sprites[i];
+                    _vertices[v++] = item.Vertex;
 
-                    vertexPtr = vertexFixedPtr;
-                    _curRange = 0;
-                    range = _ranges[_curRange];
-                    range.Start = i;
-                    item = Sprites[i];
-                    range.Format = item.Format;
-                    range.Texture = item.Texture;
-                    range.Material = item.Material;
-
-                    for (; i < end; i++, vertexPtr++)
+                    // If the current item does not match that of the current range, start a new range.
+                    if (item.Texture != range.Texture ||
+                        item.Material != range.Material ||
+                        item.Format != range.Format)
                     {
-                        item = Sprites[i];
-                        *(vertexPtr) = item.Vertex;
-
-                        // If the current item does not match that of the current range, start a new range.
-                        if (item.Texture != range.Texture ||
-                            item.Material != range.Material ||
-                            item.Format != range.Format)
-                        {
-                            range.VertexCount = i - range.Start;
-                            range.End = i;
-                            _curRange++;
-
-                            range = _ranges[_curRange];
-                            range.Start = i;
-                            range.Format = item.Format;
-                            range.Texture = item.Texture;
-                            range.Material = item.Material;
-                        }
-                    }
-
-                    // Include the last range, if it has any vertices.
-                    range.VertexCount = i - range.Start;
-                    if (range.VertexCount > 0)
-                    {
+                        range.VertexCount = i - range.Start;
                         range.End = i;
                         _curRange++;
+
+                        range = _ranges[_curRange];
+                        range.Start = i;
+                        range.Format = item.Format;
+                        range.Texture = item.Texture;
+                        range.Material = item.Material;
                     }
-
-                    if (_curRange > 0)
-                        FlushBuffer(pipe, camera, data);
                 }
-            }
 
+                // Include the last range, if it has any vertices.
+                range.VertexCount = i - range.Start;
+                if (range.VertexCount > 0)
+                {
+                    range.End = i;
+                    _curRange++;
+                }
+
+                if (_curRange > 0)
+                    FlushBuffer(pipe, camera, data);
+            }
+            
             // Reset
             NextID = 0;
         }

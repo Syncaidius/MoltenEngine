@@ -40,7 +40,7 @@ namespace Molten.Samples
         {
             _sprites = new List<Sprite>();
 
-            for (int i = 0; i < 50000; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 _sprites.Add(new Sprite()
                 {
