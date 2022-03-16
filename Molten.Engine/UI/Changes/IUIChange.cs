@@ -1,5 +1,4 @@
-﻿using Molten.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Molten.UI
 {
-    public interface IUIRenderData
+    internal interface IUIChange
     {
-        void Render(SpriteBatcher sb, UIRenderData data);
+        void Process();
     }
 }

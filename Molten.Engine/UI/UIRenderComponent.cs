@@ -1,4 +1,5 @@
-﻿using Molten.Graphics;
+﻿using Molten.Collections;
+using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,17 @@ namespace Molten.UI
     /// </summary>
     public sealed class UIRenderComponent : SpriteRenderComponent
     {
+        UIComponent _root;
+        ThreadedQueue<IUIChange> _pendingChanges = new ThreadedQueue<IUIChange>();
+
         protected override void OnDispose()
         {
             
+        }
+
+        internal void QueueChange(IUIChange change)
+        {
+            _pendingChanges.Enqueue(change);
         }
 
         public override void OnUpdate(Timing time)
@@ -24,7 +33,7 @@ namespace Molten.UI
             if (Root == null)
                 return;
 
-            // TODO build render data tree.
+            Root.Update(time);
         }
 
         protected override void OnRender(SpriteBatcher sb)
@@ -32,12 +41,39 @@ namespace Molten.UI
             if (Root == null)
                 return;
 
+            IUIChange change;
+            while (_pendingChanges.TryDequeue(out change))
+                change.Process();
+
             Root.Render(sb);
         }
 
         /// <summary>
-        /// Gets the Root UI component to be drawn.
+        /// Gets or sets the Root <see cref="UIComponent"/> to be drawn.
         /// </summary>
-        public UIComponent Root { get; set; }
+        public UIComponent Root
+        {
+            get => _root;
+            set
+            {
+                if (_root != value)
+                {
+                    if (_root != null)
+                    {
+                        _root.Root = null;
+                        _root.RenderComponent = null;
+                    }
+
+                    _root = value;
+
+                    if (_root != null)
+                    {
+                        _root.RenderComponent = this;
+                        _root.Root = _root;
+                    }
+                }
+            }
+        }
+
     }
 }

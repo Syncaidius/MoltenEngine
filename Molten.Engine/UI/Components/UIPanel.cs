@@ -24,7 +24,7 @@ namespace Molten.UI
                 BorderThickness = 2;
             }
 
-            public void Render(SpriteBatcher sb, UIBaseData data)
+            public void Render(SpriteBatcher sb, UIRenderData data)
             {
                 if (BackgroundColor.A > 0)
                     sb.DrawRect(data.RenderBounds, BackgroundColor);

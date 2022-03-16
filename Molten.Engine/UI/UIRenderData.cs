@@ -1,4 +1,5 @@
-﻿using Molten.Graphics;
+﻿using Molten.Collections;
+using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +8,11 @@ using System.Threading.Tasks;
 
 namespace Molten.UI
 {
-    public class UIBaseData
+    public class UIRenderData
     {
-        internal UIBaseData() { }
+        internal UIRenderData() { }
 
-        /// <summary>
-        /// The ID of the parent <see cref="UIBaseData"/>. Populated internally before rendering
-        /// </summary>
-        public UIBaseData Parent;
+        internal List<UIRenderData> Children { get; } = new List<UIRenderData>();
 
         /// <summary>
         /// Global position of the UI component, where 0,0 is it's origin.

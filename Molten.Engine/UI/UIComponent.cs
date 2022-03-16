@@ -14,16 +14,18 @@ namespace Molten.UI
     public abstract class UIComponent
     {
         [DataMember]
-        internal UIBaseData BaseData;
+        internal UIRenderData BaseData;
 
         UIComponent _parent;
         List<UIComponent> _children;
+        UIComponent _root;
 
         public UIComponent()
         {
             _children = new List<UIComponent>();
+            Children = _children.AsReadOnly();
             Engine = Engine.Current;
-            BaseData = new UIBaseData();
+            BaseData = new UIRenderData();
             OnInitialize(Engine, Engine.Settings.UI);
         }
 
@@ -49,14 +51,10 @@ namespace Molten.UI
                     Width = BaseData.LocalBounds.Width,
                     Height = BaseData.LocalBounds.Height,
                 };
-
-                BaseData.Parent = _parent.BaseData;
             }
             else
             {
                 BaseData.GlobalBounds = BaseData.LocalBounds;
-
-                BaseData.Parent = null;
             }
 
             UISpacing pad = BaseData.Padding;
@@ -70,7 +68,10 @@ namespace Molten.UI
 
         internal void Update(Timing time)
         {
-            OnUpdate(time);       
+            OnUpdate(time);
+
+            for (int i = _children.Count - 1; i >= 0; i--)
+                _children[i].Update(time);
         }
 
         protected virtual void OnUpdate(Timing time) { }
@@ -88,11 +89,20 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets the global bounds, relative to the <see cref="UIRenderComponent"/> that is drawing the current <see cref="UIComponent"/>.s
+        /// </summary>
         public Rectangle GlobalBounds => BaseData.GlobalBounds;
 
+        /// <summary>
+        /// Gets the bounds in which child components should be drawn.
+        /// </summary>
         public Rectangle RenderBounds => BaseData.RenderBounds;
 
-        public List<UIComponent> Children => _children;
+        /// <summary>
+        /// Gets a read-only list of child components attached to the current <see cref="UIComponent"/>.
+        /// </summary>
+        public IReadOnlyList<UIComponent> Children { get; }
 
         public UIComponent Parent
         {
@@ -101,14 +111,56 @@ namespace Molten.UI
             {
                 if(_parent != value)
                 {
-                    _parent.Children.Remove(this);
+                    if (_parent != null)
+                    {
+                        _parent._children.Remove(this);
+                        _root.RenderComponent.QueueChange(new UIRemoveChildChange()
+                        {
+                            Child = BaseData,
+                            Parent = _parent.BaseData
+                        });
+                    }
+
                     _parent = value;
-                    _parent.Children.Add(this);
+
+                    if (_parent != null)
+                    {
+                        Root = _parent.Root;
+                        _parent._children.Add(this);
+                        _root.RenderComponent.QueueChange(new UIAddChildChange()
+                        {
+                            Child = BaseData,
+                            Parent = _parent.BaseData
+                        });
+                    }
                 }
             }
         }
 
         public Engine Engine { get; private set; }
+
+        /// <summary>
+        /// Gets the root <see cref="UIComponent"/>.
+        /// </summary>
+        public UIComponent Root
+        {
+            get => _root;
+            internal set
+            {
+                if(_root != value)
+                {
+                    _root = value;
+                    RenderComponent = _root.RenderComponent;
+                    foreach (UIComponent child in Children)
+                        child.Root = _root;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the internal <see cref="UIRenderComponent"/> that will draw the current <see cref="UIComponent"/>.
+        /// </summary>
+        internal UIRenderComponent RenderComponent { get; set; }
     }
 
     /// <summary>
@@ -124,6 +176,9 @@ namespace Molten.UI
         internal override void Render(SpriteBatcher sb)
         {
             _data.Render(sb, BaseData);
+
+            foreach (UIComponent child in Children)
+                child.Render(sb);
         }
 
         public ref EP Properties => ref _data;

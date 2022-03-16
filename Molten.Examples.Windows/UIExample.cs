@@ -212,8 +212,18 @@ namespace Molten.Samples
             _ui = SpriteLayer.AddObjectWithComponent<UIRenderComponent>();
             _ui.Root = new UIPanel()
             {
-                LocalBounds = new Rectangle(100, 150, 400, 600),
-                
+                LocalBounds = new Rectangle(100, 150, 600, 450),
+            };
+
+            UIPanel childPanel = new UIPanel()
+            {
+                LocalBounds = new Rectangle(100, 50, 220, 200),
+                Parent = _ui.Root,
+                Properties = new UIPanel.RenderData()
+                {
+                    BackgroundColor = new Color(0,128, 0, 200),
+                    BorderColor = Color.LimeGreen
+                },
             };
         }
 

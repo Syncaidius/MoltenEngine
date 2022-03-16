@@ -11,7 +11,6 @@ namespace Molten
             return _pool.GetInstance();
         }
 
-        public event WorkerTaskCompletedEvent OnCompleted;
         internal ContentFile File;
         internal ContentManager Manager;
 
