@@ -46,6 +46,36 @@ namespace Molten
             int initialPages = 1,
             int charPadding = 2)
         {
+            if(ptSize > byte.MaxValue)
+            {
+                log.Error($"Font size cannot be greater than {byte.MaxValue}");
+                return null;
+            }
+
+            if (tabSize > byte.MaxValue)
+            {
+                log.Error($"Tab size cannot be greater than {byte.MaxValue}");
+                return null;
+            }
+
+            if (texturePageSize > ushort.MaxValue)
+            {
+                log.Error($"Texture page size cannot be greater than {ushort.MaxValue}");
+                return null;
+            }
+
+            if (pointsPerCurve > ushort.MaxValue)
+            {
+                log.Error($"The number of points per curve cannot be greater than {ushort.MaxValue}");
+                return null;
+            }
+
+            if (charPadding > byte.MaxValue)
+            {
+                log.Error($"Character padding cannot be greater than {byte.MaxValue}");
+                return null;
+            }
+
             path = path.ToLower();
 
             ulong hash = (ulong)ptSize << 56;       // [ptSize - 1 byte/8-bit]
