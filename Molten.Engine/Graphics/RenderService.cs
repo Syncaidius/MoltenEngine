@@ -266,7 +266,7 @@ namespace Molten.Graphics
             _requestedMultiSampleLevel = newValue;
         }
 
-        public SceneRenderData CreateRenderData()
+        internal SceneRenderData CreateRenderData()
         {
             SceneRenderData rd = OnCreateRenderData();
             RendererAddScene task = RendererAddScene.Get();

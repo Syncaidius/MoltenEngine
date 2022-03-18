@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Molten.Graphics
 {
-    public class SpriteFont : IDisposable
+    public class SpriteFont : EngineObject
     {
         struct CharData
         {
@@ -84,14 +84,14 @@ namespace Molten.Graphics
         /// <param name="initialPages">The initial number of pages in the underlying sprite font texture atlas. Minimum is 1.</param>
         /// <param name="charPadding">The number of pixels to add as padding around each character placed on to the font atlas. 
         /// Default value is 2. Negative padding can cause characters to overlap.</param>
-        public SpriteFont(RenderService renderer,
+        internal SpriteFont(RenderService renderer,
             FontFile font,
             int ptSize,
-            int tabSize = 3,
-            int texturePageSize = 512,
-            int pointsPerCurve = 12,
-            int initialPages = 1,
-            int charPadding = 2)
+            int tabSize,
+            int texturePageSize,
+            int pointsPerCurve,
+            int initialPages,
+            int charPadding )
         {
             Debug.Assert(texturePageSize >= MIN_PAGE_SIZE, $"Texture page size must be at least {MIN_PAGE_SIZE}");
             Debug.Assert(pointsPerCurve >= 2, $"Points per curve must be at least {MIN_POINTS_PER_CURVE}");
@@ -100,6 +100,7 @@ namespace Molten.Graphics
             _renderer = renderer;
             _font = font;
             _interlocker = new Interlocker();
+            Name = $"{font.Info.FullName} Font - {EOID}";
 
             if (_font.GlyphCount > 0)
             {
@@ -119,6 +120,13 @@ namespace Molten.Graphics
             _packer = new BinPacker(_pageSize, _pageSize);
             _pendingGlyphs = new ThreadedQueue<ushort>();
             _charPadding = charPadding;
+
+            FontHash = (ulong)_fontSize << 56;    // [ptSize - 1 byte/8-bit]
+            FontHash |= (ulong)_tabSize << 48;          // [tabSize - 1 byte/8-bit]
+            FontHash |= (ulong)_pageSize << 32;         // [texturePageSize - 2 bytes/16-bit]
+            FontHash |= (ulong)_pointsPerCurve << 16;   // [pointsPerCurve - 2 bytes/16-bit]
+            FontHash |= (ulong)_charPadding << 8;       // [charPadding - 1 byte/8-bit]
+            FontHash |= 0;                              // [RESERVERD - 1 byte/8-bit]
 
             _lineSpace = ToPixels(_font.HorizonalHeader.LineSpace);
             _rt = renderer.Resources.CreateSurface((uint)_pageSize, (uint)_pageSize, arraySize: (uint)initialPages, sampleCount: 8);
@@ -356,7 +364,7 @@ namespace Molten.Graphics
             }
         }
 
-        public void Dispose()
+        protected override void OnDispose()
         {
             _rt.Dispose();
             _tex.Dispose();
@@ -383,5 +391,7 @@ namespace Molten.Graphics
         /// Gets the font's recommended line spacing between two lines, in pixels.
         /// </summary>
         public int LineSpace => _lineSpace;
+
+        public ulong FontHash { get; }
     }
 }

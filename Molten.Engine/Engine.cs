@@ -46,6 +46,7 @@ namespace Molten
             _taskQueue = new ThreadedQueue<EngineTask>();
             _services = new List<EngineService>(Settings.StartupServices);
             Content = new ContentManager(Log, this, Settings.ContentWorkerThreads);
+            Fonts = new FontManager(this);
             Scenes = new SceneManager(Settings.UI);
 
             Renderer = GetService<RenderService>();
@@ -63,7 +64,8 @@ namespace Molten
 
         private void Renderer_OnStarted(EngineService o)
         {
-            LoadDefaultFont(Settings);
+            DefaultFont = Fonts.GetFont(Log, Settings.DefaultFontName, Settings.DefaultFontSize);
+            Log.Error("Failed to load default font.");
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -118,25 +120,6 @@ namespace Molten
             }
 
             return false;
-        }
-
-        private void LoadDefaultFont(EngineSettings settings)
-        {
-            try
-            {
-                using (FontReader reader = new FontReader(settings.DefaultFontName, Log))
-                {
-                    FontFile fontFile = reader.ReadFont(true);
-                    DefaultFont = new SpriteFont(Renderer, fontFile, settings.DefaultFontSize);
-                }
-            }
-            catch (Exception e)
-            {
-                // TODO Use the fallback font provided with the engine.
-                Log.Error("Failed to load default font.");
-                Log.Error(e);
-                throw e;
-            }
         }
 
         /// <summary>
@@ -280,6 +263,11 @@ namespace Molten
         /// Gets the internal scene manager for the current <see cref="Engine"/> instance.
         /// </summary>
         internal SceneManager Scenes { get; }
+
+        /// <summary>
+        /// Gets the internal <see cref="FontManager"/> bound to the current <see cref="Engine"/> instance.
+        /// </summary>
+        internal FontManager Fonts { get; }
 
         /// <summary>
         /// Gets whether or not the current <see cref="Engine"/> instance has been disposed.

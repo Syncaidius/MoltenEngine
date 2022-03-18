@@ -19,7 +19,7 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Data container for <see cref="UIPanel"/> rendering.
+        /// Container for <see cref="UIPanel"/> render data.
         /// </summary>
         public struct RenderData : IUIRenderData
         {

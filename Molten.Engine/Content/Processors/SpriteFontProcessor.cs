@@ -27,8 +27,9 @@ namespace Molten.Content
                     font = reader.ReadFont(true);
             }
 
-            if (!font.HasFlag(FontFlags.Invalid))
-                context.AddOutput(new SpriteFont(context.Engine.Renderer, font, size));
+            SpriteFont sf = context.Engine.Fonts.GetFont(context.Log, context.Filename, size);
+            if (sf != null)
+                context.AddOutput(sf);
         }
 
         public override void OnWrite(ContentContext context)
