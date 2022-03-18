@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using Molten.UI;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -8,6 +9,7 @@ namespace Molten
         {
             TooltipDelay = AddSetting("tooltip_delay", 500);
             DragThreshold = AddSetting("drag_threshold", 10f);
+            Theme = AddSetting("theme", new UITheme());
         }
 
         /// <summary>
@@ -22,10 +24,9 @@ namespace Molten
         [DataMember]
         public SettingValue<float> DragThreshold { get; }
 
-        public static readonly Color DefaultTextColor = Color.White;
-
-        public static readonly Color DefaultBackgroundColor = new Color(40, 40, 150, 200);
-
-        public static readonly Color DefaultBorderColor = new Color(80, 80, 190);
+        /// <summary>
+        /// Gets the current <see cref="UITheme"/>. This setting is not serialized when settings are saved to file.
+        /// </summary>
+        public SettingValue<UITheme> Theme { get; }
     }
 }

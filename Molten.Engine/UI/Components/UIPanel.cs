@@ -9,6 +9,18 @@ namespace Molten.UI
 {
     public class UIPanel : UIComponent<UIPanel.RenderData>
     {
+        protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
+        {
+            base.OnInitialize(engine, settings, theme);
+
+            Properties.BorderColor = theme.BorderColor;
+            Properties.BackgroundColor = theme.BackgroundColor;
+            Properties.BorderThickness = theme.BorderThickness;
+        }
+
+        /// <summary>
+        /// Data container for <see cref="UIPanel"/> rendering.
+        /// </summary>
         public struct RenderData : IUIRenderData
         {
             public Color BorderColor;
@@ -16,13 +28,6 @@ namespace Molten.UI
             public float BorderThickness;
 
             public Color BackgroundColor;
-
-            public RenderData()
-            {
-                BorderColor = UISettings.DefaultBorderColor;
-                BackgroundColor = UISettings.DefaultBackgroundColor;
-                BorderThickness = 2;
-            }
 
             public void Render(SpriteBatcher sb, UIRenderData data)
             {

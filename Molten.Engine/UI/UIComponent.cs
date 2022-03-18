@@ -26,10 +26,10 @@ namespace Molten.UI
             Children = _children.AsReadOnly();
             Engine = Engine.Current;
             BaseData = new UIRenderData();
-            OnInitialize(Engine, Engine.Settings.UI);
+            OnInitialize(Engine, Engine.Settings.UI, Engine.Settings.UI.Theme.Value);
         }
 
-        protected virtual void OnInitialize(Engine engine, UISettings settings)
+        protected virtual void OnInitialize(Engine engine, UISettings settings, UITheme theme)
         {
             BaseData.Margin.OnChanged += MarginPadding_OnChanged;
             BaseData.Padding.OnChanged += MarginPadding_OnChanged;
@@ -166,6 +166,8 @@ namespace Molten.UI
         /// Gets the internal <see cref="UIRenderComponent"/> that will draw the current <see cref="UIComponent"/>.
         /// </summary>
         internal UIRenderComponent RenderComponent { get; set; }
+
+        public UITheme Theme { get; set; }
     }
 
     /// <summary>
