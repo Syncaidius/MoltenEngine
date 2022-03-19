@@ -25,7 +25,10 @@ namespace Molten.Samples
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<IMaterial>("BasicTexture.mfx");
-            cr.Load<ITexture2D>("dds_test.dds;mipmaps=true");
+            cr.Load<ITexture2D>("dds_test.dds", new Dictionary<string, object>()
+            {
+                ["mipmaps"] = true
+            });
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 

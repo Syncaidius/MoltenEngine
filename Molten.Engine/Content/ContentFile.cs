@@ -59,14 +59,18 @@ namespace Molten
             return _segments[t];
         }
 
-        internal object GetObject(Engine engine, Type t, Dictionary<string, string> metadata)
+        internal object GetObject(Engine engine, Type t, ContentFileParameters parameters)
         {
             if (_segments.TryGetValue(t, out ThreadedList<object> list))
             {
                 if (OriginalRequestType == ContentRequestType.Read)
-                    return OriginalProcessor.OnGet(engine, t, metadata, list);
+                {
+                    return OriginalProcessor.OnGet(engine, t, parameters, list);
+                }
                 else if (OriginalRequestType == ContentRequestType.Deserialize)
+                {
                     return list[0];
+                }
             }
 
             return default;
@@ -84,16 +88,21 @@ namespace Molten
 
         internal string Path { get; private set; }
 
-        internal ContentRequestType OriginalRequestType;
+        internal ContentRequestType OriginalRequestType { get; set; }
 
         /// <summary>
         /// The content processor which loaded the file, if any.
         /// </summary>
-        internal ContentProcessor OriginalProcessor;
+        internal ContentProcessor OriginalProcessor { get; set; }
 
         /// <summary>
         /// The content type that was requested when loading the file.
         /// </summary>
-        internal Type OriginalContentType;
+        internal Type OriginalContentType { get; set; }
+
+        /// <summary>
+        /// Gets the parameters that the file was originally loaded with.
+        /// </summary>
+        internal ContentFileParameters Parameters { get;set; }
     }
 }

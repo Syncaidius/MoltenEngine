@@ -267,6 +267,7 @@ namespace Molten.Graphics
         /// <returns></returns>
         public int NearestCharacter(string text, Vector2F localPoint)
         {
+            // TODO This is needed when hit-testing for text editing.
             throw new NotImplementedException();
         }
 

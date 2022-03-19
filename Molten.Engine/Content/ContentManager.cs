@@ -3,6 +3,7 @@ using Molten.Threading;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 
@@ -11,8 +12,7 @@ namespace Molten
     /// <summary>Manages the loading, unloading and reusing of content.</summary>
     public class ContentManager : EngineObject
     {
-        static Dictionary<Type, ContentProcessor> _defaultProcessors;
-
+        Dictionary<Type, ContentProcessor> _defaultProcessors;
         ObjectPool<ContentRequest> _requestPool;
         internal ObjectPool<ContentContext> ContextPool;
         Dictionary<Type, ContentProcessor> _customProcessors;
@@ -25,15 +25,7 @@ namespace Molten
         Engine _engine;
         JsonSerializerSettings _jsonSettings;
 
-        static ContentManager()
-        {
-            _defaultProcessors = new Dictionary<Type, ContentProcessor>();
-
-            Type t = typeof(ContentProcessor);
-            AddProcessorsFromAssembly(t.Assembly);
-        }
-
-        static void AddProcessorsFromAssembly(Assembly assembly)
+        private void AddProcessorsFromAssembly(Assembly assembly)
         {
             IEnumerable<Type> types = ReflectionHelper.FindType<ContentProcessor>(assembly);
             foreach (Type t in types)
@@ -44,8 +36,9 @@ namespace Molten
                 {
                     if (_defaultProcessors.ContainsKey(accepted))
                         continue;
-                    else
-                        _defaultProcessors.Add(accepted, proc);
+
+                    proc.Initialize();
+                    _defaultProcessors.Add(accepted, proc);
                 }
             }
         }
@@ -56,6 +49,11 @@ namespace Molten
         /// <param name="workerThreads">The number of worker threads that will be used to fulfil content requests.</param>
         internal ContentManager(Logger log, Engine engine, int workerThreads = 1)
         {
+            _defaultProcessors = new Dictionary<Type, ContentProcessor>();
+
+            Type t = typeof(ContentProcessor);
+            AddProcessorsFromAssembly(t.Assembly);
+
             _engine = engine;            
             _requestPool = new ObjectPool<ContentRequest>(() => new ContentRequest());
             ContextPool = new ObjectPool<ContentContext>(() => new ContentContext());            
@@ -96,6 +94,24 @@ namespace Molten
                 foreach (Type t in p.AcceptedTypes)
                     _customProcessors[t] = p;
             }
+        }
+
+        /// <summary>
+        /// Gets a list of optional parameters that can be passed in when loading the specified content type.
+        /// </summary>
+        /// <typeparam name="T">The type of content to retrieve content parameters for.</typeparam>
+        /// <returns>A read-only list of <see cref="ContentParameter"/>.</returns>
+        public IReadOnlyList<ContentParameter> GetParameters<T>()
+        {
+            ContentProcessor proc = null;
+            Type type = typeof(T);
+            if (_customProcessors.TryGetValue(type, out proc) ||
+                _defaultProcessors.TryGetValue(type, out proc))
+            {
+                return proc.Parameters;
+            }
+
+            return null;
         }
 
         private void AddCustomJsonConverters(JsonSerializerSettings settings, IList<JsonConverter> converters)
@@ -235,6 +251,7 @@ namespace Molten
                     OriginalContentType = context.ContentType,
                     File = context.File,
                     OriginalRequestType = context.RequestType,
+                    Parameters = context.Parameters,
                 };
 
                 ContentDirectory directory;
@@ -311,13 +328,18 @@ namespace Molten
         {
             foreach (ContentContext context in request.RequestElements)
             {
+                context.Engine = _engine;
+                context.Log = _log;
+
                 ContentProcessor proc = null;
 
                 // First check if the content already exists
                 string fnLower = context.Filename.ToLower();
                 if (_content.TryGetValue(fnLower, out ContentFile file))
                 {
-                    object existing = file.GetObject(_engine, context.ContentType, context.Metadata);
+                    context.Parameters.Validate(context, file.OriginalProcessor);
+
+                    object existing = file.GetObject(_engine, context.ContentType, context.Parameters);
                     if (existing != null)
                     {
                         request.RetrievedContent[fnLower] = file;
@@ -336,11 +358,10 @@ namespace Molten
                     }
                 }
 
-                context.Engine = _engine;
-                context.Log = _log;
-
                 try
                 {
+                    context.Parameters.Validate(context, proc);
+
                     switch (context.RequestType)
                     {
                         case ContentRequestType.Read:

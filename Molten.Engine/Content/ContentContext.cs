@@ -7,8 +7,6 @@ namespace Molten
 {
     public class ContentContext : IPoolable
     {
-        Dictionary<string, object> _contextData = new Dictionary<string, object>();
-
         internal ContentContext() { }
 
         void IPoolable.ClearForPool()
@@ -20,26 +18,12 @@ namespace Molten
         {
             _info = null;
             Filename = string.Empty;
-            Metadata.Clear();
+            Parameters = null;
             ContentType = null;
             Log = null;
             Engine = null;
             Output.Clear();
             Input.Clear();
-            _contextData.Clear();
-        }
-
-        public void SetContextData<T>(string key, T obj)
-        {
-            _contextData[key] = obj;
-        }
-
-        public T GetContextData<T>(string key)
-        {
-            if (!_contextData.TryGetValue(key, out object obj))
-                return default;
-            else
-                return (T)obj;
         }
 
         public void AddOutput<T>(T obj)
@@ -81,7 +65,7 @@ namespace Molten
 
         public Type ContentType { get; internal set; }
 
-        public Dictionary<string, string> Metadata { get; internal set; } = new Dictionary<string, string>();
+        internal ContentFileParameters Parameters { get; set; }
 
         public FileInfo File
         {

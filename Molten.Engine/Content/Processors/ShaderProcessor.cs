@@ -12,6 +12,10 @@ namespace Molten.Content
 
         public override Type[] RequiredServices { get; } = { typeof(RenderService) };
 
+        protected override void OnInitialize()
+        {
+            AddParameter("name", "");
+        }
         public override void OnRead(ContentContext context)
         {
             using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
@@ -42,10 +46,11 @@ namespace Molten.Content
             throw new NotImplementedException();
         }
 
-        public override object OnGet(Engine engine, Type t, Dictionary<string, string> metadata, IList<object> groupContent)
+        public override object OnGet(Engine engine, Type contentType, ContentFileParameters parameters, IList<object> groupContent)
         {
-            string materialName = "";
-            if (metadata.TryGetValue("name", out materialName))
+            string materialName = parameters.Get<string>("name");
+
+            if (!string.IsNullOrEmpty(materialName))
             {
                 foreach (object obj in groupContent)
                 {

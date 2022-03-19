@@ -33,8 +33,10 @@ namespace Molten.UI
         [DataMember]
         public UISpacing Padding = new UISpacing();
 
+        [DataMember]
         public UIAnchorFlags Anchor;
 
+        [DataMember]
         public bool IsClipEnabled = true;
     }
 }

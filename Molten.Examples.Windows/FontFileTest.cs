@@ -68,7 +68,10 @@ namespace Molten.Samples
         private void LoadFontFile(string loadString)
         {
             ContentRequest cr = Engine.Content.BeginRequest("assets/");
-            cr.Load<SpriteFont>("Ananda Namaste Regular.ttf;size=24");
+            cr.Load<SpriteFont>("Ananda Namaste Regular.ttf", new Dictionary<string, object>()
+            {
+                ["size"] = 24
+            });
             OnContentRequested(cr);
             cr.OnCompleted += FontLoad_OnCompleted;
             cr.Commit();

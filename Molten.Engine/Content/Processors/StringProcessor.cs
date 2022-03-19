@@ -10,12 +10,16 @@ namespace Molten.Content
 
         public override Type[] RequiredServices => null;
 
+        protected override void OnInitialize()
+        {
+            AddParameter("binary", false);
+            AddParameter("perline", false);
+        }
+
         public override void OnRead(ContentContext context)
         {
-            bool isBinary = false;
+            bool isBinary = context.Parameters.Get<bool>("binary");
 
-            if (context.Metadata.TryGetValue("binary", out string binaryStr))
-                bool.TryParse(binaryStr, out isBinary);
             using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
             {
                 if (isBinary)
@@ -28,9 +32,7 @@ namespace Molten.Content
                 }
                 else
                 {
-                    bool perLine = false;
-                    if (context.Metadata.TryGetValue("perline", out string perLineStr))
-                        bool.TryParse(binaryStr, out perLine);
+                    bool perLine = context.Parameters.Get<bool>("perline");
 
                     using (StreamReader reader = new StreamReader(stream))
                     {
@@ -52,10 +54,7 @@ namespace Molten.Content
         {
             if (context.Input.TryGetValue(AcceptedTypes[0], out List<object> strings))
             {
-                bool isBinary = false;
-
-                if (context.Metadata.TryGetValue("binary", out string binaryStr))
-                    bool.TryParse(binaryStr, out isBinary);
+                bool isBinary = context.Parameters.Get<bool>("binary");
 
                 using (Stream stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
                 {

@@ -66,20 +66,22 @@ namespace Molten
             OnCompleted?.Invoke(this);
         }
 
-        /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>. </para>
+        /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>.
         /// If the content was already loaded from a previous request, the existing object will be retrieved.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
-        public void Load<T>(string fn)
+        /// <param name="parameters">A list of parameters to use when loading the asset.</param>
+        public void Load<T>(string fn, Dictionary<string, object> parameters = null)
         {
-            AddElement(fn, ContentRequestType.Read, typeof(T));
+            AddElement(fn, ContentRequestType.Read, typeof(T), parameters);
         }
 
-        /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>. </para>
+        /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>.
         /// If the content was already loaded from a previous request, the existing object will be retrieved.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
-        public void Load(Type t, string fn)
+        /// <param name="parameters">A list of parameters to use when loading the asset.</param>
+        public void Load(Type t, string fn, Dictionary<string, object> parameters = null)
         {
-            AddElement(fn, ContentRequestType.Read, t);
+            AddElement(fn, ContentRequestType.Read, t, parameters);
         }
 
         /// <summary>Adds a write request for the provided object.</summary>
@@ -93,9 +95,9 @@ namespace Molten
         /// <summary>Adds a write request for the provided object.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
         /// <param name="obj">The object to be written.</param>
-        public void Save(Type type, string fn, object obj)
+        public void Save(Type type, string fn, object obj, Dictionary<string, object> parameters = null)
         {
-            AddElement(fn, ContentRequestType.Write, type, (e) =>
+            AddElement(fn, ContentRequestType.Write, type, parameters, (e) =>
             {
                 e.AddInput(type, obj);
             });
@@ -104,19 +106,19 @@ namespace Molten
         /// <summary>Adds a write request for the provided object.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
         /// <param name="obj">The object to be written.</param>
-        public void Save<T>(string fn, params T[] obj)
+        public void Save<T>(string fn, T[] obj, Dictionary<string, object> parameters = null)
         {
-            Save(typeof(T), fn, obj);
+            Save(typeof(T), fn, obj, parameters);
         }
         /// <summary>Adds a write request for the provided object.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
         /// <param name="obj">The object to be written.</param>
-        public void Save(Type type, string fn, params object[] obj)
+        public void Save(Type type, string fn, object[] obj, Dictionary<string, object> parameters = null)
         {
             if (obj == null)
                 return;
 
-            AddElement(fn, ContentRequestType.Write, type, (e) =>
+            AddElement(fn, ContentRequestType.Write, type, parameters, (e) =>
             {
                 for (int i = 0; i < obj.Length; i++)
                     e.AddInput(type, obj[i]);
@@ -126,35 +128,35 @@ namespace Molten
         /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
         /// <typeparam name="T">The type of object to be deserialized.</typeparam>
         /// <param name="fn">The relative file path from the request's root directory.</param>
-        public void Deserialize<T>(string fn)
+        public void Deserialize<T>(string fn, Dictionary<string, object> parameters = null)
         {
-            AddElement(fn, ContentRequestType.Deserialize, typeof(T));
+            AddElement(fn, ContentRequestType.Deserialize, typeof(T), parameters);
         }
 
         /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
         /// <param name="type">The type of object to be deserialized.</typeparam>
         /// <param name="fn">The file name and path.</param>
-        public void Deserialize(Type type, string fn)
+        public void Deserialize(Type type, string fn, Dictionary<string, object> parameters = null)
         {
-            AddElement(fn, ContentRequestType.Deserialize, type);
+            AddElement(fn, ContentRequestType.Deserialize, type, parameters);
         }
 
         /// <summary>Adds a serialization operation to the current <see cref="ContentRequest"/>. This will serialize an object into JSON and write it to the specified file.</summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="fn"></param>
         /// <param name="obj"></param>
-        public void Serialize<T>(string fn, T obj)
+        public void Serialize<T>(string fn, T obj, Dictionary<string, object> parameters = null)
         {
-            Serialize(typeof(T), fn, obj);
+            Serialize(typeof(T), fn, obj, parameters);
         }
 
         /// <summary>Adds a serialization operation to the current <see cref="ContentRequest"/>. This will serialize an object into JSON and write it to the specified file.</summary>
         /// <param name="fn"></param>
         /// <param name="obj"></param>
         /// <param name="type">The type of object to be serialized.</param>
-        public void Serialize(Type type, string fn, object obj)
+        public void Serialize(Type type, string fn, object obj, Dictionary<string, object> parameters = null)
         {
-            AddElement(fn, ContentRequestType.Serialize, type, (e) =>
+            AddElement(fn, ContentRequestType.Serialize, type, parameters, (e) =>
             {
                 e.AddInput(type, obj);
             });
@@ -166,13 +168,22 @@ namespace Molten
         /// <param name="fn">The relative file path from the content manager's root directory.</param>
         public void Delete(string fn)
         {
-            AddElement(fn, ContentRequestType.Delete, null);
+            AddElement(fn, ContentRequestType.Delete, null, null);
         }
 
-        private void AddElement(string requestString, ContentRequestType type, Type contentType, Action<ContentContext> populator = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="type"></param>
+        /// <param name="contentType"></param>
+        /// <param name="parameters"></param>
+        /// <param name="populator">A callback method for populating various elements of a <see cref="ContentContext"/>.</param>
+        private void AddElement(string path, ContentRequestType type, Type contentType, Dictionary<string, object> parameters, Action<ContentContext> populator = null)
         {
+            parameters = parameters ?? new Dictionary<string, object>();
+
             ContentContext c = Manager.ContextPool.GetInstance();
-            string path = ParseRequestString(Manager.Log, requestString, c.Metadata);
             string contentPath = Path.Combine(RootDirectory, path);
 
             if (type == ContentRequestType.Read || type == ContentRequestType.Deserialize)
@@ -181,6 +192,10 @@ namespace Molten
             c.ContentType = contentType;
             c.RequestType = type;
             c.File = new FileInfo(contentPath);
+            c.Parameters = new ContentFileParameters();
+
+            foreach (KeyValuePair<string, object> kv in parameters)
+                c.Parameters.Data.Add(kv.Key.ToLower(), kv.Value);
 
             populator?.Invoke(c);
             RequestElements.Add(c);
@@ -201,27 +216,27 @@ namespace Molten
         /// Returns a content object that was loaded or retrieved as part of the request.
         /// </summary>
         /// <typeparam name="T">The type of object expected to be returned.</typeparam>
-        /// <param name="requestString">The path or request string.</param>
+        /// <param name="path">The asset path.</param>
         /// <returns></returns>
-        public T Get<T>(string requestString)
+        public T Get<T>(string path)
         {
-            return (T)Get(typeof(T), requestString);
+            return (T)Get(typeof(T), path);
         }
 
         /// <summary>
         /// Returns a content object that was loaded or retrieved as part of the request.
         /// </summary>
         /// <typeparam name="T">The type of object expected to be returned.</typeparam>
-        /// <param name="requestString">The path or request string.</param>
+        /// <param name="path">The asset path.</param>
         /// <returns></returns>
-        public object Get(Type type, string requestString)
+        public object Get(Type type, string path)
         {
             Dictionary<string, string> meta = new Dictionary<string, string>();
-            string path = Path.Combine(RootDirectory, ParseRequestString(Manager.Log, requestString, meta));
+            path = Path.Combine(RootDirectory, path);
             path = path.ToLower();
 
             if (RetrievedContent.TryGetValue(path, out ContentFile file))
-                return file.GetObject(Manager.Engine, type, meta);
+                return file.GetObject(Manager.Engine, type, file.Parameters);
 
             return default;
         }
@@ -247,29 +262,6 @@ namespace Molten
         {
             return Get(type, _requestedFiles[index]);
         }
-
-        internal static string ParseRequestString(Logger log, string requestString, Dictionary<string, string> metadataOut)
-        {
-            string[] parts = requestString.Split(REQUEST_SPLITTER, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length == 0)
-                return requestString;
-
-            string path = parts[0];
-            for (int i = 1; i < parts.Length; i++)
-            {
-                string[] metaParts = parts[i].Split(METADATA_ASSIGNMENT, StringSplitOptions.RemoveEmptyEntries);
-                if (metaParts.Length != 2)
-                {
-                    log.Error($"Invalid metadata segment in content request: {parts[i]}");
-                    continue;
-                }
-                metadataOut.Add(metaParts[0], metaParts[1]);
-            }
-
-            return path;
-        }
-
-
 
         /// <summary>
         /// Gets the path of a file that was loaded via the current content request.
