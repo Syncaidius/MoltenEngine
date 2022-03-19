@@ -20,13 +20,6 @@ namespace Molten.Content
             else
                 context.Log.Log($"No font size specified. Using default of {size}");
 
-            FontFile font = null;
-            using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
-            {
-                using (FontReader reader = new FontReader(stream, context.Log, context.Filename))
-                    font = reader.ReadFont(true);
-            }
-
             SpriteFont sf = context.Engine.Fonts.GetFont(context.Log, context.Filename, size);
             if (sf != null)
                 context.AddOutput(sf);

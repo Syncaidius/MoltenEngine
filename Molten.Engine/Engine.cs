@@ -4,6 +4,7 @@ using Molten.Graphics;
 using Molten.Input;
 using Molten.Net;
 using Molten.Threading;
+using Molten.UI;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -64,7 +65,8 @@ namespace Molten
 
         private void Renderer_OnStarted(EngineService o)
         {
-            DefaultFont = Fonts.GetFont(Log, Settings.DefaultFontName, Settings.DefaultFontSize);
+            UITheme theme = Settings.UI.Theme.Value;
+            DefaultFont = Fonts.GetFont(Log, theme.FontName, theme.FontSize);
             Log.Error("Failed to load default font.");
         }
 

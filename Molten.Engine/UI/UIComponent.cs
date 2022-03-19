@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,8 @@ namespace Molten.UI
     /// <summary>
     /// The base class for a UI component.
     /// </summary>
-    public abstract class UIComponent
+    [Serializable]
+    public abstract class UIComponent : EngineObject
     {
         [DataMember]
         internal UIRenderData BaseData;
@@ -64,6 +66,8 @@ namespace Molten.UI
 
             BaseData.RenderBounds = BaseData.BorderBounds;
             BaseData.RenderBounds.Inflate(-pad.Left, -pad.Top, -pad.Right, -pad.Bottom);
+
+            OnUpdateBounds();
         }
 
         internal void Update(Timing time)
@@ -73,6 +77,9 @@ namespace Molten.UI
             for (int i = _children.Count - 1; i >= 0; i--)
                 _children[i].Update(time);
         }
+
+        protected override void OnDispose() { }
+        protected virtual void OnUpdateBounds() { }
 
         protected virtual void OnUpdate(Timing time) { }
 

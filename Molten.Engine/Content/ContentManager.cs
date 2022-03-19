@@ -112,7 +112,7 @@ namespace Molten
         /// </summary>
         /// <param name="rootDirectory">The root directory of all operations added to the request.</param>
         /// <returns></returns>
-        public ContentRequest BeginRequest(string rootDirectory)
+        public ContentRequest BeginRequest(string rootDirectory = null)
         {
             return BeginRequest(rootDirectory, null);
         }
@@ -136,6 +136,9 @@ namespace Molten
             {
                 request.JsonSettings = _jsonSettings;
             }
+
+            if (string.IsNullOrEmpty(rootDirectory))
+                rootDirectory = Engine.Settings.DefaultAssetPath;
 
             rootDirectory = rootDirectory.StartsWith("/") ? rootDirectory.Substring(1, rootDirectory.Length - 1) : rootDirectory;
             request.RootDirectory = Path.GetFullPath(rootDirectory);

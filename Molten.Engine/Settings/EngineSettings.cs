@@ -117,6 +117,8 @@ namespace Molten
         /// <summary>Gets or sets the path (and filename) of the settings file.</summary>
         public string Path { get; set; } = "settings.json";
 
+        public string DefaultAssetPath { get; set; } = "assets/";
+
         /// <summary>Gets or sets the number of content worker threads. Changing this value will only have an affect before <see cref="Engine"/> is instantiated.</summary>
         public int ContentWorkerThreads { get; set; } = 2;
 
@@ -130,12 +132,6 @@ namespace Molten
 
         /// <summary>Gets or sets the product name.</summary>
         public string ProductName { get; set; } = "Molten Game";
-
-        /// <summary>Gets or sets the default font.</summary>
-        public string DefaultFontName { get; set; } = "Arial";
-
-        /// <summary>Gets or sets the default font size.</summary>
-        public int DefaultFontSize { get; set; } = 16;
 
         /// <summary>
         /// Gets or sets whether the engine should render into a native GUI control.

@@ -126,6 +126,9 @@ namespace Molten.Samples
         {
             base.OnHudDraw(sb);
 
+            if (SampleFont == null)
+                return;
+
             string text = "[W][A][S][D] to move -- [ESC] close -- [LMB] and [MOUSE] to rotate";
             Vector2F tSize = SampleFont.MeasureString(text);
             Vector2F pos = new Vector2F()

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,10 +24,13 @@ namespace Molten.UI
         /// </summary>
         public struct RenderData : IUIRenderData
         {
+            [DataMember]
             public Color BorderColor;
 
+            [DataMember]
             public float BorderThickness;
 
+            [DataMember]
             public Color BackgroundColor;
 
             public void Render(SpriteBatcher sb, UIRenderData data)

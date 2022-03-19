@@ -3,6 +3,7 @@ using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,14 +20,17 @@ namespace Molten.UI
         /// </summary>
         public Rectangle GlobalBounds;
 
+        [DataMember]
         public Rectangle LocalBounds;
 
         public Rectangle RenderBounds;
 
         public Rectangle BorderBounds;
 
+        [DataMember]
         public UISpacing Margin = new UISpacing();
 
+        [DataMember]
         public UISpacing Padding = new UISpacing();
 
         public UIAnchorFlags Anchor;

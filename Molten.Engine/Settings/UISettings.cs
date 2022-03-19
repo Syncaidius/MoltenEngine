@@ -27,6 +27,7 @@ namespace Molten
         /// <summary>
         /// Gets the current <see cref="UITheme"/>. This setting is not serialized when settings are saved to file.
         /// </summary>
-        public SettingValue<UITheme> Theme { get; }
+        public SettingValue<UITheme> Theme { get; }        
+       
     }
 }

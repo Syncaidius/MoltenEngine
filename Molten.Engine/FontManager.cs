@@ -95,7 +95,9 @@ namespace Molten
 
             if (fFile == null)
             {
-                if (File.Exists(path))
+                FileInfo fInfo = new FileInfo(path);
+
+                if (fInfo.Exists)
                 {
                     using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
                     {
@@ -105,7 +107,12 @@ namespace Molten
                 }
                 else
                 {
-                    using (FontReader reader = new FontReader(path, log))
+                    string sysFontName = fInfo.Name;
+
+                    if (!string.IsNullOrEmpty(fInfo.Extension))
+                        sysFontName = sysFontName.Replace(fInfo.Extension, "");
+
+                    using (FontReader reader = new FontReader(sysFontName, log))
                         fFile = reader.ReadFont(true);
                 }
             }

@@ -144,71 +144,6 @@ namespace Molten.Samples
             triPoints.Add(new Vector2F(730, 360));
             triPoints.Add(new Vector2F(770, 280));
 
-            // Define a test shape
-            Shape testShape = new Shape(new List<Vector2F>()
-            {
-                new Vector2F(2158.9981f,2350.2286f),
-                new Vector2F(2158.9981f,3245.4557f),
-                new Vector2F(-1042.9463f,3245.4557f),
-                new Vector2F(-1042.9463f,2496.1895f),
-                new Vector2F(91.149593f,800.20639f),
-                new Vector2F(441.75649f,251.73749f),
-                new Vector2F(648.06929f,-97.04991f),
-                new Vector2F(765.46219f,-332.30851f),
-                new Vector2F(849.31479f,-540.20071f),
-                new Vector2F(899.62689f,-720.72671f),
-                new Vector2F(916.39869f,-873.88651f),
-                new Vector2F(896.13819f,-1060.7944f),
-                new Vector2F(835.35969f,-1193.3788f),
-                new Vector2F(789.54889f,-1239.4959f),
-                new Vector2F(733.15879f,-1272.4376f),
-                new Vector2F(666.18939f,-1292.204f),
-                new Vector2F(588.64059f,-1298.7951f),
-                new Vector2F(511.08979f,-1291.4964f),
-                new Vector2F(444.11959f,-1269.6012f),
-                new Vector2F(387.73029f,-1233.1107f),
-                new Vector2F(341.92169f,-1182.0263f),
-                new Vector2F(306.46619f,-1109.2461f),
-                new Vector2F(281.14119f,-1007.6808f),
-                new Vector2F(260.88259f,-718.19491f),
-                new Vector2F(260.88259f,-218.68401f),
-                new Vector2F(-1042.9463f,-218.68401f),
-                new Vector2F(-1042.9463f,-410.05511f),
-                new Vector2F(-1030.3404f,-804.55201f),
-                new Vector2F(-992.52205f,-1105.8022f),
-                new Vector2F(-958.08057f,-1232.6032f),
-                new Vector2F(-905.18018f,-1358.3923f),
-                new Vector2F(-833.82067f,-1483.1695f),
-                new Vector2F(-744.00213f,-1606.9348f),
-                new Vector2F(-637.5262f,-1722.6871f),
-                new Vector2F(-516.1928f,-1823.4397f),
-                new Vector2F(-380.00205f,-1909.1927f),
-                new Vector2F(-228.95374f,-1979.9461f),
-                new Vector2F(-62.599167f,-2035.2866f),
-                new Vector2F(119.51329f,-2074.8167f),
-                new Vector2F(317.38399f,-2098.5364f),
-                new Vector2F(531.01279f,-2106.4456f),
-                new Vector2F(938.57049f,-2082.2155f),
-                new Vector2F(1122.512f,-2051.9328f),
-                new Vector2F(1293.2285f,-2009.5383f),
-                new Vector2F(1450.7202f,-1955.0316f),
-                new Vector2F(1594.987f,-1888.4129f),
-                new Vector2F(1726.0289f,-1809.6817f),
-                new Vector2F(1843.846f,-1718.8382f),
-                new Vector2F(2038.4505f,-1512.159f),
-                new Vector2F(2177.4543f,-1279.7356f),
-                new Vector2F(2260.8578f,-1021.5681f),
-                new Vector2F(2288.6606f,-737.65631f),
-                new Vector2F(2273.0151f,-508.98211f),
-                new Vector2F(2226.0792f,-273.82221f),
-                new Vector2F(2147.8538f,-32.17651f),
-                new Vector2F(2038.3398f,215.95519f),
-                new Vector2F(1852.2859f,537.88159f),
-                new Vector2F(1544.4495f,1000.9025f),
-                new Vector2F(1114.8304f,1605.018f),
-                new Vector2F(563.42839f,2350.2286f),
-            }, new Vector2F(100, 400), 0.0625f);
-
             _ui = SpriteLayer.AddObjectWithComponent<UIRenderComponent>();
             _ui.Root = new UIPanel()
             {
@@ -224,6 +159,12 @@ namespace Molten.Samples
                     BackgroundColor = new Color(0,128, 0, 200),
                     BorderColor = Color.LimeGreen
                 },
+            };
+
+            UILabel label = new UILabel()
+            {
+                LocalBounds = new Rectangle(300, 150, 200, 50),
+                Parent = _ui.Root
             };
         }
 

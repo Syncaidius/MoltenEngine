@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ namespace Molten.UI
 
         int _left, _right, _top, _bottom;
 
+        [DataMember]
         public int Left
         {
             get => _left;
@@ -25,6 +27,7 @@ namespace Molten.UI
             }
         }
 
+        [DataMember]
         public int Right
         {
             get => _right;
@@ -38,6 +41,7 @@ namespace Molten.UI
             }
         }
 
+        [DataMember]
         public int Top
         {
             get => _top;
@@ -51,6 +55,7 @@ namespace Molten.UI
             }
         }
 
+        [DataMember]
         public int Bottom
         {
             get => _bottom;
