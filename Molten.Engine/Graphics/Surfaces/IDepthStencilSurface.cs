@@ -9,12 +9,6 @@
         /// <param name="stencilValue">The value to clear the stencil to. Only applies if <see cref="DepthClearFlags.Stencil"/> flag was provided.</param>
         void Clear(DepthClearFlags flags, float depthValue = 1.0f, byte stencilValue = 0);
 
-        /// <summary>Resizes the provided <see cref="IDepthStencilSurface"/> to the specified width and height.</summary>
-        /// <param name="surface">The surface.</param>
-        /// <param name="newWidth">The new width.</param>
-        /// <param name="newHeight">The new height.</param>
-        void Resize(uint newWidth, uint newHeight);
-
         /// <summary>Gets the depth-specific format of the surface.</summary>
         DepthFormat DepthFormat { get; }
 

@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     internal class Texture2DVariable : ShaderResourceVariable
     {
-        Texture2DDX11 _texture;
+        Texture2D _texture;
 
         internal Texture2DVariable(HlslShader shader) : base(shader) { }
 
@@ -16,7 +16,7 @@ namespace Molten.Graphics
         {
             if (value != null)
             {
-                _texture = value as Texture2DDX11;
+                _texture = value as Texture2D;
 
                 if (_texture != null)
                 {

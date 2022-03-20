@@ -9,7 +9,7 @@ using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    public unsafe class Texture1DDX11 : TextureBase, ITexture
+    public unsafe class Texture1D : TextureBase, ITexture
     {
         internal ID3D11Texture1D* NativeTexture;
         Texture1DDesc _description;
@@ -18,7 +18,7 @@ namespace Molten.Graphics
 
         public event TextureHandler OnPostResize;
 
-        internal Texture1DDX11(
+        internal Texture1D(
             RendererDX11 renderer, 
             uint width, 
             Format format = Format.FormatR8G8B8A8Unorm, 
@@ -32,9 +32,9 @@ namespace Molten.Graphics
 
             _description = new Texture1DDesc()
             {
-                Width = (uint)width,
-                MipLevels = (uint)mipCount,
-                ArraySize = (uint)Math.Max(1, arraySize),
+                Width = width,
+                MipLevels = mipCount,
+                ArraySize = Math.Max(1, arraySize),
                 Format = format,
                 BindFlags = (uint)GetBindFlags(),
                 CPUAccessFlags = (uint)GetAccessFlags(),

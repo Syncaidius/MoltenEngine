@@ -1,33 +1,32 @@
 ﻿using System;
 using Silk.NET.DXGI;
-using System.IO;
 using Silk.NET.Direct3D11;
 using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    public unsafe class Texture2DDX11 : TextureBase, ITexture2D
+    public unsafe class Texture2D : TextureBase, ITexture2D
     {
         internal ID3D11Texture2D* NativeTexture;
         protected Texture2DDesc _description;
 
-        /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
+        /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="descTexture"></param>
         /// <param name="flags">A set of flags to override those of the provided texture.</param>
-        internal Texture2DDX11(Texture2DDX11 descTexture, TextureFlags flags)
+        internal Texture2D(Texture2D descTexture, TextureFlags flags)
             : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, 
                   descTexture.DxgiFormat, descTexture.MipMapCount, descTexture.ArraySize, flags)
         { }
 
-        /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
+        /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="descTexture"></param>
-        internal Texture2DDX11(Texture2DDX11 descTexture)
+        internal Texture2D(Texture2D descTexture)
             : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, descTexture.DxgiFormat, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags)
         { }
 
-        internal Texture2DDX11(
+        internal Texture2D(
             RendererDX11 renderer,
             uint width,
             uint height,
@@ -41,10 +40,10 @@ namespace Molten.Graphics
         {
             _description = new Texture2DDesc()
             {
-                Width = (uint)Math.Max(width, 1),
-                Height = (uint)Math.Max(height, 1),
-                MipLevels = (uint)mipCount,
-                ArraySize = (uint)Math.Max(arraySize, 1),
+                Width = Math.Max(width, 1),
+                Height = Math.Max(height, 1),
+                MipLevels = mipCount,
+                ArraySize = Math.Max(arraySize, 1),
                 Format = format,
                 BindFlags = (uint)GetBindFlags(),
                 CPUAccessFlags = (uint)GetAccessFlags(),
@@ -132,39 +131,15 @@ namespace Molten.Graphics
             _description.Format = newFormat;
         }
 
-        public void Resize(uint newWidth, uint newHeight)
+        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount = 0, uint newArraySize = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
         {
             QueueChange(new TextureResize()
             {
                 NewWidth = newWidth,
                 NewHeight = newHeight,
-                NewMipMapCount = MipMapCount,
-                NewArraySize = _description.ArraySize,
-                NewFormat = DxgiFormat
-            });
-        }
-
-        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount)
-        {
-            QueueChange(new TextureResize()
-            {
-                NewWidth = newWidth,
-                NewHeight = newHeight,
-                NewMipMapCount = newMipMapCount,
-                NewArraySize = _description.ArraySize,
-                NewFormat = DxgiFormat
-            });
-        }
-
-        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount, uint newArraySize, GraphicsFormat newFormat)
-        {
-            QueueChange(new TextureResize()
-            {
-                NewWidth = newWidth,
-                NewHeight = newHeight,
-                NewMipMapCount = newMipMapCount,
-                NewArraySize = newArraySize,
-                NewFormat = newFormat.ToApi(),
+                NewMipMapCount = newMipMapCount == 0 ? MipMapCount : newMipMapCount,
+                NewArraySize = newArraySize == 0 ? _description.ArraySize : newArraySize,
+                NewFormat = newFormat == GraphicsFormat.Unknown ? DxgiFormat : newFormat.ToApi()
             });
         }
     }

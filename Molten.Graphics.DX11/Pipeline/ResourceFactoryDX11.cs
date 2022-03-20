@@ -60,19 +60,19 @@ namespace Molten.Graphics
 
         public override ITexture CreateTexture1D(Texture1DProperties properties)
         {
-            return new Texture1DDX11(_renderer, properties.Width, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
+            return new Texture1D(_renderer, properties.Width, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
         }
 
         public override ITexture CreateTexture1D(TextureData data)
         {
-            Texture1DDX11 tex = new Texture1DDX11(_renderer, data.Width, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
+            Texture1D tex = new Texture1D(_renderer, data.Width, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
             tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
 
         public override ITexture2D CreateTexture2D(Texture2DProperties properties)
         {
-            return new Texture2DDX11(_renderer,
+            return new Texture2D(_renderer,
                 properties.Width,
                 properties.Height,
                 properties.Format.ToApi(),
@@ -84,7 +84,7 @@ namespace Molten.Graphics
 
         public override ITexture2D CreateTexture2D(TextureData data)
         {
-            Texture2DDX11 tex = new Texture2DDX11(_renderer,
+            Texture2D tex = new Texture2D(_renderer,
                 data.Width,
                 data.Height,
                 data.Format.ToApi(),

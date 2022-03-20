@@ -8,13 +8,13 @@ namespace Molten.Graphics
 {
     internal class RWTexture2DVariable : RWVariable
     {
-        Texture2DDX11 _texture;
+        Texture2D _texture;
 
         internal RWTexture2DVariable(HlslShader shader) : base(shader) { }
 
         protected override ContextBindableResource OnSetUnorderedResource(object value)
         {
-            _texture = value as Texture2DDX11;
+            _texture = value as Texture2D;
 
             if (_texture != null)
             {
