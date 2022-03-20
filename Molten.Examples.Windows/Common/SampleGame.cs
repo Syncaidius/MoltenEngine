@@ -52,10 +52,7 @@ namespace Molten.Samples
                 Engine.Input.Camera = _cam2D;
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<SpriteFont>("BroshK.ttf", new Dictionary<string, object>()
-            {
-                ["size"] = 24
-            });
+            cr.Load<SpriteFont>("BroshK.ttf", ("size", 24));
 
             OnContentRequested(cr);
             cr.OnCompleted += Cr_OnCompleted;

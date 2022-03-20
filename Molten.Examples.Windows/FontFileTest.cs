@@ -42,10 +42,7 @@ namespace Molten.Samples
             _rng = new Random();
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<ITexture2D>("dds_test.dds", new Dictionary<string, object>()
-            {
-                ["mipmaps"] = true
-            });
+            cr.Load<ITexture2D>("dds_test.dds", ("mipmaps", true));
 
             cr.Load<IMaterial>("Basictexture.mfx");
             cr.OnCompleted += Cr_OnCompleted;
@@ -72,10 +69,7 @@ namespace Molten.Samples
         private void LoadFontFile(string loadString, int size)
         {
             ContentRequest cr = Engine.Content.BeginRequest("assets/");
-            cr.Load<SpriteFont>("Ananda Namaste Regular.ttf", new Dictionary<string, object>()
-            {
-                ["size"] = size
-            });
+            cr.Load<SpriteFont>("Ananda Namaste Regular.ttf", ("size", size));
             OnContentRequested(cr);
             cr.OnCompleted += FontLoad_OnCompleted;
             cr.Commit();
