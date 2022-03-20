@@ -43,8 +43,6 @@
 * THE SOFTWARE.
 */
 
-using System;
-
 namespace Molten
 {
     /*

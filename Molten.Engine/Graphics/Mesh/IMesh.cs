@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>A base interface for mesh implementations.</summary>
     public interface IMesh : IRenderable, IDisposable

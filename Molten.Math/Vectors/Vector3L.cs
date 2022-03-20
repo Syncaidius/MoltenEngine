@@ -1,12 +1,11 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Molten
 {
-	///<summary>A <see cref = "long"/> vector comprised of three components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=8)]
+    ///<summary>A <see cref = "long"/> vector comprised of three components.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=8)]
 	public partial struct Vector3L : IFormattable
 	{
 		///<summary>The X component.</summary>

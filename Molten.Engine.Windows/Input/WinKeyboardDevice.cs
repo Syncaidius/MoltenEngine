@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using Molten.Windows32;
 
 namespace Molten.Input

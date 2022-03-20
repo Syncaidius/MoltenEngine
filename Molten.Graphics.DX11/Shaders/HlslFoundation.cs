@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>
     /// An a base class implementation of key shader components (e.g. name, render states, samplers, etc).

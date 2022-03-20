@@ -1,7 +1,5 @@
-﻿using Molten.Content;
-using System; using System.Collections.Generic; using System.Collections.ObjectModel;
-
-namespace Molten {     /// <summary>     /// Provides a base implementation for content processors, used by a <see cref="ContentManager"/>.     /// </summary>     public abstract class ContentProcessor     {         internal IReadOnlyList<ContentParameter> Parameters { get; private set; }          internal Dictionary<string, ContentParameter> ParametersByName;         List<ContentParameter> _parameters;          internal void Initialize()
+﻿namespace Molten {
+    /// <summary>     /// Provides a base implementation for content processors, used by a <see cref="ContentManager"/>.     /// </summary>     public abstract class ContentProcessor     {         internal IReadOnlyList<ContentParameter> Parameters { get; private set; }          internal Dictionary<string, ContentParameter> ParametersByName;         List<ContentParameter> _parameters;          internal void Initialize()
         {
             ParametersByName = new Dictionary<string, ContentParameter>();
             _parameters = new List<ContentParameter>();

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public delegate void RenderCameraProjectionFunc(IRenderSurface2D surface, float nearClip, float farClip, float fov, ref Matrix4F projection);
     public delegate void RendercameraSurfaceHandler(RenderCamera camera, IRenderSurface2D oldSurface, IRenderSurface2D newSurface);

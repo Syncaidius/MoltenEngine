@@ -1,7 +1,4 @@
-﻿using Molten.Font;
-using Molten.Graphics;
-using System;
-using System.IO;
+﻿using Molten.Graphics;
 
 namespace Molten.Content
 {

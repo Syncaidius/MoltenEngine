@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten
+﻿namespace Molten
 {
     public class SceneException : Exception
     {

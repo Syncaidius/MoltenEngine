@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace Molten
+﻿namespace Molten
 {
     internal delegate void ContentDirectoryHandler(ContentDirectory directory, FileSystemEventArgs e);
 

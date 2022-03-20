@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SharpDX.XInput;
-using Molten.Graphics;
-using State = SharpDX.XInput.State;
+﻿using Molten.Graphics;
 using Molten.Windows32;
+using SharpDX.XInput;
+using State = SharpDX.XInput.State;
 
 namespace Molten.Input
 {

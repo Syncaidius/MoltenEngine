@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>A render task which resolves a multisampled texture into a non-multisampled one.</summary>
     internal class TextureApply : RendererTask<TextureApply>

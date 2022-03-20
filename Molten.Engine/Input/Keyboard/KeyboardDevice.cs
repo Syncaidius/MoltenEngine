@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Molten.Input
+﻿namespace Molten.Input
 {
     public delegate void KeyHandler(KeyboardDevice device, KeyboardKeyState state);
     public delegate void KeyPressHandler(KeyboardKeyState state);

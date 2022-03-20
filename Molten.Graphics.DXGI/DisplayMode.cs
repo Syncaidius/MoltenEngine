@@ -1,8 +1,4 @@
 ﻿using Silk.NET.DXGI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Molten.Graphics.Dxgi
 {

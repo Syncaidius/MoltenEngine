@@ -1,9 +1,7 @@
-using System.Runtime.InteropServices;
-
 namespace Molten
 {
-	///<summary>A <see cref = "double"/> vector comprised of 3 components.</summary>
-	public partial struct Vector3D
+    ///<summary>A <see cref = "double"/> vector comprised of 3 components.</summary>
+    public partial struct Vector3D
 	{
            /// <summary>
         /// A unit <see cref="Vector3D"/> designating up (0, 1, 0).

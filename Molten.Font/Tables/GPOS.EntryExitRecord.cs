@@ -1,6 +1,4 @@
-﻿using Molten.IO;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public partial class GPOS
     {

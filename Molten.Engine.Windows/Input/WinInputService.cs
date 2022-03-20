@@ -1,12 +1,7 @@
 ﻿using Molten.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
+using Molten.Threading;
 using Molten.Windows32;
 using System.Reflection;
-using Molten.Threading;
 
 namespace Molten.Input
 {
@@ -125,7 +120,7 @@ namespace Molten.Input
         /// <returns></returns>
         public WinGamepadDevice GetGamepadHandler(int index)
         {
-            return _gamepads[(int)index];
+            return _gamepads[index];
         }
 
         protected override void OnDispose()

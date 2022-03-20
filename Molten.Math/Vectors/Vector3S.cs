@@ -1,12 +1,11 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Molten
 {
-	///<summary>A <see cref = "short"/> vector comprised of three components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=2)]
+    ///<summary>A <see cref = "short"/> vector comprised of three components.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=2)]
 	public partial struct Vector3S : IFormattable
 	{
 		///<summary>The X component.</summary>
@@ -23,16 +22,16 @@ namespace Molten
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3S));
 
 		///<summary>A Vector3S with every component set to (short)1.</summary>
-		public static readonly Vector3S One = new Vector3S((short)1, (short)1, (short)1);
+		public static readonly Vector3S One = new Vector3S(1, 1, 1);
 
 		/// <summary>The X unit <see cref="Vector3S"/>.</summary>
-		public static readonly Vector3S UnitX = new Vector3S((short)1, 0, 0);
+		public static readonly Vector3S UnitX = new Vector3S(1, 0, 0);
 
 		/// <summary>The Y unit <see cref="Vector3S"/>.</summary>
-		public static readonly Vector3S UnitY = new Vector3S(0, (short)1, 0);
+		public static readonly Vector3S UnitY = new Vector3S(0, 1, 0);
 
 		/// <summary>The Z unit <see cref="Vector3S"/>.</summary>
-		public static readonly Vector3S UnitZ = new Vector3S(0, 0, (short)1);
+		public static readonly Vector3S UnitZ = new Vector3S(0, 0, 1);
 
 		/// <summary>Represents a zero'd Vector3S.</summary>
 		public static readonly Vector3S Zero = new Vector3S(0, 0, 0);
@@ -764,7 +763,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector3S"/> source vector.</param>
         public static short Dot(ref Vector3S left, ref Vector3S right)
         {
-			return (short)(((short)left.X * right.X) + ((short)left.Y * right.Y) + ((short)left.Z * right.Z));
+			return (short)((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>

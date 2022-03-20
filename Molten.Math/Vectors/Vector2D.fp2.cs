@@ -1,10 +1,7 @@
-using System.Runtime.InteropServices;
-using System;
-
 namespace Molten
 {
-	///<summary>A <see cref = "double"/> vector comprised of 2 components.</summary>
-	public partial struct Vector2D
+    ///<summary>A <see cref = "double"/> vector comprised of 2 components.</summary>
+    public partial struct Vector2D
 	{
 #region Instance methods
         

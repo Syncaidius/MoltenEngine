@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public delegate void WindowSurfaceHandler(INativeSurface surface);
 

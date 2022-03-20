@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Molten.Collections;
-using System.Runtime.InteropServices;
+﻿using Molten.Collections;
 using Molten.Graphics.Textures;
-using Silk.NET.DXGI;
 using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
+using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
@@ -417,7 +414,7 @@ namespace Molten.Graphics
 
             if (staging != null)
             {
-                pipe.CopyResourceRegion(_native, (uint)subID, null, staging._native, (uint)subID, Vector3UI.Zero);
+                pipe.CopyResourceRegion(_native, subID, null, staging._native, subID, Vector3UI.Zero);
                 pipe.Profiler.Current.CopySubresourceCount++;
                 resToMap = staging._native;
             }
@@ -450,7 +447,7 @@ namespace Molten.Graphics
                     p += mapping.RowPitch;
                 }
             }
-            pipe.UnmapResource(_native, (uint)subID);
+            pipe.UnmapResource(_native, subID);
 
             TextureData.Slice slice = new TextureData.Slice()
             {

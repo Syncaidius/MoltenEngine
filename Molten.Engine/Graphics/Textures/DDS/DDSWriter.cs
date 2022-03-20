@@ -1,6 +1,4 @@
 ﻿using Molten.Graphics.Textures.DDS;
-using System;
-using System.IO;
 
 namespace Molten.Graphics.Textures
 {
@@ -32,11 +30,11 @@ namespace Molten.Graphics.Textures
                 {
                     Size = 124,
                     Flags = DDSFlags.Capabilities | DDSFlags.Width | DDSFlags.Height | DDSFlags.MipMapCount | DDSFlags.PixelFormat | DDSFlags.LinearSize,
-                    Height = (uint)data.Height,
-                    Width = (uint)data.Width,
-                    PitchOrLinearSize = (uint)data.Levels[0].TotalBytes,
+                    Height = data.Height,
+                    Width = data.Width,
+                    PitchOrLinearSize = data.Levels[0].TotalBytes,
                     Depth = 0,
-                    MipMapCount = (uint)data.MipMapLevels,
+                    MipMapCount = data.MipMapLevels,
                     Reserved = new uint[11],
                     PixelFormat = GetPixelFormat(data),
                     Caps = DDSCapabilities.Texture | DDSCapabilities.Complex | DDSCapabilities.MipMap,
@@ -56,14 +54,14 @@ namespace Molten.Graphics.Textures
                         ImageFormat = data.Format,
                         Dimension = GetDx10Dimension(data),
                         MiscFlags = DDSMiscFlags.None,
-                        ArraySize = (uint)data.ArraySize,
+                        ArraySize = data.ArraySize,
                         MiscFlags2 = DDSMiscFlags2.AlphaUnknown,
                     };
 
                     writer.Write((uint)dx10.ImageFormat);
                     writer.Write((uint)dx10.Dimension);
                     writer.Write((uint)dx10.MiscFlags);
-                    writer.Write((uint)dx10.ArraySize);
+                    writer.Write(dx10.ArraySize);
                     writer.Write((uint)dx10.MiscFlags2);
                 }
 
@@ -145,7 +143,7 @@ namespace Molten.Graphics.Textures
             uint result = (uint)(cc[3] << 24);
             result |= (uint)(cc[2] << 16);
             result |= (uint)(cc[1] << 8);
-            result |= (uint)cc[0];
+            result |= cc[0];
 
             return result;
         }
@@ -159,7 +157,7 @@ namespace Molten.Graphics.Textures
             uint result = (uint)32 << 24;
             result |= (uint)c << 16;
             result |= (uint)b << 8;
-            result |= (uint)a;
+            result |= a;
 
             writer.Write(result);
         }

@@ -1,6 +1,4 @@
 ﻿using Molten.Collections;
-using System;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Molten.Graphics.Textures

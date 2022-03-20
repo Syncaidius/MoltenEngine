@@ -1,8 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Graphics.Overlays;
 using Molten.Threading;
-using System;
-using System.Collections.Generic;
 
 namespace Molten.Graphics
 {

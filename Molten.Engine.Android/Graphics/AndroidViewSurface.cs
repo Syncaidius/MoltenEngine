@@ -1,6 +1,5 @@
 ﻿using Android.OS;
 using Android.Views;
-using System;
 
 namespace Molten.Graphics
 {

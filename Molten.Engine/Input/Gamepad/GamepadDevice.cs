@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Input
+﻿namespace Molten.Input
 {
     public abstract class GamepadDevice : InputDevice<GamepadButtonState, GamepadButton>
     {

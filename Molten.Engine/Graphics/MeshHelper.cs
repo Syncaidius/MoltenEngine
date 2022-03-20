@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>A collection of helper methods for creating indexed primitive meshes.</summary>
     public static class MeshHelper

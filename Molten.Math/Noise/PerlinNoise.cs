@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System;
-
-namespace Molten
+﻿namespace Molten
 {
     public class PerlinNoise
     {

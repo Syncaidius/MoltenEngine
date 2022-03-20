@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Molten
+﻿namespace Molten
 {
     public class Shape
     {
@@ -87,14 +83,14 @@ namespace Molten
             foreach(TriPoint p in Points)
             {
                 if (p.X < b.Left)
-                    b.Left = (float)p.X;
+                    b.Left = p.X;
                 else if (p.X > b.Right)
-                    b.Right = (float)p.Y;
+                    b.Right = p.Y;
 
                 if (p.Y < b.Top)
-                    b.Top = (float)p.Y;
+                    b.Top = p.Y;
                 else if (p.Y > b.Bottom)
-                    b.Bottom = (float)p.Y;
+                    b.Bottom = p.Y;
             }
 
             return b;

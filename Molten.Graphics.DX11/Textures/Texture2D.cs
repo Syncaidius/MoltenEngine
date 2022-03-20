@@ -1,7 +1,6 @@
-﻿using System;
-using Silk.NET.DXGI;
+﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
-using Silk.NET.Core.Native;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
@@ -65,7 +64,7 @@ namespace Molten.Graphics
                 Height = Height,
                 ArraySize = ArraySize,
                 Flags = Flags,
-                Format = this.DataFormat,
+                Format = DataFormat,
                 MipMapLevels = MipMapCount,
                 SampleCount = SampleCount,
             };
@@ -124,10 +123,10 @@ namespace Molten.Graphics
         protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, 
             uint newMipMapCount, uint newArraySize, Format newFormat)
         {
-            _description.ArraySize = (uint)newArraySize;
-            _description.Width = (uint)newWidth;
-            _description.Height = (uint)newHeight;
-            _description.MipLevels = (uint)newMipMapCount;
+            _description.ArraySize = newArraySize;
+            _description.Width = newWidth;
+            _description.Height = newHeight;
+            _description.MipLevels = newMipMapCount;
             _description.Format = newFormat;
         }
 

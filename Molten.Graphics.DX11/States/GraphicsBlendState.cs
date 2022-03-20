@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Silk.NET.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
@@ -127,7 +122,7 @@ namespace Molten.Graphics
 
         public static implicit operator ID3D11BlendState*(GraphicsBlendState state)
         {
-            return (ID3D11BlendState*)state._native;
+            return state._native;
         }
 
         internal override void PipelineRelease()

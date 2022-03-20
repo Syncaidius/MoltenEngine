@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public abstract class LayerRenderData
     {

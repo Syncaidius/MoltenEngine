@@ -1,9 +1,7 @@
-using System.Runtime.InteropServices;
-
 namespace Molten
 {
-	///<summary>A <see cref = "byte"/> vector comprised of 2 components.</summary>
-	public partial struct Byte2
+    ///<summary>A <see cref = "byte"/> vector comprised of 2 components.</summary>
+    public partial struct Byte2
 	{
 		
 

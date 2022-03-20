@@ -1,5 +1,4 @@
 ﻿using Molten.Input;
-using System;
 
 namespace Molten
 {

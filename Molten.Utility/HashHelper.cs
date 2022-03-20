@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Utility
+﻿namespace Molten.Utility
 {
     public static class HashHelper
     {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics.Textures
+﻿namespace Molten.Graphics.Textures
 {
     public class DDSSizeException : Exception
     {

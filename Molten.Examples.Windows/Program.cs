@@ -1,5 +1,4 @@
 ﻿using Molten.Samples;
-using System;
 
 static class Program
 {

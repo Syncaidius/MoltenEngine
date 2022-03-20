@@ -1,5 +1,4 @@
 ﻿using Molten.Collections;
-using System;
 
 namespace Molten.Graphics.Overlays
 {

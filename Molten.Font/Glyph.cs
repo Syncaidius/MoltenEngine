@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class Glyph : ICloneable
     {

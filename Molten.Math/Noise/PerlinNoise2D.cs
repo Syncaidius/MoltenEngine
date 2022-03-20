@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten
+﻿namespace Molten
 {
     /// <summary>A 2-dimensional implementation of perlin noise.</summary>
     public class PerlinNoise2D

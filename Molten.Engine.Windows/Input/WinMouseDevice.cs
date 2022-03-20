@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using Molten.Windows32;
+﻿using Molten.Windows32;
 
 namespace Molten.Input
 {

@@ -13,7 +13,6 @@
 //-------------------------------------------------------------------------------------
 
 using System.Diagnostics;
-using System.IO;
 
 namespace Molten.Graphics.Textures
 {

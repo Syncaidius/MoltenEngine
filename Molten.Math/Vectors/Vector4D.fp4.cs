@@ -1,10 +1,7 @@
-using System.Runtime.InteropServices;
-using System;
-
 namespace Molten
 {
-	///<summary>A <see cref = "double"/> vector comprised of 4 components.</summary>
-	public partial struct Vector4D
+    ///<summary>A <see cref = "double"/> vector comprised of 4 components.</summary>
+    public partial struct Vector4D
 	{
 #region Instance methods
         

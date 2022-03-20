@@ -13,7 +13,6 @@
 //-------------------------------------------------------------------------------------
 
 using Molten.Collections;
-using System;
 using System.Diagnostics;
 
 namespace Molten.Graphics.Textures

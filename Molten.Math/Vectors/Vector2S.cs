@@ -1,12 +1,11 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Molten
 {
-	///<summary>A <see cref = "short"/> vector comprised of two components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=2)]
+    ///<summary>A <see cref = "short"/> vector comprised of two components.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=2)]
 	public partial struct Vector2S : IFormattable
 	{
 		///<summary>The X component.</summary>
@@ -20,13 +19,13 @@ namespace Molten
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2S));
 
 		///<summary>A Vector2S with every component set to (short)1.</summary>
-		public static readonly Vector2S One = new Vector2S((short)1, (short)1);
+		public static readonly Vector2S One = new Vector2S(1, 1);
 
 		/// <summary>The X unit <see cref="Vector2S"/>.</summary>
-		public static readonly Vector2S UnitX = new Vector2S((short)1, 0);
+		public static readonly Vector2S UnitX = new Vector2S(1, 0);
 
 		/// <summary>The Y unit <see cref="Vector2S"/>.</summary>
-		public static readonly Vector2S UnitY = new Vector2S(0, (short)1);
+		public static readonly Vector2S UnitY = new Vector2S(0, 1);
 
 		/// <summary>Represents a zero'd Vector2S.</summary>
 		public static readonly Vector2S Zero = new Vector2S(0, 0);
@@ -727,7 +726,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector2S"/> source vector.</param>
         public static short Dot(ref Vector2S left, ref Vector2S right)
         {
-			return (short)(((short)left.X * right.X) + ((short)left.Y * right.Y));
+			return (short)((left.X * right.X) + (left.Y * right.Y));
         }
 
 		/// <summary>

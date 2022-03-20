@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Silk.NET.DXGI;
+﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
-using Silk.NET.Core.Native;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
@@ -25,10 +20,10 @@ namespace Molten.Graphics
             CubeCount = cubeCount;
             _description = new Texture2DDesc()
             {
-                Width = (uint)width,
-                Height = (uint)height,
-                MipLevels = (uint)mipCount,
-                ArraySize = (uint)(6 * CubeCount),
+                Width = width,
+                Height = height,
+                MipLevels = mipCount,
+                ArraySize = 6 * CubeCount,
                 Format = format,
                 BindFlags = (uint)BindFlag.BindShaderResource,
                 CPUAccessFlags = (uint)GetAccessFlags(),
@@ -50,7 +45,7 @@ namespace Molten.Graphics
             {
                 MostDetailedMip = 0,
                 MipLevels = _description.MipLevels,
-                NumCubes = (uint)CubeCount,
+                NumCubes = CubeCount,
                 First2DArrayFace = 0,
             };
         }
@@ -83,9 +78,9 @@ namespace Molten.Graphics
 
         protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
-            _description.Width = (uint)newWidth;
-            _description.Height = (uint)newHeight;
-            _description.MipLevels = (uint)newMipMapCount;
+            _description.Width = newWidth;
+            _description.Height = newHeight;
+            _description.MipLevels = newMipMapCount;
             _description.Format = newFormat;
         }
 

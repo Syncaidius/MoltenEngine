@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>A <see cref="RenderLayerReorder"/> for changing the draw order of a <see cref="LayerRenderData"/> instance.</summary>
     internal class RenderLayerReorder : RenderSceneChange<RenderLayerReorder>

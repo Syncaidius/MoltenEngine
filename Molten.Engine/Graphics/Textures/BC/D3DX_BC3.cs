@@ -12,8 +12,6 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace Molten.Graphics.Textures
 {
     internal class D3DX_BC3

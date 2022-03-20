@@ -1,11 +1,6 @@
 ﻿using Molten.Graphics.Textures;
 using Molten.IO;
 using Silk.NET.Direct3D11;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -71,8 +66,8 @@ namespace Molten.Graphics
                     RawStream stream = null;
 
                     MappedSubresource destBox = pipe.MapResource(
-                        texture.NativePtr, 
-                        (uint)subLevel, 
+                        texture.NativePtr,
+                        subLevel, 
                         Map.MapWriteDiscard, 
                         0, 
                         out stream);
@@ -99,7 +94,7 @@ namespace Molten.Graphics
                         stream.WriteRange(ptrData, Count);
                     }
 
-                    pipe.UnmapResource(texture.NativePtr, (uint)subLevel);
+                    pipe.UnmapResource(texture.NativePtr, subLevel);
                     pipe.Profiler.Current.MapDiscardCount++;
                 }
                 else

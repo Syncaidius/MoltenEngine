@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Molten
+﻿namespace Molten
 {
     public static class EnumHelper
     {

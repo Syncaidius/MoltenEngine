@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Molten.Comparers
+﻿namespace Molten.Comparers
 {
     public class IntPtrComparer : IComparer<IntPtr>
     {

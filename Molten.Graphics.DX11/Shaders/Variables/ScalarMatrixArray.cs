@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-using Molten.IO;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     internal unsafe class ScalarMatrixArray<T> : ShaderConstantVariable where T : unmanaged
     {

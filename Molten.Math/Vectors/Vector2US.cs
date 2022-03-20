@@ -1,12 +1,11 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Molten
 {
-	///<summary>A <see cref = "ushort"/> vector comprised of two components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=2)]
+    ///<summary>A <see cref = "ushort"/> vector comprised of two components.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=2)]
 	public partial struct Vector2US : IFormattable
 	{
 		///<summary>The X component.</summary>
@@ -20,13 +19,13 @@ namespace Molten
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2US));
 
 		///<summary>A Vector2US with every component set to (ushort)1.</summary>
-		public static readonly Vector2US One = new Vector2US((ushort)1, (ushort)1);
+		public static readonly Vector2US One = new Vector2US(1, 1);
 
 		/// <summary>The X unit <see cref="Vector2US"/>.</summary>
-		public static readonly Vector2US UnitX = new Vector2US((ushort)1, 0);
+		public static readonly Vector2US UnitX = new Vector2US(1, 0);
 
 		/// <summary>The Y unit <see cref="Vector2US"/>.</summary>
-		public static readonly Vector2US UnitY = new Vector2US(0, (ushort)1);
+		public static readonly Vector2US UnitY = new Vector2US(0, 1);
 
 		/// <summary>Represents a zero'd Vector2US.</summary>
 		public static readonly Vector2US Zero = new Vector2US(0, 0);
@@ -697,7 +696,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector2US"/> source vector.</param>
         public static ushort Dot(ref Vector2US left, ref Vector2US right)
         {
-			return (ushort)(((ushort)left.X * right.X) + ((ushort)left.Y * right.Y));
+			return (ushort)((left.X * right.X) + (left.Y * right.Y));
         }
 
 		/// <summary>

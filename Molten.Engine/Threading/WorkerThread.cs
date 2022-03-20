@@ -1,6 +1,4 @@
 ﻿using Molten.Collections;
-using System;
-using System.Threading;
 
 namespace Molten.Threading
 {

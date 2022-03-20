@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>
     /// A list 

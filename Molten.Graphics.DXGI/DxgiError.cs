@@ -1,11 +1,4 @@
-﻿using Silk.NET.Core.Native;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>
     /// See: https://docs.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-error

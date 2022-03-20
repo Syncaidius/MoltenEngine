@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Molten.Graphics.Textures
+﻿namespace Molten.Graphics.Textures
 {
     internal class BC3Parser : BCBlockParser
     {

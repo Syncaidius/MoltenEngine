@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>Stores font tables by their tag and type. Also stores the headers of unsupported tables.</summary>
     public class FontTableList

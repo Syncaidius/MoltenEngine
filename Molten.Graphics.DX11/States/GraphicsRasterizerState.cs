@@ -1,9 +1,4 @@
 ﻿using Silk.NET.Direct3D11;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -92,7 +87,7 @@ namespace Molten.Graphics
 
         public static implicit operator ID3D11RasterizerState* (GraphicsRasterizerState state)
         {
-            return (ID3D11RasterizerState*)state._native;
+            return state._native;
         }
 
         public CullMode CullMode

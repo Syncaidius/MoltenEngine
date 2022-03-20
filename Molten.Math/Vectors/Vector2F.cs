@@ -1,12 +1,11 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Molten
 {
-	///<summary>A <see cref = "float"/> vector comprised of two components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
+    ///<summary>A <see cref = "float"/> vector comprised of two components.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=4)]
 	public partial struct Vector2F : IFormattable
 	{
 		///<summary>The X component.</summary>
@@ -184,8 +183,8 @@ namespace Molten
             if (!MathHelper.IsZero(length))
             {
                 float inverse = 1.0F / length;
-			    X = (float)(X * inverse);
-			    Y = (float)(Y * inverse);
+			    X = X * inverse;
+			    Y = Y * inverse;
             }
         }
 
@@ -805,8 +804,8 @@ namespace Molten
         /// </remarks>
         public static void Lerp(ref Vector2F start, ref Vector2F end, float amount, out Vector2F result)
         {
-			result.X = (float)((1F - amount) * start.X + amount * end.X);
-			result.Y = (float)((1F - amount) * start.Y + amount * end.Y);
+			result.X = (1F - amount) * start.X + amount * end.X;
+			result.Y = (1F - amount) * start.Y + amount * end.Y;
         }
 
 		/// <summary>
@@ -822,8 +821,8 @@ namespace Molten
         {
 			return new Vector2F()
 			{
-				X = (float)((1F - amount) * start.X + amount * end.X),
-				Y = (float)((1F - amount) * start.Y + amount * end.Y),
+				X = (1F - amount) * start.X + amount * end.X,
+				Y = (1F - amount) * start.Y + amount * end.Y,
 			};
         }
 
@@ -998,15 +997,15 @@ namespace Molten
 
             return new Vector2F()
             {
-				X = (float)(0.5F * ((((2F * value2.X) + 
-                ((-value1.X + value3.X) * amount)) + 
+				X = 0.5F * ((((2F * value2.X) +
+                ((-value1.X + value3.X) * amount)) +
                 (((((2F * value1.X) - (5F * value2.X)) + (4F * value3.X)) - value4.X) * squared)) +
-                ((((-value1.X + (3F * value2.X)) - (3F * value3.X)) + value4.X) * cubed))),
+                ((((-value1.X + (3F * value2.X)) - (3F * value3.X)) + value4.X) * cubed)),
 
-				Y = (float)(0.5F * ((((2F * value2.Y) + 
-                ((-value1.Y + value3.Y) * amount)) + 
+				Y = 0.5F * ((((2F * value2.Y) +
+                ((-value1.Y + value3.Y) * amount)) +
                 (((((2F * value1.Y) - (5F * value2.Y)) + (4F * value3.Y)) - value4.Y) * squared)) +
-                ((((-value1.Y + (3F * value2.Y)) - (3F * value3.Y)) + value4.Y) * cubed))),
+                ((((-value1.Y + (3F * value2.Y)) - (3F * value3.Y)) + value4.Y) * cubed)),
 
             };
         }

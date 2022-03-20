@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public class GraphRenderer
     {
@@ -65,7 +63,7 @@ namespace Molten.Graphics
             range = (float)(highest - lowest);
             pixelScale = new Vector2F()
             {
-                X = _bounds.Width / (float)_maxPoints,
+                X = _bounds.Width / _maxPoints,
                 Y = _bounds.Height / range,
             };
 

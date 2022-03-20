@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class FontInterpreterException : Exception
     {

@@ -1,5 +1,4 @@
 ﻿using Molten.Graphics.Textures;
-using System;
 
 namespace Molten.Graphics
 {

@@ -1,7 +1,6 @@
 ﻿using Molten.Graphics;
 using Molten.Input;
 using Molten.Utility;
-using System;
 
 namespace Molten
 {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Collections
+﻿namespace Molten.Collections
 {
     /// <summary>A thread-safe collection for handling object pooling.</summary>
     /// <typeparam name="T"></typeparam>

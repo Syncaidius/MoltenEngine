@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Molten.IO;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>A shader matrix variable.</summary>
     internal unsafe class ScalarFloat3x3ArrayVariable : ShaderConstantVariable

@@ -1,10 +1,4 @@
 ﻿using Molten.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
@@ -74,7 +68,7 @@ namespace Molten.Samples
                         R = (byte)Rng.Next(0, 255),
                         G = (byte)Rng.Next(0, 255),
                         B = (byte)Rng.Next(0, 255),
-                        A = (byte)255,
+                        A = 255,
                     },
 
                     Texture = tex,

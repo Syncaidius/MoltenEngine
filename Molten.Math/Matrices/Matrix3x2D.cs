@@ -18,7 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.using System;
 
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -854,8 +853,8 @@ namespace Molten
         public static void Skew(double angleX, double angleY, out Matrix3x2D result)
         {
             result = Matrix4F.Identity;
-            result.M12 = (double) Math.Tan(angleX);
-            result.M21 = (double) Math.Tan(angleY);
+            result.M12 = Math.Tan(angleX);
+            result.M21 = Math.Tan(angleY);
         }
 
         /// <summary>

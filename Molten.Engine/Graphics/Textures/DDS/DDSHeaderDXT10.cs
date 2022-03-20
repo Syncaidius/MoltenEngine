@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics.Textures.DDS
+﻿namespace Molten.Graphics.Textures.DDS
 {
     internal struct DDSHeaderDXT10
     {

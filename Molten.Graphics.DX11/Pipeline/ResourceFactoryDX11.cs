@@ -1,11 +1,4 @@
-﻿using Silk.NET.Core.Native;
-using Silk.NET.DXGI;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
@@ -179,7 +172,7 @@ namespace Molten.Graphics
 
         public override IMesh<GBufferVertex> CreateMesh(uint maxVertices, VertexTopology topology, bool dynamic)
         {
-            return new StandardMesh(_renderer, (uint)maxVertices, topology, dynamic);
+            return new StandardMesh(_renderer, maxVertices, topology, dynamic);
         }
 
         public override IIndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices,
@@ -187,7 +180,7 @@ namespace Molten.Graphics
             VertexTopology topology = VertexTopology.TriangleList, 
             bool dynamic = false)
         {
-            return new StandardIndexedMesh(_renderer, (uint)maxVertices, (uint)maxIndices, topology, IndexBufferFormat.Unsigned32Bit, dynamic);
+            return new StandardIndexedMesh(_renderer, maxVertices, maxIndices, topology, IndexBufferFormat.Unsigned32Bit, dynamic);
         }
 
         public override IMesh<T> CreateMesh<T>(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
@@ -202,7 +195,7 @@ namespace Molten.Graphics
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit, 
             bool dynamic = false)
         {
-            return new IndexedMesh<T>(_renderer, (uint)maxVertices, (uint)maxIndices, topology, indexFormat, dynamic);
+            return new IndexedMesh<T>(_renderer, maxVertices, maxIndices, topology, indexFormat, dynamic);
         }
     }
 }

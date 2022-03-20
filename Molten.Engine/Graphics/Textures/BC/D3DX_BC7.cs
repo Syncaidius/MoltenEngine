@@ -12,7 +12,6 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 using Molten.Collections;
-using System;
 using System.Diagnostics;
 
 namespace Molten.Graphics.Textures
@@ -841,7 +840,7 @@ namespace Molten.Graphics.Textures
 
             if (uPBits > 0)
             {
-                uint uNumEP = (uint)((1 + uPartitions) << 1);
+                uint uNumEP = (1 + uPartitions) << 1;
                 byte[] aPVote = { 0, 0, 0, 0, 0, 0 };
                 byte[] aCount = { 0, 0, 0, 0, 0, 0 };
 

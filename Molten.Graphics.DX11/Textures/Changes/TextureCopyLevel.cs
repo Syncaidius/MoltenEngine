@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     internal struct TextureCopyLevel : ITextureTask
     {
@@ -22,7 +16,7 @@ namespace Molten.Graphics
             uint srcSub = (SourceSlice * texture.MipMapCount) + SourceLevel;
             uint destSub = (DestinationSlice * Destination.MipMapCount) + DestinationLevel;
 
-            pipe.CopyResourceRegion(texture.NativePtr, (uint)srcSub, null, Destination.NativePtr, (uint)destSub, Vector3UI.Zero);
+            pipe.CopyResourceRegion(texture.NativePtr, srcSub, null, Destination.NativePtr, destSub, Vector3UI.Zero);
 
             return Destination == texture;
         }

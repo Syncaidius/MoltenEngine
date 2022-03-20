@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>
     /// Indicates font embedding licensing rights for the font. Embeddable fonts may be stored in a document.

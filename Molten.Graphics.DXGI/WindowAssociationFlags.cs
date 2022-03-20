@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics.Dxgi
+﻿namespace Molten.Graphics.Dxgi
 {
     [Flags]
     public enum WindowAssociationFlags : uint

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public delegate void DisplayManagerEvent(IDisplayManager manager);
 

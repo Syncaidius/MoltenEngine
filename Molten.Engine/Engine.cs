@@ -1,13 +1,9 @@
 ﻿using Molten.Collections;
-using Molten.Font;
 using Molten.Graphics;
 using Molten.Input;
 using Molten.Net;
 using Molten.Threading;
 using Molten.UI;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace Molten
 {

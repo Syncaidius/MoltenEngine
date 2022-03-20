@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace Molten.Graphics.Textures.DDS
+﻿namespace Molten.Graphics.Textures.DDS
 {
     public class DDSReader : TextureReader
     {

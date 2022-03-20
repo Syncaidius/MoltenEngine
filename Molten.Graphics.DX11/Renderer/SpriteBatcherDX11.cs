@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public class SpriteBatcherDX11 : SpriteBatcher
     {

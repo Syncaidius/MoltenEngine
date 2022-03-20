@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     [AttributeUsage(AttributeTargets.Field)]
     public class VertexElementAttribute : Attribute

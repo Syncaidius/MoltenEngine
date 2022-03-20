@@ -1,5 +1,4 @@
 ﻿using ImageMagick;
-using System.IO;
 
 namespace Molten.Graphics.Textures
 {

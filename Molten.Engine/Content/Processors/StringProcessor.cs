@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace Molten.Content
+﻿namespace Molten.Content
 {
     public class StringProcessor : ContentProcessor
     {

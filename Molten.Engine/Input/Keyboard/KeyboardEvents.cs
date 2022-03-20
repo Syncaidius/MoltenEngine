@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Input
+﻿namespace Molten.Input
 {
     public class CharacterEventArgs : EventArgs
     {

@@ -1,15 +1,7 @@
-
-
-
-
-
-using System.Runtime.InteropServices;
-using System;
-
 namespace Molten
 {
-	///<summary>A <see cref = "sbyte"/> vector comprised of 2 components.</summary>
-	public partial struct SByte2
+    ///<summary>A <see cref = "sbyte"/> vector comprised of 2 components.</summary>
+    public partial struct SByte2
 	{
 
 #region Operators - Cast
@@ -17,8 +9,8 @@ namespace Molten
 		{
 			return new Vector2F()
 			{
-				X = (float)value.X,
-				Y = (float)value.Y,
+				X = value.X,
+				Y = value.Y,
 			};
 		}
 #endregion

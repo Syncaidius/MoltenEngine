@@ -1,12 +1,11 @@
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Molten
 {
-	///<summary>Represents a four dimensional mathematical QuaternionD.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = 8)]
+    ///<summary>Represents a four dimensional mathematical QuaternionD.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
 	public partial struct QuaternionD : IFormattable, IEquatable<QuaternionD>
 	{
 		/// <summary>

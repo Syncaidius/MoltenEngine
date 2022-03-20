@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     [Flags]
     /// <summary>Represents possible validation results from the last graphics draw call.</summary>

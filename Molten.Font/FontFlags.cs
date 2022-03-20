@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     [Flags]
     /// <summary>Determines available glyph/outline types of an OpenType/TrueType font.</summary>

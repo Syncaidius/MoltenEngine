@@ -1,10 +1,5 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.DXGI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics.Dxgi
 {

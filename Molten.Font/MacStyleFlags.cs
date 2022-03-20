@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     [Flags]
     /// <summary>A font's mac-style.</summary>

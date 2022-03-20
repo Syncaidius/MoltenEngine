@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-
-namespace Molten
+﻿namespace Molten
 {
     /// <summary>
     /// A locking helper built on top of the <see cref="Interlocked"/> class.

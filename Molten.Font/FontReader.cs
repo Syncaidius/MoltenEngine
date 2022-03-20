@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using Molten.IO;
 using System.Reflection;
-using Molten.IO;
 
 namespace Molten.Font
 {

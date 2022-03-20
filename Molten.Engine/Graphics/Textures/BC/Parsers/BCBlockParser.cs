@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Molten.Graphics.Textures
+﻿namespace Molten.Graphics.Textures
 {
     /// <summary>A base class for DDS block readers.</summary>
     internal abstract class BCBlockParser

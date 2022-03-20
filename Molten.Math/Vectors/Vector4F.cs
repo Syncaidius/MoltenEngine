@@ -1,12 +1,11 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Molten
 {
-	///<summary>A <see cref = "float"/> vector comprised of four components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
+    ///<summary>A <see cref = "float"/> vector comprised of four components.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=4)]
 	public partial struct Vector4F : IFormattable
 	{
 		///<summary>The X component.</summary>
@@ -222,10 +221,10 @@ namespace Molten
             if (!MathHelper.IsZero(length))
             {
                 float inverse = 1.0F / length;
-			    X = (float)(X * inverse);
-			    Y = (float)(Y * inverse);
-			    Z = (float)(Z * inverse);
-			    W = (float)(W * inverse);
+			    X = X * inverse;
+			    Y = Y * inverse;
+			    Z = Z * inverse;
+			    W = W * inverse;
             }
         }
 
@@ -885,10 +884,10 @@ namespace Molten
         /// </remarks>
         public static void Lerp(ref Vector4F start, ref Vector4F end, float amount, out Vector4F result)
         {
-			result.X = (float)((1F - amount) * start.X + amount * end.X);
-			result.Y = (float)((1F - amount) * start.Y + amount * end.Y);
-			result.Z = (float)((1F - amount) * start.Z + amount * end.Z);
-			result.W = (float)((1F - amount) * start.W + amount * end.W);
+			result.X = (1F - amount) * start.X + amount * end.X;
+			result.Y = (1F - amount) * start.Y + amount * end.Y;
+			result.Z = (1F - amount) * start.Z + amount * end.Z;
+			result.W = (1F - amount) * start.W + amount * end.W;
         }
 
 		/// <summary>
@@ -904,10 +903,10 @@ namespace Molten
         {
 			return new Vector4F()
 			{
-				X = (float)((1F - amount) * start.X + amount * end.X),
-				Y = (float)((1F - amount) * start.Y + amount * end.Y),
-				Z = (float)((1F - amount) * start.Z + amount * end.Z),
-				W = (float)((1F - amount) * start.W + amount * end.W),
+				X = (1F - amount) * start.X + amount * end.X,
+				Y = (1F - amount) * start.Y + amount * end.Y,
+				Z = (1F - amount) * start.Z + amount * end.Z,
+				W = (1F - amount) * start.W + amount * end.W,
 			};
         }
 
@@ -1100,25 +1099,25 @@ namespace Molten
 
             return new Vector4F()
             {
-				X = (float)(0.5F * ((((2F * value2.X) + 
-                ((-value1.X + value3.X) * amount)) + 
+				X = 0.5F * ((((2F * value2.X) +
+                ((-value1.X + value3.X) * amount)) +
                 (((((2F * value1.X) - (5F * value2.X)) + (4F * value3.X)) - value4.X) * squared)) +
-                ((((-value1.X + (3F * value2.X)) - (3F * value3.X)) + value4.X) * cubed))),
+                ((((-value1.X + (3F * value2.X)) - (3F * value3.X)) + value4.X) * cubed)),
 
-				Y = (float)(0.5F * ((((2F * value2.Y) + 
-                ((-value1.Y + value3.Y) * amount)) + 
+				Y = 0.5F * ((((2F * value2.Y) +
+                ((-value1.Y + value3.Y) * amount)) +
                 (((((2F * value1.Y) - (5F * value2.Y)) + (4F * value3.Y)) - value4.Y) * squared)) +
-                ((((-value1.Y + (3F * value2.Y)) - (3F * value3.Y)) + value4.Y) * cubed))),
+                ((((-value1.Y + (3F * value2.Y)) - (3F * value3.Y)) + value4.Y) * cubed)),
 
-				Z = (float)(0.5F * ((((2F * value2.Z) + 
-                ((-value1.Z + value3.Z) * amount)) + 
+				Z = 0.5F * ((((2F * value2.Z) +
+                ((-value1.Z + value3.Z) * amount)) +
                 (((((2F * value1.Z) - (5F * value2.Z)) + (4F * value3.Z)) - value4.Z) * squared)) +
-                ((((-value1.Z + (3F * value2.Z)) - (3F * value3.Z)) + value4.Z) * cubed))),
+                ((((-value1.Z + (3F * value2.Z)) - (3F * value3.Z)) + value4.Z) * cubed)),
 
-				W = (float)(0.5F * ((((2F * value2.W) + 
-                ((-value1.W + value3.W) * amount)) + 
+				W = 0.5F * ((((2F * value2.W) +
+                ((-value1.W + value3.W) * amount)) +
                 (((((2F * value1.W) - (5F * value2.W)) + (4F * value3.W)) - value4.W) * squared)) +
-                ((((-value1.W + (3F * value2.W)) - (3F * value3.W)) + value4.W) * cubed))),
+                ((((-value1.W + (3F * value2.W)) - (3F * value3.W)) + value4.W) * cubed)),
 
             };
         }

@@ -12,7 +12,6 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 
-using System;
 using System.Diagnostics;
 
 namespace Molten.Graphics.Textures
@@ -908,7 +907,7 @@ namespace Molten.Graphics.Textures
 
                 if (HasFlags(flags, BCFlags.DITHER_A))
                 {
-                    float fDiff = fAlph - (float)u * (1.0f / 15.0f);
+                    float fDiff = fAlph - u * (1.0f / 15.0f);
 
                     if (3 != (i & 3))
                     {

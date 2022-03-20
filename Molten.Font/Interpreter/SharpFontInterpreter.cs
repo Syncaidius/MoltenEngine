@@ -1,6 +1,5 @@
 ﻿//MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
 //MIT, 2015, Michael Popoloski's SharpFont
-using System;
 
 namespace Molten.Font
 {
@@ -1147,7 +1146,7 @@ namespace Molten.Font
 
         void OnVectorsUpdated()
         {
-            fdotp = (float)Vector2F.Dot(state.Freedom, state.Projection);
+            fdotp = Vector2F.Dot(state.Freedom, state.Projection);
             if (Math.Abs(fdotp) < Epsilon)
                 fdotp = 1.0f;
         }

@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public abstract class TextureWriter : EngineObject
     {

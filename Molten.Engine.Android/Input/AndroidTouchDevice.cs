@@ -1,8 +1,6 @@
 ﻿using Android.Content.PM;
 using Android.Views;
 using Molten.Graphics;
-using System;
-using System.Collections.Generic;
 
 namespace Molten.Input
 {

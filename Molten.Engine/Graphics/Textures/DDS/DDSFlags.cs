@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics.Textures.DDS
+﻿namespace Molten.Graphics.Textures.DDS
 {
     [FlagsAttribute]
     /// <summary>DDS_HEADER : dwFlags. http://msdn.microsoft.com/en-us/library/windows/desktop/bb943982%28v=vs.85%29.aspx. 

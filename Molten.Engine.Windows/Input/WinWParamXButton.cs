@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Input
+﻿namespace Molten.Input
 {
     /// <summary>
     /// See high-order wParam information here: https://docs.microsoft.com/en-us/windows/win32/inputdev/WM-XBUTTONUP

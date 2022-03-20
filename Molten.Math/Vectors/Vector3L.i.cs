@@ -1,10 +1,7 @@
-using System.Runtime.InteropServices;
-using System;
-
 namespace Molten
 {
-	///<summary>A <see cref = "long"/> vector comprised of 3 components.</summary>
-	public partial struct Vector3L
+    ///<summary>A <see cref = "long"/> vector comprised of 3 components.</summary>
+    public partial struct Vector3L
 	{
 
 #region Operators - Cast
@@ -12,9 +9,9 @@ namespace Molten
 		{
 			return new Vector3D()
 			{
-				X = (double)value.X,
-				Y = (double)value.Y,
-				Z = (double)value.Z,
+				X = value.X,
+				Y = value.Y,
+				Z = value.Z,
 			};
 		}
 #endregion

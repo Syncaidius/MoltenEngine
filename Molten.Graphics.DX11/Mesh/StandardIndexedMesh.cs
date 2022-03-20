@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>Represents an indexed mesh. These store mesh data by referring to vertices using index values stored in an index buffer. 
     /// In most cases this reduces the vertex data size drastically.</summary>

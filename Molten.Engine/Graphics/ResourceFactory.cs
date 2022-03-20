@@ -1,5 +1,4 @@
 ﻿using Molten.IO;
-using System;
 using System.Reflection;
 
 namespace Molten.Graphics

@@ -1,5 +1,4 @@
 ﻿using Molten.IO;
-using System.Collections.Generic;
 
 namespace Molten.Font
 {

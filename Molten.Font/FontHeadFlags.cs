@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     [Flags]
     /// <summary>Font flags. Usually provided by a font's 'head' table.</summary>

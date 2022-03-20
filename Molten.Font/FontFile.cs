@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>A loaded version of a font file.</summary>
     public class FontFile

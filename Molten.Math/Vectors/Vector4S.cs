@@ -1,12 +1,11 @@
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Molten
 {
-	///<summary>A <see cref = "short"/> vector comprised of four components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=2)]
+    ///<summary>A <see cref = "short"/> vector comprised of four components.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=2)]
 	public partial struct Vector4S : IFormattable
 	{
 		///<summary>The X component.</summary>
@@ -26,19 +25,19 @@ namespace Molten
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4S));
 
 		///<summary>A Vector4S with every component set to (short)1.</summary>
-		public static readonly Vector4S One = new Vector4S((short)1, (short)1, (short)1, (short)1);
+		public static readonly Vector4S One = new Vector4S(1, 1, 1, 1);
 
 		/// <summary>The X unit <see cref="Vector4S"/>.</summary>
-		public static readonly Vector4S UnitX = new Vector4S((short)1, 0, 0, 0);
+		public static readonly Vector4S UnitX = new Vector4S(1, 0, 0, 0);
 
 		/// <summary>The Y unit <see cref="Vector4S"/>.</summary>
-		public static readonly Vector4S UnitY = new Vector4S(0, (short)1, 0, 0);
+		public static readonly Vector4S UnitY = new Vector4S(0, 1, 0, 0);
 
 		/// <summary>The Z unit <see cref="Vector4S"/>.</summary>
-		public static readonly Vector4S UnitZ = new Vector4S(0, 0, (short)1, 0);
+		public static readonly Vector4S UnitZ = new Vector4S(0, 0, 1, 0);
 
 		/// <summary>The W unit <see cref="Vector4S"/>.</summary>
-		public static readonly Vector4S UnitW = new Vector4S(0, 0, 0, (short)1);
+		public static readonly Vector4S UnitW = new Vector4S(0, 0, 0, 1);
 
 		/// <summary>Represents a zero'd Vector4S.</summary>
 		public static readonly Vector4S Zero = new Vector4S(0, 0, 0, 0);
@@ -803,7 +802,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector4S"/> source vector.</param>
         public static short Dot(ref Vector4S left, ref Vector4S right)
         {
-			return (short)(((short)left.X * right.X) + ((short)left.Y * right.Y) + ((short)left.Z * right.Z) + ((short)left.W * right.W));
+			return (short)((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
         }
 
 		/// <summary>

@@ -23,7 +23,7 @@
 //        public SpriteFontStress() 
 //            : base("Networking Test")
 //        {
-            
+
 //        }
 
 //        protected override void OnInitialize(Engine engine)
@@ -32,7 +32,7 @@
 //            engine.StartNetworkService();
 
 //            engine.NetworkService.Start(Networking.Enums.ServiceType.Server, NET_PORT, NET_IDENTITY);
-            
+
 
 //            _client = new Networking.LidgrenNetworkService();
 //            _client.Start(Networking.Enums.ServiceType.Client, NET_PORT + 1, NET_IDENTITY);

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Silk.NET.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
 namespace Molten.Graphics
@@ -83,8 +79,8 @@ namespace Molten.Graphics
 
         protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
-            _description.Width = (uint)newWidth;
-            _description.Height = (uint)newHeight;
+            _description.Width = newWidth;
+            _description.Height = newHeight;
             _description.Format = newFormat;
             //_description.MipLevels = newMipMapCount; // NOTE: Do we set this on render targets?
 

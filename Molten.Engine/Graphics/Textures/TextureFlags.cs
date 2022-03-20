@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>Represents different options of a TextureAsset2D upon creation.</summary>
     [Flags]

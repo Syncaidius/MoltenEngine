@@ -1,6 +1,4 @@
-﻿using Molten;
-
-namespace Molten
+﻿namespace Molten
 {
     ///<summary>
     /// Contains ray hit data.

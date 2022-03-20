@@ -12,9 +12,6 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 
-using System;
-using System.IO;
-
 namespace Molten.Graphics.Textures
 {
     internal class BC4_UNORM

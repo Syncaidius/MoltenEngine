@@ -1,9 +1,7 @@
-using System.Runtime.InteropServices;
-
 namespace Molten
 {
-	///<summary>A <see cref = "int"/> vector comprised of 2 components.</summary>
-	public partial struct Vector2I
+    ///<summary>A <see cref = "int"/> vector comprised of 2 components.</summary>
+    public partial struct Vector2I
 	{
 		
 

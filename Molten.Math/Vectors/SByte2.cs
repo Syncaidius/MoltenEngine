@@ -1,17 +1,11 @@
-
-
-
-
-
-using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Molten
 {
-	///<summary>A <see cref = "sbyte"/> vector comprised of two components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=1)]
+    ///<summary>A <see cref = "sbyte"/> vector comprised of two components.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=1)]
 	public partial struct SByte2 : IFormattable
 	{
 		///<summary>The X component.</summary>
@@ -732,7 +726,7 @@ namespace Molten
         /// <param name="right">Second <see cref="SByte2"/> source vector.</param>
         public static sbyte Dot(ref SByte2 left, ref SByte2 right)
         {
-			return (sbyte)(((sbyte)left.X * right.X) + ((sbyte)left.Y * right.Y));
+			return (sbyte)((left.X * right.X) + (left.Y * right.Y));
         }
 
 		/// <summary>

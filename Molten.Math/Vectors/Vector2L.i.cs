@@ -1,10 +1,7 @@
-using System.Runtime.InteropServices;
-using System;
-
 namespace Molten
 {
-	///<summary>A <see cref = "long"/> vector comprised of 2 components.</summary>
-	public partial struct Vector2L
+    ///<summary>A <see cref = "long"/> vector comprised of 2 components.</summary>
+    public partial struct Vector2L
 	{
 
 #region Operators - Cast
@@ -12,8 +9,8 @@ namespace Molten
 		{
 			return new Vector2D()
 			{
-				X = (double)value.X,
-				Y = (double)value.Y,
+				X = value.X,
+				Y = value.Y,
 			};
 		}
 #endregion

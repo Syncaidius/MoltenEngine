@@ -1,11 +1,4 @@
-﻿using Silk.NET.Core.Native;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public class Mesh<T> : Renderable, IMesh<T> where T : unmanaged, IVertexType
     {
@@ -25,7 +18,7 @@ namespace Molten.Graphics
 
             GraphicsBuffer vBuffer = dynamic ? renderer.DynamicVertexBuffer : renderer.StaticVertexBuffer;
 
-            _vb = vBuffer.Allocate<T>((uint)MaxVertices);
+            _vb = vBuffer.Allocate<T>(MaxVertices);
             _vb.SetVertexFormat<T>();
         }
 
@@ -60,7 +53,7 @@ namespace Molten.Graphics
             _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
             _material.Object.World.Value = data.RenderTransform;
 
-            renderer.Device.Draw(_material, (uint)_vertexCount, Topology);
+            renderer.Device.Draw(_material, _vertexCount, Topology);
 
             /* TODO: According to: https://www.gamedev.net/forums/topic/667328-vertices-and-indices-in-the-same-buffer/
             *  - A buffer can be bound as both a vertex and index buffer

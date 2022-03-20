@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public abstract class TextureReader : IDisposable
     {

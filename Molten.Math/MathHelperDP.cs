@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten
+﻿namespace Molten
 {
     /// <summary>
     /// Double-precision math helper class

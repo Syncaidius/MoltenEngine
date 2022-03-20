@@ -12,8 +12,6 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 
-using System;
-
 namespace Molten.Graphics.Textures
 {
     [Flags]

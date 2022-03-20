@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Threading
+﻿namespace Molten.Threading
 {
     public class EngineThreadException : Exception
     {

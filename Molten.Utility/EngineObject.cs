@@ -1,8 +1,5 @@
 ﻿using Molten.Utility;
-using Silk.NET.Core.Native;
-using System;
 using System.Runtime.Serialization;
-using System.Threading;
 
 namespace Molten
 {

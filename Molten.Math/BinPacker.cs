@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Molten
+﻿namespace Molten
 {
     /// <summary>
     /// A Bin packer implementation based on the 'MAXRECTS' method developed by Jukka Jylänki: http://clb.demon.fi/files/RectangleBinPack.pdf

@@ -43,7 +43,6 @@
 * THE SOFTWARE.
 */
 
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -258,7 +257,7 @@ namespace Molten
             }
 
             //This is the center of our sphere.
-            center /= (float)count;
+            center /= count;
 
             //Find the radius of the sphere
             float radius = 0f;

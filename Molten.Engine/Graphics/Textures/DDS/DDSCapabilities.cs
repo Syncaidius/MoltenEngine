@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten.Graphics.Textures.DDS
+﻿namespace Molten.Graphics.Textures.DDS
 {
     [FlagsAttribute]
     /// <summary>DDS_HEADER : dwCaps. https://docs.microsoft.com/en-us/windows/desktop/direct3ddds/dds-header. </summary>

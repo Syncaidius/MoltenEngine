@@ -1,7 +1,5 @@
 ﻿using Molten.Collections;
 using Molten.Font;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Molten.Graphics

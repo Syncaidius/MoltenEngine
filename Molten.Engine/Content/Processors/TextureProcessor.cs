@@ -1,4 +1,4 @@
-﻿using Molten.Graphics; using Molten.Graphics.Textures; using Molten.Graphics.Textures.DDS; using System; using System.Collections.Generic; using System.IO; using System.Text; using System.Threading;  namespace Molten.Content {     public class TextureProcessor : ContentProcessor     {         public override Type[] AcceptedTypes { get; } = new Type[] { typeof(ITexture), typeof(TextureData) };          public override Type[] RequiredServices { get; } = { typeof(RenderService) };          protected override void OnInitialize()
+﻿using Molten.Graphics; using Molten.Graphics.Textures; using Molten.Graphics.Textures.DDS; using System.Text;  namespace Molten.Content {     public class TextureProcessor : ContentProcessor     {         public override Type[] AcceptedTypes { get; } = new Type[] { typeof(ITexture), typeof(TextureData) };          public override Type[] RequiredServices { get; } = { typeof(RenderService) };          protected override void OnInitialize()
         {
             AddParameter("array", 1U);
             AddParameter("compress", false);

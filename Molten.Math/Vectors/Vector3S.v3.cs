@@ -1,49 +1,47 @@
-using System.Runtime.InteropServices;
-
 namespace Molten
 {
-	///<summary>A <see cref = "short"/> vector comprised of 3 components.</summary>
-	public partial struct Vector3S
+    ///<summary>A <see cref = "short"/> vector comprised of 3 components.</summary>
+    public partial struct Vector3S
 	{
            /// <summary>
         /// A unit <see cref="Vector3S"/> designating up (0, 1, 0).
         /// </summary>
-        public static readonly Vector3S Up = new Vector3S(0, (short)1, 0);
+        public static readonly Vector3S Up = new Vector3S(0, 1, 0);
 
         /// <summary>
         /// A unit <see cref="Vector3S"/> designating down (0, -1, 0).
         /// </summary>
-        public static readonly Vector3S Down = new Vector3S(0, -(short)1, 0);
+        public static readonly Vector3S Down = new Vector3S(0, -1, 0);
 
         /// <summary>
         /// A unit <see cref="Vector3S"/> designating left (-1, 0, 0).
         /// </summary>
-        public static readonly Vector3S Left = new Vector3S(-(short)1, 0, 0);
+        public static readonly Vector3S Left = new Vector3S(-1, 0, 0);
 
         /// <summary>
         /// A unit <see cref="Vector3S"/> designating right (1, 0, 0).
         /// </summary>
-        public static readonly Vector3S Right = new Vector3S((short)1, 0, 0);
+        public static readonly Vector3S Right = new Vector3S(1, 0, 0);
 
         /// <summary>
         /// A unit <see cref="Vector3S"/> designating forward in a right-handed coordinate system (0, 0, -1).
         /// </summary>
-        public static readonly Vector3S ForwardRH = new Vector3S(0, 0, -(short)1);
+        public static readonly Vector3S ForwardRH = new Vector3S(0, 0, -1);
 
         /// <summary>
         /// A unit <see cref="Vector3S"/> designating forward in a left-handed coordinate system (0, 0, 1).
         /// </summary>
-        public static readonly Vector3S ForwardLH = new Vector3S(0, 0, (short)1);
+        public static readonly Vector3S ForwardLH = new Vector3S(0, 0, 1);
 
         /// <summary>
         /// A unit <see cref="Vector3S"/> designating backward in a right-handed coordinate system (0, 0, 1).
         /// </summary>
-        public static readonly Vector3S BackwardRH = new Vector3S(0, 0, (short)1);
+        public static readonly Vector3S BackwardRH = new Vector3S(0, 0, 1);
 
         /// <summary>
         /// A unit <see cref="Vector3S"/> designating backward in a left-handed coordinate system (0, 0, -1).
         /// </summary>
-        public static readonly Vector3S BackwardLH = new Vector3S(0, 0, -(short)1);
+        public static readonly Vector3S BackwardLH = new Vector3S(0, 0, -1);
 
 #region Static Methods
         /// <summary>

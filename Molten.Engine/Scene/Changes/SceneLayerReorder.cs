@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Molten
+﻿namespace Molten
 {
     /// <summary>A <see cref="SceneLayerReorder"/> for changing the draw order of a <see cref="SceneLayer"/> instance.</summary>
     internal class SceneLayerReorder : SceneChange<SceneLayerReorder>

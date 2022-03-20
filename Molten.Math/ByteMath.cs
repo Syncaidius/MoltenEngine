@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace Molten
 {
     /// <summary>A helper class for converting between different computational storage measurements (e.g. bits, bytes, kilobytes, etc).</summary>
@@ -154,7 +149,7 @@ namespace Molten
         /// <returns></returns>
         public static ulong FromBits(ulong bits)
         {
-            return (ulong)bits / BITS_IN_BYTE;
+            return bits / BITS_IN_BYTE;
         }
     }
 }

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
+﻿using Molten.Collections;
+using Molten.IO;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
-using Molten.Collections;
-using Silk.NET.Core.Native;
-using Molten.IO;
+using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {

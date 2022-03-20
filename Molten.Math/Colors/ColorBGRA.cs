@@ -18,7 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -234,7 +233,7 @@ namespace Molten
             value |= R << 16;
             value |= A << 24;
 
-            return (int)value;
+            return value;
         }
 
         /// <summary>
@@ -248,7 +247,7 @@ namespace Molten
             value |= B << 16;
             value |= A << 24;
 
-            return (int)value;
+            return value;
         }
 
         /// <summary>
@@ -293,9 +292,9 @@ namespace Molten
         /// <returns>The Hue-Saturation-Brightness (HSB) saturation for this <see cref="Color"/></returns>
         public float GetBrightness()
         {
-            float r = (float)R / 255.0f;
-            float g = (float)G / 255.0f;
-            float b = (float)B / 255.0f;
+            float r = R / 255.0f;
+            float g = G / 255.0f;
+            float b = B / 255.0f;
 
             float max, min;
 
@@ -319,9 +318,9 @@ namespace Molten
             if (R == G && G == B)
                 return 0; // 0 makes as good an UNDEFINED value as any
 
-            float r = (float)R / 255.0f;
-            float g = (float)G / 255.0f;
-            float b = (float)B / 255.0f;
+            float r = R / 255.0f;
+            float g = G / 255.0f;
+            float b = B / 255.0f;
 
             float max, min;
             float delta;
@@ -364,9 +363,9 @@ namespace Molten
         /// <returns>The Hue-Saturation-Brightness (HSB) saturation for this <see cref="Color"/></returns>
         public float GetSaturation()
         {
-            float r = (float)R / 255.0f;
-            float g = (float)G / 255.0f;
-            float b = (float)B / 255.0f;
+            float r = R / 255.0f;
+            float g = G / 255.0f;
+            float b = B / 255.0f;
 
             float max, min;
             float l, s = 0;

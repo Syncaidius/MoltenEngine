@@ -1,9 +1,7 @@
-using System.Runtime.InteropServices;
-
 namespace Molten
 {
-	///<summary>A <see cref = "ulong"/> vector comprised of 3 components.</summary>
-	public partial struct Vector3UL
+    ///<summary>A <see cref = "ulong"/> vector comprised of 3 components.</summary>
+    public partial struct Vector3UL
 	{
 
 #region Static Methods

@@ -1,11 +1,4 @@
-﻿using Molten.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
     public class RenderFormSurface : WinformsSurface<RenderForm>, INativeSurface

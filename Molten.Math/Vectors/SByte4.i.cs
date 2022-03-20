@@ -1,10 +1,7 @@
-using System.Runtime.InteropServices;
-using System;
-
 namespace Molten
 {
-	///<summary>A <see cref = "sbyte"/> vector comprised of 4 components.</summary>
-	public partial struct SByte4
+    ///<summary>A <see cref = "sbyte"/> vector comprised of 4 components.</summary>
+    public partial struct SByte4
 	{
 
 #region Operators - Cast
@@ -12,10 +9,10 @@ namespace Molten
 		{
 			return new Vector4F()
 			{
-				X = (float)value.X,
-				Y = (float)value.Y,
-				Z = (float)value.Z,
-				W = (float)value.W,
+				X = value.X,
+				Y = value.Y,
+				Z = value.Z,
+				W = value.W,
 			};
 		}
 #endregion

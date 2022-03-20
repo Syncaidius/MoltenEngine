@@ -46,8 +46,6 @@
 * THE SOFTWARE.
 */
 
-using System;
-
 namespace Molten
 {
     /// <summary>
@@ -412,7 +410,7 @@ namespace Molten
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         public static byte Lerp(byte from, byte to, float amount)
         {
-            return (byte)Lerp((float)from, (float)to, amount);
+            return (byte)Lerp(from, (float)to, amount);
         }
 
         /// <summary>
