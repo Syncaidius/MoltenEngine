@@ -1,25 +1,31 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
-    ///<summary>A <see cref = "byte"/> vector comprised of four components.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
+	///<summary>A <see cref = "byte"/> vector comprised of four components.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack=1)]
+    [Serializable]
 	public partial struct Byte4 : IFormattable
 	{
 		///<summary>The X component.</summary>
+        [DataMember]
 		public byte X;
 
 		///<summary>The Y component.</summary>
+        [DataMember]
 		public byte Y;
 
 		///<summary>The Z component.</summary>
+        [DataMember]
 		public byte Z;
 
 		///<summary>The W component.</summary>
+        [DataMember]
 		public byte W;
-
 
 		///<summary>The size of <see cref="Byte4"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Byte4));
@@ -770,7 +776,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Byte4"/> source vector.</param>
         public static byte Dot(ref Byte4 left, ref Byte4 right)
         {
-			return (byte)((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
+			return (byte)(((byte)left.X * right.X) + ((byte)left.Y * right.Y) + ((byte)left.Z * right.Z) + ((byte)left.W * right.W));
         }
 
 		/// <summary>

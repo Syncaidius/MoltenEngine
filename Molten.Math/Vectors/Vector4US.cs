@@ -1,43 +1,49 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
-    ///<summary>A <see cref = "ushort"/> vector comprised of four components.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=2)]
+	///<summary>A <see cref = "ushort"/> vector comprised of four components.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack=2)]
+    [Serializable]
 	public partial struct Vector4US : IFormattable
 	{
 		///<summary>The X component.</summary>
+        [DataMember]
 		public ushort X;
 
 		///<summary>The Y component.</summary>
+        [DataMember]
 		public ushort Y;
 
 		///<summary>The Z component.</summary>
+        [DataMember]
 		public ushort Z;
 
 		///<summary>The W component.</summary>
+        [DataMember]
 		public ushort W;
-
 
 		///<summary>The size of <see cref="Vector4US"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4US));
 
 		///<summary>A Vector4US with every component set to (ushort)1.</summary>
-		public static readonly Vector4US One = new Vector4US(1, 1, 1, 1);
+		public static readonly Vector4US One = new Vector4US((ushort)1, (ushort)1, (ushort)1, (ushort)1);
 
 		/// <summary>The X unit <see cref="Vector4US"/>.</summary>
-		public static readonly Vector4US UnitX = new Vector4US(1, 0, 0, 0);
+		public static readonly Vector4US UnitX = new Vector4US((ushort)1, 0, 0, 0);
 
 		/// <summary>The Y unit <see cref="Vector4US"/>.</summary>
-		public static readonly Vector4US UnitY = new Vector4US(0, 1, 0, 0);
+		public static readonly Vector4US UnitY = new Vector4US(0, (ushort)1, 0, 0);
 
 		/// <summary>The Z unit <see cref="Vector4US"/>.</summary>
-		public static readonly Vector4US UnitZ = new Vector4US(0, 0, 1, 0);
+		public static readonly Vector4US UnitZ = new Vector4US(0, 0, (ushort)1, 0);
 
 		/// <summary>The W unit <see cref="Vector4US"/>.</summary>
-		public static readonly Vector4US UnitW = new Vector4US(0, 0, 0, 1);
+		public static readonly Vector4US UnitW = new Vector4US(0, 0, 0, (ushort)1);
 
 		/// <summary>Represents a zero'd Vector4US.</summary>
 		public static readonly Vector4US Zero = new Vector4US(0, 0, 0, 0);
@@ -770,7 +776,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector4US"/> source vector.</param>
         public static ushort Dot(ref Vector4US left, ref Vector4US right)
         {
-			return (ushort)((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
+			return (ushort)(((ushort)left.X * right.X) + ((ushort)left.Y * right.Y) + ((ushort)left.Z * right.Z) + ((ushort)left.W * right.W));
         }
 
 		/// <summary>

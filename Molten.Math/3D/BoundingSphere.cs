@@ -46,6 +46,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -53,16 +54,19 @@ namespace Molten
     /// Represents a bounding sphere in three dimensional space.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [Serializable]
     public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     {
         /// <summary>
         /// The center of the sphere in three dimensional space.
         /// </summary>
+        [DataMember]
         public Vector3F Center;
 
         /// <summary>
         /// The radius of the sphere.
         /// </summary>
+        [DataMember]
         public float Radius;
 
         /// <summary>

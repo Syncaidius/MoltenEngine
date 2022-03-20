@@ -20,6 +20,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Quaternions\t4_quaternions.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_quaternions.tt</DependentUpon>
+    </None>
+    <None Include="Vectors\t4_vector.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector.tt</DependentUpon>
+    </None>
     <None Include="Vectors\t4_vector.i.cs">
       <DependentUpon>t4_vector.i.tt</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -40,12 +50,7 @@
   <ItemGroup>
     <None Update="Quaternions\t4_quaternions.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>t4_quaternions.txt</LastGenOutput>
-    </None>
-    <None Update="Quaternions\t4_quaternions.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>t4_quaternions.tt</DependentUpon>
+      <LastGenOutput>t4_quaternions.cs</LastGenOutput>
     </None>
     <None Update="t4_header.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -61,12 +66,7 @@
     </None>
     <None Update="Vectors\t4_vector.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>t4_vector.txt</LastGenOutput>
-    </None>
-    <None Update="Vectors\t4_vector.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>t4_vector.tt</DependentUpon>
+      <LastGenOutput>t4_vector.cs</LastGenOutput>
     </None>
     <None Update="Vectors\t4_vector2.fp.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -115,10 +115,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Quaternions\t4_quaternions.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_quaternions.tt</DependentUpon>
+    </Compile>
     <Compile Update="t4_header.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_header.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Vectors\t4_vector.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector.tt</DependentUpon>
     </Compile>
     <Compile Update="Vectors\t4_vector.fp.cs">
       <DesignTime>True</DesignTime>

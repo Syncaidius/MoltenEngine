@@ -21,6 +21,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -28,36 +29,43 @@ namespace Molten
     /// Defines viewport dimensions using insigned integer values.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [Serializable]
     public struct ViewportUI : IEquatable<ViewportUI>
     {
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
+        [DataMember]
         public uint X;
 
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
+        [DataMember]
         public uint Y;
 
         /// <summary>
         /// Width dimension of the viewport.
         /// </summary>
+        [DataMember]
         public uint Width;
 
         /// <summary>
         /// Height dimension of the viewport.
         /// </summary>
+        [DataMember]
         public uint Height;
 
         /// <summary>
         /// Gets or sets the minimum depth of the clip volume.
         /// </summary>
+        [DataMember]
         public float MinDepth;
 
         /// <summary>
         /// Gets or sets the maximum depth of the clip volume.
         /// </summary>
+        [DataMember]
         public float MaxDepth;
 
         /// <summary>
@@ -116,10 +124,7 @@ namespace Molten
         /// <value>The bounds.</value>
         public RectangleUI Bounds
         {
-            get
-            {
-                return new RectangleUI(X, Y, Width, Height);
-            }
+            get => new RectangleUI(X, Y, Width, Height);
 
             set
             {
@@ -315,10 +320,9 @@ namespace Molten
             get
             {
                 if (Height != 0)
-                {
                     return Width / (float)Height;
-                }
-                return 0f;
+                else
+                    return 0f;
             }
         }
     }

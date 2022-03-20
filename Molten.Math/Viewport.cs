@@ -21,6 +21,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -28,36 +29,43 @@ namespace Molten
     /// Defines viewport dimensions using signed integer dimensions.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [Serializable]
     public struct Viewport : IEquatable<Viewport>
     {
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
+        [DataMember]
         public int X;
 
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
+        [DataMember]
         public int Y;
 
         /// <summary>
         /// Width dimension of the viewport.
         /// </summary>
+        [DataMember]
         public int Width;
 
         /// <summary>
         /// Height dimension of the viewport.
         /// </summary>
+        [DataMember]
         public int Height;
 
         /// <summary>
         /// Gets or sets the minimum depth of the clip volume.
         /// </summary>
+        [DataMember]
         public float MinDepth;
 
         /// <summary>
         /// Gets or sets the maximum depth of the clip volume.
         /// </summary>
+        [DataMember]
         public float MaxDepth;
 
         /// <summary>
@@ -116,10 +124,7 @@ namespace Molten
         /// <value>The bounds.</value>
         public Rectangle Bounds
         {
-            get
-            {
-                return new Rectangle(X, Y, Width, Height);
-            }
+            get => new Rectangle(X, Y, Width, Height);
 
             set
             {
@@ -315,10 +320,9 @@ namespace Molten
             get
             {
                 if (Height != 0)
-                {
                     return Width / (float)Height;
-                }
-                return 0f;
+                else
+                    return 0f;
             }
         }
     }

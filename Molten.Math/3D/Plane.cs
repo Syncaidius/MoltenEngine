@@ -46,6 +46,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -53,16 +54,19 @@ namespace Molten
     /// Represents a plane in three dimensional space.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [Serializable]
     public struct Plane : IEquatable<Plane>, IFormattable
     {
         /// <summary>
         /// The normal vector of the plane.
         /// </summary>
+        [DataMember]
         public Vector3F Normal;
 
         /// <summary>
         /// The distance of the plane along its normal from the origin.
         /// </summary>
+        [DataMember]
         public float D;
 
         /// <summary>

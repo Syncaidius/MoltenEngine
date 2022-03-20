@@ -1,25 +1,31 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
-    ///<summary>A <see cref = "double"/> vector comprised of four components.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=8)]
+	///<summary>A <see cref = "double"/> vector comprised of four components.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack=8)]
+    [Serializable]
 	public partial struct Vector4D : IFormattable
 	{
 		///<summary>The X component.</summary>
+        [DataMember]
 		public double X;
 
 		///<summary>The Y component.</summary>
+        [DataMember]
 		public double Y;
 
 		///<summary>The Z component.</summary>
+        [DataMember]
 		public double Z;
 
 		///<summary>The W component.</summary>
+        [DataMember]
 		public double W;
-
 
 		///<summary>The size of <see cref="Vector4D"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4D));

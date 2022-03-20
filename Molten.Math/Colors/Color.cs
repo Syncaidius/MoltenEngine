@@ -21,6 +21,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -28,6 +29,7 @@ namespace Molten
     /// Represents a 32-bit color (4 bytes) in the form of RGBA (in byte order: R, G, B, A).
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Size = 4)]
+    [Serializable]
     public partial struct Color : IEquatable<Color>, IFormattable
     {
         private const string toStringFormat = "A:{0} R:{1} G:{2} B:{3}";
@@ -35,21 +37,25 @@ namespace Molten
         /// <summary>
         /// The red component of the color.
         /// </summary>
+        [DataMember]
         public byte R;
 
         /// <summary>
         /// The green component of the color.
         /// </summary>
+        [DataMember]
         public byte G;
 
         /// <summary>
         /// The blue component of the color.
         /// </summary>
+        [DataMember]
         public byte B;
 
         /// <summary>
         /// The alpha component of the color.
         /// </summary>
+        [DataMember]
         public byte A;
 
         /// <summary>

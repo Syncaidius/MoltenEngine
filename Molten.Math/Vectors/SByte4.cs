@@ -1,25 +1,31 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
-    ///<summary>A <see cref = "sbyte"/> vector comprised of four components.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
+	///<summary>A <see cref = "sbyte"/> vector comprised of four components.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack=1)]
+    [Serializable]
 	public partial struct SByte4 : IFormattable
 	{
 		///<summary>The X component.</summary>
+        [DataMember]
 		public sbyte X;
 
 		///<summary>The Y component.</summary>
+        [DataMember]
 		public sbyte Y;
 
 		///<summary>The Z component.</summary>
+        [DataMember]
 		public sbyte Z;
 
 		///<summary>The W component.</summary>
+        [DataMember]
 		public sbyte W;
-
 
 		///<summary>The size of <see cref="SByte4"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(SByte4));
@@ -802,7 +808,7 @@ namespace Molten
         /// <param name="right">Second <see cref="SByte4"/> source vector.</param>
         public static sbyte Dot(ref SByte4 left, ref SByte4 right)
         {
-			return (sbyte)((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
+			return (sbyte)(((sbyte)left.X * right.X) + ((sbyte)left.Y * right.Y) + ((sbyte)left.Z * right.Z) + ((sbyte)left.W * right.W));
         }
 
 		/// <summary>

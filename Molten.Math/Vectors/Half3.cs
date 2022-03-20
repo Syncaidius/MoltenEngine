@@ -20,6 +20,7 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -27,22 +28,26 @@ namespace Molten
     /// Defines a three component vector, using half precision floating point coordinates.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
+    [Serializable]
     public struct Half3 : IEquatable<Half3>
     {
         /// <summary>
         /// Gets or sets the X component of the vector.
         /// </summary>
         /// <value>The X component of the vector.</value>
+        [DataMember]
         public Half X;
         /// <summary>
         /// Gets or sets the Y component of the vector.
         /// </summary>
         /// <value>The Y component of the vector.</value>
+        [DataMember]
         public Half Y;
         /// <summary>
         /// Gets or sets the Z component of the vector.
         /// </summary>
         /// <value>The Z component of the vector.</value>
+        [DataMember]
         public Half Z;
 
         /// <summary>

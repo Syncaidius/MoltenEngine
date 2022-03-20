@@ -45,6 +45,7 @@
 
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -53,6 +54,7 @@ namespace Molten
     /// internal representation.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
+    [Serializable]
     public struct AngleF : IComparable, IComparable<AngleF>, IEquatable<AngleF>, IFormattable
     {
         /// <summary>
@@ -89,9 +91,11 @@ namespace Molten
         /// The internal representation of the angle.
         /// </summary>
         [FieldOffset(0)]
+        [DataMember]
         float radians;
 
         [FieldOffset(0)]
+        [DataMember]
         private int radiansInt;
 
         /// <summary>

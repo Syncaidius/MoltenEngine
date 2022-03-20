@@ -46,6 +46,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -53,16 +54,19 @@ namespace Molten
     /// Represents a three dimensional line based on a point in space and a direction.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [Serializable]
     public struct Ray : IEquatable<Ray>, IFormattable
     {
         /// <summary>
         /// The position in three dimensional space where the ray starts.
         /// </summary>
+        [DataMember]
         public Vector3F Position;
 
         /// <summary>
         /// The normalized direction in which the ray points.
         /// </summary>
+        [DataMember]
         public Vector3F Direction;
 
         /// <summary>

@@ -47,6 +47,7 @@
 
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten.DoublePrecision
 {
@@ -55,6 +56,7 @@ namespace Molten.DoublePrecision
     /// internal representation.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
+    [Serializable]
     public struct AngleD : IComparable, IComparable<AngleD>, IEquatable<AngleD>, IFormattable
     {
         /// <summary>
@@ -91,9 +93,11 @@ namespace Molten.DoublePrecision
         /// The internal representation of the angle.
         /// </summary>
         [FieldOffset(0)]
+        [DataMember]
         double radians;
 
         [FieldOffset(0)]
+        [DataMember]
         private int radiansInt;
 
         /// <summary>

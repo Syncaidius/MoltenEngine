@@ -21,6 +21,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -29,26 +30,31 @@ namespace Molten
     /// internally storing Left,Top,Right,Bottom instead of Left,Top,Width,Height.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [Serializable]
     public struct RectangleF : IEquatable<RectangleF>
     {
         /// <summary>
         /// The left.
         /// </summary>
+        [DataMember]
         public float Left;
 
         /// <summary>
         /// The top.
         /// </summary>
+        [DataMember]
         public float Top;
 
         /// <summary>
         /// The right.
         /// </summary>
+        [DataMember]
         public float Right;
 
         /// <summary>
         /// The bottom.
         /// </summary>
+        [DataMember]
         public float Bottom;
 
         /// <summary>

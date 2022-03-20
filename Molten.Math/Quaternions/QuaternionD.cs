@@ -1,11 +1,14 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
-    ///<summary>Represents a four dimensional mathematical QuaternionD.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
+	///<summary>Represents a four dimensional mathematical QuaternionD.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack = 8)]
+    [Serializable]
 	public partial struct QuaternionD : IFormattable, IEquatable<QuaternionD>
 	{
 		/// <summary>
@@ -29,15 +32,19 @@ namespace Molten
         public static readonly QuaternionD Identity = new QuaternionD(0D, 0D, 0D, 0D);
 
 		///<summary>The X component of the QuaternionD.</summary>
+        [DataMember]
 		public double X;
 
         ///<summary>The Y component of the QuaternionD.</summary>
+        [DataMember]
 		public double Y;
 
         ///<summary>The Z component of the QuaternionD.</summary>
+        [DataMember]
 		public double Z;
 
         ///<summary>The W component of the QuaternionD.</summary>
+        [DataMember]
 		public double W;
 
         /// <summary>

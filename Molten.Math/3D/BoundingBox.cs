@@ -46,6 +46,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -53,16 +54,19 @@ namespace Molten
     /// Represents an axis-aligned bounding box in three dimensional space.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [Serializable]
     public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     {
         /// <summary>
         /// The minimum point of the box.
         /// </summary>
+        [DataMember]
         public Vector3F Min;
 
         /// <summary>
         /// The maximum point of the box.
         /// </summary>
+        [DataMember]
         public Vector3F Max;
 
         /// <summary>

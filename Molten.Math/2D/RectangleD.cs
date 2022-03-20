@@ -21,6 +21,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten.DoublePrecision
 {
@@ -28,26 +29,31 @@ namespace Molten.DoublePrecision
     /// Double-precision version of <see cref="RectangleD"/>.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
+    [Serializable]
     public struct RectangleD : IEquatable<RectangleD>
     {
         /// <summary>
         /// The left.
         /// </summary>
+        [DataMember]
         public double Left;
 
         /// <summary>
         /// The top.
         /// </summary>
+        [DataMember]
         public double Top;
 
         /// <summary>
         /// The right.
         /// </summary>
+        [DataMember]
         public double Right;
 
         /// <summary>
         /// The bottom.
         /// </summary>
+        [DataMember]
         public double Bottom;
 
         /// <summary>

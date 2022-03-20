@@ -30,89 +30,55 @@ namespace Molten
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct BoundingFrustum : IEquatable<BoundingFrustum>
     {
-        private Matrix4F pMatrix;
-        private Plane  pNear;
-        private Plane  pFar;
-        private Plane  pLeft;
-        private Plane  pRight;
-        private Plane  pTop;
-        private Plane  pBottom;
+        Matrix4F _pMatrix;
+        Plane  _pNear;
+        Plane  _pFar;
+        Plane  _pLeft;
+        Plane  _pRight;
+        Plane  _pTop;
+        Plane  _pBottom;
 
         /// <summary>
         /// Gets or sets the Matrix that describes this bounding frustum.
         /// </summary>
         public Matrix4F Matrix
         {
-            get
-            {
-                return pMatrix;
-            }
+            get => _pMatrix;
             set
             {
-                pMatrix = value;
-                GetPlanesFromMatrix(ref pMatrix, out pNear, out pFar, out pLeft, out pRight, out pTop, out pBottom);
+                _pMatrix = value;
+                GetPlanesFromMatrix(ref _pMatrix, out _pNear, out _pFar, out _pLeft, out _pRight, out _pTop, out _pBottom);
             }
         }
         /// <summary>
         /// Gets the near plane of the BoundingFrustum.
         /// </summary>
-        public Plane Near
-        {
-            get
-            {
-                return pNear;
-            }
-        }
+        public Plane Near => _pNear;
+
         /// <summary>
         /// Gets the far plane of the BoundingFrustum.
         /// </summary>
-        public Plane Far
-        {
-            get
-            {
-                return pFar;
-            }
-        }
+        public Plane Far => _pFar;
+
         /// <summary>
         /// Gets the left plane of the BoundingFrustum.
         /// </summary>
-        public Plane Left
-        {
-            get
-            {
-                return pLeft;
-            }
-        }
+        public Plane Left => _pLeft;
+
         /// <summary>
         /// Gets the right plane of the BoundingFrustum.
         /// </summary>
-        public Plane Right
-        {
-            get
-            {
-                return pRight;
-            }
-        }
+        public Plane Right => _pRight;
+
         /// <summary>
         /// Gets the top plane of the BoundingFrustum.
         /// </summary>
-        public Plane Top
-        {
-            get
-            {
-                return pTop;
-            }
-        }
+        public Plane Top => _pTop;
+
         /// <summary>
         /// Gets the bottom plane of the BoundingFrustum.
         /// </summary>
-        public Plane Bottom
-        {
-            get
-            {
-                return pBottom;
-            }
-        }
+        public Plane Bottom => _pBottom;
 
         /// <summary>
         /// Creates a new instance of BoundingFrustum.
@@ -120,13 +86,13 @@ namespace Molten
         /// <param name="matrix">Combined matrix that usually takes view × projection matrix.</param>
         public BoundingFrustum(Matrix4F matrix)
         {
-            pMatrix = matrix;
-            GetPlanesFromMatrix(ref pMatrix, out pNear, out pFar, out pLeft, out pRight, out pTop, out pBottom);
+            _pMatrix = matrix;
+            GetPlanesFromMatrix(ref _pMatrix, out _pNear, out _pFar, out _pLeft, out _pRight, out _pTop, out _pBottom);
         }
 
         public override int GetHashCode()
         {
-            return pMatrix.GetHashCode();
+            return _pMatrix.GetHashCode();
         }
 
         /// <summary>
@@ -139,7 +105,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref BoundingFrustum other)
         {
-            return this.pMatrix == other.pMatrix;
+            return this._pMatrix == other._pMatrix;
         }
 
         /// <summary>
@@ -208,12 +174,12 @@ namespace Molten
         {
             switch (index)
             {
-                case 0: return pLeft;
-                case 1: return pRight;
-                case 2: return pTop;
-                case 3: return pBottom;
-                case 4: return pNear;
-                case 5: return pFar;
+                case 0: return _pLeft;
+                case 1: return _pRight;
+                case 2: return _pTop;
+                case 3: return _pBottom;
+                case 4: return _pNear;
+                case 5: return _pFar;
                 default:
                     return new Plane();
             }
@@ -313,24 +279,25 @@ namespace Molten
             Vector3F Far4 = farCenter - farHalfHeight * upDir - farHalfWidth * rightDir;
 
             var result = new BoundingFrustum();
-            result.pNear = new Plane(Near1, Near2, Near3);
-            result.pFar = new Plane(Far3, Far2, Far1);
-            result.pLeft = new Plane(Near4, Near3, Far3);
-            result.pRight = new Plane(Far1, Far2, Near2);
-            result.pTop = new Plane(Near2, Far2, Far3);
-            result.pBottom = new Plane(Far4, Far1, Near1);
+            result._pNear = new Plane(Near1, Near2, Near3);
+            result._pFar = new Plane(Far3, Far2, Far1);
+            result._pLeft = new Plane(Near4, Near3, Far3);
+            result._pRight = new Plane(Far1, Far2, Near2);
+            result._pTop = new Plane(Near2, Far2, Far3);
+            result._pBottom = new Plane(Far4, Far1, Near1);
 
-            result.pNear.Normalize();
-            result.pFar.Normalize();
-            result.pLeft.Normalize();
-            result.pRight.Normalize();
-            result.pTop.Normalize();
-            result.pBottom.Normalize();
+            result._pNear.Normalize();
+            result._pFar.Normalize();
+            result._pLeft.Normalize();
+            result._pRight.Normalize();
+            result._pTop.Normalize();
+            result._pBottom.Normalize();
 
-            result.pMatrix = Matrix4F.LookAtLH(cameraPos, cameraPos + lookDir * 10, upDir) * Matrix4F.PerspectiveFovLH(fov, aspect, znear, zfar);
+            result._pMatrix = Matrix4F.LookAtLH(cameraPos, cameraPos + lookDir * 10, upDir) * Matrix4F.PerspectiveFovLH(fov, aspect, znear, zfar);
 
             return result;
         }
+
         /// <summary>
         /// Creates a new frustum relaying on perspective camera parameters
         /// </summary>
@@ -372,14 +339,14 @@ namespace Molten
         /// <returns>The 8 corners of the frustum</returns>
         public void GetCorners(Vector3F[] corners)
         {
-            corners[0] = Get3PlanesInterPoint(ref pNear, ref  pBottom, ref  pRight);    //Near1
-            corners[1] = Get3PlanesInterPoint(ref pNear, ref  pTop, ref  pRight);       //Near2
-            corners[2] = Get3PlanesInterPoint(ref pNear, ref  pTop, ref  pLeft);        //Near3
-            corners[3] = Get3PlanesInterPoint(ref pNear, ref  pBottom, ref  pLeft);     //Near3
-            corners[4] = Get3PlanesInterPoint(ref pFar, ref  pBottom, ref  pRight);    //Far1
-            corners[5] = Get3PlanesInterPoint(ref pFar, ref  pTop, ref  pRight);       //Far2
-            corners[6] = Get3PlanesInterPoint(ref pFar, ref  pTop, ref  pLeft);        //Far3
-            corners[7] = Get3PlanesInterPoint(ref pFar, ref  pBottom, ref  pLeft);     //Far3
+            corners[0] = Get3PlanesInterPoint(ref _pNear, ref  _pBottom, ref  _pRight);    //Near1
+            corners[1] = Get3PlanesInterPoint(ref _pNear, ref  _pTop, ref  _pRight);       //Near2
+            corners[2] = Get3PlanesInterPoint(ref _pNear, ref  _pTop, ref  _pLeft);        //Near3
+            corners[3] = Get3PlanesInterPoint(ref _pNear, ref  _pBottom, ref  _pLeft);     //Near3
+            corners[4] = Get3PlanesInterPoint(ref _pFar, ref  _pBottom, ref  _pRight);    //Far1
+            corners[5] = Get3PlanesInterPoint(ref _pFar, ref  _pTop, ref  _pRight);       //Far2
+            corners[6] = Get3PlanesInterPoint(ref _pFar, ref  _pTop, ref  _pLeft);        //Far3
+            corners[7] = Get3PlanesInterPoint(ref _pFar, ref  _pBottom, ref  _pLeft);     //Far3
         }
 
         /// <summary>
@@ -390,13 +357,13 @@ namespace Molten
         {
             var corners = GetCorners();
             var cameraParam = new FrustumCameraParams();
-            cameraParam.Position = Get3PlanesInterPoint(ref pRight, ref pTop, ref pLeft);
-            cameraParam.LookAtDir = pNear.Normal;
-            cameraParam.UpDir = Vector3F.Normalize(Vector3F.Cross(pRight.Normal, pNear.Normal));
-            cameraParam.FOV = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(pNear.Normal, pTop.Normal))) * 2);
+            cameraParam.Position = Get3PlanesInterPoint(ref _pRight, ref _pTop, ref _pLeft);
+            cameraParam.LookAtDir = _pNear.Normal;
+            cameraParam.UpDir = Vector3F.Normalize(Vector3F.Cross(_pRight.Normal, _pNear.Normal));
+            cameraParam.FOV = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pTop.Normal))) * 2);
             cameraParam.AspectRatio = (corners[6] - corners[5]).Length() / (corners[4] - corners[5]).Length();
-            cameraParam.ZNear = (cameraParam.Position + (pNear.Normal * pNear.D)).Length();
-            cameraParam.ZFar = (cameraParam.Position + (pFar.Normal * pFar.D)).Length();
+            cameraParam.ZNear = (cameraParam.Position + (_pNear.Normal * _pNear.D)).Length();
+            cameraParam.ZFar = (cameraParam.Position + (_pFar.Normal * _pFar.D)).Length();
             return cameraParam;
         }
 
@@ -413,12 +380,12 @@ namespace Molten
             {
                 switch (i)
                 {
-                    case 0: planeResult = pNear.Intersects(ref point); break;
-                    case 1: planeResult = pFar.Intersects(ref point); break;
-                    case 2: planeResult = pLeft.Intersects(ref point); break;
-                    case 3: planeResult = pRight.Intersects(ref point); break;
-                    case 4: planeResult = pTop.Intersects(ref point); break;
-                    case 5: planeResult = pBottom.Intersects(ref point); break;
+                    case 0: planeResult = _pNear.Intersects(ref point); break;
+                    case 1: planeResult = _pFar.Intersects(ref point); break;
+                    case 2: planeResult = _pLeft.Intersects(ref point); break;
+                    case 3: planeResult = _pRight.Intersects(ref point); break;
+                    case 4: planeResult = _pTop.Intersects(ref point); break;
+                    case 5: planeResult = _pBottom.Intersects(ref point); break;
                 }
                 switch (planeResult)
                 {
@@ -551,6 +518,7 @@ namespace Molten
         {
             result = Contains(ref box);
         }
+
         /// <summary>
         /// Determines the intersection relationship between the frustum and a bounding sphere.
         /// </summary>
@@ -564,12 +532,12 @@ namespace Molten
             {
                 switch (i)
                 {
-                    case 0: planeResult = pNear.Intersects(ref sphere); break;
-                    case 1: planeResult = pFar.Intersects(ref sphere); break;
-                    case 2: planeResult = pLeft.Intersects(ref sphere); break;
-                    case 3: planeResult = pRight.Intersects(ref sphere); break;
-                    case 4: planeResult = pTop.Intersects(ref sphere); break;
-                    case 5: planeResult = pBottom.Intersects(ref sphere); break;
+                    case 0: planeResult = _pNear.Intersects(ref sphere); break;
+                    case 1: planeResult = _pFar.Intersects(ref sphere); break;
+                    case 2: planeResult = _pLeft.Intersects(ref sphere); break;
+                    case 3: planeResult = _pRight.Intersects(ref sphere); break;
+                    case 4: planeResult = _pTop.Intersects(ref sphere); break;
+                    case 5: planeResult = _pBottom.Intersects(ref sphere); break;
                 }
                 switch (planeResult)
                 {
@@ -606,6 +574,7 @@ namespace Molten
         {
             result = Contains(ref sphere);
         }
+
         /// <summary>
         /// Determines the intersection relationship between the frustum and another bounding frustum.
         /// </summary>
@@ -645,6 +614,7 @@ namespace Molten
         {
             return Contains(ref sphere) != ContainmentType.Disjoint;
         }
+
         /// <summary>
         /// Checks whether the current BoundingFrustum intersects a BoundingSphere.
         /// </summary>
@@ -663,6 +633,7 @@ namespace Molten
         {
             return Contains(ref box) != ContainmentType.Disjoint;
         }
+
         /// <summary>
         /// Checks whether the current BoundingFrustum intersects a BoundingBox.
         /// </summary>
@@ -691,6 +662,7 @@ namespace Molten
         {
             return PlaneIntersectsPoints(ref plane, GetCorners());
         }
+
         /// <summary>
         /// Checks whether the current BoundingFrustum intersects the specified Plane.
         /// </summary>
@@ -708,7 +680,7 @@ namespace Molten
         /// <returns>With of the frustum at the specified depth</returns>
         public float GetWidthAtDepth(float depth)
         {
-            float hAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(pNear.Normal, pLeft.Normal))));
+            float hAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pLeft.Normal))));
             return (float)(Math.Tan(hAngle) * depth * 2);
         }
 
@@ -719,19 +691,19 @@ namespace Molten
         /// <returns>Height of the frustum at the specified depth</returns>
         public float GetHeightAtDepth(float depth)
         {
-            float vAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(pNear.Normal, pTop.Normal))));
+            float vAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pTop.Normal))));
             return (float)(Math.Tan(vAngle) * depth * 2);
         }
 
         private BoundingFrustum GetInsideOutClone()
         {
             var frustum = this;
-            frustum.pNear.Normal = -frustum.pNear.Normal;
-            frustum.pFar.Normal = -frustum.pFar.Normal;
-            frustum.pLeft.Normal = -frustum.pLeft.Normal;
-            frustum.pRight.Normal = -frustum.pRight.Normal;
-            frustum.pTop.Normal = -frustum.pTop.Normal;
-            frustum.pBottom.Normal = -frustum.pBottom.Normal;
+            frustum._pNear.Normal = -frustum._pNear.Normal;
+            frustum._pFar.Normal = -frustum._pFar.Normal;
+            frustum._pLeft.Normal = -frustum._pLeft.Normal;
+            frustum._pRight.Normal = -frustum._pRight.Normal;
+            frustum._pTop.Normal = -frustum._pTop.Normal;
+            frustum._pBottom.Normal = -frustum._pBottom.Normal;
             return frustum;
         }
 
@@ -745,6 +717,7 @@ namespace Molten
             float? inDist, outDist;
             return Intersects(ref ray, out inDist, out outDist);
         }
+
         /// <summary>
         /// Checks whether the current BoundingFrustum intersects the specified Ray.
         /// </summary>
@@ -817,9 +790,9 @@ namespace Molten
         /// <returns>The zoom to fit distance</returns>
         public float GetZoomToExtentsShiftDistance(Vector3F[] points)
         {
-            float vAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(pNear.Normal, pTop.Normal))));
+            float vAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pTop.Normal))));
             float vSin = (float)Math.Sin(vAngle);
-            float hAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(pNear.Normal, pLeft.Normal))));
+            float hAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pLeft.Normal))));
             float hSin = (float)Math.Sin(hAngle);
             float horizontalToVerticalMapping = vSin / hSin;
 
@@ -828,10 +801,10 @@ namespace Molten
             float maxPointDist = float.MinValue;
             for (int i = 0; i < points.Length; i++)
             {
-                float pointDist = CollisionHelper.DistancePlanePoint(ref ioFrustrum.pTop, ref points[i]);
-                pointDist = Math.Max(pointDist, CollisionHelper.DistancePlanePoint(ref ioFrustrum.pBottom, ref points[i]));
-                pointDist = Math.Max(pointDist, CollisionHelper.DistancePlanePoint(ref ioFrustrum.pLeft, ref points[i]) * horizontalToVerticalMapping);
-                pointDist = Math.Max(pointDist, CollisionHelper.DistancePlanePoint(ref ioFrustrum.pRight, ref points[i]) * horizontalToVerticalMapping);
+                float pointDist = CollisionHelper.DistancePlanePoint(ref ioFrustrum._pTop, ref points[i]);
+                pointDist = Math.Max(pointDist, CollisionHelper.DistancePlanePoint(ref ioFrustrum._pBottom, ref points[i]));
+                pointDist = Math.Max(pointDist, CollisionHelper.DistancePlanePoint(ref ioFrustrum._pLeft, ref points[i]) * horizontalToVerticalMapping);
+                pointDist = Math.Max(pointDist, CollisionHelper.DistancePlanePoint(ref ioFrustrum._pRight, ref points[i]) * horizontalToVerticalMapping);
 
                 maxPointDist = Math.Max(maxPointDist, pointDist);
             }
@@ -859,7 +832,7 @@ namespace Molten
         /// <returns>The zoom to fit vector</returns>
         public Vector3F GetZoomToExtentsShiftVector(Vector3F[] points)
         {
-            return GetZoomToExtentsShiftDistance(points) * pNear.Normal;
+            return GetZoomToExtentsShiftDistance(points) * _pNear.Normal;
         }
         /// <summary>
         /// Get the vector shift which when added to camera position will do the effect of zoom to extents (zoom to fit) operation,
@@ -869,7 +842,7 @@ namespace Molten
         /// <returns>The zoom to fit vector</returns>
         public Vector3F GetZoomToExtentsShiftVector(ref BoundingBox boundingBox)
         {
-            return GetZoomToExtentsShiftDistance(boundingBox.GetCorners()) * pNear.Normal;
+            return GetZoomToExtentsShiftDistance(boundingBox.GetCorners()) * _pNear.Normal;
         }
 
         /// <summary>
@@ -878,12 +851,6 @@ namespace Molten
         /// <value>
         /// 	<c>true</c> if the current BoundingFrustrum is Orthographic; otherwise, <c>false</c>.
         /// </value>
-        public bool IsOrthographic
-        {
-            get
-            {
-                return (pLeft.Normal == -pRight.Normal) && (pTop.Normal == -pBottom.Normal);
-            }
-        }
+        public bool IsOrthographic => (_pLeft.Normal == -_pRight.Normal) && (_pTop.Normal == -_pBottom.Normal);
     }
 }

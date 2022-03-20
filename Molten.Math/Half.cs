@@ -21,6 +21,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -28,8 +29,10 @@ namespace Molten
     /// A half precision (16 bit) floating point value.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
+    [Serializable]
     public struct Half
     {
+        [DataMember]
         private ushort value;
 
         /// <summary>
@@ -111,8 +114,8 @@ namespace Molten
         /// </summary>
         public ushort RawValue
         {
-            get { return value; }
-            set { this.value = value; }
+            get => value; 
+            set => this.value = value; 
         }
 
         /// <summary>

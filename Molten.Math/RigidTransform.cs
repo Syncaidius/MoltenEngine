@@ -1,19 +1,22 @@
-﻿
+﻿using System.Runtime.Serialization;
 
 namespace Molten
 {
     ///<summary>
     /// Transform composed of a rotation and translation.
     ///</summary>
+    [Serializable]
     public struct RigidTransform
     {
         ///<summary>
         /// Translation component of the transform.
         ///</summary>
+        [DataMember]
         public Vector3F Position;
         ///<summary>
         /// Rotation component of the transform.
         ///</summary>
+        [DataMember]
         public QuaternionF Orientation;
 
         ///<summary>

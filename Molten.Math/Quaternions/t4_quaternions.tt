@@ -31,11 +31,13 @@ using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
 	///<summary>Represents a four dimensional mathematical <#=fName#>.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack = <#=d.Pack#>)]
+    [Serializable]
 	public partial struct <#=fName#> : IFormattable, IEquatable<<#=fName#>>
 	{
 		/// <summary>
@@ -59,15 +61,19 @@ namespace Molten
         public static readonly <#=fName#> Identity = new <#=fName#>(<#=d.Zero#>, <#=d.Zero#>, <#=d.Zero#>, <#=d.Zero#>);
 
 		///<summary>The X component of the <#=fName#>.</summary>
+        [DataMember]
 		public <#=d.DT#> X;
 
         ///<summary>The Y component of the <#=fName#>.</summary>
+        [DataMember]
 		public <#=d.DT#> Y;
 
         ///<summary>The Z component of the <#=fName#>.</summary>
+        [DataMember]
 		public <#=d.DT#> Z;
 
         ///<summary>The W component of the <#=fName#>.</summary>
+        [DataMember]
 		public <#=d.DT#> W;
 
         /// <summary>

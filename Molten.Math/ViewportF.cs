@@ -21,6 +21,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -28,36 +29,43 @@ namespace Molten
     /// Defines the viewport dimensions using float coordinates for (X,Y,Width,Height).
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [Serializable]
     public struct ViewportF : IEquatable<ViewportF>
     {
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
+        [DataMember]
         public float X;
 
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
+        [DataMember]
         public float Y;
 
         /// <summary>
         /// Width dimension of the viewport.
         /// </summary>
+        [DataMember]
         public float Width;
 
         /// <summary>
         /// Height dimension of the viewport.
         /// </summary>
+        [DataMember]
         public float Height;
 
         /// <summary>
         /// Gets or sets the minimum depth of the clip volume.
         /// </summary>
+        [DataMember]
         public float MinDepth;
 
         /// <summary>
         /// Gets or sets the maximum depth of the clip volume.
         /// </summary>
+        [DataMember]
         public float MaxDepth;
 
         /// <summary>
@@ -116,10 +124,7 @@ namespace Molten
         /// <value>The bounds.</value>
         public RectangleF Bounds
         {
-            get
-            {
-                return new RectangleF(X, Y, Width, Height);
-            }
+            get => new RectangleF(X, Y, Width, Height);
 
             set
             {
@@ -319,10 +324,9 @@ namespace Molten
             get
             {
                 if (!MathHelper.IsZero(Height))
-                {
                     return Width / Height;
-                }
-                return 0f;
+                else
+                    return 0f;
             }
         }
 

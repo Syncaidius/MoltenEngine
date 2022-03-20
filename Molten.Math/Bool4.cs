@@ -21,6 +21,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -28,6 +29,7 @@ namespace Molten
     /// Represents a four dimensional mathematical vector of bool (32 bits per bool value).
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [Serializable]
     public struct Bool4 : IEquatable<Bool4>, IFormattable
     {
         /// <summary>
@@ -68,21 +70,25 @@ namespace Molten
         /// <summary>
         /// The X component of the vector.
         /// </summary>
+        [DataMember]
         internal int iX;
 
         /// <summary>
         /// The Y component of the vector.
         /// </summary>
+        [DataMember]
         internal int iY;
 
         /// <summary>
         /// The Z component of the vector.
         /// </summary>
+        [DataMember]
         internal int iZ;
 
         /// <summary>
         /// The W component of the vector.
         /// </summary>
+        [DataMember]
         internal int iW;
 
         /// <summary>
@@ -90,14 +96,8 @@ namespace Molten
         /// </summary>
         public bool X
         {
-            get
-            {
-                return iX != 0;
-            }
-            set
-            {
-                iX = value ? 1 : 0;
-            }
+            get => iX != 0;
+            set => iX = value ? 1 : 0;
         }
 
         /// <summary>
@@ -105,14 +105,8 @@ namespace Molten
         /// </summary>
         public bool Y
         {
-            get
-            {
-                return iY != 0;
-            }
-            set
-            {
-                iY = value ? 1 : 0;
-            }
+            get => iY != 0;
+            set => iY = value ? 1 : 0;
         }
 
         /// <summary>
@@ -120,14 +114,8 @@ namespace Molten
         /// </summary>
         public bool Z
         {
-            get
-            {
-                return iZ != 0;
-            }
-            set
-            {
-                iZ = value ? 1 : 0;
-            }
+            get => iZ != 0;
+            set => iZ = value ? 1 : 0;
         }
 
         /// <summary>
@@ -135,14 +123,8 @@ namespace Molten
         /// </summary>
         public bool W
         {
-            get
-            {
-                return iW != 0;
-            }
-            set
-            {
-                iW = value ? 1 : 0;
-            }
+            get => iW != 0;
+            set => iW = value ? 1 : 0;
         }
 
         /// <summary>

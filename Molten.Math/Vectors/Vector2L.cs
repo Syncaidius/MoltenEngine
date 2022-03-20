@@ -1,19 +1,23 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
-    ///<summary>A <see cref = "long"/> vector comprised of two components.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=8)]
+	///<summary>A <see cref = "long"/> vector comprised of two components.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack=8)]
+    [Serializable]
 	public partial struct Vector2L : IFormattable
 	{
 		///<summary>The X component.</summary>
+        [DataMember]
 		public long X;
 
 		///<summary>The Y component.</summary>
+        [DataMember]
 		public long Y;
-
 
 		///<summary>The size of <see cref="Vector2L"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2L));

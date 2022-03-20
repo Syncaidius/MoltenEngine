@@ -46,6 +46,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -53,6 +54,7 @@ namespace Molten
     /// Represents a color in the form of rgba.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [Serializable]
     public struct Color4 : IEquatable<Color4>, IFormattable
     {
         private const string toStringFormat = "Alpha:{0} Red:{1} Green:{2} Blue:{3}";
@@ -85,21 +87,25 @@ namespace Molten
         /// <summary>
         /// The red component of the color.
         /// </summary>
+        [DataMember]
         public float R;
 
         /// <summary>
         /// The green component of the color.
         /// </summary>
+        [DataMember]
         public float G;
 
         /// <summary>
         /// The blue component of the color.
         /// </summary>
+        [DataMember]
         public float B;
 
         /// <summary>
         /// The alpha component of the color.
         /// </summary>
+        [DataMember]
         public float A;
 
         /// <summary>

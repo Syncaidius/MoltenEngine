@@ -28,14 +28,16 @@ foreach(TypeData d in _def)
         string intType = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"int" : d.DT;
 #>
 using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=_strSize[size]#> components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=<#=d.Pack#>)]
+    [Serializable]
 	public partial struct <#=fName#> : IFormattable
 	{
 <#
@@ -43,12 +45,12 @@ namespace Molten
 		{
 #>
 		///<summary>The <#=pMapUpper[p]#> component.</summary>
+        [DataMember]
 		public <#=d.DT#> <#=pMapUpper[p]#>;
 
 <#
 		}
 #>
-
 		///<summary>The size of <see cref="<#=fName#>"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=fName#>));
 
