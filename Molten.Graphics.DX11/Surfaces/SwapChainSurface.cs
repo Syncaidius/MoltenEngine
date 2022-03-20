@@ -12,7 +12,7 @@ using Molten.Windows32;
 namespace Molten.Graphics
 {
     /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
-    public unsafe abstract class SwapChainSurface : RenderSurface, ISwapChainSurface
+    public unsafe abstract class SwapChainSurface : RenderSurface2D, ISwapChainSurface
     {
         protected internal IDXGISwapChain1* NativeSwapChain;
 
@@ -22,8 +22,8 @@ namespace Molten.Graphics
         ThreadedQueue<Action> _dispatchQueue;
         uint _vsync;
 
-        internal SwapChainSurface(RendererDX11 renderer, uint mipCount, uint sampleCount)
-            : base(renderer, 1, 1, Format.FormatB8G8R8A8Unorm, mipCount, 1, sampleCount, TextureFlags.NoShaderResource)
+        internal SwapChainSurface(RendererDX11 renderer, uint mipCount)
+            : base(renderer, 1, 1, Format.FormatB8G8R8A8Unorm, mipCount, 1, 1, 0, TextureFlags.NoShaderResource)
         {
             _dispatchQueue = new ThreadedQueue<Action>();
             _presentParams = EngineUtil.Alloc<PresentParameters>();

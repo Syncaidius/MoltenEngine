@@ -11,18 +11,18 @@ namespace Molten.Graphics
     {
         RenderCamera _orthoCamera;
         ObjectRenderData _dummyData;
-        RenderSurface _surfaceScene;
-        RenderSurface _surfaceLighting;
-        RenderSurface _surfaceEmissive;
+        RenderSurface2D _surfaceScene;
+        RenderSurface2D _surfaceLighting;
+        RenderSurface2D _surfaceEmissive;
         Material _matCompose;
         IShaderValue _valLighting;
         IShaderValue _valEmissive;
 
         internal override void Initialize(RendererDX11 renderer)
         {
-            _surfaceScene = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
-            _surfaceLighting = renderer.GetSurface<RenderSurface>(MainSurfaceType.Lighting);
-            _surfaceEmissive = renderer.GetSurface<RenderSurface>(MainSurfaceType.Emissive);
+            _surfaceScene = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Scene);
+            _surfaceLighting = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Lighting);
+            _surfaceEmissive = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Emissive);
 
             string namepace = "Molten.Graphics.Assets.gbuffer_compose.mfx";
 

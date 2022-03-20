@@ -36,8 +36,8 @@ namespace Molten.Graphics
         /// <param name="renderer"></param>
         /// <param name="mipCount"></param>
         /// <param name="sampleCount"></param>
-        internal RenderFormSurface(string formTitle, string formName, RendererDX11 renderer, uint mipCount = 1, uint sampleCount = 1)
-            : base(formTitle, formName, renderer, mipCount, sampleCount) { }
+        internal RenderFormSurface(string formTitle, string formName, RendererDX11 renderer, uint mipCount = 1)
+            : base(formTitle, formName, renderer, mipCount) { }
 
         protected override void CreateControl(string title, out RenderForm control, out IntPtr handle)
         {

@@ -25,7 +25,7 @@ namespace Molten.Graphics
             uint mipCount = 1, 
             uint arraySize = 1,
             TextureFlags flags = TextureFlags.None)
-            : base(renderer, width, 1, 1, mipCount, arraySize, 1, format, flags)
+            : base(renderer, width, 1, 1, mipCount, arraySize, 1, 0, format, flags)
         {
             if (IsBlockCompressed)
                 throw new NotSupportedException("1D textures do not supports block-compressed formats.");

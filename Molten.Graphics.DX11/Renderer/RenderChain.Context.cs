@@ -14,15 +14,15 @@ namespace Molten.Graphics
             internal SceneRenderData<Renderable> Scene;
             internal LayerRenderData<Renderable> Layer;
 
-            RenderSurface[] _composition;
+            RenderSurface2D[] _composition;
             int _curComposition;
 
             internal Context(RendererDX11 renderer)
             {
-                _composition = new RenderSurface[]
+                _composition = new RenderSurface2D[]
                 {
-                    renderer.GetSurface<RenderSurface>(MainSurfaceType.Composition1),
-                    renderer.GetSurface<RenderSurface>(MainSurfaceType.Composition2)
+                    renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Composition1),
+                    renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Composition2)
                 };
             }
 
@@ -43,12 +43,12 @@ namespace Molten.Graphics
             /// <summary>
             /// Gets the composition surface that should be used next.
             /// </summary>
-            internal RenderSurface CompositionSurface => _composition[_curComposition];
+            internal RenderSurface2D CompositionSurface => _composition[_curComposition];
 
             /// <summary>
             /// Gets the previous composition surface.
             /// </summary>
-            internal RenderSurface PreviousComposition => _composition[1 - _curComposition];
+            internal RenderSurface2D PreviousComposition => _composition[1 - _curComposition];
 
             /// <summary>
             /// Gets whether or not a composition surface was used at some point.

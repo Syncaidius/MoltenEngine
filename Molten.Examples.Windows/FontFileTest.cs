@@ -73,27 +73,6 @@ namespace Molten.Samples
             OnContentRequested(cr);
             cr.OnCompleted += FontLoad_OnCompleted;
             cr.Commit();
-
-            /*string fontPath = "assets/Ananda Namaste Regular.ttf";
-            //string fontPath = "assets/BroshK.ttf";
-            //string fontPath = "assets/Digitalt.ttf";
-            //string fontPath = "assets/NotoSansCJKkr-Regular.otf";
-
-            Logger fontLog = Logger.Get();
-            fontLog.AddOutput(new LogFileWriter("font{0}.txt"));
-            Stopwatch fontTimer = new Stopwatch();
-            using (FileStream stream = new FileStream(fontPath, FileMode.Open, FileAccess.Read))
-            {
-                using (FontReader reader = new FontReader(stream, fontLog, fontPath))
-                {
-                    fontTimer.Start();
-                    _fontFile = reader.ReadFont(true);
-                    fontTimer.Stop();
-                    fontLog.Log($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read font");
-
-                    _font2Test = new SpriteFont(Engine.Renderer, _fontFile, 20);
-                }
-            }*/
         }
 
         private void FontLoad_OnCompleted(ContentRequest cr)

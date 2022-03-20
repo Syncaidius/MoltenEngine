@@ -26,14 +26,14 @@ namespace Molten.Graphics
         IntPtr? _windowHandle;
         Control _parentWindow;
 
-        internal RenderControlSurface(string controlTitle, string controlName, RendererDX11 renderer, uint mipCount = 1, uint sampleCount = 1)
-            : base(controlTitle, controlName, renderer, mipCount, sampleCount) { }
+        internal RenderControlSurface(string controlTitle, string controlName, RendererDX11 renderer, uint mipCount = 1)
+            : base(controlTitle, controlName, renderer, mipCount) { }
 
         protected override void CreateControl(string title, out RenderControl control, out IntPtr handle)
         {
             control = new RenderControl()
             {
-                Size = new System.Drawing.Size(1, 1),
+                Size = new Size(1, 1),
             };
             handle = control.Handle;
             OnHandleChanged?.Invoke(this);

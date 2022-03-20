@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace Molten.Graphics
 {
-    public delegate void RenderCameraProjectionFunc(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection);
-    public delegate void RendercameraSurfaceHandler(RenderCamera camera, IRenderSurface oldSurface, IRenderSurface newSurface);
+    public delegate void RenderCameraProjectionFunc(IRenderSurface2D surface, float nearClip, float farClip, float fov, ref Matrix4F projection);
+    public delegate void RendercameraSurfaceHandler(RenderCamera camera, IRenderSurface2D oldSurface, IRenderSurface2D newSurface);
 
     public class RenderCamera
     {
@@ -30,7 +30,7 @@ namespace Molten.Graphics
         Matrix4F _viewProjection;
         Matrix4F _invViewProjection;
         Matrix4F _transform;
-        IRenderSurface _surface;
+        IRenderSurface2D _surface;
         float _nearClip = 0.1f;
         float _farClip = 1000f;
         float _fov;
@@ -63,7 +63,7 @@ namespace Molten.Graphics
             _projection = Matrix4F.Identity;
         }
 
-        private static void CalcOrthographicProjection(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection)
+        private static void CalcOrthographicProjection(IRenderSurface2D surface, float nearClip, float farClip, float fov, ref Matrix4F projection)
         {
             uint width = 10;
             uint height = 10;
@@ -76,7 +76,7 @@ namespace Molten.Graphics
             projection = Matrix4F.OrthoOffCenterLH(0, width, -height, 0, nearClip, farClip);
         }
 
-        private static void CalcPerspectiveProjection(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection)
+        private static void CalcPerspectiveProjection(IRenderSurface2D surface, float nearClip, float farClip, float fov, ref Matrix4F projection)
         {
             uint width = 10;
             uint height = 10;
@@ -147,8 +147,8 @@ namespace Molten.Graphics
         /// </summary>
         public Matrix4F InvViewProjection => _invViewProjection;
 
-        /// <summary>Gets or sets the <see cref="IRenderSurface"/> that the camera's view should be rendered out to.</summary>
-        public IRenderSurface OutputSurface
+        /// <summary>Gets or sets the <see cref="IRenderSurface2D"/> that the camera's view should be rendered out to.</summary>
+        public IRenderSurface2D OutputSurface
         {
             get => _surface;
             set
@@ -161,7 +161,7 @@ namespace Molten.Graphics
                     if (value != null)
                         value.OnPostResize += _surface_OnPostResize;
 
-                    IRenderSurface oldSurface = _surface;
+                    IRenderSurface2D oldSurface = _surface;
                     _surface = value;
                     CalculateProjection();
                     OnOutputSurfaceChanged?.Invoke(this, oldSurface, _surface);
@@ -232,7 +232,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets or sets the ordering depth of the current <see cref="RenderCamera"/>. The default value is 0.
         /// Cameras which share the same output surface and order-depth will be rendered in the other they were added to the scene.
-        /// If you intend to output multiple cameras to the same <see cref="IRenderSurface"/>, it is recommended you change the order depth accordingly.
+        /// If you intend to output multiple cameras to the same <see cref="IRenderSurface2D"/>, it is recommended you change the order depth accordingly.
         /// </summary>
         public int OrderDepth { get; set; }
 

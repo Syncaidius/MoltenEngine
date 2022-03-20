@@ -35,8 +35,9 @@ namespace Molten.Graphics
             uint mipCount = 1,
             uint arraySize = 1,
             TextureFlags flags = TextureFlags.None,
-            uint sampleCount = 1)
-            : base(renderer, width, height, 1, mipCount, arraySize, sampleCount, format, flags)
+            uint sampleCount = 1,
+            uint sampleQuality = 0)
+            : base(renderer, width, height, 1, mipCount, arraySize, sampleCount, sampleQuality, format, flags)
         {
             _description = new Texture2DDesc()
             {
@@ -49,7 +50,7 @@ namespace Molten.Graphics
                 CPUAccessFlags = (uint)GetAccessFlags(),
                 SampleDesc = new SampleDesc()
                 {
-                    Count = (uint)Math.Max(sampleCount, 1),
+                    Count = Math.Max(sampleCount, 1),
                     Quality = 0,
                 },
                 Usage = GetUsageFlags(),

@@ -9,9 +9,9 @@ namespace Molten.Graphics
     internal class SurfaceConfig
     {
         SurfaceSizeMode _mode;
-        internal readonly RenderSurface Surface;
+        internal readonly RenderSurface2D Surface;
 
-        internal SurfaceConfig(RenderSurface surface, SurfaceSizeMode mode = SurfaceSizeMode.Full) {
+        internal SurfaceConfig(RenderSurface2D surface, SurfaceSizeMode mode = SurfaceSizeMode.Full) {
             Surface = surface;
             _mode = mode;
         }

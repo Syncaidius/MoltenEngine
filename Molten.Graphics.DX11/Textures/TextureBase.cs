@@ -38,7 +38,7 @@ namespace Molten.Graphics
         RendererDX11 _renderer;
 
         internal TextureBase(RendererDX11 renderer, uint width, uint height, uint depth, uint mipCount, 
-            uint arraySize, uint sampleCount, Format format, TextureFlags flags) : base(renderer.Device,
+            uint arraySize, uint sampleCount, uint sampleQuality, Format format, TextureFlags flags) : base(renderer.Device,
                 ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? ContextBindTypeFlags.Output : ContextBindTypeFlags.None) |
                 ((flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? ContextBindTypeFlags.Input : ContextBindTypeFlags.None))
         {
@@ -47,6 +47,7 @@ namespace Molten.Graphics
             ValidateFlagCombination();
 
             _pendingChanges = new ThreadedQueue<ITextureTask>();
+            uint maxSampleCount = _renderer.Device.Features.GetMultisampleQualityLevels(format, sampleCount);
 
             Width = width;
             Height = height;
@@ -54,6 +55,7 @@ namespace Molten.Graphics
             MipMapCount = mipCount;
             ArraySize = arraySize;
             SampleCount = sampleCount;
+            SampleQuality = Math.Min(SampleQuality, maxSampleCount);
             DxgiFormat = format;
             IsValid = false;
 
@@ -82,7 +84,7 @@ namespace Molten.Graphics
             // Validate RT mip-maps
             if (HasFlags(TextureFlags.AllowMipMapGeneration))
             {
-                if(HasFlags(TextureFlags.NoShaderResource) || !(this is RenderSurface))
+                if(HasFlags(TextureFlags.NoShaderResource) || !(this is RenderSurface2D))
                     throw new TextureFlagException(Flags, "Mip-map generation is only available on render-surface shader resources.");
             }
 
@@ -105,7 +107,7 @@ namespace Molten.Graphics
             if (!HasFlags(TextureFlags.NoShaderResource))
                 result |= BindFlag.BindShaderResource;
 
-            if (this is RenderSurface)
+            if (this is RenderSurface2D)
                 result |= BindFlag.BindRenderTarget;
 
             if (this is DepthStencilSurface)
@@ -633,6 +635,8 @@ namespace Molten.Graphics
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
         /// </summary>
         public uint SampleCount { get; protected set; }
+
+        public uint SampleQuality { get; protected set; }
 
         /// <summary>
         /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.

@@ -12,14 +12,14 @@ namespace Molten.Graphics
     internal class SkyboxStep : RenderStepBase
     {
         DepthStencilSurface _surfaceDepth;
-        RenderSurface _surfaceScene;
+        RenderSurface2D _surfaceScene;
         Material _matSky;
         IndexedMesh<Vertex> _sphereMesh;
         ObjectRenderData _skyboxData;
 
         internal override void Initialize(RendererDX11 renderer)
         {
-            _surfaceScene = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
+            _surfaceScene = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Scene);
             _surfaceDepth = renderer.GetDepthSurface();
             _skyboxData = new ObjectRenderData();
 
@@ -54,7 +54,7 @@ namespace Molten.Graphics
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 
             // We want to add to the previous composition, rather than completely overwrite it.
-            RenderSurface destSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
+            RenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
 
             device.State.ResetRenderSurfaces();
             device.State.SetRenderSurface(destSurface, 0);

@@ -7,13 +7,13 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public unsafe class RenderSurface : Texture2DDX11, IRenderSurface
+    public unsafe class RenderSurface2D : Texture2DDX11, IRenderSurface2D
     {
         /// <summary>The viewport which represents the current render surface.</summary>
         ViewportF _vp;
         Rectangle _vpBounds;
 
-        internal RenderSurface(
+        internal RenderSurface2D(
             RendererDX11 renderer,
             uint width,
             uint height,
@@ -21,8 +21,9 @@ namespace Molten.Graphics
             uint mipCount = 1,
             uint arraySize = 1,
             uint sampleCount = 1,
+            uint sampleQuality = 1,
             TextureFlags flags = TextureFlags.None, string name = null)
-            : base(renderer, width, height, format, mipCount, arraySize, flags, sampleCount)
+            : base(renderer, width, height, format, mipCount, arraySize, flags, sampleCount, sampleQuality)
         {
             Viewport = new ViewportF(0, 0, width, height);
 

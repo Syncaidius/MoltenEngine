@@ -18,17 +18,17 @@ namespace Molten.Graphics
         GraphicsBuffer _lightDataBuffer;
         BufferSegment _lightSegment;
 
-        RenderSurface _surfaceScene;
-        RenderSurface _surfaceNormals;
-        RenderSurface _surfaceLighting;
+        RenderSurface2D _surfaceScene;
+        RenderSurface2D _surfaceNormals;
+        RenderSurface2D _surfaceLighting;
         DepthStencilSurface _surfaceDepth;
 
         internal override void Initialize(RendererDX11 renderer)
         {
             _surfaceDepth = renderer.GetDepthSurface();
-            _surfaceScene = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
-            _surfaceNormals = renderer.GetSurface<RenderSurface>(MainSurfaceType.Normals);
-            _surfaceLighting = renderer.GetSurface<RenderSurface>(MainSurfaceType.Lighting);
+            _surfaceScene = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Scene);
+            _surfaceNormals = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Normals);
+            _surfaceLighting = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Lighting);
 
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings

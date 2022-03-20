@@ -2,7 +2,7 @@
 {
     public interface IDepthStencilSurface : ITexture2D
     {
-        /// <summary>Clears the provided <see cref="IRenderSurface"/> with the specified color.</summary>
+        /// <summary>Clears the provided <see cref="IRenderSurface2D"/> with the specified color.</summary>
         /// <param name="surface">The surface.</param>
         /// <param name="flags">The depth-stencil clearing flags.</param>
         /// <param name="depthValue">The value to clear the depth to. Only applies if <see cref="DepthClearFlags.Depth"/> flag was provided.</param>

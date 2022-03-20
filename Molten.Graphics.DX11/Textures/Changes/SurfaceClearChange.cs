@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     internal struct SurfaceClearChange : ITextureTask
     {
-        public RenderSurface Surface;
+        public RenderSurface2D Surface;
 
         public Color Color;
 

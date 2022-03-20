@@ -36,17 +36,17 @@ namespace Molten.Graphics
             return new DepthStencilSurface(_renderer, width, height, format, mipCount, arraySize, sampleCount, flags);
         }
 
-        public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1, uint sampleCount = 1)
+        public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1)
         {
             return new RenderFormSurface(formTitle, formName, _renderer, mipCount);
         }
 
-        public override INativeSurface CreateControlSurface(string formTitle, string controlName, uint mipCount = 1, uint sampleCount = 1)
+        public override INativeSurface CreateControlSurface(string formTitle, string controlName, uint mipCount = 1)
         {
             return new RenderControlSurface(formTitle, controlName, _renderer, mipCount);
         }
 
-        public override IRenderSurface CreateSurface(
+        public override IRenderSurface2D CreateSurface(
             uint width,
             uint height,
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
@@ -55,7 +55,7 @@ namespace Molten.Graphics
             uint sampleCount = 1,
             TextureFlags flags = TextureFlags.None)
         {
-            return new RenderSurface(_renderer, width, height, (Format)format, mipCount, arraySize, sampleCount, flags);
+            return new RenderSurface2D(_renderer, width, height, (Format)format, mipCount, arraySize, sampleCount, 0, flags);
         }
 
         public override ITexture CreateTexture1D(Texture1DProperties properties)

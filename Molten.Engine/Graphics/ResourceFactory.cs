@@ -19,7 +19,7 @@ namespace Molten.Graphics
             _compiler = sCompiler;
         }
 
-        public IRenderSurface CreateSurface(Texture2DProperties properties)
+        public IRenderSurface2D CreateSurface(Texture2DProperties properties)
         {
             return CreateSurface(properties.Width,
                 properties.Height,
@@ -30,7 +30,7 @@ namespace Molten.Graphics
                 properties.Flags);
         }
 
-        public abstract IRenderSurface CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
+        public abstract IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
             uint mipCount = 1, uint arraySize = 1, uint sampleCount = 1, TextureFlags flags = TextureFlags.None);
 
         public abstract IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless, uint mipCount = 1, uint arraySize = 1, uint sampleCount = 1,
@@ -42,7 +42,7 @@ namespace Molten.Graphics
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
         /// <param name="sampleCount">The number of samples. Anything greater than 1 will return a multi-sampled surface.</param>
         /// <returns></returns>
-        public abstract INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1, uint sampleCount = 1);
+        public abstract INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1);
 
         /// <summary>Creates a GUI control with a surface which can be rendered on to.</summary>
         /// <param name="controlTitle">The title of the form.</param>
@@ -50,7 +50,7 @@ namespace Molten.Graphics
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
         /// <param name="sampleCount">The number of samples. Anything greater than 1 will return a multi-sampled surface.</param>
         /// <returns></returns>
-        public abstract INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1, uint sampleCount = 1);
+        public abstract INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1);
 
         /// <summary>Creates a new 1D texture and returns it.</summary>
         /// <param name="properties">A set of 1D texture properties.</param>

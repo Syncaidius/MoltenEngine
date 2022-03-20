@@ -2,7 +2,7 @@
 
 namespace Molten.Input
 {
-    public delegate void InputCameraSurfaceHandler(IInputCamera camera, IRenderSurface surface);
+    public delegate void InputCameraSurfaceHandler(IInputCamera camera, IRenderSurface2D surface);
 
     /// <summary>
     /// Represents an implementation of a camera through which user input is received.
@@ -11,6 +11,6 @@ namespace Molten.Input
     {
         event InputCameraSurfaceHandler OnSurfaceChanged;
 
-        IRenderSurface OutputSurface { get; }
+        IRenderSurface2D OutputSurface { get; }
     }
 }

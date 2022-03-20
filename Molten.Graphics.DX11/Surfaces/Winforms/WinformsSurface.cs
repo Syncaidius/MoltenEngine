@@ -31,7 +31,8 @@ namespace Molten.Graphics
         protected WindowMode _mode = WindowMode.Windowed;
         WindowMode _requestedMode = WindowMode.Windowed;
 
-        internal WinformsSurface(string controlTitle, string controlName, RendererDX11 renderer, uint mipCount, uint sampleCount) : base(renderer, mipCount, sampleCount)
+        internal WinformsSurface(string controlTitle, string controlName, RendererDX11 renderer, uint mipCount) : 
+            base(renderer, mipCount)
         {
             _title = controlTitle;
             _ctrlName = controlName;
@@ -41,8 +42,8 @@ namespace Molten.Graphics
         {
             if (_displayMode.Width != newWidth || _displayMode.Height != newHeight)
             {
-                _displayMode.Width = (uint)newWidth;
-                _displayMode.Height = (uint)newHeight;
+                _displayMode.Width = newWidth;
+                _displayMode.Height = newHeight;
 
                 // TODO validate display mode here. If invalid or unsupported by display, choose nearest supported.
 

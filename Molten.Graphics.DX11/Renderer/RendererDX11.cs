@@ -95,7 +95,7 @@ namespace Molten.Graphics
             _depthSurface = new DepthStencilSurface(this, width, height, DepthFormat.R24G8_Typeless);
         }
 
-        internal SurfaceConfig RegisterSurface(string key, RenderSurface surface, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
+        internal SurfaceConfig RegisterSurface(string key, RenderSurface2D surface, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
         {
             key = key.ToLower();
             if (!_surfacesByKey.TryGetValue(key, out SurfaceConfig config))
@@ -117,17 +117,17 @@ namespace Molten.Graphics
             SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
         {
             Format dxgiFormat = (Format)format;
-            RenderSurface surface = new RenderSurface(this, width, height, dxgiFormat, name:$"renderer_{key}");
+            RenderSurface2D surface = new RenderSurface2D(this, width, height, dxgiFormat, name:$"renderer_{key}");
             SurfaceConfig config = RegisterSurface(key, surface, sizeMode);
             _mainSurfaces[mainType] = config;
         }
 
-        internal T GetSurface<T>(MainSurfaceType type) where T: RenderSurface
+        internal T GetSurface<T>(MainSurfaceType type) where T: RenderSurface2D
         {
             return _mainSurfaces[type].Surface as T;
         }
 
-        internal T GetSurface<T>(string key) where T : RenderSurface
+        internal T GetSurface<T>(string key) where T : RenderSurface2D
         {
             return _surfacesByKey[key].Surface as T;
         }
@@ -217,7 +217,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal bool ClearIfFirstUse(DeviceContext pipe, RenderSurface surface, Color color)
+        internal bool ClearIfFirstUse(DeviceContext pipe, RenderSurface2D surface, Color color)
         {
             if (!_clearedSurfaces.Contains(surface))
             {

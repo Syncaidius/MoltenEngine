@@ -9,16 +9,16 @@ namespace Molten.Graphics
 {
     internal class GBufferStep : RenderStepBase
     {
-        RenderSurface _surfaceScene;
-        RenderSurface _surfaceNormals;
-        RenderSurface _surfaceEmissive;
+        RenderSurface2D _surfaceScene;
+        RenderSurface2D _surfaceNormals;
+        RenderSurface2D _surfaceEmissive;
         DepthStencilSurface _surfaceDepth;
 
         internal override void Initialize(RendererDX11 renderer)
         {
-            _surfaceScene = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
-            _surfaceNormals = renderer.GetSurface<RenderSurface>(MainSurfaceType.Normals);
-            _surfaceEmissive = renderer.GetSurface<RenderSurface>(MainSurfaceType.Emissive);
+            _surfaceScene = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Scene);
+            _surfaceNormals = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Normals);
+            _surfaceEmissive = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Emissive);
             _surfaceDepth = renderer.GetDepthSurface();
         }
 
@@ -45,7 +45,7 @@ namespace Molten.Graphics
             device.EndDraw();
         }
 
-        private void SetMaterialCommon(Material material, RenderCamera camera, RenderSurface gBufferScene)
+        private void SetMaterialCommon(Material material, RenderCamera camera, RenderSurface2D gBufferScene)
         {
             material.Scene.View.Value = camera.View;
             material.Scene.Projection.Value = camera.Projection;

@@ -118,8 +118,8 @@ namespace Molten.Graphics
         internal uint GetMultisampleQualityLevels(Format format, uint sampleCount)
         {
             uint numQualityLevels = 0;
-            _device->CheckMultisampleQualityLevels(format, sampleCount, &numQualityLevels);
-            return numQualityLevels;
+            HResult hr = _device->CheckMultisampleQualityLevels(format, sampleCount, &numQualityLevels);
+            return hr.IsSuccess ? numQualityLevels : 0;
         }
 
         /// <summary>Gets a <see cref="CounterCapabilities>"/> containing details of the device's counter support.</summary>

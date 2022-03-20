@@ -41,7 +41,7 @@ namespace Molten.Input
             _devices = new List<InputDevice>();
         }
 
-        private void BindSurface(IRenderSurface surface)
+        private void BindSurface(IRenderSurface2D surface)
         {
             if (surface is INativeSurface window)
             {

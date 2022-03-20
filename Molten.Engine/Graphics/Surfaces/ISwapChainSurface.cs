@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public interface ISwapChainSurface : IRenderSurface
+    public interface ISwapChainSurface : IRenderSurface2D
     {
         /// <summary>
         /// Called when the <see cref="ISwapChainSurface"/> is ready to be presented.

@@ -10,16 +10,16 @@ namespace Molten.Graphics
 {
     internal class StartStep : RenderStepBase
     {
-        RenderSurface _surfaceScene;
-        RenderSurface _surfaceNormals;
-        RenderSurface _surfaceEmissive;
+        RenderSurface2D _surfaceScene;
+        RenderSurface2D _surfaceNormals;
+        RenderSurface2D _surfaceEmissive;
         DepthStencilSurface _surfaceDepth;
 
         internal override void Initialize(RendererDX11 renderer)
         {
-            _surfaceScene = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
-            _surfaceNormals = renderer.GetSurface<RenderSurface>(MainSurfaceType.Normals);
-            _surfaceEmissive = renderer.GetSurface<RenderSurface>(MainSurfaceType.Emissive);
+            _surfaceScene = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Scene);
+            _surfaceNormals = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Normals);
+            _surfaceEmissive = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Emissive);
             _surfaceDepth = renderer.GetDepthSurface();
         }
 

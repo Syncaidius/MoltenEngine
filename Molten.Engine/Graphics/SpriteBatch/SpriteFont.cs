@@ -54,7 +54,7 @@ namespace Molten.Graphics
         }
 
         FontFile _font;
-        IRenderSurface _rt;
+        IRenderSurface2D _rt;
         ITexture2D _tex;
         int _fontSize;
         int _tabSize;
@@ -128,6 +128,9 @@ namespace Molten.Graphics
             FontHash |= (ulong)_charPadding << 8;       // [charPadding - 1 byte/8-bit]
             FontHash |= 0;                              // [RESERVERD - 1 byte/8-bit]
 
+            // TODO SCENE render targets need to be multi-sampled, not the output!
+            // TODO Make Scene render targets match sample count of output camera.
+            // TODO Add RenderCameraFlags.Multisampled
             _lineSpace = ToPixels(_font.HorizonalHeader.LineSpace);
             _rt = renderer.Resources.CreateSurface((uint)_pageSize, (uint)_pageSize, arraySize: (uint)initialPages, sampleCount: 8);
             _tex = renderer.Resources.CreateTexture2D(new Texture2DProperties()
@@ -147,7 +150,12 @@ namespace Molten.Graphics
 
             ISpriteRenderer _spriteRenderer = _renderer.Resources.CreateSpriteRenderer(OnDraw);
 
-            _renderData.AddObject(_spriteRenderer, new ObjectRenderData() { DepthWriteOverride = GraphicsDepthWritePermission.Disabled }, layer);
+            ObjectRenderData ord = new ObjectRenderData()
+            {
+                DepthWriteOverride = GraphicsDepthWritePermission.Disabled,
+            };
+
+            _renderData.AddObject(_spriteRenderer, ord, layer);
             _renderData.OnPostRender += _renderData_OnPostRender;
             _renderData.AddObject(new RenderCamera(RenderCameraMode.Orthographic)
             {

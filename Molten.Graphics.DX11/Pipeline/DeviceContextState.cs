@@ -69,7 +69,7 @@ namespace Molten.Graphics
 
             RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView>(maxRTs);
 
-            Surfaces = RegisterSlotGroup<RenderSurface, SurfaceGroupBinder>(ContextBindTypeFlags.Output, "Render Surface", maxRTs);
+            Surfaces = RegisterSlotGroup<RenderSurface2D, SurfaceGroupBinder>(ContextBindTypeFlags.Output, "Render Surface", maxRTs);
             DepthSurface = RegisterSlot<DepthStencilSurface, DepthSurfaceBinder>(ContextBindTypeFlags.Output, "Depth Surface", 0);
         }
 
@@ -226,7 +226,7 @@ namespace Molten.Graphics
 
         /// <summary>Sets a list of render surfaces.</summary>
         /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
-        public void SetRenderSurfaces(params RenderSurface[] surfaces)
+        public void SetRenderSurfaces(params RenderSurface2D[] surfaces)
         {
             if (surfaces == null)
                 SetRenderSurfaces(null, 0);
@@ -237,7 +237,7 @@ namespace Molten.Graphics
         /// <summary>Sets a list of render surfaces.</summary>
         /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
         /// <param name="count">The number of render surfaces to set.</param>
-        public void SetRenderSurfaces(RenderSurface[] surfaces, uint count)
+        public void SetRenderSurfaces(RenderSurface2D[] surfaces, uint count)
         {
             if (surfaces != null)
             {
@@ -257,7 +257,7 @@ namespace Molten.Graphics
         /// <summary>Sets a render surface.</summary>
         /// <param name="surface">The surface to be set.</param>
         /// <param name="slot">The ID of the slot that the surface is to be bound to.</param>
-        public void SetRenderSurface(RenderSurface surface, uint slot)
+        public void SetRenderSurface(RenderSurface2D surface, uint slot)
         {
             Surfaces[slot].Value = surface;
         }
@@ -266,7 +266,7 @@ namespace Molten.Graphics
         /// Fills the provided array with a list of applied render surfaces.
         /// </summary>
         /// <param name="destinationArray">The array to fill with applied render surfaces.</param>
-        public void GetRenderSurfaces(RenderSurface[] destinationArray)
+        public void GetRenderSurfaces(RenderSurface2D[] destinationArray)
         {
             if (destinationArray.Length < Surfaces.SlotCount)
                 throw new InvalidOperationException($"The destination array is too small ({destinationArray.Length}). A minimum size of {Surfaces.SlotCount} is needed.");
@@ -277,7 +277,7 @@ namespace Molten.Graphics
         /// <summary>Returns the render surface that is bound to the requested slot ID. Returns null if the slot is empty.</summary>
         /// <param name="slot">The ID of the slot to retrieve a surface from.</param>
         /// <returns></returns>
-        public RenderSurface GetRenderSurface(uint slot)
+        public RenderSurface2D GetRenderSurface(uint slot)
         {
             return Surfaces[slot].Value;
         }
@@ -341,8 +341,8 @@ namespace Molten.Graphics
         {
             if (viewports == null)
             {
-                RenderSurface surface = null;
-                RenderSurface surfaceZero = GetRenderSurface(0);
+                RenderSurface2D surface = null;
+                RenderSurface2D surfaceZero = GetRenderSurface(0);
 
                 for (uint i = 0; i < _viewports.Length; i++)
                 {
@@ -537,7 +537,7 @@ namespace Molten.Graphics
 
         internal GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;
 
-        public ContextSlotGroup<RenderSurface> Surfaces { get; }
+        public ContextSlotGroup<RenderSurface2D> Surfaces { get; }
 
 
         /// <summary>

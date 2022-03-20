@@ -25,7 +25,7 @@ namespace Molten
 
         protected override void OnDispose() { }
 
-        private void _camera_OnOutputSurfaceChanged(RenderCamera camera, IRenderSurface oldSurface, IRenderSurface newSurface)
+        private void _camera_OnOutputSurfaceChanged(RenderCamera camera, IRenderSurface2D oldSurface, IRenderSurface2D newSurface)
         {
             OnSurfaceChanged?.Invoke(this, newSurface);
         }
@@ -129,8 +129,8 @@ namespace Molten
         /// </summary>
         public Matrix4F ViewProjection => _camera.ViewProjection;
 
-        /// <summary>Gets or sets the <see cref="IRenderSurface"/> that the camera's view should be rendered out to.</summary>
-        public IRenderSurface OutputSurface
+        /// <summary>Gets or sets the <see cref="IRenderSurface2D"/> that the camera's view should be rendered out to.</summary>
+        public IRenderSurface2D OutputSurface
         {
             get => _camera.OutputSurface;
             set => _camera.OutputSurface = value;
@@ -185,7 +185,7 @@ namespace Molten
         /// <summary>
         /// Gets or sets the ordering depth of the current <see cref="RenderCamera"/>. The default value is 0.
         /// Cameras which share the same output surface and order-depth will be rendered in the other they were added to the scene.
-        /// If you intend to output multiple cameras to the same <see cref="IRenderSurface"/>, it is recommended you change the order depth accordingly.
+        /// If you intend to output multiple cameras to the same <see cref="IRenderSurface2D"/>, it is recommended you change the order depth accordingly.
         /// </summary>
         public int OrderDepth
         {
