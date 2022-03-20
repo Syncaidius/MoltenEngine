@@ -174,9 +174,9 @@ void GS_Circle(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 	  v.pos = center + (doEdge * float4(sin(angle) * radius.x, cos(angle) * radius.y, 0, 0));
 	  v.pos = mul(v.pos, wvp);	  
 
-      inc = min(angleInc, remaining);
+	  inc = min(angleInc, remaining);
 	  angle += inc * doEdge;
-      remaining -= inc * doEdge;
+	  remaining -= inc * doEdge;
 	  doEdge = 1 - doEdge;
 	  spriteStream.Append(v);
   }

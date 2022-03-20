@@ -64,17 +64,17 @@ namespace Molten.Graphics
                 uint numBytes = (uint)SilkMarshal.GetMaxSizeOf(context.Source.SourceCode, NativeStringEncoding.LPStr);
 
                 // Preprocess and check for errors
-                HResult r = Compiler.Preprocess(pSrc, numBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
-                ParseErrors(context, pErrors);
+                HResult hr = Compiler.Preprocess(pSrc, numBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
+                ParseErrors(context, hr, pErrors);
 
                 // Compile source and check for errors
-                if (!context.HasErrors)
+                if (hr.IsSuccess)
                 {
                     void* postProcessedSrc = pProcessedSrc->GetBufferPointer();
                     nuint postProcessedSize = pProcessedSrc->GetBufferSize();
 
-                    r = Compiler.Compile(postProcessedSrc, postProcessedSize, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
-                    ParseErrors(context, pErrors);
+                    hr = Compiler.Compile(postProcessedSrc, postProcessedSize, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
+                    ParseErrors(context, hr, pErrors);
                 }
 
                 //Store shader result
@@ -96,7 +96,7 @@ namespace Molten.Graphics
             return !context.HasErrors;
         }
 
-        private void ParseErrors(ShaderCompilerContext<RendererDX11, HlslFoundation> context, ID3D10Blob* errors)
+        private void ParseErrors(ShaderCompilerContext<RendererDX11, HlslFoundation> context, HResult hr, ID3D10Blob* errors)
         {
             if (errors == null)
                 return;
@@ -106,8 +106,16 @@ namespace Molten.Graphics
             string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.UTF8);
             string[] errorList = strErrors.Split('\r', '\n');
 
-            for (int i = 0; i < errorList.Length; i++)
-                context.AddError(errorList[i]);
+            if (hr.IsSuccess)
+            {
+                for (int i = 0; i < errorList.Length; i++)
+                    context.AddWarning(errorList[i]);
+            }
+            else
+            {
+                for (int i = 0; i < errorList.Length; i++)
+                    context.AddError(errorList[i]);
+            }
         }
     }
 }

@@ -42,7 +42,11 @@ namespace Molten.Samples
             _rng = new Random();
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<ITexture2D>("dds_test.dds;mipmaps=true");
+            cr.Load<ITexture2D>("dds_test.dds", new Dictionary<string, object>()
+            {
+                ["mipmaps"] = true
+            });
+
             cr.Load<IMaterial>("Basictexture.mfx");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
@@ -53,8 +57,8 @@ namespace Molten.Samples
             AcceptPlayerInput = false;
             Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
 
-            LoadFontFile("Ananda Namaste Regular.ttf;size=24");
-            //LoadFontFile("Arial;size=24");
+            LoadFontFile("Ananda Namaste Regular.ttf", 24);
+            //LoadFontFile("Arial", 24);
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
@@ -65,12 +69,12 @@ namespace Molten.Samples
                 GenerateChar(state.Character);
         }
 
-        private void LoadFontFile(string loadString)
+        private void LoadFontFile(string loadString, int size)
         {
             ContentRequest cr = Engine.Content.BeginRequest("assets/");
             cr.Load<SpriteFont>("Ananda Namaste Regular.ttf", new Dictionary<string, object>()
             {
-                ["size"] = 24
+                ["size"] = size
             });
             OnContentRequested(cr);
             cr.OnCompleted += FontLoad_OnCompleted;

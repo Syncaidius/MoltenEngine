@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ID3D10Blob = Silk.NET.Core.Native.ID3D10Blob;
 using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
