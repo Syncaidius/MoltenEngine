@@ -64,48 +64,24 @@ namespace Molten
         /// If the content was already loaded from a previous request, the existing object will be retrieved.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
         /// <param name="parameters">A list of parameters to use when loading the asset.</param>
-        public void Load<T>(string fn, Dictionary<string, object> parameters = null)
+        public void Load<T>(string fn, IContentParameters parameters = null)
         {
             AddElement(fn, ContentRequestType.Read, typeof(T), parameters);
         }
 
-        public void Load<T>(string fn, params (string argName, object argValue)[] parameters)
-        {
-            Dictionary<string, object> dp = ConvertTupleParameters(parameters);
-            AddElement(fn, ContentRequestType.Read, typeof(T), dp);
-        }
-
         /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>.
         /// If the content was already loaded from a previous request, the existing object will be retrieved.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
-        /// <param name="parameters">A list of parameters to use when loading the asset.</param>
-        public void Load(Type t, string fn, Dictionary<string, object> parameters = null)
+        /// <param name="parameters">A set of to use when loading the asset.</param>
+        public void Load(Type t, string fn, IContentParameters parameters = null)
         {
             AddElement(fn, ContentRequestType.Read, t, parameters);
         }
 
-        /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>.
-        /// If the content was already loaded from a previous request, the existing object will be retrieved.</summary>
-        /// <param name="fn">The relative file path from the request's root directory.</param>
-        /// <param name="parameters">A list of parameters to use when loading the asset.</param>
-        public void Load(Type t, string fn, params (string argName, object argValue)[] parameters)
-        {
-            Dictionary<string, object> dp = ConvertTupleParameters(parameters);
-            AddElement(fn, ContentRequestType.Read, t, dp);
-        }
-
         /// <summary>Adds a write request for the provided object.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
         /// <param name="obj">The object to be written.</param>
-        public void Save<T>(string fn, T obj)
-        {
-            Save(typeof(T), fn, obj);
-        }
-
-        /// <summary>Adds a write request for the provided object.</summary>
-        /// <param name="fn">The relative file path from the request's root directory.</param>
-        /// <param name="obj">The object to be written.</param>
-        public void Save<T>(string fn, T obj, params (string argName, object argValue)[] parameters)
+        public void Save<T>(string fn, T obj, IContentParameters parameters = null)
         {
             Save(typeof(T), fn, obj, parameters);
         }
@@ -113,42 +89,15 @@ namespace Molten
         /// <summary>Adds a write request for the provided object.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
         /// <param name="obj">The object to be written.</param>
-        public void Save(Type type, string fn, object obj, params (string argName, object argValue)[] parameters)
-        {
-            Dictionary<string, object> dp = ConvertTupleParameters(parameters);
-            AddElement(fn, ContentRequestType.Write, type, dp, (e) => e.AddInput(type, obj));
-        }
-
-        /// <summary>Adds a write request for the provided object.</summary>
-        /// <param name="fn">The relative file path from the request's root directory.</param>
-        /// <param name="obj">The object to be written.</param>
-        public void Save(Type type, string fn, object obj, Dictionary<string, object> parameters = null)
+        public void Save(Type type, string fn, object obj, IContentParameters parameters = null)
         {
             AddElement(fn, ContentRequestType.Write, type, parameters, (e) => e.AddInput(type, obj));
         }
 
-
         /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
         /// <typeparam name="T">The type of object to be deserialized.</typeparam>
         /// <param name="fn">The relative file path from the request's root directory.</param>
-        public void Deserialize<T>(string fn, params (string argName, object argValue)[] parameters)
-        {
-            Deserialize(typeof(T), fn, parameters);
-        }
-
-        /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
-        /// <param name="type">The type of object to be deserialized.</typeparam>
-        /// <param name="fn">The file name and path.</param>
-        public void Deserialize(Type type, string fn, params (string argName, object argValue)[] parameters)
-        {
-            Dictionary<string, object> dp = ConvertTupleParameters(parameters);
-            AddElement(fn, ContentRequestType.Deserialize, type, dp);
-        }
-
-        /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
-        /// <typeparam name="T">The type of object to be deserialized.</typeparam>
-        /// <param name="fn">The relative file path from the request's root directory.</param>
-        public void Deserialize<T>(string fn, Dictionary<string, object> parameters = null)
+        public void Deserialize<T>(string fn, IContentParameters parameters = null)
         {
             AddElement(fn, ContentRequestType.Deserialize, typeof(T), parameters);
         }
@@ -156,7 +105,7 @@ namespace Molten
         /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
         /// <param name="type">The type of object to be deserialized.</typeparam>
         /// <param name="fn">The file name and path.</param>
-        public void Deserialize(Type type, string fn, Dictionary<string, object> parameters = null)
+        public void Deserialize(Type type, string fn, IContentParameters parameters = null)
         {
             AddElement(fn, ContentRequestType.Deserialize, type, parameters);
         }
@@ -165,26 +114,7 @@ namespace Molten
         /// <typeparam name="T"></typeparam>
         /// <param name="fn">The filename.</param>
         /// <param name="obj">The object to be serialized.</param>
-        public void Serialize<T>(string fn, T obj, params (string argName, object argValue)[] parameters)
-        {
-            Serialize(typeof(T), fn, obj, parameters);
-        }
-
-        /// <summary>Adds a serialization operation to the current <see cref="ContentRequest"/>. This will serialize an object into JSON and write it to the specified file.</summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="fn">The filename.</param>
-        /// <param name="obj">The object to be serialized.</param>
-        public void Serialize(Type t, string fn, object obj, params (string argName, object argValue)[] parameters)
-        {
-            Dictionary<string, object> dp = ConvertTupleParameters(parameters);
-            Serialize(t, fn, obj, dp);
-        }
-
-        /// <summary>Adds a serialization operation to the current <see cref="ContentRequest"/>. This will serialize an object into JSON and write it to the specified file.</summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="fn">The filename.</param>
-        /// <param name="obj">The object to be serialized.</param>
-        public void Serialize<T>(string fn, T obj, Dictionary<string, object> parameters = null)
+        public void Serialize<T>(string fn, T obj, IContentParameters parameters = null)
         {
             Serialize(typeof(T), fn, obj, parameters);
         }
@@ -193,7 +123,7 @@ namespace Molten
         /// <param name="fn">The filename.</param>
         /// <param name="obj">The object to be serialized.</param>
         /// <param name="type">The type of object to be serialized.</param>
-        public void Serialize(Type type, string fn, object obj, Dictionary<string, object> parameters = null)
+        public void Serialize(Type type, string fn, object obj, IContentParameters parameters = null)
         {
             AddElement(fn, ContentRequestType.Serialize, type, parameters, (e) =>
             {
@@ -218,10 +148,8 @@ namespace Molten
         /// <param name="contentType"></param>
         /// <param name="parameters"></param>
         /// <param name="populator">A callback method for populating various elements of a <see cref="ContentContext"/>.</param>
-        private void AddElement(string path, ContentRequestType type, Type contentType, Dictionary<string, object> parameters, Action<ContentContext> populator = null)
+        private void AddElement(string path, ContentRequestType type, Type contentType, IContentParameters parameters, Action<ContentContext> populator = null)
         {
-            parameters = parameters ?? new Dictionary<string, object>();
-
             ContentContext c = Manager.ContextPool.GetInstance();
             string contentPath = Path.Combine(RootDirectory, path);
 
@@ -231,10 +159,7 @@ namespace Molten
             c.ContentType = contentType;
             c.RequestType = type;
             c.File = new FileInfo(contentPath);
-            c.Parameters = new ContentFileParameters();
-
-            foreach (KeyValuePair<string, object> kv in parameters)
-                c.Parameters.Data.Add(kv.Key.ToLower(), kv.Value);
+            c.Parameters = parameters;
 
             populator?.Invoke(c);
             RequestElements.Add(c);

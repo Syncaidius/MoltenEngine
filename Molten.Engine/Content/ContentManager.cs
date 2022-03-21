@@ -8,10 +8,10 @@ namespace Molten
     /// <summary>Manages the loading, unloading and reusing of content.</summary>
     public class ContentManager : EngineObject
     {
-        Dictionary<Type, ContentProcessor> _defaultProcessors;
+        Dictionary<Type, IContentProcessor> _defaultProcessors;
         ObjectPool<ContentRequest> _requestPool;
         internal ObjectPool<ContentContext> ContextPool;
-        Dictionary<Type, ContentProcessor> _customProcessors;
+        Dictionary<Type, IContentProcessor> _customProcessors;
         ThreadedDictionary<string, ContentFile> _content;
         ThreadedDictionary<string, ContentDirectory> _directories;
 
@@ -23,17 +23,16 @@ namespace Molten
 
         private void AddProcessorsFromAssembly(Assembly assembly)
         {
-            IEnumerable<Type> types = ReflectionHelper.FindType<ContentProcessor>(assembly);
+            IEnumerable<Type> types = ReflectionHelper.FindType<IContentProcessor>(assembly);
             foreach (Type t in types)
             {
-                ContentProcessor proc = Activator.CreateInstance(t) as ContentProcessor;
+                IContentProcessor proc = Activator.CreateInstance(t) as IContentProcessor;
 
                 foreach (Type accepted in proc.AcceptedTypes)
                 {
                     if (_defaultProcessors.ContainsKey(accepted))
                         continue;
 
-                    proc.Initialize();
                     _defaultProcessors.Add(accepted, proc);
                 }
             }
@@ -45,9 +44,9 @@ namespace Molten
         /// <param name="workerThreads">The number of worker threads that will be used to fulfil content requests.</param>
         internal ContentManager(Logger log, Engine engine, int workerThreads = 1)
         {
-            _defaultProcessors = new Dictionary<Type, ContentProcessor>();
+            _defaultProcessors = new Dictionary<Type, IContentProcessor>();
 
-            Type t = typeof(ContentProcessor);
+            Type t = typeof(IContentProcessor);
             AddProcessorsFromAssembly(t.Assembly);
 
             _engine = engine;            
@@ -55,7 +54,7 @@ namespace Molten
             ContextPool = new ObjectPool<ContentContext>(() => new ContentContext());            
 
             // Store all the provided custom processors by type.
-            _customProcessors = new Dictionary<Type, ContentProcessor>();
+            _customProcessors = new Dictionary<Type, IContentProcessor>();
             _content = new ThreadedDictionary<string, ContentFile>();
             _directories = new ThreadedDictionary<string, ContentDirectory>();
             _workers = engine.Threading.CreateWorkerGroup("content workers", workerThreads, paused:true);
@@ -80,34 +79,16 @@ namespace Molten
         /// Adds one or more <see cref="ContentProcessor"/> to the current <see cref="ContentManager"/> instance.
         /// </summary>
         /// <param name="processors"></param>
-        public void AddCustomProcessors(params ContentProcessor[] processors)
+        public void AddCustomProcessors(params IContentProcessor[] processors)
         {
             if (processors == null || processors.Length == 0)
                 return;
 
-            foreach (ContentProcessor p in processors)
+            foreach (IContentProcessor p in processors)
             {
                 foreach (Type t in p.AcceptedTypes)
                     _customProcessors[t] = p;
             }
-        }
-
-        /// <summary>
-        /// Gets a list of optional parameters that can be passed in when loading the specified content type.
-        /// </summary>
-        /// <typeparam name="T">The type of content to retrieve content parameters for.</typeparam>
-        /// <returns>A read-only list of <see cref="ContentParameter"/>.</returns>
-        public IReadOnlyList<ContentParameter> GetParameters<T>()
-        {
-            ContentProcessor proc = null;
-            Type type = typeof(T);
-            if (_customProcessors.TryGetValue(type, out proc) ||
-                _defaultProcessors.TryGetValue(type, out proc))
-            {
-                return proc.Parameters;
-            }
-
-            return null;
         }
 
         private void AddCustomJsonConverters(JsonSerializerSettings settings, IList<JsonConverter> converters)
@@ -235,7 +216,7 @@ namespace Molten
             }
         }
 
-        private ContentFile GetContentFile(ContentContext context, ContentRequest request = null, ContentProcessor processor = null)
+        private ContentFile GetContentFile(ContentContext context, ContentRequest request = null, IContentProcessor processor = null)
         {
             string fnLower = context.Filename.ToLower();
 
@@ -269,9 +250,9 @@ namespace Molten
             return file;
         }
 
-        internal ContentProcessor GetProcessor(ContentContext context, Type type)
+        internal IContentProcessor GetProcessor(ContentContext context, Type type)
         {
-            ContentProcessor proc = null;
+            IContentProcessor proc = null;
             if (_customProcessors.TryGetValue(type, out proc) || 
                 _defaultProcessors.TryGetValue(type, out proc))
             {
@@ -327,13 +308,13 @@ namespace Molten
                 context.Engine = _engine;
                 context.Log = _log;
 
-                ContentProcessor proc = null;
+                IContentProcessor proc = null;
 
                 // First check if the content already exists
                 string fnLower = context.Filename.ToLower();
                 if (_content.TryGetValue(fnLower, out ContentFile file))
                 {
-                    context.Parameters.Validate(context, file.OriginalProcessor);
+                    ValidateParameters(context, file.OriginalProcessor);
 
                     object existing = file.GetObject(_engine, context.ContentType, context.Parameters);
                     if (existing != null)
@@ -356,7 +337,7 @@ namespace Molten
 
                 try
                 {
-                    context.Parameters.Validate(context, proc);
+                    ValidateParameters(context, proc);
 
                     switch (context.RequestType)
                     {
@@ -417,9 +398,9 @@ namespace Molten
             }
         }
 
-        private void DoRead(ContentRequest request, ContentContext context, ContentProcessor proc)
+        private void DoRead(ContentRequest request, ContentContext context, IContentProcessor proc)
         {
-            proc.OnRead(context);
+            proc.Read(context);
 
             if (context.Output.Count > 0)
             {
@@ -435,9 +416,9 @@ namespace Molten
             }
         }
 
-        private void DoWrite(ContentContext context, ContentProcessor proc)
+        private void DoWrite(ContentContext context, IContentProcessor proc)
         {
-            proc.OnWrite(context);
+            proc.Write(context);
             _log.Log($"[CONTENT] [WRITE] {context.Filename}");
         }
 
@@ -465,6 +446,23 @@ namespace Molten
                 _log.Error($"[CONTENT] [SERIALIZE] { ex.Message}", context.Filename);
                 _log.Error(ex, true);
             }
+        }
+
+        private void ValidateParameters(ContentContext context, IContentProcessor processor)
+        {
+            Type pExpectedType = processor.GetParameterType();
+
+            if (context.Parameters != null)
+            {
+                Type pType = context.Parameters.GetType();
+
+                if (!pExpectedType.IsAssignableFrom(pType))
+                    _log.Warning($"[CONTENT] {context.File}: Invalid parameter type provided. Expected '{pExpectedType.Name}' but received '{pType.Name}'. Using defaults instead.");
+                else
+                    return;
+            }
+
+            context.Parameters = Activator.CreateInstance(pExpectedType) as IContentParameters;
         }
 
         protected override void OnDispose()

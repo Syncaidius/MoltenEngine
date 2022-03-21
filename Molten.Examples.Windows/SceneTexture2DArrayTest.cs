@@ -20,7 +20,10 @@ namespace Molten.Samples
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<IMaterial>("BasicTextureArray2D.mfx");
-            cr.Load<ITexture2D>("128.dds", ("array", 3));
+            cr.Load<ITexture2D>("128.dds", new TextureParameters()
+            {
+                ArraySize = 3,
+            });
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 

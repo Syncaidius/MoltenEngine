@@ -3,17 +3,13 @@ using System.Text;
 
 namespace Molten.Content
 {
-    public class ShaderProcessor : ContentProcessor
+    public class ShaderProcessor : ContentProcessor<ShaderParameters>
     {
         public override Type[] AcceptedTypes { get; } = new Type[] { typeof(IShader) };
 
         public override Type[] RequiredServices { get; } = { typeof(RenderService) };
 
-        protected override void OnInitialize()
-        {
-            AddParameter("name", "");
-        }
-        public override void OnRead(ContentContext context)
+        protected override void OnRead(ContentContext context, ShaderParameters p)
         {
             using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
             {
@@ -38,21 +34,19 @@ namespace Molten.Content
             }
         }
 
-        public override void OnWrite(ContentContext context)
+        protected override void OnWrite(ContentContext context, ShaderParameters p)
         {
             throw new NotImplementedException();
         }
 
-        public override object OnGet(Engine engine, Type contentType, ContentFileParameters parameters, IList<object> groupContent)
+        protected override object OnGet(Engine engine, Type contentType, ShaderParameters p, IList<object> groupContent)
         {
-            string materialName = parameters.Get<string>("name");
-
-            if (!string.IsNullOrEmpty(materialName))
+            if (!string.IsNullOrEmpty(p.MaterialName))
             {
                 foreach (object obj in groupContent)
                 {
                     IMaterial mat = obj as IMaterial;
-                    if (mat.Name == materialName)
+                    if (mat.Name == p.MaterialName)
                         return mat;
                 }
             }

@@ -44,7 +44,9 @@ namespace Molten
         {
             Type bType = typeof(T);
 
-            return assembly.GetTypes().Where(t => t.IsSubclassOf(bType) && (includeAbstract || !t.IsAbstract));
+            return assembly.GetTypes().Where(t =>
+                !t.IsGenericType && (t.IsSubclassOf(bType) && (includeAbstract || !t.IsAbstract) || 
+                (bType.IsAssignableFrom(t) && !t.IsInterface)));
         }
 
         public static IEnumerable<Type> FindTypesWithAttribute<T>(Assembly assembly, bool includeAbstract = false) where T : Attribute

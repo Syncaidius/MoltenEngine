@@ -1,24 +1,16 @@
 ﻿namespace Molten.Content
 {
-    public class StringProcessor : ContentProcessor
+    public class StringProcessor : ContentProcessor<StringParameters>
     {
         public override Type[] AcceptedTypes { get; } = new Type[] { typeof(string) };
 
         public override Type[] RequiredServices => null;
 
-        protected override void OnInitialize()
+        protected override void OnRead(ContentContext context, StringParameters parameters)
         {
-            AddParameter("binary", false);
-            AddParameter("perline", false);
-        }
-
-        public override void OnRead(ContentContext context)
-        {
-            bool isBinary = context.Parameters.Get<bool>("binary");
-
             using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
             {
-                if (isBinary)
+                if (parameters.IsBinary)
                 {
                     using (BinaryReader reader = new BinaryReader(stream))
                     {
@@ -28,11 +20,9 @@
                 }
                 else
                 {
-                    bool perLine = context.Parameters.Get<bool>("perline");
-
                     using (StreamReader reader = new StreamReader(stream))
                     {
-                        if (perLine)
+                        if (parameters.IsPerLine)
                         {
                             while (!reader.EndOfStream)
                                 context.AddOutput(reader.ReadLine());
@@ -46,15 +36,13 @@
             }
         }
 
-        public override void OnWrite(ContentContext context)
+        protected override void OnWrite(ContentContext context, StringParameters parameters)
         {
             if (context.Input.TryGetValue(AcceptedTypes[0], out List<object> strings))
             {
-                bool isBinary = context.Parameters.Get<bool>("binary");
-
                 using (Stream stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
                 {
-                    if (isBinary)
+                    if (parameters.IsBinary)
                     {
                         using (BinaryWriter writer = new BinaryWriter(stream))
                         {

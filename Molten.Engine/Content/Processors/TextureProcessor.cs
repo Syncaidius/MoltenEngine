@@ -5,38 +5,26 @@ using System.Text;
 
 namespace Molten.Content
 {
-    public class TextureProcessor : ContentProcessor
+    public class TextureProcessor : ContentProcessor<TextureParameters>
     {
         public override Type[] AcceptedTypes { get; } = new Type[] { typeof(ITexture), typeof(TextureData) };
 
         public override Type[] RequiredServices { get; } = { typeof(RenderService) };
 
-        protected override void OnInitialize()
-        {
-            AddParameter("array", 1U);
-            AddParameter("mipmaps", false);
-            AddParameter("compress", false);
-            AddParameter("ddsformat", DDSFormat.DXT5);
-        }
-
-        public override void OnRead(ContentContext context)
+        protected override void OnRead(ContentContext context, TextureParameters parameters)
         {
             string extension = context.File.Extension.ToLower();
             TextureData finalData = null;
             TextureReader texReader = null;
             string fn = context.Filename;
 
-            uint arrayCount = context.Parameters.Get<uint>("array");
-            bool compress = context.Parameters.Get<bool>("compress");
-            DDSFormat compressFormat = context.Parameters.Get<DDSFormat>("ddsformat");
-
-            if (arrayCount > 1)
+            if (parameters.ArraySize > 1)
             {
                 fn = context.File.Name.Replace(context.File.Extension, "");
                 fn = context.Filename.Replace(context.File.Name, $"{fn}_{{0}}{context.File.Extension}");
             }
 
-            for (uint i = 0; i < arrayCount; i++)
+            for (uint i = 0; i < parameters.ArraySize; i++)
             {
                 string finalFn = string.Format(fn, i + 1);
 
@@ -78,8 +66,7 @@ namespace Molten.Content
 
                 if (data.MipMapLevels == 1)
                 {
-                    bool genMipsVal = context.Parameters.Get<bool>("mipmaps");
-                    if (genMipsVal)
+                    if (parameters.GenerateMipmaps)
                     {
                             //if (!data.GenerateMipMaps())
                             //   log.WriteError("[CONTENT] Unable to generate mip-maps for non-power-of-two texture.", file.ToString());
@@ -92,7 +79,7 @@ namespace Molten.Content
                     Height = data.Height,
                     MipMapLevels = data.MipMapLevels,
                     Format = data.Format,
-                    ArraySize = typeof(ITextureCube).IsAssignableFrom(context.ContentType) ? 6U : arrayCount, // Override specified array size if we're loading a cube map.
+                    ArraySize = typeof(ITextureCube).IsAssignableFrom(context.ContentType) ? 6U : parameters.ArraySize, // Override specified array size if we're loading a cube map.
                     IsCompressed = data.IsCompressed,
                 };
 
@@ -100,13 +87,13 @@ namespace Molten.Content
             }
 
             // Compress or decompress
-            if (compress)
+            if (parameters.BlockCompressionFormat.HasValue)
             {
                 // Don't block-compress 1D textures.
                 if (finalData.Height > 1)
                 {
                     if (!finalData.IsCompressed)
-                        finalData.Compress(compressFormat, context.Log);
+                        finalData.Compress(parameters.BlockCompressionFormat.Value, context.Log);
                 }
             }
 
@@ -198,11 +185,8 @@ namespace Molten.Content
             }
         }
 
-        public override void OnWrite(ContentContext context)
+        protected override void OnWrite(ContentContext context, TextureParameters parameters)
         {
-            bool compress = context.Parameters.Get<bool>("compress");
-            DDSFormat compressFormat = context.Parameters.Get<DDSFormat>("ddsformat");
-
             using (FileStream stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
             {
                 string extension = context.File.Extension.ToLower();
@@ -211,7 +195,9 @@ namespace Molten.Content
                 switch (extension)
                 {
                     case ".dds":
-                        texWriter = new DDSWriter(compressFormat);
+                        DDSFormat? pFormat = parameters.BlockCompressionFormat;
+                        DDSFormat ddsFormat = pFormat.HasValue ? pFormat.Value : DDSFormat.DXT5;
+                        texWriter = new DDSWriter(ddsFormat);
                         break;
 
                     case ".png":

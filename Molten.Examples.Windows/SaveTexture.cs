@@ -22,7 +22,7 @@ namespace Molten.Samples
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<IMaterial>("BasicTexture.mfx");
-            cr.Load<ITexture2D>("dds_dxt5.dds", ("compress", false));
+            cr.Load<ITexture2D>("dds_dxt5.dds");
             cr.Load<TextureData>("dds_dxt5.dds");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
@@ -54,14 +54,19 @@ namespace Molten.Samples
             cr = Engine.Content.BeginRequest("assets/");
 
             DDSFormat saveFormat = DDSFormat.DXT5;
-            cr.Save("saved_recompressed_texture_raw.dds", loadedData, ("compress", true), ("ddsformat", saveFormat));
+            TextureParameters texParams = new TextureParameters()
+            {
+                BlockCompressionFormat = DDSFormat.DXT5,
+            };
+
+            cr.Save("saved_recompressed_texture_raw.dds", loadedData, texParams);
             cr.Commit();
 
 
             texture.GetData(staging, (data) =>
             {
                 cr = Engine.Content.BeginRequest("assets/");
-                cr.Save("saved_texture.dds", data, ("compress", true), ("ddsformat", saveFormat));
+                cr.Save("saved_texture.dds", data, texParams);
                 cr.Commit();
             });
 

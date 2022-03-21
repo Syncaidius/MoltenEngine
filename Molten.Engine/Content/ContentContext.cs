@@ -15,7 +15,6 @@ namespace Molten
         {
             _info = null;
             Filename = string.Empty;
-            Parameters = null;
             ContentType = null;
             Log = null;
             Engine = null;
@@ -62,8 +61,6 @@ namespace Molten
 
         public Type ContentType { get; internal set; }
 
-        internal ContentFileParameters Parameters { get; set; }
-
         public FileInfo File
         {
             get => _info;
@@ -77,6 +74,8 @@ namespace Molten
         internal Dictionary<Type, List<object>> Output = new Dictionary<Type, List<object>>();
 
         internal Dictionary<Type, List<object>> Input = new Dictionary<Type, List<object>>();
+
+        internal IContentParameters Parameters;
 
         public string Filename { get; private set; }
 

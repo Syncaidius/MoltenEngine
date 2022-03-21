@@ -2,27 +2,20 @@
 
 namespace Molten.Content
 {
-    public class SpriteFontProcessor : ContentProcessor
+    public class SpriteFontProcessor : ContentProcessor<SpriteFontParameters>
     {
         public override Type[] AcceptedTypes { get; } = new Type[] { typeof(SpriteFont) };
 
         public override Type[] RequiredServices => null;
 
-        protected override void OnInitialize()
+        protected override void OnRead(ContentContext context, SpriteFontParameters p)
         {
-            AddParameter("size", 18);
-        }
-
-        public override void OnRead(ContentContext context)
-        {
-            int size = context.Parameters.Get<int>("size");
-
-            SpriteFont sf = context.Engine.Fonts.GetFont(context.Log, context.Filename, size);
+            SpriteFont sf = context.Engine.Fonts.GetFont(context.Log, context.Filename, p.FontSize);
             if (sf != null)
                 context.AddOutput(sf);
         }
 
-        public override void OnWrite(ContentContext context)
+        protected override void OnWrite(ContentContext context, SpriteFontParameters p)
         {
             throw new NotImplementedException();
         }
