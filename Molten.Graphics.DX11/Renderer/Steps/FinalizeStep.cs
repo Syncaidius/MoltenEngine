@@ -38,7 +38,7 @@
             device.State.SetScissorRectangle((Rectangle)camera.OutputSurface.Viewport.Bounds);
 
             StateConditions conditions = StateConditions.ScissorTest;
-            conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+            conditions |= camera.OutputSurface.MultiSampleLevel >= AntiAliasLevel.X2 ? StateConditions.Multisampling : StateConditions.None;
 
             renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
 

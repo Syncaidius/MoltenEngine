@@ -23,10 +23,11 @@ namespace Molten.Graphics
             DepthFormat format = DepthFormat.R24G8_Typeless,
             uint mipCount = 1,
             uint arraySize = 1,
-            uint sampleCount = 1,
+            AntiAliasLevel aaLevel = AntiAliasLevel.None,
             TextureFlags flags = TextureFlags.None)
         {
-            return new DepthStencilSurface(_renderer, width, height, format, mipCount, arraySize, sampleCount, flags);
+            MSAAQuality msaa = MSAAQuality.CenterPattern;
+            return new DepthStencilSurface(_renderer, width, height, format, mipCount, arraySize, aaLevel, msaa, flags);
         }
 
         public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1)
@@ -45,10 +46,11 @@ namespace Molten.Graphics
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
             uint mipCount = 1,
             uint arraySize = 1,
-            uint sampleCount = 1,
+            AntiAliasLevel aaLevel = AntiAliasLevel.None,
             TextureFlags flags = TextureFlags.None)
         {
-            return new RenderSurface2D(_renderer, width, height, (Format)format, mipCount, arraySize, sampleCount, 0, flags);
+            MSAAQuality msaa = MSAAQuality.CenterPattern;
+            return new RenderSurface2D(_renderer, width, height, (Format)format, mipCount, arraySize, aaLevel, msaa, flags);
         }
 
         public override ITexture CreateTexture1D(Texture1DProperties properties)
@@ -72,7 +74,7 @@ namespace Molten.Graphics
                 properties.MipMapLevels,
                 properties.ArraySize,
                 properties.Flags,
-                properties.SampleCount);
+                properties.MultiSampleLevel);
         }
 
         public override ITexture2D CreateTexture2D(TextureData data)
@@ -84,10 +86,39 @@ namespace Molten.Graphics
                 data.MipMapLevels,
                 data.ArraySize,
                 data.Flags,
-                data.SampleCount);
+                data.MultiSampleLevel);
 
             tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
+        }
+
+        public override ITexture3D CreateTexture3D(Texture3DProperties properties)
+        {
+            return new Texture3D(_renderer,
+                properties.Width,
+                properties.Height,
+                properties.Depth,
+                properties.Format.ToApi(),
+                properties.MipMapLevels,
+                properties.Flags);
+        }
+
+        public override ITexture3D CreateTexture3D(TextureData data)
+        {
+            throw new NotImplementedException();
+
+            // TODO TextureData needs support for 3D data
+
+            /*Texture3D tex = new Texture3D(_renderer,
+                data.Width,
+                data.Height,
+                data.Depth,
+                data.Format.ToApi(),
+                data.MipMapLevels,
+                data.Flags);
+
+            tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
+            return tex;*/
         }
 
         public override ITextureCube CreateTextureCube(Texture2DProperties properties)

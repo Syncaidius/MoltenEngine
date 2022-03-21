@@ -110,11 +110,11 @@ namespace Molten.Graphics
         /// <param name="format">The format to test quality levels against.</param>
         /// <param name="sampleCount">The sample count to test against.</param>
         /// <returns></returns>
-        internal uint GetMultisampleQualityLevels(Format format, uint sampleCount)
+        internal MSAASupport GetMSAASupport(Format format, AntiAliasLevel aaLevel)
         {
-            uint numQualityLevels = 0;
-            HResult hr = _device->CheckMultisampleQualityLevels(format, sampleCount, &numQualityLevels);
-            return hr.IsSuccess ? numQualityLevels : 0;
+            uint numQualityLevels = (uint)MSAASupport.FixedOnly;
+            HResult hr = _device->CheckMultisampleQualityLevels(format, (uint)aaLevel, &numQualityLevels);
+            return hr.IsSuccess ? (MSAASupport)numQualityLevels: MSAASupport.NotSupported;
         }
 
         /// <summary>Gets a <see cref="CounterCapabilities>"/> containing details of the device's counter support.</summary>

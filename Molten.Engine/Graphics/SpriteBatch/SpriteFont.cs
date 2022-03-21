@@ -130,7 +130,7 @@ namespace Molten.Graphics
             // TODO Make Scene render targets match sample count of output camera.
             // TODO Add RenderCameraFlags.Multisampled
             _lineSpace = ToPixels(_font.HorizonalHeader.LineSpace);
-            _rt = renderer.Resources.CreateSurface((uint)_pageSize, (uint)_pageSize, arraySize: (uint)initialPages, sampleCount: 8);
+            _rt = renderer.Resources.CreateSurface((uint)_pageSize, (uint)_pageSize, arraySize: (uint)initialPages, aaLevel: AntiAliasLevel.X8);
             _tex = renderer.Resources.CreateTexture2D(new Texture2DProperties()
             {
                 Width = (uint)_pageSize,

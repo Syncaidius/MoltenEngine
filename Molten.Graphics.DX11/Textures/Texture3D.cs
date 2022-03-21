@@ -33,7 +33,7 @@ namespace Molten.Graphics
             Format format = Format.FormatR8G8B8A8Unorm,
             uint mipCount = 1,
             TextureFlags flags = TextureFlags.None)
-            : base(renderer, width, height, depth, mipCount, 1, 1, 0, format, flags)
+            : base(renderer, width, height, depth, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags)
         {
             _description = new Texture3DDesc()
             {
@@ -57,9 +57,8 @@ namespace Molten.Graphics
                 Height = Height,
                 ArraySize = ArraySize,
                 Flags = Flags,
-                Format = this.DataFormat,
-                MipMapLevels = MipMapCount,
-                SampleCount = SampleCount,
+                Format = DataFormat,
+                MipMapLevels = MipMapCount
             };
         }
 

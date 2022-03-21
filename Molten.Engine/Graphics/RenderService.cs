@@ -16,8 +16,8 @@ namespace Molten.Graphics
         bool _disposeRequested;
         bool _shouldPresent;
         bool _surfaceResizeRequired;
-        AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
-        internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
+        AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
+        internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
 
         /// <summary>
         /// Creates a new instance of a <see cref="RenderService"/> sub-type.
@@ -259,7 +259,7 @@ namespace Molten.Graphics
             settings.Graphics.MSAA.OnChanged += MSAA_OnChanged;
         }
 
-        private void MSAA_OnChanged(AntiAliasMode oldValue, AntiAliasMode newValue)
+        private void MSAA_OnChanged(AntiAliasLevel oldValue, AntiAliasLevel newValue)
         {
             _requestedMultiSampleLevel = newValue;
         }

@@ -5,7 +5,5 @@
         public uint Height = 1;
 
         public uint Depth = 1;
-
-        public uint SampleCount = 1;
     }
 }

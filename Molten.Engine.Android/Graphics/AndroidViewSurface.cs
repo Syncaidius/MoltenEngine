@@ -234,7 +234,7 @@ namespace Molten.Graphics
 
         public uint ArraySize => throw new NotImplementedException();
 
-        public uint SampleCount => throw new NotImplementedException();
+        public AntiAliasLevel MultiSampleLevel => throw new NotImplementedException();
 
         public bool IsMultisampled => throw new NotImplementedException();
 

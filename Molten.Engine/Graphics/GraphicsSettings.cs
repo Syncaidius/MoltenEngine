@@ -22,7 +22,7 @@ namespace Molten.Graphics
             GraphicsAdapterID = AddSetting<int>("adapter_id", -1);
             DisplayOutputIds = AddSettingList<int>("display_id");
             VSync = AddSetting<bool>("vsync", true);
-            MSAA = AddSetting<AntiAliasMode>("msaa", 0);
+            MSAA = AddSetting<AntiAliasLevel>("msaa", 0);
             BackBufferSize = AddSetting<uint>("back_buffer_size", 1);
             EnableDebugLayer = AddSetting<bool>("renderer_debug");
         }
@@ -41,7 +41,7 @@ namespace Molten.Graphics
 
         /// <summary>Gets or sets the multi-sampled anti-aliasing (MSAA) level.</summary>
         [DataMember]
-        public SettingValue<AntiAliasMode> MSAA { get; }
+        public SettingValue<AntiAliasLevel> MSAA { get; }
 
         /// <summary>Gets or sets the number of back-buffer surfaces. More tend to increase performance, but also consumes more video memory.</summary>
         public SettingValue<uint> BackBufferSize { get; }

@@ -25,21 +25,21 @@ namespace Molten.Graphics
                 properties.Format,
                 properties.MipMapLevels,
                 properties.ArraySize,
-                properties.SampleCount,
+                properties.MultiSampleLevel,
                 properties.Flags);
         }
 
         public abstract IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
-            uint mipCount = 1, uint arraySize = 1, uint sampleCount = 1, TextureFlags flags = TextureFlags.None);
+            uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, TextureFlags flags = TextureFlags.None);
 
-        public abstract IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless, uint mipCount = 1, uint arraySize = 1, uint sampleCount = 1,
+        public abstract IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless, 
+            uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None,
             TextureFlags flags = TextureFlags.None);
 
         /// <summary>Creates a form with a surface which can be rendered on to.</summary>
         /// <param name="formTitle">The title of the form.</param>
         /// <param name="formName">The internal name of the form.</param>
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
-        /// <param name="sampleCount">The number of samples. Anything greater than 1 will return a multi-sampled surface.</param>
         /// <returns></returns>
         public abstract INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1);
 
@@ -47,7 +47,6 @@ namespace Molten.Graphics
         /// <param name="controlTitle">The title of the form.</param>
         /// <param name="controlName">The internal name of the control.</param>
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
-        /// <param name="sampleCount">The number of samples. Anything greater than 1 will return a multi-sampled surface.</param>
         /// <returns></returns>
         public abstract INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1);
 
@@ -66,6 +65,14 @@ namespace Molten.Graphics
         /// <summary>Creates a new 2D texture and returns it.</summary>
         /// <param name="data">The data from which to create the texture.</param>
         public abstract ITexture2D CreateTexture2D(TextureData data);
+
+        /// <summary>Creates a new 3D texture and returns it.</summary>
+        /// <param name="properties">A set of 3D texture properties.</param>
+        public abstract ITexture3D CreateTexture3D(Texture3DProperties properties);
+
+        /// <summary>Creates a new 3D texture and returns it.</summary>
+        /// <param name="data">The data from which to create the texture.</param>
+        public abstract ITexture3D CreateTexture3D(TextureData data);
 
         /// <summary>Creates a new cube texture (cube-map) and returns it.</summary>
         /// <param name="properties">A set of 2D texture properties.</param>

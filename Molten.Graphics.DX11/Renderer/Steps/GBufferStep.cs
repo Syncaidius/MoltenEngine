@@ -31,7 +31,7 @@
 
             device.State.SetViewports(camera.OutputSurface.Viewport);
             StateConditions conditions = StateConditions.None; // TODO expand
-            conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+            conditions |= camera.OutputSurface.MultiSampleLevel >= AntiAliasLevel.X2 ? StateConditions.Multisampling : StateConditions.None;
 
             device.BeginDraw(conditions);
             renderer.RenderSceneLayer(device, context.Layer, camera);

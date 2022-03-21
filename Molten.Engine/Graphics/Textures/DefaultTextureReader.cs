@@ -17,7 +17,7 @@ namespace Molten.Graphics.Textures
                 IsCompressed = false,
                 HighestMipMap = 0,
                 MipMapLevels = 1,
-                SampleCount = 1,
+                MultiSampleLevel = AntiAliasLevel.None,
                 Flags = TextureFlags.None,
                 Format = GraphicsFormat.R8G8B8A8_UNorm,
             };

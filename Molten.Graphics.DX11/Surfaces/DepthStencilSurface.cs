@@ -15,12 +15,14 @@ namespace Molten.Graphics
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="device"></param>
-        /// <param name="swapChain"></param>
+        /// <param name="renderer"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="format"></param>
-        /// <param name="depthBuffer">If true, a depth buffer will be created.</param>
+        /// <param name="mipCount"></param>
+        /// <param name="arraySize"></param>
+        /// <param name="aaLevel"></param>
+        /// <param name="msaa"></param>
         /// <param name="flags">Texture flags</param>
         internal DepthStencilSurface(RendererDX11 renderer,
             uint width, 
@@ -28,9 +30,10 @@ namespace Molten.Graphics
             DepthFormat format = DepthFormat.R24G8_Typeless,
             uint mipCount = 1, 
             uint arraySize = 1, 
-            uint sampleCount = 1,
+            AntiAliasLevel aaLevel = AntiAliasLevel.None,
+            MSAAQuality msaa = MSAAQuality.Default,
             TextureFlags flags = TextureFlags.None)
-            : base(renderer, width, height, Format.FormatR24G8Typeless, mipCount, arraySize, flags)
+            : base(renderer, width, height, Format.FormatR24G8Typeless, mipCount, arraySize, flags, aaLevel, msaa)
         {
             _depthFormat = format;
             _description.ArraySize = arraySize;
@@ -38,7 +41,7 @@ namespace Molten.Graphics
             _depthDesc = new DepthStencilViewDesc();
             _depthDesc.Format = GetDSVFormat().ToApi();
 
-            if (SampleCount > 1)
+            if (MultiSampleLevel >= AntiAliasLevel.X2)
             {
                 _depthDesc.ViewDimension = DsvDimension.DsvDimensionTexture2Dmsarray;
                 _depthDesc.Flags = 0U; // DsvFlag.None;

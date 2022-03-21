@@ -127,7 +127,7 @@
         /// <summary>
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
         /// </summary>
-        uint SampleCount { get; }
+        AntiAliasLevel MultiSampleLevel { get; }
 
         /// <summary>
         /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.

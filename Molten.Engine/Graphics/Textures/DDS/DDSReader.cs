@@ -37,7 +37,7 @@
                 ArraySize = _headerDXT10.ArraySize,
                 Flags = TextureFlags.None,
                 IsCompressed = true,
-                SampleCount = 1,
+                MultiSampleLevel = AntiAliasLevel.None,
                 HighestMipMap = 0,
             };
 

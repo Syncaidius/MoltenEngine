@@ -4,7 +4,7 @@
     {
         public uint Height = 1;
 
-        public uint SampleCount = 1;
+        public AntiAliasLevel MultiSampleLevel =  AntiAliasLevel.None;
 
         /// <summary>
         /// Sets <see cref="ArraySize"/> by multiplying the provided value by 6 (the number of sides/slices per cubemap).

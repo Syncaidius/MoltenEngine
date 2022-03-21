@@ -50,7 +50,7 @@
             device.State.SetScissorRectangle((Rectangle)vpBounds);
 
             StateConditions conditions = StateConditions.ScissorTest;
-            conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+            conditions |= camera.OutputSurface.MultiSampleLevel >= AntiAliasLevel.X2 ? StateConditions.Multisampling : StateConditions.None;
 
             _valLighting.Value = _surfaceLighting;
             _valEmissive.Value = _surfaceEmissive;

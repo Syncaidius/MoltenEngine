@@ -16,10 +16,10 @@ namespace Molten.Graphics
             Format format = Format.FormatR8G8B8A8SNorm,
             uint mipCount = 1,
             uint arraySize = 1,
-            uint sampleCount = 1,
-            uint sampleQuality = 1,
+            AntiAliasLevel aaLevel = AntiAliasLevel.None,
+            MSAAQuality msaa = MSAAQuality.Default,
             TextureFlags flags = TextureFlags.None, string name = null)
-            : base(renderer, width, height, format, mipCount, arraySize, flags, sampleCount, sampleQuality)
+            : base(renderer, width, height, format, mipCount, arraySize, flags, aaLevel, msaa)
         {
             Viewport = new ViewportF(0, 0, width, height);
 

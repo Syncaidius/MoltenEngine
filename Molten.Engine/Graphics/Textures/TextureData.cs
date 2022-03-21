@@ -36,7 +36,7 @@ namespace Molten.Graphics
         public uint Height;
         public uint MipMapLevels;
         public uint ArraySize = 1;
-        public uint SampleCount;
+        public AntiAliasLevel MultiSampleLevel = AntiAliasLevel.None;
 
         /// <summary>The most detailed mip map level. by default, this is 0.</summary>
         public uint HighestMipMap = 0;
@@ -104,7 +104,7 @@ namespace Molten.Graphics
             Height = otherData.Height;
             MipMapLevels = otherData.MipMapLevels;
             Width = otherData.Width;
-            SampleCount = otherData.SampleCount;
+            MultiSampleLevel = otherData.MultiSampleLevel;
             HighestMipMap = otherData.HighestMipMap;
 
             if (Levels.Length != otherData.Levels.Length)
@@ -157,7 +157,7 @@ namespace Molten.Graphics
                 Levels = new Slice[this.Levels.Length],
                 MipMapLevels = this.MipMapLevels,
                 Width = this.Width,
-                SampleCount = this.SampleCount,
+                MultiSampleLevel = this.MultiSampleLevel,
                 HighestMipMap = this.HighestMipMap,
             };
 

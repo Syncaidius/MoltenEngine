@@ -35,7 +35,7 @@ namespace Molten.Graphics
         RendererDX11 _renderer;
 
         internal TextureBase(RendererDX11 renderer, uint width, uint height, uint depth, uint mipCount, 
-            uint arraySize, uint sampleCount, uint sampleQuality, Format format, TextureFlags flags) : base(renderer.Device,
+            uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, TextureFlags flags) : base(renderer.Device,
                 ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? ContextBindTypeFlags.Output : ContextBindTypeFlags.None) |
                 ((flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? ContextBindTypeFlags.Input : ContextBindTypeFlags.None))
         {
@@ -44,15 +44,15 @@ namespace Molten.Graphics
             ValidateFlagCombination();
 
             _pendingChanges = new ThreadedQueue<ITextureTask>();
-            uint maxSampleCount = _renderer.Device.Features.GetMultisampleQualityLevels(format, sampleCount);
+            MSAASupport msaaSupport = _renderer.Device.Features.GetMSAASupport(format, aaLevel);
 
             Width = width;
             Height = height;
             Depth = depth;
             MipMapCount = mipCount;
             ArraySize = arraySize;
-            SampleCount = sampleCount;
-            SampleQuality = Math.Min(SampleQuality, maxSampleCount);
+            MultiSampleLevel = aaLevel > AntiAliasLevel.Invalid ? aaLevel : AntiAliasLevel.None;
+            SampleQuality = msaaSupport != MSAASupport.NotSupported ? sampleQuality : MSAAQuality.Default;
             DxgiFormat = format;
             IsValid = false;
 
@@ -631,14 +631,14 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
         /// </summary>
-        public uint SampleCount { get; protected set; }
+        public AntiAliasLevel MultiSampleLevel { get; protected set; }
 
-        public uint SampleQuality { get; protected set; }
+        public MSAAQuality SampleQuality { get; protected set; }
 
         /// <summary>
-        /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.
+        /// Gets whether or not the texture is multisampled. This is true if <see cref="MultiSamplingLevel"/> is greater than 1.
         /// </summary>
-        public bool IsMultisampled => SampleCount > 1;
+        public bool IsMultisampled => MultiSampleLevel >= AntiAliasLevel.X2;
 
         public bool IsValid { get; protected set; }
 

@@ -33,9 +33,9 @@ namespace Molten.Graphics
             uint mipCount = 1,
             uint arraySize = 1,
             TextureFlags flags = TextureFlags.None,
-            uint sampleCount = 1,
-            uint sampleQuality = 0)
-            : base(renderer, width, height, 1, mipCount, arraySize, sampleCount, sampleQuality, format, flags)
+            AntiAliasLevel aaLevel = AntiAliasLevel.None,
+            MSAAQuality msaa = MSAAQuality.Default)
+            : base(renderer, width, height, 1, mipCount, arraySize, aaLevel, msaa, format, flags)
         {
             _description = new Texture2DDesc()
             {
@@ -48,8 +48,8 @@ namespace Molten.Graphics
                 CPUAccessFlags = (uint)GetAccessFlags(),
                 SampleDesc = new SampleDesc()
                 {
-                    Count = Math.Max(sampleCount, 1),
-                    Quality = 0,
+                    Count = (uint)aaLevel,
+                    Quality = (uint)msaa,
                 },
                 Usage = GetUsageFlags(),
                 MiscFlags = (uint)GetResourceFlags(),
@@ -66,7 +66,7 @@ namespace Molten.Graphics
                 Flags = Flags,
                 Format = DataFormat,
                 MipMapLevels = MipMapCount,
-                SampleCount = SampleCount,
+                MultiSampleLevel = MultiSampleLevel,
             };
         }
 
