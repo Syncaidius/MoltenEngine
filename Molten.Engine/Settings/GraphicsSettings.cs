@@ -1,6 +1,7 @@
 ﻿using System.Runtime.Serialization;
+using Molten.Graphics;
 
-namespace Molten.Graphics
+namespace Molten
 {
     [DataContract]
     public class GraphicsSettings : SettingBank

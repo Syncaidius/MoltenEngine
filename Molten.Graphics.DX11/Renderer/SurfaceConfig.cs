@@ -25,7 +25,7 @@
         }
     }
 
-    public enum SurfaceSizeMode
+    public enum SurfaceSizeMode : byte
     {
         /// <summary>
         /// The surface will be at least the width and height of the largest-rendered surface.

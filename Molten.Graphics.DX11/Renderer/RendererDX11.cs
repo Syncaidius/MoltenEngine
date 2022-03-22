@@ -15,12 +15,6 @@ namespace Molten.Graphics
         HashSet<Texture2D> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
-
-        ThreadedDictionary<string, SurfaceConfig> _surfacesByKey;
-        ThreadedList<SurfaceConfig> _surfaces;
-        ThreadedDictionary<MainSurfaceType, SurfaceConfig> _mainSurfaces;
-        DepthStencilSurface _depthSurface;
-
         internal SpriteBatcherDX11 SpriteBatcher;
 
         internal GraphicsBuffer StaticVertexBuffer;
@@ -34,9 +28,7 @@ namespace Molten.Graphics
         {
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
-            _surfacesByKey = new ThreadedDictionary<string, SurfaceConfig>();
-            _mainSurfaces = new ThreadedDictionary<MainSurfaceType, SurfaceConfig>();
-            _surfaces = new ThreadedList<SurfaceConfig>();
+            Surfaces = new SurfaceBank(this);
         }
 
         protected override void OnInitializeAdapter(GraphicsSettings settings)
@@ -65,7 +57,7 @@ namespace Molten.Graphics
             StagingBuffer = new StagingBuffer(Device, StagingBufferFlags.Write, maxBufferSize);
             SpriteBatcher = new SpriteBatcherDX11(this, 3000);
 
-            InitializeMainSurfaces(BiggestWidth, BiggestHeight);
+            Surfaces.Initialize(BiggestWidth, BiggestHeight);
             LoadDefaultShaders(includeAssembly);
         }
 
@@ -74,59 +66,6 @@ namespace Molten.Graphics
             ShaderCompileResult result = Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer.mfx", includeAssembly);
             StandardMeshMaterial = result[ShaderClassType.Material, "gbuffer"] as Material;
             StandardMeshMaterial_NoNormalMap = result[ShaderClassType.Material, "gbuffer-sans-nmap"] as Material;
-        }
-
-        internal void InitializeMainSurfaces(uint width, uint height)
-        {
-            CreateMainSurface("scene", MainSurfaceType.Scene, width, height, GraphicsFormat.R8G8B8A8_UNorm);
-            CreateMainSurface("normals", MainSurfaceType.Normals, width, height, GraphicsFormat.R11G11B10_Float);
-            CreateMainSurface("emissive", MainSurfaceType.Emissive, width, height, GraphicsFormat.R8G8B8A8_UNorm);
-            CreateMainSurface("composition1", MainSurfaceType.Composition1, width, height, GraphicsFormat.R16G16B16A16_Float);
-            CreateMainSurface("composition2", MainSurfaceType.Composition2, width, height, GraphicsFormat.R16G16B16A16_Float);
-            CreateMainSurface("lighting", MainSurfaceType.Lighting, width, height, GraphicsFormat.R16G16B16A16_Float);
-            _depthSurface = new DepthStencilSurface(this, width, height, DepthFormat.R24G8_Typeless);
-        }
-
-        internal SurfaceConfig RegisterSurface(string key, RenderSurface2D surface, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
-        {
-            key = key.ToLower();
-            if (!_surfacesByKey.TryGetValue(key, out SurfaceConfig config))
-            {
-                config = new SurfaceConfig(surface, sizeMode);
-                _surfacesByKey.Add(key, config);
-                _surfaces.Add(config);
-            }
-
-            return config;
-        }
-
-        internal void CreateMainSurface(
-            string key,
-            MainSurfaceType mainType, 
-            uint width, 
-            uint height, 
-            GraphicsFormat format, 
-            SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
-        {
-            Format dxgiFormat = (Format)format;
-            RenderSurface2D surface = new RenderSurface2D(this, width, height, dxgiFormat, name:$"renderer_{key}");
-            SurfaceConfig config = RegisterSurface(key, surface, sizeMode);
-            _mainSurfaces[mainType] = config;
-        }
-
-        internal T GetSurface<T>(MainSurfaceType type) where T: RenderSurface2D
-        {
-            return _mainSurfaces[type].Surface as T;
-        }
-
-        internal T GetSurface<T>(string key) where T : RenderSurface2D
-        {
-            return _surfacesByKey[key].Surface as T;
-        }
-
-        internal DepthStencilSurface GetDepthSurface()
-        {
-            return _depthSurface;
         }
 
         internal T GetRenderStep<T>() where T : RenderStepBase, new()
@@ -187,8 +126,7 @@ namespace Molten.Graphics
 
         protected override void OnRebuildSurfaces(uint requiredWidth, uint requiredHeight)
         {
-            _surfaces.For(0, 1, (index, config) => config.RefreshSize(requiredWidth, requiredHeight));
-            _depthSurface.Resize(requiredWidth, requiredHeight);
+            Surfaces.Rebuild(requiredWidth, requiredHeight);
         }
 
         internal void RenderSceneLayer(DeviceContext pipe, LayerRenderData layerData, RenderCamera camera)
@@ -240,11 +178,7 @@ namespace Molten.Graphics
             for (int i = 0; i < _stepList.Count; i++)
                 _stepList[i].Dispose();
 
-            _surfaces.For(0, 1, (index, config) => config.Surface.Dispose());
-            _surfaces.Clear();
-            _depthSurface.Dispose();
-            _mainSurfaces.Clear();
-            _surfacesByKey.Clear();
+            Surfaces.Dispose();
 
             _resFactory.Dispose();
             _displayManager?.Dispose();
@@ -272,5 +206,7 @@ namespace Molten.Graphics
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
         /// </summary>
         public override ResourceFactory Resources => _resFactory;
+
+        internal SurfaceBank Surfaces { get; }
     }
 }

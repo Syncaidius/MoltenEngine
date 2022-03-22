@@ -13,9 +13,9 @@
 
         internal override void Initialize(RendererDX11 renderer)
         {
-            _surfaceScene = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Scene);
-            _surfaceLighting = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Lighting);
-            _surfaceEmissive = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Emissive);
+            _surfaceScene = renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Scene);
+            _surfaceLighting = renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Lighting);
+            _surfaceEmissive = renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Emissive);
 
             string namepace = "Molten.Graphics.Assets.gbuffer_compose.mfx";
 

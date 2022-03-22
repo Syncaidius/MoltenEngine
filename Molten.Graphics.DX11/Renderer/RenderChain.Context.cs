@@ -16,8 +16,8 @@ namespace Molten.Graphics
             {
                 _composition = new RenderSurface2D[]
                 {
-                    renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Composition1),
-                    renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Composition2)
+                    renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Composition1),
+                    renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Composition2)
                 };
             }
 

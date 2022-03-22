@@ -13,8 +13,8 @@
 
         internal override void Initialize(RendererDX11 renderer)
         {
-            _surfaceScene = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Scene);
-            _surfaceDepth = renderer.GetDepthSurface();
+            _surfaceScene = renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Scene);
+            _surfaceDepth = renderer.Surfaces.GetDepth();
             _skyboxData = new ObjectRenderData();
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "skybox.mfx");

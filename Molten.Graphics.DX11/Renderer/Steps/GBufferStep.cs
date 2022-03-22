@@ -9,10 +9,10 @@
 
         internal override void Initialize(RendererDX11 renderer)
         {
-            _surfaceScene = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Scene);
-            _surfaceNormals = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Normals);
-            _surfaceEmissive = renderer.GetSurface<RenderSurface2D>(MainSurfaceType.Emissive);
-            _surfaceDepth = renderer.GetDepthSurface();
+            _surfaceScene = renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Scene);
+            _surfaceNormals = renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Normals);
+            _surfaceEmissive = renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Emissive);
+            _surfaceDepth = renderer.Surfaces.GetDepth();
         }
 
         public override void Dispose() { }
