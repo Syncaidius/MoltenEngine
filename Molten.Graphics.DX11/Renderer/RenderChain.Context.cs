@@ -49,6 +49,8 @@ namespace Molten.Graphics
             /// Gets whether or not a composition surface was used at some point.
             /// </summary>
             internal bool HasComposed { get; private set; }
+
+            internal StateConditions BaseStateConditions { get; set; }
         }
     }
 }

@@ -158,7 +158,12 @@
                         _surface.OnPostResize -= _surface_OnPostResize;
 
                     if (value != null)
+                    {
+                        if (value.IsMultisampled)
+                            throw new InvalidOperationException("A RenderCamera's output surface cannot have anti-aliasing enabled.");
+
                         value.OnPostResize += _surface_OnPostResize;
+                    }
 
                     IRenderSurface2D oldSurface = _surface;
                     _surface = value;
@@ -222,6 +227,11 @@
         /// For example, setting bit 0 will skip rendering of layer 0 (the default layer).
         /// </summary>
         public SceneLayerMask LayerMask { get; set; }
+
+        /// <summary>
+        /// Gets or sets the multi-sample <see cref="AntiAliasLevel"/> when rendering a scene with the current <see cref="RenderCamera"/>.
+        /// </summary>
+        public AntiAliasLevel MultiSampleLevel { get; set; } = AntiAliasLevel.None;
 
         /// <summary>
         /// Gets the <see cref="RenderProfiler"/> instance bound to the current <see cref="RenderCamera"/>, which tracks render performance and statistics of the scene rendered by the camera.

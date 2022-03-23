@@ -5,7 +5,7 @@ namespace Molten.Graphics
     internal partial class RenderChain : IRenderChain
     {
         Link _first;
-        readonly RendererDX11 _renderer;
+        RendererDX11 _renderer;
         internal readonly ObjectPool<Link> LinkPool;
         internal readonly ObjectPool<Context> ContextPool;
 
@@ -32,6 +32,11 @@ namespace Molten.Graphics
             Context context = ContextPool.GetInstance();
             context.Layer = layerData as LayerRenderData<Renderable>;
             context.Scene = sceneData as SceneRenderData<Renderable>;
+
+            _renderer.Surfaces.MultiSampleLevel = camera.MultiSampleLevel;
+
+            if (camera.MultiSampleLevel >= AntiAliasLevel.X2)
+                context.BaseStateConditions = StateConditions.Multisampling;
 
             _first.Run(_renderer, camera, context, time);
             Link.Recycle(_first);

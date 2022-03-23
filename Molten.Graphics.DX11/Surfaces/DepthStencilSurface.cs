@@ -32,7 +32,8 @@ namespace Molten.Graphics
             uint arraySize = 1, 
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
             MSAAQuality msaa = MSAAQuality.Default,
-            TextureFlags flags = TextureFlags.None)
+            TextureFlags flags = TextureFlags.None, 
+            string name = "surface")
             : base(renderer, width, height, Format.FormatR24G8Typeless, mipCount, arraySize, flags, aaLevel, msaa)
         {
             _depthFormat = format;
@@ -40,6 +41,7 @@ namespace Molten.Graphics
             _description.Format = GetFormat().ToApi();
             _depthDesc = new DepthStencilViewDesc();
             _depthDesc.Format = GetDSVFormat().ToApi();
+            Name = $"depth_{name}";
 
             if (MultiSampleLevel >= AntiAliasLevel.X2)
             {

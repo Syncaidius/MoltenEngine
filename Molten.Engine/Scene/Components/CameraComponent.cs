@@ -201,5 +201,11 @@ namespace Molten
             get => _camera.Mode;
             set => _camera.Mode = value;
         }
+
+        public AntiAliasLevel MultiSampleLevel
+        {
+            get => _camera.MultiSampleLevel;
+            set => _camera.MultiSampleLevel = value;
+        }
     }
 }

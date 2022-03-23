@@ -5,7 +5,7 @@
     /// </summary>
     internal abstract class RenderStepBase : IDisposable
     {
-        internal abstract void Initialize(RendererDX11 renderer);
+        internal virtual void Initialize(RendererDX11 renderer) { }
 
         internal abstract void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time);
 

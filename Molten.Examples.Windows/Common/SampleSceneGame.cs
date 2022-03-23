@@ -22,7 +22,7 @@ namespace Molten.Samples
             SceneCamera.LayerMask = SceneLayerMask.Layer1 | SceneLayerMask.Layer2;
             SceneCamera.OutputSurface = Window;
             SceneCamera.MaxDrawDistance = 300;
-            SceneCamera.OutputSurface = Window;
+            SceneCamera.MultiSampleLevel = AntiAliasLevel.X8;
             MainScene.AddObject(_player);
         }
 

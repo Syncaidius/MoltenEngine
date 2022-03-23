@@ -2,33 +2,30 @@
 
 namespace Molten.Graphics
 {
-    internal class SurfaceTracker : IDisposable
+    internal class DepthSurfaceTracker : IDisposable
     {
         SurfaceSizeMode _mode;
-        Dictionary<AntiAliasLevel, RenderSurface2D> _surfaces;
+        Dictionary<AntiAliasLevel, DepthStencilSurface> _surfaces;
         RendererDX11 _renderer;
 
         uint _width;
         uint _height;
-        Format _dxgiFormat;
-        string _name;
+        DepthFormat _format;
 
-        internal SurfaceTracker(
+        internal DepthSurfaceTracker(
             RendererDX11 renderer,
             AntiAliasLevel[] aaLevels,
             uint width,
             uint height,
-            Format dxgiFormat,
-            string name,
+            DepthFormat format,
             SurfaceSizeMode mode = SurfaceSizeMode.Full)
         {
             _width = width;
             _height = height;
-            _dxgiFormat = dxgiFormat;
-            _name = name;
+            _format = format;
             _mode = mode;
             _renderer = renderer;
-            _surfaces = new Dictionary<AntiAliasLevel, RenderSurface2D>();
+            _surfaces = new Dictionary<AntiAliasLevel, DepthStencilSurface>();
         }
 
         internal void RefreshSize(uint minWidth, uint minHeight)
@@ -39,25 +36,25 @@ namespace Molten.Graphics
             switch (_mode)
             {
                 case SurfaceSizeMode.Full:
-                    foreach(RenderSurface2D rs in _surfaces.Values)
+                    foreach(DepthStencilSurface rs in _surfaces.Values)
                         rs?.Resize(minWidth, minHeight);
                     break;
 
                 case SurfaceSizeMode.Half:
-                    foreach (RenderSurface2D rs in _surfaces.Values)
+                    foreach (DepthStencilSurface rs in _surfaces.Values)
                         rs?.Resize((minWidth / 2) + 1, (minHeight / 2) + 1);
                     break;
             }
         }
 
-        internal RenderSurface2D Create(AntiAliasLevel aa)
+        internal DepthStencilSurface Create(AntiAliasLevel aa)
         {
-            RenderSurface2D rs = new RenderSurface2D(
+            DepthStencilSurface rs = new DepthStencilSurface(
                 _renderer, 
                 _width, 
                 _height, 
-                _dxgiFormat, 
-                name: $"{_name}_{aa}aa", 
+                _format, 
+                name: $"depth_{aa}aa", 
                 aaLevel: aa
             );
 
@@ -67,15 +64,15 @@ namespace Molten.Graphics
 
         public void Dispose()
         {
-            foreach(RenderSurface2D rs in _surfaces.Values)
+            foreach(DepthStencilSurface rs in _surfaces.Values)
                 rs.Dispose();
         }
 
-        internal RenderSurface2D this[AntiAliasLevel aaLevel]
+        internal DepthStencilSurface this[AntiAliasLevel aaLevel]
         {
             get
             {
-                if (!_surfaces.TryGetValue(aaLevel, out RenderSurface2D rs))
+                if (!_surfaces.TryGetValue(aaLevel, out DepthStencilSurface rs))
                 {
                     rs = Create(aaLevel);
                     _surfaces[aaLevel] = rs;

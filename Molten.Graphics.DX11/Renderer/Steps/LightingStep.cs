@@ -11,29 +11,16 @@ namespace Molten.Graphics
         GraphicsBuffer _lightDataBuffer;
         BufferSegment _lightSegment;
 
-        RenderSurface2D _surfaceScene;
-        RenderSurface2D _surfaceNormals;
-        RenderSurface2D _surfaceLighting;
-        DepthStencilSurface _surfaceDepth;
-
         internal override void Initialize(RendererDX11 renderer)
         {
-            _surfaceDepth = renderer.Surfaces.GetDepth();
-            _surfaceScene = renderer.Surfaces[MainSurfaceType.Scene];
-            _surfaceNormals = renderer.Surfaces[MainSurfaceType.Normals];
-            _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
-
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings
             uint bufferByteSize = stride * maxLights;
             _lightDataBuffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicRing, 
                 BindFlag.BindShaderResource, bufferByteSize, ResourceMiscFlag.ResourceMiscBufferStructured, structuredStride: stride);
             _lightSegment = _lightDataBuffer.Allocate<LightData>(maxLights);
-            LoadShaders(renderer);
-        }
 
-        private void LoadShaders(RendererDX11 renderer)
-        {
+            // Load shaders
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "light_point.mfx");
             _matPoint = result[ShaderClassType.Material, "light-point"] as Material;
             _matDebugPoint = result[ShaderClassType.Material, "light-point-debug"] as Material;
@@ -49,18 +36,24 @@ namespace Molten.Graphics
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
+            RenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
+            DepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
+
             Device device = renderer.Device;
 
             _surfaceLighting.Clear(renderer.Device, context.Scene.AmbientLightColor);
             device.State.ResetRenderSurfaces();
             device.State.SetRenderSurface(_surfaceLighting, 0);
-            device.State.DepthSurface.Value = _surfaceDepth;
+            device.State.DepthSurface.Value = sDepth;
             device.State.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
-            RenderPointLights(device, camera, context.Scene);
+            RenderPointLights(renderer, device, camera, context.Scene, sDepth);
         }
 
-        private void RenderPointLights(DeviceContext context, RenderCamera camera, SceneRenderData scene)
+        private void RenderPointLights(RendererDX11 renderer, DeviceContext context, RenderCamera camera, SceneRenderData scene, DepthStencilSurface dsSurface)
         {
+            RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
+            RenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
+
             // Calculate camera-specific information for each point light
             LightInstance instance;
             LightData ld;
@@ -82,16 +75,16 @@ namespace Molten.Graphics
 
             // Set data buffer on domain and pixel shaders
             _matPoint.Light.Data.Value = _lightSegment; // TODO Need to implement a dynamic structured buffer we can reuse here.
-            _matPoint.Light.MapDiffuse.Value = _surfaceScene;
-            _matPoint.Light.MapNormal.Value =  _surfaceNormals;
-            _matPoint.Light.MapDepth.Value = _surfaceDepth;
+            _matPoint.Light.MapDiffuse.Value = sScene;
+            _matPoint.Light.MapNormal.Value =  sNormals;
+            _matPoint.Light.MapDepth.Value = dsSurface;
 
             _matPoint.Light.InvViewProjection.Value = camera.InvViewProjection;
             _matPoint.Light.CameraPosition.Value = camera.Position;
             _matPoint.Scene.MaxSurfaceUV.Value = new Vector2F()
             {
-                X = (float)camera.OutputSurface.Width / _surfaceScene.Width,
-                Y = (float)camera.OutputSurface.Height / _surfaceScene.Height,
+                X = (float)camera.OutputSurface.Width / sScene.Width,
+                Y = (float)camera.OutputSurface.Height / sScene.Height,
             };
 
             //set correct buffers and shaders

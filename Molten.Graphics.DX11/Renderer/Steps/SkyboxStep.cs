@@ -5,16 +5,12 @@
     /// </summary>
     internal class SkyboxStep : RenderStepBase
     {
-        DepthStencilSurface _surfaceDepth;
-        RenderSurface2D _surfaceScene;
         Material _matSky;
         IndexedMesh<Vertex> _sphereMesh;
         ObjectRenderData _skyboxData;
 
         internal override void Initialize(RendererDX11 renderer)
         {
-            _surfaceScene = renderer.Surfaces[MainSurfaceType.Scene];
-            _surfaceDepth = renderer.Surfaces.GetDepth();
             _skyboxData = new ObjectRenderData();
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "skybox.mfx");
@@ -38,6 +34,9 @@
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
+            DepthStencilSurface _surfaceDepth;
+            RenderSurface2D _surfaceScene;
+
             // No skybox texture or we're not on the first layer.
             if (context.Scene.SkyboxTexture == null || context.Scene.Layers.First() != context.Layer)
                 return;
@@ -48,16 +47,16 @@
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 
             // We want to add to the previous composition, rather than completely overwrite it.
-            RenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
+            RenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
 
             device.State.ResetRenderSurfaces();
             device.State.SetRenderSurface(destSurface, 0);
-            device.State.DepthSurface.Value = _surfaceDepth;
+            device.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
             device.State.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
             device.State.SetViewports(camera.OutputSurface.Viewport);
             device.State.SetScissorRectangle(bounds);
 
-            renderer.Device.BeginDraw(StateConditions.None); // TODO correctly use pipe + conditions here.
+            renderer.Device.BeginDraw(context.BaseStateConditions);
             _skyboxData.RenderTransform = Matrix4F.Scaling(camera.MaxDrawDistance) * Matrix4F.CreateTranslation(camera.Position);
             _sphereMesh.Render(device, renderer, camera, _skyboxData);
             renderer.Device.EndDraw();

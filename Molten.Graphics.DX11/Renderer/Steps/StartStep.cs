@@ -4,34 +4,26 @@ namespace Molten.Graphics
 {
     internal class StartStep : RenderStepBase
     {
-        RenderSurface2D _surfaceScene;
-        RenderSurface2D _surfaceNormals;
-        RenderSurface2D _surfaceEmissive;
-        DepthStencilSurface _surfaceDepth;
-
-        internal override void Initialize(RendererDX11 renderer)
-        {
-            _surfaceScene = renderer.Surfaces[MainSurfaceType.Scene];
-            _surfaceNormals = renderer.Surfaces[MainSurfaceType.Normals];
-            _surfaceEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
-            _surfaceDepth = renderer.Surfaces.GetDepth();
-        }
-
         public override void Dispose() { }
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
+            RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
+            RenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
+            RenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
+            DepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
+
             Device device = renderer.Device;
 
             device.State.SetRenderSurfaces(null);
-            bool newSurface = renderer.ClearIfFirstUse(device, _surfaceScene, context.Scene.BackgroundColor);
-            renderer.ClearIfFirstUse(device, _surfaceNormals, Color.White * 0.5f);
-            renderer.ClearIfFirstUse(device, _surfaceEmissive, Color.Black);
+            bool newSurface = renderer.ClearIfFirstUse(device, sScene, context.Scene.BackgroundColor);
+            renderer.ClearIfFirstUse(device, sNormals, Color.White * 0.5f);
+            renderer.ClearIfFirstUse(device, sEmissive, Color.Black);
 
             // Always clear the depth surface at the start of each scene unless otherwise instructed.
             // Will also be cleared if we've just switched to a previously un-rendered surface during this frame.
             if(!camera.Flags.HasFlag(RenderCameraFlags.DoNotClearDepth) || newSurface)
-                _surfaceDepth.Clear(device, ClearFlag.ClearDepth | ClearFlag.ClearStencil);
+                sDepth.Clear(device, ClearFlag.ClearDepth | ClearFlag.ClearStencil);
         }
     }
 }

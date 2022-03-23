@@ -14,16 +14,17 @@ namespace Molten.Graphics
         ThreadedList<SurfaceTracker> _surfaces;
         SurfaceTracker[] _mainSurfaces;
 
-        DepthStencilSurface _depthSurface;
+        DepthSurfaceTracker _depthSurface;
         RendererDX11 _renderer;
         AntiAliasLevel[] _aaLevels;
 
         internal SurfaceManager(RendererDX11 renderer)
         {
             _aaLevels = ReflectionHelper.GetEnumValues<AntiAliasLevel>();
+            MainSurfaceType[] surfaceTypes = ReflectionHelper.GetEnumValues<MainSurfaceType>();
 
             _surfacesByKey = new ThreadedDictionary<string, SurfaceTracker>();
-            _mainSurfaces = new SurfaceTracker[_aaLevels.Length];
+            _mainSurfaces = new SurfaceTracker[surfaceTypes.Length];
             _surfaces = new ThreadedList<SurfaceTracker>();
             _renderer = renderer;
         }
@@ -38,7 +39,13 @@ namespace Molten.Graphics
 
         internal void Initialize(uint width, uint height)
         {
-            InitializeMainSurfaces(width, height);
+            RegisterMainSurface(MainSurfaceType.Scene, width, height, GraphicsFormat.R8G8B8A8_UNorm);
+            RegisterMainSurface(MainSurfaceType.Normals, width, height, GraphicsFormat.R11G11B10_Float);
+            RegisterMainSurface(MainSurfaceType.Emissive, width, height, GraphicsFormat.R8G8B8A8_UNorm);
+            RegisterMainSurface(MainSurfaceType.Composition1, width, height, GraphicsFormat.R16G16B16A16_Float);
+            RegisterMainSurface(MainSurfaceType.Composition2, width, height, GraphicsFormat.R16G16B16A16_Float);
+            RegisterMainSurface(MainSurfaceType.Lighting, width, height, GraphicsFormat.R16G16B16A16_Float);
+            _depthSurface = new DepthSurfaceTracker(_renderer, _aaLevels, width, height, DepthFormat.R24G8_Typeless);
         }
 
         internal void RegisterMainSurface(
@@ -53,21 +60,10 @@ namespace Molten.Graphics
             _mainSurfaces[(uint)mainType] = tracker;
         }
 
-        internal void InitializeMainSurfaces(uint width, uint height)
-        {
-            RegisterMainSurface(MainSurfaceType.Scene, width, height, GraphicsFormat.R8G8B8A8_UNorm);
-            RegisterMainSurface(MainSurfaceType.Normals, width, height, GraphicsFormat.R11G11B10_Float);
-            RegisterMainSurface(MainSurfaceType.Emissive, width, height, GraphicsFormat.R8G8B8A8_UNorm);
-            RegisterMainSurface(MainSurfaceType.Composition1, width, height, GraphicsFormat.R16G16B16A16_Float);
-            RegisterMainSurface(MainSurfaceType.Composition2, width, height, GraphicsFormat.R16G16B16A16_Float);
-            RegisterMainSurface(MainSurfaceType.Lighting, width, height, GraphicsFormat.R16G16B16A16_Float);
-            _depthSurface = new DepthStencilSurface(_renderer, width, height, DepthFormat.R24G8_Typeless);
-        }
-
         internal void Rebuild(uint requiredWidth, uint requiredHeight)
         {
             _surfaces.For(0, 1, (index, config) => config.RefreshSize(requiredWidth, requiredHeight));
-            _depthSurface.Resize(requiredWidth, requiredHeight);
+            _depthSurface.RefreshSize(requiredWidth, requiredHeight);
         }
 
         internal SurfaceTracker RegisterSurface(string key, uint width, uint height, GraphicsFormat format, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
@@ -87,10 +83,7 @@ namespace Molten.Graphics
 
         internal RenderSurface2D this[string key] => _surfacesByKey[key][MultiSampleLevel];
 
-        internal DepthStencilSurface GetDepth()
-        {
-            return _depthSurface;
-        }
+        internal DepthStencilSurface GetDepth() => _depthSurface[MultiSampleLevel];
 
         internal AntiAliasLevel MultiSampleLevel { get; set; } = AntiAliasLevel.None;
     }

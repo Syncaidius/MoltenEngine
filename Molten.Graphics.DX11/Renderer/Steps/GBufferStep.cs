@@ -2,38 +2,27 @@
 {
     internal class GBufferStep : RenderStepBase
     {
-        RenderSurface2D _surfaceScene;
-        RenderSurface2D _surfaceNormals;
-        RenderSurface2D _surfaceEmissive;
-        DepthStencilSurface _surfaceDepth;
-
-        internal override void Initialize(RendererDX11 renderer)
-        {
-            _surfaceScene = renderer.Surfaces[MainSurfaceType.Scene];
-            _surfaceNormals = renderer.Surfaces[MainSurfaceType.Normals];
-            _surfaceEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
-            _surfaceDepth = renderer.Surfaces.GetDepth();
-        }
-
         public override void Dispose() { }
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
+            RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
+            RenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
+            RenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
+
             Device device = renderer.Device;
 
-            device.State.SetRenderSurface(_surfaceScene, 0);
-            device.State.SetRenderSurface(_surfaceNormals, 1);
-            device.State.SetRenderSurface(_surfaceEmissive, 2);
-            device.State.DepthSurface.Value = _surfaceDepth;
+            device.State.SetRenderSurface(sScene, 0);
+            device.State.SetRenderSurface(sNormals, 1);
+            device.State.SetRenderSurface(sEmissive, 2);
+            device.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
 
-            SetMaterialCommon(renderer.StandardMeshMaterial, camera, _surfaceScene);
-            SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, _surfaceScene);
+            SetMaterialCommon(renderer.StandardMeshMaterial, camera, sScene);
+            SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, sScene);
 
             device.State.SetViewports(camera.OutputSurface.Viewport);
-            StateConditions conditions = StateConditions.None; // TODO expand
-            conditions |= camera.OutputSurface.MultiSampleLevel >= AntiAliasLevel.X2 ? StateConditions.Multisampling : StateConditions.None;
 
-            device.BeginDraw(conditions);
+            device.BeginDraw(context.BaseStateConditions);
             renderer.RenderSceneLayer(device, context.Layer, camera);
             device.EndDraw();
         }

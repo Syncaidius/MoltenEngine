@@ -119,18 +119,16 @@ namespace Molten.Graphics
             _pendingGlyphs = new ThreadedQueue<ushort>();
             _charPadding = charPadding;
 
-            FontHash = (ulong)_fontSize << 56;    // [ptSize - 1 byte/8-bit]
+            FontHash = (ulong)_fontSize << 56;          // [ptSize - 1 byte/8-bit]
             FontHash |= (ulong)_tabSize << 48;          // [tabSize - 1 byte/8-bit]
             FontHash |= (ulong)_pageSize << 32;         // [texturePageSize - 2 bytes/16-bit]
             FontHash |= (ulong)_pointsPerCurve << 16;   // [pointsPerCurve - 2 bytes/16-bit]
             FontHash |= (ulong)_charPadding << 8;       // [charPadding - 1 byte/8-bit]
             FontHash |= 0;                              // [RESERVERD - 1 byte/8-bit]
 
-            // TODO SCENE render targets need to be multi-sampled, not the output!
-            // TODO Make Scene render targets match sample count of output camera.
-            // TODO Add RenderCameraFlags.Multisampled
+
             _lineSpace = ToPixels(_font.HorizonalHeader.LineSpace);
-            _rt = renderer.Resources.CreateSurface((uint)_pageSize, (uint)_pageSize, arraySize: (uint)initialPages, aaLevel: AntiAliasLevel.X8);
+            _rt = renderer.Resources.CreateSurface((uint)_pageSize, (uint)_pageSize, arraySize: (uint)initialPages);
             _tex = renderer.Resources.CreateTexture2D(new Texture2DProperties()
             {
                 Width = (uint)_pageSize,
@@ -158,7 +156,8 @@ namespace Molten.Graphics
             _renderData.AddObject(new RenderCamera(RenderCameraMode.Orthographic)
             {
                 OutputSurface = _rt,
-                Flags = RenderCameraFlags.DoNotClear
+                Flags = RenderCameraFlags.DoNotClear,
+                MultiSampleLevel = AntiAliasLevel.X8
             });
 
             // Add placeholder character.

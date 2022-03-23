@@ -8,6 +8,7 @@
     <Nullable>enable</Nullable>
     <StartupObject>Program</StartupObject>
     <SupportedOSPlatformVersion>8.0</SupportedOSPlatformVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
