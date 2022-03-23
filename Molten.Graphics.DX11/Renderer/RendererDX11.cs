@@ -28,7 +28,7 @@ namespace Molten.Graphics
         {
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
-            Surfaces = new SurfaceBank(this);
+            Surfaces = new SurfaceManager(this);
         }
 
         protected override void OnInitializeAdapter(GraphicsSettings settings)
@@ -207,6 +207,6 @@ namespace Molten.Graphics
         /// </summary>
         public override ResourceFactory Resources => _resFactory;
 
-        internal SurfaceBank Surfaces { get; }
+        internal SurfaceManager Surfaces { get; }
     }
 }

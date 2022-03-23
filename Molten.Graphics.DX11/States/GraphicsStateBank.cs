@@ -9,7 +9,7 @@
 
         internal GraphicsStateBank()
         {
-            IConvertible last = EnumHelper.GetLastValue<E>();
+            IConvertible last = ReflectionHelper.GetLastEnumValue<E>();
             int presetArraySize = (int)last + 1;
             _presets = new T[presetArraySize];
             _states = new List<T>();

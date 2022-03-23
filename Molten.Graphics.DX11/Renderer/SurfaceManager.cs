@@ -8,7 +8,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    internal class SurfaceBank : IDisposable
+    internal class SurfaceManager : IDisposable
     {
         ThreadedDictionary<string, SurfaceConfig> _surfacesByKey;
         ThreadedList<SurfaceConfig> _surfaces;
@@ -17,7 +17,7 @@ namespace Molten.Graphics
         DepthStencilSurface _depthSurface;
         RendererDX11 _renderer;
 
-        internal SurfaceBank(RendererDX11 renderer)
+        internal SurfaceManager(RendererDX11 renderer)
         {
             _surfacesByKey = new ThreadedDictionary<string, SurfaceConfig>();
             _mainSurfaces = new ThreadedDictionary<MainSurfaceType, SurfaceConfig>();

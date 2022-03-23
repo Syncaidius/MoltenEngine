@@ -94,13 +94,33 @@ namespace Molten
         /// <summary>Returns an array containing all of the values in the specified enum type.</summary>
         /// <typeparam name="T">The enum type of which to return values.</typeparam>
         /// <returns></returns>
-        public static T[] EnumToArray<T>() where T : struct
+        public static T[] GetEnumValues<T>() where T : struct
         {
             Type t = typeof(T);
             if (!t.IsEnum)
                 throw new Exception("The provided type was not of type Enum");
 
             return Enum.GetValues(t) as T[];
+        }
+
+        public static T GetLastEnumValue<T>() where T : struct, IConvertible
+        {
+            Type t = typeof(T);
+
+            if (t.IsEnum == false)
+                throw new InvalidOperationException("Type must be an enum");
+
+            return Enum.GetValues(t).Cast<T>().Last();
+        }
+
+        public static T GetHighestEnumValue<T>() where T : struct, IConvertible
+        {
+            Type t = typeof(T);
+
+            if (t.IsEnum == false)
+                throw new InvalidOperationException("Type must be an enum");
+
+            return Enum.GetValues(t).Cast<T>().Max();
         }
     }
 }

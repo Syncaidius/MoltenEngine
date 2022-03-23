@@ -35,8 +35,8 @@ namespace Molten.Font
         /// Set in table version 1.3 or higher, otherwise null.</summary>
         public ItemVariationStore ItemVarStore { get; internal set; }
 
-        static readonly GlyphClass[] _classTranslation = ReflectionHelper.EnumToArray<GlyphClass>();
-        static readonly GlyphMarkClass[] _markTranslation = ReflectionHelper.EnumToArray<GlyphMarkClass>();
+        static readonly GlyphClass[] _classTranslation = ReflectionHelper.GetEnumValues<GlyphClass>();
+        static readonly GlyphMarkClass[] _markTranslation = ReflectionHelper.GetEnumValues<GlyphMarkClass>();
 
         internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {

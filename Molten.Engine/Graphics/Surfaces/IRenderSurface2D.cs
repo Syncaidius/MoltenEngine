@@ -1,12 +1,7 @@
 ﻿namespace Molten.Graphics
 {
-    public interface IRenderSurface2D : ITexture2D
+    public interface IRenderSurface2D : ITexture2D, IRenderSurface
     {
-        /// <summary>Clears the provided <see cref="IRenderSurface2D"/> with the specified color.</summary>
-        /// <param name="surface">The surface.</param>
-        /// <param name="color">The color to use for clearing the surface.</param>
-        void Clear(Color color);
-
         /// <summary>Gets the viewport that defines the renderable area of the render target.</summary>
         ViewportF Viewport { get; }
     }

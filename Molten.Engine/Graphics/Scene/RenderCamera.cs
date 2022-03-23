@@ -3,7 +3,7 @@
     public delegate void RenderCameraProjectionFunc(IRenderSurface2D surface, float nearClip, float farClip, float fov, ref Matrix4F projection);
     public delegate void RendercameraSurfaceHandler(RenderCamera camera, IRenderSurface2D oldSurface, IRenderSurface2D newSurface);
 
-    public class RenderCamera
+    public class RenderCamera : EngineObject
     {
         class ClipRange
         {
@@ -44,6 +44,8 @@
             _clipPreset[RenderCameraMode.Perspective] = new ClipRange(0.1f, 1000f);
             _clipPreset[RenderCameraMode.Orthographic] = new ClipRange(0.0f, 1.0f);
         }
+
+        protected override void OnDispose() { }
 
         /// <summary>
         /// Creates a new instance of <see cref="RenderCamera"/> with the specified projection calculation preset.

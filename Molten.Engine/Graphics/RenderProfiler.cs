@@ -127,7 +127,7 @@ namespace Molten.Graphics
             _curID = 0;
             _frameTimer.Stop();
             _frameTimer.Reset();
-            FrameCount = 0;
+            FrameID = 0;
 
             for (int i = 0; i < MaxSnapshots; i++)
                 _snapshots[i].Clear();
@@ -149,7 +149,7 @@ namespace Molten.Graphics
             _frameTimer.Stop();
             Current.Time = _frameTimer.Elapsed.TotalMilliseconds;
             Current.TargetTime = time.TargetFrameTime;
-            Current.FrameID = FrameCount++;
+            Current.FrameID = FrameID++;
             Previous = Current;
             _curID++;
 
@@ -169,7 +169,7 @@ namespace Molten.Graphics
         /// <summary>
         /// The total number of frames tracked during this 
         /// </summary>
-        public uint FrameCount { get; private set; }
+        public uint FrameID { get; private set; }
 
         /// <summary>
         /// Gets the profiling data for the current frame.

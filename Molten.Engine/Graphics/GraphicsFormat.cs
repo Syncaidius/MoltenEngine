@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public enum GraphicsFormat
+    public enum GraphicsFormat : byte
     {
         ///<Summary>The format is not known.</Summary>
         Unknown = 0,

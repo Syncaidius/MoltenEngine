@@ -18,7 +18,7 @@ namespace Molten.Input
 
         static WinGamepadDevice()
         {
-            _buttons = ReflectionHelper.EnumToArray<GamepadButtonFlags>();
+            _buttons = ReflectionHelper.GetEnumValues<GamepadButtonFlags>();
         }
 
         internal WinGamepadDevice(WinInputService manager, int index) : 
