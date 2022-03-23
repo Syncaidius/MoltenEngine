@@ -104,7 +104,7 @@ namespace Molten.Graphics
 
         public void Present()
         {
-            Apply(Device);
+            OnApply(Device);
 
             if (OnPresent() && NativeSwapChain != null)
             {

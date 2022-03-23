@@ -27,12 +27,16 @@ namespace Molten.Graphics
         RenderProfiler _defaultProfiler;
         DrawInfo _drawInfo;
 
+        internal DeviceContext()
+        {
+            _drawInfo = new DrawInfo();
+            _defaultProfiler = _profiler = new RenderProfiler();
+        }
+
         internal void Initialize(Logger log, Device device, ID3D11DeviceContext* context)
         {
             _context = context;
             Device = device;
-            _defaultProfiler = _profiler = new RenderProfiler();
-            _drawInfo = new DrawInfo();
             Log = log;
 
             if (_context->GetType() == DeviceContextType.DeviceContextImmediate)

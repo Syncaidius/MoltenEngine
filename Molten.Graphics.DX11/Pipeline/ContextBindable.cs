@@ -12,13 +12,20 @@ namespace Molten.Graphics
         {
             BoundTo = new List<ContextSlot>();
             BindFlags = bindFlags;
+            LastUsedFrameID = device.Profiler.FrameID;
         }
 
         /// <summary>
         /// Invoked when the current <see cref="ContextBindable"/> should apply any changes before being bound to a GPU context.
         /// </summary>
-        /// <param name="pipe">The <see cref="DeviceContext"/> that the current <see cref="ContextBindable"/> is to be bound to.</param>
-        internal abstract void Apply(DeviceContext pipe);
+        /// <param name="context">The <see cref="DeviceContext"/> that the current <see cref="ContextBindable"/> is to be bound to.</param>
+        internal void Apply(DeviceContext context)
+        {
+            LastUsedFrameID = context.Device.Profiler.FrameID;
+            OnApply(context);
+        }
+
+        protected abstract void OnApply(DeviceContext context);
 
         /// <summary>
         /// Gets the instance-specific version of the current <see cref="ContextBindable"/>. Any change which will require a device
@@ -37,6 +44,11 @@ namespace Molten.Graphics
         internal uint BindID { get; set; }
 
         internal ContextBindTypeFlags BindFlags { get; set; }
+
+        /// <summary>
+        /// Gets the ID of the frame that the current <see cref="ContextBindable"/> was applied.
+        /// </summary>
+        internal uint LastUsedFrameID { get; private set; }
     }
 
     public unsafe abstract class PipeBindable<T> : ContextBindable

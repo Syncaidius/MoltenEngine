@@ -108,7 +108,7 @@ namespace Molten.Graphics
             return true;
         }
 
-        internal override void Apply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext pipe)
         {
             if (_native == null || _dirty)
             {

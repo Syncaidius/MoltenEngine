@@ -35,7 +35,7 @@ namespace Molten.Graphics
 
         internal virtual void Clear(DeviceContext pipe, Color color)
         {
-            Apply(pipe);
+            OnApply(pipe);
 
             if (RTV.Ptr != null)
             {

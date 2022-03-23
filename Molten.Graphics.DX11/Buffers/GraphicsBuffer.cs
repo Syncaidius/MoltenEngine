@@ -373,7 +373,7 @@ namespace Molten.Graphics
             return ((CpuAccessFlag)Description.CPUAccessFlags & flag) == flag;
         }
 
-        internal override void Apply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext pipe)
         {
             ApplyChanges(pipe);
         }

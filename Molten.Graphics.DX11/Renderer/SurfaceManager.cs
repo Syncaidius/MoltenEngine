@@ -10,27 +10,29 @@ namespace Molten.Graphics
 {
     internal class SurfaceManager : IDisposable
     {
-        ThreadedDictionary<string, SurfaceConfig> _surfacesByKey;
-        ThreadedList<SurfaceConfig> _surfaces;
-        ThreadedDictionary<MainSurfaceType, SurfaceConfig> _mainSurfaces;
+        ThreadedDictionary<string, SurfaceTracker> _surfacesByKey;
+        ThreadedList<SurfaceTracker> _surfaces;
+        SurfaceTracker[] _mainSurfaces;
 
         DepthStencilSurface _depthSurface;
         RendererDX11 _renderer;
+        AntiAliasLevel[] _aaLevels;
 
         internal SurfaceManager(RendererDX11 renderer)
         {
-            _surfacesByKey = new ThreadedDictionary<string, SurfaceConfig>();
-            _mainSurfaces = new ThreadedDictionary<MainSurfaceType, SurfaceConfig>();
-            _surfaces = new ThreadedList<SurfaceConfig>();
+            _aaLevels = ReflectionHelper.GetEnumValues<AntiAliasLevel>();
+
+            _surfacesByKey = new ThreadedDictionary<string, SurfaceTracker>();
+            _mainSurfaces = new SurfaceTracker[_aaLevels.Length];
+            _surfaces = new ThreadedList<SurfaceTracker>();
             _renderer = renderer;
         }
 
         public void Dispose()
         {
-            _surfaces.For(0, 1, (index, config) => config.Surface.Dispose());
+            _surfaces.For(0, 1, (index, config) => config.Dispose());
             _surfaces.Clear();
             _depthSurface.Dispose();
-            _mainSurfaces.Clear();
             _surfacesByKey.Clear();
         }
 
@@ -39,28 +41,26 @@ namespace Molten.Graphics
             InitializeMainSurfaces(width, height);
         }
 
-        internal void CreateMainSurface(
-            string key,
+        internal void RegisterMainSurface(
             MainSurfaceType mainType,
             uint width,
             uint height,
             GraphicsFormat format,
             SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
         {
-            Format dxgiFormat = (Format)format;
-            RenderSurface2D surface = new RenderSurface2D(_renderer, width, height, dxgiFormat, name: $"renderer_{key}");
-            SurfaceConfig config = RegisterSurface(key, surface, sizeMode);
-            _mainSurfaces[mainType] = config;
+            string key = mainType.ToString();
+            SurfaceTracker tracker = RegisterSurface(key, width, height, format, sizeMode);
+            _mainSurfaces[(uint)mainType] = tracker;
         }
 
         internal void InitializeMainSurfaces(uint width, uint height)
         {
-            CreateMainSurface("scene", MainSurfaceType.Scene, width, height, GraphicsFormat.R8G8B8A8_UNorm);
-            CreateMainSurface("normals", MainSurfaceType.Normals, width, height, GraphicsFormat.R11G11B10_Float);
-            CreateMainSurface("emissive", MainSurfaceType.Emissive, width, height, GraphicsFormat.R8G8B8A8_UNorm);
-            CreateMainSurface("composition1", MainSurfaceType.Composition1, width, height, GraphicsFormat.R16G16B16A16_Float);
-            CreateMainSurface("composition2", MainSurfaceType.Composition2, width, height, GraphicsFormat.R16G16B16A16_Float);
-            CreateMainSurface("lighting", MainSurfaceType.Lighting, width, height, GraphicsFormat.R16G16B16A16_Float);
+            RegisterMainSurface(MainSurfaceType.Scene, width, height, GraphicsFormat.R8G8B8A8_UNorm);
+            RegisterMainSurface(MainSurfaceType.Normals, width, height, GraphicsFormat.R11G11B10_Float);
+            RegisterMainSurface(MainSurfaceType.Emissive, width, height, GraphicsFormat.R8G8B8A8_UNorm);
+            RegisterMainSurface(MainSurfaceType.Composition1, width, height, GraphicsFormat.R16G16B16A16_Float);
+            RegisterMainSurface(MainSurfaceType.Composition2, width, height, GraphicsFormat.R16G16B16A16_Float);
+            RegisterMainSurface(MainSurfaceType.Lighting, width, height, GraphicsFormat.R16G16B16A16_Float);
             _depthSurface = new DepthStencilSurface(_renderer, width, height, DepthFormat.R24G8_Typeless);
         }
 
@@ -70,12 +70,12 @@ namespace Molten.Graphics
             _depthSurface.Resize(requiredWidth, requiredHeight);
         }
 
-        internal SurfaceConfig RegisterSurface(string key, RenderSurface2D surface, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
+        internal SurfaceTracker RegisterSurface(string key, uint width, uint height, GraphicsFormat format, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
         {
             key = key.ToLower();
-            if (!_surfacesByKey.TryGetValue(key, out SurfaceConfig config))
+            if (!_surfacesByKey.TryGetValue(key, out SurfaceTracker config))
             {
-                config = new SurfaceConfig(surface, sizeMode);
+                config = new SurfaceTracker(_renderer, _aaLevels, width, height, format.ToApi(), key, sizeMode);
                 _surfacesByKey.Add(key, config);
                 _surfaces.Add(config);
             }
@@ -83,19 +83,15 @@ namespace Molten.Graphics
             return config;
         }
 
-        internal T Get<T>(MainSurfaceType type) where T : RenderSurface2D
-        {
-            return _mainSurfaces[type].Surface as T;
-        }
+        internal RenderSurface2D this[MainSurfaceType type] => _mainSurfaces[(uint)type][MultiSampleLevel];
 
-        internal T Get<T>(string key) where T : RenderSurface2D
-        {
-            return _surfacesByKey[key].Surface as T;
-        }
+        internal RenderSurface2D this[string key] => _surfacesByKey[key][MultiSampleLevel];
 
         internal DepthStencilSurface GetDepth()
         {
             return _depthSurface;
         }
+
+        internal AntiAliasLevel MultiSampleLevel { get; set; } = AntiAliasLevel.None;
     }
 }

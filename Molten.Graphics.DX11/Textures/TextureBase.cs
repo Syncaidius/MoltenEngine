@@ -356,7 +356,7 @@ namespace Molten.Graphics
                 staging.Depth != Depth)
                 throw new TextureCopyException(this, staging, "Staging texture dimensions do not match current texture.");
 
-            staging.Apply(pipe);
+            staging.OnApply(pipe);
 
             ID3D11Resource* resToMap = _native;
 
@@ -581,7 +581,7 @@ namespace Molten.Graphics
         /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the
         /// GPU may be using the texture will cause unexpected behaviour.</summary>
         /// <param name="pipe"></param>
-        internal override void Apply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext pipe)
         {
             if (IsDisposed)
                 return;

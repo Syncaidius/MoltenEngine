@@ -32,7 +32,7 @@
             Parent = this;
         }
 
-        internal override sealed void Apply(DeviceContext pipe) { }
+        protected override sealed void OnApply(DeviceContext pipe) { }
 
         /// <summary>
         /// Gets or sets the number of iterations the shader/component should be run.

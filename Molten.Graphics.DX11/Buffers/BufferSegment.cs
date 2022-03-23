@@ -227,7 +227,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal override void Apply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext pipe)
         {
             Buffer.Apply(pipe);
         }

@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public enum AntiAliasLevel : uint
+    public enum AntiAliasLevel : byte
     {
         Invalid = 0,
 

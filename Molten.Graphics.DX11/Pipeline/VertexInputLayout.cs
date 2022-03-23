@@ -91,7 +91,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal override void Apply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext pipe)
         {
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }

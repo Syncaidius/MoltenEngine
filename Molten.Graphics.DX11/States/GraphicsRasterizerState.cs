@@ -68,7 +68,7 @@ namespace Molten.Graphics
                 _desc.SlopeScaledDepthBias == other._desc.SlopeScaledDepthBias;
         }
 
-        internal override void Apply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext pipe)
         {
             if (_native == null || _dirty)
             {

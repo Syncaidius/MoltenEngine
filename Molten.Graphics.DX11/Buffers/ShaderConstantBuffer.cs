@@ -65,7 +65,7 @@ namespace Molten.Graphics
             base.PipelineRelease();
         }
 
-        internal override void Apply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext pipe)
         {
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
             if (DirtyVariables)

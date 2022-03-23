@@ -19,9 +19,9 @@ namespace Molten.Graphics
         internal override void Initialize(RendererDX11 renderer)
         {
             _surfaceDepth = renderer.Surfaces.GetDepth();
-            _surfaceScene = renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Scene);
-            _surfaceNormals = renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Normals);
-            _surfaceLighting = renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Lighting);
+            _surfaceScene = renderer.Surfaces[MainSurfaceType.Scene];
+            _surfaceNormals = renderer.Surfaces[MainSurfaceType.Normals];
+            _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
 
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings

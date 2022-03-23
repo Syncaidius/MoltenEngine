@@ -10,7 +10,7 @@
 
         internal override void Initialize(RendererDX11 renderer)
         {
-            _surfaceScene = renderer.Surfaces.Get<RenderSurface2D>(MainSurfaceType.Scene);
+            _surfaceScene = renderer.Surfaces[MainSurfaceType.Scene];
             _surfaceDepth = renderer.Surfaces.GetDepth();
         }
 

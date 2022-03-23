@@ -45,7 +45,7 @@ namespace Molten.Graphics
                     _desc.Filter <= Filter.FilterComparisonAnisotropic;
         }
 
-        internal override void Apply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext pipe)
         {
             // If the sampler was actually dirty, recreate it.
             if (_isDirty)
