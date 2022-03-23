@@ -55,7 +55,7 @@
             };
         }
 
-        internal unsafe void Flush(DeviceContext pipe, RenderCamera camera, ObjectRenderData data)
+        internal unsafe void Flush(DeviceContext context, RenderCamera camera, ObjectRenderData data)
         {
             if (NextID == 0)
                 return;
@@ -63,7 +63,7 @@
             Range range;
 
             _vpBounds = (Rectangle)camera.OutputSurface.Viewport.Bounds;
-            pipe.State.VertexBuffers[0].Value = _segment;
+            context.State.VertexBuffers[0].Value = _segment;
 
             // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.            
             uint i = 0;
@@ -117,20 +117,20 @@
                 }
 
                 if (_curRange > 0)
-                    FlushBuffer(pipe, camera, data, v);
+                    FlushBuffer(context, camera, data, v);
             }
             
             // Reset
             NextID = 0;
         }
 
-        private void FlushBuffer(DeviceContext pipe, RenderCamera camera, ObjectRenderData data, uint vertexCount)
+        private void FlushBuffer(DeviceContext context, RenderCamera camera, ObjectRenderData data, uint vertexCount)
         {
             Range range;
             uint writeIndex = 0;
 
             // Map buffer segment
-            _segment.Map(pipe, (buffer, stream) =>
+            _segment.Map(context, (buffer, stream) =>
             {
                 for (uint i = 0; i < _curRange; i++)
                 {
@@ -145,11 +145,11 @@
             for(uint i = 0; i < _curRange; i++)
             {
                 range = _ranges[i];
-                _flushFuncs[(int)range.Format](pipe, camera, range, data);
+                _flushFuncs[(int)range.Format](context, camera, range, data);
             }
         }
 
-        private void FlushSpriteRange(DeviceContext pipe, RenderCamera camera, Range range, ObjectRenderData data)
+        private void FlushSpriteRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
         {
             Material mat = range.Material as Material;
 
@@ -166,30 +166,30 @@
             }
 
             if (range.ClipID <= 0)
-                pipe.State.SetScissorRectangles(_vpBounds);
+                context.State.SetScissorRectangles(_vpBounds);
             else
-                pipe.State.SetScissorRectangles(Clips[range.ClipID]);
+                context.State.SetScissorRectangles(Clips[range.ClipID]);
 
             mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            pipe.Draw(mat, range.VertexCount, VertexTopology.PointList, range.Start);
+            context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.Start);
         }
 
-        private void FlushLineRange(DeviceContext pipe, RenderCamera camera, Range range, ObjectRenderData data)
+        private void FlushLineRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
         {
             _defaultLineMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            pipe.Draw(_defaultLineMaterial, range.VertexCount, VertexTopology.PointList, range.Start);
+            context.Draw(_defaultLineMaterial, range.VertexCount, VertexTopology.PointList, range.Start);
         }
 
-        private void FlushTriangleRange(DeviceContext pipe, RenderCamera camera, Range range, ObjectRenderData data)
+        private void FlushTriangleRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
         {
             _defaultTriMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            pipe.Draw(_defaultTriMaterial, range.VertexCount, VertexTopology.PointList, range.Start);
+            context.Draw(_defaultTriMaterial, range.VertexCount, VertexTopology.PointList, range.Start);
         }
 
-        private void FlushCircleRange(DeviceContext pipe, RenderCamera camera, Range range, ObjectRenderData data)
+        private void FlushCircleRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
         {
             _defaultCircleMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            pipe.Draw(_defaultCircleMaterial, range.VertexCount, VertexTopology.PointList, range.Start);
+            context.Draw(_defaultCircleMaterial, range.VertexCount, VertexTopology.PointList, range.Start);
         }
 
         public override void Dispose()

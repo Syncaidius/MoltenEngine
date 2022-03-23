@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public unsafe class ShaderSampler : PipeBindable<ID3D11SamplerState>, IShaderSampler
+    public unsafe class ShaderSampler : ContextBindable<ID3D11SamplerState>, IShaderSampler
     {
         internal override unsafe ID3D11SamplerState* NativePtr => _native;
 

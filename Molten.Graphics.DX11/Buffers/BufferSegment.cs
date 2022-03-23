@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
-    internal unsafe class BufferSegment : PipeBindableResource<ID3D11Buffer>, IPoolable
+    internal unsafe class BufferSegment : ContextBindableResource<ID3D11Buffer>, IPoolable
     {
         /// <summary>The size of the segment in bytes. This is <see cref="ElementCount"/> multiplied by <see cref="Stride"/>.</summary>
         internal uint ByteCount;
@@ -74,19 +74,19 @@ namespace Molten.Graphics
 
         /// <summary>Copies an array of elements into the buffer.</summary>
         /// <param name="data">The elements to set </param>
-        internal void SetData<T>(DeviceContext pipe, T[] data) where T : unmanaged
+        internal void SetData<T>(DeviceContext context, T[] data) where T : unmanaged
         {
-            SetData<T>(pipe, data, 0, (uint)data.Length);
+            SetData<T>(context, data, 0, (uint)data.Length);
         }
 
         /// <summary>Copies element data into the buffer.</summary>
         /// <param name="data">The source of elements to copy into the buffer.</param>
         /// <param name="offset">The ID of the first element in the buffer at which to copy the source data into.</param>
         /// <param name="count">The number of elements to copy from the source array.</param>
-        internal void SetData<T>(DeviceContext pipe, T[] data, uint count)
+        internal void SetData<T>(DeviceContext context, T[] data, uint count)
             where T : unmanaged
         {
-            SetData<T>(pipe, data, 0, count);
+            SetData<T>(context, data, 0, count);
         }
 
         /// <summary>Copies element data into the buffer.</summary>
@@ -96,7 +96,7 @@ namespace Molten.Graphics
         /// <param name="elementOffset">The number of elements from the beginning of the <see cref="BufferSegment"/> to offset the destination of the provided data.
         /// The number of bytes the data is offset is based on the <see cref="Stride"/> value of the buffer segment.</param>
         /// <param name="completionCallback">The callback to invoke when the set-data operation has been completed.</param>
-        internal void SetData<T>(DeviceContext pipe, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null, Action completionCallback = null) 
+        internal void SetData<T>(DeviceContext context, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null, Action completionCallback = null) 
             where T : unmanaged
         {
             uint tStride = (uint)Marshal.SizeOf(typeof(T));
@@ -128,12 +128,12 @@ namespace Molten.Graphics
 
         /// <summary>Immediately sets the data on the buffer.</summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="pipe">The pipe.</param>
+        /// <param name="context">The pipe.</param>
         /// <param name="data">The data.</param>
         /// <param name="startIndex">The element index within the provided data array to start copying from.</param>
         /// <param name="count">The number of elements to transfer from the provided data array.</param>
         /// <param name="byteOffset">The number of bytes to offset the copied data within the buffer segment.</param>
-        internal void SetDataImmediate<T>(DeviceContext pipe, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null) 
+        internal void SetDataImmediate<T>(DeviceContext context, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null) 
             where T : unmanaged
         {
             uint tStride = (uint)Marshal.SizeOf<T>();
@@ -146,15 +146,15 @@ namespace Molten.Graphics
             if (finalBytePos > segmentBounds)
                 throw new OverflowException($"Provided data's final byte position {finalBytePos} would exceed the segment's bounds (byte {segmentBounds})");
 
-            Buffer.Set<T>(pipe, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
+            Buffer.Set<T>(context, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
         }
 
-        internal void Map(DeviceContext pipe, Action<GraphicsBuffer, RawStream> callback, GraphicsBuffer staging = null)
+        internal void Map(DeviceContext context, Action<GraphicsBuffer, RawStream> callback, GraphicsBuffer staging = null)
         {
             uint curByteOffset = ByteOffset;
             uint curStride = Stride;
 
-            Buffer.GetStream(pipe, ByteOffset, Stride * ElementCount, (buffer, stream) =>
+            Buffer.GetStream(context, ByteOffset, Stride * ElementCount, (buffer, stream) =>
             {
                 if (Buffer.Mode == BufferMode.DynamicRing)
                     ByteOffset = (uint)stream.Position;
@@ -167,7 +167,7 @@ namespace Molten.Graphics
                 Version++;
         }
 
-        internal void GetData<T>(DeviceContext pipe, 
+        internal void GetData<T>(DeviceContext context, 
             T[] destination, 
             uint startIndex, 
             uint count, 
@@ -189,7 +189,7 @@ namespace Molten.Graphics
             Buffer.QueueOperation(op);
         }
 
-        internal void CopyTo(DeviceContext pipe, uint sourceByteOffset, BufferSegment destination, uint destByteOffset, uint count, bool isImmediate = false, Action completionCallback = null)
+        internal void CopyTo(DeviceContext context, uint sourceByteOffset, BufferSegment destination, uint destByteOffset, uint count, bool isImmediate = false, Action completionCallback = null)
         {
             uint bytesToCopy = Stride * count;
             uint totalOffset = ByteOffset + sourceByteOffset;
@@ -209,7 +209,7 @@ namespace Molten.Graphics
 
             if (isImmediate)
             {
-                Buffer.CopyTo(pipe, destination.Buffer, sourceRegion, destination.ByteOffset + destByteOffset);
+                Buffer.CopyTo(context, destination.Buffer, sourceRegion, destination.ByteOffset + destByteOffset);
             }
             else
             {
@@ -227,9 +227,9 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnApply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext context)
         {
-            Buffer.Apply(pipe);
+            Buffer.Apply(context);
         }
 
         /// <summary>Releases the buffer space reserved by the segment.</summary>

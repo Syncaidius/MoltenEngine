@@ -147,11 +147,11 @@ namespace Molten.Graphics
             }
         }
 
-        internal bool ClearIfFirstUse(DeviceContext pipe, RenderSurface2D surface, Color color)
+        internal bool ClearIfFirstUse(DeviceContext context, RenderSurface2D surface, Color color)
         {
             if (!_clearedSurfaces.Contains(surface))
             {
-                surface.Clear(pipe, color);
+                surface.Clear(context, color);
                 _clearedSurfaces.Add(surface);
                 return true;
             }
@@ -159,13 +159,13 @@ namespace Molten.Graphics
             return false;
         }
 
-        internal bool ClearIfFirstUse(DeviceContext pipe, DepthStencilSurface surface,
+        internal bool ClearIfFirstUse(DeviceContext context, DepthStencilSurface surface,
             ClearFlag flags = ClearFlag.ClearDepth, 
             float depth = 1.0f, byte stencil = 0)
         {
             if (!_clearedSurfaces.Contains(surface))
             {
-                surface.Clear(pipe, flags, depth, stencil);
+                surface.Clear(context, flags, depth, stencil);
                 _clearedSurfaces.Add(surface);
                 return true;
             }

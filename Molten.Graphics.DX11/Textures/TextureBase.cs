@@ -342,7 +342,7 @@ namespace Molten.Graphics
             });
         }
 
-        internal TextureData GetAllData(DeviceContext pipe, TextureBase staging)
+        internal TextureData GetAllData(DeviceContext context, TextureBase staging)
         {
             if (staging == null && !HasFlags(TextureFlags.Staging))
                 throw new TextureCopyException(this, null, "A null staging texture was provided, but this is only valid if the current texture is a staging texture. A staging texture is required to retrieve data from non-staged textures.");
@@ -356,14 +356,14 @@ namespace Molten.Graphics
                 staging.Depth != Depth)
                 throw new TextureCopyException(this, staging, "Staging texture dimensions do not match current texture.");
 
-            staging.OnApply(pipe);
+            staging.OnApply(context);
 
             ID3D11Resource* resToMap = _native;
 
             if (staging != null)
             {
-                pipe.Native->CopyResource(staging.NativePtr, _native);
-                pipe.Profiler.Current.CopyResourceCount++;
+                context.Native->CopyResource(staging.NativePtr, _native);
+                context.Profiler.Current.CopyResourceCount++;
                 resToMap = staging._native;
             }
 
@@ -391,7 +391,7 @@ namespace Molten.Graphics
                 for (uint i = 0; i < MipMapCount; i++)
                 {
                     uint subID = (a * MipMapCount) + i;
-                    data.Levels[subID] = GetSliceData(pipe, staging, i, a);
+                    data.Levels[subID] = GetSliceData(context, staging, i, a);
                 }
             }
 

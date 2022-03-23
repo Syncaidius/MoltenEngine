@@ -4,7 +4,7 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics
 {
     /// <summary>A helper class that safely wraps InputLayout.</summary>
-    internal unsafe class VertexInputLayout : PipeBindable<ID3D11InputLayout>
+    internal unsafe class VertexInputLayout : ContextBindable<ID3D11InputLayout>
     {
         ID3D11InputLayout* _native;
         bool _isValid = true;
@@ -91,7 +91,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnApply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext context)
         {
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }

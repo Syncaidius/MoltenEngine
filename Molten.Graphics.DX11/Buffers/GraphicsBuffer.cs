@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
-    internal unsafe partial class GraphicsBuffer : PipeBindableResource<ID3D11Buffer>
+    internal unsafe partial class GraphicsBuffer : ContextBindableResource<ID3D11Buffer>
     {
         ID3D11Buffer* _native;
         uint _ringPos;
@@ -153,30 +153,30 @@ namespace Molten.Graphics
         }
 
         /// <summary>Copies all the data in the current <see cref="GraphicsBuffer"/> to the destination <see cref="GraphicsBuffer"/>.</summary>
-        /// <param name="pipe">The <see cref="DeviceContext"/> that will perform the copy.</param>
+        /// <param name="context">The <see cref="DeviceContext"/> that will perform the copy.</param>
         /// <param name="destination">The <see cref="GraphicsBuffer"/> to copy to.</param>
-        internal void CopyTo(DeviceContext pipe, GraphicsBuffer destination)
+        internal void CopyTo(DeviceContext context, GraphicsBuffer destination)
         {
             if (destination.Description.ByteWidth < Description.ByteWidth)
                 throw new Exception("The destination buffer is not large enough.");
 
             // If the current buffer is a staging buffer, initialize and apply all its pending changes.
             if (Description.Usage == Usage.UsageStaging)
-                ApplyChanges(pipe);
+                ApplyChanges(context);
 
             ValidateCopyBufferUsage(destination);
-            pipe.Native->CopyResource(this, destination);
+            context.Native->CopyResource(this, destination);
         }
 
-        internal void CopyTo(DeviceContext pipe, GraphicsBuffer destination, Box sourceRegion, uint destByteOffset = 0)
+        internal void CopyTo(DeviceContext context, GraphicsBuffer destination, Box sourceRegion, uint destByteOffset = 0)
         {
             // If the current buffer is a staging buffer, initialize and apply all its pending changes.
             if (Description.Usage == Usage.UsageStaging)
-                ApplyChanges(pipe);
+                ApplyChanges(context);
 
             ValidateCopyBufferUsage(destination);
-            pipe.CopyResourceRegion(this, 0, ref sourceRegion, destination, 0, new Vector3UI(destByteOffset,0,0));
-            pipe.Profiler.Current.CopySubresourceCount++;
+            context.CopyResourceRegion(this, 0, ref sourceRegion, destination, 0, new Vector3UI(destByteOffset,0,0));
+            context.Profiler.Current.CopySubresourceCount++;
         }
 
         private void ValidateCopyBufferUsage(GraphicsBuffer destination)
@@ -189,7 +189,7 @@ namespace Molten.Graphics
                 throw new Exception("The destination buffer must have a usage flag of Staging or Default. Only these two allow the GPU write access for copying/writing data to the destination.");
         }
 
-        internal void GetStream(DeviceContext pipe, 
+        internal void GetStream(DeviceContext context, 
             uint byteOffset, 
             uint dataSize, 
             Action<GraphicsBuffer, RawStream> callback, 
@@ -208,9 +208,9 @@ namespace Molten.Graphics
                 switch (Mode)
                 {
                     case BufferMode.DynamicDiscard:
-                        pipe.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
+                        context.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
                         stream.Position = byteOffset;
-                        pipe.Profiler.Current.MapDiscardCount++;
+                        context.Profiler.Current.MapDiscardCount++;
                         break;
 
                     case BufferMode.DynamicRing:
@@ -220,35 +220,35 @@ namespace Molten.Graphics
                         {
                             if (_ringPos > 0 && _ringPos + dataSize < Description.ByteWidth)
                             {
-                                pipe.MapResource(NativePtr, 0, Map.MapWriteNoOverwrite, 0, out stream);
-                                pipe.Profiler.Current.MapNoOverwriteCount++;
+                                context.MapResource(NativePtr, 0, Map.MapWriteNoOverwrite, 0, out stream);
+                                context.Profiler.Current.MapNoOverwriteCount++;
                                 stream.Position = _ringPos;
                                 _ringPos += dataSize;
                             }
                             else
                             {                                
-                                pipe.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
-                                pipe.Profiler.Current.MapDiscardCount++;
+                                context.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
+                                context.Profiler.Current.MapDiscardCount++;
                                 stream.Position = 0;
                                 _ringPos = dataSize;
                             }
                         }
                         else
                         {
-                            pipe.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
-                            pipe.Profiler.Current.MapDiscardCount++;
+                            context.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
+                            context.Profiler.Current.MapDiscardCount++;
                             stream.Position = byteOffset;
                         }
                         break;
 
                     default:
-                        pipe.MapResource(NativePtr, 0, Map.MapWrite, 0, out stream);
-                        pipe.Profiler.Current.MapWriteCount++;
+                        context.MapResource(NativePtr, 0, Map.MapWrite, 0, out stream);
+                        context.Profiler.Current.MapWriteCount++;
                         break;
                 }     
                 
                 callback(this, stream);
-                pipe.UnmapResource(NativePtr, 0);
+                context.UnmapResource(NativePtr, 0);
             }
             else
             {
@@ -268,17 +268,17 @@ namespace Molten.Graphics
                 // Write updated data into buffer
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
                 {
-                    pipe.MapResource(staging.NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
-                    pipe.Profiler.Current.MapDiscardCount++;
+                    context.MapResource(staging.NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
+                    context.Profiler.Current.MapDiscardCount++;
                 }
                 else
                 {
-                    pipe.MapResource(staging.NativePtr, 0, Map.MapWrite, 0, out stream);
-                    pipe.Profiler.Current.MapWriteCount++;
+                    context.MapResource(staging.NativePtr, 0, Map.MapWrite, 0, out stream);
+                    context.Profiler.Current.MapWriteCount++;
                 }
 
                 callback(staging, stream);
-                pipe.UnmapResource(staging.NativePtr, 0);
+                context.UnmapResource(staging.NativePtr, 0);
 
                 Box stagingRegion = new Box()
                 {
@@ -287,15 +287,15 @@ namespace Molten.Graphics
                     Back = 1,
                     Bottom = 1,
                 };
-                pipe.CopyResourceRegion(staging, 0, ref stagingRegion, 
+                context.CopyResourceRegion(staging, 0, ref stagingRegion, 
                     this, 0, new Vector3UI(byteOffset, 0, 0));
-                pipe.Profiler.Current.CopySubresourceCount++;
+                context.Profiler.Current.CopySubresourceCount++;
             }
         }
 
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
         internal void Set<T>(
-            DeviceContext pipe,
+            DeviceContext context,
             T[] data,
             uint startIndex,
             uint count,
@@ -309,21 +309,21 @@ namespace Molten.Graphics
 
             uint dataSize = count * dataStride;
 
-            GetStream(pipe, byteOffset, dataSize, (buffer, stream) =>
+            GetStream(context, byteOffset, dataSize, (buffer, stream) =>
             {
                 stream.WriteRange<T>(data, startIndex, count);
             }, staging);
         }
 
         /// <summary>Retrieves data from a <see cref="GraphicsBuffer"/>.</summary>
-        /// <param name="pipe">The <see cref="DeviceContext"/> that will perform the 'get' operation.</param>
+        /// <param name="context">The <see cref="DeviceContext"/> that will perform the 'get' operation.</param>
         /// <param name="destination">The destination array. Must be big enough to contain the retrieved data.</param>
         /// <param name="startIndex">The start index within the destination array at which to place the retrieved data.</param>
         /// <param name="count">The number of elements to retrieve</param>
         /// <param name="dataStride">The size of the data being retrieved. The default value is 0. 
         /// A value of 0 will force the stride of <see cref="{T}"/> to be automatically calculated, which may cause a tiny performance hit.</param>
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        internal void Get<T>(DeviceContext pipe, T[] destination, uint startIndex, uint count, uint dataStride, uint byteOffset = 0)
+        internal void Get<T>(DeviceContext context, T[] destination, uint startIndex, uint count, uint dataStride, uint byteOffset = 0)
             where T : unmanaged
         {
             uint readOffset = startIndex * dataStride;
@@ -336,25 +336,25 @@ namespace Molten.Graphics
 
             //now set the structured variable's data
             RawStream stream = null;
-            MappedSubresource dataBox = pipe.MapResource(NativePtr, 0, Map.MapRead, 0, out stream);
-            pipe.Profiler.Current.MapReadCount++;
+            MappedSubresource dataBox = context.MapResource(NativePtr, 0, Map.MapRead, 0, out stream);
+            context.Profiler.Current.MapReadCount++;
             stream.Position = byteOffset;
             stream.ReadRange<T>(destination, readOffset, count);
 
             // Unmap
-            pipe.UnmapResource(NativePtr, 0);
+            context.UnmapResource(NativePtr, 0);
         }
 
         /// <summary>Applies any pending changes onto the buffer.</summary>
-        /// <param name="pipe">The graphics pipe to use when process changes.</param>
+        /// <param name="context">The graphics pipe to use when process changes.</param>
         /// <param name="forceInitialize">If set to true, the buffer will be initialized if not done so already.</param>
-        protected void ApplyChanges(DeviceContext pipe)
+        protected void ApplyChanges(DeviceContext context)
         {
             if (_pendingChanges.Count > 0)
             {
                 IBufferOperation op = null;
                 while (_pendingChanges.TryDequeue(out op))
-                    op.Process(pipe);
+                    op.Process(context);
             }
         }
 
@@ -373,9 +373,9 @@ namespace Molten.Graphics
             return ((CpuAccessFlag)Description.CPUAccessFlags & flag) == flag;
         }
 
-        protected override void OnApply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext context)
         {
-            ApplyChanges(pipe);
+            ApplyChanges(context);
         }
 
         internal override void PipelineRelease()

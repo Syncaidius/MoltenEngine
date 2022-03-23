@@ -18,7 +18,7 @@ namespace Molten.Graphics
 
         internal Action CompletionCallback;
 
-        public void Process(DeviceContext pipe)
+        public void Process(DeviceContext context)
         {
             CompletionCallback?.Invoke();
         }

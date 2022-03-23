@@ -2,6 +2,6 @@
 {
     internal interface IBufferOperation
     {
-        void Process(DeviceContext pipe);
+        void Process(DeviceContext context);
     }
 }

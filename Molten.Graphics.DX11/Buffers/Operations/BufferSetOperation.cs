@@ -23,9 +23,9 @@
 
         internal StagingBuffer Staging;
 
-        public void Process(DeviceContext pipe)
+        public void Process(DeviceContext context)
         {
-            DestinationSegment.Buffer.Set<T>(pipe, Data, StartIndex, Count, DataStride, ByteOffset, Staging);
+            DestinationSegment.Buffer.Set<T>(context, Data, StartIndex, Count, DataStride, ByteOffset, Staging);
             CompletionCallback?.Invoke();
         }
     }

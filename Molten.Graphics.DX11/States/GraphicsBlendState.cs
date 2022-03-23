@@ -3,7 +3,7 @@
 namespace Molten.Graphics
 {
     /// <summary>Stores a blend state for use with a <see cref="DeviceContext"/>.</summary>
-    internal unsafe class GraphicsBlendState : PipeBindable<ID3D11BlendState>, IEquatable<GraphicsBlendState>
+    internal unsafe class GraphicsBlendState : ContextBindable<ID3D11BlendState>, IEquatable<GraphicsBlendState>
     {
         static BlendDesc _defaultDesc;
 

@@ -3,7 +3,7 @@
 namespace Molten.Graphics
 {
     /// <summary>Stores a rasterizer state for use with a <see cref="DeviceContext"/>.</summary>
-    internal unsafe class GraphicsRasterizerState : PipeBindable<ID3D11RasterizerState>
+    internal unsafe class GraphicsRasterizerState : ContextBindable<ID3D11RasterizerState>
     {
         static RasterizerDesc _defaultDesc;
 

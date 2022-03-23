@@ -48,7 +48,7 @@
             OnRender(pipe, renderer, camera, data);
         }
 
-        private protected abstract void OnRender(DeviceContext pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data);
+        private protected abstract void OnRender(DeviceContext context, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data);
 
         /// <summary>Gets or sets whether or not the renderable should be drawn.</summary>
         public bool IsVisible { get; set; }

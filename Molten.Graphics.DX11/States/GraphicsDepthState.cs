@@ -3,7 +3,7 @@
 namespace Molten.Graphics
 {
     /// <summary>Stores a depth-stencil state for use with a <see cref="DeviceContext"/>.</summary>
-    internal unsafe class GraphicsDepthState : PipeBindable<ID3D11DepthStencilState>, IEquatable<GraphicsDepthState>
+    internal unsafe class GraphicsDepthState : ContextBindable<ID3D11DepthStencilState>, IEquatable<GraphicsDepthState>
     {
         public class Face
         {

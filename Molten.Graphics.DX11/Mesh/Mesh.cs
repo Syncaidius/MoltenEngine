@@ -38,17 +38,17 @@
             _vb.SetData(_renderer.Device, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        internal virtual void ApplyBuffers(DeviceContext pipe)
+        internal virtual void ApplyBuffers(DeviceContext context)
         {
-            pipe.State.VertexBuffers[0].Value = _vb;
+            context.State.VertexBuffers[0].Value = _vb;
         }
 
-        private protected override void OnRender(DeviceContext pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        private protected override void OnRender(DeviceContext context, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (_material == null)
                 return;
 
-            ApplyBuffers(pipe);
+            ApplyBuffers(context);
             ApplyResources(_material);
             _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
             _material.Object.World.Value = data.RenderTransform;

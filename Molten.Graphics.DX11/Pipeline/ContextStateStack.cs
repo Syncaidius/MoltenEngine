@@ -5,15 +5,15 @@
         const int STACK_INCREMENT = 5;
         GraphicsPipeState[] _stack;
         int _stackSize = 0;
-        DeviceContext _pipe;
+        DeviceContext _context;
 
-        internal ContextStateStack(DeviceContext pipe)
+        internal ContextStateStack(DeviceContext context)
         {
             _stack = new GraphicsPipeState[STACK_INCREMENT];
             for (int i = 0; i < _stack.Length; i++)
-                _stack[i] = new GraphicsPipeState(pipe);
+                _stack[i] = new GraphicsPipeState(context);
 
-            _pipe = pipe;
+            _context = context;
         }
 
         /// <summary>Pushes the current state of a pipe onto the stack.</summary>
@@ -28,7 +28,7 @@
 
                 // Initialize new additions
                 for (int i = _stackSize; i < _stack.Length; i++)
-                    _stack[i] = new GraphicsPipeState(_pipe);
+                    _stack[i] = new GraphicsPipeState(_context);
             }
 
             _stack[id].Capture();
@@ -57,13 +57,7 @@
             }
         }
 
-        internal GraphicsPipeState FirstState
-        {
-            get
-            {
-                return _stackSize > 0 ? _stack[0] : null;
-            }
-        }
+        internal GraphicsPipeState FirstState => _stackSize > 0 ? _stack[0] : null;
 
         internal GraphicsPipeState LastState
         {

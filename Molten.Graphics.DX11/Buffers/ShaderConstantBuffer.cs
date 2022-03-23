@@ -65,7 +65,7 @@ namespace Molten.Graphics
             base.PipelineRelease();
         }
 
-        protected override void OnApply(DeviceContext pipe)
+        protected override void OnApply(DeviceContext context)
         {
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
             if (DirtyVariables)
@@ -77,13 +77,13 @@ namespace Molten.Graphics
                 foreach(ShaderConstantVariable v in Variables)
                     v.Write(_constData + v.ByteOffset);
 
-                MappedSubresource data = pipe.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0);
+                MappedSubresource data = context.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0);
                 Buffer.MemoryCopy(_constData, data.PData, data.DepthPitch, Description.ByteWidth);
-                pipe.UnmapResource(NativePtr, 0);
+                context.UnmapResource(NativePtr, 0);
             }
             else
             {
-                ApplyChanges(pipe);
+                ApplyChanges(context);
             }
         }
 

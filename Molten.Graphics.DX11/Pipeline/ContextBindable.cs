@@ -51,26 +51,26 @@ namespace Molten.Graphics
         internal uint LastUsedFrameID { get; private set; }
     }
 
-    public unsafe abstract class PipeBindable<T> : ContextBindable
+    public unsafe abstract class ContextBindable<T> : ContextBindable
         where T : unmanaged
     {
-        internal PipeBindable(Device device, ContextBindTypeFlags bindFlags) : 
+        internal ContextBindable(Device device, ContextBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
 
         }
 
         /// <summary>
-        /// Gets the native pointer of the current <see cref="PipeBindable{T}"/>, as a <typeparamref name="T"/> pointer.
+        /// Gets the native pointer of the current <see cref="ContextBindable{T}"/>, as a <typeparamref name="T"/> pointer.
         /// </summary>
         internal abstract T* NativePtr { get; }
 
         /// <summary>
-        /// Gets the native pointer of the current <see cref="PipeBindable{T}"/>,as a <see cref="void"/> pointer.
+        /// Gets the native pointer of the current <see cref="ContextBindable{T}"/>,as a <see cref="void"/> pointer.
         /// </summary>
         internal void* RawNative => NativePtr;
 
-        public static implicit operator T*(PipeBindable<T> bindable)
+        public static implicit operator T*(ContextBindable<T> bindable)
         {
             return bindable.NativePtr;
         }

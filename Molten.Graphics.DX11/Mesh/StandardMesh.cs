@@ -8,9 +8,9 @@
 
         }
 
-        private protected override void OnRender(DeviceContext pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        private protected override void OnRender(DeviceContext context, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
-            ApplyBuffers(pipe);
+            ApplyBuffers(context);
             IShaderResource normal = GetResource(1);
             Material mat = _material;
 

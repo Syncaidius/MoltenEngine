@@ -59,7 +59,7 @@ namespace Molten.Graphics
             RenderPointLights(device, camera, context.Scene);
         }
 
-        private void RenderPointLights(DeviceContext pipe, RenderCamera camera, SceneRenderData scene)
+        private void RenderPointLights(DeviceContext context, RenderCamera camera, SceneRenderData scene)
         {
             // Calculate camera-specific information for each point light
             LightInstance instance;
@@ -78,7 +78,7 @@ namespace Molten.Graphics
                 scene.PointLights.Data[i] = ld;
             }
 
-            _lightSegment.SetData(pipe, scene.PointLights.Data);
+            _lightSegment.SetData(context, scene.PointLights.Data);
 
             // Set data buffer on domain and pixel shaders
             _matPoint.Light.Data.Value = _lightSegment; // TODO Need to implement a dynamic structured buffer we can reuse here.
@@ -95,18 +95,18 @@ namespace Molten.Graphics
             };
 
             //set correct buffers and shaders
-            pipe.State.VertexBuffers[0].Value = null;
-            pipe.State.IndexBuffer.Value = null;
+            context.State.VertexBuffers[0].Value = null;
+            context.State.IndexBuffer.Value = null;
             uint pointCount = scene.PointLights.ElementCount * 2;
 
-            pipe.BeginDraw(StateConditions.None); // TODO expand use of conditions here
-            pipe.Draw(_matPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
-            pipe.EndDraw();
+            context.BeginDraw(StateConditions.None); // TODO expand use of conditions here
+            context.Draw(_matPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
+            context.EndDraw();
 
             // Draw debug light volumes
-            pipe.BeginDraw(StateConditions.Debug);
-            pipe.Draw(_matDebugPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
-            pipe.EndDraw();
+            context.BeginDraw(StateConditions.Debug);
+            context.Draw(_matDebugPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
+            context.EndDraw();
         }
     }
 }

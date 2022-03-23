@@ -3,7 +3,7 @@
     /// <summary>Stores the current state of a <see cref="DeviceContext"/>.</summary>
     internal class GraphicsPipeState
     {
-        DeviceContext _pipe;
+        DeviceContext _context;
         GraphicsBlendState _blendState;
         GraphicsDepthState _depthState;
         GraphicsRasterizerState _rasterState;
@@ -18,60 +18,60 @@
 
         ViewportF[] _viewports;
 
-        public GraphicsPipeState(DeviceContext pipe)
+        public GraphicsPipeState(DeviceContext context)
         {
-            _pipe = pipe;
-            uint maxSurfaces = _pipe.Device.Features.SimultaneousRenderSurfaces;
+            _context = context;
+            uint maxSurfaces = _context.Device.Features.SimultaneousRenderSurfaces;
 
             _surfaces = new RenderSurface2D[maxSurfaces];
             _viewports = new ViewportF[maxSurfaces];
-            _vSegments = new BufferSegment[_pipe.Device.Features.MaxVertexBufferSlots];
+            _vSegments = new BufferSegment[_context.Device.Features.MaxVertexBufferSlots];
         }
 
         public void Capture()
         {
-            _blendState = _pipe.State.Blend.Value;
-            _depthState = _pipe.State.Depth.Value;
-            _rasterState = _pipe.State.Rasterizer.Value;
+            _blendState = _context.State.Blend.Value;
+            _depthState = _context.State.Depth.Value;
+            _rasterState = _context.State.Rasterizer.Value;
 
-            _pipe.State.VertexBuffers.Get(_vSegments);
-            _iSegment = _pipe.State.IndexBuffer.Value;
+            _context.State.VertexBuffers.Get(_vSegments);
+            _iSegment = _context.State.IndexBuffer.Value;
 
             //store viewports
-            int vpCount = _pipe.State.ViewportCount;
+            int vpCount = _context.State.ViewportCount;
             if (_viewports.Length < vpCount)
                 Array.Resize(ref _viewports, vpCount);
-            _pipe.State.GetViewports(_viewports);
+            _context.State.GetViewports(_viewports);
 
             // Store surfaces
-            _pipe.State.GetRenderSurfaces(_surfaces);
+            _context.State.GetRenderSurfaces(_surfaces);
 
-            _depthSurface = _pipe.State.DepthSurface.Value;
-            _depthWriteOverride = _pipe.State.DepthWriteOverride;
+            _depthSurface = _context.State.DepthSurface.Value;
+            _depthWriteOverride = _context.State.DepthWriteOverride;
         }
 
         public void Restore()
         {
             //states
-            _pipe.State.Blend.Value = _blendState;
-            _pipe.State.Depth.Value = _depthState;
-            _pipe.State.Rasterizer.Value = _rasterState;
+            _context.State.Blend.Value = _blendState;
+            _context.State.Depth.Value = _depthState;
+            _context.State.Rasterizer.Value = _rasterState;
 
             //buffers
-            _pipe.State.VertexBuffers.Set(_vSegments);
-            _pipe.State.IndexBuffer.Value = _iSegment;
+            _context.State.VertexBuffers.Set(_vSegments);
+            _context.State.IndexBuffer.Value = _iSegment;
 
             //restore viewports
-            _pipe.State.SetViewports(_viewports);
+            _context.State.SetViewports(_viewports);
 
             // Restore surfaces -- ensure surface 0 is correctly handled when null.
-            _pipe.State.SetRenderSurfaces(_surfaces);
+            _context.State.SetRenderSurfaces(_surfaces);
             if (_surfaces[0] == null)
-                _pipe.State.SetRenderSurface(null, 0);
+                _context.State.SetRenderSurface(null, 0);
 
 
-            _pipe.State.DepthSurface.Value = _depthSurface;
-            _pipe.State.DepthWriteOverride = _depthWriteOverride;
+            _context.State.DepthSurface.Value = _depthSurface;
+            _context.State.DepthWriteOverride = _depthWriteOverride;
         }
 
         /// <summary>Resets the pipe state, but does not apply it.</summary>

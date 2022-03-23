@@ -52,18 +52,18 @@
             _ib.SetData(_renderer.Device, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        internal override void ApplyBuffers(DeviceContext pipe)
+        internal override void ApplyBuffers(DeviceContext context)
         {
-            base.ApplyBuffers(pipe);
-            pipe.State.IndexBuffer.Value = _ib;
+            base.ApplyBuffers(context);
+            context.State.IndexBuffer.Value = _ib;
         }
 
-        private protected override void OnRender(DeviceContext pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        private protected override void OnRender(DeviceContext context, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (_material == null)
                 return;
 
-            ApplyBuffers(pipe);
+            ApplyBuffers(context);
             ApplyResources(_material);
             _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 

@@ -37,7 +37,7 @@ namespace Molten.Graphics
             Type = type;
         }
 
-        protected override void OnApply(DeviceContext pipe) { }
+        protected override void OnApply(DeviceContext context) { }
     }
 
     internal abstract unsafe class ShaderComposition<T> : ShaderComposition 

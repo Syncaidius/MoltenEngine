@@ -3,8 +3,8 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    internal delegate void PipeDrawCallback(MaterialPass pass);
-    internal delegate void PipeDrawFailCallback(MaterialPass pass, uint iteration, uint passNumber, GraphicsBindResult result);
+    internal delegate void ContextDrawCallback(MaterialPass pass);
+    internal delegate void ContextDrawFailCallback(MaterialPass pass, uint iteration, uint passNumber, GraphicsBindResult result);
 
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="DeviceContext"/>.</summary>
     public unsafe partial class DeviceContext : EngineObject
@@ -157,7 +157,7 @@ namespace Molten.Graphics
         {
 #if DEBUG
             if (_drawInfo.Began)
-                throw new GraphicsContextException("GraphicsPipe: EndDraw() must be called before the next BeginDraw() call.");
+                throw new GraphicsContextException($"{nameof(DeviceContext)}: EndDraw() must be called before the next BeginDraw() call.");
 #endif
 
             _drawInfo.Began = true;
@@ -168,19 +168,19 @@ namespace Molten.Graphics
         {
 #if DEBUG
             if (!_drawInfo.Began)
-                throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before EndDraw().");
+                throw new GraphicsContextException($"{nameof(DeviceContext)}: BeginDraw() must be called before EndDraw().");
 #endif
 
             _drawInfo.Reset();
         }
 
         private GraphicsBindResult DrawCommon(Material mat, GraphicsValidationMode mode, VertexTopology topology, 
-            PipeDrawCallback drawCallback, PipeDrawFailCallback failCallback)
+            ContextDrawCallback drawCallback, ContextDrawFailCallback failCallback)
         {
             GraphicsBindResult vResult = GraphicsBindResult.Successful;
 
             if (!_drawInfo.Began)
-                throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(Draw)}()");
+                throw new GraphicsContextException($"{nameof(DeviceContext)}: BeginDraw() must be called before calling {nameof(Draw)}()");
 
             State.Material.Value = mat;
 
@@ -310,7 +310,7 @@ namespace Molten.Graphics
             });
 
             if (!_drawInfo.Began)
-                throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(DrawIndexedInstanced)}()");
+                throw new GraphicsContextException($"{nameof(DeviceContext)}: BeginDraw() must be called before calling {nameof(DrawIndexedInstanced)}()");
         }
 
         internal void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
@@ -349,7 +349,7 @@ namespace Molten.Graphics
                     return;
                 }
 
-                // TODO have this processed during the presentation call of each graphics pipe.
+                // TODO have this processed during the presentation call of each graphics context.
 
                
                 Native->Dispatch(groupsX, groupsY, groupsZ);
@@ -365,7 +365,7 @@ namespace Molten.Graphics
             if (Type != GraphicsContextType.Immediate)
             {
                 SilkUtil.ReleasePtr(ref _context);
-                Device.RemoveDeferredPipe(this);
+                Device.RemoveDeferredContext(this);
             }
         }
 
@@ -378,7 +378,7 @@ namespace Molten.Graphics
 
         internal Logger Log { get; private set; }
 
-        /// <summary>Gets the profiler bound to the current <see cref="Graphics.DeviceContext"/>. Contains statistics for this pipe alone.</summary>
+        /// <summary>Gets the profiler bound to the current <see cref="Graphics.DeviceContext"/>. Contains statistics for this context alone.</summary>
         public RenderProfiler Profiler
         {
             get => _profiler;

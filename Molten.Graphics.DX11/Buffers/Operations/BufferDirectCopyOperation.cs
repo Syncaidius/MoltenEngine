@@ -8,9 +8,9 @@
 
         internal Action CompletionCallback;
 
-        public void Process(DeviceContext pipe)
+        public void Process(DeviceContext context)
         {
-            SourceBuffer.CopyTo(pipe, DestinationBuffer);
+            SourceBuffer.CopyTo(context, DestinationBuffer);
             CompletionCallback?.Invoke();
         }
     }

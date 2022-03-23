@@ -16,7 +16,7 @@ namespace Molten.Graphics
         D3D11 _api;
         DisplayAdapterDXGI _adapter;
 
-        List<DeviceContext> _pipes;
+        List<DeviceContext> _contexts;
 
         Logger _log;
         DisplayManagerDXGI _displayManager;
@@ -39,8 +39,8 @@ namespace Molten.Graphics
             _log = log;
             _displayManager = manager;
             _adapter = _displayManager.SelectedAdapter as DisplayAdapterDXGI;
-            _pipes = new List<DeviceContext>();
-            Pipes = _pipes.AsReadOnly();
+            _contexts = new List<DeviceContext>();
+            Contexts = _contexts.AsReadOnly();
             VertexFormatCache = new TypedObjectCache<IVertexType, VertexFormat>(VertexFormat.FromType);
             _settings = settings;
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
@@ -129,24 +129,24 @@ namespace Molten.Graphics
             ID3D11DeviceContext* dc = null;
             NativeDevice->CreateDeferredContext(0, &dc);
 
-            DeviceContext pipe = new DeviceContext();
-            pipe.Initialize(_log, this, dc);
-            _pipes.Add(pipe);
-            return pipe;
+            DeviceContext context = new DeviceContext();
+            context.Initialize(_log, this, dc);
+            _contexts.Add(context);
+            return context;
         }
 
-        internal void RemoveDeferredPipe(DeviceContext pipe)
+        internal void RemoveDeferredContext(DeviceContext context)
         {
-            if(pipe == this)
+            if(context == this)
                 throw new GraphicsContextException("Cannot remove the graphics device from itself.");
 
-            if (pipe.Device != this)
+            if (context.Device != this)
                 throw new GraphicsContextException("Graphics pipe is owned by another device.");
 
-            if (!pipe.IsDisposed)
-                pipe.Dispose();
+            if (!context.IsDisposed)
+                context.Dispose();
 
-            _pipes.Remove(pipe);
+            _contexts.Remove(context);
         }
 
         internal void SubmitContext(DeviceContext context)
@@ -161,8 +161,8 @@ namespace Molten.Graphics
         /// <summary>Disposes of the <see cref="Device"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
-            for (int i = _pipes.Count - 1; i >= 0; i--)
-                RemoveDeferredPipe(_pipes[i]);
+            for (int i = _contexts.Count - 1; i >= 0; i--)
+                RemoveDeferredContext(_contexts[i]);
 
             // TODO dispose of all bound IGraphicsResource
             VertexFormatCache.Dispose();
@@ -181,7 +181,7 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        internal IReadOnlyCollection<DeviceContext> Pipes { get; }
+        internal IReadOnlyCollection<DeviceContext> Contexts { get; }
 
         /// <summary>Gets an instance of <see cref="DeviceFeaturesDX11"/> which provides access to feature support details for the current graphics device.</summary>
         internal DeviceFeaturesDX11 Features { get; private set; }
