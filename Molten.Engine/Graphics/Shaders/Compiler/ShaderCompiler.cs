@@ -223,8 +223,54 @@ namespace Molten.Graphics
                     continue;
                 }
 
-                parser.Parse(shader, context, node);
+                ShaderHeaderNode pNode = ParseNode(node);
+                parser.Parse(shader, context, pNode);
             }
+        }
+
+        private ShaderHeaderNode ParseNode(XmlNode node)
+        {
+            ShaderHeaderNode shn = new ShaderHeaderNode();
+
+            // Parse attributes
+            if (node.Attributes != null)
+            {
+                foreach (XmlAttribute att in node.Attributes)
+                {
+                    string nName = att.Name.ToLower();
+                    switch (nName)
+                    {
+                        case "value":
+                            shn.Value = att.InnerText;
+                            shn.ValueType = ShaderHeaderValueType.Value;
+                            break;
+
+                        case "preset":
+                            if (shn.ValueType != ShaderHeaderValueType.Value)
+                            {
+                                shn.Value = att.InnerText;
+                                shn.ValueType = ShaderHeaderValueType.Preset;
+                            }
+                            break;
+
+                        case "index":
+                            if (!int.TryParse(att.InnerText, out int index))
+                                index = 0;
+
+                            shn.Index = index;
+                            break;
+                    }
+                }
+            }
+
+            // Parse sub-values
+            foreach(XmlNode c in node.ChildNodes)
+            {
+                string cName = c.Name.ToLower();
+                shn.ChildValues.Add((cName, c.InnerText));
+            }
+
+            return shn;
         }
 
         private ShaderSource GetDependencySource(ShaderSource source, in string key, out Stream stream,

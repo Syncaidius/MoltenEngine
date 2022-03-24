@@ -6,12 +6,12 @@ namespace Molten.Graphics
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Description;
 
-        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode node)
+        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
             switch (foundation)
             {
                 case HlslShader shader:
-                    shader.Description = string.IsNullOrWhiteSpace(node.InnerText) ? "Unknown" : node.InnerText;
+                    shader.Description = node.ValueType != ShaderHeaderValueType.None ? "Unknown" : node.Value;
                     break;
 
                 case MaterialPass pass:

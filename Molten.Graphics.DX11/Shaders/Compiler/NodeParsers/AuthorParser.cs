@@ -6,22 +6,11 @@ namespace Molten.Graphics
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Author;
 
-        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode node)
+        public override Type[] TypeFilter { get; } = { typeof(HlslShader) };
+
+        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            switch (foundation)
-            {
-                case HlslShader shader:
-                    shader.Description = string.IsNullOrWhiteSpace(node.InnerText) ? "Unknown" : node.InnerText;
-                    break;
-
-                case MaterialPass pass:
-                    context.AddWarning($"Ignoring '{NodeType}' in material pass definition");
-                    break;
-
-                default:
-                    context.AddWarning($"Ignoring '{NodeType}' in unsupported shader type '{foundation.GetType().Name}' definition");
-                    break;
-            }
+            (foundation as HlslShader).Author = node.ValueType != ShaderHeaderValueType.None ? "Unknown" : node.Value;
         }
     }
 }

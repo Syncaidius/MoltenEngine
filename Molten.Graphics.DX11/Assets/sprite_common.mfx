@@ -17,6 +17,7 @@ struct PS_IN
 };
 
 Texture2DArray mapDiffuse;
+Texture2DMSArray mapDiffuseMS;
 SamplerState diffuseSampler;
 
 float4x4 wvp;
@@ -205,6 +206,12 @@ void GS_Tri(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 float4 PS( PS_IN input ) : SV_Target
 {
 	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
+	return col * input.col;
+}
+
+float4 PS_MS( PS_IN input ) : SV_Target
+{
+	float4 col = mapDiffuseMS.Sample(diffuseSampler, input.uv);
 	return col * input.col;
 }
 

@@ -1,81 +1,114 @@
 <material>
 	<name>sprite-texture</name>
+    <author>James Yarwood</author>
 	<description>The default material for rendering sprites in a SpriteBatch with a texture</description>
 	<pass>
-		<name>main</name>
-		<iterations>1</iterations>
-		<vertex>VS</vertex>
-		<geometry>GS</geometry>
-    <fragment>PS</fragment>
-    <blend preset="PreMultipliedAlpha" />
-    <rasterizer preset="ScissorTest" />
-    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
-    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
+        <name value="main"/>
+        <iterations value="1"/>
+        <vertex value="VS"/>
+        <geometry value="GS"/>
+        <fragment value="PS" />
+        <fragment value="PS_MS">
+            <condition value="Multisampling"/>
+        </fragment>
+        <blend preset="PreMultipliedAlpha" />
+        <rasterizer preset="ScissorTest" />
+        <rasterizer preset="DefaultMultisample">
+            <condition value="Multisampling"/>
+        </rasterizer>
+        <rasterizer preset="ScissorTestMultiSample">
+            <condition value="Multisampling"/>
+            <condition value="ScissorTest"/>
+        </rasterizer>
 	</pass>
 </material>
 
 <material>
 	<name>sprite-no-texture</name>
+    <author>James Yarwood</author>
 	<description>The default material for rendering sprites in a SpriteBatch with no texture.</description>
 	<pass>
-		<name>main</name>
-		<iterations>1</iterations>
-		<vertex>VS</vertex>
-		<geometry>GS</geometry>
-    <fragment>PS_NoTexture</fragment>
-    <blend preset="PreMultipliedAlpha" />
-    <rasterizer preset="ScissorTest" />
-    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
-    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
+		<name value="main"/>
+		<iterations value="1"/>
+		<vertex value="VS"/>
+        <geometry value="GS"/>
+        <fragment value="PS_NoTexture"/>
+        <blend preset="PreMultipliedAlpha" />
+        <rasterizer preset="ScissorTest" />
+        <rasterizer preset="DefaultMultisample">
+            <condition value="Multisampling"/>
+        </rasterizer>
+        <rasterizer preset="ScissorTestMultiSample">
+            <condition value="Multisampling"/>
+            <condition value="ScissorTest"/>
+        </rasterizer>
 	</pass>
 </material>
 
 <material>
-  <name>line</name>
-  <description>The default material for rendering un-textured lines with 1 point per line.</description>
-  <pass>
-    <name>main</name>
-    <iterations>1</iterations>
-    <vertex>VS_Line</vertex>
-    <geometry>GS_Line</geometry>
-    <fragment>PS_NoTexture</fragment>
-    <blend preset="PreMultipliedAlpha" />
-    <rasterizer preset="ScissorTest" />
-    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
-    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
-  </pass>
+    <name>line</name>
+    <author>James Yarwood</author>
+    <description>The default material for rendering un-textured lines with 1 point per line.</description>
+    <pass>
+        <name value="main"/>
+        <iterations value="1"/>
+        <vertex value="VS_Line" />
+        <geometry value="GS_Line" />
+        <fragment value="PS_NoTexture"/>
+        <blend preset="PreMultipliedAlpha" />
+        <rasterizer preset="ScissorTest" />
+        <rasterizer preset="DefaultMultisample">
+            <condition value="Multisampling"/>
+        </rasterizer>
+        <rasterizer preset="ScissorTestMultiSample">
+            <condition value="Multisampling"/>
+            <condition value="ScissorTest"/>
+        </rasterizer>
+    </pass>
 </material>
 
 <material>
-  <name>circle</name>
-  <description>The default material for rendering an un-textured circle from a single point.</description>
-  <pass>
-    <name>main</name>
-    <iterations>1</iterations>
-    <vertex>VS_Circle</vertex>
-    <geometry>GS_Circle</geometry>
-    <fragment>PS_NoTexture</fragment>
-    <blend preset="PreMultipliedAlpha" />
-    <rasterizer preset="ScissorTest" />
-    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
-    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
-  </pass>
+    <name>circle</name>
+    <author>James Yarwood</author>
+    <description value="The default material for rendering an un-textured circle from a single point" />
+    <pass>
+        <name value="main"/>
+        <iterations value="1"/>
+        <vertex value="VS_Circle"/>
+        <geometry value="GS_Circle"/>
+        <fragment value="PS_NoTexture"/>
+        <blend preset="PreMultipliedAlpha" />
+        <rasterizer preset="ScissorTest" />
+        <rasterizer preset="DefaultMultisample">
+            <condition value="Multisampling"/>
+        </rasterizer>
+        <rasterizer preset="ScissorTestMultiSample">
+            <condition value="Multisampling"/>
+            <condition value="ScissorTest"/>
+        </rasterizer>
+    </pass>
 </material>
 
 <material>
-  <name>triangle</name>
-  <description>The default material for rendering an un-textured triangle from a single point.</description>
-  <pass>
-    <name>main</name>
-    <iterations>1</iterations>
-    <vertex>VS_Tri</vertex>
-    <geometry>GS_Tri</geometry>
-    <fragment>PS_NoTexture</fragment>
-    <blend preset="PreMultipliedAlpha" />
-    <rasterizer preset="ScissorTest" />
-    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
-    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
-  </pass>
+    <name>triangle</name>
+    <author>James Yarwood</author>
+    <description>The default material for rendering an un-textured triangle from a single point.</description>
+    <pass>
+        <name value="main"/>
+        <iterations value="1"/>
+        <vertex value="VS_Tri"/>
+        <geometry value="GS_Tri"/>
+        <fragment value="PS_NoTexture"/>
+        <blend preset="PreMultipliedAlpha"/>
+        <rasterizer preset="ScissorTest" />
+        <rasterizer preset="DefaultMultisample">
+            <condition value="Multisampling"/>
+        </rasterizer>
+        <rasterizer preset="ScissorTestMultiSample">
+            <condition value="Multisampling"/>
+            <condition value="ScissorTest"/>
+        </rasterizer>
+    </pass>
 </material>
 
 #include "sprite_common.mfx";

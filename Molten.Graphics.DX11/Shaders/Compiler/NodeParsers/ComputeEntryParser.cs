@@ -7,19 +7,14 @@ namespace Molten.Graphics
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Entry;
 
-        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode node)
+        public override Type[] TypeFilter { get; } = { typeof(ComputeTask) };
+
+        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            if (foundation is ComputeTask cTask)
-            {
-                if (string.IsNullOrWhiteSpace(node.InnerText))
-                    context.AddError("Compute task <entry> tag is missing or empty.");
-                else
-                    cTask.Composition.EntryPoint = node.InnerText;
-            }
+            if (node.ValueType == ShaderHeaderValueType.None)
+                context.AddError("Compute task <entry> tag is missing or empty.");
             else
-            {
-                context.AddWarning($"Ignoring '{NodeType}' for unsupported shader type '{foundation.GetType().Name}'");
-            }
+                (foundation as ComputeTask).Composition.EntryPoint = node.Value;
         }
     }
 }
