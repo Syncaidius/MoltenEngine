@@ -15,7 +15,7 @@ namespace Molten.Graphics
 
         public abstract ShaderNodeType NodeType { get; }
 
-        public void Parse(S foundation, ShaderCompilerContext<R, S> context, ShaderHeaderNode node)
+        public void Parse(S foundation, ShaderCompilerContext<R, S> context, XmlNode node)
         {
             if(TypeFilter != null)
             {
@@ -25,7 +25,8 @@ namespace Molten.Graphics
                     {
                         if (t.IsAssignableFrom(foundation.GetType()))
                         {
-                            OnParse(foundation, context, node);
+                            ShaderHeaderNode shn = ParseNode(context, node);
+                            OnParse(foundation, context, shn);
                             return;
                         }
                     }
@@ -39,6 +40,77 @@ namespace Molten.Graphics
             context.AddWarning($"Ignoring unsupported '{node.Name}' node in '{foundation.GetType().Name}' definition");
         }
 
+        private ShaderHeaderNode ParseNode(ShaderCompilerContext<R, S> context, XmlNode node)
+        {
+            ShaderHeaderNode shn = new ShaderHeaderNode();
+
+            // Parse attributes
+            if (node.Attributes != null)
+            {
+                foreach (XmlAttribute att in node.Attributes)
+                {
+                    string nName = att.Name.ToLower();
+                    switch (nName)
+                    {
+                        case "value":
+                            shn.Value = att.InnerText;
+                            shn.ValueType = ShaderHeaderValueType.Value;
+                            break;
+
+                        case "preset":
+                            if (shn.ValueType != ShaderHeaderValueType.Value)
+                            {
+                                shn.Value = att.InnerText;
+                                shn.ValueType = ShaderHeaderValueType.Preset;
+                            }
+                            break;
+
+                        case "index":
+                            if (!int.TryParse(att.InnerText, out int index))
+                                index = 0;
+
+                            shn.Index = index;
+                            break;
+                    }
+                }
+            }
+
+            // Parse sub-values
+            foreach (XmlNode c in node.ChildNodes)
+            {
+                string cName = c.Name.ToLower();
+
+                switch (cName)
+                {
+                    case "condition":
+                        if (Enum.TryParse(c.InnerText, true, out StateConditions sc))
+                            shn.Conditions |= sc;
+                        else
+                            InvalidEnumMessage<StateConditions>(context, (c.Name, c.InnerText), "state condition");
+                        break;
+
+                    default:
+                        if (c.ChildNodes.Count > 0)
+                        {
+                            for (int j = 0; j < c.ChildNodes.Count; j++)
+                            {
+                                ShaderHeaderNode cNode = ParseNode(context, c.ChildNodes[j]);
+                                shn.ChildNodes.Add(cNode);
+                            }
+                        }
+                        else
+                        {
+                            shn.ChildValues.Add((cName, c.InnerText));
+                        } 
+
+                        break;
+                }
+
+            }
+
+            return shn;
+        }
+
         protected abstract void OnParse(S foundation, ShaderCompilerContext<R, S> context, ShaderHeaderNode node);
 
         protected void InvalidValueMessage(ShaderCompilerContext<R, S> context, (string Name, string Value) node, string friendlyTagName, string friendlyValueName)
@@ -48,10 +120,8 @@ namespace Molten.Graphics
 
         protected void UnsupportedTagMessage(ShaderCompilerContext<R, S> context, string parentName, (string Name, string Value) node)
         {
-            if(parentName != null)
-                context.AddWarning($"Ignoring unsupported {parentName} tag '{node.Name}'.");
-            else
-                context.AddWarning($"Ignoring unsupported root tag '{node.Name}'.");
+            parentName = parentName ?? "root";
+            context.AddWarning($"Ignoring unsupported {parentName} tag '{node.Name}'.");
         }
 
         protected void InvalidEnumMessage<T>(ShaderCompilerContext<R, S> context, (string Name, string Value) node, string friendlyTagName)
@@ -76,10 +146,8 @@ namespace Molten.Graphics
                 strPossibleVals += possibleVals[i].ToString();
             }
 
-            if (isFlags)
-                context.AddWarning($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.Value}'. Must be a combination of {strPossibleVals}");
-            else
-                context.AddWarning($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.Value}'. Must be {strPossibleVals}");
+            string mustBe = isFlags ? "a combination of " : "";
+            context.AddWarning($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.Value}'. Must be {mustBe}{strPossibleVals}");
         }
 
         protected Color4 ParseColor4(ShaderCompilerContext<R, S> context, string value, bool fromRgb)

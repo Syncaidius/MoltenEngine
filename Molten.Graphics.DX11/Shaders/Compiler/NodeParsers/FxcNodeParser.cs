@@ -1,7 +1,4 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract class FxcNodeParser : ShaderNodeParser<RendererDX11, HlslFoundation>
-    {
-
-    }
+    public abstract class FxcNodeParser : ShaderNodeParser<RendererDX11, HlslFoundation> { }
 }

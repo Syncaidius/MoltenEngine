@@ -28,10 +28,18 @@ namespace Molten.Graphics
         /// </summary>
         public ShaderHeaderValueType ValueType { get; set; }
 
+        public StateConditions Conditions { get; set; }
+
         /// <summary>
         /// Gets a list of child values that were bound to the header node
         /// </summary>
         public List<(string key, string value)> ChildValues { get; } = new List<(string key, string value)>();
+
+        /// <summary>
+        /// Gets a list of child nodes bound to the current <see cref="ShaderHeaderNode"/>. These were nodes which had their own child values/nodes.
+        /// </summary>
+        public List<ShaderHeaderNode> ChildNodes { get; } = new List<ShaderHeaderNode>();
+
     }
 
     public enum ShaderHeaderValueType

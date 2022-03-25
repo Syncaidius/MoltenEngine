@@ -5,7 +5,7 @@ namespace Molten.Graphics
     /// <summary>Stores a blend state for use with a <see cref="DeviceContext"/>.</summary>
     internal unsafe class GraphicsBlendState : ContextBindable<ID3D11BlendState>, IEquatable<GraphicsBlendState>
     {
-        static BlendDesc _defaultDesc;
+        public static readonly BlendDesc _defaultDesc;
 
         /// <summary>
         /// Gets or sets the blend sample mask.
@@ -16,6 +16,7 @@ namespace Molten.Graphics
         /// Gets or sets the blend factor.
         /// </summary>
         public Color4 BlendFactor { get; set; }
+
         static GraphicsBlendState()
         {
             _defaultDesc = new BlendDesc()

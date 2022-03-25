@@ -7,120 +7,104 @@ namespace Molten.Graphics
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Rasterizer;
 
-        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode node)
+        public override Type[] TypeFilter { get; } = { typeof(Material), typeof(MaterialPass) };
+
+        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            if (foundation is ComputeTask)
-            {
-                context.AddWarning($"Ignoring {NodeType} in compute task definition");
-                return;
-            }
-
             GraphicsRasterizerState state = null;
-            StateConditions conditions = StateConditions.None;
+            RasterizerPreset preset = RasterizerPreset.Default;
 
-            foreach(XmlAttribute attribute in node.Attributes)
+            if (node.ValueType == ShaderHeaderValueType.Preset)
             {
-                string attName = attribute.Name.ToLower();
-                switch (attName)
-                {
-                    case "preset":
-                        if (Enum.TryParse(attribute.InnerText, true, out RasterizerPreset preset))
-                            state = new GraphicsRasterizerState(foundation.Device, foundation.Device.RasterizerBank.GetPreset(preset));
-                        break;
-
-                    case "condition":
-                        if (!Enum.TryParse(attribute.InnerText, true, out conditions))
-                            InvalidEnumMessage<StateConditions>(context, attribute, "state condition");
-                        break;
-                }
+                if (!Enum.TryParse(node.Value, true, out preset))
+                    InvalidEnumMessage<RasterizerPreset>(context, (node.Name, node.Value), "rasterizer preset");
             }
 
-            state = state ?? new GraphicsRasterizerState(foundation.Device, foundation.Device.RasterizerBank.GetPreset(RasterizerPreset.Default));
+            state = new GraphicsRasterizerState(foundation.Device, foundation.Device.RasterizerBank.GetPreset(RasterizerPreset.Default));
 
-            foreach (XmlNode child in node.ChildNodes)
+            foreach ((string Name, string Value) c in node.ChildValues)
             {
-                string nodeName = child.Name.ToLower();
-                switch (nodeName)
+                switch (c.Name)
                 {
                     case "cull":
-                        if (SilkUtil.TryParseEnum(child.InnerText, out CullMode mode))
+                        if (EngineUtil.TryParseEnum(c.Value, out CullMode mode))
                             state.CullMode = mode;
                         else
-                            InvalidEnumMessage<CullMode>(context, child, "cull mode");
+                            InvalidEnumMessage<CullMode>(context, c, "cull mode");
                         break;
 
                     case "depthbias":
-                        if (int.TryParse(child.InnerText, out int bias))
+                        if (int.TryParse(c.Value, out int bias))
                             state.DepthBias = bias;
                         else
-                            InvalidValueMessage(context, child, "depth bias", "integer");
+                            InvalidValueMessage(context, c, "depth bias", "integer");
                         break;
 
                     case "depthbiasclamp":
-                        if (float.TryParse(child.InnerText, out float biasClamp))
+                        if (float.TryParse(c.Value, out float biasClamp))
                             state.DepthBiasClamp = biasClamp;
                         else
-                            InvalidValueMessage(context, child, "depth bias clamp", "floating-point");
+                            InvalidValueMessage(context, c, "depth bias clamp", "floating-point");
                         break;
 
                     case "fill":
-                        if (SilkUtil.TryParseEnum(child.InnerText, out FillMode fillMode))
+                        if (EngineUtil.TryParseEnum(c.Value, out FillMode fillMode))
                             state.FillMode = fillMode;
                         else
-                            InvalidEnumMessage<FillMode>(context, child, "fill mode");
+                            InvalidEnumMessage<FillMode>(context, c, "fill mode");
                         break;
 
                     case "aaline": // IsAntialiasedLineEnabled
-                        if (bool.TryParse(child.InnerText, out bool aaLineEnabled))
+                        if (bool.TryParse(c.Value, out bool aaLineEnabled))
                             state.IsAntialiasedLineEnabled = aaLineEnabled;
                         break;
 
                     case "depthclip":
-                        if (bool.TryParse(child.InnerText, out bool depthClipEnabled))
+                        if (bool.TryParse(c.Value, out bool depthClipEnabled))
                             state.IsDepthClipEnabled = depthClipEnabled;
                         else
-                            InvalidValueMessage(context, child, "depth clip enabled", "boolean");
+                            InvalidValueMessage(context, c, "depth clip enabled", "boolean");
                         break;
 
                     case "frontisccw":
-                        if (bool.TryParse(child.InnerText, out bool frontIsCCW))
+                        if (bool.TryParse(c.Value, out bool frontIsCCW))
                             state.IsFrontCounterClockwise = frontIsCCW;
                         else
-                            InvalidValueMessage(context, child, "front is counter-clockwise", "boolean");
+                            InvalidValueMessage(context, c, "front is counter-clockwise", "boolean");
                         break;
 
                     case "multisample":
-                        if (bool.TryParse(child.InnerText, out bool multisampleEnabled))
+                        if (bool.TryParse(c.Value, out bool multisampleEnabled))
                             state.IsMultisampleEnabled = multisampleEnabled;
                         else
-                            InvalidValueMessage(context, child, "multisampling enabled", "boolean");
+                            InvalidValueMessage(context, c, "multisampling enabled", "boolean");
                         break;
 
                     case "scissortest":
-                        if (bool.TryParse(child.InnerText, out bool scissorEnabled))
+                        if (bool.TryParse(c.Value, out bool scissorEnabled))
                             state.IsScissorEnabled = scissorEnabled;
                         else
-                            InvalidValueMessage(context, child, "scissor testing enabled", "boolean");
+                            InvalidValueMessage(context, c, "scissor testing enabled", "boolean");
                         break;
 
                     case "scaledslopebias":
-                        if (float.TryParse(child.InnerText, out float scaledSlopeDepthBias))
+                        if (float.TryParse(c.Value, out float scaledSlopeDepthBias))
                             state.SlopeScaledDepthBias = scaledSlopeDepthBias;
                         else
-                            InvalidValueMessage(context, child, "slope-scaled depth bias", "floating-point");
+                            InvalidValueMessage(context, c, "slope-scaled depth bias", "floating-point");
                         break;
 
                     default:
-                        UnsupportedTagMessage(context, child);
+                        UnsupportedTagMessage(context, node.Name, c);
                         break;
                 }
             }
             state = foundation.Device.RasterizerBank.AddOrRetrieveExisting(state);
 
-            if (conditions == StateConditions.None)
+            if (node.Conditions == StateConditions.None)
                 foundation.RasterizerState.FillMissingWith(state);
             else
-                foundation.RasterizerState[conditions] = state;
+                foundation.RasterizerState[node.Conditions] = state;
         }
     }
 }

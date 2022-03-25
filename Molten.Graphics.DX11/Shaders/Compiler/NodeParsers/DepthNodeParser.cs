@@ -7,156 +7,146 @@ namespace Molten.Graphics
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Depth;
 
-        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode node)
+        public override Type[] TypeFilter { get; } = { typeof(Material), typeof(MaterialPass) };
+
+        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            if (foundation is ComputeTask)
+            GraphicsDepthState state = null;
+            DepthStencilPreset preset = DepthStencilPreset.Default;
+
+            if (node.ValueType == ShaderHeaderValueType.Preset)
             {
-                context.AddWarning($"Ignoring {NodeType} in compute task definition");
-                return;
+                if (!Enum.TryParse(node.Value, true, out preset))
+                    InvalidEnumMessage<DepthStencilPreset>(context, (node.Name, node.Value), "depth-stencil preset");
             }
 
-            GraphicsDepthState state = null;
-            StateConditions conditions = StateConditions.None;
+            state = new GraphicsDepthState(foundation.Device, foundation.Device.DepthBank.GetPreset(preset));
 
-            foreach (XmlAttribute attribute in node.Attributes)
+            foreach ((string Name, string Value) c in node.ChildValues)
             {
-                string attName = attribute.Name.ToLower();
-                switch (attName)
+                switch (c.Name)
                 {
-                    case "preset":
-                        if (Enum.TryParse(attribute.InnerText, true, out DepthStencilPreset preset))
-                            state = new GraphicsDepthState(foundation.Device, foundation.Device.DepthBank.GetPreset(preset));
+                    case "writepermission":
+                        if (EngineUtil.TryParseEnum(c.Value, out GraphicsDepthWritePermission writePermission))
+                            state.WritePermission = writePermission;
+                        else
+                            InvalidEnumMessage<DepthWriteMask>(context, c, "depth write permission");
                         break;
 
-                    case "condition":
-                        if (!Enum.TryParse(attribute.InnerText, true, out conditions))
-                            InvalidEnumMessage<StateConditions>(context, attribute, "state condition");
+                    case "enabled":
+                        if (bool.TryParse(c.Value, out bool depthEnabled))
+                            state.IsDepthEnabled = depthEnabled;
+                        else
+                            InvalidValueMessage(context, c, "depth-testing enabled", "boolean");
+                        break;
+
+                    case "stencilenabled":
+                        if (bool.TryParse(c.Value, out bool stencilEnabled))
+                            state.IsStencilEnabled = stencilEnabled;
+                        else
+                            InvalidValueMessage(context, c, "stencil-testing enabled", "boolean");
+                        break;
+
+                    case "writemask":
+                        if (EngineUtil.TryParseEnum(c.Value, out DepthWriteMask writeMask))
+                            state.DepthWriteMask = writeMask;
+                        else
+                            InvalidEnumMessage<DepthWriteMask>(context, c, "depth write mask");
+                        break;
+
+                    case "comparison":
+                        if (EngineUtil.TryParseEnum(c.Value, out ComparisonFunc comparison))
+                            state.DepthComparison = comparison;
+                        else
+                            InvalidEnumMessage<ComparisonFunc>(context, c, "depth comparison");
+                        break;
+
+                    case "stencilreadmask":
+                        if (byte.TryParse(c.Value, out byte stencilReadMask))
+                            state.StencilReadMask = stencilReadMask;
+                        else
+                            InvalidValueMessage(context, c, "stencil read mask", "byte");
+                        break;
+
+                    case "stencilwritemask":
+                        if (byte.TryParse(c.Value, out byte stencilWriteMask))
+                            state.StencilWriteMask = stencilWriteMask;
+                        else
+                            InvalidValueMessage(context, c, "stencil write mask", "byte");
+                        break;
+
+                    case "reference":
+                        if (byte.TryParse(c.Value, out byte stencilRef))
+                            state.StencilReference = stencilRef;
+                        else
+                            InvalidValueMessage(context, c, "stencil reference", "integer");
+                        break;
+
+                    default:
+                        UnsupportedTagMessage(context, node.Name, c);
                         break;
                 }
             }
 
-            state = state ?? new GraphicsDepthState(foundation.Device, foundation.Device.DepthBank.GetPreset(DepthStencilPreset.Default));
-
-            foreach (XmlNode child in node.ChildNodes)
+            foreach (ShaderHeaderNode c in node.ChildNodes)
             {
-                string nodeName = child.Name.ToLower();
-
-                switch (nodeName)
+                switch (c.Name)
                 {
-                    case "writepermission":
-                        if (SilkUtil.TryParseEnum(child.InnerText, out GraphicsDepthWritePermission writePermission))
-                            state.WritePermission = writePermission;
-                        else
-                            InvalidEnumMessage<DepthWriteMask>(context, child, "depth write permission");
-                        break;
-
-                    case "enabled":
-                        if (bool.TryParse(child.InnerText, out bool depthEnabled))
-                            state.IsDepthEnabled = depthEnabled;
-                        else
-                            InvalidValueMessage(context, child, "depth-testing enabled", "boolean");
-                        break;
-
-                    case "stencilenabled":
-                        if (bool.TryParse(child.InnerText, out bool stencilEnabled))
-                            state.IsStencilEnabled = stencilEnabled;
-                        else
-                            InvalidValueMessage(context, child, "stencil-testing enabled", "boolean");
-                        break;
-
-                    case "writemask":
-                        if (SilkUtil.TryParseEnum(child.InnerText, out DepthWriteMask writeMask))
-                            state.DepthWriteMask = writeMask;
-                        else
-                            InvalidEnumMessage<DepthWriteMask>(context, child, "depth write mask");
-                        break;
-
-                    case "comparison":
-                        if (SilkUtil.TryParseEnum(child.InnerText, out ComparisonFunc comparison))
-                            state.DepthComparison = comparison;
-                        else
-                            InvalidEnumMessage<ComparisonFunc>(context, child, "depth comparison");
-                        break;
-
-                    case "stencilreadmask":
-                        if (byte.TryParse(child.InnerText, out byte stencilReadMask))
-                            state.StencilReadMask = stencilReadMask;
-                        else
-                            InvalidValueMessage(context, child, "stencil read mask", "byte");
-                        break;
-
-                    case "stencilwritemask":
-                        if (byte.TryParse(child.InnerText, out byte stencilWriteMask))
-                            state.StencilWriteMask = stencilWriteMask;
-                        else
-                            InvalidValueMessage(context, child, "stencil write mask", "byte");
-                        break;
-
-                    case "reference":
-                        if (byte.TryParse(child.InnerText, out byte stencilRef))
-                            state.StencilReference = stencilRef;
-                        else
-                            InvalidValueMessage(context, child, "stencil reference", "integer");
-                        break;
-
                     case "front":
-                        ParseFaceNode(context, child, state.FrontFace);
+                        ParseFaceNode(context, c, state.FrontFace);
                         break;
 
                     case "back":
-                        ParseFaceNode(context, child, state.BackFace);
-                        break;
-
-                    default:
-                        UnsupportedTagMessage(context, child);
+                        ParseFaceNode(context, c, state.BackFace);
                         break;
                 }
             }
 
             state = foundation.Device.DepthBank.AddOrRetrieveExisting(state);
 
-            if (conditions == StateConditions.None)
+            if (node.Conditions == StateConditions.None)
                 foundation.DepthState.FillMissingWith(state);
             else
-                foundation.DepthState[conditions] = state;
+                foundation.DepthState[node.Conditions] = state;
         }
 
-        private void ParseFaceNode(ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode faceNode, GraphicsDepthState.Face face)
+        private void ParseFaceNode(ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode faceNode, GraphicsDepthState.Face face)
         {
-            foreach(XmlNode child in faceNode.ChildNodes)
+            foreach (ShaderHeaderNode c in faceNode.ChildNodes)
             {
-                string nodeName = child.Name.ToLower();
-                switch (nodeName) {
+                (string Name, string Value) cv = (c.Name, c.Value);
+
+                switch (c.Name) {
                     case "comparison":
-                        if (SilkUtil.TryParseEnum(child.InnerText, out ComparisonFunc comparison))
+                        if (EngineUtil.TryParseEnum(c.Value, out ComparisonFunc comparison))
                             face.Comparison = comparison;
                         else
-                            InvalidEnumMessage<ComparisonFunc>(context, child, $"{faceNode.Name}-face comparison");
+                            InvalidEnumMessage<ComparisonFunc>(context, cv, $"{faceNode.Name}-face comparison");
                         break;
 
                     case "stencilpass":
-                        if (SilkUtil.TryParseEnum(child.InnerText, out StencilOp stencilpassOp))
+                        if (EngineUtil.TryParseEnum(c.Value, out StencilOp stencilpassOp))
                             face.PassOperation = stencilpassOp;
                         else
-                            InvalidEnumMessage<StencilOp>(context, child, $"{faceNode.Name}-face stencil pass operation");
+                            InvalidEnumMessage<StencilOp>(context, cv, $"{faceNode.Name}-face stencil pass operation");
                         break;
 
                     case "stencilfail":
-                        if (SilkUtil.TryParseEnum(child.InnerText, out StencilOp stencilFailOp))
+                        if (EngineUtil.TryParseEnum(c.Value, out StencilOp stencilFailOp))
                             face.FailOperation = stencilFailOp;
                         else
-                            InvalidEnumMessage<StencilOp>(context, child, $"{faceNode.Name}-face stencil fail operation");
+                            InvalidEnumMessage<StencilOp>(context, cv, $"{faceNode.Name}-face stencil fail operation");
                         break;
 
                     case "fail":
-                        if (SilkUtil.TryParseEnum(child.InnerText, out StencilOp failOp))
+                        if (EngineUtil.TryParseEnum(c.Value, out StencilOp failOp))
                             face.DepthFailOperation = failOp;
                         else
-                            InvalidEnumMessage<StencilOp>(context, child, $"{faceNode.Name}-face depth fail operation");
+                            InvalidEnumMessage<StencilOp>(context, cv, $"{faceNode.Name}-face depth fail operation");
                         break;
 
                     default:
-                        UnsupportedTagMessage(context, child);
+                        UnsupportedTagMessage(context, faceNode.Name, cv);
                         break;
                 }
             }
