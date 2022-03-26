@@ -9,7 +9,7 @@
             base(device, filename)
         {
             UAVs = new RWVariable[0];
-            Composition = new CSComposition(this, false, ShaderType.Compute);
+            Composition = new CSComposition(this, ShaderType.Compute);
         }
 
         internal override void PipelineRelease()

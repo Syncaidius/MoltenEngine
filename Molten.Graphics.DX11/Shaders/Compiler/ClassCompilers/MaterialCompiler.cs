@@ -129,7 +129,7 @@
             {
                 if (string.IsNullOrWhiteSpace(sc.EntryPoint))
                 {
-                    if (!sc.Optional)
+                    if (_mandatoryShaders.Contains(sc.Type))
                         context.AddError($"Mandatory entry point for {sc.Type} shader is missing.");
 
                     continue;

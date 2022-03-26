@@ -18,11 +18,11 @@ namespace Molten.Graphics
             _parent = material;
             Name = name;
 
-            VS = new VSComposition(material, false);
-            GS = new GSComposition(material, true);
-            HS = new HSComposition(material, true);
-            DS = new DSComposition(material, true);
-            PS = new PSComposition(material, false);
+            VS = new VSComposition(material);
+            GS = new GSComposition(material);
+            HS = new HSComposition(material);
+            DS = new DSComposition(material);
+            PS = new PSComposition(material);
 
             Compositions = new ShaderComposition[5];
             Compositions[ID_VERTEX] = VS;

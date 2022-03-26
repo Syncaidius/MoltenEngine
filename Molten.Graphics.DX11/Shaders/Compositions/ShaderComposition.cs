@@ -23,17 +23,14 @@ namespace Molten.Graphics
 
         internal ShaderType Type;
 
-        internal bool Optional;
-
         internal HlslShader Parent { get; }
 
         internal unsafe abstract void SetBytecode(ID3D10Blob* byteCode);
 
-        internal ShaderComposition(HlslShader parentShader, bool optional, ShaderType type) : 
+        internal ShaderComposition(HlslShader parentShader, ShaderType type) : 
             base(parentShader.Device, ContextBindTypeFlags.Input)
         {
             Parent = parentShader;
-            Optional = optional;
             Type = type;
         }
 
@@ -45,8 +42,8 @@ namespace Molten.Graphics
     {
         T* _ptrShader;
 
-        internal ShaderComposition(HlslShader parentShader, bool optional, ShaderType type) : 
-            base(parentShader, optional, type) { }
+        internal ShaderComposition(HlslShader parentShader, ShaderType type) : 
+            base(parentShader, type) { }
 
         internal override unsafe void SetBytecode(ID3D10Blob* byteCode)
         {
