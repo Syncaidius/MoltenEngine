@@ -1,6 +1,6 @@
 <material>
-	<name>sprite-texture</name>
-    <author>James Yarwood</author>
+    <name value="sprite-texture" />
+    <author value="James Yarwood"/>
 	<description>The default material for rendering sprites in a SpriteBatch with a texture</description>
 	<pass>
         <name value="main"/>
@@ -8,7 +8,7 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS" />
-        <fragment value="PS_MS">
+        <fragment value="PS">
             <condition value="Multisampling"/>
         </fragment>
         <blend preset="PreMultipliedAlpha" />
@@ -24,8 +24,8 @@
 </material>
 
 <material>
-	<name>sprite-no-texture</name>
-    <author>James Yarwood</author>
+    <name value="sprite-no-texture" />
+    <author value="James Yarwood"/>
 	<description>The default material for rendering sprites in a SpriteBatch with no texture.</description>
 	<pass>
 		<name value="main"/>
@@ -46,8 +46,8 @@
 </material>
 
 <material>
-    <name>line</name>
-    <author>James Yarwood</author>
+    <name value="line" />
+    <author value="James Yarwood"/>
     <description>The default material for rendering un-textured lines with 1 point per line.</description>
     <pass>
         <name value="main"/>
@@ -68,8 +68,8 @@
 </material>
 
 <material>
-    <name>circle</name>
-    <author>James Yarwood</author>
+    <name value="circle" />
+    <author value="James Yarwood"/>
     <description value="The default material for rendering an un-textured circle from a single point" />
     <pass>
         <name value="main"/>
@@ -90,8 +90,8 @@
 </material>
 
 <material>
-    <name>triangle</name>
-    <author>James Yarwood</author>
+    <name value="triangle" />
+    <author value="James Yarwood"/>
     <description>The default material for rendering an un-textured triangle from a single point.</description>
     <pass>
         <name value="main"/>

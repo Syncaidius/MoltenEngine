@@ -1,19 +1,19 @@
 <material>
-	<name>skybox-default</name>
-	<description>The default material for rendering skyboxes.</description>
+    <name value="skybox-default"/>
+    <description value="The default material for rendering skyboxes."/>
 	<pass>
-		<name>main</name>
-		<iterations>1</iterations>
-		<vertex>VS</vertex>
-		<fragment>PS</fragment>
+        <name value="main"/>
+        <iterations value="1"/>
+        <vertex value="VS"/>
+        <fragment value="PS" />
 		<blend preset="Default" />
 		<rasterizer preset="NoCulling" />
-		<depth>
-		  <enabled>true</enabled>
-		  <writemask>All</writemask>
-		  <writepermission>ReadOnly</writepermission>
-		  <comparison>LessEqual</comparison>
-		</depth>
+        <depth>
+            <enabled value="true"/>
+            <writemask value="All"/>
+            <writepermission value="ReadOnly"/>
+            <comparison value="LessEqual"/>
+        </depth>
 	</pass>
 </material>
 

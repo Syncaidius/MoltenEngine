@@ -19,15 +19,17 @@ namespace Molten.Graphics
         {
             if(TypeFilter != null)
             {
+                bool isValid = false;
+                int validFilterCount = 0;
                 foreach(Type t in TypeFilter)
                 {
                     if (typeof(IShaderElement).IsAssignableFrom(t))
                     {
                         if (t.IsAssignableFrom(foundation.GetType()))
                         {
-                            ShaderHeaderNode shn = ParseNode(context, node);
-                            OnParse(foundation, context, shn);
-                            return;
+                            isValid = true;
+                            validFilterCount++;
+                            break;
                         }
                     }
                     else
@@ -35,14 +37,21 @@ namespace Molten.Graphics
                         context.AddWarning($"Ignoring invalid filter type '{t.Name}' provided in '{this.GetType().Name}' shader node parser");
                     }
                 }
+
+                if(!isValid && validFilterCount > 0)
+                {
+                    context.AddWarning($"Ignoring unsupported '{node.Name}' node in '{foundation.GetType().Name}' definition");
+                    return;
+                }    
             }
 
-            context.AddWarning($"Ignoring unsupported '{node.Name}' node in '{foundation.GetType().Name}' definition");
+            ShaderHeaderNode shn = ParseNode(context, node);
+            OnParse(foundation, context, shn);
         }
 
         private ShaderHeaderNode ParseNode(ShaderCompilerContext<R, S> context, XmlNode node)
         {
-            ShaderHeaderNode shn = new ShaderHeaderNode();
+            ShaderHeaderNode shn = new ShaderHeaderNode(node);
 
             // Parse attributes
             if (node.Attributes != null)
@@ -69,43 +78,51 @@ namespace Molten.Graphics
                             if (!int.TryParse(att.InnerText, out int index))
                                 index = 0;
 
-                            shn.Index = index;
+                            shn.SlotID = index;
                             break;
                     }
                 }
             }
 
             // Parse sub-values
-            foreach (XmlNode c in node.ChildNodes)
+            if (node.ChildNodes.Count > 0)
             {
-                string cName = c.Name.ToLower();
-
-                switch (cName)
+                if(node.ChildNodes.Count == 1)
                 {
-                    case "condition":
-                        if (Enum.TryParse(c.InnerText, true, out StateConditions sc))
-                            shn.Conditions |= sc;
-                        else
-                            InvalidEnumMessage<StateConditions>(context, (c.Name, c.InnerText), "state condition");
-                        break;
-
-                    default:
-                        if (c.ChildNodes.Count > 0)
-                        {
-                            for (int j = 0; j < c.ChildNodes.Count; j++)
-                            {
-                                ShaderHeaderNode cNode = ParseNode(context, c.ChildNodes[j]);
-                                shn.ChildNodes.Add(cNode);
-                            }
-                        }
-                        else
-                        {
-                            shn.ChildValues.Add((cName, c.InnerText));
-                        } 
-
-                        break;
+                    XmlNode cNode = node.ChildNodes[0];
+                    if (cNode.Name == "#text")
+                        shn.Value = node.InnerText;
                 }
 
+                foreach (XmlNode c in node.ChildNodes)
+                {
+                    string cName = c.Name.ToLower();
+
+                    if (cName == "depth" && c.ChildNodes.Count > 0)
+                    {
+
+                    }
+
+                    ShaderHeaderNode cNode = ParseNode(context, c);
+
+                    switch (cName)
+                    {
+                        case "condition":
+                            if (Enum.TryParse(cNode.Value, true, out StateConditions sc))
+                                shn.Conditions |= sc;
+                            else
+                                InvalidEnumMessage<StateConditions>(context, (c.Name, c.InnerText), "state condition");
+                            break;
+
+                        default:
+                            if (c.ChildNodes.Count > 0)
+                                shn.ChildNodes.Add(cNode);
+                            else
+                                shn.ChildValues.Add((cName, cNode.Value));
+
+                            break;
+                    }
+                }
             }
 
             return shn;

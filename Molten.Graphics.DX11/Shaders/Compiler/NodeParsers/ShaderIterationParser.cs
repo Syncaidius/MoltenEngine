@@ -6,18 +6,19 @@ namespace Molten.Graphics
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Iterations;
 
-        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode node)
-        {
-            int val = 1;
-            if (int.TryParse(node.InnerText, out val))
-                foundation.Iterations = val;
-            else
-                context.AddWarning($"Invalid iteration number format for {foundation.GetType().Name}. Should be an integer value.");
+        public override Type[] TypeFilter => null;
 
-            if (string.IsNullOrWhiteSpace(node.InnerText))
-                foundation.Name = "Unnamed Material";
+        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
+        {
+            if (int.TryParse(node.Value, out int val))
+            {
+                foundation.Iterations = val;
+            }
             else
-                foundation.Name = node.InnerText;
+            {
+                context.AddWarning($"Invalid iteration number format for {foundation.GetType().Name}. Should be an integer value.");
+                foundation.Iterations = 1;
+            }
         }
     }
 }

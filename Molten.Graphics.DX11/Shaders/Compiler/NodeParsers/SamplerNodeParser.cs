@@ -6,135 +6,112 @@ namespace Molten.Graphics
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Sampler;
 
-        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode node)
+        public override Type[] TypeFilter { get; } = { typeof(Material), typeof(MaterialPass) };
+
+        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            if (foundation is ComputeTask)
-            {
-                context.AddWarning($"Ignoring {NodeType} in compute task definition");
-                return;
-            }
-
-            int slotID = 0;
-            StateConditions conditions = StateConditions.None;
             ShaderSampler sampler = null;
+            SamplerPreset preset = SamplerPreset.Default;
 
-            foreach (XmlAttribute attribute in node.Attributes)
+            if (node.ValueType == ShaderHeaderValueType.Preset)
             {
-                string attName = attribute.Name.ToLower();
-                switch (attName)
-                {
-                    case "slot": // The blend state RT index. Blend states can provide per-render target/surface configuration.
-                        if (!int.TryParse(attribute.InnerText, out slotID))
-                            InvalidValueMessage(context, attribute, "sampler slot", "integer");
-                        break;
-
-                    case "condition":
-                        if (!Enum.TryParse(attribute.InnerText, true, out conditions))
-                            InvalidEnumMessage<StateConditions>(context, attribute, "sampler condition");
-                        break;
-
-                    case "preset":
-                        if (Enum.TryParse(attribute.InnerText, true, out SamplerPreset preset))
-                            sampler = new ShaderSampler(foundation.Device, foundation.Device.SamplerBank.GetPreset(preset));
-                        else
-                            InvalidEnumMessage<SamplerPreset>(context, attribute, "sampler preset");
-                        break;
-                }
+                if (!Enum.TryParse(node.Value, true, out preset))
+                    InvalidEnumMessage<SamplerPreset>(context, (node.Name, node.Value), "sampler preset");
             }
 
             // Retrieve existing state if available and create a new one from it to avoid editing the existing one.
-            sampler = sampler ?? foundation.Device.SamplerBank.GetPreset(SamplerPreset.Default);
+            sampler = new ShaderSampler(foundation.Device, foundation.Device.SamplerBank.GetPreset(preset));
 
-            foreach (XmlNode child in node.ChildNodes)
+            foreach ((string Name, string Value) c in node.ChildValues)
             {
-                string nodeName = child.Name.ToLower();
+                string nodeName = c.Name.ToLower();
                 switch (nodeName)
                 {
                     case "addressu":
-                        if (Enum.TryParse(child.InnerText, true, out SamplerAddressMode uMode))
+                        if (Enum.TryParse(c.Value, true, out SamplerAddressMode uMode))
                             sampler.AddressU = uMode;
                         else
-                            InvalidEnumMessage<SamplerAddressMode>(context, child, "U address mode");
+                            InvalidEnumMessage<SamplerAddressMode>(context, c, "U address mode");
                         break;
 
                     case "addressv":
-                        if (Enum.TryParse(child.InnerText, true, out SamplerAddressMode vMode))
+                        if (Enum.TryParse(c.Value, true, out SamplerAddressMode vMode))
                             sampler.AddressV = vMode;
                         else
-                            InvalidEnumMessage<SamplerAddressMode>(context, child, "V address mode");
+                            InvalidEnumMessage<SamplerAddressMode>(context, c, "V address mode");
                         break;
 
                     case "addressw":
-                        if (Enum.TryParse(child.InnerText, true, out SamplerAddressMode wMode))
+                        if (Enum.TryParse(c.Value, true, out SamplerAddressMode wMode))
                             sampler.AddressW = wMode;
                         else
-                            InvalidEnumMessage<SamplerAddressMode>(context, child, "W address mode");
+                            InvalidEnumMessage<SamplerAddressMode>(context, c, "W address mode");
                         break;
 
                     case "border": // Border color to use if SharpDX.Direct3D11.TextureAddressMode.Border is specified.
-                        sampler.BorderColor = ParseColor4(context, child, true);
+                        sampler.BorderColor = ParseColor4(context, c.Value, true);
                         break;
 
                     case "comparison":
-                        if (Enum.TryParse(child.InnerText, true, out ComparisonMode cMode))
+                        if (Enum.TryParse(c.Value, true, out ComparisonMode cMode))
                             sampler.ComparisonFunc = cMode;
                         else
-                            InvalidEnumMessage<ComparisonMode>(context, child, "comparison mode");
+                            InvalidEnumMessage<ComparisonMode>(context, c, "comparison mode");
                         break;
 
                     case "filter":
-                        if (Enum.TryParse(child.InnerText, true, out SamplerFilter filter))
+                        if (Enum.TryParse(c.Value, true, out SamplerFilter filter))
                             sampler.FilterMode = filter;
                         else
-                            InvalidEnumMessage<SamplerFilter>(context, child, "filter");
+                            InvalidEnumMessage<SamplerFilter>(context, c, "filter");
                         break;
 
                     case "maxanisotropy": // Max anisotrophy
-                        if (uint.TryParse(child.InnerText, out uint maxAnisotrophy))
+                        if (uint.TryParse(c.Value, out uint maxAnisotrophy))
                             sampler.MaxAnisotropy = maxAnisotrophy;
                         else
-                            InvalidValueMessage(context, child, "max anisotrophy", "integer");
+                            InvalidValueMessage(context, c, "max anisotrophy", "integer");
                         break;
 
                     case "maxmipmaplod": // Max mip-map LoD.
-                        if (float.TryParse(child.InnerText, out float maxMipMapLod))
+                        if (float.TryParse(c.Value, out float maxMipMapLod))
                             sampler.MaxMipMapLod = maxMipMapLod;
                         else
-                            InvalidValueMessage(context, child, "maximum mip-map level-of-detail", "floating-point");
+                            InvalidValueMessage(context, c, "maximum mip-map level-of-detail", "floating-point");
                         break;
 
                     case "minmipmaplod": // Min mip-map LoD.
-                        if (float.TryParse(child.InnerText, out float minMipMapLoD))
+                        if (float.TryParse(c.Value, out float minMipMapLoD))
                             sampler.MaxMipMapLod = minMipMapLoD;
                         else
-                            InvalidValueMessage(context, child, "minimum mip-map level-of-detail", "floating-point");
+                            InvalidValueMessage(context, c, "minimum mip-map level-of-detail", "floating-point");
                         break;
 
                     case "lodbias": // LoD bias.
-                        if (float.TryParse(child.InnerText, out float lodBias))
+                        if (float.TryParse(c.Value, out float lodBias))
                             sampler.LodBias = lodBias;
                         else
-                            InvalidValueMessage(context, child, "level-of-detail (LoD) bias", "floating-point");
+                            InvalidValueMessage(context, c, "level-of-detail (LoD) bias", "floating-point");
                         break;
 
                     default:
-                        UnsupportedTagMessage(context, child);
+                        UnsupportedTagMessage(context, node.Name, c);
                         break;
                 }
             }
 
 
             // Initialize shader state bank for the sampler if needed.
-            if (slotID >= foundation.Samplers.Length)
+            if (node.SlotID >= foundation.Samplers.Length)
             {
                 int oldLength = foundation.Samplers.Length;
-                Array.Resize(ref foundation.Samplers, slotID + 1);
+                Array.Resize(ref foundation.Samplers, node.SlotID + 1);
                 for (int i = oldLength; i < foundation.Samplers.Length; i++)
                     foundation.Samplers[i] = new ShaderStateBank<ShaderSampler>();
             }
 
             sampler = foundation.Device.SamplerBank.AddOrRetrieveExisting(sampler);
-            foundation.Samplers[slotID][conditions] = sampler;
+            foundation.Samplers[node.SlotID][node.Conditions] = sampler;
         }
     }
 }

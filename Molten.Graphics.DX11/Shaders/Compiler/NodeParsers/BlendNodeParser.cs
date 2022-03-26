@@ -29,7 +29,7 @@ namespace Molten.Graphics
             }
 
             GraphicsBlendState state = new GraphicsBlendState(foundation.Device, foundation.BlendState[node.Conditions] ?? foundation.Device.BlendBank.GetPreset(BlendPreset.Default));
-            state.IndependentBlendEnable = (state.IndependentBlendEnable || (node.Index > 0));
+            state.IndependentBlendEnable = (state.IndependentBlendEnable || (node.SlotID > 0));
 
             foreach ((string Name, string Value) c in node.ChildValues)
             {
@@ -112,7 +112,7 @@ namespace Molten.Graphics
             }
 
             // Update RT blend description on main description.
-            state[node.Index] = rtBlendDesc;
+            state[node.SlotID] = rtBlendDesc;
             state = foundation.Device.BlendBank.AddOrRetrieveExisting(state);
 
             if (node.Conditions == StateConditions.None)

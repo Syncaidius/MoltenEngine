@@ -6,12 +6,11 @@ namespace Molten.Graphics
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Name;
 
-        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode node)
+        public override Type[] TypeFilter => null;
+
+        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            if (string.IsNullOrWhiteSpace(node.InnerText))
-                foundation.Name = "Unnamed Material";
-            else
-                foundation.Name = node.InnerText;
+            foundation.Name = string.IsNullOrWhiteSpace(node.Value) ? "Unnamed Material" : node.Value;
         }
     }
 }

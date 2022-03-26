@@ -17,11 +17,12 @@ struct PS_IN
 };
 
 Texture2DArray mapDiffuse;
-Texture2DMSArray mapDiffuseMS;
+Texture2DMSArray<float4> mapDiffuseMS;
 SamplerState diffuseSampler;
 
 float4x4 wvp;
 float2 textureSize;
+uint sampleCount;
 
 static float degToRad360 = 6.28319;
 
@@ -211,8 +212,13 @@ float4 PS( PS_IN input ) : SV_Target
 
 float4 PS_MS( PS_IN input ) : SV_Target
 {
-	float4 col = mapDiffuseMS.Sample(diffuseSampler, input.uv);
-	return col * input.col;
+    float4 texCol = float4(0,0,0,0);
+    for(uint i = 0; i < sampleCount; i++)
+    {
+	    texCol += mapDiffuseMS.Load(input.pos.xyz, i);
+    }
+
+	return (texCol / 4) * input.col;
 }
 
 float4 PS_NoTexture(PS_IN input) : SV_Target

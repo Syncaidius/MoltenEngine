@@ -7,26 +7,18 @@ namespace Molten.Graphics
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Domain;
 
-        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode node)
-        {
-            if (foundation is ComputeTask)
-            {
-                context.AddWarning($"Ignoring {NodeType} in compute task definition");
-                return;
-            }
+        public override Type[] TypeFilter { get; } = { typeof(Material), typeof(MaterialPass) };
 
+        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
+        {
             switch (foundation)
             {
                 case Material material:
-                    material.DefaultDSEntryPoint = node.InnerText;
+                    material.DefaultDSEntryPoint = node.Value;
                     break;
 
                 case MaterialPass pass:
-                    pass.DomainShader.EntryPoint = node.InnerText;
-                    break;
-
-                default:
-                    context.AddWarning($"Ignoring '{NodeType}' in unsupported shader type '{foundation.GetType().Name}' definition");
+                    pass.DomainShader.EntryPoint = node.Value;
                     break;
             }
         }

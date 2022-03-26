@@ -6,22 +6,18 @@ namespace Molten.Graphics
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Pass;
 
-        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode node)
+        public override Type[] TypeFilter { get; } = { typeof(Material) };
+
+        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            if (foundation is Material material)
-            {
-                MaterialPass pass = new MaterialPass(material, "<Unnamed Material Pass>");
+            Material mat = foundation as Material;
+            MaterialPass pass = new MaterialPass(mat, "<Unnamed Material Pass>");
 
-                for (int i = 0; i < material.Samplers.Length; i++)
-                    pass.Samplers[i] = material.Samplers[i];
+            for (int i = 0; i < mat.Samplers.Length; i++)
+                pass.Samplers[i] = mat.Samplers[i];
 
-                context.Compiler.ParseNode(pass, node, context);
-                material.AddPass(pass);
-            }
-            else
-            {
-                context.AddWarning($"Ignoring '{NodeType}' node on non-material shader element '{foundation.GetType().Name}'");
-            }
+            context.Compiler.ParseNode(pass, node.OriginalNode, context);
+            mat.AddPass(pass);
         }
     }
 }

@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Molten.Graphics
 {
     public class ShaderHeaderNode
     {
+        internal ShaderHeaderNode(XmlNode original)
+        {
+            OriginalNode = original;
+        }
+
         /// <summary>
         /// The original name of the node.
         /// </summary>
@@ -21,7 +27,7 @@ namespace Molten.Graphics
         /// <summary>
         /// The index or slot that the node refers to for a shader element.
         /// </summary>
-        public int Index { get; set; }
+        public int SlotID { get; set; }
 
         /// <summary>
         /// Gets the type of value held in <see cref="Value"/>.
@@ -39,6 +45,8 @@ namespace Molten.Graphics
         /// Gets a list of child nodes bound to the current <see cref="ShaderHeaderNode"/>. These were nodes which had their own child values/nodes.
         /// </summary>
         public List<ShaderHeaderNode> ChildNodes { get; } = new List<ShaderHeaderNode>();
+
+        public XmlNode OriginalNode { get; }
 
     }
 
