@@ -84,11 +84,11 @@ namespace Molten.Graphics
                 Context.Native->IASetPrimitiveTopology(_boundTopology.ToApi());
             }
 
-            VS.Shader.Value = pass.VertexShader;
-            GS.Shader.Value = pass.GeometryShader;
-            HS.Shader.Value = pass.HullShader;
-            DS.Shader.Value = pass.DomainShader;
-            PS.Shader.Value = pass.PixelShader;
+            VS.Shader.Value = pass.VS;
+            GS.Shader.Value = pass.GS;
+            HS.Shader.Value = pass.HS;
+            DS.Shader.Value = pass.DS;
+            PS.Shader.Value = pass.PS;
 
             bool vsChanged = VS.Bind();
             bool gsChanged = GS.Bind();

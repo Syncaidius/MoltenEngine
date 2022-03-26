@@ -18,25 +18,25 @@ namespace Molten.Graphics
             _parent = material;
             Name = name;
 
-            VertexShader = new VSComposition(material, false);
-            GeometryShader = new GSComposition(material, true);
-            HullShader = new HSComposition(material, true);
-            DomainShader = new DSComposition(material, true);
-            PixelShader = new PSComposition(material, false);
+            VS = new VSComposition(material, false);
+            GS = new GSComposition(material, true);
+            HS = new HSComposition(material, true);
+            DS = new DSComposition(material, true);
+            PS = new PSComposition(material, false);
 
             Compositions = new ShaderComposition[5];
-            Compositions[ID_VERTEX] = VertexShader;
-            Compositions[ID_HULL] = HullShader;
-            Compositions[ID_DOMAIN] = DomainShader;
-            Compositions[ID_GEOMETRY] = GeometryShader;
-            Compositions[ID_PIXEL] = PixelShader;
+            Compositions[ID_VERTEX] = VS;
+            Compositions[ID_HULL] = HS;
+            Compositions[ID_DOMAIN] = DS;
+            Compositions[ID_GEOMETRY] = GS;
+            Compositions[ID_PIXEL] = PS;
         }
 
         internal GraphicsBindResult ValidateInput(D3DPrimitiveTopology topology)
         {
             GraphicsBindResult result = GraphicsBindResult.Successful;
 
-            if(HullShader.PtrShader != null)
+            if(HS.PtrShader != null)
             {
                 if (topology < D3DPrimitiveTopology.D3D11PrimitiveTopology1ControlPointPatchlist)
                     result |= GraphicsBindResult.HullPatchTopologyExpected;
@@ -51,19 +51,19 @@ namespace Molten.Graphics
                 Compositions[i].Dispose();
         }
 
-        internal ShaderComposition[] Compositions;
+        internal ShaderComposition[] Compositions { get; }
 
-        internal VSComposition VertexShader { get; }
+        internal VSComposition VS { get; }
 
-        internal GSComposition GeometryShader { get; }
+        internal GSComposition GS { get; }
 
-        internal HSComposition HullShader { get; }
+        internal HSComposition HS { get; }
 
-        internal DSComposition DomainShader { get; }
+        internal DSComposition DS { get; }
 
-        internal PSComposition PixelShader { get; }
+        internal PSComposition PS { get; }
 
-        internal D3DPrimitive GeometryPrimitive;
+        internal D3DPrimitive GeometryPrimitive { get; set; }
 
         /// <summary>Gets or sets whether or not the pass will be run.</summary>
         /// <value>

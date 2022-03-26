@@ -5,6 +5,7 @@
         public override ShaderClassType ClassType => ShaderClassType.Material;
 
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
+        ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
 
         public override List<IShaderElement> Parse(ShaderCompilerContext<RendererDX11, HlslFoundation> context,
             RendererDX11 renderer, in string header)
@@ -17,7 +18,7 @@
                 if (material.Passes == null || material.Passes.Length == 0)
                 {
                     material.AddDefaultPass();
-                    if (string.IsNullOrWhiteSpace(material.Passes[0].VertexShader.EntryPoint))
+                    if (string.IsNullOrWhiteSpace(material.Passes[0].VS.EntryPoint))
                     {
                         context.AddError($"Material '{material.Name}' does not have a defined vertex shader entry point. Must be defined in the material or it's first pass.");
                         return result;
@@ -46,10 +47,10 @@
             // Only run this if there is more than 1 pass.
             if (material.PassCount > 1)
             {
-                ShaderIOStructure iStructure = material.Passes[0].VertexShader.InputStructure;
+                ShaderIOStructure iStructure = material.Passes[0].VS.InputStructure;
                 for (int i = 1; i < material.PassCount; i++)
                 {
-                    if (!material.Passes[i].VertexShader.InputStructure.IsCompatible(iStructure))
+                    if (!material.Passes[i].VS.InputStructure.IsCompatible(iStructure))
                         context.AddError($"Vertex input structure in Pass #{i + 1} in material '{material.Name}' does not match structure of pass #1");
                 }
             }
@@ -99,7 +100,7 @@
                     }
                 }
 
-                material.InputStructure = material.Passes[0].VertexShader.InputStructure;
+                material.InputStructure = material.Passes[0].VS.InputStructure;
                 material.InputStructureByteCode = firstPassResult[ShaderType.Vertex].ByteCode;
                 result.Add(material);
 
@@ -124,10 +125,8 @@
             MaterialPassCompileResult result = new MaterialPassCompileResult(pass);
 
             // Compile each stage of the material pass.
-            for (int i = 0; i < pass.Compositions.Length; i++)
+            foreach(ShaderComposition sc in pass.Compositions)
             {
-                ShaderComposition sc = pass.Compositions[i];
-
                 if (string.IsNullOrWhiteSpace(sc.EntryPoint))
                 {
                     if (!sc.Optional)
@@ -178,36 +177,36 @@
             // Vertex Shader
             if (pResult[ShaderType.Vertex] != null)
             {
-                if (!BuildStructure(context, material, pResult[ShaderType.Vertex], pass.VertexShader))
-                    context.AddError($"Invalid vertex shader structure for '{pResult.Pass.VertexShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                if (!BuildStructure(context, material, pResult[ShaderType.Vertex], pass.VS))
+                    context.AddError($"Invalid vertex shader structure for '{pResult.Pass.VS.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Hull Shader
             if (pResult[ShaderType.Hull] != null)
             {
-                if (!BuildStructure(context, material, pResult[ShaderType.Hull], pass.HullShader))
-                    context.AddError($"Invalid hull shader structure for '{pResult.Pass.HullShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                if (!BuildStructure(context, material, pResult[ShaderType.Hull], pass.HS))
+                    context.AddError($"Invalid hull shader structure for '{pResult.Pass.HS.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Domain Shader
             if (pResult[ShaderType.Domain] != null)
             {
-                if (!BuildStructure(context, material, pResult[ShaderType.Domain], pass.DomainShader))
-                    context.AddError($"Invalid domain shader structure for '{pResult.Pass.DomainShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                if (!BuildStructure(context, material, pResult[ShaderType.Domain], pass.DS))
+                    context.AddError($"Invalid domain shader structure for '{pResult.Pass.DS.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Geometry Shader
             if (pResult[ShaderType.Geometry] != null)
             {
-                if (!BuildStructure(context, material, pResult[ShaderType.Geometry], pass.GeometryShader))
-                    context.AddError($"Invalid geometry shader structure for '{pResult.Pass.GeometryShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                if (!BuildStructure(context, material, pResult[ShaderType.Geometry], pass.GS))
+                    context.AddError($"Invalid geometry shader structure for '{pResult.Pass.GS.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Pixel Shader
             if (pResult[ShaderType.Pixel] != null)
             {
-                if (!BuildStructure(context, material, pResult[ShaderType.Pixel], pass.PixelShader))
-                    context.AddError($"Invalid pixel shader structure for '{pResult.Pass.PixelShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                if (!BuildStructure(context, material, pResult[ShaderType.Pixel], pass.PS))
+                    context.AddError($"Invalid pixel shader structure for '{pResult.Pass.PS.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
         }
 

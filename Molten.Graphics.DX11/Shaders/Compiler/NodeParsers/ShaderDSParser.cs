@@ -18,7 +18,7 @@ namespace Molten.Graphics
                     break;
 
                 case MaterialPass pass:
-                    pass.DomainShader.EntryPoint = node.Value;
+                    pass.DS.EntryPoint = node.Value;
                     break;
             }
         }
