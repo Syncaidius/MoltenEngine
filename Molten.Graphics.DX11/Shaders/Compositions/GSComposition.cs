@@ -5,7 +5,7 @@ namespace Molten.Graphics
     internal class GSComposition : ShaderComposition<ID3D11GeometryShader>
     {
         public GSComposition(HlslShader parentShader, bool optional) : 
-            base(parentShader, optional, ShaderType.GeometryShader)
+            base(parentShader, optional, ShaderType.Geometry)
         {
         }
 

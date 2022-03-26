@@ -22,7 +22,7 @@ SamplerState diffuseSampler;
 
 float4x4 wvp;
 float2 textureSize;
-uint sampleCount;
+uint sampleCount = 8;
 
 static float degToRad360 = 6.28319;
 

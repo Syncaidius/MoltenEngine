@@ -210,16 +210,21 @@ namespace Molten.Graphics
             foreach (XmlNode node in parentNode.ChildNodes)
             {
                 string nodeName = node.Name.ToLower();
+
+                // Skip XML comments.
+                if (nodeName == "#comment")
+                    continue;
+
                 if (!Enum.TryParse(nodeName, true, out ShaderNodeType nodeType))
                 {
-                    context.AddError($"Node '{nodeName}' is invalid");
+                    context.AddWarning($"Node '{nodeName}' is invalid");
                     continue;
                 }
 
                 ShaderNodeParser<R, S> parser = null;
                 if (!_nodeParsers.TryGetValue(nodeType, out parser))
                 {
-                    context.AddError($"The node '{nodeName}' is not supported by compiler '{this.GetType().Name}'");
+                    context.AddWarning($"The node '{nodeName}' is not supported by compiler '{this.GetType().Name}'");
                     continue;
                 }
 

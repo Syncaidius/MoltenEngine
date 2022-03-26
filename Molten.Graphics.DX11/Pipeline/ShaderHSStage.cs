@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal class ShaderHSStage : ContextShaderStage<ID3D11HullShader>
     {
-        public ShaderHSStage(DeviceContextState state) : base(state, ShaderType.HullShader)
+        public ShaderHSStage(DeviceContextState state) : base(state, ShaderType.Hull)
         {
         }
 

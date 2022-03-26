@@ -1,29 +1,34 @@
-﻿namespace Molten.Graphics
+﻿using Silk.NET.Core.Native;
+
+namespace Molten.Graphics
 {
     internal unsafe class MaterialPassCompileResult
     {
         internal MaterialPassCompileResult(MaterialPass pass)
         {
             Pass = pass;
-            Results = new FxcCompileResult[pass.Compositions.Length];
+            Results = new Dictionary<ShaderType, FxcCompileResult>();
         }
 
-        internal FxcCompileResult[] Results;
+        public FxcCompileResult this[ShaderType type]
+        {
+            get
+            {
+                if (Results.TryGetValue(type, out FxcCompileResult result))
+                    return result;
+                else
+                    return null;
+            }
+
+            set => Results[type] = value;
+        }
+
+        internal Dictionary<ShaderType, FxcCompileResult> Results { get; } 
 
         internal ShaderIOStructure InputStructure;
 
         internal ShaderIOStructure OutputSructure;
 
-        internal MaterialPass Pass { get; private set; }
-
-        internal FxcCompileResult VertexResult => Results[0];
-
-        internal FxcCompileResult HullResult => Results[1];
-
-        internal FxcCompileResult DomainResult => Results[2];
-
-        internal FxcCompileResult GeometryResult => Results[3];
-
-        internal FxcCompileResult PixelResult => Results[4];
+        internal MaterialPass Pass { get; }
     }
 }

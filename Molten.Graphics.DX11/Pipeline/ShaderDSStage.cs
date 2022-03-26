@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal class ShaderDSStage : ContextShaderStage<ID3D11DomainShader>
     {
-        public ShaderDSStage(DeviceContextState state) : base(state, ShaderType.DomainShader)
+        public ShaderDSStage(DeviceContextState state) : base(state, ShaderType.Domain)
         {
         }
 

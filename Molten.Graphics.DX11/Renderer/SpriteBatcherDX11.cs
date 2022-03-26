@@ -158,7 +158,11 @@
                 mat = mat ?? _defaultMaterial;
                 Vector2F texSize = new Vector2F(range.Texture.Width, range.Texture.Height);
                 mat.SpriteBatch.TextureSize.Value = texSize;
-                mat.Textures.DiffuseTexture.Value = range.Texture;
+
+                //if(range.Texture.IsMultisampled)
+                //    mat.Textures.DiffuseTextureMS.Value = range.Texture;
+                //else
+                    mat.Textures.DiffuseTexture.Value = range.Texture;
             }
             else
             {

@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal class ShaderCSStage : ContextShaderStage<ID3D11ComputeShader>
     {
-        public ShaderCSStage(DeviceContextState state) : base(state, ShaderType.ComputeShader)
+        public ShaderCSStage(DeviceContextState state) : base(state, ShaderType.Compute)
         {
             uint uavSlots = state.Context.Device.Features.MaxUnorderedAccessViews;
             UAVs = state.RegisterSlotGroup(ContextBindTypeFlags.Input, "UAV", uavSlots, new UavGroupBinder(this));

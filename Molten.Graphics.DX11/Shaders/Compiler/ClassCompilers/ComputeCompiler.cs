@@ -16,7 +16,7 @@ namespace Molten.Graphics
             {
                 context.Compiler.ParserHeader(compute, in header, context);
                 FxcCompileResult result = null;
-                if (context.Renderer.ShaderCompiler.CompileSource(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out result))
+                if (context.Renderer.ShaderCompiler.CompileSource(compute.Composition.EntryPoint, ShaderType.Compute, context, out result))
                 {
                     if(BuildStructure(context, compute, result, compute.Composition))
                         compute.Composition.SetBytecode(result.ByteCode);

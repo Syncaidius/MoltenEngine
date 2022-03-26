@@ -100,7 +100,7 @@
                 }
 
                 material.InputStructure = material.Passes[0].VertexShader.InputStructure;
-                material.InputStructureByteCode = firstPassResult.VertexResult.ByteCode;
+                material.InputStructureByteCode = firstPassResult[ShaderType.Vertex].ByteCode;
                 result.Add(material);
 
                 material.Scene = new SceneMaterialProperties(material);
@@ -136,11 +136,13 @@
                     continue;
                 }
 
+                FxcCompileResult cResult = null;
                 if (context.Renderer.ShaderCompiler.CompileSource(sc.EntryPoint,
-                    sc.Type, context, out result.Results[i]))
+                    sc.Type, context, out cResult))
                 {
-                    sc.SetBytecode(result.Results[i].ByteCode);
-                    BuildIO(result.Results[i], sc);
+                    result[sc.Type] = cResult;
+                    sc.SetBytecode(cResult.ByteCode);
+                    BuildIO(cResult, sc);
                 }
                 else
                 {
@@ -152,8 +154,11 @@
             if (!context.HasErrors)
             {
                 // Fill in any extra metadata
-                if (result.GeometryResult != null)
-                    pass.GeometryPrimitive = result.GeometryResult.Reflection.Ptr->GetGSInputPrimitive();
+                if (result[ShaderType.Geometry] != null)
+                {
+                    FxcCompileResult fcr = result[ShaderType.Geometry];
+                    pass.GeometryPrimitive = fcr.Reflection.Ptr->GetGSInputPrimitive();
+                }
 
                 // Validate I/O structure of each shader stage.
                 if (_layoutValidator.Validate(context, result))
@@ -171,37 +176,37 @@
             Material material = pass.Material as Material;
 
             // Vertex Shader
-            if (pResult.VertexResult != null)
+            if (pResult[ShaderType.Vertex] != null)
             {
-                if (!BuildStructure(context, material, pResult.VertexResult, pass.VertexShader))
+                if (!BuildStructure(context, material, pResult[ShaderType.Vertex], pass.VertexShader))
                     context.AddError($"Invalid vertex shader structure for '{pResult.Pass.VertexShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Hull Shader
-            if (pResult.HullResult != null)
+            if (pResult[ShaderType.Hull] != null)
             {
-                if (!BuildStructure(context, material, pResult.HullResult, pass.HullShader))
+                if (!BuildStructure(context, material, pResult[ShaderType.Hull], pass.HullShader))
                     context.AddError($"Invalid hull shader structure for '{pResult.Pass.HullShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Domain Shader
-            if (pResult.DomainResult != null)
+            if (pResult[ShaderType.Domain] != null)
             {
-                if (!BuildStructure(context, material, pResult.DomainResult, pass.DomainShader))
+                if (!BuildStructure(context, material, pResult[ShaderType.Domain], pass.DomainShader))
                     context.AddError($"Invalid domain shader structure for '{pResult.Pass.DomainShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Geometry Shader
-            if (pResult.GeometryResult != null)
+            if (pResult[ShaderType.Geometry] != null)
             {
-                if (!BuildStructure(context, material, pResult.GeometryResult, pass.GeometryShader))
+                if (!BuildStructure(context, material, pResult[ShaderType.Geometry], pass.GeometryShader))
                     context.AddError($"Invalid geometry shader structure for '{pResult.Pass.GeometryShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
-            // PixelShader Shader
-            if (pResult.PixelResult != null)
+            // Pixel Shader
+            if (pResult[ShaderType.Pixel] != null)
             {
-                if (!BuildStructure(context, material, pResult.PixelResult, pass.PixelShader))
+                if (!BuildStructure(context, material, pResult[ShaderType.Pixel], pass.PixelShader))
                     context.AddError($"Invalid pixel shader structure for '{pResult.Pass.PixelShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
         }

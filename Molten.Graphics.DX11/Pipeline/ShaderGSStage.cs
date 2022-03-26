@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal class ShaderGSStage : ContextShaderStage<ID3D11GeometryShader>
     {
-        public ShaderGSStage(DeviceContextState state) : base(state, ShaderType.GeometryShader)
+        public ShaderGSStage(DeviceContextState state) : base(state, ShaderType.Geometry)
         {
         }
 

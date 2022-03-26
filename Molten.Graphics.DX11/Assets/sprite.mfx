@@ -8,9 +8,9 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS" />
-        <fragment value="PS">
+        <!--<fragment value="PS_MS">
             <condition value="Multisampling"/>
-        </fragment>
+        </fragment>-->
         <blend preset="PreMultipliedAlpha" />
         <rasterizer preset="ScissorTest" />
         <rasterizer preset="DefaultMultisample">

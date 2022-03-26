@@ -24,26 +24,26 @@
 
             switch (profile)
             {
-                case ShaderType.ComputeShader:
+                case ShaderType.Compute:
                     pString += "cs_";
                     break;
-                case ShaderType.DomainShader:
+                case ShaderType.Domain:
                     pString += "ds_";
                     break;
-                case ShaderType.GeometryShader:
+                case ShaderType.Geometry:
                     pString += "gs_";
                     break;
-                case ShaderType.PixelShader:
+                case ShaderType.Pixel:
                     pString += "ps_";
                     break;
-                case ShaderType.VertexShader:
+                case ShaderType.Vertex:
                     pString += "vs_";
                     break;
-                case ShaderType.HullShader:
+                case ShaderType.Hull:
                     pString += "hs_";
                     break;
 
-                case ShaderType.LibShader:
+                case ShaderType.Lib:
                     pString += "lib_";
                     break;
 

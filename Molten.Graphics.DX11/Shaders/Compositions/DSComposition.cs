@@ -5,7 +5,7 @@ namespace Molten.Graphics
     internal class DSComposition : ShaderComposition<ID3D11DomainShader>
     {
         public DSComposition(HlslShader parentShader, bool optional) : 
-            base(parentShader, optional, ShaderType.DomainShader)
+            base(parentShader, optional, ShaderType.Domain)
         {
         }
 

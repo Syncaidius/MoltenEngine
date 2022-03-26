@@ -62,24 +62,25 @@ namespace Molten.Graphics
                 previous = stages[i];
             }
 
-            return valid && 
-                CheckTessellationShaders(context, pResult) && 
+            return valid &&
+                CheckTessellationShaders(context, pResult) &&
                 CheckGeometryTessellationAdjacency(pResult);
         }
 
         private bool CheckTessellationShaders(
-            ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
+            ShaderCompilerContext<RendererDX11, HlslFoundation> context,
             MaterialPassCompileResult pResult)
         {
             bool valid = true;
-            FxcCompileResult hs = pResult.Results[MaterialPass.ID_HULL];
-            FxcCompileResult ds = pResult.Results[MaterialPass.ID_DOMAIN];
+            FxcCompileResult hs = pResult[ShaderType.Hull];
+            FxcCompileResult ds = pResult[ShaderType.Domain];
 
-            if(hs != null && ds == null)
+            if (hs != null && ds == null)
             {
                 context.AddError($"Material pass '{pResult.Pass.Name}' Has a hull shader but no domain shader. Both or neither must be present.");
                 valid = false;
-            }else if(hs == null && ds != null)
+            }
+            else if (hs == null && ds != null)
             {
                 context.AddError($"Material pass '{pResult.Pass.Name}' Has a domain shader but no hull shader. Both or neither must be present.");
                 valid = false;
@@ -91,9 +92,9 @@ namespace Molten.Graphics
         private bool CheckGeometryTessellationAdjacency(MaterialPassCompileResult pResult)
         {
             bool valid = true;
-            FxcCompileResult geometryRef = pResult.Results[MaterialPass.ID_GEOMETRY];
-            FxcCompileResult hullRef = pResult.Results[MaterialPass.ID_HULL];
-            FxcCompileResult domainRef = pResult.Results[MaterialPass.ID_DOMAIN];
+            FxcCompileResult geometryRef = pResult[ShaderType.Geometry];
+            FxcCompileResult hullRef = pResult[ShaderType.Hull];
+            FxcCompileResult domainRef = pResult[ShaderType.Domain];
 
             if (geometryRef == null || hullRef == null || domainRef == null)
                 return valid;
@@ -102,7 +103,7 @@ namespace Molten.Graphics
                 * see: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476340%28v=vs.85%29.aspx
                 * quote: "A geometry shader that expects primitives with adjacency (for example, 6 vertices per triangle) is 
                 * not valid when tessellation is active (this results in undefined behavior, which the debug layer will complain about)."*/
-            valid = pResult.Pass.GeometryPrimitive == D3DPrimitive.D3DPrimitiveLineAdj || 
+            valid = pResult.Pass.GeometryPrimitive == D3DPrimitive.D3DPrimitiveLineAdj ||
                 pResult.Pass.GeometryPrimitive == D3DPrimitive.D3DPrimitiveTriangleAdj;
 
             return valid;
