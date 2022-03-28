@@ -142,6 +142,8 @@ namespace Molten.Graphics
                     obj = GetVariableResource<Texture1DVariable>(context, shader, bind);
                     break;
 
+                case D3DSrvDimension.D3D101SrvDimensionTexture2Dms:
+                case D3DSrvDimension.D3D101SrvDimensionTexture2Dmsarray:
                 case D3DSrvDimension.D3DSrvDimensionTexture2Darray:
                 case D3DSrvDimension.D3DSrvDimensionTexture2D:
                     obj = GetVariableResource<Texture2DVariable>(context, shader, bind);

@@ -215,10 +215,10 @@ float4 PS_MS( PS_IN input ) : SV_Target
     float4 texCol = float4(0,0,0,0);
     for(uint i = 0; i < sampleCount; i++)
     {
-	    texCol += mapDiffuseMS.Load(input.pos.xyz, i);
+	    texCol += mapDiffuseMS.Load(input.pos, i);
     }
 
-	return (texCol / 4) * input.col;
+	return (texCol / sampleCount) * input.col;
 }
 
 float4 PS_NoTexture(PS_IN input) : SV_Target

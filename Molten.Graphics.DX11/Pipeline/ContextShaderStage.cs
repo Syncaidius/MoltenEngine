@@ -26,7 +26,7 @@ namespace Molten.Graphics
         {
             bool shaderChanged = Shader.Bind();
 
-                ShaderComposition<T> composition = Shader.BoundValue;
+            ShaderComposition<T> composition = Shader.BoundValue;
 
             if (composition.PtrShader != null)
             {

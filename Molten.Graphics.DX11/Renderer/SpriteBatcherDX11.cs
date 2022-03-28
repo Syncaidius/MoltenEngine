@@ -21,7 +21,8 @@
         SpriteVertex[] _vertices;
         Rectangle _vpBounds;
 
-        Material _defaultMaterial;
+        Material _defaultMaterial; 
+        Material _defaultMaterialMS;
         Material _defaultNoTextureMaterial;
         Material _defaultLineMaterial;
         Material _defaultCircleMaterial;
@@ -41,6 +42,7 @@
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite.mfx");
             _defaultMaterial = result[ShaderClassType.Material, "sprite-texture"] as Material;
+            _defaultMaterialMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
             _defaultNoTextureMaterial = result[ShaderClassType.Material, "sprite-no-texture"] as Material;
             _defaultLineMaterial = result[ShaderClassType.Material, "line"] as Material;
             _defaultCircleMaterial = result[ShaderClassType.Material, "circle"] as Material;
@@ -155,14 +157,20 @@
 
             if (range.Texture != null)
             {
-                mat = mat ?? _defaultMaterial;
+                if (range.Texture.IsMultisampled)
+                {
+                    mat = mat ?? _defaultMaterialMS;
+                    mat.Textures.DiffuseTextureMS.Value = range.Texture;
+                    mat.Textures.SampleCount.Value = (uint)range.Texture.MultiSampleLevel;
+                }
+                else
+                {
+                    mat = mat ?? _defaultMaterial;
+                    mat.Textures.DiffuseTexture.Value = range.Texture; 
+                }
+
                 Vector2F texSize = new Vector2F(range.Texture.Width, range.Texture.Height);
                 mat.SpriteBatch.TextureSize.Value = texSize;
-
-                //if(range.Texture.IsMultisampled)
-                //    mat.Textures.DiffuseTextureMS.Value = range.Texture;
-                //else
-                    mat.Textures.DiffuseTexture.Value = range.Texture;
             }
             else
             {

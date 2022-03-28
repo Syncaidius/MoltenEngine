@@ -37,7 +37,7 @@ namespace Molten
             int ptSize,
             int tabSize = 3,
             int texturePageSize = 512,
-            int pointsPerCurve = 12,
+            int pointsPerCurve = 16,
             int initialPages = 1,
             int charPadding = 2)
         {
