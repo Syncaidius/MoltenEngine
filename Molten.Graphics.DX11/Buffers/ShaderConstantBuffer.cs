@@ -45,7 +45,9 @@ namespace Molten.Graphics
 
                 sv.Name = SilkMarshal.PtrToString((nint)info.Desc->Name);
                 sv.ByteOffset = info.Desc->StartOffset;
-                sv.ValueFromPtr(info.Desc->DefaultValue);
+
+                if(info.Desc->DefaultValue != null)
+                    sv.ValueFromPtr(info.Desc->DefaultValue);
 
                 _varLookup.Add(sv.Name, sv);
                 Variables[c] = sv;

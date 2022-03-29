@@ -53,7 +53,6 @@ namespace Molten.Graphics
 
         FontFile _font;
         IRenderSurface2D _rt;
-        ITexture2D _tex;
         int _fontSize;
         int _tabSize;
         int _pageSize;
@@ -128,16 +127,9 @@ namespace Molten.Graphics
 
 
             _lineSpace = ToPixels(_font.HorizonalHeader.LineSpace);
-            _rt = renderer.Resources.CreateSurface((uint)_pageSize, (uint)_pageSize, arraySize: (uint)initialPages);
-            _tex = renderer.Resources.CreateTexture2D(new Texture2DProperties()
-            {
-                Width = (uint)_pageSize,
-                Height = (uint)_pageSize,
-                ArraySize = (uint)initialPages,
-                Format = _rt.DataFormat,
-            });
-
+            _rt = renderer.Resources.CreateSurface((uint)_pageSize, (uint)_pageSize, arraySize: (uint)initialPages, flags: TextureFlags.AllowMipMapGeneration);
             _rt.Clear(Color.Transparent);
+
             _renderData = renderer.CreateRenderData();
             _renderData.BackgroundColor = Color.Transparent;
             _renderData.IsVisible = false;
@@ -157,7 +149,7 @@ namespace Molten.Graphics
             {
                 OutputSurface = _rt,
                 Flags = RenderCameraFlags.DoNotClear,
-                MultiSampleLevel = AntiAliasLevel.X8
+                //MultiSampleLevel = AntiAliasLevel.X8
             });
 
             // Add placeholder character.
@@ -180,7 +172,7 @@ namespace Molten.Graphics
 
         private void _renderData_OnPostRender(RenderService renderer, SceneRenderData data)
         {
-            _renderer.Resources.ResolveTexture(_rt, _tex);
+            _rt.GenerateMipMaps();
         }
 
         private int ToPixels(float designUnits)
@@ -373,7 +365,6 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             _rt.Dispose();
-            _tex.Dispose();
             _renderer.DestroyRenderData(_renderData);
             _renderData.Dispose();
         }
@@ -391,7 +382,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the underlying texture atlas of the sprite font.
         /// </summary>
-        public ITexture2D UnderlyingTexture => _tex;
+        public ITexture2D UnderlyingTexture => _rt;
 
         /// <summary>
         /// Gets the font's recommended line spacing between two lines, in pixels.

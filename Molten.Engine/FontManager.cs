@@ -1,4 +1,5 @@
-﻿using Molten.Font;
+﻿using System.Collections.Concurrent;
+using Molten.Font;
 using Molten.Graphics;
 
 namespace Molten
@@ -13,12 +14,12 @@ namespace Molten
         }
 
         Engine _engine;
-        Dictionary<string, FontCache> _cache;
+        ConcurrentDictionary<string, FontCache> _cache;
 
         internal FontManager(Engine engine)
         {
             _engine = engine;
-            _cache = new Dictionary<string, FontCache>();
+            _cache = new ConcurrentDictionary<string, FontCache>();
         }
 
         /// <summary>
@@ -122,10 +123,16 @@ namespace Molten
             SpriteFont newFont = new SpriteFont(_engine.Renderer, fFile, ptSize,
                 tabSize, texturePageSize, pointsPerCurve, initialPages, charPadding);
 
-            FontCache fontCache = new FontCache();
-            fontCache.Font = fFile;
-            fontCache.Instances.Add(hash, newFont);
-            _cache.Add(path, fontCache);
+            if(cache == null)
+            {
+                cache = new FontCache();
+                cache.Font = fFile;
+
+                if (!_cache.TryAdd(path, cache))
+                    cache = _cache[path];
+            }
+
+            cache.Instances.TryAdd(hash, newFont);
             newFont.OnDisposing += NewFont_OnDisposing;
 
             return newFont;

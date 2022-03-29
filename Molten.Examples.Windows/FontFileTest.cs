@@ -10,7 +10,6 @@ namespace Molten.Samples
 
         SceneObject _parent;
         SceneObject _child;
-        Random _rng;
         IMesh<VertexTexture> _mesh;
         FontFile _fontFile;
         SpriteFont _font2Test;
@@ -32,7 +31,6 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-            _rng = new Random();
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<ITexture2D>("dds_test.dds", new TextureParameters()
@@ -51,7 +49,7 @@ namespace Molten.Samples
             Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
 
             LoadFontFile("Ananda Namaste Regular.ttf", 24);
-            //LoadFontFile("Arial", 24);
+            //LoadFontFile("BroshK.ttf", 24);
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
@@ -65,7 +63,7 @@ namespace Molten.Samples
         private void LoadFontFile(string loadString, int size)
         {
             ContentRequest cr = Engine.Content.BeginRequest("assets/");
-            cr.Load<SpriteFont>("Ananda Namaste Regular.ttf", new SpriteFontParameters()
+            cr.Load<SpriteFont>(loadString, new SpriteFontParameters()
             {
                 FontSize = size,
             });
@@ -99,8 +97,9 @@ namespace Molten.Samples
             SampleSpriteRenderComponent sCom = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             sCom.RenderCallback = (sb) =>
             {
-                if (SampleFont == null)
+                if (SampleFont == null || _glyphTriPoints == null || _colors == null)
                     return;
+
                 sb.DrawRectOutline(_glyphBounds, Color.Grey, 1);
                 sb.DrawRectOutline(_fontBounds, Color.Pink, 1);
 

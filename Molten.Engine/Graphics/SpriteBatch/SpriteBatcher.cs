@@ -107,7 +107,7 @@ namespace Molten.Graphics
                 item.Material = null;
                 item.Format = SpriteFormat.Sprite;
 
-                item.Vertex.Position = new Vector2F(charPos.X, charPos.Y + cache.YOffset);
+                item.Vertex.Position = new Vector2F(charPos.X, charPos.Y + (cache.YOffset * scale.Y));
                 item.Vertex.Rotation = 0; // TODO 2D text rotation.
                 item.Vertex.ArraySlice = 0; // TODO SpriteFont array slice support.
                 item.Vertex.Size = new Vector2F(cache.Location.Width, cache.Location.Height) * scale;

@@ -2,6 +2,7 @@
   "profiles": {
     "Molten.Examples.Windows": {
       "commandName": "Project",
+      "sqlDebugging": false,
       "nativeDebugging": false
     }
   }
