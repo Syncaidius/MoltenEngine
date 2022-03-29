@@ -1,19 +1,26 @@
 ﻿namespace Molten.Graphics
 {
-    /// <summary>A shader matrix variable.</summary>
-    internal unsafe class ScalarArray<T> : ShaderConstantVariable where T : unmanaged
+    internal unsafe class ScalarMatrixArray<T> : ShaderConstantVariable where T : unmanaged
     {
         static Type _elementType = typeof(T);
         static uint _stride = (uint)sizeof(T);
 
+        uint _components;
+        uint _valueBytes;
+        uint _expectedElements;
         Array _value;
-        internal int ExpectedElements;
 
-        public ScalarArray(ShaderConstantBuffer parent, uint expectedElements)
-            : base(parent)
+        internal ScalarMatrixArray(ShaderConstantBuffer parent, uint rows, uint columns, uint expectedElements) : base(parent)
         {
-            SizeOf = expectedElements * _stride;
+            _components = columns * rows;
+            _expectedElements = expectedElements;
+            SizeOf = (_stride * _components) * _expectedElements;
+
+            T[] tempVal = new T[_components];
+            _value = tempVal;
         }
+
+        public override unsafe void ValueFromPtr(void* ptr) { }
 
         public override void Dispose() { }
 
@@ -41,10 +48,10 @@
                     {
                         _value = (Array)value;
 
-                        nuint valueBytes = (nuint)_value.Length * _stride;
+                        _valueBytes = (uint)_value.Length * _stride;
 
-                        if (valueBytes != SizeOf)
-                            throw new InvalidOperationException($"Value that was set is not of the expected size ({SizeOf}bytes)");
+                        if (_valueBytes != SizeOf)
+                            throw new InvalidOperationException("Value that was set is not of the expected size (" + SizeOf + " bytes)");
                     }
                     DirtyParent();
                 }

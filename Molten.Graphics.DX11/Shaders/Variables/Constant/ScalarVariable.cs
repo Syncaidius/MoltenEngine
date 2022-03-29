@@ -15,6 +15,11 @@ namespace Molten.Graphics
             _value = EngineUtil.AllocArray<T>(_expectedElements);
         }
 
+        public override unsafe void ValueFromPtr(void* ptr)
+        {
+            Buffer.MemoryCopy(ptr, _value, SizeOf, SizeOf);
+        }
+
         internal override void Write(byte* pDest)
         {
             Buffer.MemoryCopy(_value, pDest, SizeOf, SizeOf);

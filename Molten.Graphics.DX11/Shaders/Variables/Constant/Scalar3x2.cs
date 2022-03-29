@@ -10,6 +10,10 @@
         {
             SizeOf = sizeof(float) * (3 * 2);
         }
+        public override unsafe void ValueFromPtr(void* ptr)
+        {
+            _value = *(Matrix3x2F*)ptr;
+        }
 
         public override void Dispose() { }
 

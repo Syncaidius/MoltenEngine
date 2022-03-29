@@ -13,6 +13,8 @@
             ParentBuffer = parent;
         }
 
+        public abstract void ValueFromPtr(void* ptr);
+
         public abstract void Dispose();
 
         /// <summary>Marks the parent buffer as dirty.</summary>

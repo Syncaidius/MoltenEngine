@@ -11,6 +11,8 @@
             SizeOf = (uint)sizeof(Matrix4F);
         }
 
+        public override unsafe void ValueFromPtr(void* ptr) { }
+
         public override void Dispose() { }
 
         internal override void Write(byte* pDest)

@@ -11,6 +11,12 @@
             SizeOf = (uint)sizeof(Matrix3F);
         }
 
+        public override unsafe void ValueFromPtr(void* ptr)
+        {
+            _value = *(Matrix3F*)ptr;
+            _value.Transpose();
+        }
+
         public override void Dispose() { }
 
         internal override void Write(byte* pDest)
