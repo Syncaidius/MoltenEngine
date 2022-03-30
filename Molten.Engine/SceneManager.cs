@@ -43,7 +43,7 @@ namespace Molten
         {
             if (Focused != acceptor && acceptor != null)
             {
-                acceptor.InvokeCursorFocus();
+                acceptor.CursorFocus();
 
                 OnFocus?.Invoke(new SceneEventData<MouseButton>()
                 {
@@ -59,7 +59,7 @@ namespace Molten
         {
             if (Focused != null)
             {
-                Focused.InvokeCursorUnfocus();
+                Focused.CursorUnfocus();
 
                 OnUnfocus?.Invoke(new SceneEventData<MouseButton>()
                 {
@@ -75,6 +75,7 @@ namespace Molten
         {
             Vector2F cursorPos = (Vector2F)mouse.Position;
             Vector2F cursorDelta = (Vector2F)mouse.Delta;
+
             for (int i = _scenes.Count - 1; i >= 0; i--)
             {
                 ICursorAcceptor newHover = _scenes[i].PickObject(cursorPos);
@@ -82,12 +83,7 @@ namespace Molten
                 if (newHover == null)
                 {
                     // Trigger leave on previous hover component.
-                    if (Hovered != null)
-                    {
-                        Hovered.InvokeCursorLeave(cursorPos);
-                    }
-
-                    // Set new-current as null.
+                    Hovered?.CursorLeave(cursorPos);
                     Hovered = null;
                 }
                 else
@@ -95,13 +91,11 @@ namespace Molten
                     if (Hovered != newHover)
                     {
                         //trigger leave on old hover component.
-                        if (Hovered != null)
-                            Hovered.InvokeCursorLeave(cursorPos);
+                        Hovered?.CursorLeave(cursorPos);
 
                         //set new hover component and trigger it's enter event
                         Hovered = newHover;
-                        Hovered.InvokeCursorEnter(cursorPos);
-
+                        Hovered.CursorEnter(cursorPos);
                     }
                 }
 
@@ -112,11 +106,11 @@ namespace Molten
                 // Invoke hover event if possible
                 if (Hovered != null)
                 {
-                    Hovered.InvokeCursorHover(cursorPos);
+                    Hovered.CursorHover(cursorPos);
 
                     // Handle scroll wheel event
                     if (mouse.ScrollWheel.Delta != 0)
-                        Hovered.InvokeCursorWheelScroll(mouse.ScrollWheel);
+                        Hovered.CursorWheelScroll(mouse.ScrollWheel);
                 }
             }
         }

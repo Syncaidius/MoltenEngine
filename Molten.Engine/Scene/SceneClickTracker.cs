@@ -8,7 +8,7 @@ namespace Molten
         internal Vector2F DragDistance;
         internal bool InputDragged = false;
         internal float DragThreshold = 10; // Pixels
-        internal MouseButton Button;
+        public MouseButton Button { get; private set; }
 
         public SceneClickTracker(MouseButton button)
         {
@@ -20,13 +20,13 @@ namespace Molten
             Vector2F mousePos = (Vector2F)mouse.Position;
             Vector2F mouseMove = (Vector2F)mouse.Delta;
 
-            //handle clicking and dragging.
+            // Handle clicking and dragging.
             if (mouse.IsDown(Button))
             {
-                //check if we're starting a new click 
+                // Check if we're starting a new click 
                 if (PressedObject == null)
                 {
-                    //store the component as being dragged
+                    // Store the component as being dragged
                     PressedObject = handler.Hovered;
 
                     if (PressedObject != null)
@@ -39,35 +39,34 @@ namespace Molten
                         }
 
                         // Trigger press-start event
-                        PressedObject.InvokeCursorClickStarted(mousePos, Button);
+                        PressedObject.CursorClickStarted(mousePos, Button);
                     }
 
                     InputDragged = false;
                     DragDistance = new Vector2F();
-
                 }
                 else
                 {
-                    //update drag checks
+                    // Update drag checks
                     DragDistance += mouseMove;
 
                     float distDragged = Math.Abs(DragDistance.Length());
                     if (distDragged >= DragThreshold)
                     {
                         InputDragged = true;
-                        PressedObject.InvokeCursorDrag(mousePos, mouseMove, Button);
+                        PressedObject.CursorDrag(mousePos, mouseMove, Button);
                     }
                 }
             }
             else
             {
-                //check if the tap was released outside or inside of the component
+                // Check if the tap was released outside or inside of the component
                 if (PressedObject != null)
                 {
                     if (PressedObject.Contains(mousePos) == true)
-                        PressedObject.InvokeCursorClickCompleted(mousePos, InputDragged, Button);
+                        PressedObject.CursorClickCompleted(mousePos, InputDragged, Button);
                     else
-                        PressedObject.InvokeCursorClickCompletedOutside(mousePos, Button);
+                        PressedObject.CursorClickCompletedOutside(mousePos, Button);
 
                     PressedObject = null;
                 }

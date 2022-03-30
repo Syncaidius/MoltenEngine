@@ -259,7 +259,11 @@ namespace Molten.Input
                 _states = new S[5];
         }
 
-        protected void QueueState(S state)
+        /// <summary>
+        /// Queues a state on the input device. This can be used to simulate input.
+        /// </summary>
+        /// <param name="state">The state to be queued on the device's buffer.</param>
+        public void QueueState(S state)
         {
             // Should we circle back to the beginning of the buffer?
             if (_bEnd == _buffer.Length)

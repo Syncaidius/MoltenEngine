@@ -2,7 +2,7 @@
 
 namespace Molten.Input
 {
-    public delegate void MouseEventHandler(MouseDevice mouse, MouseButtonState state);
+    public delegate void MouseEventHandler(MouseDevice mouse, in MouseButtonState state);
 
     /// <summary>
     /// Represents an implementation of a mouse or pointer device.

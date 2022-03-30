@@ -15,6 +15,7 @@ namespace Molten
         KeyboardDevice _keyboard;
         GamepadDevice _gamepad;
         MouseDevice _mouse;
+        TouchDevice _touch;
 
         /// <summary>
         /// Occurs when the game is in the process of closing.
@@ -112,8 +113,7 @@ namespace Molten
             {
                 if (RunState != GameRunState.Exiting)
                 {
-                    if (_mouse != null)
-                        Engine.Scenes.HandleInput(_mouse, timing);
+                    HandleInput(timing);
                     OnUpdate(timing);
                 }
                 else
@@ -124,6 +124,23 @@ namespace Molten
                     ForceExit();
                 }
             });
+        }
+
+        private void HandleInput(Timing timing)
+        {
+            if(_mouse != null)
+            {
+                if(_touch != null)
+                {
+                    // Translate touch input to mouse.
+                }
+
+                Engine.Scenes.HandleInput(_mouse, timing);
+            }
+            else if(_touch != null)
+            {
+                // TODO t
+            }            
         }
 
         /// <summary>

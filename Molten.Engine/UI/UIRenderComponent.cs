@@ -57,52 +57,52 @@ namespace Molten.UI
                 return false;
         }
 
-        public void InvokeCursorClickStarted(Vector2F pos, MouseButton button)
+        public void CursorClickStarted(Vector2F pos, MouseButton button)
         {
             
         }
 
-        public void InvokeCursorClickCompletedOutside(Vector2F pos, MouseButton button)
+        public void CursorClickCompletedOutside(Vector2F pos, MouseButton button)
         {
             
         }
 
-        public void InvokeCursorClickCompleted(Vector2F pos, bool wasDragged, MouseButton button)
+        public void CursorClickCompleted(Vector2F pos, bool wasDragged, MouseButton button)
         {
             
         }
 
-        public void InvokeCursorWheelScroll(InputScrollWheel wheel)
+        public void CursorWheelScroll(InputScrollWheel wheel)
         {
             
         }
 
-        public void InvokeCursorEnter(Vector2F pos)
+        public void CursorEnter(Vector2F pos)
         {
             
         }
 
-        public void InvokeCursorLeave(Vector2F pos)
+        public void CursorLeave(Vector2F pos)
         {
            
         }
 
-        public void InvokeCursorHover(Vector2F pos)
+        public void CursorHover(Vector2F pos)
         {
             
         }
 
-        public void InvokeCursorFocus()
+        public void CursorFocus()
         {
             
         }
 
-        public void InvokeCursorDrag(Vector2F pos, Vector2F delta, MouseButton button)
+        public void CursorDrag(Vector2F pos, Vector2F delta, MouseButton button)
         {
             
         }
 
-        public void InvokeCursorUnfocus()
+        public void CursorUnfocus()
         {
            
         }

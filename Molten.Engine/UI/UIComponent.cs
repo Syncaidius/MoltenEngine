@@ -64,9 +64,9 @@ namespace Molten.UI
             OnUpdateBounds();
         }
 
-        internal void HandleInput(Timing time)
+        internal void HandleInput(Timing time, SceneClickTracker tracker)
         {
-
+            return;
         }
 
         internal bool Contains(Vector2F point)

@@ -14,25 +14,25 @@ namespace Molten
 
         bool Contains(Vector2F point);
 
-        void InvokeCursorClickStarted(Vector2F pos, MouseButton button);
+        void CursorClickStarted(Vector2F pos, MouseButton button);
 
-        void InvokeCursorClickCompletedOutside(Vector2F pos, MouseButton button);
+        void CursorClickCompletedOutside(Vector2F pos, MouseButton button);
 
-        void InvokeCursorClickCompleted(Vector2F pos, bool wasDragged, MouseButton button);
+        void CursorClickCompleted(Vector2F pos, bool wasDragged, MouseButton button);
 
-        void InvokeCursorWheelScroll(InputScrollWheel wheel);
+        void CursorDrag(Vector2F pos, Vector2F delta, MouseButton button);
 
-        void InvokeCursorEnter(Vector2F pos);
+        void CursorWheelScroll(InputScrollWheel wheel);
 
-        void InvokeCursorLeave(Vector2F pos);
+        void CursorEnter(Vector2F pos);
 
-        void InvokeCursorHover(Vector2F pos);
+        void CursorLeave(Vector2F pos);
 
-        void InvokeCursorFocus();
+        void CursorHover(Vector2F pos);
 
-        void InvokeCursorDrag(Vector2F pos, Vector2F delta, MouseButton button);
+        void CursorFocus();
 
-        void InvokeCursorUnfocus();
+        void CursorUnfocus();
 
         /// <summary>
         /// Gets the tooltip that is displayed when the object is hovered over by a mouse cursor.
