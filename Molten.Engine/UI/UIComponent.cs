@@ -64,6 +64,16 @@ namespace Molten.UI
             OnUpdateBounds();
         }
 
+        internal void HandleInput(Timing time)
+        {
+
+        }
+
+        internal bool Contains(Vector2F point)
+        {
+            return BaseData.GlobalBounds.Contains(point);
+        }
+
         internal void Update(Timing time)
         {
             OnUpdate(time);

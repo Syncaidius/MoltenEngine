@@ -112,6 +112,8 @@ namespace Molten
             {
                 if (RunState != GameRunState.Exiting)
                 {
+                    if (_mouse != null)
+                        Engine.Scenes.HandleInput(_mouse, timing);
                     OnUpdate(timing);
                 }
                 else

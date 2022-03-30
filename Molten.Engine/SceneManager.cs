@@ -7,7 +7,7 @@ namespace Molten
         public event SceneInputEventHandler<MouseButton> OnFocus;
         public event SceneInputEventHandler<MouseButton> OnUnfocus;
 
-        List<Scene> _scenes = new List<Scene>();
+        List<Scene> _scenes;
         List<SceneClickTracker> _trackers;
         Dictionary<MouseButton, SceneClickTracker> _trackerByButton;
         UISettings _settings;
@@ -15,6 +15,9 @@ namespace Molten
         internal SceneManager(UISettings settings)
         {
             _settings = settings;
+            _trackers = new List<SceneClickTracker>();
+            _trackerByButton = new Dictionary<MouseButton, SceneClickTracker>();
+            _scenes = new List<Scene>();
         }
 
         internal void Add(Scene scene)

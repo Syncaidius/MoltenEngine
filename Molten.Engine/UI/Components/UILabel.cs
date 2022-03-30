@@ -3,32 +3,8 @@ using System.Runtime.Serialization;
 
 namespace Molten.UI
 {
-    public class UILabel : UIComponent<UILabel.RenderData>
+    public class UILabel : UIComponent<UITextData>
     {
-        /// <summary>
-        /// Container for <see cref="UILabel"/> render data.
-        /// </summary>
-        public struct RenderData : IUIRenderData
-        {
-            [DataMember]
-            public Color Color;
-
-            [DataMember]
-            public string Text;
-
-            public SpriteFont Font;
-
-            public Vector2F Position;
-
-            public IMaterial Material;
-
-            public void Render(SpriteBatcher sb, UIRenderData data)
-            {
-                if (Font != null && Color.A > 0)
-                    sb.DrawString(Font, Text, Position, Color, Material);
-            }
-        }
-
         UIHorizonalAlignment _hAlign;
         UIVerticalAlignment _vAlign;
 

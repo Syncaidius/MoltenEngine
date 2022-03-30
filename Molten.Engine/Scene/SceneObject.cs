@@ -113,6 +113,10 @@ namespace Molten
                 }
 
                 comByType.Add(component);
+
+                if(_layer != null)
+                    RegisterComponentOnLayer(component);
+
                 return component;
             }
         }
@@ -123,6 +127,11 @@ namespace Molten
                 throw new Exception("Failed to remove component; It is owned by a different object.");
 
             _components.Remove(component);
+
+            if (_layer != null)
+                UnregisterComponentOnLayer(component);
+
+
             component.Destroy(this);
             _componentsByType[typeof(T)].Remove(component);
         }
@@ -135,6 +144,18 @@ namespace Molten
                 foreach (SceneComponent com in comByType)
                     _components.Remove(com);
             }
+        }
+
+        private void RegisterComponentOnLayer(SceneComponent sc)
+        {
+            if(sc is ICursorAcceptor ca)
+                _layer.InputAcceptors.Add(ca);
+        }
+
+        private void UnregisterComponentOnLayer(SceneComponent sc)
+        {
+            if (sc is ICursorAcceptor ca)
+                _layer.InputAcceptors.Remove(ca);
         }
 
         internal void Update(Timing time)
@@ -202,13 +223,21 @@ namespace Molten
                 if (_layer != value)
                 {
                     if (_scene != null)
+                    {
                         OnRemovedFromScene?.Invoke(this, _scene, _layer);
+
+                        for (int i = _components.Count - 1; i >= 0; i--)
+                            UnregisterComponentOnLayer(_components[i]);
+                    }
 
                     _layer = value;
                     if (value != null)
                     {
                         _scene = value.ParentScene;
                         OnAddedToScene?.Invoke(this, value.ParentScene, _layer);
+
+                        for (int i = _components.Count - 1; i >= 0; i--)
+                            RegisterComponentOnLayer(_components[i]);
                     }
                     else
                     {
