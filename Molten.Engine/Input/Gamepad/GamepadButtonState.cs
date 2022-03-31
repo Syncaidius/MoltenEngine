@@ -16,28 +16,18 @@
         /// <summary>
         /// Gets the current button press state.
         /// </summary>
-        public InputAction Action;
+        public InputAction Action { get; set; }
 
         /// <summary>
         /// Gets the UTC time at which the button was last pressed.
         /// </summary>
-        DateTime _pressTimestamp;
-        public DateTime PressTimestamp
-        {
-            get => _pressTimestamp;
-            set => _pressTimestamp = value;
-        }
+        public DateTime PressTimestamp { get; set; }
 
         /// <summary>
         /// Gets the amount of time that the <see cref="GamepadButton"/> has been held.
         /// </summary>
         public TimeSpan HeldTime;
 
-        ulong _updateID;
-        public ulong UpdateID
-        {
-            get => _updateID;
-            set => _updateID = value;
-        }
+        public ulong UpdateID { get; set; }
     }
 }

@@ -19,6 +19,10 @@ namespace Molten.Input
         /// </summary>
         public event MoltenEventHandler<InputDevice> OnDisconnected;
 
+        public event MoltenEventHandler<InputDevice> OnEnabled;
+
+        public event MoltenEventHandler<InputDevice> OnDisabled;
+
         /// <summary>
         /// Invoked when the connection status of the device has changed.
         /// </summary>
@@ -29,7 +33,10 @@ namespace Molten.Input
 
         public abstract int BufferSize { get; protected set; }
 
-        public InputService Manager { get; }
+        /// <summary>
+        /// Gets the <see cref="InputService"/> that the current <see cref="InputDevice"/> is bound to.
+        /// </summary>
+        public InputService Service { get; private set; }
 
         /// <summary>
         /// Gets the maximum number of simultaneous states that the current <see cref="InputDevice"/> can keep track of.
@@ -39,7 +46,7 @@ namespace Molten.Input
         /// <summary>
         /// Gets a list of features bound to the current <see cref="InputDevice"/>.
         /// </summary>
-        public IReadOnlyCollection<InputDeviceFeature> Features { get; }
+        public IReadOnlyCollection<InputDeviceFeature> Features { get; private set; }
 
         /// <summary>Gets whether or not the current <see cref="InputDevice"/> is connected.</summary>
         public bool IsConnected
@@ -61,16 +68,47 @@ namespace Molten.Input
             }
         }
 
-        bool _connected;
-        List<InputDeviceFeature> _features;
-
-        public InputDevice(InputService manager)
+        /// <summary>
+        /// Gets or sets whether the current <see cref="InputDevice"/> is enabled. 
+        /// If false, the device will stop receiving and processing input, even if <see cref="IsConnected"/> is still true.
+        /// <para><see cref="IsEnabled"/> will be false if <see cref="IsConnected"/> is also false, regardless of the internal enabled state.</para>
+        /// </summary>
+        public bool IsEnabled
         {
-            Manager = manager;
+            get => _enabled;
+            set
+            {
+                if(value != _enabled)
+                {
+                    _enabled = value;
+                    if (_enabled)
+                        OnEnabled?.Invoke(this);
+                    else
+                        OnDisabled?.Invoke(this);
+                }
+            }
+        }
+
+        bool _connected;
+        bool _enabled;
+        List<InputDeviceFeature> _features;
+        
+        internal void Initialize(InputService service) 
+        {
+            _enabled = true;
+            Service = service; 
+
             MaxSimultaneousStates = GetMaxSimultaneousStates();
-            _features = Initialize() ?? new List<InputDeviceFeature>();
+            _features = OnInitialize(service) ?? new List<InputDeviceFeature>(); 
             Features = _features.AsReadOnly();
         }
+
+        /// <summary>
+        /// Invoked during device initialization to allow the device to initialize and define it's feature-set.
+        /// </summary>
+        /// <param name="features"></param>
+        /// <returns>A list of detected <see cref="InputDeviceFeature"/> objects.</returns>
+        protected abstract List<InputDeviceFeature> OnInitialize(InputService service);
 
         /// <summary>
         /// Clears the current state of the input handler.
@@ -109,20 +147,12 @@ namespace Molten.Input
 
         protected abstract void OnUnbind(INativeSurface surface);
 
-
-        /// <summary>
-        /// Invoked during device initialization to allow the device to initialize and define it's feature-set.
-        /// </summary>
-        /// <param name="features"></param>
-        /// <returns>A list of detected <see cref="InputDeviceFeature"/> objects.</returns>
-        protected abstract List<InputDeviceFeature> Initialize();
-
         protected void LogFeatures()
         {
 #if DEBUG
-            Manager.Log.Log($"Initialized device '{DeviceName}' with {_features.Count} features: ");
+            Service.Log.Log($"Initialized device '{DeviceName}' with {_features.Count} features: ");
             foreach (InputDeviceFeature feature in _features)
-                Manager.Log.Log($"   {feature.Name} - {feature.Description}");
+                Service.Log.Log($"   {feature.Name} - {feature.Description}");
 #endif
         }
 
@@ -251,11 +281,11 @@ namespace Molten.Input
         int _bStart;
         int _bEnd;
 
-        public InputDevice(InputService manager, int bufferSize) : base(manager)
+        protected void InitializeBuffer(int bufferSize)
         {
             _buffer = new S[bufferSize]; 
-
-            if(_states == null)
+            
+            if (_states == null)
                 _states = new S[5];
         }
 
@@ -300,13 +330,16 @@ namespace Molten.Input
         {
             OnUpdate(time);
 
+            if (!IsEnabled)
+                return;
+
             while (_bStart != _bEnd)
             {
                 if (_bStart == _buffer.Length)
                     _bStart = 0;
 
                 S state = _buffer[_bStart];
-                state.UpdateID = Manager.UpdateID;
+                state.UpdateID = Service.UpdateID;
                 int stateID = GetStateID(ref state);
 
                 S prev = _states[stateID];
@@ -322,7 +355,6 @@ namespace Molten.Input
             foreach (InputDeviceFeature f in Features)
                 f.Update(time);
         }
-
 
         public bool IsAnyDown(params T[] stateIDs)
         {

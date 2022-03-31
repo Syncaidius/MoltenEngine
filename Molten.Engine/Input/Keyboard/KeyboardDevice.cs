@@ -5,10 +5,10 @@
 
     public abstract class KeyboardDevice : InputDevice<KeyboardKeyState, KeyCode>
     {
-        public KeyboardDevice(InputService manager) : 
-            base(manager, manager.Settings.Input.KeyboardBufferSize)
+        protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
-
+            InitializeBuffer(service.Settings.Input.KeyboardBufferSize);
+            return null;
         }
 
         protected override int TranslateStateID(KeyCode idValue)
@@ -73,7 +73,7 @@
 
         protected override bool GetIsTapped(ref KeyboardKeyState state)
         {
-            return state.Action == InputAction.Pressed && state.UpdateID == Manager.UpdateID;
+            return state.Action == InputAction.Pressed && state.UpdateID == Service.UpdateID;
         }
 
         /// <summary>

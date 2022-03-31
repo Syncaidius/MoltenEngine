@@ -4,26 +4,16 @@
     {
         public MouseButton Button;
 
-        DateTime _pressTimestamp;
-        public DateTime PressTimestamp
-        {
-            get => _pressTimestamp;
-            set => _pressTimestamp = value;
-        }
+        public DateTime PressTimestamp { get; set; }
 
         public Vector2I Position;
 
         public Vector2I Delta;
 
-        public InputAction Action;
+        public InputAction Action { get; set; }
 
         public InputActionType ActionType;
 
-        ulong _updateID;
-        public ulong UpdateID
-        {
-            get => _updateID;
-            set => _updateID = value;
-        }
+        public ulong UpdateID { get; set; }
     }
 }

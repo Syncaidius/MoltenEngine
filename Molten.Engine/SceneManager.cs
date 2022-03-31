@@ -4,20 +4,27 @@ namespace Molten
 {
     internal class SceneManager : IDisposable
     {
-        public event SceneInputEventHandler<MouseButton> OnFocus;
-        public event SceneInputEventHandler<MouseButton> OnUnfocus;
+        public event SceneInputEventHandler<MouseButton> OnObjectFocused;
+        public event SceneInputEventHandler<MouseButton> OnObjectUnfocused;
 
         List<Scene> _scenes;
         List<SceneClickTracker> _trackers;
-        Dictionary<MouseButton, SceneClickTracker> _trackerByButton;
         UISettings _settings;
 
         internal SceneManager(UISettings settings)
         {
             _settings = settings;
             _trackers = new List<SceneClickTracker>();
-            _trackerByButton = new Dictionary<MouseButton, SceneClickTracker>();
             _scenes = new List<Scene>();
+
+            MouseButton[] buttons = ReflectionHelper.GetEnumValues<MouseButton>();
+            foreach(MouseButton b in buttons)
+            {
+                if (b == MouseButton.None)
+                    continue;
+
+                _trackers.Add(new SceneClickTracker(b));
+            }
         }
 
         internal void Add(Scene scene)
@@ -39,13 +46,13 @@ namespace Molten
             _scenes.Clear();
         }
 
-        internal void SetFocus(ICursorAcceptor acceptor)
+        internal void SetFocus(IInputAcceptor acceptor)
         {
             if (Focused != acceptor && acceptor != null)
             {
                 acceptor.CursorFocus();
 
-                OnFocus?.Invoke(new SceneEventData<MouseButton>()
+                OnObjectFocused?.Invoke(new SceneInputData<MouseButton>()
                 {
                     Object = acceptor,
                     InputValue = MouseButton.None,
@@ -61,7 +68,7 @@ namespace Molten
             {
                 Focused.CursorUnfocus();
 
-                OnUnfocus?.Invoke(new SceneEventData<MouseButton>()
+                OnObjectUnfocused?.Invoke(new SceneInputData<MouseButton>()
                 {
                     Object = Focused,
                     InputValue = MouseButton.None,
@@ -71,6 +78,12 @@ namespace Molten
             Focused = null;
         }
 
+        internal void HandleInput(TouchDevice touch, Timing time)
+        {
+            // TODO implement SceneTouchTracker class
+            // TODO do touch-specific input handling and call relevant IInputAcceptor methods.
+        }
+
         internal void HandleInput(MouseDevice mouse, Timing time)
         {
             Vector2F cursorPos = (Vector2F)mouse.Position;
@@ -78,7 +91,7 @@ namespace Molten
 
             for (int i = _scenes.Count - 1; i >= 0; i--)
             {
-                ICursorAcceptor newHover = _scenes[i].PickObject(cursorPos);
+                IInputAcceptor newHover = _scenes[i].PickObject(cursorPos);
 
                 if (newHover == null)
                 {
@@ -126,9 +139,9 @@ namespace Molten
         }
 
         /// <summary>Gets the component which is currently focused.</summary>
-        public ICursorAcceptor Focused { get; private set; }
+        public IInputAcceptor Focused { get; private set; }
 
         /// <summary>Gets the component that the pointer is currently hovering over.</summary>
-        public ICursorAcceptor Hovered { get; private set; } = null;
+        public IInputAcceptor Hovered { get; private set; } = null;
     }
 }

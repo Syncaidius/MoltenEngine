@@ -40,12 +40,6 @@ namespace Molten.Input
             base.OnStop();
         }
 
-        protected override T OnGetCustomDevice<T>()
-        {
-            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
-            return Activator.CreateInstance(typeof(T), flags, null, args: new object[] { this }, null) as T;
-        }
-
         protected override void OnBindSurface(INativeSurface surface)
         {
             if(_surface != surface)
@@ -94,7 +88,11 @@ namespace Molten.Input
 
         public override TouchDevice GetTouch()
         {
-            throw new NotImplementedException();
+            MouseDevice md = GetMouse();
+            // TODO check if the system actually has a touch device.
+            MouseTouchEmulatorDevice mted = GetCustomDevice<MouseTouchEmulatorDevice>();
+            mted.Mouse = md;
+            return mted;
         }
 
         protected override GamepadDevice OnGetGamepad(int index, GamepadSubType subtype)
@@ -102,7 +100,8 @@ namespace Molten.Input
             // TODO implement Xbox One controller support: https://github.com/roblambell/XboxOneController/blob/master/XInputInject/Main.cs
             // TODO make use of subtype parameter.
 
-            WinGamepadDevice gp = new WinGamepadDevice(this, index);
+            WinGamepadDevice gp = GetCustomDevice<WinGamepadDevice>();
+            gp.Index = index;
             gp.OnDisposing += Gp_OnDisposing;
             _gamepads.Add(gp);
             return gp;

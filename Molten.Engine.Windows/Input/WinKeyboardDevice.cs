@@ -6,7 +6,7 @@ namespace Molten.Input
     /// <summary>A handler for keyboard input.</summary>
     public class WinKeyboardDevice : KeyboardDevice
     {
-        // TODO detect keyboard device properties: https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-keyboard
+        // TODO Detect keyboard device properties: https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-keyboard
 
         struct ParsedLParam
         {
@@ -20,29 +20,31 @@ namespace Molten.Input
 
         public override string DeviceName => "Windows Keyboard";
 
-        internal WinKeyboardDevice(WinInputService manager) :
-            base(manager)
-        {
-
-        }
-
         protected override int GetMaxSimultaneousStates()
         {
             return (int)KeyCode.OemClear + 1;
         }
 
-        protected override List<InputDeviceFeature> Initialize()
+        protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
-            var manager = Manager as WinInputService;
+            List<InputDeviceFeature> baseFeatures = base.OnInitialize(service);
+
             Win32.OnWndProcMessage += Manager_OnWndProcMessage;
 
-            // TODO get extra features
+            // TODO get extra keyboard features. e.g. lights, screens, macro buttons.
             List<InputDeviceFeature> features = new List<InputDeviceFeature>();
+
+            if(baseFeatures != null)
+                features.AddRange(baseFeatures);
+
             return features;
         }
 
         private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam)
         {
+            if (!IsEnabled)
+                return;
+
             IntPtr forewindow = Win32.GetForegroundWindow();
             ParsedLParam plp;
             KeyboardKeyState state = new KeyboardKeyState()

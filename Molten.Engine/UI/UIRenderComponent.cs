@@ -7,7 +7,7 @@ namespace Molten.UI
     /// <summary>
     /// A <see cref="SceneComponent"/> used for rendering a UI system into a <see cref="Scene"/>.
     /// </summary>
-    public sealed class UIRenderComponent : SpriteRenderComponent, ICursorAcceptor
+    public sealed class UIRenderComponent : SpriteRenderComponent, IInputAcceptor
     {
         UIComponent _root;
         ThreadedQueue<IUIChange> _pendingChanges = new ThreadedQueue<IUIChange>();
@@ -44,7 +44,7 @@ namespace Molten.UI
             Root.Render(sb);
         }
 
-        public ICursorAcceptor HandleInput(Vector2F inputPos)
+        public IInputAcceptor HandleInput(Vector2F inputPos)
         {
             return null;
         }
@@ -105,6 +105,31 @@ namespace Molten.UI
         public void CursorUnfocus()
         {
            
+        }
+
+        public void CursorHeld(Vector2F pos, Vector2F delta, MouseButton button)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TouchStarted(Vector2F pos, in TouchPointState state)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TouchCompleted(Vector2F pos, in TouchPointState state)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TouchDrag(Vector2F pos, in TouchPointState state)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TouchHeld(Vector2F pos, in TouchPointState state)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

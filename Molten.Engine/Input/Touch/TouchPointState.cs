@@ -20,7 +20,7 @@
         /// <summary>
         /// The state of the touch point.
         /// </summary>
-        public InputAction State;
+        public InputAction Action { get; set; }
 
         /// <summary>
         /// The touch point ID.
@@ -44,18 +44,8 @@
         /// </summary>
         public float Size;
 
-        DateTime _pressTimestamp;
-        public DateTime PressTimestamp
-        {
-            get => _pressTimestamp;
-            set => _pressTimestamp = value;
-        }
+        public DateTime PressTimestamp { get; set; }
 
-        ulong _updateID;
-        public ulong UpdateID
-        {
-            get => _updateID;
-            set => _updateID = value;
-        }
+        public ulong UpdateID { get; set; }
     }
 }

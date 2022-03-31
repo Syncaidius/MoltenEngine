@@ -6,21 +6,11 @@
 
         public KeyboardKeyType KeyType;
 
-        DateTime _pressTimestamp;
-        public DateTime PressTimestamp
-        {
-            get => _pressTimestamp;
-            set => _pressTimestamp = value;
-        }
+        public DateTime PressTimestamp { get; set; }
 
-        public InputAction Action;
+        public InputAction Action { get; set; }
 
-        ulong _updateID;
-        public ulong UpdateID
-        {
-            get => _updateID;
-            set => _updateID = value;
-        }
+        public ulong UpdateID { get; set; }
 
         /// <summary>Gets the character value of the key. 
         /// This is only populated if <see cref="KeyType"/> is equal to <see cref="KeyboardKeyType.Character"/></summary>

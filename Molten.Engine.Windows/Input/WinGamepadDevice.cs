@@ -21,18 +21,10 @@ namespace Molten.Input
             _buttons = ReflectionHelper.GetEnumValues<GamepadButtonFlags>();
         }
 
-        internal WinGamepadDevice(WinInputService manager, int index) : 
-            base(manager, index)
+        protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
-        }
+            List<InputDeviceFeature> baseFeatures = base.OnInitialize(service);
 
-        protected override int GetMaxSimultaneousStates()
-        {
-            return (int)GamepadButton.Y + 1;
-        }
-
-        protected override List<InputDeviceFeature> Initialize()
-        {
             // Initialize hold timer dictionaries.
             _deviceName = "Gamepad " + Index;
             _pad = new Controller((UserIndex)Index);
@@ -49,12 +41,22 @@ namespace Molten.Input
             if (IsConnected)
                 RetrieveDeviceInformation();
 
-            return new List<InputDeviceFeature>()
+            List<InputDeviceFeature> features = new List<InputDeviceFeature>()
             {
-                LeftStick, RightStick, 
+                LeftStick, RightStick,
                 LeftTrigger, RightTrigger,
                 VibrationLeft, VibrationRight
             };
+
+            if (baseFeatures != null)
+                features.AddRange(baseFeatures);
+
+            return features;
+        }
+
+        protected override int GetMaxSimultaneousStates()
+        {
+            return (int)GamepadButton.Y + 1;
         }
 
         protected override void OnBind(INativeSurface surface)
@@ -96,7 +98,10 @@ namespace Molten.Input
         /// <param name="releaseInput">If set to true, will reset all held timers and stop retrieving the latest state.</param>
         protected override void OnUpdate(Timing time)
         {
-            IsConnected = _pad.IsConnected;    
+            IsConnected = _pad.IsConnected;
+
+            if (!IsEnabled)
+                return;
 
             // TODO test against all windows, not just the current release input if window is not focused.
             IntPtr focusedHandle = Win32.GetForegroundWindow();

@@ -5,12 +5,12 @@ namespace Molten
     /// <summary>
     /// Represents an object which can respond to mouse/touch cursor input.
     /// </summary>
-    public interface ICursorAcceptor
+    public interface IInputAcceptor
     {
-        /// <summary>Called when a scene requires the object to handle cursor input.</summary>
+        /// <summary>Called when updating scene input. This gives the current <see cref="IInputAcceptor"/> a chance to do custom input handling..</summary>
         /// <param name="inputPos">The input position.</param>
         /// <returns></returns>
-        ICursorAcceptor HandleInput(Vector2F inputPos);
+        IInputAcceptor HandleInput(Vector2F inputPos);
 
         bool Contains(Vector2F point);
 
@@ -21,6 +21,8 @@ namespace Molten
         void CursorClickCompleted(Vector2F pos, bool wasDragged, MouseButton button);
 
         void CursorDrag(Vector2F pos, Vector2F delta, MouseButton button);
+
+        void CursorHeld(Vector2F pos, Vector2F delta, MouseButton button);
 
         void CursorWheelScroll(InputScrollWheel wheel);
 
@@ -33,6 +35,14 @@ namespace Molten
         void CursorFocus();
 
         void CursorUnfocus();
+
+        void TouchStarted(Vector2F pos, in TouchPointState state);
+
+        void TouchCompleted(Vector2F pos, in TouchPointState state);
+
+        void TouchDrag(Vector2F pos, in TouchPointState state);
+
+        void TouchHeld(Vector2F pos, in TouchPointState state);
 
         /// <summary>
         /// Gets the tooltip that is displayed when the object is hovered over by a mouse cursor.

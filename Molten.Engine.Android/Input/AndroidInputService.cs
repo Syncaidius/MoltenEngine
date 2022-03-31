@@ -18,12 +18,6 @@ namespace Molten.Input
             _navigation = new AndroidInputNavigation();
         }
 
-        protected override T OnGetCustomDevice<T>()
-        {
-            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
-            return Activator.CreateInstance(typeof(T), flags, null, args: new object[] { this }, null) as T;
-        }
-
         protected override void OnBindSurface(INativeSurface surface)
         {
             _navigation.SetSurface(surface);

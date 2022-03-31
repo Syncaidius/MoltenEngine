@@ -13,22 +13,19 @@ namespace Molten.Input
         AndroidViewSurface _boundSurface;
         View _boundView;
 
-        internal AndroidTouchDevice(AndroidInputService manager) : base(manager)
-        {
-
-        }
-
         protected override int GetMaxSimultaneousStates()
         {
             return 5;
         }
 
-        protected override List<InputDeviceFeature> Initialize()
+        protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
-            IsConnected = false;
-            Manager.Settings.Input.TouchBufferSize.OnChanged += TouchSampleBufferSize_OnChanged;
+            List<InputDeviceFeature> baseFeatures = base.OnInitialize(service);
 
-            return null;
+            IsConnected = false;
+            Service.Settings.Input.TouchBufferSize.OnChanged += TouchSampleBufferSize_OnChanged;
+
+            return baseFeatures;
         }
 
         private void TouchSampleBufferSize_OnChanged(int oldValue, int newValue)
@@ -100,6 +97,9 @@ namespace Molten.Input
 
         private void Surface_Touch(object sender, View.TouchEventArgs e)
         {
+            if (!IsEnabled)
+                return;
+
             // TODO process touch queue and trigger events accordingly.
             // TODO figure out gestures based on number of pressed touch points.
             // TODO individually track each active touch-point so we can form gestures easily.
@@ -111,24 +111,24 @@ namespace Molten.Input
             {
                 case MotionEventActions.PointerDown:
                 case MotionEventActions.Down: 
-                    tps.State = InputAction.Pressed; break;
+                    tps.Action = InputAction.Pressed; break;
 
                 case MotionEventActions.PointerUp:
                 case MotionEventActions.Up:
-                    tps.State = InputAction.Released;
+                    tps.Action = InputAction.Released;
                     break;
 
                 case MotionEventActions.Move:
-                    tps.State = InputAction.Moved;
+                    tps.Action = InputAction.Moved;
                     break;
 
                 // NOTE: A movement has happened outside of the normal bounds of the UI element.
                 case MotionEventActions.Outside:
-                    tps.State = InputAction.Moved;
+                    tps.Action = InputAction.Moved;
                     break;
 
                 case MotionEventActions.Scroll:
-                    tps.State = InputAction.Moved; 
+                    tps.Action = InputAction.Moved; 
                     break;
             }
 

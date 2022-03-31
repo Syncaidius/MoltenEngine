@@ -78,6 +78,7 @@ namespace Molten
 
                         _keyboard = _engine.Input.GetKeyboard();
                         _mouse = _engine.Input.GetMouse();
+                        _touch = _engine.Input.GetTouch();
                         _gamepad = _engine.Input.GetGamepad<GamepadDevice>(0, GamepadSubType.Gamepad);
                         break;
 
@@ -113,7 +114,23 @@ namespace Molten
             {
                 if (RunState != GameRunState.Exiting)
                 {
-                    HandleInput(timing);
+                    if (_mouse != null)
+                        Engine.Scenes.HandleInput(_mouse, timing);
+
+                    if (_touch != null)
+                    {
+                        if (_mouse != null && _mouse.IsConnected && _mouse.IsEnabled)
+                        {
+                            // Make sure we're not emulating touch input using the same mouse device as above, if available.
+                            if (_touch is MouseTouchEmulatorDevice mted && mted.Mouse != _mouse)
+                                Engine.Scenes.HandleInput(_touch, timing);
+                        }
+                        else
+                        {
+                            Engine.Scenes.HandleInput(_touch, timing);
+                        }
+                    }
+
                     OnUpdate(timing);
                 }
                 else
@@ -124,23 +141,6 @@ namespace Molten
                     ForceExit();
                 }
             });
-        }
-
-        private void HandleInput(Timing timing)
-        {
-            if(_mouse != null)
-            {
-                if(_touch != null)
-                {
-                    // Translate touch input to mouse.
-                }
-
-                Engine.Scenes.HandleInput(_mouse, timing);
-            }
-            else if(_touch != null)
-            {
-                // TODO t
-            }            
         }
 
         /// <summary>

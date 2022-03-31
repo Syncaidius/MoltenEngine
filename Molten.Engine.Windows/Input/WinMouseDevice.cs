@@ -25,7 +25,12 @@ namespace Molten.Input
         bool _requestedVisibility = true;
         bool _cursorVisibility = true;
 
-        internal WinMouseDevice(WinInputService manager) : base(manager)
+        protected override int GetMaxSimultaneousStates()
+        {
+            return (int)MouseButton.XButton2 + 1;
+        }
+
+        protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
             // TODO Check if mouse is connected: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-mouse-input#mouse-configuration
             // TODO Check available buttons:
@@ -33,31 +38,31 @@ namespace Molten.Input
             //         passing the SM_CMOUSEBUTTONS value to the GetSystemMetrics function.
             // TODO Consider system scroll settings: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-mouse-input#determining-the-number-of-scroll-lines
             // TODO detect if mouse wheel is present: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-mouse-input#detecting-a-mouse-with-a-wheel
-        }
 
-        protected override int GetMaxSimultaneousStates()
-        {
-            return (int)MouseButton.XButton2 + 1;
-        }
+            List<InputDeviceFeature> baseFeatures = base.OnInitialize(service);
 
-        protected override List<InputDeviceFeature> Initialize()
-        {
-
-            WinInputService manager = Manager as WinInputService;
             Win32.OnWndProcMessage += Manager_OnWndProcMessage;
             ScrollWheel = new InputScrollWheel("Vertical");
             HScrollWheel = new InputScrollWheel("Horizontal");
 
             // TODO detect mouse features.
-            return new List<InputDeviceFeature>()
+            List< InputDeviceFeature> features = new List<InputDeviceFeature>()
             {
                 ScrollWheel,
                 HScrollWheel
             };
+
+            if (baseFeatures != null)
+                features.AddRange(baseFeatures);
+
+            return features;
         }
 
         private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam)
         {
+            if (!IsEnabled)
+                return;
+
             // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/using-mouse-input
             // Positional mouse messages.
 
@@ -263,16 +268,28 @@ namespace Molten.Input
         /// <param name="time">The snapshot of game time to use.</param>
         protected override void OnUpdate(Timing time)
         {
-            if(_cursorVisibility != _requestedVisibility)
+            if (IsEnabled)
             {
-                // Safely handles the cursor's visibility state, since calls to show and hide are counted. 
-                // Two calls to .Show and a last call to .Hide will not hide the cursor.
-                if (_requestedVisibility)
-                    Cursor.Show();
-                else
-                    Cursor.Hide();
+                if (_cursorVisibility != _requestedVisibility)
+                {
+                    // Safely handles the cursor's visibility state, since calls to show and hide are counted. 
+                    // Two calls to .Show and a last call to .Hide will not hide the cursor.
+                    if (_requestedVisibility)
+                        Cursor.Show();
+                    else
+                        Cursor.Hide();
 
-                _cursorVisibility = _requestedVisibility;
+                    _cursorVisibility = _requestedVisibility;
+                }
+            }
+            else
+            {
+                // Hide mouse when disabled.
+                if (_cursorVisibility)
+                {
+                    Cursor.Hide();
+                    _cursorVisibility = false;
+                }
             }
         }
 

@@ -43,10 +43,10 @@ namespace Molten.Input
         bool _cursorVisible;
         bool _wasInsideControl;
 
-        public MouseDevice(InputService manager) : 
-            base(manager, manager.Settings.Input.MouseBufferSize)
+        protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
-
+            InitializeBuffer(service.Settings.Input.MouseBufferSize);
+            return null;
         }
 
         /// <summary>Positions the mouse cursor at the center of the currently-bound <see cref="IInputCamera.OutputSurface"/>.</summary>
@@ -209,7 +209,7 @@ namespace Molten.Input
 
         protected override bool GetIsTapped(ref MouseButtonState state)
         {
-            return state.Action == InputAction.Pressed && state.UpdateID == Manager.UpdateID;
+            return state.Action == InputAction.Pressed && state.UpdateID == Service.UpdateID;
         }
 
         protected override void OnUpdate(Timing time) { }

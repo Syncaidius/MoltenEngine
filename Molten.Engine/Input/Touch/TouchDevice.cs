@@ -4,10 +4,10 @@ namespace Molten.Input
 {
     public abstract class TouchDevice : InputDevice<TouchPointState, int>
     {
-        public TouchDevice(InputService manager) : 
-            base(manager, manager.Settings.Input.TouchBufferSize)
+        protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
-            
+            InitializeBuffer(service.Settings.Input.TouchBufferSize);
+            return null;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Molten.Input
         protected override bool ProcessState(ref TouchPointState newsState, ref TouchPointState prevState)
         {
             // Calculate delta from last pointer state.
-            if (newsState.State == InputAction.Moved && prevState.State != InputAction.Released)
+            if (newsState.Action == InputAction.Moved && prevState.Action != InputAction.Released)
             {
                 newsState.Delta = newsState.Position - newsState.Position;
                 OnTouch?.Invoke(newsState);
@@ -58,7 +58,7 @@ namespace Molten.Input
                 newsState.Delta = Vector2F.Zero;
                 OnTouch?.Invoke(newsState);
 
-                switch (newsState.State)
+                switch (newsState.Action)
                 {
                     case InputAction.Pressed: TouchDown?.Invoke(newsState); break;
                     case InputAction.Released: TouchUp?.Invoke(newsState); break;
@@ -71,19 +71,19 @@ namespace Molten.Input
 
         protected override bool GetIsHeld(ref TouchPointState state)
         {
-            return state.State == InputAction.Held || state.State == InputAction.Moved;
+            return state.Action == InputAction.Held || state.Action == InputAction.Moved;
         }
 
         protected override bool GetIsDown(ref TouchPointState state)
         {
-            return state.State == InputAction.Pressed || 
-                state.State == InputAction.Held || 
-                state.State == InputAction.Moved;
+            return state.Action == InputAction.Pressed || 
+                state.Action == InputAction.Held || 
+                state.Action == InputAction.Moved;
         }
 
         protected override bool GetIsTapped(ref TouchPointState state)
         {
-            return state.State == InputAction.Pressed;
+            return state.Action == InputAction.Pressed;
         }
     }
 }

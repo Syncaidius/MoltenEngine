@@ -105,7 +105,6 @@ namespace Molten.Input
             {
                 gamepad = OnGetGamepad(index, subtype);
                 _gamepadsByIndex.Add(index, gamepad);
-                AddDevice(gamepad);
             }
 
             return gamepad as T;
@@ -115,16 +114,22 @@ namespace Molten.Input
         /// <typeparam name="T">The type of handler to retrieve.</typeparam>
         /// <param name="surface">The surface for which to bind and return an input handler.</param>
         /// <returns>An input handler of the specified type.</returns>
-        public T GetCustomDevice<T>() where T : InputDevice
+        public T GetCustomDevice<T>() where T : InputDevice, new()
         {
-            T device = OnGetCustomDevice<T>();
-            AddDevice(device);
+            if (!_byType.TryGetValue(typeof(T), out InputDevice device))
+            {
+                device = new T();
+                device.Initialize(this);
 
-            if (_activeSurface != null)
-                device.Bind(_activeSurface);
+                AddDevice(device);
 
-            device.OnDisposing += Device_OnDisposing;
-            return device;
+                if (_activeSurface != null)
+                    device.Bind(_activeSurface);
+
+                device.OnDisposing += Device_OnDisposing;
+            }
+
+            return device as T;
         }
 
         private void AddDevice(InputDevice device)
@@ -132,6 +137,7 @@ namespace Molten.Input
             Type dType = typeof(InputDevice);
             Type t = device.GetType();
 
+            // Add the device to all relevant device type categories.
             _devices.Add(device);
             while (dType.IsAssignableFrom(t))
             {
@@ -197,8 +203,6 @@ namespace Molten.Input
 
             _byType.Clear();
         }
-
-        protected abstract T OnGetCustomDevice<T>() where T : InputDevice;
 
         protected abstract void OnBindSurface(INativeSurface surface);
 

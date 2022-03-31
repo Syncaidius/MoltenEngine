@@ -2,10 +2,10 @@
 {
     public abstract class GamepadDevice : InputDevice<GamepadButtonState, GamepadButton>
     {
-        public GamepadDevice(InputService manager, int index) : 
-            base(manager, manager.Settings.Input.GamepadBufferSize)
+        protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
-            Index = index;
+            InitializeBuffer(service.Settings.Input.GamepadBufferSize);
+            return null;
         }
 
         protected override bool ProcessState(ref GamepadButtonState newState, ref GamepadButtonState prevState)
@@ -76,6 +76,6 @@
         public abstract GamepadSubType SubType { get; }
 
         /// <summary>Gets the index of the gamepad.</summary>
-        public int Index { get; }
+        public int Index { get; set; }
     }
 }
