@@ -39,7 +39,7 @@
         /// Invoked when the scene component is about to be added to a new parent. If false is returned, the object will not be added to <paramref name="obj"/>.
         /// </summary>
         /// <param name="obj">The <see cref="SceneObject"/> that will become the new parent.</param>
-        protected internal virtual bool OnAdd(SceneObject obj) { return true; }
+        protected internal virtual bool OnAdd(SceneObject obj) { return false; }
 
         /// <summary>
         /// Invoked when the scene component has been added to a new parent.
@@ -51,7 +51,7 @@
         /// Invoked when the scene component is about to be removed from its parent. If false is returned, the object will not be removed from <paramref name="obj"/>.
         /// </summary>
         /// <param name="obj">The <see cref="SceneObject"/> that will be removed as a parent.</param>
-        protected internal virtual bool OnRemove(SceneObject obj) { return true; }
+        protected internal virtual bool OnRemove(SceneObject obj) { return false; }
 
         /// <summary>
         /// Invoked when the scene component has been removed from its parent.

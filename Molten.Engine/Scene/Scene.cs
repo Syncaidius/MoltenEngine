@@ -101,7 +101,7 @@ namespace Molten
         public C AddObjectWithComponent<C>(SceneLayer layer = null, ObjectUpdateFlags flags = ObjectUpdateFlags.All, bool visible = true) where C : SceneComponent, new()
         {
             SceneObject obj = new SceneObject(Engine, ObjectUpdateFlags.All, visible);
-            C com = obj.AddComponent<C>();
+            C com = obj.Components.Add<C>();
             AddObject(obj, layer);
 
             return com;

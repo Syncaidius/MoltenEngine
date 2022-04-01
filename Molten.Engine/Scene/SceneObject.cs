@@ -72,7 +72,7 @@ namespace Molten
 
         private void _components_OnAdded(SceneCollection<SceneComponent> collection, SceneComponent component)
         {
-            component.Initialize(Parent);
+            component.Initialize(this);
             component.OnAdded(this);
         }
 

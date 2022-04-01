@@ -43,7 +43,7 @@ namespace Molten.Samples
         private void SpawnRandomTestCube(IMaterial material, IMesh mesh, int spawnRadius)
         {
             SceneObject obj = CreateObject();
-            MeshComponent meshCom = obj.AddComponent<MeshComponent>();
+            MeshComponent meshCom = obj.Components.Add<MeshComponent>();
             meshCom.RenderedObject = mesh;
 
             int maxRange = spawnRadius * 2;

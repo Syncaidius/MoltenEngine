@@ -65,7 +65,7 @@ namespace Molten.Samples
             };
             _player = CreateObject();
             _player.Transform.LocalPosition = new Vector3F(0, 0, -20);
-            CameraComponent cam = _player.AddComponent<CameraComponent>();
+            CameraComponent cam = _player.Components.Add<CameraComponent>();
             cam.MaxDrawDistance = 300;
             cam.OutputSurface = surface;
             scene.AddObject(_player);
@@ -77,7 +77,7 @@ namespace Molten.Samples
         protected SceneObject SpawnTestCube(Scene scene, IMesh mesh, Vector3F pos)
         {
             SceneObject obj = CreateObject(pos, scene);
-            MeshComponent meshCom = obj.AddComponent<MeshComponent>();
+            MeshComponent meshCom = obj.Components.Add<MeshComponent>();
             meshCom.RenderedObject = mesh;
             return obj;
         }

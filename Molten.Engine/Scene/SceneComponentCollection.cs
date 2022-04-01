@@ -15,7 +15,7 @@ namespace Molten
             _componentsByType = new Dictionary<Type, List<SceneComponent>>();
         }
 
-        public SceneComponent AddComponent(Type componentType)
+        public SceneComponent Add(Type componentType)
         {
             Type baseType = typeof(SceneComponent);
 
