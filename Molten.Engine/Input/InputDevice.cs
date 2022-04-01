@@ -318,8 +318,9 @@ namespace Molten.Input
         /// </summary>
         /// <param name="stateID">The state ID. For example, a mouse button, key or touch-point ID.</param>
         /// <returns></returns>
-        public S GetState(int stateID)
+        public S GetState(T state)
         {
+            int stateID = TranslateStateID(state);
             if (stateID > MaxSimultaneousStates)
                 throw new IndexOutOfRangeException($"stateID was greater than or equal to {nameof(MaxSimultaneousStates)}, which is {MaxSimultaneousStates}.");
 
