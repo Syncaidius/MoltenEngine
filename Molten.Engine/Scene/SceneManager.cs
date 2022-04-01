@@ -46,7 +46,7 @@ namespace Molten
             _scenes.Clear();
         }
 
-        internal void SetFocus(IInputAcceptor acceptor)
+        internal void SetFocus(IPointerReceiver acceptor)
         {
             if (Focused != acceptor && acceptor != null)
             {
@@ -91,7 +91,7 @@ namespace Molten
 
             for (int i = _scenes.Count - 1; i >= 0; i--)
             {
-                IInputAcceptor newHover = _scenes[i].PickObject(cursorPos);
+                IPointerReceiver newHover = _scenes[i].PickObject(cursorPos);
 
                 if (newHover == null)
                 {
@@ -139,9 +139,9 @@ namespace Molten
         }
 
         /// <summary>Gets the component which is currently focused.</summary>
-        public IInputAcceptor Focused { get; private set; }
+        public IPointerReceiver Focused { get; private set; }
 
         /// <summary>Gets the component that the pointer is currently hovering over.</summary>
-        public IInputAcceptor Hovered { get; private set; } = null;
+        public IPointerReceiver Hovered { get; private set; } = null;
     }
 }

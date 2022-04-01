@@ -4,7 +4,7 @@ namespace Molten
 {
     internal class SceneClickTracker
     {
-        internal IInputAcceptor PressedObject = null;
+        internal IPointerReceiver PressedObject = null;
         internal Vector2F DragDistance;
         internal bool InputDragged = false;
         internal float DragThreshold = 10; // Pixels

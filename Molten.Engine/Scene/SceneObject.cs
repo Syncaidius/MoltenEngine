@@ -148,13 +148,13 @@ namespace Molten
 
         private void RegisterComponentOnLayer(SceneComponent sc)
         {
-            if(sc is IInputAcceptor ca)
+            if(sc is IPointerReceiver ca)
                 _layer.InputAcceptors.Add(ca);
         }
 
         private void UnregisterComponentOnLayer(SceneComponent sc)
         {
-            if (sc is IInputAcceptor ca)
+            if (sc is IPointerReceiver ca)
                 _layer.InputAcceptors.Remove(ca);
         }
 

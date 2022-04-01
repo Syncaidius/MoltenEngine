@@ -5,13 +5,8 @@ namespace Molten
     /// <summary>
     /// Represents an object which can respond to mouse/touch cursor input.
     /// </summary>
-    public interface IInputAcceptor
+    public interface IPointerReceiver
     {
-        /// <summary>Called when updating scene input. This gives the current <see cref="IInputAcceptor"/> a chance to do custom input handling..</summary>
-        /// <param name="inputPos">The input position.</param>
-        /// <returns></returns>
-        IInputAcceptor HandleInput(Vector2F inputPos);
-
         bool Contains(Vector2F point);
 
         void CursorClickStarted(Vector2F pos, MouseButton button);

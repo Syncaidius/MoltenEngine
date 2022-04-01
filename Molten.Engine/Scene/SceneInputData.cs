@@ -1,7 +1,7 @@
 ﻿namespace Molten
 {
     public delegate void SceneInputEventHandler<T>(SceneInputData<T> data) where T : struct;
-    public delegate void SceneInputHandler<T>(T component) where T : IInputAcceptor;
+    public delegate void SceneInputHandler<T>(T component) where T : IPointerReceiver;
 
     public struct SceneInputData<T> where T : struct
     {
@@ -11,7 +11,7 @@
         /// <summary>
         /// The object which invoked the event.
         /// </summary>
-        public IInputAcceptor Object;
+        public IPointerReceiver Object;
 
         /// <summary>
         /// If true, the object was dragged.

@@ -7,7 +7,7 @@ namespace Molten.UI
     /// <summary>
     /// A <see cref="SceneComponent"/> used for rendering a UI system into a <see cref="Scene"/>.
     /// </summary>
-    public sealed class UIRenderComponent : SpriteRenderComponent, IInputAcceptor
+    public sealed class UIRenderComponent : SpriteRenderComponent, IPointerReceiver, IInputHandler
     {
         UIComponent _root;
         ThreadedQueue<IUIChange> _pendingChanges = new ThreadedQueue<IUIChange>();
@@ -15,6 +15,11 @@ namespace Molten.UI
         protected override void OnDispose()
         {
             
+        }
+
+        public void HandleInput(Vector2F inputPos)
+        {
+            // TODO Handle keyboard input/focusing here.
         }
 
         internal void QueueChange(IUIChange change)
@@ -42,11 +47,6 @@ namespace Molten.UI
                 change.Process();
 
             Root.Render(sb);
-        }
-
-        public IInputAcceptor HandleInput(Vector2F inputPos)
-        {
-            return null;
         }
 
         public bool Contains(Vector2F point)

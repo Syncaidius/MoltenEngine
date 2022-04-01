@@ -158,7 +158,7 @@ namespace Molten
             _pendingChanges.Enqueue(change);
         }
 
-        private IInputAcceptor PickObjectFromLayer(Vector2F cursorPos, SceneLayer layer)
+        private IPointerReceiver PickObjectFromLayer(Vector2F cursorPos, SceneLayer layer)
         {
             for (int i = layer.InputAcceptors.Count - 1; i >= 0; i--)
             {
@@ -169,9 +169,9 @@ namespace Molten
             return null;
         }
 
-        private IInputAcceptor PickObject(Vector2F cursorPos, IList<SceneLayer> layers)
+        private IPointerReceiver PickObject(Vector2F cursorPos, IList<SceneLayer> layers)
         {
-            IInputAcceptor result;
+            IPointerReceiver result;
             for (int i = layers.Count - 1; i >= 0; i--)
             {
                 result = PickObjectFromLayer(cursorPos, layers[i]);
@@ -182,7 +182,7 @@ namespace Molten
             return null;
         }
 
-        public IInputAcceptor PickObject(Vector2F cursorPos)
+        public IPointerReceiver PickObject(Vector2F cursorPos)
         {
             return PickObject(cursorPos, Layers);
         }
