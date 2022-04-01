@@ -1,5 +1,5 @@
 ﻿# Molten Engine
-[![Build Status](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/MoltenEngine-.NET%20Desktop-CI)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=2)  
+[![Build Status](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/MoltenEngine-.NET%20Desktop-CI)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=2)  [![.NET](https://github.com/Syncaidius/MoltenEngine/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/dotnet.yml)
 
 Molten is a engine project I'm working on in my spare time as a means to eventually produce my own games without using a third party engine or framework such as [Unity3D](https://unity3d.com/) or [MonoGame](http://monogame.net).
 
