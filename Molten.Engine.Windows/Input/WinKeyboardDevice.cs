@@ -46,7 +46,6 @@ namespace Molten.Input
                 return;
 
             IntPtr forewindow = Win32.GetForegroundWindow();
-            ParsedLParam plp;
             KeyboardKeyState state = new KeyboardKeyState()
             {
                 Key = 0,

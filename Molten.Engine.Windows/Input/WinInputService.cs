@@ -12,10 +12,7 @@ namespace Molten.Input
         List<WinGamepadDevice> _gamepads;
         INativeSurface _surface;
         WindowsClipboard _clipboard;
-        Win32.WndProc _hookProcDelegate;
         IntPtr _windowHandle;
-        IntPtr _wndProc;
-        IntPtr _hIMC;
 
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
         /// <param name="settings">The <see cref="InputSettings"/> that was provided when the engine was instanciated.</param>

@@ -7,7 +7,6 @@
         static uint _stride = (uint)sizeof(T);
 
         Array _value;
-        internal int ExpectedElements;
 
         public ScalarArray(ShaderConstantBuffer parent, uint expectedElements)
             : base(parent)

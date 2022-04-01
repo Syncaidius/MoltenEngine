@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-android</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <SupportedOSPlatformVersion>29.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 

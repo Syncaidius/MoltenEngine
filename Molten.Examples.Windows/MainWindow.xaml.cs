@@ -201,15 +201,5 @@ namespace Molten.Samples
             _curTest = Activator.CreateInstance(lastTestType) as SampleGame;
             _curTest.Start(settings, true);
         }
-
-        class RendererComboItem : ComboBoxItem
-        {
-            public string LibraryName;
-
-            public override string ToString()
-            {
-                return Content.ToString();
-            }
-        }
     }
 }

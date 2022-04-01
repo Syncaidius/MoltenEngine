@@ -25,10 +25,6 @@ namespace Molten.Graphics
 
         internal Dictionary<ShaderType, FxcCompileResult> Results { get; } 
 
-        internal ShaderIOStructure InputStructure;
-
-        internal ShaderIOStructure OutputSructure;
-
         internal MaterialPass Pass { get; }
     }
 }

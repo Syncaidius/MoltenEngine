@@ -7,7 +7,6 @@ namespace Molten.Graphics
     {
         /// <summary>The viewport which represents the current render surface.</summary>
         ViewportF _vp;
-        Rectangle _vpBounds;
 
         internal RenderSurface2D(
             RendererDX11 renderer,

@@ -9,9 +9,6 @@ namespace Molten.Graphics
         internal ID3D11Texture2D* NativeTexture;
         Texture2DDesc _description;
 
-        public event TextureHandler OnPreResize;
-        public event TextureHandler OnPostResize;
-
         internal TextureCubeDX11(RendererDX11 renderer, uint width,
             uint height, Format format = Format.FormatR8G8B8A8Unorm, uint mipCount = 1, 
             uint cubeCount = 1, TextureFlags flags = TextureFlags.None)

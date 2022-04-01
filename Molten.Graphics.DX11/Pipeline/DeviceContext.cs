@@ -308,9 +308,6 @@ namespace Molten.Graphics
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
                     $" -- Material: {material.Name} -- Topology: {topology} -- Indices-per-instance: { indexCountPerInstance}");
             });
-
-            if (!_drawInfo.Began)
-                throw new GraphicsContextException($"{nameof(DeviceContext)}: BeginDraw() must be called before calling {nameof(DrawIndexedInstanced)}()");
         }
 
         internal void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ)

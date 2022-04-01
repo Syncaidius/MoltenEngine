@@ -5,7 +5,7 @@
     <TargetFramework>net6.0-windows8.0</TargetFramework>
 	<UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <StartupObject>Program</StartupObject>
     <SupportedOSPlatformVersion>8.0</SupportedOSPlatformVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

@@ -69,7 +69,7 @@
                         if (_value.Length != val.Length)
                             throw new InvalidOperationException($"Value that was set is not of the expected size ({_value.Length} elements).");
 
-                        Buffer.BlockCopy(val, 0, _value, 0, val.Length);
+                        Buffer.BlockCopy(val, 0, _value, 0, (int)SizeOf);
                         _isDirty = true;
                         DirtyParent();
                     }

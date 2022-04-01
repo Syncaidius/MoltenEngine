@@ -7,7 +7,6 @@ namespace Molten.Graphics
     {
         Material _matPoint;
         Material _matDebugPoint;
-        StartStep _startStep;
         GraphicsBuffer _lightDataBuffer;
         BufferSegment _lightSegment;
 

@@ -11,7 +11,6 @@ namespace Molten.Net
 
         public NetworkService()
         {
-            Log = Logger.Get();
             _inbox = new ThreadedQueue<INetworkMessage>();
             _outbox = new ThreadedQueue<(INetworkMessage, INetworkConnection[])>();
         }
@@ -70,8 +69,6 @@ namespace Molten.Net
         {
             Log.Dispose();
         }
-
-        protected internal Logger Log { get; }
 
         /// <summary>
         /// Gets the network identifier of the current network service.

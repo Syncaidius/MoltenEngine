@@ -1,12 +1,14 @@
 ﻿namespace Molten.Graphics
 {
-    public interface IBonedMesh<T> : IIndexedMesh<T> where T : unmanaged, IVertexType
+    public interface IBonedMesh<T, B> : IIndexedMesh<T> 
+        where T : unmanaged, IVertexType
+        where B : unmanaged
     {
-        void SetBones<T>(T[] data) where T : unmanaged;
+        void SetBones(B[] data);
 
-        void SetBones<T>(T[] data, uint count) where T : unmanaged;
+        void SetBones(B[] data, uint count);
 
-        void SetBones<T>(T[] data, uint startIndex, uint count) where T : unmanaged;
+        void SetBones(B[] data, uint startIndex, uint count);
 
         ///// <summary>Gets or sets a bone.<value>
         //IMeshBone this[string boneName] { get; set; }

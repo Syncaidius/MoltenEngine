@@ -126,10 +126,10 @@ namespace Molten.Graphics
                         }
                         else
                         {
-                            uint x = 0;
-                            uint y = 0;
-                            uint w = Math.Max(texture.Width >> (int)MipLevel, 1);
-                            uint h = Math.Max(texture.Height >> (int)MipLevel, 1);
+                            //uint x = 0;
+                            //uint y = 0;
+                            //uint w = Math.Max(texture.Width >> (int)MipLevel, 1);
+                            //uint h = Math.Max(texture.Height >> (int)MipLevel, 1);
                             context.UpdateResource(texture, subLevel, null, ptrData, Pitch, arraySliceBytes);
                         }
                     }

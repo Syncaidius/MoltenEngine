@@ -53,7 +53,6 @@ namespace Molten.Samples
             loadedData.Decompress(Log);
             cr = Engine.Content.BeginRequest("assets/");
 
-            DDSFormat saveFormat = DDSFormat.DXT5;
             TextureParameters texParams = new TextureParameters()
             {
                 BlockCompressionFormat = DDSFormat.DXT5,

@@ -9,10 +9,6 @@ namespace Molten.Graphics
         internal ID3D11Texture1D* NativeTexture;
         Texture1DDesc _description;
 
-        public event TextureHandler OnPreResize;
-
-        public event TextureHandler OnPostResize;
-
         internal Texture1D(
             RendererDX11 renderer, 
             uint width, 
