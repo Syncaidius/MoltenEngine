@@ -233,7 +233,6 @@ Global
 		{D58134DD-2CA1-4417-8880-00A3F27DFDB5}.Release|x86.Build.0 = Release|Any CPU
 		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Debug|x64.ActiveCfg = Debug|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Debug|x64.Build.0 = Debug|Any CPU
 		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Debug|x86.ActiveCfg = Debug|Any CPU
 		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Debug|x86.Build.0 = Debug|Any CPU
 		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Release|Any CPU.ActiveCfg = Release|Any CPU
