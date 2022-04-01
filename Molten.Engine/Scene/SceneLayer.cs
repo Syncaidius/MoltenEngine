@@ -4,9 +4,11 @@ namespace Molten
 {
     public class SceneLayer
     {
-        internal LayerRenderData Data;
-        internal List<SceneObject> Objects;
-        internal List<IPointerReceiver> InputAcceptors;
+        internal LayerRenderData Data { get; set; }
+        internal List<SceneObject> Objects { get; }
+
+        internal List<IInputHandler> InputHandlers { get; }
+        internal List<IPointerReceiver> PointerReceivers { get; }
 
         /// <summary>
         /// Gets the layer's parent scene. This will only change (to null) in the event the layer is removed from it's parent scene.
@@ -16,7 +18,8 @@ namespace Molten
         internal SceneLayer()
         {
             Objects = new List<SceneObject>();
-            InputAcceptors = new List<IPointerReceiver>();
+            PointerReceivers = new List<IPointerReceiver>();
+            InputHandlers = new List<IInputHandler>();
         }
 
         /// <summary>

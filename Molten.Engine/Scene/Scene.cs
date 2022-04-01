@@ -121,7 +121,7 @@ namespace Molten
             Type comType = typeof(SceneComponent);
 
             for (int i = 0; i < componentTypes.Count; i++)
-                obj.AddComponent(componentTypes[i]);
+                obj.Components.Add(componentTypes[i]);
 
             AddObject(obj, layer);
 
@@ -160,10 +160,10 @@ namespace Molten
 
         private IPointerReceiver PickObjectFromLayer(Vector2F cursorPos, SceneLayer layer)
         {
-            for (int i = layer.InputAcceptors.Count - 1; i >= 0; i--)
+            for (int i = layer.PointerReceivers.Count - 1; i >= 0; i--)
             {
-                if (layer.InputAcceptors[i].Contains(cursorPos))
-                    return layer.InputAcceptors[i];
+                if (layer.PointerReceivers[i].Contains(cursorPos))
+                    return layer.PointerReceivers[i];
             }
 
             return null;

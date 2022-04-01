@@ -159,6 +159,6 @@ namespace Molten.UI
             }
         }
 
-        public string Tooltip => throw new NotImplementedException();
+        public string Tooltip => Name;
     }
 }

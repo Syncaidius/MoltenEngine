@@ -111,7 +111,7 @@ namespace Molten
                         Hovered.CursorEnter(cursorPos);
                     }
                 }
-
+                
                 // Update all button trackers
                 for (int j = 0; j < _trackers.Count; j++)
                     _trackers[j].Update(this, mouse, time);

@@ -20,9 +20,8 @@ namespace Molten
         ObjectUpdateFlags _updateFlags;
         bool _visible;
 
-        Dictionary<Type, List<SceneComponent>> _componentsByType;
-        ThreadedList<SceneComponent> _components;
-        SceneChildCollection _children;
+        SceneComponentCollection _components;
+        SceneCollection<SceneObject> _children;
 
         public event SceneObjectVisibilityHandler OnVisibilityChanged;
         public event SceneObjectHandler OnUpdateFlagsChanged;
@@ -44,119 +43,56 @@ namespace Molten
         internal SceneObject(Engine engine, ObjectUpdateFlags updateFlags = ObjectUpdateFlags.Children | ObjectUpdateFlags.Self, bool visible = true)
         {
             _engine = engine;
-            _components = new ThreadedList<SceneComponent>();
-            _componentsByType = new Dictionary<Type, List<SceneComponent>>();
-            _children = new SceneChildCollection(this);
+            _components = new SceneComponentCollection(Engine.Log, this);
+            _children = new SceneCollection<SceneObject>(this);
             _transform = new SceneObjectTransform(this);
 
             _children.OnAdded += _children_OnItemAdded;
             _children.OnRemoved += _children_OnItemRemoved;
 
+            _components.OnAdd += _components_OnAdd;
+            _components.OnAdded += _components_OnAdded;
+            _components.OnRemove += _components_OnRemove;
+            _components.OnRemoved += _components_OnRemoved;
+
             _updateFlags = updateFlags;
             IsVisible = visible;
         }
 
-        protected override void OnDispose() { }
+        private void _components_OnRemoved(SceneCollection<SceneComponent> collection, SceneComponent component)
+        {
+            component.OnRemoved(this);
+        }
 
-        private void _children_OnItemRemoved(SceneChildCollection collection, SceneObject item)
+        private void _components_OnRemove(SceneCollection<SceneComponent> collection, SceneComponent component, 
+            ref SceneCollection<SceneComponent>.EventData data)
+        {
+            data.Cancel = component.OnRemove(this);
+        }
+
+        private void _components_OnAdded(SceneCollection<SceneComponent> collection, SceneComponent component)
+        {
+            component.Initialize(Parent);
+            component.OnAdded(this);
+        }
+
+        private void _components_OnAdd(SceneCollection<SceneComponent> collection, SceneComponent component, 
+            ref SceneCollection<SceneComponent>.EventData data)
+        {
+            data.Cancel = component.OnAdd(this);
+        }
+
+        private void _children_OnItemRemoved(SceneCollection<SceneObject> collection, SceneObject item)
         {
             item.Parent = null;
         }
 
-        private void _children_OnItemAdded(SceneChildCollection collection, SceneObject item)
+        private void _children_OnItemAdded(SceneCollection<SceneObject> collection, SceneObject item)
         {
             item.Parent = this;
         }
 
-        public T AddComponent<T>() where T : SceneComponent, new()
-        {
-            Type t = typeof(T);
-            T component = Activator.CreateInstance(t) as T;
-            _components.Add(component);
-            component.Initialize(this);
-
-            List<SceneComponent> comByType;
-            if (!_componentsByType.TryGetValue(t, out comByType))
-            {
-                comByType = new List<SceneComponent>();
-                _componentsByType.Add(t, comByType);
-            }
-
-            comByType.Add(component);
-            return component;
-        }
-
-        public SceneComponent AddComponent(Type componentType)
-        {
-            Type baseType = typeof(SceneComponent);
-
-            if (baseType.IsAssignableFrom(componentType) == false)
-            {
-                Engine.Log.Error($"Scene.AddObjectWithComponents: Attempt to add invalid component type {componentType.Name} to new object.");
-                return null;
-            }
-
-            ConstructorInfo cInfo = componentType.GetConstructor(Type.EmptyTypes);
-            if (cInfo == null)
-            {
-                Engine.Log.Error($"Scene.AddObjectWithComponents: Attempted to add valid component type {componentType.Name} to new object, but no parameterless-constructor was present.");
-                return null;
-            }
-            else
-            {
-                SceneComponent component = cInfo.Invoke(ReflectionHelper.EmptyObjectArray) as SceneComponent;
-                List<SceneComponent> comByType;
-                if (!_componentsByType.TryGetValue(componentType, out comByType))
-                {
-                    comByType = new List<SceneComponent>();
-                    _componentsByType.Add(componentType, comByType);
-                }
-
-                comByType.Add(component);
-
-                if(_layer != null)
-                    RegisterComponentOnLayer(component);
-
-                return component;
-            }
-        }
-
-        public void RemoveComponent<T>(T component) where T : SceneComponent, new()
-        {
-            if (component.Object != this)
-                throw new Exception("Failed to remove component; It is owned by a different object.");
-
-            _components.Remove(component);
-
-            if (_layer != null)
-                UnregisterComponentOnLayer(component);
-
-
-            component.Destroy(this);
-            _componentsByType[typeof(T)].Remove(component);
-        }
-
-        public void RemoveComponents<T>() where T : SceneComponent, new()
-        {
-            if (_componentsByType.TryGetValue(typeof(T), out List<SceneComponent> comByType))
-            {
-                comByType = new List<SceneComponent>();
-                foreach (SceneComponent com in comByType)
-                    _components.Remove(com);
-            }
-        }
-
-        private void RegisterComponentOnLayer(SceneComponent sc)
-        {
-            if(sc is IPointerReceiver ca)
-                _layer.InputAcceptors.Add(ca);
-        }
-
-        private void UnregisterComponentOnLayer(SceneComponent sc)
-        {
-            if (sc is IPointerReceiver ca)
-                _layer.InputAcceptors.Remove(ca);
-        }
+        protected override void OnDispose() { }
 
         internal void Update(Timing time)
         {
@@ -165,7 +101,7 @@ namespace Molten
 
             if ((_updateFlags & ObjectUpdateFlags.Self) == ObjectUpdateFlags.Self)
             {
-                _components.For(0, 1, (index, component) =>
+                _components.Objects.For(0, 1, (index, component) =>
                 {
                     if (component.IsEnabled)
                         component.OnUpdate(time);
@@ -227,7 +163,7 @@ namespace Molten
                         OnRemovedFromScene?.Invoke(this, _scene, _layer);
 
                         for (int i = _components.Count - 1; i >= 0; i--)
-                            UnregisterComponentOnLayer(_components[i]);
+                            _components[i].UnregisterFromLayer();
                     }
 
                     _layer = value;
@@ -237,14 +173,13 @@ namespace Molten
                         OnAddedToScene?.Invoke(this, value.ParentScene, _layer);
 
                         for (int i = _components.Count - 1; i >= 0; i--)
-                            RegisterComponentOnLayer(_components[i]);
+                            _components[i].RegisterOnLayer();
                     }
                     else
                     {
                         _scene = null;
                     }
 
-                    // TODO make this thread-safe.
                     for (int i = _children.Count - 1; i >= 0; i--)
                         _children[i].Layer = value;
                 }
@@ -256,8 +191,13 @@ namespace Molten
         /// </summary>
         public SceneObjectTransform Transform => _transform;
 
-        /// <summary>Gets an collection containing all of the child <see cref="SceneObject"/> instances attached to the current <see cref="SceneObject"/>.</summary>
-        public SceneChildCollection Children => _children;
+        /// <summary>Gets a collection containing all of the child <see cref="SceneObject"/> instances attached to the current <see cref="SceneObject"/>.</summary>
+        public SceneCollection<SceneObject> Children => _children;
+
+        /// <summary>
+        /// Gets a collection containing all of the <see cref="SceneComponent"/> objects attached to the current <see cref="SceneObject"/>.
+        /// </summary>
+        public SceneComponentCollection Components => _components;
 
         /// <summary>Gets the object's parent <see cref="SceneObject"/>, if any. Value is null if the current object has no parent.</summary>
         public SceneObject Parent { get; internal set; }

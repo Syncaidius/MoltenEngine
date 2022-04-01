@@ -50,7 +50,7 @@ namespace Molten
             }
         }
 
-        protected override void OnDestroy(SceneObject obj)
+        protected internal override bool OnRemove(SceneObject obj)
         {
             obj.OnRemovedFromScene -= Obj_OnRemovedFromScene;
             obj.OnAddedToScene -= Obj_OnAddedToScene;
@@ -60,7 +60,7 @@ namespace Molten
             _spriteRenderer = null;
             _visible = true;
 
-            base.OnDestroy(obj);
+            return base.OnRemove(obj);
         }
 
         private void Obj_OnAddedToScene(SceneObject obj, Scene scene, SceneLayer layer)
