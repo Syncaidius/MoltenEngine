@@ -45,7 +45,7 @@ namespace Molten.Samples
             _mesh = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
             _mesh.SetVertices(SampleVertexData.TexturedCube);
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
-            AcceptPlayerInput = false;
+            CameraController.AcceptInput = false;
             Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
 
             LoadFontFile("Ananda Namaste Regular.ttf", 24);

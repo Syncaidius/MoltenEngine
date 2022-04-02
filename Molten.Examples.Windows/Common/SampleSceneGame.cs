@@ -6,6 +6,7 @@ namespace Molten.Samples
     public abstract class SampleSceneGame : SampleGame
     {
         SceneObject _player;
+        SampleCameraController _camController;
 
         public SampleSceneGame(string title) : base(title) { }
 
@@ -19,6 +20,7 @@ namespace Molten.Samples
         {
             _player = CreateObject();
             SceneCamera = _player.Components.Add<CameraComponent>();
+            _camController = _player.Components.Add<SampleCameraController>();
             SceneCamera.LayerMask = SceneLayerMask.Layer1 | SceneLayerMask.Layer2;
             SceneCamera.OutputSurface = Window;
             SceneCamera.MaxDrawDistance = 300;
@@ -69,52 +71,6 @@ namespace Molten.Samples
 
             if (Keyboard.IsTapped(KeyCode.Escape))
                 Exit();
-
-            // Keyboard input - Again messy code for now
-            float rotSpeed = 0.25f;
-            float moveSpeed = 0.5f;
-
-            Vector2F axisDelta = Vector2F.Zero;
-
-            if (AcceptPlayerInput && Mouse.IsDown(MouseButton.Left))
-                axisDelta = new Vector2F(Mouse.Delta.Y, Mouse.Delta.X) * rotSpeed;
-
-            // Gamepad movement
-            axisDelta += new Vector2F(Gamepad.RightStick.Y, Gamepad.RightStick.X) * rotSpeed * 2f;
-
-            _player.Transform.LocalRotationX += axisDelta.X;
-            _player.Transform.LocalRotationY += axisDelta.Y;
-
-            // Handle forward, backward, left and right movement. 
-            // For now, we'll just add the keyboard and gamepad values together. In a real game, this isn't a good idea!
-            Vector3F moveDelta = UpdateKeyboardMovement(time, moveSpeed);
-            moveDelta += UpdateGamepadMovement(time, moveSpeed);
-
-            _player.Transform.LocalPosition += moveDelta * time.Delta * moveSpeed;
-        }
-
-        private Vector3F UpdateKeyboardMovement(Timing time, float speed)
-        {
-            Vector3F moveDelta = Vector3F.Zero;
-            if (Keyboard.IsDown(KeyCode.W)) moveDelta += _player.Transform.Global.Backward * speed;
-            if (Keyboard.IsDown(KeyCode.S)) moveDelta += _player.Transform.Global.Forward * speed;
-            if (Keyboard.IsDown(KeyCode.A)) moveDelta += _player.Transform.Global.Left * speed;
-            if (Keyboard.IsDown(KeyCode.D)) moveDelta += _player.Transform.Global.Right * speed;
-
-
-            return moveDelta;
-        }
-
-        private Vector3F UpdateGamepadMovement(Timing time, float speed)
-        {
-            Vector3F moveDelta = Vector3F.Zero;
-            if (Gamepad.IsDown(GamepadButton.DPadUp)) moveDelta += _player.Transform.Global.Backward * speed;
-            if (Gamepad.IsDown(GamepadButton.DPadDown)) moveDelta += _player.Transform.Global.Forward * speed;
-            if (Gamepad.IsDown(GamepadButton.DPadLeft)) moveDelta += _player.Transform.Global.Left * speed;
-            if (Gamepad.IsDown(GamepadButton.DPadRight)) moveDelta += _player.Transform.Global.Right * speed;
-
-            moveDelta += new Vector3F(Gamepad.LeftStick.X, 0, Gamepad.LeftStick.Y) * speed * 2;
-            return moveDelta;
         }
 
         protected override void OnHudDraw(SpriteBatcher sb)
@@ -168,8 +124,8 @@ namespace Molten.Samples
 
         public SceneObject Player => _player;
 
-        public bool AcceptPlayerInput { get; set; } = true;
-
         public CameraComponent SceneCamera { get; set; }
+
+        public SampleCameraController CameraController => _camController;
     }
 }

@@ -114,7 +114,8 @@ namespace Molten
             {
                 if (RunState != GameRunState.Exiting)
                 {
-                    Engine.Scenes.HandleInput(_mouse, _touch, _keyboard, timing);
+                    if(Engine.Input != null && Engine.Input.State == EngineServiceState.Running)
+                        Engine.Scenes.HandleInput(_mouse, _touch, _keyboard, _gamepad, timing);
 
                     OnUpdate(timing);
                 }
@@ -287,7 +288,7 @@ namespace Molten
         public MouseDevice Mouse => _mouse;
 
         /// <summary>
-        /// Gets the <see cref="GamepadDevice"/> attached to the game's main window.
+        /// Gets the primary <see cref="GamepadDevice"/> attached to the game's main window.
         /// </summary>
         public GamepadDevice Gamepad => _gamepad;
 
