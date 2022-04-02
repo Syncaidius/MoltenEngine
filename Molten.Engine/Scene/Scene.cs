@@ -160,31 +160,30 @@ namespace Molten
 
         private IPointerReceiver PickObjectFromLayer(Vector2F cursorPos, SceneLayer layer)
         {
-            for (int i = layer.PointerReceivers.Count - 1; i >= 0; i--)
-            {
-                if (layer.PointerReceivers[i].Contains(cursorPos))
-                    return layer.PointerReceivers[i];
-            }
+            
 
             return null;
         }
 
-        private IPointerReceiver PickObject(Vector2F cursorPos, IList<SceneLayer> layers)
-        {
-            IPointerReceiver result;
-            for (int i = layers.Count - 1; i >= 0; i--)
-            {
-                result = PickObjectFromLayer(cursorPos, layers[i]);
-                if (result != null)
-                    return result;
-            }
-
-            return null;
-        }
-
+        /// <summary>
+        /// Picks a <see cref="IPointerReceiver"/> out of the scene based on the provided cursor position.
+        /// </summary>
+        /// <param name="cursorPos"></param>
+        /// <returns></returns>
         public IPointerReceiver PickObject(Vector2F cursorPos)
         {
-            return PickObject(cursorPos, Layers);
+            SceneLayer layer = null;
+            for (int i = Layers.Count - 1; i >= 0; i--)
+            {
+                layer = Layers[i];
+                for (int j = layer.PointerReceivers.Count - 1; j >= 0; j--)
+                {
+                    if (layer.PointerReceivers[j].Contains(cursorPos))
+                        return layer.PointerReceivers[j];
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
