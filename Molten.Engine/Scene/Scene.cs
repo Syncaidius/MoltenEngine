@@ -158,13 +158,6 @@ namespace Molten
             _pendingChanges.Enqueue(change);
         }
 
-        private IPointerReceiver PickObjectFromLayer(Vector2F cursorPos, SceneLayer layer)
-        {
-            
-
-            return null;
-        }
-
         /// <summary>
         /// Picks a <see cref="IPointerReceiver"/> out of the scene based on the provided cursor position.
         /// </summary>

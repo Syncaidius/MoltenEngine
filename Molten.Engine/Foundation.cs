@@ -114,22 +114,7 @@ namespace Molten
             {
                 if (RunState != GameRunState.Exiting)
                 {
-                    if (_mouse != null)
-                        Engine.Scenes.HandleInput(_mouse, timing);
-
-                    if (_touch != null)
-                    {
-                        if (_mouse != null && _mouse.IsConnected && _mouse.IsEnabled)
-                        {
-                            // Make sure we're not emulating touch input using the same mouse device as above, if available.
-                            if (_touch is MouseTouchEmulatorDevice mted && mted.Mouse != _mouse)
-                                Engine.Scenes.HandleInput(_touch, timing);
-                        }
-                        else
-                        {
-                            Engine.Scenes.HandleInput(_touch, timing);
-                        }
-                    }
+                    Engine.Scenes.HandleInput(_mouse, _touch, _keyboard, timing);
 
                     OnUpdate(timing);
                 }

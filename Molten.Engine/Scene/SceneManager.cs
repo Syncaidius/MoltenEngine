@@ -9,11 +9,9 @@ namespace Molten
 
         List<Scene> _scenes;
         List<SceneClickTracker> _trackers;
-        UISettings _settings;
 
-        internal SceneManager(UISettings settings)
+        internal SceneManager()
         {
-            _settings = settings;
             _trackers = new List<SceneClickTracker>();
             _scenes = new List<Scene>();
 
@@ -78,16 +76,41 @@ namespace Molten
             Focused = null;
         }
 
-        internal void HandleInput(TouchDevice touch, Timing time)
+        internal void HandleInput(MouseDevice mouse, TouchDevice touch, KeyboardDevice kb, Timing timing)
+        {
+            if (mouse != null)
+                HandleMouseInput(mouse, timing);
+
+            if (touch != null)
+            {
+                if (mouse != null && mouse.IsConnected && mouse.IsEnabled)
+                {
+                    // Make sure we're not emulating touch input using the same mouse device as above, if available.
+                    if (touch is MouseTouchEmulatorDevice mted && mted.Mouse != mouse)
+                        HandleTouchInput(touch, timing);
+                }
+                else
+                {
+                    HandleTouchInput(touch, timing);
+                }
+            }
+
+            for (int i = _scenes.Count - 1; i >= 0; i--)
+            {
+                Scene scene = _scenes[i];
+
+            }
+        }
+
+        private void HandleTouchInput(TouchDevice touch ,Timing time)
         {
             // TODO implement SceneTouchTracker class
             // TODO do touch-specific input handling and call relevant IInputAcceptor methods.
         }
 
-        internal void HandleInput(MouseDevice mouse, Timing time)
+        private void HandleMouseInput(MouseDevice mouse, Timing time)
         {
             Vector2F cursorPos = (Vector2F)mouse.Position;
-            Vector2F cursorDelta = (Vector2F)mouse.Delta;
 
             for (int i = _scenes.Count - 1; i >= 0; i--)
             {
@@ -111,10 +134,6 @@ namespace Molten
                         Hovered.CursorEnter(cursorPos);
                     }
                 }
-                
-                // Update all button trackers
-                for (int j = 0; j < _trackers.Count; j++)
-                    _trackers[j].Update(this, mouse, time);
 
                 // Invoke hover event if possible
                 if (Hovered != null)
@@ -126,6 +145,10 @@ namespace Molten
                         Hovered.CursorWheelScroll(mouse.ScrollWheel);
                 }
             }
+
+            // Update all button trackers
+            for (int j = 0; j < _trackers.Count; j++)
+                _trackers[j].Update(this, mouse, time);
         }
 
         internal void Update(Timing time)

@@ -44,7 +44,7 @@ namespace Molten
             _services = new List<EngineService>(Settings.StartupServices);
             Content = new ContentManager(Log, this, Settings.ContentWorkerThreads);
             Fonts = new FontManager(this);
-            Scenes = new SceneManager(Settings.UI);
+            Scenes = new SceneManager();
 
             Renderer = GetService<RenderService>();
             Input = GetService<InputService>();

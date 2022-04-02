@@ -7,7 +7,6 @@ namespace Molten
         internal LayerRenderData Data { get; set; }
         internal List<SceneObject> Objects { get; }
 
-        internal List<IInputHandler> InputHandlers { get; }
         internal List<IPointerReceiver> PointerReceivers { get; }
 
         /// <summary>
@@ -19,7 +18,6 @@ namespace Molten
         {
             Objects = new List<SceneObject>();
             PointerReceivers = new List<IPointerReceiver>();
-            InputHandlers = new List<IInputHandler>();
         }
 
         /// <summary>

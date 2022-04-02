@@ -7,7 +7,7 @@ namespace Molten.UI
     /// <summary>
     /// A <see cref="SceneComponent"/> used for rendering a UI system into a <see cref="Scene"/>.
     /// </summary>
-    public sealed class UIRenderComponent : SpriteRenderComponent, IPointerReceiver, IInputHandler
+    public sealed class UIRenderComponent : SpriteRenderComponent, IPointerReceiver
     {
         UIComponent _root;
         ThreadedQueue<IUIChange> _pendingChanges = new ThreadedQueue<IUIChange>();
