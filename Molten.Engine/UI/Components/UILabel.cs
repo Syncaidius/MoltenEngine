@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Molten.UI
 {
-    public class UILabel : UIComponent<UITextData>
+    public class UILabel : UIElement<UITextData>
     {
         UIHorizonalAlignment _hAlign;
         UIVerticalAlignment _vAlign;

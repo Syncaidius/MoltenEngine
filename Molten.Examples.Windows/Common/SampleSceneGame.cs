@@ -19,6 +19,7 @@ namespace Molten.Samples
         private void SpawnPlayer()
         {
             _player = CreateObject();
+            _player.Transform.LocalPosition = new Vector3F(0, 0, -10);
             SceneCamera = _player.Components.Add<CameraComponent>();
             _camController = _player.Components.Add<SampleCameraController>();
             SceneCamera.LayerMask = SceneLayerMask.Layer1 | SceneLayerMask.Layer2;

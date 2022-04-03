@@ -5,11 +5,11 @@ using Molten.Input;
 namespace Molten.UI
 {
     /// <summary>
-    /// A <see cref="SceneComponent"/> used for rendering a UI system into a <see cref="Scene"/>.
+    /// A <see cref="SceneComponent"/> used for updating and rendering a UI system into a <see cref="Scene"/>.
     /// </summary>
-    public sealed class UIRenderComponent : SpriteRenderComponent, IPointerReceiver
+    public sealed class UIManagerComponent : SpriteRenderComponent, IPointerReceiver
     {
-        UIComponent _root;
+        UIElement _root;
         ThreadedQueue<IUIChange> _pendingChanges = new ThreadedQueue<IUIChange>();
 
         protected override void OnDispose()
@@ -52,9 +52,29 @@ namespace Molten.UI
         public bool Contains(Vector2F point)
         {
             if (Root != null)
-                return Root.Contains(point);
+                return PickElement(Root, point) != null;
             else
                 return false;
+        }
+
+        private UIElement PickElement(UIElement e, in Vector2F point)
+        {
+            UIElement result = null;
+
+            if (e.Contains(point))
+            {
+                for (int i = e.Children.Count - 1; i >= 0; i--)
+                {
+                    result = PickElement(e.Children[i], point);
+                    if (result != null)
+                        return result;
+                }
+
+                if (e.Contains(point))
+                    return e;
+            }
+
+            return result;
         }
 
         public void CursorClickStarted(Vector2F pos, MouseButton button)
@@ -89,7 +109,10 @@ namespace Molten.UI
 
         public void CursorHover(Vector2F pos)
         {
-            
+            if (Root != null)
+                HoverElement = PickElement(Root, pos);
+            else
+                HoverElement = null;
         }
 
         public void CursorFocus()
@@ -133,9 +156,9 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets or sets the Root <see cref="UIComponent"/> to be drawn.
+        /// Gets or sets the Root <see cref="UIElement"/> to be drawn.
         /// </summary>
-        public UIComponent Root
+        public UIElement Root
         {
             get => _root;
             set
@@ -158,6 +181,8 @@ namespace Molten.UI
                 }
             }
         }
+
+        public UIElement HoverElement { get; private set; }
 
         public string Tooltip => Name;
     }

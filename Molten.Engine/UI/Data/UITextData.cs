@@ -18,6 +18,7 @@ namespace Molten.UI
 
         public SpriteFont Font;
 
+        [DataMember]
         public Vector2F Position;
 
         public IMaterial Material;

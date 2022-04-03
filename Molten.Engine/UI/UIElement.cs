@@ -7,18 +7,18 @@ namespace Molten.UI
     /// The base class for a UI component.
     /// </summary>
     [Serializable]
-    public abstract class UIComponent : EngineObject
+    public abstract class UIElement : EngineObject
     {
         [DataMember]
         internal UIRenderData BaseData;
 
-        UIComponent _parent;
-        List<UIComponent> _children;
-        UIComponent _root;
+        UIElement _parent;
+        List<UIElement> _children;
+        UIElement _root;
 
-        public UIComponent()
+        public UIElement()
         {
-            _children = new List<UIComponent>();
+            _children = new List<UIElement>();
             Children = _children.AsReadOnly();
             Engine = Engine.Current;
             BaseData = new UIRenderData();
@@ -69,17 +69,22 @@ namespace Molten.UI
             return;
         }
 
-        internal bool Contains(Vector2F point)
-        {
-            return BaseData.GlobalBounds.Contains(point);
-        }
-
         internal void Update(Timing time)
         {
             OnUpdate(time);
 
             for (int i = _children.Count - 1; i >= 0; i--)
                 _children[i].Update(time);
+        }
+
+        /// <summary>
+        /// Checks if the current <see cref="UIElement"/> contains the given <see cref="Vector2F"/>. This does not test any child <see cref="UIElement"/> objects.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public virtual bool Contains(Vector2F point)
+        {
+            return BaseData.GlobalBounds.Contains(point);
         }
 
         protected override void OnDispose() { }
@@ -101,7 +106,7 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets the global bounds, relative to the <see cref="UIRenderComponent"/> that is drawing the current <see cref="UIComponent"/>.s
+        /// Gets the global bounds, relative to the <see cref="UIManagerComponent"/> that is drawing the current <see cref="UIElement"/>.s
         /// </summary>
         public Rectangle GlobalBounds => BaseData.GlobalBounds;
 
@@ -116,11 +121,11 @@ namespace Molten.UI
         public ref bool IsClipEnabled => ref BaseData.IsClipEnabled;
 
         /// <summary>
-        /// Gets a read-only list of child components attached to the current <see cref="UIComponent"/>.
+        /// Gets a read-only list of child components attached to the current <see cref="UIElement"/>.
         /// </summary>
-        public IReadOnlyList<UIComponent> Children { get; }
+        public IReadOnlyList<UIElement> Children { get; }
 
-        public UIComponent Parent
+        public UIElement Parent
         {
             get => _parent;
             set
@@ -156,9 +161,9 @@ namespace Molten.UI
         public Engine Engine { get; private set; }
 
         /// <summary>
-        /// Gets the root <see cref="UIComponent"/>.
+        /// Gets the root <see cref="UIElement"/>.
         /// </summary>
-        public UIComponent Root
+        public UIElement Root
         {
             get => _root;
             internal set
@@ -167,16 +172,16 @@ namespace Molten.UI
                 {
                     _root = value;
                     RenderComponent = _root.RenderComponent;
-                    foreach (UIComponent child in Children)
+                    foreach (UIElement child in Children)
                         child.Root = _root;
                 }
             }
         }
 
         /// <summary>
-        /// Gets the internal <see cref="UIRenderComponent"/> that will draw the current <see cref="UIComponent"/>.
+        /// Gets the internal <see cref="UIManagerComponent"/> that will draw the current <see cref="UIElement"/>.
         /// </summary>
-        internal UIRenderComponent RenderComponent { get; set; }
+        internal UIManagerComponent RenderComponent { get; set; }
 
         public UITheme Theme { get; set; }
     }
@@ -186,7 +191,7 @@ namespace Molten.UI
     /// </summary>
     /// <typeparam name="R"></typeparam>
     /// <typeparam name="EP">Extended property structure.</typeparam>
-    public abstract class UIComponent<EP> : UIComponent
+    public abstract class UIElement<EP> : UIElement
         where EP : struct, IUIRenderData
     {
         EP _data = new EP();
@@ -198,13 +203,13 @@ namespace Molten.UI
             if (BaseData.IsClipEnabled)
             {
                 sb.PushClip(BaseData.RenderBounds);
-                foreach (UIComponent child in Children)
+                foreach (UIElement child in Children)
                     child.Render(sb);
                 sb.PopClip();
             }
             else
             {
-                foreach (UIComponent child in Children)
+                foreach (UIElement child in Children)
                     child.Render(sb);
             }
         }

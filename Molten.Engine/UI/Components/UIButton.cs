@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Molten.UI
 {
-    public class UIButton : UIComponent<UIPanel.RenderData>
+    public class UIButton : UIElement<UIPanelData>
     {
         protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
         {

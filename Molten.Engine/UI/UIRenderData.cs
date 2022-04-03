@@ -2,6 +2,7 @@
 
 namespace Molten.UI
 {
+    [Serializable]
     public class UIRenderData
     {
         internal UIRenderData() { }

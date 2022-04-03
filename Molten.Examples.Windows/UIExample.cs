@@ -10,7 +10,7 @@ namespace Molten.Samples
         SceneObject _parent;
         SceneObject _child;
         IMesh<VertexTexture> _mesh;
-        UIRenderComponent _ui;
+        UIManagerComponent _ui;
 
         public UIExample() : base("UI Example") { }
 
@@ -28,52 +28,8 @@ namespace Molten.Samples
             cr.Commit();
 
             _mesh = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
+            _mesh.SetVertices(SampleVertexData.TexturedCube);
 
-            VertexTexture[] verts = new VertexTexture[]{
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)), //front
-               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(0,0)),
-               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(1, 0)),
-               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(1,1)),
-
-               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(1,0)), //back
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(1,1)),
-               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(0, 0)),
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
-
-               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(0,1)), //top
-               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(0,0)),
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(1, 0)),
-               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(1,1)),
-
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(1,0)), //bottom
-               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(1,1)),
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(0, 0)),
-               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(0,1)),
-
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)), //left
-               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(0,0)),
-               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(1, 0)),
-               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(1,1)),
-
-               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(1,0)), //right
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(1,1)),
-               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(0, 0)),
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
-            };
-
-            _mesh.SetVertices(verts);
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
@@ -93,7 +49,7 @@ namespace Molten.Samples
             mat.SetDefaultResource(tex, 0);
             _mesh.Material = mat;
 
-            _ui = SpriteLayer.AddObjectWithComponent<UIRenderComponent>();
+            _ui = SpriteLayer.AddObjectWithComponent<UIManagerComponent>();
             _ui.Root = new UIPanel()
             {
                 LocalBounds = new Rectangle(100, 150, 600, 450),
@@ -103,7 +59,7 @@ namespace Molten.Samples
             {
                 LocalBounds = new Rectangle(100, 50, 220, 200),
                 Parent = _ui.Root,
-                Properties = new UIPanel.RenderData()
+                Properties = new UIPanelData()
                 {
                     BackgroundColor = new Color(0,128, 0, 200),
                     BorderColor = Color.LimeGreen
@@ -112,7 +68,7 @@ namespace Molten.Samples
 
             UILabel label = new UILabel()
             {
-                LocalBounds = new Rectangle(300, 150, 200, 50),
+                LocalBounds = new Rectangle(300, 150, 200, 20),
                 Parent = _ui.Root
             };
         }
@@ -122,6 +78,21 @@ namespace Molten.Samples
             RotateParentChild(_parent, _child, time);
 
             base.OnUpdate(time);
+        }
+
+        protected override void OnHudDraw(SpriteBatcher sb)
+        {
+            base.OnHudDraw(sb);
+
+            string text = $"Hovered UI Element: {(_ui.HoverElement != null ? _ui.HoverElement.Name : "None")}";
+            Vector2F tSize = SampleFont.MeasureString(text);
+            Vector2F pos = new Vector2F()
+            {
+                X = Window.Width / 2 + (-tSize.X / 2),
+                Y = 25,
+            };
+
+            sb.DrawString(SampleFont, text, pos, Color.White);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets the setting value for the number of milliseconds the cursor must hover over a <see cref="Molten.UI.UIComponent"/> before a tooltip is displayed.
+        /// Gets the setting value for the number of milliseconds the cursor must hover over a <see cref="Molten.UI.UIElement"/> before a tooltip is displayed.
         /// </summary>
         [DataMember]
         public SettingValue<int> TooltipDelay { get; }
