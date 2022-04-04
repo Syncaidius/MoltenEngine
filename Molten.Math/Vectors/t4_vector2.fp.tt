@@ -36,7 +36,22 @@ namespace Molten
 	public partial struct <#=fName#>
 	{
 #region Instance methods
-        
+        public <#=fName#> GetOrthonormal(bool polarity, bool allowZero = false)
+        {
+            <#=d.DT#> len = Length();
+            <#=d.DT#> az = allowZero ? 1 : 0;
+            <#=d.DT#> azInv = 1 - az;
+
+            if(len == 0)
+                return polarity ? new <#=fName#>(0, azInv) : new <#=fName#>(0, -azInv);
+            else
+                return polarity ? new <#=fName#>(-Y/len, X/len) : new <#=fName#>(Y/len, -X/len);
+        }
+
+        public <#=fName#> GetOrthogonal(bool polarity)
+        {
+            return polarity ? new <#=fName#>(-Y, X) : new <#=fName#>(Y, -X);
+        }
 #endregion
 
 #region Static Methods

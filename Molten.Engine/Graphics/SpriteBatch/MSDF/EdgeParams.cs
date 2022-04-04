@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
-    public class ContourCombiner<T>
-        where T : struct
+    public struct EdgeParams
     {
+        public SignedDistance minDistance;
+        public EdgeHolder nearEdge;
+        public double nearParam;
     }
 }

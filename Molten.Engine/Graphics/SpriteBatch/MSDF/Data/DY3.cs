@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
-    public class ContourCombiner<T>
-        where T : struct
+    public unsafe struct DY3
     {
+        public fixed int Values[3];
+
+        public ref int this[int index] => ref Values[index];
     }
 }

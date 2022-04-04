@@ -1,10 +1,28 @@
+using System.Runtime.InteropServices;
+using System;
+
 namespace Molten
 {
-    ///<summary>A <see cref = "double"/> vector comprised of 2 components.</summary>
-    public partial struct Vector2D
+	///<summary>A <see cref = "double"/> vector comprised of 2 components.</summary>
+	public partial struct Vector2D
 	{
 #region Instance methods
-        
+        public Vector2D GetOrthonormal(bool polarity, bool allowZero = false)
+        {
+            double len = Length();
+            double az = allowZero ? 1 : 0;
+            double azInv = 1 - az;
+
+            if(len == 0)
+                return polarity ? new Vector2D(0, azInv) : new Vector2D(0, -azInv);
+            else
+                return polarity ? new Vector2D(-Y/len, X/len) : new Vector2D(Y/len, -X/len);
+        }
+
+        public Vector2D GetOrthogonal(bool polarity)
+        {
+            return polarity ? new Vector2D(-Y, X) : new Vector2D(Y, -X);
+        }
 #endregion
 
 #region Static Methods

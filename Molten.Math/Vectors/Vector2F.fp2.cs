@@ -1,10 +1,33 @@
+
+
+
+
+
+using System.Runtime.InteropServices;
+using System;
+
 namespace Molten
 {
-    ///<summary>A <see cref = "float"/> vector comprised of 2 components.</summary>
-    public partial struct Vector2F
+	///<summary>A <see cref = "float"/> vector comprised of 2 components.</summary>
+	public partial struct Vector2F
 	{
 #region Instance methods
-        
+        public Vector2F GetOrthonormal(bool polarity, bool allowZero = false)
+        {
+            float len = Length();
+            float az = allowZero ? 1 : 0;
+            float azInv = 1 - az;
+
+            if(len == 0)
+                return polarity ? new Vector2F(0, azInv) : new Vector2F(0, -azInv);
+            else
+                return polarity ? new Vector2F(-Y/len, X/len) : new Vector2F(Y/len, -X/len);
+        }
+
+        public Vector2F GetOrthogonal(bool polarity)
+        {
+            return polarity ? new Vector2F(-Y, X) : new Vector2F(Y, -X);
+        }
 #endregion
 
 #region Static Methods
