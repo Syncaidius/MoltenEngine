@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
+    /* NOTES *******
+     * TODO All X3, DY3, X2 types need replacing with fixed array pointers, as their content may be changed inside methods they're passed to.
+     * 
+     */
     public class MsdfGenerator
     {
         /// <summary>
@@ -126,7 +130,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                 {
                     Vector2D p = new Vector2D(x + .5, y + .5) / scale - translate;
                     SignedDistance minDistance = new SignedDistance();
-                    EdgeHolder* nearEdge = null;
+                    EdgeHolder nearEdge = null;
                     double nearParam = 0;
                     for (std::vector<Contour>::const_iterator contour = shape.contours.begin(); contour != shape.contours.end(); ++contour)
                         for (std::vector<EdgeHolder>::const_iterator edge = contour->edges.begin(); edge != contour->edges.end(); ++edge)

@@ -8,6 +8,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 {
     public unsafe class MsdfMath
     {
+        public const double M_PI = 3.14159265358979323846;
         /// <summary>
         /// Returns the smaller of the arguments.
         /// </summary>

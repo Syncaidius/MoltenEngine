@@ -10,7 +10,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
     {
         Vector2D[] p;
 
-        public LinearSegment(Vector2D p0, Vector2D p1, EdgeColor edgeColor) :
+        public LinearSegment(Vector2D p0, Vector2D p1, EdgeColor edgeColor = EdgeColor.WHITE) :
             base(edgeColor)
         {
             p = new Vector2D[] { p0, p1 };
@@ -97,6 +97,11 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             part1 = new LinearSegment(p[0], point(1 / 3.0), Color);
             part2 = new LinearSegment(point(1 / 3.0), point(2 / 3.0), Color);
             part3 = new LinearSegment(point(2 / 3.0), p[1], Color);
+        }
+
+        public double length()
+        {
+            return (p[1] - p[0]).Length();
         }
     }
 }
