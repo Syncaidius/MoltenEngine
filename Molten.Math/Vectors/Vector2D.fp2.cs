@@ -7,7 +7,7 @@ namespace Molten
 	public partial struct Vector2D
 	{
 #region Instance methods
-        public Vector2D GetOrthonormal(bool polarity, bool allowZero = false)
+        public Vector2D GetOrthonormal(bool polarity = true, bool allowZero = false)
         {
             double len = Length();
             double az = allowZero ? 1 : 0;

@@ -12,7 +12,7 @@ namespace Molten
 	public partial struct Vector2F
 	{
 #region Instance methods
-        public Vector2F GetOrthonormal(bool polarity, bool allowZero = false)
+        public Vector2F GetOrthonormal(bool polarity = true, bool allowZero = false)
         {
             float len = Length();
             float az = allowZero ? 1 : 0;
