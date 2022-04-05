@@ -4,13 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.SpriteBatch
+namespace Molten.Graphics.SpriteBatch.MSDF
 {
     public class MsdfShape
     {
         public struct Bounds
         {
             public double l, b, r, t;
+
+            public Bounds(double ll, double bb, double rr, double tt)
+            {
+                l = ll;
+                b = bb;
+                r = rr; 
+                t = tt;
+            }
         }
 
         struct Intersection
@@ -21,7 +29,7 @@ namespace Molten.Graphics.SpriteBatch
 
             static int compare(Intersection a, Intersection b)
             {
-                return MsdfMath.Sign(reinterpret_cast <const Intersection*> (a)->x - reinterpret_cast <const Intersection*> (b)->x);
+                return MsdfMath.sign(a.x - b.x);
             }
         };
 
@@ -50,7 +58,7 @@ namespace Molten.Graphics.SpriteBatch
         /// <returns></returns>
         public Contour AddContour()
         {
-            Contours c = new Contours();
+            Contour c = new Contour();
             Contours.Add(c);
             return c;
         }
@@ -62,7 +70,7 @@ namespace Molten.Graphics.SpriteBatch
         {
             foreach (Contour contour in Contours)
             {
-                if (contour.Edges.size() == 1)
+                if (contour.Edges.Count == 1)
                 {
                     EdgeSegment* parts[3] = { };
                     contour->edges[0]->splitInThirds(parts[0], parts[1], parts[2]);
@@ -73,17 +81,17 @@ namespace Molten.Graphics.SpriteBatch
                 }
                 else
                 {
-                    EdgeHolder* prevEdge = &contour->edges.back();
-                    for (std::vector<EdgeHolder>::iterator edge = contour->edges.begin(); edge != contour->edges.end(); ++edge)
+                    EdgeHolder prevEdge = contour.Edges.Last();
+                    foreach(EdgeHolder edge in contour.Edges)
                     {
-                        Vector2D prevDir = (*prevEdge)->direction(1).normalize();
-                        Vector2D curDir = (*edge)->direction(0).normalize();
+                        Vector2D prevDir = edge.Segment.direction(1).GetNormalized();
+                        Vector2D curDir = edge.Segment.direction(0).GetNormalized();
                         if (Vector2D.Dot(prevDir, curDir) < MSDFGEN_CORNER_DOT_EPSILON - 1)
                         {
-                            DeconvergeEdge(*prevEdge, 1);
-                            DeconvergeEdge(*edge, 0);
+                            DeconvergeEdge(prevEdge, 1);
+                            DeconvergeEdge(edge, 0);
                         }
-                        prevEdge = &*edge;
+                        prevEdge = edge;
                     }
                 }
             }
@@ -92,14 +100,12 @@ namespace Molten.Graphics.SpriteBatch
         private static void DeconvergeEdge(EdgeHolder edgeHolder, int param)
         {
             {
-                const QuadraticSegment* quadraticSegment = dynamic_cast <const QuadraticSegment*> (&*edgeHolder);
-                if (quadraticSegment)
-                    edgeHolder = quadraticSegment->convertToCubic();
+                if(edgeHolder.Segment is QuadraticSegment quadraticSegment)
+                    edgeHolder.Segment = quadraticSegment.ConvertToCubic();
             }
             {
-                CubicSegment* cubicSegment = dynamic_cast<CubicSegment*>(&*edgeHolder);
-                if (cubicSegment)
-                    cubicSegment->deconverge(param, MSDFGEN_DECONVERGENCE_FACTOR);
+                if(edgeHolder.Segment is CubicSegment cubicSegment)
+                    cubicSegment.Deconverge(param, MSDFGEN_DECONVERGENCE_FACTOR);
             }
         }
 
@@ -111,9 +117,9 @@ namespace Molten.Graphics.SpriteBatch
         {
             foreach (Contour contour in Contours)
             {
-                if (!contour->edges.empty())
+                if (contour.Edges.Count > 0)
                 {
-                    Vector2D corner = contour.edges.back()->point(1);
+                    Vector2D corner = contour.Edges.Last().Segment.point(1);
                     foreach (EdgeHolder edge in contour.Edges)
                     {
                         if (!*edge)
@@ -121,7 +127,7 @@ namespace Molten.Graphics.SpriteBatch
                         if ((*edge)->point(0) != corner)
                             return false;
 
-                        corner = (*edge)->point(1);
+                        corner = edge.Segment->point(1);
                     }
                 }
             }
@@ -174,8 +180,8 @@ namespace Molten.Graphics.SpriteBatch
         /// <returns></returns>
         public Bounds getBounds(double border = 0, double miterLimit = 0, int polarity = 0)
         {
-            static const double LARGE_VALUE = 1e240;
-            MsdfShape.Bounds bounds = { +LARGE_VALUE, +LARGE_VALUE, -LARGE_VALUE, -LARGE_VALUE };
+            const double LARGE_VALUE = 1e240;
+            MsdfShape.Bounds bounds = new Bounds( +LARGE_VALUE, +LARGE_VALUE, -LARGE_VALUE, -LARGE_VALUE);
             bound(bounds.l, bounds.b, bounds.r, bounds.t);
             if (border > 0)
             {
@@ -196,15 +202,15 @@ namespace Molten.Graphics.SpriteBatch
         /// <param name=""></param>
         /// <param name=""></param>
         /// <param name="y"></param>
-        public void scanline(Scanline line, double y) {
+        public unsafe void scanline(Scanline line, double y) {
             List<Scanline::Intersection> intersections = new List<Scanline.Intersection>();
-            double x[3];
-            int dy[3];
+            double* x = stackalloc double[3];
+            int* dy = stackalloc int[3];
             foreach (Contour contour in Contours)
             {
-                foreach (EdgeHolder edge in Contours)
+                foreach (EdgeHolder edge in contour.Edges)
                 {
-                    int n = (*edge)->scanlineIntersections(x, dy, y);
+                    int n = edge.Segment.scanlineIntersections(x, dy, y);
                     for (int i = 0; i < n; ++i)
                     {
                         Scanline::Intersection intersection = { x[i], dy[i] };

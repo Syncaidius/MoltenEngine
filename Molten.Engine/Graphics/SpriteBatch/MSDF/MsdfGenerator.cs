@@ -109,13 +109,16 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                     double dummy;
                     Vector2D p = new Vector2D(x + .5, y + .5) / scale - translate;
                     SignedDistance minDistance = new SignedDistance();
-                    for (std::vector<Contour>::const_iterator contour = shape.contours.begin(); contour != shape.contours.end(); ++contour)
-                        for (std::vector<EdgeHolder>::const_iterator edge = contour->edges.begin(); edge != contour->edges.end(); ++edge)
+                    foreach (Contour contour in shape.Contours)
+                    {
+                        foreach (EdgeHolder edge in contour.Edges)
                         {
-                            SignedDistance distance = (*edge)->signedDistance(p, dummy);
+                            SignedDistance distance = edge.Segment.signedDistance(p, out dummy);
                             if (distance < minDistance)
                                 minDistance = distance;
-                        }
+                        } 
+                    }
+
                     output[x, row] = (float)(minDistance.Distance / range + .5);
                 }
             }
@@ -132,20 +135,24 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                     SignedDistance minDistance = new SignedDistance();
                     EdgeHolder nearEdge = null;
                     double nearParam = 0;
-                    for (std::vector<Contour>::const_iterator contour = shape.contours.begin(); contour != shape.contours.end(); ++contour)
-                        for (std::vector<EdgeHolder>::const_iterator edge = contour->edges.begin(); edge != contour->edges.end(); ++edge)
+                    foreach (Contour contour in shape.Contours)
+                    {
+                        foreach (EdgeHolder edge in contour.Edges)
                         {
                             double param;
-                            SignedDistance distance = (*edge)->signedDistance(p, param);
+                            SignedDistance distance = edge.Segment.signedDistance(p, out param);
                             if (distance < minDistance)
                             {
                                 minDistance = distance;
-                                nearEdge = &*edge;
+                                nearEdge = edge; // TODO do we clone here?
                                 nearParam = param;
                             }
                         }
-                    if (nearEdge)
-                        (*nearEdge)->distanceToPseudoDistance(minDistance, p, nearParam);
+                    }
+
+                    if (nearEdge != null)
+                        nearEdge.Segment.distanceToPseudoDistance(ref minDistance, p, nearParam);
+
                     output[x, row] = (float)(minDistance.Distance / range + .5);
                 }
             }
@@ -165,38 +172,39 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                     r.nearEdge = g.nearEdge = b.nearEdge = null;
                     r.nearParam = g.nearParam = b.nearParam = 0;
 
-                    for (std::vector<Contour>::const_iterator contour = shape.contours.begin(); contour != shape.contours.end(); ++contour) {
-                        for (std::vector<EdgeHolder>::const_iterator edge = contour->edges.begin(); edge != contour->edges.end(); ++edge)
+                    foreach (Contour contour in shape.Contours)
+                    {
+                        foreach (EdgeHolder edge in contour.Edges)
                         {
                             double param;
-                            SignedDistance distance = (*edge)->signedDistance(p, param);
-                            if ((*edge)->color & EdgeColor.RED && distance < r.minDistance)
+                            SignedDistance distance = edge.Segment.signedDistance(p, out param);
+                            if ((edge.Segment.Color & EdgeColor.RED) == EdgeColor.RED && distance < r.minDistance)
                             {
                                 r.minDistance = distance;
-                                r.nearEdge = &*edge;
+                                r.nearEdge = edge; // TODO clone here?
                                 r.nearParam = param;
                             }
-                            if ((*edge)->color & EdgeColor.GREEN && distance < g.minDistance)
+                            if ((edge.Segment.Color & EdgeColor.GREEN) == EdgeColor.GREEN && distance < g.minDistance)
                             {
                                 g.minDistance = distance;
-                                g.nearEdge = &*edge;
+                                g.nearEdge = edge; // TODO clone here?
                                 g.nearParam = param;
                             }
-                            if ((*edge)->color & EdgeColor.BLUE && distance < b.minDistance)
+                            if ((edge.Segment.Color & EdgeColor.BLUE) == EdgeColor.BLUE && distance < b.minDistance)
                             {
                                 b.minDistance = distance;
-                                b.nearEdge = &*edge;
+                                b.nearEdge = edge; // TODO clone here?
                                 b.nearParam = param;
                             }
                         }
                     }
 
-                    if (r.nearEdge)
-                        (*r.nearEdge)->distanceToPseudoDistance(r.minDistance, p, r.nearParam);
-                    if (g.nearEdge)
-                        (*g.nearEdge)->distanceToPseudoDistance(g.minDistance, p, g.nearParam);
-                    if (b.nearEdge)
-                        (*b.nearEdge)->distanceToPseudoDistance(b.minDistance, p, b.nearParam);
+                    if (r.nearEdge != null)
+                        r.nearEdge.Segment.distanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
+                    if (g.nearEdge != null)
+                        g.nearEdge.Segment.distanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
+                    if (b.nearEdge != null)
+                        b.nearEdge.Segment.distanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
                     output[x, row][0] = (float)(r.minDistance.Distance / range + .5);
                     output[x, row][1] = (float)(g.minDistance.Distance / range + .5);
                     output[x, row][2] = (float)(b.minDistance.Distance / range + .5);
@@ -222,48 +230,52 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                     r.nearEdge = g.nearEdge = b.nearEdge = null;
                     r.nearParam = g.nearParam = b.nearParam = 0;
 
-                    for (std::vector<Contour>::const_iterator contour = shape.contours.begin(); contour != shape.contours.end(); ++contour)
-                        for (std::vector<EdgeHolder>::const_iterator edge = contour->edges.begin(); edge != contour->edges.end(); ++edge)
+                    foreach (Contour contour in shape.Contours)
+                    {
+                        foreach (EdgeHolder edge in contour.Edges)
                         {
                             double param = 0;
-                            SignedDistance distance = (*edge)->signedDistance(p, param);
+                            SignedDistance distance = edge.Segment.signedDistance(p, out param);
                             if (distance < minDistance)
                                 minDistance = distance;
-                            if ((*edge)->color & EdgeColor.RED && distance < r.minDistance)
+
+                            if ((edge.Segment.Color & EdgeColor.RED) == EdgeColor.RED && distance < r.minDistance)
                             {
                                 r.minDistance = distance;
-                                r.nearEdge = &*edge;
+                                r.nearEdge = edge; // TODO .clone() here?
                                 r.nearParam = param;
                             }
-                            if ((*edge)->color & EdgeColor.GREEN && distance < g.minDistance)
+                            if ((edge.Segment.Color & EdgeColor.GREEN) == EdgeColor.GREEN && distance < g.minDistance)
                             {
                                 g.minDistance = distance;
-                                g.nearEdge = &*edge;
+                                g.nearEdge = edge; // TODO clone here?
                                 g.nearParam = param;
                             }
-                            if ((*edge)->color & EdgeColor.BLUE && distance < b.minDistance)
+                            if ((edge.Segment.Color & EdgeColor.BLUE) == EdgeColor.BLUE && distance < b.minDistance)
                             {
                                 b.minDistance = distance;
-                                b.nearEdge = &*edge;
+                                b.nearEdge = edge; // TODO clone here?
                                 b.nearParam = param;
                             }
                         }
 
-                    if (r.nearEdge != null)
-                        (*r.nearEdge)->distanceToPseudoDistance(r.minDistance, p, r.nearParam);
-                    if (g.nearEdge)
-                        (*g.nearEdge)->distanceToPseudoDistance(g.minDistance, p, g.nearParam);
-                    if (b.nearEdge)
-                        (*b.nearEdge)->distanceToPseudoDistance(b.minDistance, p, b.nearParam);
-                    output[x, row][0] = (float)(r.minDistance.Distance / range + .5);
-                    output[x, row][1] = (float)(g.minDistance.Distance / range + .5);
-                    output[x, row][2] = (float)(b.minDistance.Distance / range + .5);
-                    output[x, row][3] = (float)(minDistance.Distance / range + .5);
-                }
-            }
+                        if (r.nearEdge != null)
+                            r.nearEdge.Segment.distanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
+                        if (g.nearEdge != null)
+                            g.nearEdge.Segment.distanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
+                        if (b.nearEdge != null)
+                            b.nearEdge.Segment.distanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
 
-            errorCorrectionConfig.DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
-            msdfErrorCorrection(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
+                        output[x, row][0] = (float)(r.minDistance.Distance / range + .5);
+                        output[x, row][1] = (float)(g.minDistance.Distance / range + .5);
+                        output[x, row][2] = (float)(b.minDistance.Distance / range + .5);
+                        output[x, row][3] = (float)(minDistance.Distance / range + .5);
+                    }
+                }
+
+                errorCorrectionConfig.DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
+                msdfErrorCorrection(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
+            }
         }
     }
 }
