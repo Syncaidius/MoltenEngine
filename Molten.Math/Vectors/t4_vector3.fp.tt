@@ -25,9 +25,6 @@ foreach(TypeData d in _def)
 	string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
 	string mathHelper = d.DT == "double" ? "MathHelperDP" : "MathHelper";
 #>
-using System.Runtime.InteropServices;
-using System;
-
 namespace Molten
 {
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>

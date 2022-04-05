@@ -45,6 +45,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector2.fp.tt</DependentUpon>
     </None>
+    <None Include="Vectors\t4_vector3.fp.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector3.fp.tt</DependentUpon>
+    </None>
+    <None Include="Vectors\t4_vector4.fp.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector4.fp.tt</DependentUpon>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -83,12 +93,7 @@
     </None>
     <None Update="Vectors\t4_vector3.fp.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>t4_vector3.fp.txt</LastGenOutput>
-    </None>
-    <None Update="Vectors\t4_vector3.fp.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>t4_vector3.fp.tt</DependentUpon>
+      <LastGenOutput>t4_vector3.fp.cs</LastGenOutput>
     </None>
     <None Update="Vectors\t4_vector3.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -101,12 +106,7 @@
     </None>
     <None Update="Vectors\t4_vector4.fp.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>t4_vector4.fp.txt</LastGenOutput>
-    </None>
-    <None Update="Vectors\t4_vector4.fp.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>t4_vector4.fp.tt</DependentUpon>
+      <LastGenOutput>t4_vector4.fp.cs</LastGenOutput>
     </None>
   </ItemGroup>
 
@@ -144,6 +144,16 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector2.fp.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Vectors\t4_vector3.fp.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector3.fp.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Vectors\t4_vector4.fp.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector4.fp.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 

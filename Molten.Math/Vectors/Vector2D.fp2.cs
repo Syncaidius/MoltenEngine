@@ -1,6 +1,3 @@
-using System.Runtime.InteropServices;
-using System;
-
 namespace Molten
 {
 	///<summary>A <see cref = "double"/> vector comprised of 2 components.</summary>

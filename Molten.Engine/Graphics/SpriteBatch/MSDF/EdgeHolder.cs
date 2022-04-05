@@ -16,6 +16,11 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 
         public EdgeSegment Segment { get; }
 
+        public EdgeHolder()
+        {
+            Segment = null;
+        }
+
         public EdgeHolder(EdgeSegment segment)
         {
             Segment = segment;

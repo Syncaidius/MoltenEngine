@@ -41,14 +41,6 @@ namespace Molten
 		/// <summary>Represents a zero'd Byte3.</summary>
 		public static readonly Byte3 Zero = new Byte3(0, 0, 0);
 
-		 /// <summary>
-        /// Gets a value indicting whether this instance is normalized.
-        /// </summary>
-        public bool IsNormalized
-        {
-            get => MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z));
-        }
-
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
@@ -197,21 +189,6 @@ namespace Molten
             return (byte)((X * X) + (Y * Y) + (Z * Z));
         }
 
-        /// <summary>
-        /// Converts the vector into a unit vector.
-        /// </summary>
-        public void Normalize()
-        {
-            byte length = Length();
-            if (!MathHelper.IsZero(length))
-            {
-                float inverse = 1.0F / length;
-			    X = (byte)(X * inverse);
-			    Y = (byte)(Y * inverse);
-			    Z = (byte)(Z * inverse);
-            }
-        }
-
 		/// <summary>
         /// Creates an array containing the elements of the current <see cref="Byte3"/>.
         /// </summary>
@@ -221,27 +198,6 @@ namespace Molten
             return new byte[] { X, Y, Z};
         }
 		
-        /// <summary>
-        /// Returns a normalized unit vector of the original vector.
-        /// </summary>
-        public Byte3 GetNormalized()
-        {
-            float length = Length();
-            if (!MathHelper.IsZero(length))
-            {
-                float inverse = 1.0F / length;
-                return new Byte3()
-                {
-			        X = (byte)(this.X * inverse),
-			        Y = (byte)(this.Y * inverse),
-			        Z = (byte)(this.Z * inverse),
-                };
-            }
-            else
-            {
-                return new Byte3();
-            }
-        }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
@@ -602,51 +558,7 @@ namespace Molten
             }
         }
 
-        /// <summary>
-        /// Orthonormalizes a list of vectors.
-        /// </summary>
-        /// <param name="destination">The list of orthonormalized vectors.</param>
-        /// <param name="source">The list of vectors to orthonormalize.</param>
-        /// <remarks>
-        /// <para>Orthonormalization is the process of making all vectors orthogonal to each
-        /// other and making all vectors of unit length. This means that any given vector will
-        /// be orthogonal to any other given vector in the list.</para>
-        /// <para>Because this method uses the modified Gram-Schmidt process, the resulting vectors
-        /// tend to be numerically unstable. The numeric stability decreases according to the vectors
-        /// position in the list so that the first vector is the most stable and the last vector is the
-        /// least stable.</para>
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Orthonormalize(Byte3[] destination, params Byte3[] source)
-        {
-            //Uses the modified Gram-Schmidt process.
-            //Because we are making unit vectors, we can optimize the math for orthogonalization
-            //and simplify the projection operation to remove the division.
-            //q1 = m1 / |m1|
-            //q2 = (m2 - (q1 ⋅ m2) * q1) / |m2 - (q1 ⋅ m2) * q1|
-            //q3 = (m3 - (q1 ⋅ m3) * q1 - (q2 ⋅ m3) * q2) / |m3 - (q1 ⋅ m3) * q1 - (q2 ⋅ m3) * q2|
-            //q4 = (m4 - (q1 ⋅ m4) * q1 - (q2 ⋅ m4) * q2 - (q3 ⋅ m4) * q3) / |m4 - (q1 ⋅ m4) * q1 - (q2 ⋅ m4) * q2 - (q3 ⋅ m4) * q3|
-            //q5 = ...
-
-            if (source == null)
-                throw new ArgumentNullException("source");
-            if (destination == null)
-                throw new ArgumentNullException("destination");
-            if (destination.Length < source.Length)
-                throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
-
-            for (int i = 0; i < source.Length; ++i)
-            {
-                Byte3 newvector = source[i];
-
-                for (int r = 0; r < i; ++r)
-                    newvector -= Dot(destination[r], newvector) * destination[r];
-
-                newvector.Normalize();
-                destination[i] = newvector;
-            }
-        }
+        
 
         /// <summary>
         /// Takes the value of an indexed component and assigns it to the axis of a new <see cref="Byte3"/>. <para />
@@ -1025,17 +937,6 @@ namespace Molten
 				Z = (byte)(vector.Z - ((2.0F * dot) * normal.Z)),
             };
         }
-
-        /// <summary>
-        /// Converts the <see cref="Byte3"/> into a unit vector.
-        /// </summary>
-        /// <param name="value">The <see cref="Byte3"/> to normalize.</param>
-        /// <returns>The normalized <see cref="Byte3"/>.</returns>
-        public static Byte3 Normalize(Byte3 value)
-        {
-            value.Normalize();
-            return value;
-        }
 #endregion
 
 #region Indexers
@@ -1045,8 +946,7 @@ namespace Molten
         /// <value>The value of the X, Y or Z component, depending on the index.</value>
         /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>
-        
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>  
 		public byte this[int index]
 		{
 			get
