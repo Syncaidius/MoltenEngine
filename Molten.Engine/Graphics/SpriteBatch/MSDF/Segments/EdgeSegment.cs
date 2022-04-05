@@ -74,7 +74,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         }
 
         /// Outputs a list of (at most three) intersections (their X coordinates) with an infinite horizontal scanline at y and returns how many there are.
-        public abstract int scanlineIntersections(X3 x, DY3 dy, double y);
+        public unsafe abstract int scanlineIntersections(double* x, int* dy, double y);
 
         /// Adjusts the bounding box to fit the edge segment.
         public abstract void bound(ref double l, ref double b, ref double r, ref double t);

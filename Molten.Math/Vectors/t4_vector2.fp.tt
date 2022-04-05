@@ -36,7 +36,7 @@ namespace Molten
 	public partial struct <#=fName#>
 	{
 #region Instance methods
-        public <#=fName#> GetOrthonormal(bool polarity, bool allowZero = false)
+        public <#=fName#> GetOrthonormal(bool polarity = true, bool allowZero = false)
         {
             <#=d.DT#> len = Length();
             <#=d.DT#> az = allowZero ? 1 : 0;

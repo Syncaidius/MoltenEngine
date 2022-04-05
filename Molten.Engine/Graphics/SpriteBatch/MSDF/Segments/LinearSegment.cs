@@ -59,7 +59,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             p[1] = tmp;
         }
 
-        public override int scanlineIntersections(X3 x, DY3 dy, double y)
+        public unsafe override int scanlineIntersections(double* x, int* dy, double y)
         {
             if ((y >= p[0].Y && y < p[1].Y) || (y >= p[1].Y && y < p[0].Y))
             {

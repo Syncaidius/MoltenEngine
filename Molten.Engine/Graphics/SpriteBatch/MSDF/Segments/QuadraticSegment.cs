@@ -91,7 +91,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             p[2] = tmp;
         }
 
-        public unsafe override int scanlineIntersections(X3 x, DY3 dy, double y)
+        public unsafe override int scanlineIntersections(double* x, int* dy, double y)
         {
             int total = 0;
             int nextDY = y > p[0].Y ? 1 : -1;
@@ -110,9 +110,9 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                 int solutions = EquationSolver.solveQuadratic(t, br.Y, 2 * ab.Y, p[0].Y - y);
                 // Sort solutions
                 double tmp;
-                if (solutions >= 2 && t[0] > t[1]) 
+                if (solutions >= 2 && t[0] > t[1])
                 {
-                    tmp = t[0]; 
+                    tmp = t[0];
                     t[0] = t[1];
                     t[1] = tmp;
                 }
@@ -218,7 +218,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         public override void splitInThirds(ref EdgeSegment part1, ref EdgeSegment part2, ref EdgeSegment part3)
         {
             part1 = new QuadraticSegment(p[0], MsdfMath.mix(p[0], p[1], 1 / 3.0), point(1 / 3.0), Color);
-            part2 = new QuadraticSegment(point(1 / 3.0), MsdfMath.mix(MsdfMath.mix(p[0], p[1], 5 / 9.), MsdfMath.mix(p[1], p[2], 4 / 9.), .5), point(2 / 3.), Color);
+            part2 = new QuadraticSegment(point(1 / 3.0), MsdfMath.mix(MsdfMath.mix(p[0], p[1], 5 / 9.0), MsdfMath.mix(p[1], p[2], 4 / 9.0), .5), point(2 / 3.0), Color);
             part3 = new QuadraticSegment(point(2 / 3.0), MsdfMath.mix(p[1], p[2], 2 / 3.0), p[2], Color);
         }
 
