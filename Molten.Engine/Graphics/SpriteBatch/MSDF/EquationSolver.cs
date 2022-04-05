@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
-    internal static class EquationSolver
+    internal unsafe static class EquationSolver
     {
-        public static int solveQuadratic(X2 x, double a, double b, double c)
+        public static int solveQuadratic(double* x, double a, double b, double c)
         {
             // a == 0 -> linear equation
             if (a == 0 || Math.Abs(b) > 1e12 * Math.Abs(a))
@@ -40,7 +40,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                 return 0;
         }
 
-        public static int solveCubicNormed(X3 x, double a, double b, double c)
+        public static int solveCubicNormed(double* x, double a, double b, double c)
         {
             double a2 = a * a;
             double q = 1 / 9.0 * (a2 - 3 * b);
@@ -74,7 +74,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             }
         }
 
-        public static int solveCubic(X3 x, double a, double b, double c, double d)
+        public static int solveCubic(double* x, double a, double b, double c, double d)
         {
             if (a != 0)
             {
@@ -82,6 +82,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                 if (Math.Abs(bn) < 1e6) // Above this ratio, the numerical error gets larger than if we treated a as zero
                     return solveCubicNormed(x, bn, c / a, d / a);
             }
+
             return solveQuadratic(x, b, c, d);
         }
     }

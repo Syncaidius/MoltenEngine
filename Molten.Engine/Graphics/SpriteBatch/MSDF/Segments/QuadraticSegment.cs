@@ -17,9 +17,28 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             p = new Vector2D[3] { p0, p1, p2 };
         }
 
+        public EdgeSegment ConvertToCubic()
+        {
+            return new CubicSegment(p[0], MsdfMath.mix(p[0], p[1], 2 / 3.0), MsdfMath.mix(p[1], p[2], 1 / 3.0), p[2], Color);
+        }
+
         public override void bound(ref double l, ref double b, ref double r, ref double t)
         {
-            throw new NotImplementedException();
+            pointBounds(p[0], ref l, ref b, ref r, ref t);
+            pointBounds(p[2], ref l, ref b, ref r, ref t);
+            Vector2D bot = (p[1] - p[0]) - (p[2] - p[1]);
+            if (bot.X != 0)
+            {
+                double param = (p[1].X - p[0].X) / bot.X;
+                if (param > 0 && param < 1)
+                    pointBounds(point(param), ref l, ref b, ref r, ref t);
+            }
+            if (bot.Y != 0)
+            {
+                double param = (p[1].Y - p[0].Y) / bot.Y;
+                if (param > 0 && param < 1)
+                    pointBounds(point(param), ref l, ref b, ref r, ref t);
+            }
         }
 
         public override EdgeSegment Clone()
@@ -42,12 +61,22 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 
         public override void moveEndPoint(Vector2D to)
         {
-            throw new NotImplementedException();
+            Vector2D origEDir = p[2] - p[1];
+            Vector2D origP1 = p[1];
+            p[1] += Vector2D.Cross(p[2] - p[1], to - p[2]) / Vector2D.Cross(p[2] - p[1], p[0] - p[1]) * (p[0] - p[1]);
+            p[2] = to;
+            if (Vector2D.Dot(origEDir, p[2] - p[1]) < 0)
+                p[1] = origP1;
         }
 
         public override void moveStartPoint(Vector2D to)
         {
-            throw new NotImplementedException();
+            Vector2D origSDir = p[0] - p[1];
+            Vector2D origP1 = p[1];
+            p[1] += Vector2D.Cross(p[0] - p[1], to - p[0]) / Vector2D.Cross(p[0] - p[1], p[2] - p[1]) * (p[2] - p[1]);
+            p[0] = to;
+            if (Vector2D.Dot(origSDir, p[0] - p[1]) < 0)
+                p[1] = origP1;
         }
 
         public override Vector2D point(double param)
@@ -57,15 +86,82 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 
         public override void reverse()
         {
-            throw new NotImplementedException();
+            Vector2D tmp = p[0];
+            p[0] = p[2];
+            p[2] = tmp;
         }
 
-        public override int scanlineIntersections(X3 x, DY3 dy, double y)
+        public unsafe override int scanlineIntersections(X3 x, DY3 dy, double y)
         {
-            throw new NotImplementedException();
+            int total = 0;
+            int nextDY = y > p[0].Y ? 1 : -1;
+            x[total] = p[0].X;
+            if (p[0].Y == y)
+            {
+                if (p[0].Y < p[1].Y || (p[0].Y == p[1].Y && p[0].Y < p[2].Y))
+                    dy[total++] = 1;
+                else
+                    nextDY = 1;
+            }
+            {
+                Vector2D ab = p[1] - p[0];
+                Vector2D br = p[2] - p[1] - ab;
+                double* t = stackalloc double[2];
+                int solutions = EquationSolver.solveQuadratic(t, br.Y, 2 * ab.Y, p[0].Y - y);
+                // Sort solutions
+                double tmp;
+                if (solutions >= 2 && t[0] > t[1]) 
+                {
+                    tmp = t[0]; 
+                    t[0] = t[1];
+                    t[1] = tmp;
+                }
+
+                for (int i = 0; i < solutions && total < 2; ++i)
+                {
+                    if (t[i] >= 0 && t[i] <= 1)
+                    {
+                        x[total] = p[0].X + 2 * t[i] * ab.X + t[i] * t[i] * br.X;
+                        if (nextDY * (ab.Y + t[i] * br.Y) >= 0)
+                        {
+                            dy[total++] = nextDY;
+                            nextDY = -nextDY;
+                        }
+                    }
+                }
+            }
+            if (p[2].Y == y)
+            {
+                if (nextDY > 0 && total > 0)
+                {
+                    --total;
+                    nextDY = -1;
+                }
+                if ((p[2].Y < p[1].Y || (p[2].Y == p[1].Y && p[2].Y < p[0].Y)) && total < 2)
+                {
+                    x[total] = p[2].X;
+                    if (nextDY < 0)
+                    {
+                        dy[total++] = -1;
+                        nextDY = 1;
+                    }
+                }
+            }
+            if (nextDY != (y >= p[2].Y ? 1 : -1))
+            {
+                if (total > 0)
+                    --total;
+                else
+                {
+                    if (Math.Abs(p[2].Y - y) < Math.Abs(p[0].Y - y))
+                        x[total] = p[2].X;
+                    dy[total++] = nextDY;
+                }
+            }
+            return total;
         }
 
-        public override SignedDistance signedDistance(Vector2D origin, out double param)
+        public unsafe override SignedDistance signedDistance(Vector2D origin, out double param)
         {
             Vector2D qa = p[0] - origin;
             Vector2D ab = p[1] - p[0];
@@ -74,7 +170,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             double b = 3 * Vector2D.Dot(ab, br);
             double c = 2 * Vector2D.Dot(ab, ab) + Vector2D.Dot(qa, br);
             double d = Vector2D.Dot(qa, ab);
-            X3 t;
+            double* t = stackalloc double[3];
             int solutions = EquationSolver.solveCubic(t, a, b, c, d);
 
             Vector2D epDir = direction(0);
@@ -106,14 +202,24 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             if (param >= 0 && param <= 1)
                 return new SignedDistance(minDistance, 0);
             if (param < .5)
-                return new SignedDistance(minDistance, Math.Abs(Vector2D.Dot(direction(0).normalize(), qa.normalize())));
+            {
+                Vector2D d0n = direction(0).GetNormalized();
+                Vector2D qan = qa.GetNormalized();
+                return new SignedDistance(minDistance, Math.Abs(Vector2D.Dot(d0n, qan)));
+            }
             else
-                return new SignedDistance(minDistance, Math.Abs(Vector2D.Dot(direction(1).normalize(), (p[2] - origin).normalize())));
+            {
+                Vector2D d1n = direction(1).GetNormalized();
+                Vector2D p2n = (p[2] - origin).GetNormalized();
+                return new SignedDistance(minDistance, Math.Abs(Vector2D.Dot(d1n, p2n)));
+            }
         }
 
         public override void splitInThirds(ref EdgeSegment part1, ref EdgeSegment part2, ref EdgeSegment part3)
         {
-            throw new NotImplementedException();
+            part1 = new QuadraticSegment(p[0], MsdfMath.mix(p[0], p[1], 1 / 3.0), point(1 / 3.0), Color);
+            part2 = new QuadraticSegment(point(1 / 3.0), MsdfMath.mix(MsdfMath.mix(p[0], p[1], 5 / 9.), MsdfMath.mix(p[1], p[2], 4 / 9.), .5), point(2 / 3.), Color);
+            part3 = new QuadraticSegment(point(2 / 3.0), MsdfMath.mix(p[1], p[2], 2 / 3.0), p[2], Color);
         }
 
         public double length()
