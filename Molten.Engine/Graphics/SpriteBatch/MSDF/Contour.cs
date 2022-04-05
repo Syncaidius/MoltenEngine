@@ -47,14 +47,15 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 
             Vector2D prevDir = Edges.Last().Segment.direction(1).GetNormalized(true);
 
-            for (std::vector<EdgeHolder>::const_iterator edge = Edges.begin(); edge != Edges.end(); ++edge) {
-                Vector2D dir = -(*edge)->direction(0).normalize(true);
+            foreach(EdgeHolder edge in Edges)
+            { 
+                Vector2D dir = -edge.Segment.direction(0).GetNormalized(true);
                 if (polarity * Vector2D.Cross(prevDir, dir) >= 0) {
                     double miterLength = miterLimit;
                     double q = .5 * (1 - Vector2D.Dot(prevDir, dir));
                     if (q > 0)
                         miterLength = MsdfMath.min(1 / Math.Sqrt(q), miterLimit);
-                    Vector2D miter = (*edge)->point(0) + border * miterLength * (prevDir + dir).normalize(true);
+                    Vector2D miter = (*edge)->point(0) + border * miterLength * (prevDir + dir).GetNormalized(true);
                     boundPoint(l, b, r, t, miter);
                 }
                 prevDir = (*edge)->direction(1).normalize(true);

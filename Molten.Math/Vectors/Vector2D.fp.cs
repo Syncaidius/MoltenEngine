@@ -65,16 +65,16 @@ namespace Molten
         /// </summary>
         /// <param name="value">The <see cref="Vector2D"/> to normalize.</param>
         /// <returns>The normalized <see cref="Vector2D"/>.</returns>
-        public static Vector2D Normalize(Vector2D value)
+        public static Vector2D Normalize(Vector2D value, bool allowZero = false)
         {
-            value.Normalize();
+            value.Normalize(allowZero);
             return value;
         }
 
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector2D GetNormalized(bool allowZero = true)
+        public Vector2D GetNormalized(bool allowZero = false)
         {
             double length = Length();
             if (!MathHelperDP.IsZero(length))
@@ -91,7 +91,7 @@ namespace Molten
                 return new Vector2D()
                 {
                     X = 0,
-                    Y = 1,
+                    Y = allowZero ? 1 : 0,
                 };
             }
         }
@@ -99,7 +99,7 @@ namespace Molten
         /// <summary>
         /// Converts the vector into a unit vector.
         /// </summary>
-        public void Normalize(bool allowZero = true)
+        public void Normalize(bool allowZero = false)
         {
             double length = Length();
             if (!MathHelperDP.IsZero(length))
@@ -111,7 +111,7 @@ namespace Molten
             else
             {
                 X = 0;
-                Y = 1;
+                Y = allowZero ? 1 : 0;
             }
         }
 

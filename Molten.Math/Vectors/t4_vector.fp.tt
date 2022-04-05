@@ -97,16 +97,16 @@ namespace Molten
         /// </summary>
         /// <param name="value">The <#=See(fullName)#> to normalize.</param>
         /// <returns>The normalized <#=See(fullName)#>.</returns>
-        public static <#=fullName#> Normalize(<#=fullName#> value)
+        public static <#=fullName#> Normalize(<#=fullName#> value, bool allowZero = false)
         {
-            value.Normalize();
+            value.Normalize(allowZero);
             return value;
         }
 
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public <#=fullName#> GetNormalized(bool allowZero = true)
+        public <#=fullName#> GetNormalized(bool allowZero = false)
         {
             <#=d.FP#> length = Length();
             if (!<#=mathHelper#>.IsZero(length))
@@ -132,7 +132,7 @@ namespace Molten
 		for(int p = 0; p < size; p++)
 		{
 #>
-                    <#=pMapUpper[p]#> = <#=(p == 1 ? "1" : "0")#>,
+                    <#=pMapUpper[p]#> = <#=(p == 1 ? "allowZero ? 1 : 0" : "0")#>,
 <#
 		}
 #>
@@ -143,7 +143,7 @@ namespace Molten
         /// <summary>
         /// Converts the vector into a unit vector.
         /// </summary>
-        public void Normalize(bool allowZero = true)
+        public void Normalize(bool allowZero = false)
         {
             <#=d.DT#> length = Length();
             if (!<#=mathHelper#>.IsZero(length))
@@ -164,7 +164,7 @@ namespace Molten
 		for(int p = 0; p < size; p++)
 		{
 #>
-                <#=pMapUpper[p]#> = <#=(p == 1 ? "1" : "0")#>;
+                <#=pMapUpper[p]#> = <#=(p == 1 ? "allowZero ? 1 : 0" : "0")#>;
 <#
 		}
 #>

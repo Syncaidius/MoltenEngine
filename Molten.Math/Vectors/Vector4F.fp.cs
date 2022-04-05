@@ -65,16 +65,16 @@ namespace Molten
         /// </summary>
         /// <param name="value">The <see cref="Vector4F"/> to normalize.</param>
         /// <returns>The normalized <see cref="Vector4F"/>.</returns>
-        public static Vector4F Normalize(Vector4F value)
+        public static Vector4F Normalize(Vector4F value, bool allowZero = false)
         {
-            value.Normalize();
+            value.Normalize(allowZero);
             return value;
         }
 
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector4F GetNormalized(bool allowZero = true)
+        public Vector4F GetNormalized(bool allowZero = false)
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
@@ -93,7 +93,7 @@ namespace Molten
                 return new Vector4F()
                 {
                     X = 0,
-                    Y = 1,
+                    Y = allowZero ? 1 : 0,
                     Z = 0,
                     W = 0,
                 };
@@ -103,7 +103,7 @@ namespace Molten
         /// <summary>
         /// Converts the vector into a unit vector.
         /// </summary>
-        public void Normalize(bool allowZero = true)
+        public void Normalize(bool allowZero = false)
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
@@ -117,7 +117,7 @@ namespace Molten
             else
             {
                 X = 0;
-                Y = 1;
+                Y = allowZero ? 1 : 0;
                 Z = 0;
                 W = 0;
             }
