@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
     /* NOTES *******
-     * TODO All X3, DY3, X2 types need replacing with fixed array pointers, as their content may be changed inside methods they're passed to.
-     * 
+     * TODO Replace N generic of BitmapRef<T, int N>, BitmapConstRef<T, int N> and Bitmap<T, int N>. Store N as a property on these classes instead.
      */
     public class MsdfGenerator
     {
