@@ -15,6 +15,12 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 
             /// Normalized Y direction of the oriented edge at the point of intersection.
             public int direction;
+
+            public Intersection(double xx, int dir)
+            {
+                x = xx;
+                direction = dir;
+            }
         }
 
         public List<Intersection> intersections;

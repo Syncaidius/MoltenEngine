@@ -213,7 +213,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         /// <param name=""></param>
         /// <param name="y"></param>
         public unsafe void scanline(Scanline line, double y) {
-            List<Scanline::Intersection> intersections = new List<Scanline.Intersection>();
+            List<Scanline.Intersection> intersections = new List<Scanline.Intersection>();
             double* x = stackalloc double[3];
             int* dy = stackalloc int[3];
             foreach (Contour contour in Contours)
@@ -223,7 +223,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                     int n = edge.Segment.scanlineIntersections(x, dy, y);
                     for (int i = 0; i < n; ++i)
                     {
-                        Scanline::Intersection intersection = { x[i], dy[i] };
+                        Scanline.Intersection intersection = new Scanline.Intersection(x[i], dy[i]);
                         intersections.Add(intersection);
                     }
                 }

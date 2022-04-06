@@ -212,7 +212,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             }
 
             errorCorrectionConfig.DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
-            msdfErrorCorrection(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
+            ErrorCorrection.msdfErrorCorrection(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
         }
 
         void generateMTSDF_legacy(BitmapRef<Color4> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
@@ -274,7 +274,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                 }
 
                 errorCorrectionConfig.DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
-                msdfErrorCorrection(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
+                ErrorCorrection.msdfErrorCorrection(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
             }
         }
     }
