@@ -8,6 +8,9 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 {
     public class MsdfShape
     {
+        const double MSDFGEN_CORNER_DOT_EPSILON = 0.000001;
+        const double MSDFGEN_DECONVERGENCE_FACTOR = 0.000001;
+
         public struct Bounds
         {
             public double l, b, r, t;
@@ -23,11 +26,18 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 
         struct Intersection
         {
-            double x;
-            int direction;
-            int contourIndex;
+            public double x;
+            public int direction;
+            public int contourIndex;
 
-            static int compare(Intersection a, Intersection b)
+            public Intersection(double pX, int pDirection, int pContourIndex)
+            {
+                x = pX;
+                direction = pDirection;
+                contourIndex = pContourIndex;
+            }
+
+            public static int compare(Intersection a, Intersection b)
             {
                 return MsdfMath.sign(a.x - b.x);
             }
@@ -72,12 +82,12 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             {
                 if (contour.Edges.Count == 1)
                 {
-                    EdgeSegment* parts[3] = { };
-                    contour->edges[0]->splitInThirds(parts[0], parts[1], parts[2]);
-                    contour->edges.clear();
-                    contour->edges.push_back(EdgeHolder(parts[0]));
-                    contour->edges.push_back(EdgeHolder(parts[1]));
-                    contour->edges.push_back(EdgeHolder(parts[2]));
+                    EdgeSegment[] parts = new EdgeSegment[3];  
+                    contour.Edges[0].Segment.splitInThirds(ref parts[0], ref parts[1], ref parts[2]);
+                    contour.Edges.Clear();
+                    contour.Edges.Add(new EdgeHolder(parts[0]));
+                    contour.Edges.Add(new EdgeHolder(parts[1]));
+                    contour.Edges.Add(new EdgeHolder(parts[2]));
                 }
                 else
                 {
@@ -122,12 +132,12 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                     Vector2D corner = contour.Edges.Last().Segment.point(1);
                     foreach (EdgeHolder edge in contour.Edges)
                     {
-                        if (!*edge)
+                        if (edge.Segment == null)
                             return false;
-                        if ((*edge)->point(0) != corner)
+                        if (edge.Segment.point(0) != corner)
                             return false;
 
-                        corner = edge.Segment->point(1);
+                        corner = edge.Segment.point(1);
                     }
                 }
             }
@@ -237,56 +247,62 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         /// <summary>
         /// Assumes its contours are unoriented (even-odd fill rule). Attempts to orient them to conform to the non-zero winding rule.
         /// </summary>
-        public void orientContours()
+        public unsafe void orientContours()
         {
-            double ratio = .5 * (Math.Sqrt(5) - 1); // an irrational number to minimize chance of intersecting a corner or other point of interest
+            double ratio = 0.5 * (Math.Sqrt(5) - 1); // an irrational number to minimize chance of intersecting a corner or other point of interest
             int[] orientations = new int[Contours.Count];
-            std::vector<Intersection> intersections;
+            List<Intersection> intersections = new List<Intersection>();
+
             for (int i = 0; i < Contours.Count; ++i) {
-                if (!orientations[i] && !Contours[i].edges.empty()) {
+                if (orientations[i] == 0 && Contours[i].Edges.Count > 0) {
                     // Find an Y that crosses the contour
-                    double y0 = Contours[i].edges.front()->point(0).y;
+                    double y0 = Contours[i].Edges.First().Segment.point(0).Y;
                     double y1 = y0;
-                    for (int j = 0; j < Contours[i].Edges.Count && y0 == y1; j++) {
-                        EdgeHolder edge = Contours.Edges[j];
-                        y1 = (*edge)->point(1).y;
-                    }
 
-                    for (std::vector<EdgeHolder>::const_iterator edge = Contours[i].edges.begin(); edge != Contours[i].edges.end() && y0 == y1; ++edge)
-                        y1 = (*edge)->point(ratio).y; // in case all endpoints are in a horizontal line
-
-                    double y = mix(y0, y1, ratio);
-
+                    for (int j = 0; j < Contours[i].Edges.Count && y0 == y1; j++) 
+                        y1 = Contours[i].Edges[j].Segment.point(1).Y;
+                    for (int j = 0; j < Contours[i].Edges.Count && y0 == y1; j++)
+                        y1 = Contours[i].Edges[j].Segment.point(ratio).Y; // in case all endpoints are in a horizontal line
+                    double y = MsdfMath.mix(y0, y1, ratio);
                     // Scanline through whole shape at Y
-                    double x[3];
-                    int dy[3];
-
+                    double* x = stackalloc double[3];
+                    int* dy = stackalloc int[3];
                     for (int j = 0; j < Contours.Count; ++j) 
                     {
-                        for (std::vector<EdgeHolder>::const_iterator edge = Contours[j].edges.begin(); edge != Contours[j].edges.end(); ++edge) {
-                            int n = (*edge)->scanlineIntersections(x, dy, y);
+                        foreach (EdgeHolder edge in Contours[j].Edges)
+                        { 
+                            int n = edge.Segment.scanlineIntersections(x, dy, y);
                             for (int k = 0; k < n; ++k) {
-                                Intersection intersection = { x[k], dy[k], j };
-                                intersections.push_back(intersection);
+                                Intersection intersection = new Intersection( x[k], dy[k], j );
+                                intersections.Add(intersection);
                             }
                         }
                     }
-                    qsort(&intersections[0], intersections.size(), sizeof(Intersection), &Intersection::compare);
+                    intersections.Sort(Intersection.compare);
                     // Disqualify multiple intersections
-                    for (int j = 1; j < (int)intersections.size(); ++j)
+                    for (int j = 1; j < intersections.Count; ++j)
                         if (intersections[j].x == intersections[j - 1].x)
-                            intersections[j].direction = intersections[j - 1].direction = 0;
+                        {
+                            Intersection isec = intersections[j];
+                            Intersection isecPrev = intersections[j - 1];
+
+                            isec.direction = 0;
+                            isecPrev.direction = 0;
+
+                            intersections[j] = isec;
+                            intersections[j - 1] = isecPrev;
+                        }
                     // Inspect scanline and deduce orientations of intersected contours
-                    for (int j = 0; j < (int)intersections.size(); ++j)
-                        if (intersections[j].direction)
-                            orientations[intersections[j].contourIndex] += 2 * ((j & 1) ^ (intersections[j].direction > 0)) - 1;
-                    intersections.clear();
+                    for (int j = 0; j < intersections.Count; ++j)
+                        if (intersections[j].direction != 0)
+                            orientations[intersections[j].contourIndex] += 2 * ((j & 1) ^ (intersections[j].direction > 0 ? 1 : 0)) - 1;
+                    intersections.Clear();
                 }
             }
             // Reverse contours that have the opposite orientation
-            for (int i = 0; i < (int)contours.size(); ++i) {
+            for (int i = 0; i < Contours.Count; ++i) {
                 if (orientations[i] < 0)
-                    contours[i].reverse();
+                    Contours[i].reverse();
             }
         }
     }
