@@ -25,5 +25,18 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             /// Texel marked as protected. Protected texels are only given the error flag if they cause inversion artifacts.
             PROTECTED = 2
         };
+
+        public unsafe MSDFErrorCorrection(BitmapRef<byte> pStencil, MsdfProjection pProjection, double range) 
+        {
+            Validation.NPerPixel(stencil, 1);
+
+            stencil = pStencil;
+            projection = pProjection;
+
+            invRange = 1 / range;
+            minDeviationRatio = ErrorCorrectionConfig.defaultMinDeviationRatio;
+            minImproveRatio = ErrorCorrectionConfig.defaultMinImproveRatio;
+            EngineUtil.MemSet(stencil.pixels, 0, (nuint)(sizeof(byte) * stencil.Width * stencil.Height));
+        }
     }
 }

@@ -11,8 +11,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
     /// </summary>
     /// <typeparam name="R">BitmapRef type</typeparam>
     /// <typeparam name="D">Distance type</typeparam>
-    public abstract class DistancePixelConversion<R, D>
-        where R : struct
+    public abstract class DistancePixelConversion<D>
         where D : struct
     {
         protected DistancePixelConversion(double range)
@@ -20,49 +19,51 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             InvRange = 1.0 / range;
         }
 
-        public abstract R Convert(D distance);
+        public unsafe abstract void Convert(float* pixels, D distance);
 
         public double InvRange { get; }
+
+        public abstract int NPerPixel { get; }
     }
 
-    public class DoubleDistancePixelConversion : DistancePixelConversion<float, double>
+    public class DoubleDistancePixelConversion : DistancePixelConversion<double>
     {
         public DoubleDistancePixelConversion(double range) : base(range) { }
 
-        public override unsafe float Convert(double distance)
+        public override unsafe void Convert(float* pixels, double distance)
         {
-            return (float)(InvRange * distance + .5);
+            *pixels = (float)(InvRange * distance + .5);
         }
+
+        public override int NPerPixel => 1;
     }
 
-    public class MultiDistancePixelConversion : DistancePixelConversion<Color3, Vector3D>
+    public class MultiDistancePixelConversion : DistancePixelConversion<Vector3D>
     {
         public MultiDistancePixelConversion(double range) : base(range) { }
 
-        public override  Color3 Convert(Vector3D distance)
+        public unsafe override void Convert(float* pixels, Vector3D distance)
         {
-            return new Color3()
-            {
-                R = (float)(InvRange * distance.X + .5),
-                G = (float)(InvRange * distance.Y + .5),
-                B = (float)(InvRange * distance.Z + .5)
-            };
+            pixels[0] = (float)(InvRange * distance.X + .5);
+            pixels[1] = (float)(InvRange * distance.Y + .5);
+            pixels[2] = (float)(InvRange * distance.Z + .5);
         }
+
+        public override int NPerPixel => 3;
     }
 
-    public class MultiTrueDistancePixelConversion : DistancePixelConversion<Color4, Vector4D>
+    public class MultiTrueDistancePixelConversion : DistancePixelConversion<Vector4D>
     {
         public MultiTrueDistancePixelConversion(double range) : base(range) { }
 
-        public override Color4 Convert(Vector4D distance)
+        public unsafe override void Convert(float* pixels, Vector4D distance)
         {
-            return new Color4()
-            {
-                R = (float)(InvRange * distance.X + .5),
-                G = (float)(InvRange * distance.Y + .5),
-                B = (float)(InvRange * distance.Z + .5),
-                A = (float)(InvRange * distance.W + .5)
-            };            
+            pixels[0] = (float)(InvRange * distance.X + .5);
+            pixels[1] = (float)(InvRange * distance.Y + .5);
+            pixels[2] = (float)(InvRange * distance.Z + .5);
+            pixels[3] = (float)(InvRange * distance.W + .5);
         }
+
+        public override int NPerPixel => 4;
     }
 }

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
-    internal unsafe class BitmapRef<T>
+    internal unsafe class BitmapConstRef<T>
         where T : unmanaged
     {
-        public T* pixels;
+        public readonly T* pixels;
 
-        public BitmapRef(int nPerPixel)
+        public BitmapConstRef(int nPerPixel)
         {
             pixels = null;
             Width = 0;
@@ -19,12 +19,20 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             NPerPixel = nPerPixel;
         }
 
-        public BitmapRef(T* pixels, int nPerPixel, int width, int height)
+        public BitmapConstRef(T* pixels, int nPerPixel, int width, int height)
         {
             this.pixels = pixels;
             Width = width;
             Height = height;
             NPerPixel = nPerPixel;
+        }
+
+        public BitmapConstRef(BitmapRef<T> orig)
+        {
+            pixels = orig.pixels;
+            Width = orig.Width;
+            Height = orig.Height;
+            NPerPixel = orig.NPerPixel;
         }
 
         public int Width { get; set; }
@@ -36,6 +44,6 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         /// </summary>
         public int NPerPixel { get; }
 
-        public T* this [int x, int y] => pixels+NPerPixel * (Width * y + x);
+        public T* this[int x, int y] => pixels + NPerPixel * (Width * y + x);
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
-    internal class ErrorCorrectionConfig
+    internal unsafe class ErrorCorrectionConfig
     {
         /// <summary>
         /// Mode of operation
@@ -63,14 +63,14 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         /// </summary>
         public double MinImproveRatio;
 
-        public byte[] Buffer;
+        public byte* Buffer;
 
         public ErrorCorrectionConfig(
             ErrorCorrectMode mode = ErrorCorrectMode.EDGE_PRIORITY, 
             DistanceErrorCheckMode distanceCheckMode = DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE,
             double minDeviationRatio = defaultMinDeviationRatio,
             double minImproveRatio = defaultMinImproveRatio,
-            byte[] buffer = null)
+            byte* buffer = null)
         {
             Mode = mode;
             DistanceCheckMode = distanceCheckMode;

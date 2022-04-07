@@ -8,17 +8,18 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 {
     internal static class ErrorCorrection
     {
-        public static void msdfErrorCorrectionInner<T>(BitmapRef<T> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
-        where T : struct
+        public unsafe static void msdfErrorCorrectionInner(BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
         {
             if (config.ErrorCorrection.Mode == ErrorCorrectionConfig.ErrorCorrectMode.DISABLED)
                 return;
-            Bitmap < byte, 1 > stencilBuffer;
+
+            Bitmap<byte> stencilBuffer = null;
             if (config.ErrorCorrection.Buffer == null)
-                stencilBuffer = new Bitmap < byte, 1 > (sdf.Width, sdf.Height);
-            BitmapRef < byte, 1 > stencil;
-            stencil.pixels = config.ErrorCorrection.Buffer != null ? config.ErrorCorrection.Buffer : (byte*)stencilBuffer;
-            stencil.width = sdf.Width, stencil.height = sdf.Height;
+                stencilBuffer = new Bitmap<byte> (1, sdf.Width, sdf.Height);
+            BitmapRef<byte> stencil = new BitmapRef<byte>(1);
+            stencil.pixels = config.ErrorCorrection.Buffer != null ? config.ErrorCorrection.Buffer : (stencilBuffer == null ? null : stencilBuffer.Ptr);
+            stencil.Width = sdf.Width;
+            stencil.Height = sdf.Height;
             MSDFErrorCorrection ec = new MSDFErrorCorrection(stencil, projection, range);
             ec.setMinDeviationRatio(config.ErrorCorrection.MinDeviationRatio);
             ec.setMinImproveRatio(config.ErrorCorrection.MinImproveRatio);
@@ -52,10 +53,10 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             ec.apply(sdf);
         }
 
-        public static void msdfErrorCorrectionShapeless<T>(BitmapRef<T> sdf, MsdfProjection projection, double range, double minDeviationRatio, bool protectAll)
+        public static void msdfErrorCorrectionShapeless<T>(BitmapRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio, bool protectAll)
             where T : struct
         {
-            Bitmap < byte, 1 > stencilBuffer = new Bitmap<T>(sdf.Width, sdf.Height);
+            Bitmap<byte> stencilBuffer = new Bitmap<byte>(1, sdf.Width, sdf.Height);
             MSDFErrorCorrection ec = new MSDFErrorCorrection(stencilBuffer, projection, range);
             ec.setMinDeviationRatio(minDeviationRatio);
             if (protectAll)

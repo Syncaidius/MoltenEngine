@@ -15,16 +15,19 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         /// 
         /// </summary>
         /// <typeparam name="R">BitmapRef type</typeparam>
-        /// <typeparam name="D">Distance Type</typeparam>
+        /// <typeparam name="DT">Distance Type</typeparam>
         /// <typeparam name="CC">Contour combiner</typeparam>
         /// <param name="output"></param>
         /// <param name="shape"></param>
         /// <param name="projection"></param>
-        private void GenerateDistanceField<R, D, CC>(DistancePixelConversion<R, D> distancePixelConversion, BitmapRef<R> output, MsdfShape shape, MsdfProjection projection)
+        private unsafe void GenerateDistanceField<R, DT, CC>(DistancePixelConversion<DT> distancePixelConversion, BitmapRef<float> output, MsdfShape shape, MsdfProjection projection)
             where R : struct
-            where D : struct
-            where CC : ContourCombiner<D>
+            where DT : struct
+            where CC : ContourCombiner<DT>
         {
+            
+            Validation.NPerPixel(output, 4);
+
             ShapeDistanceFinder<CC> distanceFinder = new ShapeDistanceFinder<CC>(shape);
             bool rightToLeft = false;
             for (int y = 0; y < output.Height; ++y)
@@ -34,8 +37,8 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                 {
                     int x = rightToLeft ? output.Width - col - 1 : col;
                     Vector2D p = projection.Unproject(new Vector2D(x + .5, y + .5));
-                    D distance = distanceFinder.distance(p);
-                    output[x, row] = distancePixelConversion.Convert(distance);
+                    DT distance = distanceFinder.distance(p);
+                    distancePixelConversion.Convert(output[x,row], distance);
                 }
                 rightToLeft = !rightToLeft;
             }
@@ -43,6 +46,8 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 
         void generateSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
         {
+            Validation.NPerPixel(output, 1);
+
             if (config.OverlapSupport)
                 generateDistanceField<OverlappingContourCombiner<TrueDistanceSelector>>(output, shape, projection, range);
             else
@@ -51,28 +56,34 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 
         void generatePseudoSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
         {
+            Validation.NPerPixel(output, 1);
+
             if (config.OverlapSupport)
                 generateDistanceField<OverlappingContourCombiner<PseudoDistanceSelector>>(output, shape, projection, range);
             else
                 generateDistanceField<SimpleContourCombiner<PseudoDistanceSelector>>(output, shape, projection, range);
         }
 
-        void generateMSDF(BitmapRef<Color3> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        void generateMSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
         {
+            Validation.NPerPixel(output, 3);
+
             if (config.OverlapSupport)
                 generateDistanceField<OverlappingContourCombiner<MultiDistanceSelector>>(output, shape, projection, range);
             else
                 generateDistanceField<SimpleContourCombiner<MultiDistanceSelector>>(output, shape, projection, range);
-            msdfErrorCorrection(output, shape, projection, range, config);
+            ErrorCorrection.msdfErrorCorrection(output, shape, projection, range, config);
         }
 
-        void generateMTSDF(BitmapRef<Color4> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        void generateMTSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
         {
+            Validation.NPerPixel(output, 4);
+
             if (config.OverlapSupport)
                 generateDistanceField<OverlappingContourCombiner<MultiAndTrueDistanceSelector>>(output, shape, projection, range);
             else
                 generateDistanceField<SimpleContourCombiner<MultiAndTrueDistanceSelector>>(output, shape, projection, range);
-            msdfErrorCorrection(output, shape, projection, range, config);
+            ErrorCorrection.msdfErrorCorrection(output, shape, projection, range, config);
         }
 
         // Legacy API
@@ -87,19 +98,22 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             generatePseudoSDF(output, shape, new MsdfProjection(scale, translate), range, new GeneratorConfig(overlapSupport));
         }
 
-        void generateMSDF(BitmapRef<Color3> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
+        void generateMSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
         {
             generateMSDF(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(overlapSupport, errorCorrectionConfig));
         }
 
-        void generateMTSDF(BitmapRef<Color4> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
+        void generateMTSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
         {
             generateMTSDF(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(overlapSupport, errorCorrectionConfig));
         }
 
         // Legacy version
-        void generateSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        unsafe void generateSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
         {
+            if (output.NPerPixel != 1)
+                throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
+
             for (int y = 0; y < output.Height; ++y)
             {
                 int row = shape.InverseYAxis ? output.Height - y - 1 : y;
@@ -118,13 +132,16 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                         } 
                     }
 
-                    output[x, row] = (float)(minDistance.Distance / range + .5);
+                    *output[x, row] = (float)(minDistance.Distance / range + .5);
                 }
             }
         }
 
-        void generatePseudoSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        unsafe void generatePseudoSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
         {
+            if (output.NPerPixel != 1)
+                throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
+
             for (int y = 0; y < output.Height; ++y)
             {
                 int row = shape.InverseYAxis ? output.Height - y - 1 : y;
@@ -152,13 +169,16 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                     if (nearEdge != null)
                         nearEdge.Segment.distanceToPseudoDistance(ref minDistance, p, nearParam);
 
-                    output[x, row] = (float)(minDistance.Distance / range + .5);
+                    *output[x, row] = (float)(minDistance.Distance / range + .5);
                 }
             }
         }
 
-        void generateMSDF_legacy(BitmapRef<Color3> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
+        unsafe void generateMSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
         {
+            if (output.NPerPixel != 3)
+                throw new IndexOutOfRangeException("A BitmapRef of 3 component-per-pixel is expected");
+
             for (int y = 0; y < output.Height; ++y)
             {
                 int row = shape.InverseYAxis ? output.Height - y - 1 : y;
@@ -214,8 +234,11 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             ErrorCorrection.msdfErrorCorrection(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
         }
 
-        void generateMTSDF_legacy(BitmapRef<Color4> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
+        unsafe void generateMTSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
         {
+            if (output.NPerPixel != 4)
+                throw new IndexOutOfRangeException("A BitmapRef of 4 components-per-pixel is expected");
+
             for (int y = 0; y < output.Height; ++y)
             {
                 int row = shape.InverseYAxis ? output.Height - y - 1 : y;

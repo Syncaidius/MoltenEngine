@@ -164,11 +164,12 @@ namespace Molten
                 mem.Free();
         }
 
-        public static void Zero(void* ptr, nuint numBytes)
+        public static void MemSet(void* ptr, byte val, nuint numBytes)
         {
+            // TODO optimize by using a larger type (ulong) and then setting the last 1 - 7 bytes (remainder) using byte.
             byte* p = (byte*)ptr;
             for (uint i = 0; i < numBytes; i++)
-                p[i] = 0;
+                p[i] = val;
         }
 
         /// <summary>A helper method for pinning a managed/C# object and providing an <see cref="IntPtr"/> to it. 
