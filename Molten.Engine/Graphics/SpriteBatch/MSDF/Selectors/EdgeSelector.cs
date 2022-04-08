@@ -16,12 +16,11 @@ namespace Molten.Graphics.SpriteBatch.MSDF
     /// </summary>
     /// <typeparam name="DT">Distance type. e.g. double, MultiDistance or MultiAndTrueDistance.</typeparam>
     /// <typeparam name="P">Point type, such as double or Vector2D.</typeparam>
-    public abstract class EdgeSelector<DT, P> : EdgeSelector
+    public abstract class EdgeSelector<DT> : EdgeSelector
         where DT : unmanaged
-        where P : unmanaged
     {
         public abstract DT distance();
 
-        public abstract void reset(in P p);
+        public abstract void reset(in Vector2D p);
     }
 }

@@ -12,7 +12,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         public double a;
     };
 
-    public class MultiAndTrueDistanceSelector : EdgeSelector<MultiAndTrueDistance, Vector2D>
+    public class MultiAndTrueDistanceSelector : EdgeSelector<MultiAndTrueDistance>
     {
         Vector2D p;
         PseudoDistanceSelectorBase r, g, b;

@@ -9,17 +9,16 @@ namespace Molten.Graphics.SpriteBatch.MSDF
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="R">BitmapRef type</typeparam>
-    /// <typeparam name="D">Distance type</typeparam>
-    public abstract class DistancePixelConversion<D>
-        where D : struct
+    /// <typeparam name="DT">Distance type</typeparam>
+    public abstract class DistancePixelConversion<DT>
+        where DT : struct
     {
         protected DistancePixelConversion(double range)
         {
             InvRange = 1.0 / range;
         }
 
-        public unsafe abstract void Convert(float* pixels, D distance);
+        public unsafe abstract void Convert(float* pixels, DT distance);
 
         public double InvRange { get; }
 
@@ -38,30 +37,30 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         public override int NPerPixel => 1;
     }
 
-    public class MultiDistancePixelConversion : DistancePixelConversion<Vector3D>
+    public class MultiDistancePixelConversion : DistancePixelConversion<MultiDistance>
     {
         public MultiDistancePixelConversion(double range) : base(range) { }
 
-        public unsafe override void Convert(float* pixels, Vector3D distance)
+        public unsafe override void Convert(float* pixels, MultiDistance distance)
         {
-            pixels[0] = (float)(InvRange * distance.X + .5);
-            pixels[1] = (float)(InvRange * distance.Y + .5);
-            pixels[2] = (float)(InvRange * distance.Z + .5);
+            pixels[0] = (float)(InvRange * distance.r + .5);
+            pixels[1] = (float)(InvRange * distance.g + .5);
+            pixels[2] = (float)(InvRange * distance.b + .5);
         }
 
         public override int NPerPixel => 3;
     }
 
-    public class MultiTrueDistancePixelConversion : DistancePixelConversion<Vector4D>
+    public class MultiTrueDistancePixelConversion : DistancePixelConversion<MultiAndTrueDistance>
     {
         public MultiTrueDistancePixelConversion(double range) : base(range) { }
 
-        public unsafe override void Convert(float* pixels, Vector4D distance)
+        public unsafe override void Convert(float* pixels, MultiAndTrueDistance distance)
         {
-            pixels[0] = (float)(InvRange * distance.X + .5);
-            pixels[1] = (float)(InvRange * distance.Y + .5);
-            pixels[2] = (float)(InvRange * distance.Z + .5);
-            pixels[3] = (float)(InvRange * distance.W + .5);
+            pixels[0] = (float)(InvRange * distance.r + .5);
+            pixels[1] = (float)(InvRange * distance.g + .5);
+            pixels[2] = (float)(InvRange * distance.b + .5);
+            pixels[3] = (float)(InvRange * distance.a + .5);
         }
 
         public override int NPerPixel => 4;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.SpriteBatch.MSDF.Selectors
+namespace Molten.Graphics.SpriteBatch.MSDF
 {
     internal class PseudoDistanceSelector : PseudoDistanceSelectorBase
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
-    public abstract class PseudoDistanceSelectorBase : EdgeSelector<double, double>
+    public abstract class PseudoDistanceSelectorBase : EdgeSelector<double>
     {
         SignedDistance minTrueDistance;
         double minNegativePseudoDistance;
@@ -45,7 +45,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             return false;
         }
 
-        public override void reset(in double delta)
+        public void reset(in double delta)
         {
             minTrueDistance.Distance += MsdfMath.nonZeroSign(minTrueDistance.Distance) * delta;
             minNegativePseudoDistance = -Math.Abs(minTrueDistance.Distance);

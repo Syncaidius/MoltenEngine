@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
-    public class ContourCombiner<T>
-        where T : struct
+    public abstract class ContourCombiner
     {
         public static void initDistance(ref double distance)
         {
@@ -30,5 +29,22 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         {
             return MsdfMath.median(distance.X, distance.Y, distance.Z);
         }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="ES">EdgeSelector type.</typeparam>
+    /// <typeparam name="DT">Distance type. e.g. double, MultiDistance or MultiAndTrueDistance.</typeparam>
+    /// <typeparam name="P">Point type, such as double or Vector2D.</typeparam>
+    public abstract class ContourCombiner<ES, DT> : ContourCombiner
+        where ES : EdgeSelector<DT>
+        where DT : unmanaged
+    {
+        public abstract void reset(in Vector2D p);
+
+        public abstract ES edgeSelector(int i);
+
+        public abstract DT distance();
     }
 }

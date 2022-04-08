@@ -11,7 +11,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         public double r, g, b;
     };
 
-    public class MultiDistanceSelector : EdgeSelector<MultiDistance, Vector2D>
+    public class MultiDistanceSelector : EdgeSelector<MultiDistance>
     {
         Vector2D p;
         PseudoDistanceSelectorBase r, g, b;
