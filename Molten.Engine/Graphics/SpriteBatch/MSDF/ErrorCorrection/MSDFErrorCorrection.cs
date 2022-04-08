@@ -411,7 +411,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                         shapeDistanceChecker.shapeCoord = projection.Unproject(new Vector2D(x + .5, y + .5));
                         shapeDistanceChecker.sdfCoord = new Vector2D(x + .5, row + .5);
                         shapeDistanceChecker.msd = c;
-                        shapeDistanceChecker.protectedFlag = ((StencilFlags)(*stencil[x, row) & StencilFlags.PROTECTED) != 0;
+                        shapeDistanceChecker.protectedFlag = ((StencilFlags)(*stencil[x, row]) & StencilFlags.PROTECTED) != 0;
                         float cm = MsdfMath.median(c[0], c[1], c[2]);
                         float* l = null, b = null, r = null, t = null;
                         // Mark current texel c with the error flag if an artifact occurs when it's interpolated with any of its 8 neighbors.

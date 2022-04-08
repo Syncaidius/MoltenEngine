@@ -52,7 +52,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 
         public override double distance()
         {
-            return new Vector2D(minDistance.Distance);
+            return minDistance.Distance;
         }
     }
 }

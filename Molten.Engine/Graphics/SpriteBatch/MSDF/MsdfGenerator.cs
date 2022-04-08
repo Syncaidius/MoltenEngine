@@ -20,10 +20,9 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         /// <param name="output"></param>
         /// <param name="shape"></param>
         /// <param name="projection"></param>
-        private unsafe void generateDistanceField<ES, DT, P>(ContourCombiner<ES, DT,P> tmpCombiner, BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
-            where ES : EdgeSelector<DT,P>
+        private unsafe void generateDistanceField<ES, DT>(ContourCombiner<ES, DT> tmpCombiner, BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
+            where ES : EdgeSelector<DT>
             where DT : unmanaged
-            where P : unmanaged
         {
             DistancePixelConversion<DT> distancePixelConversion = tmpCombiner.GetDistancePixelConverter(range);
             Validation.NPerPixel(output, 4);

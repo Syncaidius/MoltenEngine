@@ -108,22 +108,19 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         }
 
         /// Clamps the number to the interval from 0 to 1.
-        template<typename T>
-        inline T clamp(T n)
+        public static float clamp(float n)
         {
-            return n >= T(0) && n <= T(1) ? n : T(n > T(0));
+            return n >= 0f && n <= 1.0f ? n : (n > 0 ? 1f : 0f);
         }
 
         /// Clamps the number to the interval from 0 to b.
-        template<typename T>
-        inline T clamp(T n, T b)
+        public static float clamp(float n, float b)
         {
-            return n >= T(0) && n <= b ? n : T(n > T(0)) * b;
+            return n >= 0f && n <= b ? n : (n > 0 ? 1f : 0f) * b;
         }
 
         /// Clamps the number to the interval from a to b.
-        template<typename T>
-        inline T clamp(T n, T a, T b)
+        public static double clamp(double n, double a, double b)
         {
             return n >= a && n <= b ? n : n < a ? a : b;
         }

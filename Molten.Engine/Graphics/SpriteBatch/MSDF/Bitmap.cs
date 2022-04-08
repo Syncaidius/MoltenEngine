@@ -28,7 +28,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             pixels = EngineUtil.AllocArray<T>((nuint)(NPerPixel * w * h));
         }
 
-        public Bitmap(BitmapConstRef<T> orig)
+        public Bitmap(BitmapRef<T> orig)
         {
             NPerPixel = orig.NPerPixel;
             Set(orig);
@@ -44,7 +44,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         {
             EngineUtil.Free(ref pixels);
         }
-        public void Set(BitmapConstRef<T> orig)
+        public void Set(BitmapRef<T> orig)
         {
             Validation.NPerPixel(orig, NPerPixel);
 
@@ -81,11 +81,6 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         public static implicit operator BitmapRef<T>(Bitmap<T> b)
         {
             return new BitmapRef<T>(b.pixels, b.NPerPixel, b.w, b.h);
-        }
-
-        public static implicit operator BitmapConstRef<T>(Bitmap<T> b)
-        {
-            return new BitmapConstRef<T>(b.pixels, b.NPerPixel, b.w, b.h);
         }
 
         public T* Ptr => pixels;
