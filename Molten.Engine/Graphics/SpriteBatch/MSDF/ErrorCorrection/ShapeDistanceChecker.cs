@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
-    internal class ShapeDistanceChecker<CC, T>
+    internal unsafe class ShapeDistanceChecker<CC, T>
         where CC : ContourCombiner<T>
         where T : struct
     {
@@ -15,12 +15,12 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         public bool protectedFlag;
 
         ShapeDistanceFinder<ContourCombiner<PseudoDistanceSelector>> distanceFinder;
-        BitmapConstRef<float, N> sdf;
+        BitmapRef<float, N> sdf;
         double invRange;
         Vector2D texelSize;
         double minImproveRatio;
 
-        public ShapeDistanceChecker(BitmapConstRef<float, N> pSdf, MsdfShape pShape, MsdfProjection pProjection, double pInvRange, double pMinImproveRatio)
+        public ShapeDistanceChecker(BitmapRef<float, N> pSdf, MsdfShape pShape, MsdfProjection pProjection, double pInvRange, double pMinImproveRatio)
         {
             distanceFinder = pShape;
             sdf = pSdf;

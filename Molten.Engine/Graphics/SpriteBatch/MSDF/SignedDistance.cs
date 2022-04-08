@@ -14,7 +14,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 
         public SignedDistance()
         {
-            Distance = double.MinValue;
+            Distance = -double.MaxValue;
             Dot = 1;
         }
 
