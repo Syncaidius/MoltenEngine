@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.MSDF
 {
-    internal unsafe class BitmapRef<T>
+    public unsafe class BitmapRef<T>
         where T : unmanaged
     {
         public T* pixels;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.MSDF
 {
-    internal abstract class BaseArtifactClassifier
+    public abstract class BaseArtifactClassifier
     {
         protected double span;
         protected bool protectedFlag;

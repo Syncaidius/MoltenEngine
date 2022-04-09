@@ -11,7 +11,7 @@ namespace Molten.MSDF
     /// </summary>
     /// <typeparam name="ES">Edge selector type</typeparam>
     /// <typeparam name="DT">Distance Type</typeparam>
-    internal unsafe class ShapeDistanceChecker<ES, DT, EC>
+    public unsafe class ShapeDistanceChecker<ES, DT, EC>
         where ES : EdgeSelector<DT, EC>, new()
         where DT : unmanaged
         where EC : unmanaged
@@ -21,7 +21,7 @@ namespace Molten.MSDF
         public bool protectedFlag;
 
         ShapeDistanceFinder<ES, DT, EC> distanceFinder;
-        BitmapRef<float> sdf;
+        internal BitmapRef<float> sdf;
         double invRange;
         Vector2D texelSize;
         double minImproveRatio;
@@ -36,9 +36,9 @@ namespace Molten.MSDF
             texelSize = pProjection.UnprojectVector(new Vector2D(1));
         }
 
-        public ArtifactClassifier<ES, DT> classifier(Vector2D direction, double span)
+        public ArtifactClassifier<ES, DT, EC> classifier(Vector2D direction, double span)
         {
-            return new ArtifactClassifier<ES, DT>(this, direction, span);
+            return new ArtifactClassifier<ES, DT, EC>(this, direction, span);
         }
     }
 }
