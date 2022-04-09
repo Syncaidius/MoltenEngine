@@ -20,11 +20,11 @@ namespace Molten.Graphics.MSDF
         public float* msd;
         public bool protectedFlag;
 
-        ShapeDistanceFinder<ES, DT, EC> distanceFinder;
+        internal ShapeDistanceFinder<ES, DT, EC> distanceFinder;
         internal BitmapRef<float> sdf;
-        double invRange;
-        Vector2D texelSize;
-        double minImproveRatio;
+        internal double invRange;
+        internal Vector2D texelSize;
+        internal double minImproveRatio;
 
         public ShapeDistanceChecker(BitmapRef<float> pSdf, MsdfShape pShape, MsdfProjection pProjection, double pInvRange, double pMinImproveRatio)
         {

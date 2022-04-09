@@ -46,6 +46,7 @@ namespace Molten.Graphics.MSDF
                 // Compute the evaluated distance (interpolated median) before and after error correction, as well as the exact shape distance.
                 float oldPSD = MsdfMath.median(oldMSD[0], oldMSD[1], oldMSD[2]);
                 float newPSD = MsdfMath.median(newMSD[0], newMSD[1], newMSD[2]);
+                
                 float refPSD = (float)(parent.invRange * parent.distanceFinder.distance(parent.shapeCoord + tVector * parent.texelSize) + .5);
                 // Compare the differences of the exact distance and the before and after distances.
                 return parent.minImproveRatio * Math.Abs(newPSD - refPSD) < (double)Math.Abs(oldPSD - refPSD);

@@ -8,7 +8,10 @@ namespace Molten.Graphics.MSDF
 {
     internal static class ErrorCorrection
     {
-        public unsafe static void msdfErrorCorrectionInner(BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public unsafe static void msdfErrorCorrectionInner<ES, DT, EC>(ContourCombiner<ES, DT, EC> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+            where ES : EdgeSelector<DT, EC>, new()
+            where DT : unmanaged
+            where EC : unmanaged
         {
             if (config.ErrorCorrection.Mode == ErrorCorrectionConfig.ErrorCorrectMode.DISABLED)
                 return;
@@ -23,7 +26,8 @@ namespace Molten.Graphics.MSDF
             MSDFErrorCorrection ec = new MSDFErrorCorrection(stencil, projection, range);
             ec.setMinDeviationRatio(config.ErrorCorrection.MinDeviationRatio);
             ec.setMinImproveRatio(config.ErrorCorrection.MinImproveRatio);
-            switch (config.ErrorCorrection.Mode) {
+            switch (config.ErrorCorrection.Mode)
+            {
                 case ErrorCorrectionConfig.ErrorCorrectMode.DISABLED:
                 case ErrorCorrectionConfig.ErrorCorrectMode.INDISCRIMINATE:
                     break;
@@ -37,8 +41,9 @@ namespace Molten.Graphics.MSDF
             }
             if (config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE ||
                 (config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE &&
-                config.ErrorCorrection.Mode != ErrorCorrectionConfig.ErrorCorrectMode.EDGE_ONLY)) {
-                ec.findErrors<N>(sdf);
+                config.ErrorCorrection.Mode != ErrorCorrectionConfig.ErrorCorrectMode.EDGE_ONLY))
+            {
+                ec.findErrors(sdf);
                 if (config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE)
                     ec.protectAll();
             }
@@ -46,9 +51,9 @@ namespace Molten.Graphics.MSDF
                 config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE)
             {
                 if (config.OverlapSupport)
-                    ec.findErrors<OverlappingContourCombiner, N>(sdf, shape);
+                    ec.findErrors(combiner, sdf, shape);
                 else
-                    ec.findErrors<SimpleContourCombiner, N>(sdf, shape);
+                    ec.findErrors(combiner, sdf, shape);
             }
             ec.apply(sdf);
         }
@@ -64,8 +69,12 @@ namespace Molten.Graphics.MSDF
             ec.apply(sdf);
         }
 
-        public static void msdfErrorCorrection(BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config) {
-            msdfErrorCorrectionInner(sdf, shape, projection, range, config);
+        public static void msdfErrorCorrection<ES, DT, EC>(ContourCombiner<ES, DT, EC> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+            where ES : EdgeSelector<DT, EC>, new()
+            where DT : unmanaged
+            where EC : unmanaged
+        {
+            msdfErrorCorrectionInner(combiner, sdf, shape, projection, range, config);
         }
 
         public static void msdfFastDistanceErrorCorrection(BitmapRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio)
