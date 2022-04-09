@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
-    public class TrueDistanceSelector : EdgeSelector<double>
+    public class TrueDistanceSelector : EdgeSelector<double, TrueDistanceSelector.EdgeCache>
     {
         Vector2D p;
         SignedDistance minDistance;
@@ -30,7 +30,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             this.p = p;
         }
 
-        public unsafe void addEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
+        public override unsafe void addEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
         {
             double delta = DISTANCE_DELTA_FACTOR * (p - cache.point).Length();
             if (cache.absDistance - delta <= Math.Abs(minDistance.Distance))
@@ -44,15 +44,26 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             }
         }
 
-        public void merge(TrueDistanceSelector other)
+        public override void merge(EdgeSelector<double, EdgeCache> other)
         {
-            if (other.minDistance < minDistance)
-                minDistance = other.minDistance;
+            TrueDistanceSelector td = other as TrueDistanceSelector;
+            if (td.minDistance < minDistance)
+                minDistance = td.minDistance;
         }
 
         public override double distance()
         {
             return minDistance.Distance;
+        }
+
+        public override void initDistance(ref double distance)
+        {
+            distance = -double.MaxValue;
+        }
+
+        public override double resolveDistance(double distance)
+        {
+            return distance;
         }
     }
 }

@@ -8,27 +8,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 {
     public abstract class ContourCombiner
     {
-        public static void initDistance(ref double distance)
-        {
-            distance = -double.MaxValue;
-        }
 
-        public static void initDistance(ref Vector3D distance)
-        {
-            distance.X = -double.MaxValue;
-            distance.Y = -double.MaxValue;
-            distance.Z = -double.MaxValue;
-        }
-
-        public static double resolveDistance(double distance)
-        {
-            return distance;
-        }
-
-        public static double resolveDistance(Vector3D distance)
-        {
-            return MsdfMath.median(distance.X, distance.Y, distance.Z);
-        }
     }
 
     /// <summary>
@@ -36,10 +16,11 @@ namespace Molten.Graphics.SpriteBatch.MSDF
     /// </summary>
     /// <typeparam name="ES">EdgeSelector type.</typeparam>
     /// <typeparam name="DT">Distance type. e.g. double, MultiDistance or MultiAndTrueDistance.</typeparam>
-    /// <typeparam name="P">Point type, such as double or Vector2D.</typeparam>
-    public abstract class ContourCombiner<ES, DT> : ContourCombiner
-        where ES : EdgeSelector<DT>
+    /// <typeparam name="EC">EdgeCache type.</typeparam>
+    public abstract class ContourCombiner<ES, DT, EC> : ContourCombiner
+        where ES : EdgeSelector<DT, EC>, new()
         where DT : unmanaged
+        where EC : unmanaged
     {
         public abstract void reset(in Vector2D p);
 

@@ -8,11 +8,11 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 {
     internal class MSDFErrorCorrection
     {
-        const double ARTIFACT_T_EPSILON = 0.01;
-        const double PROTECTION_RADIUS_TOLERANCE = 1.001;
+        public const double ARTIFACT_T_EPSILON = 0.01;
+        public const double PROTECTION_RADIUS_TOLERANCE = 1.001;
 
-        const int CLASSIFIER_FLAG_CANDIDATE = 0x01;
-        const int CLASSIFIER_FLAG_ARTIFACT = 0x02;
+        public const int CLASSIFIER_FLAG_CANDIDATE = 0x01;
+        public const int CLASSIFIER_FLAG_ARTIFACT = 0x02;
 
         BitmapRef<byte> stencil;
         MsdfProjection projection;

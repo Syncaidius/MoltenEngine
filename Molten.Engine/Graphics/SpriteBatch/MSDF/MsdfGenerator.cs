@@ -14,20 +14,21 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="R">BitmapRef type</typeparam>
+        /// <typeparam name="ES">Edge selector type</typeparam>
         /// <typeparam name="DT">Distance Type</typeparam>
-        /// <typeparam name="CC">Contour combiner</typeparam>
+        /// <typeparam name="EC">Edge cache Type</typeparam>
         /// <param name="output"></param>
         /// <param name="shape"></param>
         /// <param name="projection"></param>
-        private unsafe void generateDistanceField<ES, DT>(ContourCombiner<ES, DT> tmpCombiner, BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
-            where ES : EdgeSelector<DT>
+        private unsafe void generateDistanceField<ES, DT, EC>(DistancePixelConversion<DT> distancePixelConversion, ContourCombiner<ES, DT, EC> combiner, BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
+            where ES : EdgeSelector<DT, EC>, new()
             where DT : unmanaged
+            where EC : unmanaged
         {
-            DistancePixelConversion<DT> distancePixelConversion = tmpCombiner.GetDistancePixelConverter(range);
             Validation.NPerPixel(output, 4);
 
-            ShapeDistanceFinder<CC> distanceFinder = new ShapeDistanceFinder<CC>(shape);
+            ShapeDistanceFinder<ES, DT, EC> distanceFinder = new ShapeDistanceFinder<ES, DT, EC>(shape, combiner);
+
             bool rightToLeft = false;
             for (int y = 0; y < output.Height; ++y)
             {
@@ -46,45 +47,51 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         void generateSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
         {
             Validation.NPerPixel(output, 1);
+            var dpc = new DoubleDistancePixelConversion(range);
 
             if (config.OverlapSupport)
             {
-                generateDistanceField<OverlappingContourCombiner<TrueDistanceSelector>>(output, shape, projection, range);
+                var combiner = new OverlappingContourCombiner<TrueDistanceSelector, double, TrueDistanceSelector.EdgeCache>(shape);
+                generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
             else
             {
-                var combiner = new SimpleContourCombiner<TrueDistanceSelector, double>(shape);
-                generateDistanceField(combiner, output, shape, projection, range);
+                var combiner = new SimpleContourCombiner<TrueDistanceSelector, double, TrueDistanceSelector.EdgeCache>(shape);
+                generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
         }
 
         void generatePseudoSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
         {
             Validation.NPerPixel(output, 1);
+            var dpc = new DoubleDistancePixelConversion(range);
 
             if (config.OverlapSupport)
             {
-                generateDistanceField<OverlappingContourCombiner<PseudoDistanceSelector>>(output, shape, projection, range);
+                var combiner = new OverlappingContourCombiner<PseudoDistanceSelector, double, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
             else
             {
-                var combiner = new SimpleContourCombiner<PseudoDistanceSelector, double>(shape);
-                generateDistanceField(combiner, output, shape, projection, range);
+                var combiner = new SimpleContourCombiner<PseudoDistanceSelector, double, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
         }
 
         void generateMSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
         {
             Validation.NPerPixel(output, 3);
+            var dpc = new MultiDistancePixelConversion(range);
 
             if (config.OverlapSupport)
             {
-                generateDistanceField<OverlappingContourCombiner<MultiDistanceSelector>>(output, shape, projection, range);
+                var combiner = new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                  generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
             else
             {
-                var combiner = new SimpleContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
-                generateDistanceField(combiner, output, shape, projection, range);
+                var combiner = new SimpleContourCombiner<MultiDistanceSelector, MultiDistance, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
             ErrorCorrection.msdfErrorCorrection(output, shape, projection, range, config);
         }
@@ -92,15 +99,17 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         void generateMTSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
         {
             Validation.NPerPixel(output, 4);
+            var dpc = new MultiTrueDistancePixelConversion(range);
 
             if (config.OverlapSupport)
             {
-                generateDistanceField<OverlappingContourCombiner<MultiAndTrueDistanceSelector>>(output, shape, projection, range);
+                var combiner = new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
             else
             {
-                var combiner = new SimpleContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
-                generateDistanceField(combiner, output, shape, projection, range);
+                var combiner = new SimpleContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
             ErrorCorrection.msdfErrorCorrection(output, shape, projection, range, config);
         }

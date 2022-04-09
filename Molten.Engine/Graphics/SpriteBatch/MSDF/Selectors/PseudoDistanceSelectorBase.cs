@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
-    public abstract class PseudoDistanceSelectorBase : EdgeSelector<double>
+    public abstract class PseudoDistanceSelectorBase : EdgeSelector<double, PseudoDistanceSelectorBase.EdgeCache>
     {
         SignedDistance minTrueDistance;
         double minNegativePseudoDistance;
@@ -90,18 +90,20 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                 minPositivePseudoDistance = distance;
         }
 
-        public void merge(PseudoDistanceSelectorBase other)
+        public override void merge(EdgeSelector<double, EdgeCache> other)
         {
-            if (other.minTrueDistance < minTrueDistance)
+            PseudoDistanceSelectorBase pd = other as PseudoDistanceSelectorBase;
+
+            if (pd.minTrueDistance < minTrueDistance)
             {
-                minTrueDistance = other.minTrueDistance;
-                nearEdge = other.nearEdge;
-                nearEdgeParam = other.nearEdgeParam;
+                minTrueDistance = pd.minTrueDistance;
+                nearEdge = pd.nearEdge;
+                nearEdgeParam = pd.nearEdgeParam;
             }
-            if (other.minNegativePseudoDistance > minNegativePseudoDistance)
-                minNegativePseudoDistance = other.minNegativePseudoDistance;
-            if (other.minPositivePseudoDistance < minPositivePseudoDistance)
-                minPositivePseudoDistance = other.minPositivePseudoDistance;
+            if (pd.minNegativePseudoDistance > minNegativePseudoDistance)
+                minNegativePseudoDistance = pd.minNegativePseudoDistance;
+            if (pd.minPositivePseudoDistance < minPositivePseudoDistance)
+                minPositivePseudoDistance = pd.minPositivePseudoDistance;
         }
 
         public double computeDistance(in Vector2D p)

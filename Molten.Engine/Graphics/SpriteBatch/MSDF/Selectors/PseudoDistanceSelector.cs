@@ -10,14 +10,14 @@ namespace Molten.Graphics.SpriteBatch.MSDF
     {
         Vector2D p;
 
-        public void reset(in Vector2D p)
+        public override void reset(in Vector2D p)
         {
             double delta = DISTANCE_DELTA_FACTOR * (p - this.p).Length();
             reset(delta);
             this.p = p;
         }
 
-        public void addEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
+        public override void addEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
         {
             if (isEdgeRelevant(cache, edge, p))
             {
@@ -57,6 +57,16 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         public override double distance()
         {
             return computeDistance(p);
+        }
+
+        public override void initDistance(ref double distance)
+        {
+            distance = -double.MaxValue;
+        }
+
+        public override double resolveDistance(double distance)
+        {
+            return distance;
         }
     }
 }

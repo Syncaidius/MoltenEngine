@@ -8,14 +8,14 @@ namespace Molten.Graphics.SpriteBatch.MSDF
 {
     internal abstract class BaseArtifactClassifier
     {
-        public const double ARTIFACT_T_EPSILON = 0.01;
-        public const double PROTECTION_RADIUS_TOLERANCE = 1.001;
-
-        public const int CLASSIFIER_FLAG_CANDIDATE = 0x01;
-        public const int CLASSIFIER_FLAG_ARTIFACT = 0x02;
-
         protected double span;
         protected bool protectedFlag;
+
+        public BaseArtifactClassifier(double span, bool protectedFlag)
+        {
+            this.span = span;
+            this.protectedFlag = protectedFlag;
+        }
 
         public int rangeTest(double at, double bt, double xt, float am, float bm, float xm)
         {
@@ -25,8 +25,8 @@ namespace Molten.Graphics.SpriteBatch.MSDF
                 double axSpan = (xt - at) * span, bxSpan = (bt - xt) * span;
                 // Check if the interpolated median's value is in the expected range based on its distance (span) from boundaries a, b.
                 if (!(xm >= am - axSpan && xm <= am + axSpan && xm >= bm - bxSpan && xm <= bm + bxSpan))
-                    return CLASSIFIER_FLAG_CANDIDATE | CLASSIFIER_FLAG_ARTIFACT;
-                return CLASSIFIER_FLAG_CANDIDATE;
+                    return MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE | MSDFErrorCorrection.CLASSIFIER_FLAG_ARTIFACT;
+                return MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE;
             }
             return 0;
         }

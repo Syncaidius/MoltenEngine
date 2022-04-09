@@ -6,24 +6,36 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SpriteBatch.MSDF
 {
-    internal class ArtifactClassifier<CC, T> : BaseArtifactClassifier
-        where CC: ContourCombiner<T>
-        where T : struct
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="ES">Edge selector type</typeparam>
+    /// <typeparam name="DT">Distance Type</typeparam>
+    internal class ArtifactClassifier<ES, DT> : BaseArtifactClassifier
+        where ES : EdgeSelector
+        where DT : unmanaged
     {
-        ShapeDistanceChecker<CC,T> parent;
+        ShapeDistanceChecker<ES,DT> parent;
         Vector2D direction;
 
+        public ArtifactClassifier(ShapeDistanceChecker<ES,DT> parent, in Vector2D direction, double span)  :
+            base(span, parent.protectedFlag)
+        {
+            this.parent = parent;
+            this.direction = direction;
+        }
+
         public unsafe bool evaluate(int N, double t, float m, int flags) {
-            if ((flags & CLASSIFIER_FLAG_CANDIDATE) == CLASSIFIER_FLAG_CANDIDATE) {
+            if ((flags & MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE) == MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE) {
                 // Skip expensive distance evaluation if the point has already been classified as an artifact by the base classifier.
-                if ((flags & CLASSIFIER_FLAG_ARTIFACT) == CLASSIFIER_FLAG_ARTIFACT)
+                if ((flags & MSDFErrorCorrection.CLASSIFIER_FLAG_ARTIFACT) == MSDFErrorCorrection.CLASSIFIER_FLAG_ARTIFACT)
                     return true;
                 Vector2D tVector = t * direction;
                 float* oldMSD = stackalloc float[N];
                 float* newMSD = stackalloc float[3];
                 // Compute the color that would be currently interpolated at the artifact candidate's position.
                 Vector2D sdfCoord = parent.sdfCoord + tVector;
-                interpolate(oldMSD, parent.sdf, sdfCoord);
+                BitmapRef<float>.Interpolate(oldMSD, parent.sdf, sdfCoord);
                 // Compute the color that would be interpolated at the artifact candidate's position if error correction was applied on the current texel.
                 double aWeight = (1 - Math.Abs(tVector.X)) * (1 - Math.Abs(tVector.Y));
                 float aPSD = MsdfMath.median(parent.msd[0], parent.msd[1], parent.msd[2]);

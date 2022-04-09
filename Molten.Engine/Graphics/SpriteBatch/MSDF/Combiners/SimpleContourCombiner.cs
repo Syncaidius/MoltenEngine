@@ -11,10 +11,11 @@ namespace Molten.Graphics.SpriteBatch.MSDF
     /// </summary>
     /// <typeparam name="ES">EdgeSelector type.</typeparam>
     /// <typeparam name="DT">Distance type. e.g. double, MultiDistance or MultiAndTrueDistance.</typeparam>
-    /// <typeparam name="P">Point type, such as double or Vector2D.</typeparam>
-    public class SimpleContourCombiner<ES, DT> : ContourCombiner<ES, DT>
-        where ES: EdgeSelector<DT>
+    /// <typeparam name="EC">Edge cache type.</typeparam>
+    public class SimpleContourCombiner<ES, DT, EC> : ContourCombiner<ES, DT, EC>
+        where ES: EdgeSelector<DT, EC>, new()
         where DT : unmanaged
+        where EC : unmanaged
     {
         ES shapeEdgeSelector;
 

@@ -12,7 +12,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
         public double a;
     };
 
-    public class MultiAndTrueDistanceSelector : EdgeSelector<MultiAndTrueDistance>
+    public class MultiAndTrueDistanceSelector : EdgeSelector<MultiAndTrueDistance, PseudoDistanceSelectorBase.EdgeCache>
     {
         Vector2D p;
         PseudoDistanceSelectorBase r, g, b;
@@ -26,7 +26,7 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             this.p = p;
         }
 
-        public void addEdge(ref PseudoDistanceSelectorBase.EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
+        public override void addEdge(ref PseudoDistanceSelectorBase.EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
         {
             if (
                 ((edge.Color & EdgeColor.RED) == EdgeColor.RED && r.isEdgeRelevant(cache, edge, p)) ||
@@ -87,11 +87,12 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             }
         }
 
-        public void merge(MultiAndTrueDistanceSelector other)
+        public override void merge(EdgeSelector<MultiAndTrueDistance, PseudoDistanceSelectorBase.EdgeCache> other)
         {
-            r.merge(other.r);
-            g.merge(other.g);
-            b.merge(other.b);
+            MultiAndTrueDistanceSelector mtd = other as MultiAndTrueDistanceSelector;
+            r.merge(mtd.r);
+            g.merge(mtd.g);
+            b.merge(mtd.b);
         }
 
         /// <summary>
@@ -126,6 +127,18 @@ namespace Molten.Graphics.SpriteBatch.MSDF
             if (b.trueDistance() < distance)
                 distance = b.trueDistance();
             return distance;
+        }
+
+        public override void initDistance(ref MultiAndTrueDistance distance)
+        {
+            distance.r = -double.MaxValue;
+            distance.g = -double.MaxValue;
+            distance.b = -double.MaxValue;
+        }
+
+        public override double resolveDistance(MultiAndTrueDistance distance)
+        {
+            return MsdfMath.median(distance.r, distance.g, distance.b);
         }
     }
 }
