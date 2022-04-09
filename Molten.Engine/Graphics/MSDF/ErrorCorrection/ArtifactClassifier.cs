@@ -12,22 +12,24 @@ namespace Molten.Graphics.MSDF
     /// <typeparam name="ES">Edge selector type</typeparam>
     /// <typeparam name="DT">Distance Type</typeparam>
     public class ArtifactClassifier<ES, DT, EC> : BaseArtifactClassifier
-        where ES : EdgeSelector<DT,EC>, new()
+        where ES : EdgeSelector<DT, EC>, new()
         where DT : unmanaged
         where EC : unmanaged
     {
-        ShapeDistanceChecker<ES,DT, EC> parent;
+        ShapeDistanceChecker<ES, DT, EC> parent;
         Vector2D direction;
 
-        public ArtifactClassifier(ShapeDistanceChecker<ES, DT, EC> parent, in Vector2D direction, double span)  :
+        public ArtifactClassifier(ShapeDistanceChecker<ES, DT, EC> parent, in Vector2D direction, double span) :
             base(span, parent.protectedFlag)
         {
             this.parent = parent;
             this.direction = direction;
         }
 
-        public unsafe bool evaluate(int N, double t, float m, int flags) {
-            if ((flags & MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE) == MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE) {
+        public unsafe bool evaluate(int N, double t, float m, int flags)
+        {
+            if ((flags & MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE) == MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE)
+            {
                 // Skip expensive distance evaluation if the point has already been classified as an artifact by the base classifier.
                 if ((flags & MSDFErrorCorrection.CLASSIFIER_FLAG_ARTIFACT) == MSDFErrorCorrection.CLASSIFIER_FLAG_ARTIFACT)
                     return true;
@@ -46,8 +48,8 @@ namespace Molten.Graphics.MSDF
                 // Compute the evaluated distance (interpolated median) before and after error correction, as well as the exact shape distance.
                 float oldPSD = MsdfMath.median(oldMSD[0], oldMSD[1], oldMSD[2]);
                 float newPSD = MsdfMath.median(newMSD[0], newMSD[1], newMSD[2]);
-                
-                float refPSD = (float)(parent.invRange * parent.distanceFinder.distance(parent.shapeCoord + tVector * parent.texelSize) + .5);
+
+                float refPSD = parent.distanceFinder.getRefPSD(parent.shapeCoord + tVector * parent.texelSize, parent.invRange); // (float)(parent.invRange * parent.distanceFinder.distance(parent.shapeCoord + tVector * parent.texelSize) + .5);
                 // Compare the differences of the exact distance and the before and after distances.
                 return parent.minImproveRatio * Math.Abs(newPSD - refPSD) < (double)Math.Abs(oldPSD - refPSD);
             }

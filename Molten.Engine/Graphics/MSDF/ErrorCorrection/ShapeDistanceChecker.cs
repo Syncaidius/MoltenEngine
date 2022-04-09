@@ -26,9 +26,9 @@ namespace Molten.Graphics.MSDF
         internal Vector2D texelSize;
         internal double minImproveRatio;
 
-        public ShapeDistanceChecker(BitmapRef<float> pSdf, MsdfShape pShape, MsdfProjection pProjection, double pInvRange, double pMinImproveRatio)
+        public ShapeDistanceChecker(ContourCombiner<ES,DT,EC> combiner, BitmapRef<float> pSdf, MsdfShape pShape, MsdfProjection pProjection, double pInvRange, double pMinImproveRatio)
         {
-            distanceFinder = new ShapeDistanceFinder<ContourCombiner<PseudoDistanceSelector>>(pShape);
+            distanceFinder = new ShapeDistanceFinder<ES,DT,EC>(pShape, combiner);
             sdf = pSdf;
             invRange = pInvRange;
             minImproveRatio = pMinImproveRatio;

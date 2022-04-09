@@ -88,6 +88,15 @@ namespace Molten.Graphics.MSDF
 
             return contourCombiner.distance();
         }
+
+        public float getRefPSD(in Vector2D origin, double invRange)
+        {
+            DT dist = distance(in origin);
+            
+            ES es = new ES();
+
+            return es.getRefPSD(dist, invRange);
+        }
     }
 
     public class SimpleTrueShapeDistanceFinder : ShapeDistanceFinder<TrueDistanceSelector, double, TrueDistanceSelector.EdgeCache>

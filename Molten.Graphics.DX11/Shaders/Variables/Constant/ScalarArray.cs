@@ -22,7 +22,7 @@
             if (_value != null)
                 EngineUtil.PinObject(_value, (ptr) => Buffer.MemoryCopy(ptr.ToPointer(), pDest, SizeOf, SizeOf));
             else
-                EngineUtil.Zero(pDest, SizeOf);
+                EngineUtil.MemSet(pDest, 0, SizeOf);
         }
 
         public override object Value

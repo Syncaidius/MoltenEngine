@@ -124,5 +124,10 @@ namespace Molten.Graphics.MSDF
         {
             return MsdfMath.median(distance.r, distance.g, distance.b);
         }
+
+        public override float getRefPSD(in MultiDistance dist, double invRange)
+        {
+            return (float)(invRange * dist.r + .5);
+        }
     }
 }

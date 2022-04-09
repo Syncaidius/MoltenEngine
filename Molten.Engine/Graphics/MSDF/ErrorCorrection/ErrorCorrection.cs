@@ -81,5 +81,10 @@ namespace Molten.Graphics.MSDF
         {
             msdfErrorCorrectionShapeless(sdf, projection, range, minDeviationRatio, false);
         }
+
+        public static void msdfFastEdgeErrorCorrection(BitmapRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio)
+        {
+            msdfErrorCorrectionShapeless(sdf, projection, range, minDeviationRatio, true);
+        }
     }
 }

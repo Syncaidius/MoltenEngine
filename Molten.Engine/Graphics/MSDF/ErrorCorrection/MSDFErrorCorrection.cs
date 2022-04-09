@@ -253,7 +253,7 @@ namespace Molten.Graphics.MSDF
         /// <param name="dA"></param>
         /// <param name="dB"></param>
         /// <returns></returns>
-        public unsafe bool hasLinearArtifactInner(ArtifactClassifier artifactClassifier, float am, float bm, float* a, float* b, float dA, float dB)
+        public unsafe bool hasLinearArtifactInner(BaseArtifactClassifier artifactClassifier, float am, float bm, float* a, float* b, float dA, float dB)
         {
             // Find interpolation ratio t (0 < t < 1) where two color channels are equal (mix(dA, dB, t) == 0).
             double t = (double)dA / (dA - dB);
@@ -266,7 +266,7 @@ namespace Molten.Graphics.MSDF
             return false;
         }
 
-        public unsafe bool hasDiagonalArtifactInner(ArtifactClassifier artifactClassifier,
+        public unsafe bool hasDiagonalArtifactInner(BaseArtifactClassifier artifactClassifier,
             float am, float dm, float* a, float* l, float* q,
             float dA, float dBC, float dD, double tEx0, double tEx1)
         {
@@ -310,7 +310,7 @@ namespace Molten.Graphics.MSDF
             return false;
         }
 
-        public unsafe bool hasLinearArtifact(ArtifactClassifier artifactClassifier, float am, float* a, float* b)
+        public unsafe bool hasLinearArtifact(BaseArtifactClassifier artifactClassifier, float am, float* a, float* b)
         {
             float bm = MsdfMath.median(b[0], b[1], b[2]);
             return (
@@ -324,7 +324,8 @@ namespace Molten.Graphics.MSDF
             );
         }
 
-        public unsafe bool hasDiagonalArtifact(ArtifactClassifier artifactClassifier, float am, float* a, float* b, float* c, float* d) {
+        public unsafe bool hasDiagonalArtifact(BaseArtifactClassifier artifactClassifier, float am, float* a, float* b, float* c, float* d)
+        {
             float dm = MsdfMath.median(d[0], d[1], d[2]);
             // Out of the pair, only report artifacts for the texel further from the edge to minimize side effects.
             if (Math.Abs(am - .5f) >= Math.Abs(dm - .5f)) {
@@ -373,25 +374,28 @@ namespace Molten.Graphics.MSDF
                     float* c = sdf[x, y];
                     float cm = MsdfMath.median(c[0], c[1], c[2]);
                     bool protectedFlag = ((StencilFlags)(*stencil[x, y]) & StencilFlags.PROTECTED) != 0;
-                    float* l = null, b = null, r = null, t = null;
+                    float* l = sdf[x - 1, y]; 
+                    float* b = sdf[x, y - 1]; 
+                    float* r = sdf[x + 1, y]; 
+                    float* t = sdf[x, y + 1];
 
                     // Mark current texel c with the error flag if an artifact occurs when it's interpolated with any of its 8 neighbors.
-                    *stencil[x, y] |= (byte)(StencilFlags.ERROR * (
-                        (x > 0 && ((l = sdf[x - 1, y]), hasLinearArtifact(new BaseArtifactClassifier(hSpan, protectedFlag), cm, c, l))) ||
-                        (y > 0 && ((b = sdf[x, y - 1]), hasLinearArtifact(new BaseArtifactClassifier(vSpan, protectedFlag), cm, c, b))) ||
-                        (x < sdf.Width - 1 && ((r = sdf[x + 1, y]), hasLinearArtifact(new BaseArtifactClassifier(hSpan, protectedFlag), cm, c, r))) ||
-                        (y < sdf.Height - 1 && ((t = sdf[x, y + 1]), hasLinearArtifact(new BaseArtifactClassifier(vSpan, protectedFlag), cm, c, t))) ||
+                    *stencil[x, y] |= (byte)((int)StencilFlags.ERROR * ((
+                        (x > 0 && hasLinearArtifact(new BaseArtifactClassifier(hSpan, protectedFlag), cm, c, l)) ||
+                        (y > 0 && hasLinearArtifact(new BaseArtifactClassifier(vSpan, protectedFlag), cm, c, b)) ||
+                        (x < sdf.Width - 1 && hasLinearArtifact(new BaseArtifactClassifier(hSpan, protectedFlag), cm, c, r)) ||
+                        (y < sdf.Height - 1 && hasLinearArtifact(new BaseArtifactClassifier(vSpan, protectedFlag), cm, c, t)) ||
                         (x > 0 && y > 0 && hasDiagonalArtifact(new BaseArtifactClassifier(dSpan, protectedFlag), cm, c, l, b, sdf[x - 1, y - 1])) ||
                         (x < sdf.Width - 1 && y > 0 && hasDiagonalArtifact(new BaseArtifactClassifier(dSpan, protectedFlag), cm, c, r, b, sdf[x + 1, y - 1])) ||
                         (x > 0 && y < sdf.Height - 1 && hasDiagonalArtifact(new BaseArtifactClassifier(dSpan, protectedFlag), cm, c, l, t, sdf[x - 1, y + 1])) ||
                         (x < sdf.Width - 1 && y < sdf.Height - 1 && hasDiagonalArtifact(new BaseArtifactClassifier(dSpan, protectedFlag), cm, c, r, t, sdf[x + 1, y + 1]))
-                    ));
+                    ) ? 1 : 0));
                 }
             }
         }
 
-        public unsafe void findErrors<ES,DT,EC>(ContourCombiner<ES,DT,EC> combiner, BitmapRef<float> sdf, MsdfShape shape)
-            where ES : EdgeSelector<DT,EC>, new()
+        public unsafe void findErrors<ES, DT, EC>(ContourCombiner<ES, DT, EC> combiner, BitmapRef<float> sdf, MsdfShape shape)
+            where ES : EdgeSelector<DT, EC>, new()
             where DT : unmanaged
             where EC : unmanaged
         {
@@ -400,7 +404,7 @@ namespace Molten.Graphics.MSDF
             double vSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(0, invRange)).Length();
             double dSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange)).Length();
             {
-                ShapeDistanceChecker<ES, DT, EC> shapeDistanceChecker = new ShapeDistanceChecker<ES, DT,EC>(sdf, shape, projection, invRange, minImproveRatio);
+                ShapeDistanceChecker<ES, DT, EC> shapeDistanceChecker = new ShapeDistanceChecker<ES, DT, EC>(combiner, sdf, shape, projection, invRange, minImproveRatio);
                 bool rightToLeft = false;
 
                 // Inspect all texels.
@@ -416,18 +420,23 @@ namespace Molten.Graphics.MSDF
                         shapeDistanceChecker.msd = c;
                         shapeDistanceChecker.protectedFlag = ((StencilFlags)(*stencil[x, row]) & StencilFlags.PROTECTED) != 0;
                         float cm = MsdfMath.median(c[0], c[1], c[2]);
-                        float* l = null, b = null, r = null, t = null;
+
+                        float* l = sdf[x - 1, row]; 
+                        float* b = sdf[x, row - 1]; 
+                        float* r = sdf[x + 1, row]; 
+                        float* t = sdf[x, row + 1];
+
                         // Mark current texel c with the error flag if an artifact occurs when it's interpolated with any of its 8 neighbors.
-                        *stencil[x, row] |= (byte)(StencilFlags.ERROR * (
-                            (x > 0 && ((l = sdf[x - 1, row]), hasLinearArtifact(shapeDistanceChecker.classifier(new Vector2D(-1, 0), hSpan), cm, c, l))) ||
-                            (row > 0 && ((b = sdf[x, row - 1]), hasLinearArtifact(shapeDistanceChecker.classifier(new Vector2D(0, -1), vSpan), cm, c, b))) ||
-                            (x < sdf.Width - 1 && ((r = sdf[x + 1, row]), hasLinearArtifact(shapeDistanceChecker.classifier(new Vector2D(+1, 0), hSpan), cm, c, r))) ||
-                            (row < sdf.Height - 1 && ((t = sdf[x, row + 1]), hasLinearArtifact(shapeDistanceChecker.classifier(new Vector2D(0, +1), vSpan), cm, c, t))) ||
+                        *stencil[x, row] |= (byte)((int)StencilFlags.ERROR * ((
+                            (x > 0 && hasLinearArtifact(shapeDistanceChecker.classifier(new Vector2D(-1, 0), hSpan), cm, c, l)) ||
+                            (row > 0 && hasLinearArtifact(shapeDistanceChecker.classifier(new Vector2D(0, -1), vSpan), cm, c, b)) ||
+                            (x < sdf.Width - 1 && hasLinearArtifact(shapeDistanceChecker.classifier(new Vector2D(+1, 0), hSpan), cm, c, r)) ||
+                            (row < sdf.Height - 1 && hasLinearArtifact(shapeDistanceChecker.classifier(new Vector2D(0, +1), vSpan), cm, c, t)) ||
                             (x > 0 && row > 0 && hasDiagonalArtifact(shapeDistanceChecker.classifier(new Vector2D(-1, -1), dSpan), cm, c, l, b, sdf[x - 1, row - 1])) ||
                             (x < sdf.Width - 1 && row > 0 && hasDiagonalArtifact(shapeDistanceChecker.classifier(new Vector2D(+1, -1), dSpan), cm, c, r, b, sdf[x + 1, row - 1])) ||
                             (x > 0 && row < sdf.Height - 1 && hasDiagonalArtifact(shapeDistanceChecker.classifier(new Vector2D(-1, +1), dSpan), cm, c, l, t, sdf[x - 1, row + 1])) ||
                             (x < sdf.Width - 1 && row < sdf.Height - 1 && hasDiagonalArtifact(shapeDistanceChecker.classifier(new Vector2D(+1, +1), dSpan), cm, c, r, t, sdf[x + 1, row + 1]))
-                        ));
+                        ) ? 1 : 0));
                     }
                 }
             }

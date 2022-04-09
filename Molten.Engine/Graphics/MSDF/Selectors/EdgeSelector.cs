@@ -31,5 +31,7 @@ namespace Molten.Graphics.MSDF
         public abstract double resolveDistance(DT distance);
 
         public abstract void initDistance(ref DT distance);
+
+        public abstract float getRefPSD(in DT dist, double invRange);
     }
 }

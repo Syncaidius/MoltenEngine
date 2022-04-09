@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.MSDF
 {
-    public abstract class BaseArtifactClassifier
+    public class BaseArtifactClassifier
     {
         protected double span;
         protected bool protectedFlag;
@@ -31,7 +31,7 @@ namespace Molten.Graphics.MSDF
             return 0;
         }
 
-        public bool evaluate(double t, float m, int flags)
+        public virtual bool evaluate(double t, float m, int flags)
         {
             return (flags & 2) != 0;
         }

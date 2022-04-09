@@ -44,7 +44,7 @@
             }
             else
             {
-                EngineUtil.Zero(pDest, SizeOf);
+                EngineUtil.MemSet(pDest, 0, SizeOf);
             }
         }
 

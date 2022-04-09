@@ -65,5 +65,10 @@ namespace Molten.Graphics.MSDF
         {
             return distance;
         }
+
+        public override float getRefPSD(in double dist, double invRange)
+        {
+            return (float)(invRange * dist + .5);
+        }
     }
 }
