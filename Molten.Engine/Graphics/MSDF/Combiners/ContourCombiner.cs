@@ -17,10 +17,9 @@ namespace Molten.Graphics.MSDF
     /// <typeparam name="ES">EdgeSelector type.</typeparam>
     /// <typeparam name="DT">Distance type. e.g. double, MultiDistance or MultiAndTrueDistance.</typeparam>
     /// <typeparam name="EC">EdgeCache type.</typeparam>
-    public abstract class ContourCombiner<ES, DT, EC> : ContourCombiner
-        where ES : EdgeSelector<DT, EC>, new()
+    public abstract class ContourCombiner<ES, DT> : ContourCombiner
+        where ES : EdgeSelector<DT>, new()
         where DT : unmanaged
-        where EC : unmanaged
     {
         public abstract void reset(in Vector2D p);
 

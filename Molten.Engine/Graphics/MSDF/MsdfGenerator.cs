@@ -20,12 +20,11 @@ namespace Molten.Graphics.MSDF
         /// <param name="output"></param>
         /// <param name="shape"></param>
         /// <param name="projection"></param>
-        private unsafe void generateDistanceField<ES, DT, EC>(DistancePixelConversion<DT> distancePixelConversion, ContourCombiner<ES, DT, EC> combiner, BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
-            where ES : EdgeSelector<DT, EC>, new()
+        private unsafe void generateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConversion, ContourCombiner<ES, DT> combiner, BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
+            where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
-            where EC : unmanaged
         {
-            ShapeDistanceFinder<ES, DT, EC> distanceFinder = new ShapeDistanceFinder<ES, DT, EC>(shape, combiner);
+            ShapeDistanceFinder<ES, DT> distanceFinder = new ShapeDistanceFinder<ES, DT>(shape, combiner);
 
             bool rightToLeft = false;
             for (int y = 0; y < output.Height; ++y)
@@ -49,12 +48,12 @@ namespace Molten.Graphics.MSDF
 
             if (config.OverlapSupport)
             {
-                var combiner = new OverlappingContourCombiner<TrueDistanceSelector, double, TrueDistanceSelector.EdgeCache>(shape);
+                var combiner = new OverlappingContourCombiner<TrueDistanceSelector, double>(shape);
                 generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
             else
             {
-                var combiner = new SimpleContourCombiner<TrueDistanceSelector, double, TrueDistanceSelector.EdgeCache>(shape);
+                var combiner = new SimpleContourCombiner<TrueDistanceSelector, double>(shape);
                 generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
         }
@@ -66,12 +65,12 @@ namespace Molten.Graphics.MSDF
 
             if (config.OverlapSupport)
             {
-                var combiner = new OverlappingContourCombiner<PseudoDistanceSelector, double, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                var combiner = new OverlappingContourCombiner<PseudoDistanceSelector, double>(shape);
                 generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
             else
             {
-                var combiner = new SimpleContourCombiner<PseudoDistanceSelector, double, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                var combiner = new SimpleContourCombiner<PseudoDistanceSelector, double>(shape);
                 generateDistanceField(dpc, combiner, output, shape, projection, range);
             }
         }
@@ -83,13 +82,13 @@ namespace Molten.Graphics.MSDF
 
             if (config.OverlapSupport)
             {
-                var combiner = new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                var combiner = new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
                 generateDistanceField(dpc, combiner, output, shape, projection, range);
                 ErrorCorrection.msdfErrorCorrection(combiner, output, shape, projection, range, config);
             }
             else
             {
-                var combiner = new SimpleContourCombiner<MultiDistanceSelector, MultiDistance, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                var combiner = new SimpleContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
                 generateDistanceField(dpc, combiner, output, shape, projection, range);
                 ErrorCorrection.msdfErrorCorrection(combiner, output, shape, projection, range, config);
             }
@@ -101,13 +100,13 @@ namespace Molten.Graphics.MSDF
             var dpc = new MultiTrueDistancePixelConversion(range);
             if (config.OverlapSupport)
             {
-                var combiner = new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                var combiner = new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
                 generateDistanceField(dpc, combiner, output, shape, projection, range);
                 ErrorCorrection.msdfErrorCorrection(combiner, output, shape, projection, range, config);
             }
             else
             {
-                var combiner = new SimpleContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                var combiner = new SimpleContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
                 generateDistanceField(dpc, combiner, output, shape, projection, range);
                 ErrorCorrection.msdfErrorCorrection(combiner, output, shape, projection, range, config);
             }
@@ -258,7 +257,7 @@ namespace Molten.Graphics.MSDF
             }
 
             errorCorrectionConfig.DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
-            var combiner = new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance, PseudoDistanceSelectorBase.EdgeCache>(shape);
+            var combiner = new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
             ErrorCorrection.msdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
         }
 
@@ -324,7 +323,7 @@ namespace Molten.Graphics.MSDF
                 }
 
                 errorCorrectionConfig.DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
-                var combiner = new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance, PseudoDistanceSelectorBase.EdgeCache>(shape);
+                var combiner = new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
                 ErrorCorrection.msdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
             }
         }

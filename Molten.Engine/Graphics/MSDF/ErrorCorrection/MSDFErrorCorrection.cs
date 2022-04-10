@@ -394,17 +394,16 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void findErrors<ES, DT, EC>(ContourCombiner<ES, DT, EC> combiner, BitmapRef<float> sdf, MsdfShape shape)
-            where ES : EdgeSelector<DT, EC>, new()
+        public unsafe void findErrors<ES, DT>(ContourCombiner<ES, DT> combiner, BitmapRef<float> sdf, MsdfShape shape)
+            where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
-            where EC : unmanaged
         {
             // Compute the expected deltas between values of horizontally, vertically, and diagonally adjacent texels.
             double hSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange, 0)).Length();
             double vSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(0, invRange)).Length();
             double dSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange)).Length();
             {
-                ShapeDistanceChecker<ES, DT, EC> shapeDistanceChecker = new ShapeDistanceChecker<ES, DT, EC>(combiner, sdf, shape, projection, invRange, minImproveRatio);
+                ShapeDistanceChecker<ES, DT> shapeDistanceChecker = new ShapeDistanceChecker<ES, DT>(combiner, sdf, shape, projection, invRange, minImproveRatio);
                 bool rightToLeft = false;
 
                 // Inspect all texels.

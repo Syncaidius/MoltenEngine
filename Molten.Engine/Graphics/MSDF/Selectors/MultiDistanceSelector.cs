@@ -11,7 +11,7 @@ namespace Molten.Graphics.MSDF
         public double r, g, b;
     };
 
-    public class MultiDistanceSelector : EdgeSelector<MultiDistance, PseudoDistanceSelectorBase.EdgeCache>
+    public class MultiDistanceSelector : EdgeSelector<MultiDistance>
     {
         Vector2D p;
         PseudoDistanceSelectorBase r = new PseudoDistanceSelector();
@@ -27,7 +27,7 @@ namespace Molten.Graphics.MSDF
             this.p = p;
         }
 
-        public override void addEdge(ref PseudoDistanceSelectorBase.EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
+        public override void addEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
         {
             if (
                 ((edge.Color & EdgeColor.RED) == EdgeColor.RED && r.isEdgeRelevant(cache, edge, p)) ||
@@ -88,7 +88,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public override void merge(EdgeSelector<MultiDistance, PseudoDistanceSelectorBase.EdgeCache> other)
+        public override void merge(EdgeSelector<MultiDistance> other)
         {
             MultiDistanceSelector md = other as MultiDistanceSelector;
             r.merge(md.r);

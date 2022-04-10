@@ -153,15 +153,10 @@ namespace Molten.Samples
             double peakSize = 5;
             Contour cInner = new Contour();
             cInner.AddEdge(new LinearSegment(innerPos + new Vector2D(innerSize.X, 0), innerPos));
-
             cInner.AddEdge(new LinearSegment(innerPos, innerPos + new Vector2D(0, innerSize.Y)));
-
             cInner.AddEdge(new LinearSegment(innerPos + new Vector2D(0, innerSize.Y), innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize)));
-
             cInner.AddEdge(new LinearSegment(innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize), innerPos + innerSize));
-
             cInner.AddEdge(new LinearSegment(innerPos + innerSize, innerPos + new Vector2D(innerSize.X, 0)));
-
 
             shape.Contours.Add(cInner);
             return shape;

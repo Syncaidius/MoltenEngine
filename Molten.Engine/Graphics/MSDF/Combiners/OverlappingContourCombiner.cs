@@ -12,10 +12,9 @@ namespace Molten.Graphics.MSDF
     /// <typeparam name="ES">EdgeSelector type.</typeparam>
     /// <typeparam name="DT">Distance type. e.g. double, MultiDistance or MultiAndTrueDistance.</typeparam>
     /// <typeparam name="EC">Edge cache type.</typeparam>
-    public class OverlappingContourCombiner<ES, DT, EC> : ContourCombiner<ES, DT, EC>
-         where ES : EdgeSelector<DT, EC>, new()
+    public class OverlappingContourCombiner<ES, DT> : ContourCombiner<ES, DT>
+         where ES : EdgeSelector<DT>, new()
         where DT : unmanaged
-        where EC : unmanaged
     {
         Vector2D p;
         List<int> windings;
@@ -35,7 +34,7 @@ namespace Molten.Graphics.MSDF
         public override void reset(in Vector2D p)
         {
             this.p = p;
-            foreach (EdgeSelector<DT, EC> contourEdgeSelector in edgeSelectors)
+            foreach (EdgeSelector<DT> contourEdgeSelector in edgeSelectors)
                 contourEdgeSelector.reset(p);
         }
 

@@ -12,7 +12,7 @@ namespace Molten.Graphics.MSDF
         public double a;
     };
 
-    public class MultiAndTrueDistanceSelector : EdgeSelector<MultiAndTrueDistance, PseudoDistanceSelectorBase.EdgeCache>
+    public class MultiAndTrueDistanceSelector : EdgeSelector<MultiAndTrueDistance>
     {
         Vector2D p;
         PseudoDistanceSelectorBase r, g, b;
@@ -26,7 +26,7 @@ namespace Molten.Graphics.MSDF
             this.p = p;
         }
 
-        public override void addEdge(ref PseudoDistanceSelectorBase.EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
+        public override void addEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
         {
             if (
                 ((edge.Color & EdgeColor.RED) == EdgeColor.RED && r.isEdgeRelevant(cache, edge, p)) ||
@@ -87,7 +87,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public override void merge(EdgeSelector<MultiAndTrueDistance, PseudoDistanceSelectorBase.EdgeCache> other)
+        public override void merge(EdgeSelector<MultiAndTrueDistance> other)
         {
             MultiAndTrueDistanceSelector mtd = other as MultiAndTrueDistanceSelector;
             r.merge(mtd.r);

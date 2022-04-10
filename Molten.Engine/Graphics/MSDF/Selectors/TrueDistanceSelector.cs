@@ -6,22 +6,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.MSDF
 {
-    public class TrueDistanceSelector : EdgeSelector<double, TrueDistanceSelector.EdgeCache>
+    public class TrueDistanceSelector : EdgeSelector<double>
     {
         Vector2D p;
         SignedDistance minDistance;
-
-        public struct EdgeCache
-        {
-            public Vector2D point;
-            public double absDistance;
-
-            public EdgeCache(Vector2D p, double absDist)
-            {
-                point = p;
-                absDistance = absDist;
-            }
-        }
 
         public override void reset(in Vector2D p)
         {
@@ -44,7 +32,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public override void merge(EdgeSelector<double, EdgeCache> other)
+        public override void merge(EdgeSelector<double> other)
         {
             TrueDistanceSelector td = other as TrueDistanceSelector;
             if (td.minDistance < minDistance)

@@ -11,24 +11,23 @@ namespace Molten.Graphics.MSDF
     /// </summary>
     /// <typeparam name="ES">Edge selector type</typeparam>
     /// <typeparam name="DT">Distance Type</typeparam>
-    public unsafe class ShapeDistanceChecker<ES, DT, EC>
-        where ES : EdgeSelector<DT, EC>, new()
+    public unsafe class ShapeDistanceChecker<ES, DT>
+        where ES : EdgeSelector<DT>, new()
         where DT : unmanaged
-        where EC : unmanaged
     {
         public Vector2D shapeCoord, sdfCoord;
         public float* msd;
         public bool protectedFlag;
 
-        internal ShapeDistanceFinder<ES, DT, EC> distanceFinder;
+        internal ShapeDistanceFinder<ES, DT> distanceFinder;
         internal BitmapRef<float> sdf;
         internal double invRange;
         internal Vector2D texelSize;
         internal double minImproveRatio;
 
-        public ShapeDistanceChecker(ContourCombiner<ES,DT,EC> combiner, BitmapRef<float> pSdf, MsdfShape pShape, MsdfProjection pProjection, double pInvRange, double pMinImproveRatio)
+        public ShapeDistanceChecker(ContourCombiner<ES,DT> combiner, BitmapRef<float> pSdf, MsdfShape pShape, MsdfProjection pProjection, double pInvRange, double pMinImproveRatio)
         {
-            distanceFinder = new ShapeDistanceFinder<ES,DT,EC>(pShape, combiner);
+            distanceFinder = new ShapeDistanceFinder<ES,DT>(pShape, combiner);
             sdf = pSdf;
             invRange = pInvRange;
             minImproveRatio = pMinImproveRatio;
@@ -36,9 +35,9 @@ namespace Molten.Graphics.MSDF
             texelSize = pProjection.UnprojectVector(new Vector2D(1));
         }
 
-        public ArtifactClassifier<ES, DT, EC> classifier(Vector2D direction, double span)
+        public ArtifactClassifier<ES, DT> classifier(Vector2D direction, double span)
         {
-            return new ArtifactClassifier<ES, DT, EC>(this, direction, span);
+            return new ArtifactClassifier<ES, DT>(this, direction, span);
         }
     }
 }

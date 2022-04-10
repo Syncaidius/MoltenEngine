@@ -6,21 +6,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.MSDF
 {
-    public abstract class PseudoDistanceSelectorBase : EdgeSelector<double, PseudoDistanceSelectorBase.EdgeCache>
+    public abstract class PseudoDistanceSelectorBase : EdgeSelector<double>
     {
         SignedDistance minTrueDistance;
         double minNegativePseudoDistance;
         double minPositivePseudoDistance;
         EdgeSegment nearEdge;
         double nearEdgeParam;
-
-        public struct EdgeCache
-        {
-            public Vector2D point;
-            public double absDistance;
-            public double aDomainDistance, bDomainDistance;
-            public double aPseudoDistance, bPseudoDistance;
-        }
 
         public PseudoDistanceSelectorBase()
         {
@@ -90,7 +82,7 @@ namespace Molten.Graphics.MSDF
                 minPositivePseudoDistance = distance;
         }
 
-        public override void merge(EdgeSelector<double, EdgeCache> other)
+        public override void merge(EdgeSelector<double> other)
         {
             PseudoDistanceSelectorBase pd = other as PseudoDistanceSelectorBase;
 

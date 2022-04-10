@@ -18,15 +18,14 @@ namespace Molten.Graphics.MSDF
     /// </summary>
     /// <typeparam name="DT">Distance type. e.g. double, MultiDistance or MultiAndTrueDistance.</typeparam>
     /// <typeparam name="EC">EdgeCache type.</typeparam>
-    public abstract class EdgeSelector<DT, EC> : EdgeSelector
+    public abstract class EdgeSelector<DT> : EdgeSelector
         where DT : unmanaged
-        where EC : unmanaged
     {
         public abstract DT distance();
 
-        public abstract void addEdge(ref EC cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge);
+        public abstract void addEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge);
 
-        public abstract void merge(EdgeSelector<DT, EC> other);
+        public abstract void merge(EdgeSelector<DT> other);
 
         public abstract double resolveDistance(DT distance);
 

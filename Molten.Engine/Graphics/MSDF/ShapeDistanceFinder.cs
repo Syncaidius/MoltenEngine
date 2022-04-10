@@ -11,20 +11,19 @@ namespace Molten.Graphics.MSDF
     /// </summary>
     /// <typeparam name="ES">Edge selector type</typeparam>
     /// <typeparam name="DT">Distance Type</typeparam>
-    public class ShapeDistanceFinder<ES, DT, EC>
-        where ES : EdgeSelector<DT, EC>, new()
+    public class ShapeDistanceFinder<ES, DT>
+        where ES : EdgeSelector<DT>, new()
         where DT : unmanaged
-        where EC : unmanaged
     {
         MsdfShape shape;
-        ContourCombiner<ES, DT, EC> contourCombiner;
-        EC[] shapeEdgeCache;
+        ContourCombiner<ES, DT> contourCombiner;
+        EdgeCache[] shapeEdgeCache;
 
-        public ShapeDistanceFinder(MsdfShape shape, ContourCombiner<ES, DT, EC> combiner)
+        public ShapeDistanceFinder(MsdfShape shape, ContourCombiner<ES, DT> combiner)
         {
             this.shape = shape;
             contourCombiner = combiner;
-            shapeEdgeCache = new EC[shape.edgeCount()];
+            shapeEdgeCache = new EdgeCache[shape.edgeCount()];
         }
 
         public DT distance(in Vector2D origin)
@@ -32,7 +31,7 @@ namespace Molten.Graphics.MSDF
             contourCombiner.reset(origin);
 
             int ecIndex = 0;
-            ref EC edgeCache = ref shapeEdgeCache[ecIndex];
+            ref EdgeCache edgeCache = ref shapeEdgeCache[ecIndex];
 
             for (int i = 0; i < shape.Contours.Count; i++)
             {
@@ -59,7 +58,7 @@ namespace Molten.Graphics.MSDF
             return contourCombiner.distance();
         }
 
-        public DT oneShotDistance(ContourCombiner<ES, DT, EC> combiner, MsdfShape shape, in Vector2D origin) {
+        public DT oneShotDistance(ContourCombiner<ES, DT> combiner, MsdfShape shape, in Vector2D origin) {
             contourCombiner = combiner;
             contourCombiner.reset(origin);
 
@@ -78,7 +77,7 @@ namespace Molten.Graphics.MSDF
                     foreach (EdgeSegment edge in contour.Edges)
                     { 
                         EdgeSegment nextEdge = edge;
-                        EC dummy = new EC();
+                        EdgeCache dummy = new EdgeCache();
                         edgeSelector.addEdge(ref dummy, prevEdge, curEdge, nextEdge);
                         prevEdge = curEdge;
                         curEdge = nextEdge;
@@ -99,10 +98,10 @@ namespace Molten.Graphics.MSDF
         }
     }
 
-    public class SimpleTrueShapeDistanceFinder : ShapeDistanceFinder<TrueDistanceSelector, double, TrueDistanceSelector.EdgeCache>
+    public class SimpleTrueShapeDistanceFinder : ShapeDistanceFinder<TrueDistanceSelector, double>
     {
         public SimpleTrueShapeDistanceFinder(MsdfShape shape) :
-            base(shape, new SimpleContourCombiner<TrueDistanceSelector, double, TrueDistanceSelector.EdgeCache>(shape))
+            base(shape, new SimpleContourCombiner<TrueDistanceSelector, double>(shape))
         {
         }
     }

@@ -8,10 +8,9 @@ namespace Molten.Graphics.MSDF
 {
     public static class ErrorCorrection
     {
-        public unsafe static void msdfErrorCorrectionInner<ES, DT, EC>(ContourCombiner<ES, DT, EC> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
-            where ES : EdgeSelector<DT, EC>, new()
+        public unsafe static void msdfErrorCorrectionInner<ES, DT>(ContourCombiner<ES, DT> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+            where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
-            where EC : unmanaged
         {
             if (config.ErrorCorrection.Mode == ErrorCorrectionConfig.ErrorCorrectMode.DISABLED)
                 return;
@@ -69,10 +68,9 @@ namespace Molten.Graphics.MSDF
             ec.apply(sdf);
         }
 
-        public static void msdfErrorCorrection<ES, DT, EC>(ContourCombiner<ES, DT, EC> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
-            where ES : EdgeSelector<DT, EC>, new()
+        public static void msdfErrorCorrection<ES, DT>(ContourCombiner<ES, DT> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+            where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
-            where EC : unmanaged
         {
             msdfErrorCorrectionInner(combiner, sdf, shape, projection, range, config);
         }
