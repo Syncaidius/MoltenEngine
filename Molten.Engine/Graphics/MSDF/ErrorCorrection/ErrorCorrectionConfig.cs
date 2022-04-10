@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.MSDF
 {
-    internal unsafe class ErrorCorrectionConfig
+    public unsafe class ErrorCorrectionConfig
     {
         /// <summary>
         /// Mode of operation

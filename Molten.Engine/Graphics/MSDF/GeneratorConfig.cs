@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.MSDF
 {
-    internal class GeneratorConfig
+    public class GeneratorConfig
     {
         public bool OverlapSupport { get; set; }
 

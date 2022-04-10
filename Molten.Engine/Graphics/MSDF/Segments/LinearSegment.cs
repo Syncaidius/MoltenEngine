@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.MSDF
 {
-    internal class LinearSegment : EdgeSegment
+    public class LinearSegment : EdgeSegment
     {
         Vector2D[] p;
 

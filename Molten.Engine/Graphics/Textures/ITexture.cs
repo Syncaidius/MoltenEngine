@@ -66,7 +66,7 @@
         /// <param name="mipCount">The number of mip-map levels to copy per array slice, from the provided <see cref="TextureData"/>.</param>
         /// <param name="arrayCount">The number of array slices to copy from the provided <see cref="TextureData"/>.</param>
         /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
-        /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
+        /// <param name="destArraySlice">The array slice index within the current texture to start copying to.</param>
         void SetData(TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0);
 
         /// <summary>Copies the provided data into the texture.</summary>

@@ -1,5 +1,7 @@
-﻿using Molten.Font;
+﻿using System.Runtime.InteropServices;
+using Molten.Font;
 using Molten.Graphics;
+using Molten.Graphics.MSDF;
 using Molten.Input;
 
 namespace Molten.Samples
@@ -25,6 +27,8 @@ namespace Molten.Samples
         List<List<Vector2F>> _holePoints;
         List<Color> _colors;
         Vector2F _charOffset = new Vector2F(300, 300);
+        MsdfGenerator _msdf;
+        ITexture2D _texMsdf;
 
         public FontFileTest() : base("FontFile Test") { }
 
@@ -72,14 +76,92 @@ namespace Molten.Samples
             cr.Commit();
         }
 
-        private void FontLoad_OnCompleted(ContentRequest cr)
+        private unsafe void FontLoad_OnCompleted(ContentRequest cr)
         {
             _font2Test = cr.Get<SpriteFont>(0);
             _fontFile = _font2Test.Font;
             InitializeFontDebug();
             GenerateChar('Å');
+
+            // Run MSDF tests
+            _msdf = new MsdfGenerator();
+
+            int testWidth = 64;
+            int testHeight = 64;
+            int nPerPixel = 1;
+            FillRule fl = FillRule.FILL_NONZERO;
+
+            float* pixels = EngineUtil.AllocArray<float>((nuint)(testWidth * testHeight * nPerPixel));
+            BitmapRef<float> sdf = new BitmapRef<float>(pixels, nPerPixel, testWidth, testHeight);
+            MsdfShape shape = CreateMsdfShape(new Vector2D(32, 32));
+
+            MsdfProjection projection = new MsdfProjection(new Vector2D(1), new Vector2D(8, 8));
+            _msdf.generateSDF(sdf, shape, projection, 2, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
+            {
+                DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
+                Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
+            }));
+            MsdfRasterization.distanceSignCorrection(sdf, shape, projection, fl);
+
+            /*float* oPixels = EngineUtil.AllocArray<float>((nuint)(testWidth * testHeight * nPerPixel));
+            BitmapRef<float> output = new BitmapRef<float>(oPixels, nPerPixel, testWidth, testHeight);
+            MsdfRasterization.renderMSDF(output, sdf, 15, 0.5f);*/
+
+            _texMsdf = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
+            {
+                Width = (uint)testWidth,
+                Height = (uint)testHeight,
+                Format = GraphicsFormat.R32_Float
+            });
+
+            float[] pData = new float[testWidth * testHeight * nPerPixel];
+            fixed (float* ptrData = pData) 
+                Buffer.MemoryCopy(pixels, ptrData, pData.Length * sizeof(float), pData.Length * sizeof(float));
+
+            
+
+            uint rowPitch = (uint)((testWidth * nPerPixel) * sizeof(float));
+            _texMsdf.SetData(0, pData, 0, (uint)pData.Length, rowPitch);
         }
 
+        private MsdfShape CreateMsdfShape(Vector2D size)
+        {
+            MsdfShape shape = new MsdfShape();
+            Contour c = new Contour();
+            /*c.AddEdge(new EdgeHolder()
+            {
+                Segment = new LinearSegment(new Vector2D(0), new Vector2D(size.X / 2f, -(size.Y / 4)))
+            });
+
+            c.AddEdge(new EdgeHolder()
+            {
+                Segment = new LinearSegment(new Vector2D(size.X / 2f, -(size.Y / 4)), new Vector2D(size.X, 0))
+            }); */
+
+            c.AddEdge(new EdgeHolder()
+            {
+                Segment = new QuadraticSegment(new Vector2D(0), new Vector2D(size.X / 2f, -(size.Y / 4)), new Vector2D(size.X, 0))
+            });
+
+            c.AddEdge(new EdgeHolder()
+            {
+                Segment = new LinearSegment(new Vector2D(size.X, 0), size)
+            });
+
+            c.AddEdge(new EdgeHolder()
+            {
+                Segment = new LinearSegment(size, new Vector2D(0, size.Y))
+            });
+
+            c.AddEdge(new EdgeHolder()
+            {
+                Segment = new LinearSegment(new Vector2D(0, size.Y), new Vector2D(0))
+            });
+
+            shape.Contours.Add(c);
+
+            return shape;
+        }
         private void InitializeFontDebug()
         {
             _fontBounds = _fontFile.ContainerBounds;
@@ -156,6 +238,13 @@ namespace Molten.Samples
                     sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
                     pos.Y += _font2Test.LineSpace;
                     sb.DrawString(_font2Test, $"Font Name: {_font2Test.Font.Info.FullName}", pos, Color.White);
+                }
+
+                if (_texMsdf != null)
+                {
+                    Vector2F pos = new Vector2F(800, 600);
+                    Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, (int)_texMsdf.Width, (int)_texMsdf.Height);
+                    sb.Draw(_texMsdf, texBounds, Color.White);
                 }
             };
         }

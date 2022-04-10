@@ -113,6 +113,12 @@ namespace Molten.Graphics.MSDF
             return n >= 0f && n <= 1.0f ? n : (n > 0 ? 1f : 0f);
         }
 
+        /// Clamps the number to the interval from 0 to 1.
+        public static double clamp(double n)
+        {
+            return n >= 0 && n <= 1.0 ? n : (n > 0 ? 1 : 0);
+        }
+
         /// Clamps the number to the interval from 0 to b.
         public static float clamp(float n, float b)
         {

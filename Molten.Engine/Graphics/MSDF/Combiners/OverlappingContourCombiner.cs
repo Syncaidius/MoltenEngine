@@ -28,6 +28,8 @@ namespace Molten.Graphics.MSDF
                 windings.Add(contour.winding());
 
             edgeSelectors = new List<ES>(shape.Contours.Count);
+            for (int i = 0; i < shape.Contours.Count; i++)
+                edgeSelectors.Add(new ES());
         }
 
         public override void reset(in Vector2D p)

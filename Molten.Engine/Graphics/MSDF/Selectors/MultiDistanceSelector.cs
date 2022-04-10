@@ -14,7 +14,9 @@ namespace Molten.Graphics.MSDF
     public class MultiDistanceSelector : EdgeSelector<MultiDistance, PseudoDistanceSelectorBase.EdgeCache>
     {
         Vector2D p;
-        PseudoDistanceSelectorBase r, g, b;
+        PseudoDistanceSelectorBase r = new PseudoDistanceSelector();
+        PseudoDistanceSelectorBase g = new PseudoDistanceSelector();
+        PseudoDistanceSelectorBase b = new PseudoDistanceSelector();
 
         public override void reset(in Vector2D p)
         {

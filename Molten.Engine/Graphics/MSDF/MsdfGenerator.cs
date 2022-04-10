@@ -25,8 +25,6 @@ namespace Molten.Graphics.MSDF
             where DT : unmanaged
             where EC : unmanaged
         {
-            Validation.NPerPixel(output, 4);
-
             ShapeDistanceFinder<ES, DT, EC> distanceFinder = new ShapeDistanceFinder<ES, DT, EC>(shape, combiner);
 
             bool rightToLeft = false;
@@ -44,7 +42,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        void generateSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
+        public void generateSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
         {
             Validation.NPerPixel(output, 1);
             var dpc = new DoubleDistancePixelConversion(range);
@@ -61,7 +59,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        void generatePseudoSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
+        public void generatePseudoSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
         {
             Validation.NPerPixel(output, 1);
             var dpc = new DoubleDistancePixelConversion(range);
@@ -78,7 +76,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        void generateMSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public void generateMSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
         {
             Validation.NPerPixel(output, 3);
             var dpc = new MultiDistancePixelConversion(range);
@@ -97,7 +95,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        void generateMTSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public void generateMTSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
         {
             Validation.NPerPixel(output, 4);
             var dpc = new MultiTrueDistancePixelConversion(range);
@@ -117,17 +115,17 @@ namespace Molten.Graphics.MSDF
 
         // Legacy API
 
-        void generateSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
+        public void generateSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
         {
             generateSDF(output, shape, new MsdfProjection(scale, translate), range, new GeneratorConfig(overlapSupport));
         }
 
-        void generatePseudoSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
+        public void generatePseudoSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
         {
             generatePseudoSDF(output, shape, new MsdfProjection(scale, translate), range, new GeneratorConfig(overlapSupport));
         }
 
-        void generateMSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
+        public void generateMSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
         {
             generateMSDF(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(overlapSupport, errorCorrectionConfig));
         }
@@ -138,7 +136,7 @@ namespace Molten.Graphics.MSDF
         }
 
         // Legacy version
-        unsafe void generateSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        public unsafe void generateSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
         {
             if (output.NPerPixel != 1)
                 throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
@@ -166,7 +164,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        unsafe void generatePseudoSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        public unsafe void generatePseudoSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
         {
             if (output.NPerPixel != 1)
                 throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
@@ -203,7 +201,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        unsafe void generateMSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
+        public unsafe void generateMSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
         {
             if (output.NPerPixel != 3)
                 throw new IndexOutOfRangeException("A BitmapRef of 3 component-per-pixel is expected");
@@ -264,7 +262,7 @@ namespace Molten.Graphics.MSDF
             ErrorCorrection.msdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
         }
 
-        unsafe void generateMTSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
+        public unsafe void generateMTSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
         {
             if (output.NPerPixel != 4)
                 throw new IndexOutOfRangeException("A BitmapRef of 4 components-per-pixel is expected");

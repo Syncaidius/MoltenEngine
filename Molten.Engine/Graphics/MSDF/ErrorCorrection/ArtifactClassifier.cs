@@ -38,7 +38,7 @@ namespace Molten.Graphics.MSDF
                 float* newMSD = stackalloc float[3];
                 // Compute the color that would be currently interpolated at the artifact candidate's position.
                 Vector2D sdfCoord = parent.sdfCoord + tVector;
-                BitmapRef<float>.Interpolate(oldMSD, parent.sdf, sdfCoord);
+                MsdfRasterization.interpolate(oldMSD, parent.sdf, sdfCoord);
                 // Compute the color that would be interpolated at the artifact candidate's position if error correction was applied on the current texel.
                 double aWeight = (1 - Math.Abs(tVector.X)) * (1 - Math.Abs(tVector.Y));
                 float aPSD = MsdfMath.median(parent.msd[0], parent.msd[1], parent.msd[2]);

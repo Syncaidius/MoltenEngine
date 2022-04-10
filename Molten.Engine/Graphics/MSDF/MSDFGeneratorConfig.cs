@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.MSDF
 {
-    internal class MSDFGeneratorConfig : GeneratorConfig
+    public class MSDFGeneratorConfig : GeneratorConfig
     {
         public ErrorCorrectionConfig ErrorCorrection;
 

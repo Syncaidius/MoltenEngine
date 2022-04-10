@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.MSDF
 {
-    internal static class ErrorCorrection
+    public static class ErrorCorrection
     {
         public unsafe static void msdfErrorCorrectionInner<ES, DT, EC>(ContourCombiner<ES, DT, EC> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
             where ES : EdgeSelector<DT, EC>, new()
