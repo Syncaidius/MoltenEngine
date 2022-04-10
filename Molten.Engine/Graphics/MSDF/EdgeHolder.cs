@@ -11,7 +11,9 @@ namespace Molten.Graphics.MSDF
         /// Swaps the edges held by a and b.
         public static void Swap(EdgeHolder a, EdgeHolder b)
         {
-
+            EdgeSegment tmp = a.Segment;
+            a.Segment = b.Segment;
+            b.Segment = tmp;
         }
 
         public EdgeSegment Segment { get; set; }
