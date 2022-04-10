@@ -16,11 +16,6 @@ namespace Molten.Graphics.MSDF
 
         public EdgeSegment Segment { get; set; }
 
-        public EdgeHolder()
-        {
-            Segment = null;
-        }
-
         public EdgeHolder(EdgeSegment segment)
         {
             Segment = segment;

@@ -28,13 +28,6 @@ namespace Molten.Graphics.MSDF
             Edges.Add(edge);
         }
 
-        public EdgeHolder AddEdge()
-        {
-            EdgeHolder eh = new EdgeHolder();
-            Edges.Add(eh);
-            return eh;
-        }
-
         public void bound(ref double l, ref double b, ref double r, ref double t)
         {
             foreach (EdgeHolder edge in Edges)
