@@ -9,7 +9,7 @@ namespace Molten.Graphics.MSDF
     public struct EdgeParams
     {
         public SignedDistance minDistance;
-        public EdgeHolder nearEdge;
+        public EdgeSegment nearEdge;
         public double nearParam;
     }
 }

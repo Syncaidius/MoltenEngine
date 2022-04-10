@@ -83,19 +83,19 @@ namespace Molten.Graphics.MSDF
                 if (contour.Edges.Count == 1)
                 {
                     EdgeSegment[] parts = new EdgeSegment[3];  
-                    contour.Edges[0].Segment.splitInThirds(ref parts[0], ref parts[1], ref parts[2]);
+                    contour.Edges[0].splitInThirds(ref parts[0], ref parts[1], ref parts[2]);
                     contour.Edges.Clear();
-                    contour.Edges.Add(new EdgeHolder(parts[0]));
-                    contour.Edges.Add(new EdgeHolder(parts[1]));
-                    contour.Edges.Add(new EdgeHolder(parts[2]));
+                    contour.Edges.Add(parts[0]);
+                    contour.Edges.Add(parts[1]);
+                    contour.Edges.Add(parts[2]);
                 }
                 else
                 {
-                    EdgeHolder prevEdge = contour.Edges.Last();
-                    foreach(EdgeHolder edge in contour.Edges)
+                    EdgeSegment prevEdge = contour.Edges.Last();
+                    foreach(EdgeSegment edge in contour.Edges)
                     {
-                        Vector2D prevDir = edge.Segment.direction(1).GetNormalized();
-                        Vector2D curDir = edge.Segment.direction(0).GetNormalized();
+                        Vector2D prevDir = edge.direction(1).GetNormalized();
+                        Vector2D curDir = edge.direction(0).GetNormalized();
                         if (Vector2D.Dot(prevDir, curDir) < MSDFGEN_CORNER_DOT_EPSILON - 1)
                         {
                             DeconvergeEdge(prevEdge, 1);
@@ -107,14 +107,14 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        private static void DeconvergeEdge(EdgeHolder edgeHolder, int param)
+        private static void DeconvergeEdge(EdgeSegment edge, int param)
         {
             {
-                if(edgeHolder.Segment is QuadraticSegment quadraticSegment)
-                    edgeHolder.Segment = quadraticSegment.ConvertToCubic();
+                if(edge is QuadraticSegment quadraticSegment)
+                    edge = quadraticSegment.ConvertToCubic();
             }
             {
-                if(edgeHolder.Segment is CubicSegment cubicSegment)
+                if(edge is CubicSegment cubicSegment)
                     cubicSegment.Deconverge(param, MSDFGEN_DECONVERGENCE_FACTOR);
             }
         }
@@ -129,15 +129,15 @@ namespace Molten.Graphics.MSDF
             {
                 if (contour.Edges.Count > 0)
                 {
-                    Vector2D corner = contour.Edges.Last().Segment.point(1);
-                    foreach (EdgeHolder edge in contour.Edges)
+                    Vector2D corner = contour.Edges.Last().point(1);
+                    foreach (EdgeSegment edge in contour.Edges)
                     {
-                        if (edge.Segment == null)
+                        if (edge == null)
                             return false;
-                        if (edge.Segment.point(0) != corner)
+                        if (edge.point(0) != corner)
                             return false;
 
-                        corner = edge.Segment.point(1);
+                        corner = edge.point(1);
                     }
                 }
             }
@@ -218,9 +218,9 @@ namespace Molten.Graphics.MSDF
             int* dy = stackalloc int[3];
             foreach (Contour contour in Contours)
             {
-                foreach (EdgeHolder edge in contour.Edges)
+                foreach (EdgeSegment edge in contour.Edges)
                 {
-                    int n = edge.Segment.scanlineIntersections(x, dy, y);
+                    int n = edge.scanlineIntersections(x, dy, y);
                     for (int i = 0; i < n; ++i)
                     {
                         Scanline.Intersection intersection = new Scanline.Intersection(x[i], dy[i]);
@@ -256,22 +256,22 @@ namespace Molten.Graphics.MSDF
             for (int i = 0; i < Contours.Count; ++i) {
                 if (orientations[i] == 0 && Contours[i].Edges.Count > 0) {
                     // Find an Y that crosses the contour
-                    double y0 = Contours[i].Edges.First().Segment.point(0).Y;
+                    double y0 = Contours[i].Edges.First().point(0).Y;
                     double y1 = y0;
 
                     for (int j = 0; j < Contours[i].Edges.Count && y0 == y1; j++) 
-                        y1 = Contours[i].Edges[j].Segment.point(1).Y;
+                        y1 = Contours[i].Edges[j].point(1).Y;
                     for (int j = 0; j < Contours[i].Edges.Count && y0 == y1; j++)
-                        y1 = Contours[i].Edges[j].Segment.point(ratio).Y; // in case all endpoints are in a horizontal line
+                        y1 = Contours[i].Edges[j].point(ratio).Y; // in case all endpoints are in a horizontal line
                     double y = MsdfMath.mix(y0, y1, ratio);
                     // Scanline through whole shape at Y
                     double* x = stackalloc double[3];
                     int* dy = stackalloc int[3];
                     for (int j = 0; j < Contours.Count; ++j) 
                     {
-                        foreach (EdgeHolder edge in Contours[j].Edges)
+                        foreach (EdgeSegment edge in Contours[j].Edges)
                         { 
-                            int n = edge.Segment.scanlineIntersections(x, dy, y);
+                            int n = edge.scanlineIntersections(x, dy, y);
                             for (int k = 0; k < n; ++k) {
                                 Intersection intersection = new Intersection( x[k], dy[k], j );
                                 intersections.Add(intersection);

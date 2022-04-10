@@ -43,11 +43,11 @@ namespace Molten.Graphics.MSDF
                 {
                     ES edgeSelector = contourCombiner.edgeSelector(i);
 
-                    EdgeSegment prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]).Segment : contour.Edges[0].Segment;
-                    EdgeSegment curEdge = contour.Edges.Last().Segment;
-                    foreach (EdgeHolder edge in contour.Edges)
+                    EdgeSegment prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
+                    EdgeSegment curEdge = contour.Edges.Last();
+                    foreach (EdgeSegment edge in contour.Edges)
                     {
-                        EdgeSegment nextEdge = edge.Segment;
+                        EdgeSegment nextEdge = edge;
                         edgeSelector.addEdge(ref edgeCache, prevEdge, curEdge, nextEdge);
                         ecIndex++;
                         prevEdge = curEdge;
@@ -72,12 +72,12 @@ namespace Molten.Graphics.MSDF
                 {
                     ES edgeSelector = contourCombiner.edgeSelector(i);
 
-                    EdgeSegment prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]).Segment : contour.Edges[0].Segment;
-                    EdgeSegment curEdge = contour.Edges.Last().Segment;
+                    EdgeSegment prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
+                    EdgeSegment curEdge = contour.Edges.Last();
 
-                    foreach (EdgeHolder edge in contour.Edges)
+                    foreach (EdgeSegment edge in contour.Edges)
                     { 
-                        EdgeSegment nextEdge = edge.Segment;
+                        EdgeSegment nextEdge = edge;
                         EC dummy = new EC();
                         edgeSelector.addEdge(ref dummy, prevEdge, curEdge, nextEdge);
                         prevEdge = curEdge;

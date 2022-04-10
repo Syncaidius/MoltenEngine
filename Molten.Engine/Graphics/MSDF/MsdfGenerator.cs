@@ -151,9 +151,9 @@ namespace Molten.Graphics.MSDF
                     SignedDistance minDistance = new SignedDistance();
                     foreach (Contour contour in shape.Contours)
                     {
-                        foreach (EdgeHolder edge in contour.Edges)
+                        foreach (EdgeSegment edge in contour.Edges)
                         {
-                            SignedDistance distance = edge.Segment.signedDistance(p, out dummy);
+                            SignedDistance distance = edge.signedDistance(p, out dummy);
                             if (distance < minDistance)
                                 minDistance = distance;
                         } 
@@ -176,14 +176,14 @@ namespace Molten.Graphics.MSDF
                 {
                     Vector2D p = new Vector2D(x + .5, y + .5) / scale - translate;
                     SignedDistance minDistance = new SignedDistance();
-                    EdgeHolder nearEdge = null;
+                    EdgeSegment nearEdge = null;
                     double nearParam = 0;
                     foreach (Contour contour in shape.Contours)
                     {
-                        foreach (EdgeHolder edge in contour.Edges)
+                        foreach (EdgeSegment edge in contour.Edges)
                         {
                             double param;
-                            SignedDistance distance = edge.Segment.signedDistance(p, out param);
+                            SignedDistance distance = edge.signedDistance(p, out param);
                             if (distance < minDistance)
                             {
                                 minDistance = distance;
@@ -194,7 +194,7 @@ namespace Molten.Graphics.MSDF
                     }
 
                     if (nearEdge != null)
-                        nearEdge.Segment.distanceToPseudoDistance(ref minDistance, p, nearParam);
+                        nearEdge.distanceToPseudoDistance(ref minDistance, p, nearParam);
 
                     *output[x, row] = (float)(minDistance.Distance / range + .5);
                 }
@@ -220,23 +220,23 @@ namespace Molten.Graphics.MSDF
 
                     foreach (Contour contour in shape.Contours)
                     {
-                        foreach (EdgeHolder edge in contour.Edges)
+                        foreach (EdgeSegment edge in contour.Edges)
                         {
                             double param;
-                            SignedDistance distance = edge.Segment.signedDistance(p, out param);
-                            if ((edge.Segment.Color & EdgeColor.RED) == EdgeColor.RED && distance < r.minDistance)
+                            SignedDistance distance = edge.signedDistance(p, out param);
+                            if ((edge.Color & EdgeColor.RED) == EdgeColor.RED && distance < r.minDistance)
                             {
                                 r.minDistance = distance;
                                 r.nearEdge = edge; // TODO clone here?
                                 r.nearParam = param;
                             }
-                            if ((edge.Segment.Color & EdgeColor.GREEN) == EdgeColor.GREEN && distance < g.minDistance)
+                            if ((edge.Color & EdgeColor.GREEN) == EdgeColor.GREEN && distance < g.minDistance)
                             {
                                 g.minDistance = distance;
                                 g.nearEdge = edge; // TODO clone here?
                                 g.nearParam = param;
                             }
-                            if ((edge.Segment.Color & EdgeColor.BLUE) == EdgeColor.BLUE && distance < b.minDistance)
+                            if ((edge.Color & EdgeColor.BLUE) == EdgeColor.BLUE && distance < b.minDistance)
                             {
                                 b.minDistance = distance;
                                 b.nearEdge = edge; // TODO clone here?
@@ -246,11 +246,11 @@ namespace Molten.Graphics.MSDF
                     }
 
                     if (r.nearEdge != null)
-                        r.nearEdge.Segment.distanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
+                        r.nearEdge.distanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
                     if (g.nearEdge != null)
-                        g.nearEdge.Segment.distanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
+                        g.nearEdge.distanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
                     if (b.nearEdge != null)
-                        b.nearEdge.Segment.distanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
+                        b.nearEdge.distanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
                     output[x, row][0] = (float)(r.minDistance.Distance / range + .5);
                     output[x, row][1] = (float)(g.minDistance.Distance / range + .5);
                     output[x, row][2] = (float)(b.minDistance.Distance / range + .5);
@@ -282,26 +282,26 @@ namespace Molten.Graphics.MSDF
 
                     foreach (Contour contour in shape.Contours)
                     {
-                        foreach (EdgeHolder edge in contour.Edges)
+                        foreach (EdgeSegment edge in contour.Edges)
                         {
                             double param = 0;
-                            SignedDistance distance = edge.Segment.signedDistance(p, out param);
+                            SignedDistance distance = edge.signedDistance(p, out param);
                             if (distance < minDistance)
                                 minDistance = distance;
 
-                            if ((edge.Segment.Color & EdgeColor.RED) == EdgeColor.RED && distance < r.minDistance)
+                            if ((edge.Color & EdgeColor.RED) == EdgeColor.RED && distance < r.minDistance)
                             {
                                 r.minDistance = distance;
                                 r.nearEdge = edge; // TODO .clone() here?
                                 r.nearParam = param;
                             }
-                            if ((edge.Segment.Color & EdgeColor.GREEN) == EdgeColor.GREEN && distance < g.minDistance)
+                            if ((edge.Color & EdgeColor.GREEN) == EdgeColor.GREEN && distance < g.minDistance)
                             {
                                 g.minDistance = distance;
                                 g.nearEdge = edge; // TODO clone here?
                                 g.nearParam = param;
                             }
-                            if ((edge.Segment.Color & EdgeColor.BLUE) == EdgeColor.BLUE && distance < b.minDistance)
+                            if ((edge.Color & EdgeColor.BLUE) == EdgeColor.BLUE && distance < b.minDistance)
                             {
                                 b.minDistance = distance;
                                 b.nearEdge = edge; // TODO clone here?
@@ -310,11 +310,11 @@ namespace Molten.Graphics.MSDF
                         }
 
                         if (r.nearEdge != null)
-                            r.nearEdge.Segment.distanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
+                            r.nearEdge.distanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
                         if (g.nearEdge != null)
-                            g.nearEdge.Segment.distanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
+                            g.nearEdge.distanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
                         if (b.nearEdge != null)
-                            b.nearEdge.Segment.distanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
+                            b.nearEdge.distanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
 
                         output[x, row][0] = (float)(r.minDistance.Distance / range + .5);
                         output[x, row][1] = (float)(g.minDistance.Distance / range + .5);

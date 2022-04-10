@@ -61,15 +61,15 @@ namespace Molten.Graphics.MSDF
             {
                 if (contour.Edges.Count > 0)
                 {
-                    EdgeHolder prevEdge = contour.Edges.Last();
-                    foreach (EdgeHolder edge in contour.Edges)
+                    EdgeSegment prevEdge = contour.Edges.Last();
+                    foreach (EdgeSegment edge in contour.Edges)
                     {
-                        EdgeColor commonColor = prevEdge.Segment.Color & edge.Segment.Color;
+                        EdgeColor commonColor = prevEdge.Color & edge.Color;
                         // If the color changes from prevEdge to edge, this is a corner.
                         if ((commonColor & (commonColor - 1)) != (commonColor - 1))
                         {
                             // Find the four texels that envelop the corner and mark them as protected.
-                            Vector2D p = projection.Project(edge.Segment.point(0));
+                            Vector2D p = projection.Project(edge.point(0));
                             if (shape.InverseYAxis)
                                 p.Y = stencil.Height - p.Y;
                             int l = (int)Math.Floor(p.X - .5);
