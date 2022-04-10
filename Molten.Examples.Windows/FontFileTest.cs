@@ -88,7 +88,7 @@ namespace Molten.Samples
 
             int testWidth = 64;
             int testHeight = 64;
-            int nPerPixel = 3;
+            int nPerPixel = 1;
             FillRule fl = FillRule.FILL_NONZERO;
 
             float* pixels = EngineUtil.AllocArray<float>((nuint)(testWidth * testHeight * nPerPixel));
@@ -96,12 +96,12 @@ namespace Molten.Samples
             MsdfShape shape = CreateMsdfShape(new Vector2D(32, 32));
 
             MsdfProjection projection = new MsdfProjection(new Vector2D(1), new Vector2D(8, 8));
-            _msdf.generateMSDF(sdf, shape, projection, 2, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
+            _msdf.generateSDF(sdf, shape, projection, 2, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
             {
                 DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
                 Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
             }));
-            MsdfRasterization.multiDistanceSignCorrection(sdf, shape, projection, fl);
+            MsdfRasterization.distanceSignCorrection(sdf, shape, projection, fl);
 
             /*float* oPixels = EngineUtil.AllocArray<float>((nuint)(testWidth * testHeight * nPerPixel));
             BitmapRef<float> output = new BitmapRef<float>(oPixels, nPerPixel, testWidth, testHeight);
@@ -111,7 +111,7 @@ namespace Molten.Samples
             {
                 Width = (uint)testWidth,
                 Height = (uint)testHeight,
-                Format = GraphicsFormat.R32G32B32_Float
+                Format = GraphicsFormat.R32_Float
             });
 
             float[] pData = new float[testWidth * testHeight * nPerPixel];
@@ -160,6 +160,37 @@ namespace Molten.Samples
 
             shape.Contours.Add(c);
 
+            Vector2D innerPos = new Vector2D(10, 10);
+            Vector2D innerSize = new Vector2D(15, 15);
+            double peakSize = 5;
+            Contour cInner = new Contour();
+            cInner.AddEdge(new EdgeHolder()
+            {
+                Segment = new LinearSegment(innerPos + new Vector2D(innerSize.X, 0), innerPos)
+            });
+
+            cInner.AddEdge(new EdgeHolder()
+            {
+                Segment = new LinearSegment(innerPos, innerPos + new Vector2D(0, innerSize.Y))
+            });
+
+            cInner.AddEdge(new EdgeHolder()
+            {
+                Segment = new LinearSegment(innerPos + new Vector2D(0, innerSize.Y), innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize))
+            });
+
+            cInner.AddEdge(new EdgeHolder()
+            {
+                Segment = new LinearSegment(innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize), innerPos + innerSize)
+            });
+
+            cInner.AddEdge(new EdgeHolder()
+            {
+                Segment = new LinearSegment(innerPos + innerSize, innerPos + new Vector2D(innerSize.X, 0))
+            });
+
+
+            shape.Contours.Add(cInner);
             return shape;
         }
         private void InitializeFontDebug()
