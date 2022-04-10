@@ -88,7 +88,7 @@ namespace Molten.Samples
 
             int testWidth = 64;
             int testHeight = 64;
-            int nPerPixel = 1;
+            int nPerPixel = 3;
             FillRule fl = FillRule.FILL_NONZERO;
 
             float* pixels = EngineUtil.AllocArray<float>((nuint)(testWidth * testHeight * nPerPixel));
@@ -96,12 +96,12 @@ namespace Molten.Samples
             MsdfShape shape = CreateMsdfShape(new Vector2D(32, 32));
 
             MsdfProjection projection = new MsdfProjection(new Vector2D(1), new Vector2D(8, 8));
-            _msdf.generateSDF(sdf, shape, projection, 2, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
+            _msdf.generateMSDF(sdf, shape, projection, 2, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
             {
                 DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
                 Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
             }));
-            MsdfRasterization.distanceSignCorrection(sdf, shape, projection, fl);
+            MsdfRasterization.multiDistanceSignCorrection(sdf, shape, projection, fl);
 
             /*float* oPixels = EngineUtil.AllocArray<float>((nuint)(testWidth * testHeight * nPerPixel));
             BitmapRef<float> output = new BitmapRef<float>(oPixels, nPerPixel, testWidth, testHeight);
@@ -111,7 +111,7 @@ namespace Molten.Samples
             {
                 Width = (uint)testWidth,
                 Height = (uint)testHeight,
-                Format = GraphicsFormat.R32_Float
+                Format = GraphicsFormat.R32G32B32_Float
             });
 
             float[] pData = new float[testWidth * testHeight * nPerPixel];

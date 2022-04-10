@@ -34,7 +34,7 @@ namespace Molten.Graphics.MSDF
 
         public unsafe MSDFErrorCorrection(BitmapRef<byte> pStencil, MsdfProjection pProjection, double range)
         {
-            Validation.NPerPixel(stencil, 1);
+            Validation.NPerPixel(pStencil, 1);
 
             stencil = pStencil;
             projection = pProjection;
