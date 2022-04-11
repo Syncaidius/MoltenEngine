@@ -8,14 +8,17 @@ namespace Molten.Graphics.MSDF
 {
     public static class MsdfRasterization
     {
-        public static unsafe void distanceSignCorrection(BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, FillRule fillRule) {
+        public static unsafe void distanceSignCorrection(BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, FillRule fillRule)
+        {
             Validation.NPerPixel(sdf, 1);
             Scanline scanline = new Scanline();
 
-            for (int y = 0; y < sdf.Height; ++y) {
+            for (int y = 0; y < sdf.Height; ++y)
+            {
                 int row = shape.InverseYAxis ? sdf.Height - y - 1 : y;
                 shape.scanline(scanline, projection.UnprojectY(y + .5));
-                for (int x = 0; x < sdf.Width; ++x) {
+                for (int x = 0; x < sdf.Width; ++x)
+                {
                     bool fill = scanline.filled(projection.UnprojectX(x + .5), fillRule);
                     float* sd = sdf[x, row];
                     if ((*sd > 0.5f) != fill)
@@ -31,18 +34,22 @@ namespace Molten.Graphics.MSDF
             return (float)MsdfMath.clamp((dist - midValue) * pxRange + 0.5);
         }
 
-        public static unsafe void renderSDF(BitmapRef<float> output, BitmapRef<float> sdf, double pxRange, float midValue) {
+        public static unsafe void renderSDF(BitmapRef<float> output, BitmapRef<float> sdf, double pxRange, float midValue)
+        {
             Validation.NPerPixel(output, 1);
             Validation.NPerPixel(sdf, 1);
 
-            Vector2D scale = new Vector2D((double) sdf.Width/ output.Width, (double)sdf.Height / output.Height);
+            Vector2D scale = new Vector2D((double)sdf.Width / output.Width, (double)sdf.Height / output.Height);
             pxRange *= (double)(output.Width + output.Height) / (sdf.Width + sdf.Height);
             for (int y = 0; y < output.Height; ++y)
-                for (int x = 0; x < output.Width; ++x) {
+            {
+                for (int x = 0; x < output.Width; ++x)
+                {
                     float sd;
                     interpolate(&sd, sdf, scale * new Vector2D(x + .5, y + .5));
                     *output[x, y] = distVal(sd, pxRange, midValue);
                 }
+            }
         }
 
         public static unsafe void renderMSDF(BitmapRef<float> output, BitmapRef<float> sdf, double pxRange, float midValue)
@@ -154,6 +161,24 @@ namespace Molten.Graphics.MSDF
             b = (int)MsdfMath.clamp(b, bitmap.Height - 1); t = (int)MsdfMath.clamp(t, bitmap.Height - 1);
             for (int i = 0; i < bitmap.NPerPixel; ++i)
                 output[i] = MsdfMath.mix(MsdfMath.mix(bitmap[l, b][i], bitmap[r, b][i], lr), MsdfMath.mix(bitmap[l, t][i], bitmap[r, t][i], lr), bt);
+        }
+
+        public unsafe static void simulate8bit(BitmapRef<float> bitmap)
+        {
+            Validation.NPerPixel(bitmap, 1);
+            float* end = bitmap.pixels + 1 * bitmap.Width * bitmap.Height;
+            for (float* p = bitmap.pixels; p < end; ++p)
+                *p = pixelByteToFloat(pixelFloatToByte(*p));
+        }
+
+        public static float pixelByteToFloat(byte x)
+        {
+            return 1f / 255f * x;
+        }
+
+        public static byte pixelFloatToByte(float x)
+        {
+            return (byte)MsdfMath.clamp(256f * x, 255f);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Molten.Collections;
 using Molten.Font;
 using Molten.Graphics;
 using Molten.Graphics.MSDF;
@@ -6,9 +7,9 @@ using Molten.Input;
 
 namespace Molten.Samples
 {
-    public class FontFileTest : SampleSceneGame
+    public class MsdfTest : SampleSceneGame
     {
-        public override string Description => "A test area for the WIP FontFile system.";
+        public override string Description => "An example of using signed-distance-field (SDF), multi-channel signed-distance-field (MSDF) and multi-channel true signed-distance-field (MTSDF) rendering.";
 
         SceneObject _parent;
         SceneObject _child;
@@ -27,12 +28,18 @@ namespace Molten.Samples
         List<List<Vector2F>> _holePoints;
         List<Color> _colors;
         Vector2F _charOffset = new Vector2F(300, 300);
+        MsdfGenerator _msdf;
+        Dictionary<string, ITexture2D> _msdfTextures;
+        bool _loaded;
 
-        public FontFileTest() : base("Fonts") { }
+        public MsdfTest() : base("Signed Distance Field (SDF)") { }
 
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
+
+            _msdfTextures = new Dictionary<string, ITexture2D>();
+            _msdf = new MsdfGenerator();
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<ITexture2D>("dds_test.dds", new TextureParameters()
@@ -74,15 +81,91 @@ namespace Molten.Samples
             cr.Commit();
         }
 
-        private unsafe void FontLoad_OnCompleted(ContentRequest cr)
+        private void FontLoad_OnCompleted(ContentRequest cr)
         {
             _font2Test = cr.Get<SpriteFont>(0);
             _fontFile = _font2Test.Font;
             InitializeFontDebug();
             GenerateChar('Å');
+
+            GenerateSDF("SDF", false);
+            GenerateSDF("SDF Legacy", true);
+
+            _loaded = true;
         }
 
-        private MsdfShape CreateMsdfShape(Vector2D size)
+        private unsafe void GenerateSDF(string label, bool legacy)
+        {
+            int shapeSize = 50;
+            int pWidth = 64;
+            int pHeight = 64;
+            int nPerPixel = 1;
+            double pxRange = 4;
+
+            int testWidth = 256;
+            int testHeight = 256;
+            int testNPerPixel = 1;
+            Vector2D scale = new Vector2D(1);
+            Vector2D pOffset = new Vector2D(0, 8);
+            double avgScale = .5 * (scale.X + scale.Y);
+            double range = pxRange / MsdfMath.min(scale.X, scale.Y);
+            FillRule fl = FillRule.FILL_NONZERO;
+
+            float* pixels = EngineUtil.AllocArray<float>((nuint)(pWidth * pHeight * nPerPixel));
+            BitmapRef<float> sdf = new BitmapRef<float>(pixels, nPerPixel, pWidth, pHeight);
+            MsdfShape shape = CreateShape(new Vector2D(shapeSize));
+
+            MsdfProjection projection = new MsdfProjection(scale, pOffset);
+            if (legacy)
+            {
+                _msdf.generateSDF_legacy(sdf, shape, range, scale, pOffset);
+            }
+            else
+            {
+                _msdf.generateSDF(sdf, shape, projection, range, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
+                {
+                    DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
+                    Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
+                }));
+            }
+            MsdfRasterization.distanceSignCorrection(sdf, shape, projection, fl);
+
+            // Output render test texture
+            float* oPixels = EngineUtil.AllocArray<float>((nuint)(testWidth * testHeight * testNPerPixel));
+            BitmapRef<float> output = new BitmapRef<float>(oPixels, testNPerPixel, testWidth, testHeight);
+            MsdfRasterization.simulate8bit(sdf);
+            MsdfRasterization.renderSDF(output, sdf, avgScale * range, 0.5f);
+            ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
+            {
+                Width = (uint)testWidth,
+                Height = (uint)testHeight,
+                Format = GraphicsFormat.R8G8B8A8_UNorm
+            });
+
+            float[] pData = new float[testWidth * testHeight * testNPerPixel];
+            fixed (float* ptrData = pData)
+                Buffer.MemoryCopy(oPixels, ptrData, pData.Length * sizeof(float), pData.Length * sizeof(float));
+
+            Color[] pData2 = new Color[testWidth * testHeight];
+            for (int i = 0; i < pData2.Length; i++)
+            {
+                pData2[i] = new Color()
+                {
+                    R = (byte)(255 * oPixels[i]),
+                    G = (byte)(255 * oPixels[i]),
+                    B = (byte)(255 * oPixels[i]),
+                    A = (byte)(255 * oPixels[i] > 0 ? 255 : 0),
+                };
+
+            }
+
+            uint rowPitch = (uint)((testWidth * testNPerPixel * sizeof(Color)));
+            tex.SetData(0, pData2, 0, (uint)pData2.Length, rowPitch);
+
+            _msdfTextures.Add(label, tex);
+        }
+
+        private MsdfShape CreateShape(Vector2D size)
         {
             MsdfShape shape = new MsdfShape();
             Contour c = new Contour();
@@ -175,17 +258,22 @@ namespace Molten.Samples
 
                 sb.DrawString(SampleFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
 
-                // Only draw test font if it's loaded
-                if (_font2Test != null && _font2Test.UnderlyingTexture != null)
+                if (_loaded)
                 {
-                    Vector2F pos = new Vector2F(800, 65);
-                    Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, 512, 512);
-                    sb.Draw(_font2Test.UnderlyingTexture, texBounds, Color.White);
-                    sb.DrawRectOutline(texBounds, Color.Red, 1);
-                    pos.Y += 517;
-                    sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
-                    pos.Y += _font2Test.LineSpace;
-                    sb.DrawString(_font2Test, $"Font Name: {_font2Test.Font.Info.FullName}", pos, Color.White);
+                    Vector2F pos = new Vector2F(700, 65);
+
+                    foreach (string label in _msdfTextures.Keys)
+                    {
+                        ITexture2D tex = _msdfTextures[label];
+                        Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, (int)tex.Width, (int)tex.Height);
+                        sb.Draw(tex, texBounds, Color.White);
+                        sb.DrawRectOutline(texBounds, Color.Yellow, 1);
+
+                        Vector2F tPos = new Vector2F(texBounds.X, texBounds.Bottom + 5);
+                        sb.DrawString(SampleFont, label, tPos, Color.White);
+
+                        pos.X += (float)tex.Width + 15;
+                    }
                 }
             };
         }
