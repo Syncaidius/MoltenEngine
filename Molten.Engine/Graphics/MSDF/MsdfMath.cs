@@ -77,13 +77,13 @@ namespace Molten.Graphics.MSDF
             return max(min(a, b), min(max(a, b), c));
         }
 
-        /// Returns the weighted average of a and b.
+        /// Returns the weighted average of a and b. MathHelper.Lerp equivilent
         public static double mix(double a, double b, double weight)
         {
             return (1.0 - weight) * a + weight * b;
         }
 
-        /// Returns the weighted average of a and b.
+        /// Returns the weighted average of a and b. MathHelper.Lerp equivilent
         public static Vector2D mix(Vector2D a, Vector2D b, double weight)
         {
             return (1.0 - weight) * a + weight * b;

@@ -82,34 +82,6 @@ namespace Molten.Samples
             GenerateChar('Å');
         }
 
-        private MsdfShape CreateMsdfShape(Vector2D size)
-        {
-            MsdfShape shape = new MsdfShape();
-            Contour c = new Contour();
-
-            c.AddEdge(new QuadraticSegment(new Vector2D(0), new Vector2D(size.X / 2f, -(size.Y / 4)), new Vector2D(size.X, 0)));
-
-            c.AddEdge(new LinearSegment(new Vector2D(size.X, 0), size));
-
-            c.AddEdge(new LinearSegment(size, new Vector2D(0, size.Y)));
-
-            c.AddEdge(new LinearSegment(new Vector2D(0, size.Y), new Vector2D(0)));
-
-            shape.Contours.Add(c);
-
-            Vector2D innerPos = size / 6;
-            Vector2D innerSize = size / 2;
-            double peakSize = 5;
-            Contour cInner = new Contour();
-            cInner.AddEdge(new LinearSegment(innerPos + new Vector2D(innerSize.X, 0), innerPos));
-            cInner.AddEdge(new LinearSegment(innerPos, innerPos + new Vector2D(0, innerSize.Y)));
-            cInner.AddEdge(new LinearSegment(innerPos + new Vector2D(0, innerSize.Y), innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize)));
-            cInner.AddEdge(new LinearSegment(innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize), innerPos + innerSize));
-            cInner.AddEdge(new LinearSegment(innerPos + innerSize, innerPos + new Vector2D(innerSize.X, 0)));
-
-            shape.Contours.Add(cInner);
-            return shape;
-        }
         private void InitializeFontDebug()
         {
             _fontBounds = _fontFile.ContainerBounds;
