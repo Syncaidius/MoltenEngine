@@ -26,12 +26,12 @@ namespace Molten.Graphics.MSDF
         public List<Intersection> intersections;
         public int lastIndex;
 
-        public int compareIntersections(Intersection a, Intersection b)
+        public int CompareIntersections(Intersection a, Intersection b)
         {
             return MsdfMath.Sign(a.x - b.x);
         }
 
-        public bool interpretFillRule(int intersections, FillRule fillRule)
+        public bool InterpretFillRule(int intersections, FillRule fillRule)
         {
             switch (fillRule)
             {
@@ -47,7 +47,7 @@ namespace Molten.Graphics.MSDF
             return false;
         }
 
-        public double overlap(Scanline a, Scanline b, double xFrom, double xTo, FillRule fillRule)
+        public double Overlap(Scanline a, Scanline b, double xFrom, double xTo, FillRule fillRule)
         {
             double total = 0;
             bool aInside = false, bInside = false;
@@ -59,12 +59,12 @@ namespace Molten.Graphics.MSDF
                 double xNext = MsdfMath.Min(ax, bx);
                 if (ax == xNext && ai < a.intersections.Count)
                 {
-                    aInside = interpretFillRule(a.intersections[ai].direction, fillRule);
+                    aInside = InterpretFillRule(a.intersections[ai].direction, fillRule);
                     ax = ++ai < a.intersections.Count ? a.intersections[ai].x : xTo;
                 }
                 if (bx == xNext && bi < b.intersections.Count)
                 {
-                    bInside = interpretFillRule(b.intersections[bi].direction, fillRule);
+                    bInside = InterpretFillRule(b.intersections[bi].direction, fillRule);
                     bx = ++bi < b.intersections.Count ? b.intersections[bi].x : xTo;
                 }
             }
@@ -76,12 +76,12 @@ namespace Molten.Graphics.MSDF
                     total += xNext - x;
                 if (ax == xNext && ai < a.intersections.Count)
                 {
-                    aInside = interpretFillRule(a.intersections[ai].direction, fillRule);
+                    aInside = InterpretFillRule(a.intersections[ai].direction, fillRule);
                     ax = ++ai < a.intersections.Count ? a.intersections[ai].x : xTo;
                 }
                 if (bx == xNext && bi < b.intersections.Count)
                 {
-                    bInside = interpretFillRule(b.intersections[bi].direction, fillRule);
+                    bInside = InterpretFillRule(b.intersections[bi].direction, fillRule);
                     bx = ++bi < b.intersections.Count ? b.intersections[bi].x : xTo;
                 }
                 x = xNext;
@@ -91,12 +91,12 @@ namespace Molten.Graphics.MSDF
             return total;
         }
 
-        public void preprocess()
+        public void Preprocess()
         {
             lastIndex = 0;
             if (intersections.Count > 0)
             {
-                intersections.Sort(compareIntersections);
+                intersections.Sort(CompareIntersections);
                 int totalDirection = 0;
                 for (int i = 0; i < intersections.Count; i++)
                 {
@@ -108,13 +108,13 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public void setIntersections(List<Intersection> newIntersections)
+        public void SetIntersections(List<Intersection> newIntersections)
         {
             intersections = newIntersections;
-            preprocess();
+            Preprocess();
         }
 
-        public int moveTo(double x)
+        public int MoveTo(double x)
         {
             if (intersections.Count == 0)
                 return -1;
@@ -140,22 +140,22 @@ namespace Molten.Graphics.MSDF
             return index;
         }
 
-        public int countIntersections(double x)
+        public int CountIntersections(double x)
         {
-            return moveTo(x) + 1;
+            return MoveTo(x) + 1;
         }
 
-        public int sumIntersections(double x)
+        public int SumIntersections(double x)
         {
-            int index = moveTo(x);
+            int index = MoveTo(x);
             if (index >= 0)
                 return intersections[index].direction;
             return 0;
         }
 
-        public bool filled(double x, FillRule fillRule)
+        public bool Filled(double x, FillRule fillRule)
         {
-            return interpretFillRule(sumIntersections(x), fillRule);
+            return InterpretFillRule(SumIntersections(x), fillRule);
         }
     }
 }

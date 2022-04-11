@@ -229,7 +229,7 @@ namespace Molten.Graphics.MSDF
                 }
             }
 
-            line.setIntersections(intersections);
+            line.SetIntersections(intersections);
         }
 
         /// <summary>

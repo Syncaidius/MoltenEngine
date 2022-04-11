@@ -32,5 +32,43 @@ namespace Molten
             if (edgeResolution < 3)
                 throw new Exception("Edge resolution must be at least 3");
         }
+
+        /// <summary>
+        /// Performs basic checks to determine if the object represents a valid shape.
+        /// </summary>
+        /// <returns></returns>
+        public bool Validate()
+        {
+            foreach (Contour contour in Contours)
+            {
+                if (contour.Edges.Count > 0)
+                {
+                    Vector2D corner = contour.Edges.Last().Point(1);
+                    foreach (Edge edge in contour.Edges)
+                    {
+                        if (edge == null)
+                            return false;
+                        if (edge.Point(0) != corner)
+                            return false;
+
+                        corner = edge.Point(1);
+                    }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Returns the total number of edges in the current <see cref="ContourShape"/>.
+        /// </summary>
+        /// <returns></returns>
+        public int GetEdgeCount()
+        {
+            int total = 0;
+            foreach (Contour contour in Contours)
+                total += contour.Edges.Count;
+
+            return total;
+        }
     }
 }

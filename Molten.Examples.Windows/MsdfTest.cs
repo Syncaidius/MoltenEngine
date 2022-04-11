@@ -114,6 +114,7 @@ namespace Molten.Samples
             float* pixels = EngineUtil.AllocArray<float>((nuint)(pWidth * pHeight * nPerPixel));
             BitmapRef<float> sdf = new BitmapRef<float>(pixels, nPerPixel, pWidth, pHeight);
             MsdfShape shape = CreateShape(new Vector2D(shapeSize));
+            shape.Normalize();
 
             MsdfProjection projection = new MsdfProjection(scale, pOffset);
             if (legacy)

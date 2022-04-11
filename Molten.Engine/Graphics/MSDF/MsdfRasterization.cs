@@ -19,7 +19,7 @@ namespace Molten.Graphics.MSDF
                 shape.scanline(scanline, projection.UnprojectY(y + .5));
                 for (int x = 0; x < sdf.Width; ++x)
                 {
-                    bool fill = scanline.filled(projection.UnprojectX(x + .5), fillRule);
+                    bool fill = scanline.Filled(projection.UnprojectX(x + .5), fillRule);
                     float* sd = sdf[x, row];
                     if ((*sd > 0.5f) != fill)
                         *sd = 1.0f - sd[0];
@@ -91,7 +91,7 @@ namespace Molten.Graphics.MSDF
                     shape.scanline(scanline, projection.UnprojectY(y + .5));
                     for (int x = 0; x < w; ++x)
                     {
-                        bool fill = scanline.filled(projection.UnprojectX(x + .5), fillRule);
+                        bool fill = scanline.Filled(projection.UnprojectX(x + .5), fillRule);
                         float* msd = sdf[x, row];
                         float sd = MsdfMath.Median(msd[0], msd[1], msd[2]);
                         if (sd == .5f)
