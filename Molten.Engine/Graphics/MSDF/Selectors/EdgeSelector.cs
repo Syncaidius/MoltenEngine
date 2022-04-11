@@ -10,7 +10,7 @@ namespace Molten.Graphics.MSDF
     {
         public const double DISTANCE_DELTA_FACTOR = 1.001;
 
-        public abstract void reset(in Vector2D p);
+        public abstract void reset(ref Vector2D p);
     }
 
     /// <summary>
@@ -31,6 +31,6 @@ namespace Molten.Graphics.MSDF
 
         public abstract void initDistance(ref DT distance);
 
-        public abstract float getRefPSD(in DT dist, double invRange);
+        public abstract float getRefPSD(ref DT dist, double invRange);
     }
 }

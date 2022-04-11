@@ -26,9 +26,9 @@ namespace Molten.Graphics.MSDF
             shapeEdgeCache = new EdgeCache[shape.edgeCount()];
         }
 
-        public DT distance(in Vector2D origin)
+        public DT distance(ref Vector2D origin)
         {
-            contourCombiner.reset(origin);
+            contourCombiner.reset(ref origin);
 
             int ecIndex = 0;
             ref EdgeCache edgeCache = ref shapeEdgeCache[ecIndex];
@@ -58,9 +58,9 @@ namespace Molten.Graphics.MSDF
             return contourCombiner.distance();
         }
 
-        public DT oneShotDistance(ContourCombiner<ES, DT> combiner, MsdfShape shape, in Vector2D origin) {
+        public DT oneShotDistance(ContourCombiner<ES, DT> combiner, MsdfShape shape, ref Vector2D origin) {
             contourCombiner = combiner;
-            contourCombiner.reset(origin);
+            contourCombiner.reset(ref origin);
 
             for (int i = 0; i < shape.Contours.Count; i++)
             {
@@ -88,13 +88,13 @@ namespace Molten.Graphics.MSDF
             return contourCombiner.distance();
         }
 
-        public float getRefPSD(in Vector2D origin, double invRange)
+        public float getRefPSD(ref Vector2D origin, double invRange)
         {
-            DT dist = distance(in origin);
+            DT dist = distance(ref origin);
             
             ES es = new ES();
 
-            return es.getRefPSD(dist, invRange);
+            return es.getRefPSD(ref dist, invRange);
         }
     }
 

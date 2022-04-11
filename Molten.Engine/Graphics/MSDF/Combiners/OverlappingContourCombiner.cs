@@ -31,11 +31,11 @@ namespace Molten.Graphics.MSDF
                 edgeSelectors.Add(new ES());
         }
 
-        public override void reset(in Vector2D p)
+        public override void reset(ref Vector2D p)
         {
             this.p = p;
             foreach (EdgeSelector<DT> contourEdgeSelector in edgeSelectors)
-                contourEdgeSelector.reset(p);
+                contourEdgeSelector.reset(ref p);
         }
 
         public override ES edgeSelector(int i)
@@ -49,9 +49,9 @@ namespace Molten.Graphics.MSDF
             ES shapeEdgeSelector = new ES();
             ES innerEdgeSelector = new ES();
             ES outerEdgeSelector = new ES();
-            shapeEdgeSelector.reset(p);
-            innerEdgeSelector.reset(p);
-            outerEdgeSelector.reset(p);
+            shapeEdgeSelector.reset(ref p);
+            innerEdgeSelector.reset(ref p);
+            outerEdgeSelector.reset(ref p);
             for (int i = 0; i < contourCount; ++i)
             {
                 DT edgeDistance = edgeSelectors[i].distance();

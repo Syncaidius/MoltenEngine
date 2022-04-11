@@ -19,9 +19,9 @@ namespace Molten.Graphics.MSDF
 
         public SimpleContourCombiner(MsdfShape shape) { }
 
-        public override void reset(in Vector2D p)
+        public override void reset(ref Vector2D p)
         {
-            shapeEdgeSelector.reset(p);
+            shapeEdgeSelector.reset(ref p);
         }
 
         public override ES edgeSelector(int i)

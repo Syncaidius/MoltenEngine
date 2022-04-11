@@ -34,7 +34,7 @@ namespace Molten.Graphics.MSDF
                 {
                     int x = rightToLeft ? output.Width - col - 1 : col;
                     Vector2D p = projection.Unproject(new Vector2D(x + .5, y + .5));
-                    DT distance = distanceFinder.distance(p);
+                    DT distance = distanceFinder.distance(ref p);
                     distancePixelConversion.Convert(output[x,row], distance);
                 }
                 rightToLeft = !rightToLeft;

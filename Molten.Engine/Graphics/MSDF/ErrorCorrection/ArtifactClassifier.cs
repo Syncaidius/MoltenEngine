@@ -48,7 +48,8 @@ namespace Molten.Graphics.MSDF
                 float oldPSD = MsdfMath.median(oldMSD[0], oldMSD[1], oldMSD[2]);
                 float newPSD = MsdfMath.median(newMSD[0], newMSD[1], newMSD[2]);
 
-                float refPSD = parent.distanceFinder.getRefPSD(parent.shapeCoord + tVector * parent.texelSize, parent.invRange); // (float)(parent.invRange * parent.distanceFinder.distance(parent.shapeCoord + tVector * parent.texelSize) + .5);
+                Vector2D origin = parent.shapeCoord + tVector * parent.texelSize;
+                float refPSD = parent.distanceFinder.getRefPSD(ref origin, parent.invRange); // (float)(parent.invRange * parent.distanceFinder.distance(parent.shapeCoord + tVector * parent.texelSize) + .5);
                 // Compare the differences of the exact distance and the before and after distances.
                 return parent.minImproveRatio * Math.Abs(newPSD - refPSD) < (double)Math.Abs(oldPSD - refPSD);
             }

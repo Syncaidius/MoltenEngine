@@ -60,7 +60,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public override void reset(in Vector2D p)
+        public override void reset(ref Vector2D p)
         {
             double delta = DISTANCE_DELTA_FACTOR * (p - this.p).Length();
             reset(delta);
@@ -77,7 +77,7 @@ namespace Molten.Graphics.MSDF
             return distance;
         }
 
-        public override float getRefPSD(in double dist, double invRange)
+        public override float getRefPSD(ref double dist, double invRange)
         {
             return (float)(invRange * dist + .5);
         }
