@@ -14,9 +14,9 @@ namespace Molten.Graphics.MSDF
     public class MultiDistanceSelector : EdgeSelector<MultiDistance>
     {
         Vector2D p;
-        PseudoDistanceSelectorBase r = new PseudoDistanceSelector();
-        PseudoDistanceSelectorBase g = new PseudoDistanceSelector();
-        PseudoDistanceSelectorBase b = new PseudoDistanceSelector();
+        PseudoDistanceSelector r = new PseudoDistanceSelector();
+        PseudoDistanceSelector g = new PseudoDistanceSelector();
+        PseudoDistanceSelector b = new PseudoDistanceSelector();
 
         public override void reset(in Vector2D p)
         {
@@ -57,7 +57,7 @@ namespace Molten.Graphics.MSDF
                 if (add > 0)
                 {
                     double pd = distance.Distance;
-                    if (PseudoDistanceSelectorBase.getPseudoDistance(pd, ap, -aDir))
+                    if (PseudoDistanceSelector.getPseudoDistance(pd, ap, -aDir))
                     {
                         pd = -pd;
                         if ((edge.Color & EdgeColor.RED) == EdgeColor.RED)
@@ -72,7 +72,7 @@ namespace Molten.Graphics.MSDF
                 if (bdd > 0)
                 {
                     double pd = distance.Distance;
-                    if (PseudoDistanceSelectorBase.getPseudoDistance(pd, bp, bDir))
+                    if (PseudoDistanceSelector.getPseudoDistance(pd, bp, bDir))
                     {
                         if ((edge.Color & EdgeColor.RED) == EdgeColor.RED)
                             r.addEdgePseudoDistance(pd);

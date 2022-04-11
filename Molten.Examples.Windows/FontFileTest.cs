@@ -96,7 +96,7 @@ namespace Molten.Samples
             MsdfShape shape = CreateMsdfShape(new Vector2D(32, 32));
 
             MsdfProjection projection = new MsdfProjection(new Vector2D(1), new Vector2D(8, 8));
-            _msdf.generateSDF(sdf, shape, projection, 2, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
+            _msdf.generatePseudoSDF(sdf, shape, projection, 2, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
             {
                 DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
                 Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
