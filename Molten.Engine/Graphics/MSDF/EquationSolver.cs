@@ -8,7 +8,7 @@ namespace Molten.Graphics.MSDF
 {
     internal unsafe static class EquationSolver
     {
-        public static int solveQuadratic(double* x, double a, double b, double c)
+        public static int SolveQuadratic(double* x, double a, double b, double c)
         {
             // a == 0 -> linear equation
             if (a == 0 || Math.Abs(b) > 1e12 * Math.Abs(a))
@@ -40,7 +40,7 @@ namespace Molten.Graphics.MSDF
                 return 0;
         }
 
-        public static int solveCubicNormed(double* x, double a, double b, double c)
+        public static int SolveCubicNormed(double* x, double a, double b, double c)
         {
             double a2 = a * a;
             double q = 1 / 9.0 * (a2 - 3 * b);
@@ -74,16 +74,16 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public static int solveCubic(double* x, double a, double b, double c, double d)
+        public static int SolveCubic(double* x, double a, double b, double c, double d)
         {
             if (a != 0)
             {
                 double bn = b / a;
                 if (Math.Abs(bn) < 1e6) // Above this ratio, the numerical error gets larger than if we treated a as zero
-                    return solveCubicNormed(x, bn, c / a, d / a);
+                    return SolveCubicNormed(x, bn, c / a, d / a);
             }
 
-            return solveQuadratic(x, b, c, d);
+            return SolveQuadratic(x, b, c, d);
         }
     }
 }

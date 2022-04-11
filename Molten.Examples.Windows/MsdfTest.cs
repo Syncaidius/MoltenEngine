@@ -108,8 +108,8 @@ namespace Molten.Samples
             Vector2D scale = new Vector2D(1);
             Vector2D pOffset = new Vector2D(0, 8);
             double avgScale = .5 * (scale.X + scale.Y);
-            double range = pxRange / MsdfMath.min(scale.X, scale.Y);
-            FillRule fl = FillRule.FILL_NONZERO;
+            double range = pxRange / MsdfMath.Min(scale.X, scale.Y);
+            FillRule fl = FillRule.NonZero;
 
             float* pixels = EngineUtil.AllocArray<float>((nuint)(pWidth * pHeight * nPerPixel));
             BitmapRef<float> sdf = new BitmapRef<float>(pixels, nPerPixel, pWidth, pHeight);
@@ -118,11 +118,11 @@ namespace Molten.Samples
             MsdfProjection projection = new MsdfProjection(scale, pOffset);
             if (legacy)
             {
-                _msdf.generateSDF_legacy(sdf, shape, range, scale, pOffset);
+                _msdf.GenerateSDF_Legacy(sdf, shape, range, scale, pOffset);
             }
             else
             {
-                _msdf.generateSDF(sdf, shape, projection, range, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
+                _msdf.GenerateSDF(sdf, shape, projection, range, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
                 {
                     DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
                     Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED

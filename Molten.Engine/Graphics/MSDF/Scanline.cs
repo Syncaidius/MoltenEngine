@@ -28,20 +28,20 @@ namespace Molten.Graphics.MSDF
 
         public int compareIntersections(Intersection a, Intersection b)
         {
-            return MsdfMath.sign(a.x - b.x);
+            return MsdfMath.Sign(a.x - b.x);
         }
 
         public bool interpretFillRule(int intersections, FillRule fillRule)
         {
             switch (fillRule)
             {
-                case FillRule.FILL_NONZERO:
+                case FillRule.NonZero:
                     return intersections != 0;
-                case FillRule.FILL_ODD:
+                case FillRule.Odd:
                     return (intersections & 1) == 1;
-                case FillRule.FILL_POSITIVE:
+                case FillRule.Positive:
                     return intersections > 0;
-                case FillRule.FILL_NEGATIVE:
+                case FillRule.Negative:
                     return intersections < 0;
             }
             return false;
@@ -56,7 +56,7 @@ namespace Molten.Graphics.MSDF
             double bx = b.intersections.Count > 0 ? b.intersections[bi].x : xTo;
             while (ax < xFrom || bx < xFrom)
             {
-                double xNext = MsdfMath.min(ax, bx);
+                double xNext = MsdfMath.Min(ax, bx);
                 if (ax == xNext && ai < a.intersections.Count)
                 {
                     aInside = interpretFillRule(a.intersections[ai].direction, fillRule);
@@ -71,7 +71,7 @@ namespace Molten.Graphics.MSDF
             double x = xFrom;
             while (ax < xTo || bx < xTo)
             {
-                double xNext = MsdfMath.min(ax, bx);
+                double xNext = MsdfMath.Min(ax, bx);
                 if (aInside == bInside)
                     total += xNext - x;
                 if (ax == xNext && ai < a.intersections.Count)

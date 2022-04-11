@@ -31,7 +31,7 @@ namespace Molten.Graphics.MSDF
         {
             if (pxRange == 0)
                 return (dist > midValue ? 1f : 0);
-            return (float)MsdfMath.clamp((dist - midValue) * pxRange + 0.5);
+            return (float)MsdfMath.Clamp((dist - midValue) * pxRange + 0.5);
         }
 
         public static unsafe void renderSDF(BitmapRef<float> output, BitmapRef<float> sdf, double pxRange, float midValue)
@@ -93,7 +93,7 @@ namespace Molten.Graphics.MSDF
                     {
                         bool fill = scanline.filled(projection.UnprojectX(x + .5), fillRule);
                         float* msd = sdf[x, row];
-                        float sd = MsdfMath.median(msd[0], msd[1], msd[2]);
+                        float sd = MsdfMath.Median(msd[0], msd[1], msd[2]);
                         if (sd == .5f)
                             ambiguous = true;
                         else if ((sd > .5f) != fill)
@@ -157,10 +157,10 @@ namespace Molten.Graphics.MSDF
             int t = b + 1;
             double lr = pos.X - l;
             double bt = pos.Y - b;
-            l = (int)MsdfMath.clamp(l, bitmap.Width - 1); r = (int)MsdfMath.clamp(r, bitmap.Width - 1);
-            b = (int)MsdfMath.clamp(b, bitmap.Height - 1); t = (int)MsdfMath.clamp(t, bitmap.Height - 1);
+            l = (int)MsdfMath.Clamp(l, bitmap.Width - 1); r = (int)MsdfMath.Clamp(r, bitmap.Width - 1);
+            b = (int)MsdfMath.Clamp(b, bitmap.Height - 1); t = (int)MsdfMath.Clamp(t, bitmap.Height - 1);
             for (int i = 0; i < bitmap.NPerPixel; ++i)
-                output[i] = MsdfMath.mix(MsdfMath.mix(bitmap[l, b][i], bitmap[r, b][i], lr), MsdfMath.mix(bitmap[l, t][i], bitmap[r, t][i], lr), bt);
+                output[i] = MsdfMath.Mix(MsdfMath.Mix(bitmap[l, b][i], bitmap[r, b][i], lr), MsdfMath.Mix(bitmap[l, t][i], bitmap[r, t][i], lr), bt);
         }
 
         public unsafe static void simulate8bit(BitmapRef<float> bitmap)
@@ -178,7 +178,7 @@ namespace Molten.Graphics.MSDF
 
         public static byte pixelFloatToByte(float x)
         {
-            return (byte)MsdfMath.clamp(256f * x, 255f);
+            return (byte)MsdfMath.Clamp(256f * x, 255f);
         }
     }
 }

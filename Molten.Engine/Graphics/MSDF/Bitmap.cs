@@ -68,12 +68,12 @@ namespace Molten.Graphics.MSDF
             pixels = EngineUtil.AllocArray<T>((nuint)(NPerPixel * w * h));
         }
 
-        public int width()
+        public int Width()
         {
             return w;
         }
 
-        public int height()
+        public int Height()
         {
             return h;
         }

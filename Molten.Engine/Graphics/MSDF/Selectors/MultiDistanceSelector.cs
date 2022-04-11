@@ -18,68 +18,68 @@ namespace Molten.Graphics.MSDF
         PseudoDistanceSelector g = new PseudoDistanceSelector();
         PseudoDistanceSelector b = new PseudoDistanceSelector();
 
-        public override void reset(ref Vector2D p)
+        public override void Reset(ref Vector2D p)
         {
             double delta = DISTANCE_DELTA_FACTOR * (p - this.p).Length();
-            r.reset(delta);
-            g.reset(delta);
-            b.reset(delta);
+            r.Reset(delta);
+            g.Reset(delta);
+            b.Reset(delta);
             this.p = p;
         }
 
-        public override void addEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
+        public override void AddEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
         {
             if (
-                ((edge.Color & EdgeColor.RED) == EdgeColor.RED && r.isEdgeRelevant(cache, edge, p)) ||
-                ((edge.Color & EdgeColor.GREEN) == EdgeColor.GREEN && g.isEdgeRelevant(cache, edge, p)) ||
-                ((edge.Color & EdgeColor.BLUE) == EdgeColor.BLUE && b.isEdgeRelevant(cache, edge, p))
+                ((edge.Color & EdgeColor.Red) == EdgeColor.Red && r.IsEdgeRelevant(cache, edge, p)) ||
+                ((edge.Color & EdgeColor.Green) == EdgeColor.Green && g.IsEdgeRelevant(cache, edge, p)) ||
+                ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue && b.IsEdgeRelevant(cache, edge, p))
             )
             {
                 double param;
-                SignedDistance distance = edge.signedDistance(p, out param);
-                if ((edge.Color & EdgeColor.RED) == EdgeColor.RED)
-                    r.addEdgeTrueDistance(edge, distance, param);
-                if ((edge.Color & EdgeColor.GREEN) == EdgeColor.GREEN)
-                    g.addEdgeTrueDistance(edge, distance, param);
-                if ((edge.Color & EdgeColor.BLUE) == EdgeColor.BLUE)
-                    b.addEdgeTrueDistance(edge, distance, param);
+                SignedDistance distance = edge.SignedDistance(p, out param);
+                if ((edge.Color & EdgeColor.Red) == EdgeColor.Red)
+                    r.AddEdgeTrueDistance(edge, distance, param);
+                if ((edge.Color & EdgeColor.Green) == EdgeColor.Green)
+                    g.AddEdgeTrueDistance(edge, distance, param);
+                if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue)
+                    b.AddEdgeTrueDistance(edge, distance, param);
                 cache.point = p;
                 cache.absDistance = Math.Abs(distance.Distance);
 
-                Vector2D ap = p - edge.point(0);
-                Vector2D bp = p - edge.point(1);
-                Vector2D aDir = edge.direction(0).GetNormalized(true);
-                Vector2D bDir = edge.direction(1).GetNormalized(true);
-                Vector2D prevDir = prevEdge.direction(1).GetNormalized(true);
-                Vector2D nextDir = nextEdge.direction(0).GetNormalized(true);
+                Vector2D ap = p - edge.Point(0);
+                Vector2D bp = p - edge.Point(1);
+                Vector2D aDir = edge.Direction(0).GetNormalized(true);
+                Vector2D bDir = edge.Direction(1).GetNormalized(true);
+                Vector2D prevDir = prevEdge.Direction(1).GetNormalized(true);
+                Vector2D nextDir = nextEdge.Direction(0).GetNormalized(true);
                 double add = Vector2D.Dot(ap, (prevDir + aDir).GetNormalized(true));
                 double bdd = -Vector2D.Dot(bp, (bDir + nextDir).GetNormalized(true));
                 if (add > 0)
                 {
                     double pd = distance.Distance;
-                    if (PseudoDistanceSelector.getPseudoDistance(pd, ap, -aDir))
+                    if (PseudoDistanceSelector.GetPseudoDistance(pd, ap, -aDir))
                     {
                         pd = -pd;
-                        if ((edge.Color & EdgeColor.RED) == EdgeColor.RED)
-                            r.addEdgePseudoDistance(pd);
-                        if ((edge.Color & EdgeColor.GREEN) == EdgeColor.GREEN)
-                            g.addEdgePseudoDistance(pd);
-                        if ((edge.Color & EdgeColor.BLUE) == EdgeColor.BLUE)
-                            b.addEdgePseudoDistance(pd);
+                        if ((edge.Color & EdgeColor.Red) == EdgeColor.Red)
+                            r.AddEdgePseudoDistance(pd);
+                        if ((edge.Color & EdgeColor.Green) == EdgeColor.Green)
+                            g.AddEdgePseudoDistance(pd);
+                        if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue)
+                            b.AddEdgePseudoDistance(pd);
                     }
                     cache.aPseudoDistance = pd;
                 }
                 if (bdd > 0)
                 {
                     double pd = distance.Distance;
-                    if (PseudoDistanceSelector.getPseudoDistance(pd, bp, bDir))
+                    if (PseudoDistanceSelector.GetPseudoDistance(pd, bp, bDir))
                     {
-                        if ((edge.Color & EdgeColor.RED) == EdgeColor.RED)
-                            r.addEdgePseudoDistance(pd);
-                        if ((edge.Color & EdgeColor.GREEN) == EdgeColor.GREEN)
-                            g.addEdgePseudoDistance(pd);
-                        if ((edge.Color & EdgeColor.BLUE) == EdgeColor.BLUE)
-                            b.addEdgePseudoDistance(pd);
+                        if ((edge.Color & EdgeColor.Red) == EdgeColor.Red)
+                            r.AddEdgePseudoDistance(pd);
+                        if ((edge.Color & EdgeColor.Green) == EdgeColor.Green)
+                            g.AddEdgePseudoDistance(pd);
+                        if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue)
+                            b.AddEdgePseudoDistance(pd);
                     }
                     cache.bPseudoDistance = pd;
                 }
@@ -88,46 +88,46 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public override void merge(EdgeSelector<MultiDistance> other)
+        public override void Merge(EdgeSelector<MultiDistance> other)
         {
             MultiDistanceSelector md = other as MultiDistanceSelector;
-            r.merge(md.r);
-            g.merge(md.g);
-            b.merge(md.b);
+            r.Merge(md.r);
+            g.Merge(md.g);
+            b.Merge(md.b);
         }
 
-        public override MultiDistance distance()
+        public override MultiDistance Distance()
         {
             MultiDistance multiDistance;
-            multiDistance.r = r.computeDistance(p);
-            multiDistance.g = g.computeDistance(p);
-            multiDistance.b = b.computeDistance(p);
+            multiDistance.r = r.ComputeDistance(p);
+            multiDistance.g = g.ComputeDistance(p);
+            multiDistance.b = b.ComputeDistance(p);
             return multiDistance;
         }
 
-        public SignedDistance trueDistance()
+        public SignedDistance TrueDistance()
         {
-            SignedDistance distance = r.trueDistance();
-            if (g.trueDistance() < distance)
-                distance = g.trueDistance();
-            if (b.trueDistance() < distance)
-                distance = b.trueDistance();
+            SignedDistance distance = r.TrueDistance();
+            if (g.TrueDistance() < distance)
+                distance = g.TrueDistance();
+            if (b.TrueDistance() < distance)
+                distance = b.TrueDistance();
             return distance;
         }
 
-        public override void initDistance(ref MultiDistance distance)
+        public override void InitDistance(ref MultiDistance distance)
         {
             distance.r = -double.MaxValue;
             distance.g = -double.MaxValue;
             distance.b = -double.MaxValue;
         }
 
-        public override double resolveDistance(MultiDistance distance)
+        public override double ResolveDistance(MultiDistance distance)
         {
-            return MsdfMath.median(distance.r, distance.g, distance.b);
+            return MsdfMath.Median(distance.r, distance.g, distance.b);
         }
 
-        public override float getRefPSD(ref MultiDistance dist, double invRange)
+        public override float GetRefPSD(ref MultiDistance dist, double invRange)
         {
             return (float)(invRange * dist.r + .5);
         }

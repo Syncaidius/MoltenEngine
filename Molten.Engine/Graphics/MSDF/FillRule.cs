@@ -8,9 +8,9 @@ namespace Molten.Graphics.MSDF
 {
     public enum FillRule
     {
-        FILL_NONZERO,
-        FILL_ODD, // "even-odd"
-        FILL_POSITIVE,
-        FILL_NEGATIVE
+        NonZero,
+        Odd, // "even-odd"
+        Positive,
+        Negative
     };
 }

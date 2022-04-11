@@ -15,7 +15,7 @@ namespace Molten.Graphics.MSDF
             Color = color;
         }       
 
-        protected static void pointBounds(Vector2D p, ref double l, ref double b, ref double r, ref double t)
+        protected static void PointBounds(Vector2D p, ref double l, ref double b, ref double r, ref double t)
         {
             if (p.X < l) l = p.X;
             if (p.Y < b) b = p.Y;
@@ -27,24 +27,24 @@ namespace Molten.Graphics.MSDF
         public abstract EdgeSegment Clone();
 
         /// Returns the point on the edge specified by the parameter (between 0 and 1).
-        public abstract Vector2D point(double param);
+        public abstract Vector2D Point(double param);
 
         /// Returns the direction the edge has at the point specified by the parameter.
-        public abstract Vector2D direction(double param);
+        public abstract Vector2D Direction(double param);
 
         /// Returns the change of direction (second derivative) at the point specified by the parameter.
-        public abstract Vector2D directionChange(double param);
+        public abstract Vector2D DirectionChange(double param);
 
         /// Returns the minimum signed distance between origin and the edge.
-        public abstract SignedDistance signedDistance(Vector2D origin, out double param);
+        public abstract SignedDistance SignedDistance(Vector2D origin, out double param);
 
         /// Converts a previously retrieved signed distance from origin to pseudo-distance.
-        public void distanceToPseudoDistance(ref SignedDistance distance, Vector2D origin, double param)
+        public void DistanceToPseudoDistance(ref SignedDistance distance, Vector2D origin, double param)
         {
             if (param < 0)
             {
-                Vector2D dir = Vector2D.Normalize(direction(0));
-                Vector2D aq = origin - point(0);
+                Vector2D dir = Vector2D.Normalize(Direction(0));
+                Vector2D aq = origin - Point(0);
                 double ts = Vector2D.Dot(aq, dir);
                 if (ts < 0)
                 {
@@ -58,8 +58,8 @@ namespace Molten.Graphics.MSDF
             }
             else if (param > 1)
             {
-                Vector2D dir = Vector2D.Normalize(direction(1));
-                Vector2D bq = origin - point(1);
+                Vector2D dir = Vector2D.Normalize(Direction(1));
+                Vector2D bq = origin - Point(1);
                 double ts = Vector2D.Dot(bq, dir);
                 if (ts > 0)
                 {
@@ -74,19 +74,19 @@ namespace Molten.Graphics.MSDF
         }
 
         /// Outputs a list of (at most three) intersections (their X coordinates) with an infinite horizontal scanline at y and returns how many there are.
-        public unsafe abstract int scanlineIntersections(double* x, int* dy, double y);
+        public unsafe abstract int ScanlineIntersections(double* x, int* dy, double y);
 
         /// Adjusts the bounding box to fit the edge segment.
-        public abstract void bound(ref double l, ref double b, ref double r, ref double t);
+        public abstract void Bound(ref double l, ref double b, ref double r, ref double t);
 
         /// Reverses the edge (swaps its start point and end point).
-        public abstract void reverse();
+        public abstract void Reverse();
         /// Moves the start point of the edge segment.
-        public abstract void moveStartPoint(Vector2D to);
+        public abstract void MoveStartPoint(Vector2D to);
         /// Moves the end point of the edge segment.
-        public abstract void moveEndPoint(Vector2D to);
+        public abstract void MoveEndPoint(Vector2D to);
 
         /// Splits the edge segments into thirds which together represent the original edge.
-        public abstract void splitInThirds(ref EdgeSegment part1, ref EdgeSegment part2, ref EdgeSegment part3);
+        public abstract void SplitInThirds(ref EdgeSegment part1, ref EdgeSegment part2, ref EdgeSegment part3);
     }
 }

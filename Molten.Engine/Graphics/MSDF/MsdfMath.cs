@@ -15,7 +15,7 @@ namespace Molten.Graphics.MSDF
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static double min(double a, double b)
+        public static double Min(double a, double b)
         {
             return b < a ? b : a;
         }
@@ -26,7 +26,7 @@ namespace Molten.Graphics.MSDF
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static float min(float a, float b)
+        public static float Min(float a, float b)
         {
             return b < a ? b : a;
         }
@@ -37,7 +37,7 @@ namespace Molten.Graphics.MSDF
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static double max(double a, double b)
+        public static double Max(double a, double b)
         {
             return a < b ? b : a;
         }
@@ -48,7 +48,7 @@ namespace Molten.Graphics.MSDF
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static float max(float a, float b)
+        public static float Max(float a, float b)
         {
             return a < b ? b : a;
         }
@@ -60,9 +60,9 @@ namespace Molten.Graphics.MSDF
         /// <param name="b"></param>
         /// <param name="c"></param>
         /// <returns></returns>
-        public static double median(double a, double b, double c)
+        public static double Median(double a, double b, double c)
         {
-            return max(min(a, b), min(max(a, b), c));
+            return Max(Min(a, b), Min(Max(a, b), c));
         }
 
         /// <summary>
@@ -72,67 +72,67 @@ namespace Molten.Graphics.MSDF
         /// <param name="b"></param>
         /// <param name="c"></param>
         /// <returns></returns>
-        public static float median(float a, float b, float c)
+        public static float Median(float a, float b, float c)
         {
-            return max(min(a, b), min(max(a, b), c));
+            return Max(Min(a, b), Min(Max(a, b), c));
         }
 
         /// Returns the weighted average of a and b. MathHelper.Lerp equivilent
-        public static double mix(double a, double b, double weight)
+        public static double Mix(double a, double b, double weight)
         {
             return (1.0 - weight) * a + weight * b;
         }
 
         /// Returns the weighted average of a and b. MathHelper.Lerp equivilent
-        public static Vector2D mix(Vector2D a, Vector2D b, double weight)
+        public static Vector2D Mix(Vector2D a, Vector2D b, double weight)
         {
             return (1.0 - weight) * a + weight * b;
         }
 
         /// Returns the weighted average of a and b.
-        public static double mix(double a, double b, float weight)
+        public static double Mix(double a, double b, float weight)
         {
-            return (float)(1.0 - weight) * a + weight * b;
+            return (1.0 - weight) * a + weight * b;
         }
 
         /// Returns the weighted average of a and b.
-        public static float mix(float a, float b, double weight)
+        public static float Mix(float a, float b, double weight)
         {
-            return (float)((1.0 - weight) * a + weight * b);
+            return (float)((1.0f - weight) * a + weight * b);
         }
 
         /// Returns the weighted average of a and b.
-        public static float mix(float a, float b, float weight)
+        public static float Mix(float a, float b, float weight)
         {
             return (float)(1.0 - weight) * a + weight * b;
         }
 
         /// Clamps the number to the interval from 0 to 1.
-        public static float clamp(float n)
+        public static float Clamp(float n)
         {
             return n >= 0f && n <= 1.0f ? n : (n > 0 ? 1f : 0f);
         }
 
         /// Clamps the number to the interval from 0 to 1.
-        public static double clamp(double n)
+        public static double Clamp(double n)
         {
             return n >= 0 && n <= 1.0 ? n : (n > 0 ? 1 : 0);
         }
 
         /// Clamps the number to the interval from 0 to b.
-        public static float clamp(float n, float b)
+        public static float Clamp(float n, float b)
         {
             return n >= 0f && n <= b ? n : (n > 0 ? 1f : 0f) * b;
         }
 
         /// Clamps the number to the interval from a to b.
-        public static double clamp(double n, double a, double b)
+        public static double Clamp(double n, double a, double b)
         {
             return n >= a && n <= b ? n : n < a ? a : b;
         }
 
         /// Returns 1 for positive values, -1 for negative values, and 0 for zero.
-        public static int sign(double n)
+        public static int Sign(double n)
         {
             int greaterThanZero = 0.0 < n ? 1 : 0;
             int lessThanZero = n < 0.0 ? 1 : 0;
@@ -140,7 +140,7 @@ namespace Molten.Graphics.MSDF
         }
 
         /// Returns 1 for non-negative values and -1 for negative values.
-        public static int nonZeroSign(double n)
+        public static int NonZeroSign(double n)
         {
             int greaterThanZero = (n > 0) ? 1 : 0;
             return 2 * greaterThanZero - 1;

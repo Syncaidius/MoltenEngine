@@ -19,19 +19,19 @@ namespace Molten.Graphics.MSDF
 
         public SimpleContourCombiner(MsdfShape shape) { }
 
-        public override void reset(ref Vector2D p)
+        public override void Reset(ref Vector2D p)
         {
-            shapeEdgeSelector.reset(ref p);
+            shapeEdgeSelector.Reset(ref p);
         }
 
-        public override ES edgeSelector(int i)
+        public override ES EdgeSelector(int i)
         {
             return shapeEdgeSelector;
         }
 
-        public override DT distance()
+        public override DT Distance()
         {
-            return shapeEdgeSelector.distance();
+            return shapeEdgeSelector.Distance();
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Molten.Graphics.MSDF
             texelSize = pProjection.UnprojectVector(new Vector2D(1));
         }
 
-        public ArtifactClassifier<ES, DT> classifier(Vector2D direction, double span)
+        public ArtifactClassifier<ES, DT> Classifier(Vector2D direction, double span)
         {
             return new ArtifactClassifier<ES, DT>(this, direction, span);
         }

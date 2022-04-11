@@ -10,7 +10,7 @@ namespace Molten.Graphics.MSDF
     {
         public const double DISTANCE_DELTA_FACTOR = 1.001;
 
-        public abstract void reset(ref Vector2D p);
+        public abstract void Reset(ref Vector2D p);
     }
 
     /// <summary>
@@ -21,16 +21,16 @@ namespace Molten.Graphics.MSDF
     public abstract class EdgeSelector<DT> : EdgeSelector
         where DT : unmanaged
     {
-        public abstract DT distance();
+        public abstract DT Distance();
 
-        public abstract void addEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge);
+        public abstract void AddEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge);
 
-        public abstract void merge(EdgeSelector<DT> other);
+        public abstract void Merge(EdgeSelector<DT> other);
 
-        public abstract double resolveDistance(DT distance);
+        public abstract double ResolveDistance(DT distance);
 
-        public abstract void initDistance(ref DT distance);
+        public abstract void InitDistance(ref DT distance);
 
-        public abstract float getRefPSD(ref DT dist, double invRange);
+        public abstract float GetRefPSD(ref DT dist, double invRange);
     }
 }

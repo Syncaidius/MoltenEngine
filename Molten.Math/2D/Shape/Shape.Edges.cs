@@ -29,7 +29,7 @@ namespace Molten
 
             public override Vector2D Point(double param)
             {
-                return Vector2D.Lerp(ref Points[0], ref Points[1], param);
+                return Vector2D.Lerp(ref Points[INDEX_P0], ref Points[INDEX_P1], param);
             }
         }
 
@@ -42,7 +42,7 @@ namespace Molten
 
             public override Vector2D Point(double param)
             {
-                return Vector2D.Lerp(ref Points[0], ref Points[1], param);
+                return Vector2D.Lerp(ref Points[INDEX_P0], ref Points[INDEX_P1], param);
             }
         }
 
@@ -55,7 +55,7 @@ namespace Molten
 
             public override Vector2D Point(double param)
             {
-                return Vector2D.Lerp(ref Points[0], ref Points[1], param);
+                return Vector2D.Lerp(ref Points[INDEX_P0], ref Points[INDEX_P1], param);
             }
         }
     }

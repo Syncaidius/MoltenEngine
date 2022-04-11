@@ -8,7 +8,7 @@ namespace Molten.Graphics.MSDF
 {
     public static class ErrorCorrection
     {
-        public unsafe static void msdfErrorCorrectionInner<ES, DT>(ContourCombiner<ES, DT> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public unsafe static void MsdfErrorCorrectionInner<ES, DT>(ContourCombiner<ES, DT> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
@@ -23,66 +23,66 @@ namespace Molten.Graphics.MSDF
             stencil.Width = sdf.Width;
             stencil.Height = sdf.Height;
             MSDFErrorCorrection ec = new MSDFErrorCorrection(stencil, projection, range);
-            ec.setMinDeviationRatio(config.ErrorCorrection.MinDeviationRatio);
-            ec.setMinImproveRatio(config.ErrorCorrection.MinImproveRatio);
+            ec.SetMinDeviationRatio(config.ErrorCorrection.MinDeviationRatio);
+            ec.SetMinImproveRatio(config.ErrorCorrection.MinImproveRatio);
             switch (config.ErrorCorrection.Mode)
             {
                 case ErrorCorrectionConfig.ErrorCorrectMode.DISABLED:
                 case ErrorCorrectionConfig.ErrorCorrectMode.INDISCRIMINATE:
                     break;
                 case ErrorCorrectionConfig.ErrorCorrectMode.EDGE_PRIORITY:
-                    ec.protectCorners(shape);
-                    ec.protectEdges(sdf);
+                    ec.ProtectCorners(shape);
+                    ec.ProtectEdges(sdf);
                     break;
                 case ErrorCorrectionConfig.ErrorCorrectMode.EDGE_ONLY:
-                    ec.protectAll();
+                    ec.ProtectAll();
                     break;
             }
             if (config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE ||
                 (config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE &&
                 config.ErrorCorrection.Mode != ErrorCorrectionConfig.ErrorCorrectMode.EDGE_ONLY))
             {
-                ec.findErrors(sdf);
+                ec.FindErrors(sdf);
                 if (config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE)
-                    ec.protectAll();
+                    ec.ProtectAll();
             }
             if (config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.ALWAYS_CHECK_DISTANCE ||
                 config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE)
             {
                 if (config.OverlapSupport)
-                    ec.findErrors(combiner, sdf, shape);
+                    ec.FindErrors(combiner, sdf, shape);
                 else
-                    ec.findErrors(combiner, sdf, shape);
+                    ec.FindErrors(combiner, sdf, shape);
             }
-            ec.apply(sdf);
+            ec.Apply(sdf);
         }
 
-        public static void msdfErrorCorrectionShapeless(BitmapRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio, bool protectAll)
+        public static void MsdfErrorCorrectionShapeless(BitmapRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio, bool protectAll)
         {
             Bitmap<byte> stencilBuffer = new Bitmap<byte>(1, sdf.Width, sdf.Height);
             MSDFErrorCorrection ec = new MSDFErrorCorrection(stencilBuffer, projection, range);
-            ec.setMinDeviationRatio(minDeviationRatio);
+            ec.SetMinDeviationRatio(minDeviationRatio);
             if (protectAll)
-                ec.protectAll();
-            ec.findErrors(sdf);
-            ec.apply(sdf);
+                ec.ProtectAll();
+            ec.FindErrors(sdf);
+            ec.Apply(sdf);
         }
 
-        public static void msdfErrorCorrection<ES, DT>(ContourCombiner<ES, DT> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public static void MsdfErrorCorrection<ES, DT>(ContourCombiner<ES, DT> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
-            msdfErrorCorrectionInner(combiner, sdf, shape, projection, range, config);
+            MsdfErrorCorrectionInner(combiner, sdf, shape, projection, range, config);
         }
 
-        public static void msdfFastDistanceErrorCorrection(BitmapRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio)
+        public static void MsdfFastDistanceErrorCorrection(BitmapRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio)
         {
-            msdfErrorCorrectionShapeless(sdf, projection, range, minDeviationRatio, false);
+            MsdfErrorCorrectionShapeless(sdf, projection, range, minDeviationRatio, false);
         }
 
-        public static void msdfFastEdgeErrorCorrection(BitmapRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio)
+        public static void MsdfFastEdgeErrorCorrection(BitmapRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio)
         {
-            msdfErrorCorrectionShapeless(sdf, projection, range, minDeviationRatio, true);
+            MsdfErrorCorrectionShapeless(sdf, projection, range, minDeviationRatio, true);
         }
     }
 }

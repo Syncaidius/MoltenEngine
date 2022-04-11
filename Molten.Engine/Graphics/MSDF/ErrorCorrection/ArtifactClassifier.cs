@@ -25,7 +25,7 @@ namespace Molten.Graphics.MSDF
             this.direction = direction;
         }
 
-        public unsafe bool evaluate(int N, double t, float m, int flags)
+        public unsafe bool Evaluate(int N, double t, float m, int flags)
         {
             if ((flags & MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE) == MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE)
             {
@@ -40,13 +40,13 @@ namespace Molten.Graphics.MSDF
                 MsdfRasterization.interpolate(oldMSD, parent.sdf, sdfCoord);
                 // Compute the color that would be interpolated at the artifact candidate's position if error correction was applied on the current texel.
                 double aWeight = (1 - Math.Abs(tVector.X)) * (1 - Math.Abs(tVector.Y));
-                float aPSD = MsdfMath.median(parent.msd[0], parent.msd[1], parent.msd[2]);
+                float aPSD = MsdfMath.Median(parent.msd[0], parent.msd[1], parent.msd[2]);
                 newMSD[0] = (float)(oldMSD[0] + aWeight * (aPSD - parent.msd[0]));
                 newMSD[1] = (float)(oldMSD[1] + aWeight * (aPSD - parent.msd[1]));
                 newMSD[2] = (float)(oldMSD[2] + aWeight * (aPSD - parent.msd[2]));
                 // Compute the evaluated distance (interpolated median) before and after error correction, as well as the exact shape distance.
-                float oldPSD = MsdfMath.median(oldMSD[0], oldMSD[1], oldMSD[2]);
-                float newPSD = MsdfMath.median(newMSD[0], newMSD[1], newMSD[2]);
+                float oldPSD = MsdfMath.Median(oldMSD[0], oldMSD[1], oldMSD[2]);
+                float newPSD = MsdfMath.Median(newMSD[0], newMSD[1], newMSD[2]);
 
                 Vector2D origin = parent.shapeCoord + tVector * parent.texelSize;
                 float refPSD = parent.distanceFinder.getRefPSD(ref origin, parent.invRange); // (float)(parent.invRange * parent.distanceFinder.distance(parent.shapeCoord + tVector * parent.texelSize) + .5);

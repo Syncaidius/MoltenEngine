@@ -28,7 +28,7 @@ namespace Molten.Graphics.MSDF
 
         public DT distance(ref Vector2D origin)
         {
-            contourCombiner.reset(ref origin);
+            contourCombiner.Reset(ref origin);
 
             int ecIndex = 0;
             ref EdgeCache edgeCache = ref shapeEdgeCache[ecIndex];
@@ -40,14 +40,14 @@ namespace Molten.Graphics.MSDF
 
                 if (edgeCount > 0)
                 {
-                    ES edgeSelector = contourCombiner.edgeSelector(i);
+                    ES edgeSelector = contourCombiner.EdgeSelector(i);
 
                     EdgeSegment prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
                     EdgeSegment curEdge = contour.Edges.Last();
                     foreach (EdgeSegment edge in contour.Edges)
                     {
                         EdgeSegment nextEdge = edge;
-                        edgeSelector.addEdge(ref edgeCache, prevEdge, curEdge, nextEdge);
+                        edgeSelector.AddEdge(ref edgeCache, prevEdge, curEdge, nextEdge);
                         ecIndex++;
                         prevEdge = curEdge;
                         curEdge = nextEdge;
@@ -55,12 +55,12 @@ namespace Molten.Graphics.MSDF
                 }
             }
 
-            return contourCombiner.distance();
+            return contourCombiner.Distance();
         }
 
         public DT oneShotDistance(ContourCombiner<ES, DT> combiner, MsdfShape shape, ref Vector2D origin) {
             contourCombiner = combiner;
-            contourCombiner.reset(ref origin);
+            contourCombiner.Reset(ref origin);
 
             for (int i = 0; i < shape.Contours.Count; i++)
             {
@@ -69,7 +69,7 @@ namespace Molten.Graphics.MSDF
 
                 if (edgeCount > 0)
                 {
-                    ES edgeSelector = contourCombiner.edgeSelector(i);
+                    ES edgeSelector = contourCombiner.EdgeSelector(i);
 
                     EdgeSegment prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
                     EdgeSegment curEdge = contour.Edges.Last();
@@ -78,14 +78,14 @@ namespace Molten.Graphics.MSDF
                     { 
                         EdgeSegment nextEdge = edge;
                         EdgeCache dummy = new EdgeCache();
-                        edgeSelector.addEdge(ref dummy, prevEdge, curEdge, nextEdge);
+                        edgeSelector.AddEdge(ref dummy, prevEdge, curEdge, nextEdge);
                         prevEdge = curEdge;
                         curEdge = nextEdge;
                     }
                 }
             }
 
-            return contourCombiner.distance();
+            return contourCombiner.Distance();
         }
 
         public float getRefPSD(ref Vector2D origin, double invRange)
@@ -94,7 +94,7 @@ namespace Molten.Graphics.MSDF
             
             ES es = new ES();
 
-            return es.getRefPSD(ref dist, invRange);
+            return es.GetRefPSD(ref dist, invRange);
         }
     }
 

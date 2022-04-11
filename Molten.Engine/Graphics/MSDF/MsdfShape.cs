@@ -39,7 +39,7 @@ namespace Molten.Graphics.MSDF
 
             public static int compare(Intersection a, Intersection b)
             {
-                return MsdfMath.sign(a.x - b.x);
+                return MsdfMath.Sign(a.x - b.x);
             }
         };
 
@@ -83,7 +83,7 @@ namespace Molten.Graphics.MSDF
                 if (contour.Edges.Count == 1)
                 {
                     EdgeSegment[] parts = new EdgeSegment[3];  
-                    contour.Edges[0].splitInThirds(ref parts[0], ref parts[1], ref parts[2]);
+                    contour.Edges[0].SplitInThirds(ref parts[0], ref parts[1], ref parts[2]);
                     contour.Edges.Clear();
                     contour.Edges.Add(parts[0]);
                     contour.Edges.Add(parts[1]);
@@ -94,8 +94,8 @@ namespace Molten.Graphics.MSDF
                     EdgeSegment prevEdge = contour.Edges.Last();
                     foreach(EdgeSegment edge in contour.Edges)
                     {
-                        Vector2D prevDir = edge.direction(1).GetNormalized();
-                        Vector2D curDir = edge.direction(0).GetNormalized();
+                        Vector2D prevDir = edge.Direction(1).GetNormalized();
+                        Vector2D curDir = edge.Direction(0).GetNormalized();
                         if (Vector2D.Dot(prevDir, curDir) < MSDFGEN_CORNER_DOT_EPSILON - 1)
                         {
                             DeconvergeEdge(prevEdge, 1);
@@ -129,15 +129,15 @@ namespace Molten.Graphics.MSDF
             {
                 if (contour.Edges.Count > 0)
                 {
-                    Vector2D corner = contour.Edges.Last().point(1);
+                    Vector2D corner = contour.Edges.Last().Point(1);
                     foreach (EdgeSegment edge in contour.Edges)
                     {
                         if (edge == null)
                             return false;
-                        if (edge.point(0) != corner)
+                        if (edge.Point(0) != corner)
                             return false;
 
-                        corner = edge.point(1);
+                        corner = edge.Point(1);
                     }
                 }
             }
@@ -158,7 +158,7 @@ namespace Molten.Graphics.MSDF
         public void bound(double l, double b, double r, double t)
         {
             foreach (Contour contour in Contours)
-                contour.bound(ref l, ref b, ref r, ref t);
+                contour.Bound(ref l, ref b, ref r, ref t);
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Molten.Graphics.MSDF
         public void boundMiters(double l, double b, double r, double t, double border, double miterLimit, int polarity)
         {
             foreach (Contour contour in Contours)
-                contour.boundMiters(ref l, ref b, ref r, ref t, border, miterLimit, polarity);
+                contour.BoundMiters(ref l, ref b, ref r, ref t, border, miterLimit, polarity);
         }
 
         /// <summary>
@@ -220,7 +220,7 @@ namespace Molten.Graphics.MSDF
             {
                 foreach (EdgeSegment edge in contour.Edges)
                 {
-                    int n = edge.scanlineIntersections(x, dy, y);
+                    int n = edge.ScanlineIntersections(x, dy, y);
                     for (int i = 0; i < n; ++i)
                     {
                         Scanline.Intersection intersection = new Scanline.Intersection(x[i], dy[i]);
@@ -256,14 +256,14 @@ namespace Molten.Graphics.MSDF
             for (int i = 0; i < Contours.Count; ++i) {
                 if (orientations[i] == 0 && Contours[i].Edges.Count > 0) {
                     // Find an Y that crosses the contour
-                    double y0 = Contours[i].Edges.First().point(0).Y;
+                    double y0 = Contours[i].Edges.First().Point(0).Y;
                     double y1 = y0;
 
                     for (int j = 0; j < Contours[i].Edges.Count && y0 == y1; j++) 
-                        y1 = Contours[i].Edges[j].point(1).Y;
+                        y1 = Contours[i].Edges[j].Point(1).Y;
                     for (int j = 0; j < Contours[i].Edges.Count && y0 == y1; j++)
-                        y1 = Contours[i].Edges[j].point(ratio).Y; // in case all endpoints are in a horizontal line
-                    double y = MsdfMath.mix(y0, y1, ratio);
+                        y1 = Contours[i].Edges[j].Point(ratio).Y; // in case all endpoints are in a horizontal line
+                    double y = MsdfMath.Mix(y0, y1, ratio);
                     // Scanline through whole shape at Y
                     double* x = stackalloc double[3];
                     int* dy = stackalloc int[3];
@@ -271,7 +271,7 @@ namespace Molten.Graphics.MSDF
                     {
                         foreach (EdgeSegment edge in Contours[j].Edges)
                         { 
-                            int n = edge.scanlineIntersections(x, dy, y);
+                            int n = edge.ScanlineIntersections(x, dy, y);
                             for (int k = 0; k < n; ++k) {
                                 Intersection intersection = new Intersection( x[k], dy[k], j );
                                 intersections.Add(intersection);
@@ -302,7 +302,7 @@ namespace Molten.Graphics.MSDF
             // Reverse contours that have the opposite orientation
             for (int i = 0; i < Contours.Count; ++i) {
                 if (orientations[i] < 0)
-                    Contours[i].reverse();
+                    Contours[i].Reverse();
             }
         }
     }

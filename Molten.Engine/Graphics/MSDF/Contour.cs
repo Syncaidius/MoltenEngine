@@ -10,12 +10,12 @@ namespace Molten.Graphics.MSDF
     {
         public List<EdgeSegment> Edges = new List<EdgeSegment>();
 
-        private static double shoelace(Vector2D a, Vector2D b)
+        private static double Shoelace(Vector2D a, Vector2D b)
         {
             return (b.X - a.X) * (a.Y + b.Y);
         }
 
-        private static void boundPoint(ref double l, ref double b, ref double r, ref double t, Vector2D p)
+        private static void BoundPoint(ref double l, ref double b, ref double r, ref double t, Vector2D p)
         {
             if (p.X < l) l = p.X;
             if (p.Y < b) b = p.Y;
@@ -28,69 +28,69 @@ namespace Molten.Graphics.MSDF
             Edges.Add(edge);
         }
 
-        public void bound(ref double l, ref double b, ref double r, ref double t)
+        public void Bound(ref double l, ref double b, ref double r, ref double t)
         {
             foreach (EdgeSegment edge in Edges)
-                edge.bound(ref l, ref b, ref r, ref t);
+                edge.Bound(ref l, ref b, ref r, ref t);
         }
 
-        public void boundMiters(ref double l, ref double b, ref double r, ref double t, double border, double miterLimit, int polarity) {
+        public void BoundMiters(ref double l, ref double b, ref double r, ref double t, double border, double miterLimit, int polarity) {
             if (Edges.Count == 0)
                 return;
 
-            Vector2D prevDir = Edges.Last().direction(1).GetNormalized(true);
+            Vector2D prevDir = Edges.Last().Direction(1).GetNormalized(true);
 
             foreach (EdgeSegment edge in Edges)
             {
-                Vector2D dir = -edge.direction(0).GetNormalized(true);
+                Vector2D dir = -edge.Direction(0).GetNormalized(true);
                 if (polarity * Vector2D.Cross(prevDir, dir) >= 0) {
                     double miterLength = miterLimit;
                     double q = .5 * (1 - Vector2D.Dot(prevDir, dir));
                     if (q > 0)
-                        miterLength = MsdfMath.min(1 / Math.Sqrt(q), miterLimit);
-                    Vector2D miter = edge.point(0) + border * miterLength * (prevDir + dir).GetNormalized(true);
-                    boundPoint(ref l, ref b, ref r, ref t, miter);
+                        miterLength = MsdfMath.Min(1 / Math.Sqrt(q), miterLimit);
+                    Vector2D miter = edge.Point(0) + border * miterLength * (prevDir + dir).GetNormalized(true);
+                    BoundPoint(ref l, ref b, ref r, ref t, miter);
                 }
-                prevDir = edge.direction(1).GetNormalized(true);
+                prevDir = edge.Direction(1).GetNormalized(true);
             }
         }
 
-        public int winding() {
+        public int Winding() {
             if (Edges.Count == 0)
                 return 0;
 
             double total = 0;
             if (Edges.Count == 1) {
-                Vector2D a = Edges[0].point(0), b = Edges[0].point(1 / 3.0), c = Edges[0].point(2 / 3.0);
-                total += shoelace(a, b);
-                total += shoelace(b, c);
-                total += shoelace(c, a);
+                Vector2D a = Edges[0].Point(0), b = Edges[0].Point(1 / 3.0), c = Edges[0].Point(2 / 3.0);
+                total += Shoelace(a, b);
+                total += Shoelace(b, c);
+                total += Shoelace(c, a);
             } else if (Edges.Count == 2) {
-                Vector2D a = Edges[0].point(0), b = Edges[0].point(.5), c = Edges[1].point(0), d = Edges[1].point(.5);
-                total += shoelace(a, b);
-                total += shoelace(b, c);
-                total += shoelace(c, d);
-                total += shoelace(d, a);
+                Vector2D a = Edges[0].Point(0), b = Edges[0].Point(.5), c = Edges[1].Point(0), d = Edges[1].Point(.5);
+                total += Shoelace(a, b);
+                total += Shoelace(b, c);
+                total += Shoelace(c, d);
+                total += Shoelace(d, a);
             } else
             {
-                Vector2D prev = Edges.Last().point(0);
+                Vector2D prev = Edges.Last().Point(0);
                 foreach (EdgeSegment edge in Edges)
                 {
-                    Vector2D cur = edge.point(0);
-                    total += shoelace(prev, cur);
+                    Vector2D cur = edge.Point(0);
+                    total += Shoelace(prev, cur);
                     prev = cur;
                 }
             }
-            return MsdfMath.sign(total);
+            return MsdfMath.Sign(total);
         }
 
-        public void reverse()
+        public void Reverse()
         {
             for (int i = Edges.Count / 2; i > 0; --i)
                 SwapEdges(i - 1, Edges.Count - i);
 
             foreach (EdgeSegment edge in Edges)
-                edge.reverse();
+                edge.Reverse();
         }
 
         /// Swaps two edges at index and and b.

@@ -11,20 +11,20 @@ namespace Molten.Graphics.MSDF
         Vector2D p;
         SignedDistance minDistance;
 
-        public override void reset(ref Vector2D p)
+        public override void Reset(ref Vector2D p)
         {
             double delta = DISTANCE_DELTA_FACTOR * (p - this.p).Length();
-            minDistance.Distance += MsdfMath.nonZeroSign(minDistance.Distance) * delta;
+            minDistance.Distance += MsdfMath.NonZeroSign(minDistance.Distance) * delta;
             this.p = p;
         }
 
-        public override unsafe void addEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
+        public override unsafe void AddEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
         {
             double delta = DISTANCE_DELTA_FACTOR * (p - cache.point).Length();
             if (cache.absDistance - delta <= Math.Abs(minDistance.Distance))
             {
                 double dummy;
-                SignedDistance distance = edge.signedDistance(p, out dummy);
+                SignedDistance distance = edge.SignedDistance(p, out dummy);
                 if (distance < minDistance)
                     minDistance = distance;
                 cache.point = p;
@@ -32,29 +32,29 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public override void merge(EdgeSelector<double> other)
+        public override void Merge(EdgeSelector<double> other)
         {
             TrueDistanceSelector td = other as TrueDistanceSelector;
             if (td.minDistance < minDistance)
                 minDistance = td.minDistance;
         }
 
-        public override double distance()
+        public override double Distance()
         {
             return minDistance.Distance;
         }
 
-        public override void initDistance(ref double distance)
+        public override void InitDistance(ref double distance)
         {
             distance = -double.MaxValue;
         }
 
-        public override double resolveDistance(double distance)
+        public override double ResolveDistance(double distance)
         {
             return distance;
         }
 
-        public override float getRefPSD(ref double dist, double invRange)
+        public override float GetRefPSD(ref double dist, double invRange)
         {
             return (float)(invRange * dist + .5);
         }

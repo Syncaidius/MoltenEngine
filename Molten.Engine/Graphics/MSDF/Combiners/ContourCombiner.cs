@@ -21,10 +21,10 @@ namespace Molten.Graphics.MSDF
         where ES : EdgeSelector<DT>, new()
         where DT : unmanaged
     {
-        public abstract void reset(ref Vector2D p);
+        public abstract void Reset(ref Vector2D p);
 
-        public abstract ES edgeSelector(int i);
+        public abstract ES EdgeSelector(int i);
 
-        public abstract DT distance();
+        public abstract DT Distance();
     }
 }

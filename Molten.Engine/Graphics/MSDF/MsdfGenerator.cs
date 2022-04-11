@@ -20,7 +20,7 @@ namespace Molten.Graphics.MSDF
         /// <param name="output"></param>
         /// <param name="shape"></param>
         /// <param name="projection"></param>
-        private unsafe void generateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConversion, ContourCombiner<ES, DT> combiner, BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
+        private unsafe void GenerateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConversion, ContourCombiner<ES, DT> combiner, BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
@@ -41,7 +41,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public void generateSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
+        public void GenerateSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
         {
             Validation.NPerPixel(output, 1);
             var dpc = new DoubleDistancePixelConversion(range);
@@ -49,16 +49,16 @@ namespace Molten.Graphics.MSDF
             if (config.OverlapSupport)
             {
                 var combiner = new OverlappingContourCombiner<TrueDistanceSelector, double>(shape);
-                generateDistanceField(dpc, combiner, output, shape, projection, range);
+                GenerateDistanceField(dpc, combiner, output, shape, projection, range);
             }
             else
             {
                 var combiner = new SimpleContourCombiner<TrueDistanceSelector, double>(shape);
-                generateDistanceField(dpc, combiner, output, shape, projection, range);
+                GenerateDistanceField(dpc, combiner, output, shape, projection, range);
             }
         }
 
-        public void generatePseudoSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
+        public void GeneratePseudoSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
         {
             Validation.NPerPixel(output, 1);
             var dpc = new DoubleDistancePixelConversion(range);
@@ -66,16 +66,16 @@ namespace Molten.Graphics.MSDF
             if (config.OverlapSupport)
             {
                 var combiner = new OverlappingContourCombiner<PseudoDistanceSelector, double>(shape);
-                generateDistanceField(dpc, combiner, output, shape, projection, range);
+                GenerateDistanceField(dpc, combiner, output, shape, projection, range);
             }
             else
             {
                 var combiner = new SimpleContourCombiner<PseudoDistanceSelector, double>(shape);
-                generateDistanceField(dpc, combiner, output, shape, projection, range);
+                GenerateDistanceField(dpc, combiner, output, shape, projection, range);
             }
         }
 
-        public void generateMSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public void GenerateMSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
         {
             Validation.NPerPixel(output, 3);
             var dpc = new MultiDistancePixelConversion(range);
@@ -83,59 +83,59 @@ namespace Molten.Graphics.MSDF
             if (config.OverlapSupport)
             {
                 var combiner = new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
-                generateDistanceField(dpc, combiner, output, shape, projection, range);
-                ErrorCorrection.msdfErrorCorrection(combiner, output, shape, projection, range, config);
+                GenerateDistanceField(dpc, combiner, output, shape, projection, range);
+                ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
             }
             else
             {
                 var combiner = new SimpleContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
-                generateDistanceField(dpc, combiner, output, shape, projection, range);
-                ErrorCorrection.msdfErrorCorrection(combiner, output, shape, projection, range, config);
+                GenerateDistanceField(dpc, combiner, output, shape, projection, range);
+                ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
             }
         }
 
-        public void generateMTSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public void GenerateMTSDF(BitmapRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
         {
             Validation.NPerPixel(output, 4);
             var dpc = new MultiTrueDistancePixelConversion(range);
             if (config.OverlapSupport)
             {
                 var combiner = new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
-                generateDistanceField(dpc, combiner, output, shape, projection, range);
-                ErrorCorrection.msdfErrorCorrection(combiner, output, shape, projection, range, config);
+                GenerateDistanceField(dpc, combiner, output, shape, projection, range);
+                ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
             }
             else
             {
                 var combiner = new SimpleContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
-                generateDistanceField(dpc, combiner, output, shape, projection, range);
-                ErrorCorrection.msdfErrorCorrection(combiner, output, shape, projection, range, config);
+                GenerateDistanceField(dpc, combiner, output, shape, projection, range);
+                ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
             }
         }
 
         // Legacy API
 
-        public void generateSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
+        public void GenerateSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
         {
-            generateSDF(output, shape, new MsdfProjection(scale, translate), range, new GeneratorConfig(overlapSupport));
+            GenerateSDF(output, shape, new MsdfProjection(scale, translate), range, new GeneratorConfig(overlapSupport));
         }
 
-        public void generatePseudoSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
+        public void GeneratePseudoSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
         {
-            generatePseudoSDF(output, shape, new MsdfProjection(scale, translate), range, new GeneratorConfig(overlapSupport));
+            GeneratePseudoSDF(output, shape, new MsdfProjection(scale, translate), range, new GeneratorConfig(overlapSupport));
         }
 
-        public void generateMSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
+        public void GenerateMSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
         {
-            generateMSDF(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(overlapSupport, errorCorrectionConfig));
+            GenerateMSDF(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(overlapSupport, errorCorrectionConfig));
         }
 
-        void generateMTSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
+        void GenerateMTSDF(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
         {
-            generateMTSDF(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(overlapSupport, errorCorrectionConfig));
+            GenerateMTSDF(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(overlapSupport, errorCorrectionConfig));
         }
 
         // Legacy version
-        public unsafe void generateSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        public unsafe void GenerateSDF_Legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
         {
             if (output.NPerPixel != 1)
                 throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
@@ -152,7 +152,7 @@ namespace Molten.Graphics.MSDF
                     {
                         foreach (EdgeSegment edge in contour.Edges)
                         {
-                            SignedDistance distance = edge.signedDistance(p, out dummy);
+                            SignedDistance distance = edge.SignedDistance(p, out dummy);
                             if (distance < minDistance)
                                 minDistance = distance;
                         } 
@@ -163,7 +163,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void generatePseudoSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        public unsafe void GeneratePseudoSDF_Legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
         {
             if (output.NPerPixel != 1)
                 throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
@@ -182,7 +182,7 @@ namespace Molten.Graphics.MSDF
                         foreach (EdgeSegment edge in contour.Edges)
                         {
                             double param;
-                            SignedDistance distance = edge.signedDistance(p, out param);
+                            SignedDistance distance = edge.SignedDistance(p, out param);
                             if (distance < minDistance)
                             {
                                 minDistance = distance;
@@ -193,14 +193,14 @@ namespace Molten.Graphics.MSDF
                     }
 
                     if (nearEdge != null)
-                        nearEdge.distanceToPseudoDistance(ref minDistance, p, nearParam);
+                        nearEdge.DistanceToPseudoDistance(ref minDistance, p, nearParam);
 
                     *output[x, row] = (float)(minDistance.Distance / range + .5);
                 }
             }
         }
 
-        public unsafe void generateMSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
+        public unsafe void GenerateMSDF_Legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
         {
             if (output.NPerPixel != 3)
                 throw new IndexOutOfRangeException("A BitmapRef of 3 component-per-pixel is expected");
@@ -222,20 +222,20 @@ namespace Molten.Graphics.MSDF
                         foreach (EdgeSegment edge in contour.Edges)
                         {
                             double param;
-                            SignedDistance distance = edge.signedDistance(p, out param);
-                            if ((edge.Color & EdgeColor.RED) == EdgeColor.RED && distance < r.minDistance)
+                            SignedDistance distance = edge.SignedDistance(p, out param);
+                            if ((edge.Color & EdgeColor.Red) == EdgeColor.Red && distance < r.minDistance)
                             {
                                 r.minDistance = distance;
                                 r.nearEdge = edge; // TODO clone here?
                                 r.nearParam = param;
                             }
-                            if ((edge.Color & EdgeColor.GREEN) == EdgeColor.GREEN && distance < g.minDistance)
+                            if ((edge.Color & EdgeColor.Green) == EdgeColor.Green && distance < g.minDistance)
                             {
                                 g.minDistance = distance;
                                 g.nearEdge = edge; // TODO clone here?
                                 g.nearParam = param;
                             }
-                            if ((edge.Color & EdgeColor.BLUE) == EdgeColor.BLUE && distance < b.minDistance)
+                            if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue && distance < b.minDistance)
                             {
                                 b.minDistance = distance;
                                 b.nearEdge = edge; // TODO clone here?
@@ -245,11 +245,11 @@ namespace Molten.Graphics.MSDF
                     }
 
                     if (r.nearEdge != null)
-                        r.nearEdge.distanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
+                        r.nearEdge.DistanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
                     if (g.nearEdge != null)
-                        g.nearEdge.distanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
+                        g.nearEdge.DistanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
                     if (b.nearEdge != null)
-                        b.nearEdge.distanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
+                        b.nearEdge.DistanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
                     output[x, row][0] = (float)(r.minDistance.Distance / range + .5);
                     output[x, row][1] = (float)(g.minDistance.Distance / range + .5);
                     output[x, row][2] = (float)(b.minDistance.Distance / range + .5);
@@ -258,10 +258,10 @@ namespace Molten.Graphics.MSDF
 
             errorCorrectionConfig.DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
             var combiner = new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
-            ErrorCorrection.msdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
+            ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
         }
 
-        public unsafe void generateMTSDF_legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
+        public unsafe void GenerateMTSDF_Legacy(BitmapRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
         {
             if (output.NPerPixel != 4)
                 throw new IndexOutOfRangeException("A BitmapRef of 4 components-per-pixel is expected");
@@ -284,23 +284,23 @@ namespace Molten.Graphics.MSDF
                         foreach (EdgeSegment edge in contour.Edges)
                         {
                             double param = 0;
-                            SignedDistance distance = edge.signedDistance(p, out param);
+                            SignedDistance distance = edge.SignedDistance(p, out param);
                             if (distance < minDistance)
                                 minDistance = distance;
 
-                            if ((edge.Color & EdgeColor.RED) == EdgeColor.RED && distance < r.minDistance)
+                            if ((edge.Color & EdgeColor.Red) == EdgeColor.Red && distance < r.minDistance)
                             {
                                 r.minDistance = distance;
                                 r.nearEdge = edge; // TODO .clone() here?
                                 r.nearParam = param;
                             }
-                            if ((edge.Color & EdgeColor.GREEN) == EdgeColor.GREEN && distance < g.minDistance)
+                            if ((edge.Color & EdgeColor.Green) == EdgeColor.Green && distance < g.minDistance)
                             {
                                 g.minDistance = distance;
                                 g.nearEdge = edge; // TODO clone here?
                                 g.nearParam = param;
                             }
-                            if ((edge.Color & EdgeColor.BLUE) == EdgeColor.BLUE && distance < b.minDistance)
+                            if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue && distance < b.minDistance)
                             {
                                 b.minDistance = distance;
                                 b.nearEdge = edge; // TODO clone here?
@@ -309,11 +309,11 @@ namespace Molten.Graphics.MSDF
                         }
 
                         if (r.nearEdge != null)
-                            r.nearEdge.distanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
+                            r.nearEdge.DistanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
                         if (g.nearEdge != null)
-                            g.nearEdge.distanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
+                            g.nearEdge.DistanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
                         if (b.nearEdge != null)
-                            b.nearEdge.distanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
+                            b.nearEdge.DistanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
 
                         output[x, row][0] = (float)(r.minDistance.Distance / range + .5);
                         output[x, row][1] = (float)(g.minDistance.Distance / range + .5);
@@ -324,7 +324,7 @@ namespace Molten.Graphics.MSDF
 
                 errorCorrectionConfig.DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
                 var combiner = new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
-                ErrorCorrection.msdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
+                ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
             }
         }
     }
