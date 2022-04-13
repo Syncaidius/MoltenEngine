@@ -40,7 +40,7 @@ namespace Molten
             SweepContext tcx = new SweepContext();
             foreach (Contour contour in Contours)
             {
-                List<TriPoint> points = GetContourPoints(contour, edgeResolution);
+                List<TriPoint> points = contour.GetEdgePoints(edgeResolution);
 
                 int winding = contour.GetWinding();
                 switch (winding)
@@ -73,31 +73,6 @@ namespace Molten
                     tri.Points[i].Y = (tri.Points[i].Y * scale) + offset.Y;
                 }
             }
-        }
-
-        private List<TriPoint> GetContourPoints(Contour contour, int edgeResolution = 3)
-        {
-            if (edgeResolution < 3)
-                throw new Exception("Edge resolution must be at least 3");
-
-            List<TriPoint> points = new List<TriPoint>();
-            foreach(Edge edge in contour.Edges)
-            {
-                if(edge is LinearEdge lEdge)
-                {
-                    if (points.Count > 0)
-                        points.Add(new TriPoint((Vector2F)edge.Points[Edge.INDEX_P1]));
-                }
-                else
-                {
-                    for(int i = 0; i < edgeResolution; i++)
-                    {
-                        float dist = i > 0 ? (1.0f / i) : 0;
-                    }
-                }
-            }
-
-            return points;
         }
 
         /// <summary>
@@ -136,6 +111,101 @@ namespace Molten
                 total += contour.Edges.Count;
 
             return total;
+        }
+
+        public void Scale(float scale)
+        {
+            Scale(new Vector2F(scale));
+        }
+
+        public void Scale(Vector2F scale)
+        {
+            Vector2D dScale = (Vector2D)scale;
+
+            foreach (Contour contour in Contours)
+            {
+                foreach (Edge e in contour.Edges)
+                {
+                    for (int i = 0; i < e.Points.Length; i++)
+                        e.Points[i] *= dScale;
+                }
+            }
+        }
+
+        public void Offset(Vector2F offset)
+        {
+            Vector2D dOffset = (Vector2D)offset;
+
+            foreach (Contour contour in Contours)
+            {
+                foreach (Edge e in contour.Edges)
+                {
+                    for (int i = 0; i < e.Points.Length; i++)
+                        e.Points[i] += dOffset;
+                }
+            }
+        }
+
+        public void ScaleAndOffset(Vector2F offset, float scale)
+        {
+            ScaleAndOffset(offset, new Vector2F(scale));  
+        }
+
+        public void ScaleAndOffset(Vector2F offset, Vector2F scale)
+        {
+            Vector2D dOffset = (Vector2D)offset;
+            Vector2D dScale = (Vector2D)scale;
+
+            foreach (Contour contour in Contours)
+            {
+                foreach (Edge e in contour.Edges)
+                {
+                    for (int i = 0; i < e.Points.Length; i++)
+                    {
+                        e.Points[i] *= dScale;
+                        e.Points[i] += dOffset;
+                    }
+                }
+            }
+        }
+
+        public bool Contains(Shape shape)
+        {
+            for (int i = 0; i < shape.Points.Count; i++)
+            {
+                // We only need 1 point to be outside to invalidate a containment.
+                if (!Contains((Vector2F)shape.Points[i]))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool Contains(Vector2F point, int edgeResolution = 3)
+        {
+            Vector2D dPoint = (Vector2D)point;
+
+            // Check hole contours first.
+            foreach(Contour c in Contours)
+            {
+                if(c.GetWinding() == -1)
+                {
+                    if (c.Contains(dPoint, edgeResolution))
+                        return false;
+                }
+            }
+
+            // Now check main contour(s)
+            foreach(Contour c in Contours)
+            {
+                if (c.GetWinding() > -1)
+                {
+                    if (c.Contains(dPoint, edgeResolution))
+                        return true;
+                }
+            }
+
+            return false;
         }
     }
 }

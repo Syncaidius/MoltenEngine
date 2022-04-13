@@ -10,14 +10,16 @@ namespace Molten
     {
         public abstract class Edge
         {
-            public const int INDEX_P0 = 0;
-            public const int INDEX_P1 = 1;
-            public const int INDEX_CP1 = 2;
-            public const int INDEX_CP2 = 3;
+            public const int P0 = 0;
+            public const int P1 = 1;
+            public const int CP1 = 2;
+            public const int CP2 = 3;
 
             public Vector2D[] Points { get; protected init; }
 
             public abstract Vector2D Point(double param);
+
+            public abstract Vector2D PointAlongEdge(double percentage);
         }
 
         public class LinearEdge : Edge
@@ -27,9 +29,19 @@ namespace Molten
                 Points = new Vector2D[] { p0, p1 };
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="param">A percentage value between 0.0 and 1.0.</param>
+            /// <returns></returns>
             public override Vector2D Point(double param)
             {
-                return Vector2D.Lerp(ref Points[INDEX_P0], ref Points[INDEX_P1], param);
+                return Vector2D.Lerp(ref Points[P0], ref Points[P1], param);
+            }
+
+            public override Vector2D PointAlongEdge(double percentage)
+            {
+                return Vector2D.Lerp(ref Points[P0], ref Points[P1], percentage);
             }
         }
 
@@ -42,7 +54,14 @@ namespace Molten
 
             public override Vector2D Point(double param)
             {
-                return Vector2D.Lerp(ref Points[INDEX_P0], ref Points[INDEX_P1], param);
+                Vector2D start = Vector2D.Lerp(ref Points[P0], ref Points[P1], param);
+                Vector2D end = Vector2D.Lerp(ref Points[P1], ref Points[CP1], param);
+                return Vector2D.Lerp(ref start, ref end, param);
+            }
+
+            public override Vector2D PointAlongEdge(double percentage)
+            {
+                return BezierCurve2D.CalculateQuadratic(percentage, Points[P0], Points[P1], Points[CP1]);
             }
         }
 
@@ -55,7 +74,16 @@ namespace Molten
 
             public override Vector2D Point(double param)
             {
-                return Vector2D.Lerp(ref Points[INDEX_P0], ref Points[INDEX_P1], param);
+                Vector2D p12 = Vector2D.Lerp(ref Points[P1], ref Points[CP1], param);
+                Vector2D start = Vector2D.Lerp(Vector2D.Lerp(ref Points[P0], ref Points[P1], param), p12, param);
+                Vector2D end = Vector2D.Lerp(p12, Vector2D.Lerp(Points[CP1], Points[CP2], param), param);
+
+                return Vector2D.Lerp(start, end, param);
+            }
+
+            public override Vector2D PointAlongEdge(double percentage)
+            {
+                return BezierCurve2D.CalculateCubic(percentage, Points[P0], Points[P1], Points[CP1], Points[CP2]);
             }
         }
     }

@@ -63,7 +63,7 @@ namespace Molten.Font
         {
             RectangleF bounds = RectangleF.Empty;
 
-            GlyphPoint[] glyphPoints = glyph.Points;
+            GlyphPoint[] glyphPoints = glyph.pointsPerCurve;
             for (int i = glyphPoints.Length - 1; i >= 0; --i)
             {
                 GlyphPoint p = glyphPoints[i];
@@ -91,7 +91,7 @@ namespace Molten.Font
 
         internal static void OffsetGlyph(Glyph glyph, int dx, int dy)
         {
-            GlyphPoint[] points = glyph.Points;
+            GlyphPoint[] points = glyph.pointsPerCurve;
             for (int i = points.Length - 1; i >= 0; --i)
                 points[i] = new GlyphPoint(points[i].Point + new Vector2F(dx, dy), points[i].IsOnCurve);
 

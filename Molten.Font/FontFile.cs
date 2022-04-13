@@ -161,8 +161,8 @@
                     Bottom = _containerBounds.Bottom - difTop,
                 };
 
-                for (int i = 0; i < glyph.Points.Length; i++)
-                    glyph.Points[i].Y = glyph.MaxY - (glyph.Points[i].Y - oldBounds.Top);
+                for (int i = 0; i < glyph.pointsPerCurve.Length; i++)
+                    glyph.pointsPerCurve[i].Y = glyph.MaxY - (glyph.pointsPerCurve[i].Y - oldBounds.Top);
             }
         }
 

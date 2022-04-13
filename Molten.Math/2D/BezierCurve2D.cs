@@ -76,6 +76,30 @@ namespace Molten
         /// <param name="cp2">Second control point.</param>
         /// <param name="end">End point.</param>
         /// <returns></returns>
+        public static Vector2D CalculateCubic(double t,
+            Vector2D start, Vector2D end, Vector2D cp1, Vector2D cp2)
+        {
+            double u = 1 - t;
+            double tt = t * t;
+            double uu = u * u;
+            double uuu = uu * u;
+            double ttt = tt * t;
+
+            Vector2D p = uuu * start; //first term
+            p += 3 * uu * t * cp1; //second term
+            p += 3 * u * tt * cp2; //third term
+            p += ttt * end; //fourth term
+
+            return p;
+        }
+
+        /// <summary>Calculates a point along a 2D cubic bezier curve.</summary>
+        /// <param name="t">How far along the curve to calculate the point. 0f is the start. 1f is the end.</param>
+        /// <param name="start">Start point.</param>
+        /// <param name="cp1">First control point.</param>
+        /// <param name="cp2">Second control point.</param>
+        /// <param name="end">End point.</param>
+        /// <returns></returns>
         public static Vector2F CalculateCubic(float t,
             BezierCurve2D curve)
         {
@@ -111,6 +135,29 @@ namespace Molten
             {
                 X = end.X + ((2f / 3f) * (cp.X - end.X)),
                 Y = end.Y + ((2f / 3f) * (cp.Y - end.Y)),
+            };
+
+            return CalculateCubic(t, start, end, cp1, cp2);
+        }
+
+        /// <summary>Calculates a point along a 2D quadratic bezier curve.</summary>
+        /// <param name="t">How far along the curve to calculate the point. 0f is the start. 1f is the end.</param>
+        /// <param name="start">Start point.</param>
+        /// <param name="cp">The control point.</param>
+        /// <param name="end">End point.</param>
+        /// <returns></returns>
+        public static Vector2D CalculateQuadratic(double t, Vector2D start, Vector2D end, Vector2D cp)
+        {
+            Vector2D cp1 = new Vector2D()
+            {
+                X = start.X + ((2.0 / 3.0) * (cp.X - start.X)),
+                Y = start.Y + ((2.0 / 3.0) * (cp.Y - start.Y)),
+            };
+
+            Vector2D cp2 = new Vector2D()
+            {
+                X = end.X + ((2.0 / 3.0) * (cp.X - end.X)),
+                Y = end.Y + ((2.0 / 3.0) * (cp.Y - end.Y)),
             };
 
             return CalculateCubic(t, start, end, cp1, cp2);

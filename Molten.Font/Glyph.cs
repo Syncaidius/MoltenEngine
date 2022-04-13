@@ -23,7 +23,7 @@
 
         public ushort[] ContourEndPoints { get; private set; }
 
-        public GlyphPoint[] Points => _points;
+        public GlyphPoint[] pointsPerCurve => _points;
 
         public byte[] Instructions { get; private set; }
 
@@ -45,7 +45,7 @@
             int src_contour_count = other.ContourEndPoints.Length;
             ushort oldLastPointCount = (ushort)(ContourEndPoints[oldLength - 1] + 1);
 
-            _points = ArrayHelper.Concat(Points, other.Points);
+            _points = ArrayHelper.Concat(pointsPerCurve, other.pointsPerCurve);
             ContourEndPoints = ArrayHelper.Concat(ContourEndPoints, other.ContourEndPoints);
             int newLength = ContourEndPoints.Length;
 
@@ -61,12 +61,96 @@
             ushort[] contourClone = new ushort[ContourEndPoints.Length];
             Array.Copy(ContourEndPoints, contourClone, contourClone.Length);
 
-            GlyphPoint[] pointClone = new GlyphPoint[Points.Length];
-            Array.Copy(Points, pointClone, Points.Length);
+            GlyphPoint[] pointClone = new GlyphPoint[pointsPerCurve.Length];
+            Array.Copy(pointsPerCurve, pointClone, pointsPerCurve.Length);
 
             byte[] instructionClone = new byte[Instructions.Length];
             Array.Copy(Instructions, instructionClone, instructionClone.Length);
             return new Glyph(Bounds, contourClone, pointClone, instructionClone);
+        }
+
+        /// <summary>
+        /// Populates the <see cref="Shapes"/> list based on the gylph's outline.
+        /// </summary>
+        /// <param name="curveResolution">The maximum number of points per curve in a glyph contour.</param>
+        /// <returns></returns>
+        public List<ContourShape> CreateShapes2()
+        {
+            List<ContourShape> result = new List<ContourShape>();
+            List<Vector2D> cp = new List<Vector2D>();
+            Vector2D prevCurvePoint = Vector2D.Zero;
+            int start = 0;
+            GlyphPoint p = GlyphPoint.Empty;
+
+            ContourShape shape = new ContourShape();
+            result.Add(shape);
+            for (int i = 0; i < ContourEndPoints.Length; i++)
+            {
+                ContourShape.Contour contour = new ContourShape.Contour();
+                shape.Contours.Add(contour);
+
+                int end = ContourEndPoints[i];
+                cp.Clear();
+
+                // Check if hint-point (1 contour point).
+                if (end - start > 0)
+                {
+                    int startOffset = 0;
+
+                    // Find start point
+                    for (int j = start; j <= end; j++)
+                    {
+                        if (_points[j].IsOnCurve)
+                        {
+                            start = j;
+                            break;
+                        }
+
+                        startOffset++;
+                    }
+
+                    for (int j = start; j <= end; j++)
+                    {
+                        p = _points[j];
+
+                        // If off curve, it's a bezier control point.
+                        if (p.IsOnCurve)
+                        {
+                            AddCurve(contour, prevCurvePoint, (Vector2D)p.Point, cp);
+                            prevCurvePoint = (Vector2D)p.Point;
+                        }
+                        else
+                        {
+                            cp.Add((Vector2D)p.Point);
+                        }
+                    }
+
+                    Vector2D startPoint = contour.Edges[0].Points[ContourShape.Edge.P0];
+
+                    // Close contour, by linking the end point back to the start point.
+                    if (!startPoint.Equals(p.Point))
+                    {
+                        if (startOffset > 0)
+                        {
+                            // All of the points within the offset start will be control points
+                            int originalStart = start - startOffset;
+                            int offsetEnd = start;
+                            for (int k = originalStart; k < offsetEnd; k++)
+                                cp.Add((Vector2D)_points[k].Point);
+                        }
+
+                        
+                        if (cp.Count > 0)
+                            AddCurve(contour, (Vector2D)p.Point, startPoint, cp);
+                        else
+                            contour.Edges.Add(new ContourShape.LinearEdge((Vector2D)p.Point, startPoint));
+                    }
+                }
+
+                start = end + 1;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -93,7 +177,6 @@
                 // Check if hint-point (1 contour point).
                 if (end - start > 0)
                 {
-                    RectangleF pointBounds = new RectangleF();
                     int startOffset = 0;
 
                     // Find start point
@@ -111,12 +194,11 @@
                     for (int j = start; j <= end; j++)
                     {
                         p = _points[j];
-                        pointBounds.Encapsulate(p.Point);
 
                         // If off curve, it's a bezier control point.
                         if (p.IsOnCurve)
                         {
-                            PlotCurve(shape, prevCurvePoint, p.Point, cp, pointsPerCurve, curveIncrement);
+                            PlotCurve(shape, prevCurvePoint, p.Point, cp, pointsPerCurve);
                             prevCurvePoint = p.Point;
                         }
                         else
@@ -138,7 +220,7 @@
                         }
 
                         if (cp.Count > 0)
-                            PlotCurve(shape, prevCurvePoint, (Vector2F)shape.Points[0], cp, pointsPerCurve, curveIncrement);
+                            PlotCurve(shape, p.Point, (Vector2F)shape.Points[0], cp, pointsPerCurve);
                         else
                             shape.Points.Add(new TriPoint((Vector2F)shape.Points[0]));
                     }
@@ -177,8 +259,42 @@
             return result;
         }
 
-        private void PlotCurve(Shape shape, Vector2F prevPoint, Vector2F curPoint, List<Vector2F> cp, float pointsPerCurve, float curveIncrement)
+        private void AddCurve(ContourShape.Contour contour, Vector2D prevPoint, Vector2D curPoint, List<Vector2D> cp)
         {
+            switch (cp.Count)
+            {
+                case 0: // Line
+                    contour.Edges.Add(new ContourShape.LinearEdge(prevPoint, curPoint));
+                    break;
+
+                case 1: // Quadratic bezier curve
+                    contour.Edges.Add(new ContourShape.QuadraticEdge(prevPoint, curPoint, cp[0]));
+                    break;
+
+                case 2: // Cubic curve
+                    contour.Edges.Add(new ContourShape.CubicEdge(prevPoint, curPoint, cp[0], cp[1]));
+                    break;
+
+                default:
+                    // There are at least 3 control points.
+                    for (int i = 0; i < cp.Count - 1; i++)
+                    {
+                        Vector2D midPoint = (cp[i] + cp[i + 1]) / 2.0;
+                        contour.Edges.Add(new ContourShape.QuadraticEdge(prevPoint, midPoint, cp[i]));
+                        prevPoint = midPoint;
+                    }
+
+                    // Calculate last bezier 
+                    contour.Edges.Add(new ContourShape.QuadraticEdge(prevPoint, curPoint, cp[cp.Count - 1]));
+                    break;
+            }
+
+            cp.Clear();
+        }
+
+        private void PlotCurve(Shape shape, Vector2F prevPoint, Vector2F curPoint, List<Vector2F> cp, float curveResolution)
+        {
+            float curveIncrement = 1.0f / curveResolution;
             float curvePercent = 0f;
             switch (cp.Count)
             {
@@ -188,7 +304,7 @@
 
                 case 1: // Quadratic bezier curve
                     curvePercent = 0f;
-                    for (int c = 0; c < pointsPerCurve; c++)
+                    for (int c = 0; c < curveResolution; c++)
                     {
                         curvePercent += curveIncrement;
                         Vector2F cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[0]);
@@ -198,7 +314,7 @@
 
                 case 2: // Cubic curve
                     curvePercent = 0f;
-                    for (int c = 0; c < pointsPerCurve; c++)
+                    for (int c = 0; c < curveResolution; c++)
                     {
                         curvePercent += curveIncrement;
                         Vector2F cPos = BezierCurve2D.CalculateCubic(curvePercent, prevPoint, curPoint, cp[0], cp[1]);
@@ -213,7 +329,7 @@
                         Vector2F midPoint = (cp[i] + cp[i + 1]) / 2f;
 
                         curvePercent = 0f;
-                        for (int c = 0; c < pointsPerCurve; c++)
+                        for (int c = 0; c < curveResolution; c++)
                         {
                             curvePercent += curveIncrement;
                             Vector2F cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, midPoint, cp[i]);
@@ -225,7 +341,7 @@
 
                     // Calculate last bezier 
                     curvePercent = 0f;
-                    for (int c = 0; c < pointsPerCurve; c++)
+                    for (int c = 0; c < curveResolution; c++)
                     {
                         curvePercent += curveIncrement;
                         Vector2F cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[cp.Count - 1]);

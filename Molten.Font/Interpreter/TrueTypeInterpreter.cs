@@ -45,7 +45,7 @@ namespace Molten.Font
                 metrics.LeftSideBearing,
                 glyph.MinX,
                 glyph.MaxY,
-                glyph.Points,
+                glyph.pointsPerCurve,
                 glyph.ContourEndPoints,
                 glyph.Instructions,
                 glyphSizeInPixel);
