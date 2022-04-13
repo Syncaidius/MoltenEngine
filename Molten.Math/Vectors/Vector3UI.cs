@@ -972,6 +972,108 @@ namespace Molten
 			}
 		}
 #endregion
+
+#region Casts - vectors
+        ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="SByte3"/>.</summary>
+        public static explicit operator SByte3(Vector3UI val)
+        {
+            return new SByte3()
+            {
+                X = (sbyte)val.X,
+                Y = (sbyte)val.Y,
+                Z = (sbyte)val.Z,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="Byte3"/>.</summary>
+        public static explicit operator Byte3(Vector3UI val)
+        {
+            return new Byte3()
+            {
+                X = (byte)val.X,
+                Y = (byte)val.Y,
+                Z = (byte)val.Z,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="Vector3I"/>.</summary>
+        public static explicit operator Vector3I(Vector3UI val)
+        {
+            return new Vector3I()
+            {
+                X = (int)val.X,
+                Y = (int)val.Y,
+                Z = (int)val.Z,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="Vector3S"/>.</summary>
+        public static explicit operator Vector3S(Vector3UI val)
+        {
+            return new Vector3S()
+            {
+                X = (short)val.X,
+                Y = (short)val.Y,
+                Z = (short)val.Z,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="Vector3US"/>.</summary>
+        public static explicit operator Vector3US(Vector3UI val)
+        {
+            return new Vector3US()
+            {
+                X = (ushort)val.X,
+                Y = (ushort)val.Y,
+                Z = (ushort)val.Z,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="Vector3L"/>.</summary>
+        public static explicit operator Vector3L(Vector3UI val)
+        {
+            return new Vector3L()
+            {
+                X = (long)val.X,
+                Y = (long)val.Y,
+                Z = (long)val.Z,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="Vector3UL"/>.</summary>
+        public static explicit operator Vector3UL(Vector3UI val)
+        {
+            return new Vector3UL()
+            {
+                X = val.X,
+                Y = val.Y,
+                Z = val.Z,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="Vector3F"/>.</summary>
+        public static explicit operator Vector3F(Vector3UI val)
+        {
+            return new Vector3F()
+            {
+                X = (float)val.X,
+                Y = (float)val.Y,
+                Z = (float)val.Z,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="Vector3D"/>.</summary>
+        public static explicit operator Vector3D(Vector3UI val)
+        {
+            return new Vector3D()
+            {
+                X = (double)val.X,
+                Y = (double)val.Y,
+                Z = (double)val.Z,
+            };
+        }
+
+#endregion
 	}
 }
 

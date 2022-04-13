@@ -171,17 +171,6 @@ namespace Molten
             };
         }
 #endregion
-
-#region Operators - Cast
-        public static explicit operator Vector2I(Vector2F value)
-		{
-			return new Vector2I()
-			{
-				X = (int)value.X,
-				Y = (int)value.Y,
-			};
-		}
-#endregion
 	}
 }
 

@@ -21,6 +21,7 @@ struct TypeData
     public string Zero;     // Value for 0 or Zero
     public bool IsFPType;   // The type is a floating-point type
     public bool Unsigned;   // The type uses an unsigned data type
+    public int Bits;        // The number of bits in DT
 }
 
 string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};

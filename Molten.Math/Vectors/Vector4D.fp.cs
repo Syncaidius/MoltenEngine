@@ -186,19 +186,6 @@ namespace Molten
             };
         }
 #endregion
-
-#region Operators - Cast
-        public static explicit operator Vector4L(Vector4D value)
-		{
-			return new Vector4L()
-			{
-				X = (long)value.X,
-				Y = (long)value.Y,
-				Z = (long)value.Z,
-				W = (long)value.W,
-			};
-		}
-#endregion
 	}
 }
 

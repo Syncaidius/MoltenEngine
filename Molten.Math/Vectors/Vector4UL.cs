@@ -1025,6 +1025,117 @@ namespace Molten
 			}
 		}
 #endregion
+
+#region Casts - vectors
+        ///<summary>Casts a <see cref="Vector4UL"/> to a <see cref="SByte4"/>.</summary>
+        public static explicit operator SByte4(Vector4UL val)
+        {
+            return new SByte4()
+            {
+                X = (sbyte)val.X,
+                Y = (sbyte)val.Y,
+                Z = (sbyte)val.Z,
+                W = (sbyte)val.W,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector4UL"/> to a <see cref="Byte4"/>.</summary>
+        public static explicit operator Byte4(Vector4UL val)
+        {
+            return new Byte4()
+            {
+                X = (byte)val.X,
+                Y = (byte)val.Y,
+                Z = (byte)val.Z,
+                W = (byte)val.W,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector4UL"/> to a <see cref="Vector4I"/>.</summary>
+        public static explicit operator Vector4I(Vector4UL val)
+        {
+            return new Vector4I()
+            {
+                X = (int)val.X,
+                Y = (int)val.Y,
+                Z = (int)val.Z,
+                W = (int)val.W,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector4UL"/> to a <see cref="Vector4UI"/>.</summary>
+        public static explicit operator Vector4UI(Vector4UL val)
+        {
+            return new Vector4UI()
+            {
+                X = (uint)val.X,
+                Y = (uint)val.Y,
+                Z = (uint)val.Z,
+                W = (uint)val.W,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector4UL"/> to a <see cref="Vector4S"/>.</summary>
+        public static explicit operator Vector4S(Vector4UL val)
+        {
+            return new Vector4S()
+            {
+                X = (short)val.X,
+                Y = (short)val.Y,
+                Z = (short)val.Z,
+                W = (short)val.W,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector4UL"/> to a <see cref="Vector4US"/>.</summary>
+        public static explicit operator Vector4US(Vector4UL val)
+        {
+            return new Vector4US()
+            {
+                X = (ushort)val.X,
+                Y = (ushort)val.Y,
+                Z = (ushort)val.Z,
+                W = (ushort)val.W,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector4UL"/> to a <see cref="Vector4L"/>.</summary>
+        public static explicit operator Vector4L(Vector4UL val)
+        {
+            return new Vector4L()
+            {
+                X = (long)val.X,
+                Y = (long)val.Y,
+                Z = (long)val.Z,
+                W = (long)val.W,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector4UL"/> to a <see cref="Vector4F"/>.</summary>
+        public static explicit operator Vector4F(Vector4UL val)
+        {
+            return new Vector4F()
+            {
+                X = (float)val.X,
+                Y = (float)val.Y,
+                Z = (float)val.Z,
+                W = (float)val.W,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector4UL"/> to a <see cref="Vector4D"/>.</summary>
+        public static explicit operator Vector4D(Vector4UL val)
+        {
+            return new Vector4D()
+            {
+                X = (double)val.X,
+                Y = (double)val.Y,
+                Z = (double)val.Z,
+                W = (double)val.W,
+            };
+        }
+
+#endregion
 	}
 }
 

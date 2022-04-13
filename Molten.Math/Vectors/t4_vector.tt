@@ -1329,6 +1329,47 @@ namespace Molten
 			}
 		}
 #endregion
+
+#region Casts - vectors
+<#
+    foreach(TypeData dCast in _def)
+    {
+        string castName = $"{dCast.Name}{size}{dCast.Postfix}";
+        if(castName == fName)
+            continue;
+
+		string castFn = $"{fName}";
+		string castFpCast = dCast.DT == "float" ? "(float)" : (dCast.DT == "double" ? "" : $"({dCast.DT})");
+		string castHelper = dCast.FP == "double" ? "MathHelperDP" : "MathHelper";
+        bool sameDT = dCast.DT == d.DT;
+        bool sameFP = dCast.IsFPType == d.IsFPType;
+        bool sameSign = dCast.Unsigned == d.Unsigned;
+        bool sameBits = dCast.Bits == d.Bits;
+        bool isHigherBits = dCast.Bits > d.Bits;
+        string castTypeCast = !sameDT && (!sameFP || !sameSign || (sameFP && !isHigherBits)) ? $"({dCast.DT})" : "";
+        string castFpToTypeCast = (typeCast.Length > 0) ? typeCast : (dCast.DT != dCast.FP ? $"({dCast.DT})" : "");
+        string castIntType = (dCast.DT == "byte" || dCast.DT == "sbyte" || dCast.DT == "short" || dCast.DT == "ushort") ? $"int" : dCast.DT;
+#>
+        ///<summary>Casts a <see cref="<#=fName#>"/> to a <see cref="<#=castName#>"/>.</summary>
+        public static explicit operator <#=castName#>(<#=fName#> val)
+        {
+            return new <#=castName#>()
+            {
+<#
+        for(int p = 0; p < size; p++)
+        {
+#>
+                <#=pMapUpper[p]#> = <#=castTypeCast#>val.<#=pMapUpper[p]#>,
+<#
+        }
+#>
+            };
+        }
+
+<#
+    }
+#>
+#endregion
 	}
 }
 <#

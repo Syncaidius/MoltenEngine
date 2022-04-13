@@ -921,6 +921,99 @@ namespace Molten
 			}
 		}
 #endregion
+
+#region Casts - vectors
+        ///<summary>Casts a <see cref="Vector2US"/> to a <see cref="SByte2"/>.</summary>
+        public static explicit operator SByte2(Vector2US val)
+        {
+            return new SByte2()
+            {
+                X = (sbyte)val.X,
+                Y = (sbyte)val.Y,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector2US"/> to a <see cref="Byte2"/>.</summary>
+        public static explicit operator Byte2(Vector2US val)
+        {
+            return new Byte2()
+            {
+                X = (byte)val.X,
+                Y = (byte)val.Y,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector2US"/> to a <see cref="Vector2I"/>.</summary>
+        public static explicit operator Vector2I(Vector2US val)
+        {
+            return new Vector2I()
+            {
+                X = (int)val.X,
+                Y = (int)val.Y,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector2US"/> to a <see cref="Vector2UI"/>.</summary>
+        public static explicit operator Vector2UI(Vector2US val)
+        {
+            return new Vector2UI()
+            {
+                X = val.X,
+                Y = val.Y,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector2US"/> to a <see cref="Vector2S"/>.</summary>
+        public static explicit operator Vector2S(Vector2US val)
+        {
+            return new Vector2S()
+            {
+                X = (short)val.X,
+                Y = (short)val.Y,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector2US"/> to a <see cref="Vector2L"/>.</summary>
+        public static explicit operator Vector2L(Vector2US val)
+        {
+            return new Vector2L()
+            {
+                X = (long)val.X,
+                Y = (long)val.Y,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector2US"/> to a <see cref="Vector2UL"/>.</summary>
+        public static explicit operator Vector2UL(Vector2US val)
+        {
+            return new Vector2UL()
+            {
+                X = val.X,
+                Y = val.Y,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector2US"/> to a <see cref="Vector2F"/>.</summary>
+        public static explicit operator Vector2F(Vector2US val)
+        {
+            return new Vector2F()
+            {
+                X = (float)val.X,
+                Y = (float)val.Y,
+            };
+        }
+
+        ///<summary>Casts a <see cref="Vector2US"/> to a <see cref="Vector2D"/>.</summary>
+        public static explicit operator Vector2D(Vector2US val)
+        {
+            return new Vector2D()
+            {
+                X = (double)val.X,
+                Y = (double)val.Y,
+            };
+        }
+
+#endregion
 	}
 }
 

@@ -30,11 +30,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector.tt</DependentUpon>
     </None>
-    <None Include="Vectors\t4_vector.i.cs">
-      <DependentUpon>t4_vector.i.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </None>
     <None Include="Vectors\t4_vector.fp.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -65,10 +60,6 @@
     <None Update="t4_header.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_header.cs</LastGenOutput>
-    </None>
-    <None Update="Vectors\t4_vector.i.tt">
-      <LastGenOutput>t4_vector.i.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
     </None>
     <None Update="Vectors\t4_vector.fp.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -134,11 +125,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector.fp.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Vectors\t4_vector.i.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>t4_vector.i.tt</DependentUpon>
     </Compile>
     <Compile Update="Vectors\t4_vector2.fp.cs">
       <DesignTime>True</DesignTime>

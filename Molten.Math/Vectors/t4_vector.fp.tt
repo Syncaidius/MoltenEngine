@@ -258,23 +258,6 @@ namespace Molten
             };
         }
 #endregion
-
-#region Operators - Cast
-        public static explicit operator Vector<#=size#><#=intCastPostfix#>(<#=fullName#> value)
-		{
-			return new Vector<#=size#><#=intCastPostfix#>()
-			{
-<#
-			for(int p = 0; p < size; p++)
-			{
-#>
-				<#=pMapUpper[p]#> = <#=intCast#>value.<#=pMapUpper[p]#>,
-<#
-			}
-#>
-			};
-		}
-#endregion
 	}
 }
 <#

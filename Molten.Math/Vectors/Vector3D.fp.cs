@@ -176,18 +176,6 @@ namespace Molten
             };
         }
 #endregion
-
-#region Operators - Cast
-        public static explicit operator Vector3L(Vector3D value)
-		{
-			return new Vector3L()
-			{
-				X = (long)value.X,
-				Y = (long)value.Y,
-				Z = (long)value.Z,
-			};
-		}
-#endregion
 	}
 }
 
