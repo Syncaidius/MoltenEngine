@@ -17,7 +17,7 @@ namespace Molten
         /// <param name="offset"></param>
         /// <param name="scale"></param>
         /// <param name="edgeResolution">The maximum number of points that are allowed to represent an edge. For bezier curves, this will affect the curve smoothness.</param>
-        public void Triangulate(IList<Vector2F> output, Vector2F offset, float scale = 1f, int edgeResolution = 3)
+        public void Triangulate(List<Vector2F> output, Vector2F offset, float scale = 1f, int edgeResolution = 3)
         {
             List<Triangle> triangles = new List<Triangle>();
             Triangulate(triangles, offset, scale, edgeResolution);
@@ -35,7 +35,7 @@ namespace Molten
         /// </summary>
         /// <param name="output"></param>
         /// <param name="edgeResolution">The maximum number of points that are allowed to represent an edge. For bezier curves, this will affect the curve smoothness.</param>
-        public void Triangulate(IList<Triangle> output, Vector2F offset, float scale = 1f, int edgeResolution = 3)
+        public void Triangulate(List<Triangle> output, Vector2F offset, float scale = 1f, int edgeResolution = 3)
         {
             SweepContext tcx = new SweepContext();
             foreach (Contour contour in Contours)
@@ -49,11 +49,11 @@ namespace Molten
                         continue;
 
                     case -1: // Outline
-                        points.Reverse();
                         tcx.AddPoints(points);
                         break;
 
                     case 1: // Hole
+                        points.Reverse();
                         tcx.AddHole(points);
                         break;
                 }
@@ -63,14 +63,16 @@ namespace Molten
             Sweep sweep = new Sweep();
             sweep.Triangulate(tcx);
 
-            output = tcx.GetTriangles();
+            List<Triangle> result = tcx.GetTriangles();
 
             // Scale and offset triangles
-            foreach (Triangle tri in output)
+            foreach (Triangle tri in result)
             {
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 3; i++)
+                {
                     tri.Points[i].X = (tri.Points[i].X * scale) + offset.X;
                     tri.Points[i].Y = (tri.Points[i].Y * scale) + offset.Y;
+                    output.Add(tri);
                 }
             }
         }

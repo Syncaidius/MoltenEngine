@@ -204,8 +204,8 @@ namespace Molten.Samples
             _glyphTriPoints = new List<Vector2F>();
 
 
-            //foreach (ContourShape s in _shapes)
-            //    s.Triangulate(_glyphTriPoints, Vector2F.Zero, 1);
+            foreach (ContourShape s in _shapes)
+                s.Triangulate(_glyphTriPoints, Vector2F.Zero, 1);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
