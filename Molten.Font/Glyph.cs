@@ -78,7 +78,6 @@
         {
             List<ContourShape> result = new List<ContourShape>();
             List<Vector2D> cp = new List<Vector2D>();
-            Vector2D prevCurvePoint = Vector2D.Zero;
             int start = 0;
             GlyphPoint p = GlyphPoint.Empty;
 
@@ -88,6 +87,7 @@
             {
                 ContourShape.Contour contour = new ContourShape.Contour();
                 shape.Contours.Add(contour);
+                Vector2D prevCurvePoint = Vector2D.Zero;
 
                 int end = ContourEndPoints[i];
                 cp.Clear();
@@ -116,7 +116,9 @@
                         // If off curve, it's a bezier control point.
                         if (p.IsOnCurve)
                         {
-                            AddCurve(contour, prevCurvePoint, (Vector2D)p.Point, cp);
+                            if(j > start)
+                                AddCurve(contour, prevCurvePoint, (Vector2D)p.Point, cp);
+
                             prevCurvePoint = (Vector2D)p.Point;
                         }
                         else
@@ -141,7 +143,7 @@
 
                         
                         if (cp.Count > 0)
-                            AddCurve(contour, (Vector2D)p.Point, startPoint, cp);
+                            AddCurve(contour, prevCurvePoint, startPoint, cp);
                         else
                             contour.Edges.Add(new ContourShape.LinearEdge((Vector2D)p.Point, startPoint));
                     }
@@ -220,7 +222,7 @@
                         }
 
                         if (cp.Count > 0)
-                            PlotCurve(shape, p.Point, (Vector2F)shape.Points[0], cp, pointsPerCurve);
+                            PlotCurve(shape, prevCurvePoint, (Vector2F)shape.Points[0], cp, pointsPerCurve);
                         else
                             shape.Points.Add(new TriPoint((Vector2F)shape.Points[0]));
                     }

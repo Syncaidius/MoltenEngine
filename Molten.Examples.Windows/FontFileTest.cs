@@ -79,7 +79,7 @@ namespace Molten.Samples
             _font2Test = cr.Get<SpriteFont>(0);
             _fontFile = _font2Test.Font;
             InitializeFontDebug();
-            GenerateChar('Å');
+            GenerateChar('g');
         }
 
         private void InitializeFontDebug()
