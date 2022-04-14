@@ -90,6 +90,8 @@ namespace Molten.Samples
 
             GenerateSDF("SDF", false);
             GenerateSDF("SDF Legacy", true);
+            GenerateMSDF("MSDF", false);
+            GenerateMSDF("MSDF Legacy", true);
 
             _loaded = true;
         }
@@ -119,11 +121,11 @@ namespace Molten.Samples
             MsdfProjection projection = new MsdfProjection(scale, pOffset);
             if (legacy)
             {
-                _msdf.GenerateSDF_Legacy(sdf, shape, range, scale, pOffset);
+                _msdf.GeneratePseudoSDF_Legacy(sdf, shape, range, scale, pOffset);
             }
             else
             {
-                _msdf.GenerateSDF(sdf, shape, projection, range, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
+                _msdf.GeneratePseudoSDF(sdf, shape, projection, range, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
                 {
                     DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
                     Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
@@ -162,6 +164,75 @@ namespace Molten.Samples
 
             uint rowPitch = (uint)((testWidth * testNPerPixel * sizeof(Color)));
             tex.SetData(0, pData2, 0, (uint)pData2.Length, rowPitch);
+
+            _msdfTextures.Add(label, tex);
+        }
+
+        private unsafe void GenerateMSDF(string label, bool legacy)
+        {
+            int shapeSize = 50;
+            int pWidth = 64;
+            int pHeight = 64;
+            int nPerPixel = 3;
+            double pxRange = 4;
+
+            int testWidth = 256;
+            int testHeight = 256;
+            int testNPerPixel = 3;
+            Vector2D scale = new Vector2D(1);
+            Vector2D pOffset = new Vector2D(0, 8);
+            double avgScale = .5 * (scale.X + scale.Y);
+            double range = pxRange / MsdfMath.Min(scale.X, scale.Y);
+            FillRule fl = FillRule.NonZero;
+
+            float* pixels = EngineUtil.AllocArray<float>((nuint)(pWidth * pHeight * nPerPixel));
+            BitmapRef<float> sdf = new BitmapRef<float>(pixels, nPerPixel, pWidth, pHeight);
+            MsdfShape shape = CreateShape(new Vector2D(shapeSize));
+            shape.Normalize();
+
+            MsdfProjection projection = new MsdfProjection(scale, pOffset);
+            MSDFGeneratorConfig config = new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
+            {
+                DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
+                Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
+            });
+
+            if (legacy)
+                _msdf.GenerateMSDF_Legacy(sdf, shape, range, scale, pOffset, config.ErrorCorrection);
+            else
+                _msdf.GenerateMSDF(sdf, shape, projection, range, config);
+
+            MsdfRasterization.multiDistanceSignCorrection(sdf, shape, projection, fl);
+            ErrorCorrection.MsdfErrorCorrection(new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance>(shape), sdf, shape, projection, range, config);
+
+            // Output render test texture
+            int numElements = testWidth * testHeight * testNPerPixel;
+            float* oPixels = EngineUtil.AllocArray<float>((nuint)numElements);
+            BitmapRef<float> output = new BitmapRef<float>(oPixels, testNPerPixel, testWidth, testHeight);
+            MsdfRasterization.simulate8bit(sdf);
+            MsdfRasterization.renderMSDF(output, sdf, avgScale * range, 0.5f);
+            ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
+            {
+                Width = (uint)testWidth,
+                Height = (uint)testHeight,
+                Format = GraphicsFormat.R8G8B8A8_UNorm
+            });
+
+            Color[] pData = new Color[testWidth * testHeight];
+            for (int i = 0; i < pData.Length; i++)
+            {
+                int pi = i * nPerPixel;
+                pData[i] = new Color()
+                {
+                    R = (byte)(255 * oPixels[pi]),
+                    G = (byte)(255 * oPixels[pi+1]),
+                    B = (byte)(255 * oPixels[pi+2]),
+                    A = (byte)(255 * oPixels[pi+3] > 0 ? 255 : 0),
+                };
+            }
+
+            uint rowPitch = (uint)((testWidth * sizeof(Color)));
+            tex.SetData(0, pData, 0, (uint)pData.Length, rowPitch);
 
             _msdfTextures.Add(label, tex);
         }

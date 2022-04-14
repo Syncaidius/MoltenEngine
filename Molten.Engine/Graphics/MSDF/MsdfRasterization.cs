@@ -165,8 +165,7 @@ namespace Molten.Graphics.MSDF
 
         public unsafe static void simulate8bit(BitmapRef<float> bitmap)
         {
-            Validation.NPerPixel(bitmap, 1);
-            float* end = bitmap.pixels + 1 * bitmap.Width * bitmap.Height;
+            float* end = bitmap.pixels + bitmap.NPerPixel * bitmap.Width * bitmap.Height;
             for (float* p = bitmap.pixels; p < end; ++p)
                 *p = pixelByteToFloat(pixelFloatToByte(*p));
         }
