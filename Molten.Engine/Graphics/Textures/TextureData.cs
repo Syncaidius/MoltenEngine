@@ -2,36 +2,8 @@
 
 namespace Molten.Graphics
 {
-    public class TextureData : ICloneable
+    public partial class TextureData : ICloneable
     {
-        /// <summary>Represents a slice of texture data. This can either be a mip map level or array element in a texture array (which could still technically a mip-map level of 0).</summary>
-        public class Slice
-        {
-            public byte[] Data;
-
-            public uint Pitch;
-            public uint TotalBytes;
-
-            public uint Width;
-            public uint Height;
-
-            public Slice Clone()
-            {
-                Slice result = new Slice()
-                {
-                    Data = new byte[this.Data.Length],
-                    Pitch = this.Pitch,
-                    TotalBytes = this.TotalBytes,
-                    Width = this.Width,
-                    Height = this.Height,
-                };
-
-                Array.Copy(Data, result.Data, TotalBytes);
-
-                return result;
-            }
-        }
-
         public uint Width;
         public uint Height;
         public uint MipMapLevels;
