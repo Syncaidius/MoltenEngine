@@ -2,11 +2,7 @@
 {
     public class Sprite
     {
-        public virtual RectangleF Source { get; set; }
-
-        public float ArraySlice { get; set; }
-
-        public ITexture2D Texture { get; set; }
+        public SpriteData Data = new SpriteData();
 
         public Vector2F Position { get; set; }
 

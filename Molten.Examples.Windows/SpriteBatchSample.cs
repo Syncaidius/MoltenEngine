@@ -53,8 +53,13 @@ namespace Molten.Samples
         private void SetupSprites(ITexture2D tex)
         {
             _sprites = new List<Sprite>();
+            SpriteData sData = new SpriteData()
+            {
+                Texture = tex,
+                Source = new Rectangle(0, 0, 128, 128),
+            };
 
-            for(int i = 0; i < 300; i++)
+            for (int i = 0; i < 300; i++)
             {
                 _sprites.Add(new Sprite()
                 {
@@ -71,10 +76,9 @@ namespace Molten.Samples
                         B = (byte)Rng.Next(0, 255),
                         A = (byte)Rng.Next(50, 100),
                     },
-
-                    Texture = tex,
-                    Source = new Rectangle(0, 0, 128, 128),
-                    Scale = new Vector2F(Rng.Next(25, 101), Rng.Next(25,101)) / 100,
+                    
+                    Data = sData,
+                    Scale = new Vector2F(Rng.Next(25, 101), Rng.Next(25, 101)) / 100,
                     Origin = new Vector2F(0.5f),
                 });
             }

@@ -73,10 +73,13 @@ namespace Molten.Samples
                         B = (byte)Rng.Next(0, 255),
                         A = 255,
                     },
-
-                    Texture = tex,
-                    Source = new Rectangle(0, 0, 128, 128),
-                    ArraySlice = Rng.Next(0, 3),
+                 
+                    Data = new SpriteData()
+                    {
+                        Texture = tex,
+                        Source = new Rectangle(0, 0, 128, 128),
+                        ArraySlice = Rng.Next(0, 3),
+                    },                    
                     Scale = new Vector2F(Rng.Next(25, 101), Rng.Next(25,101)) / 100,
                     Origin = new Vector2F(0.5f),
                 });

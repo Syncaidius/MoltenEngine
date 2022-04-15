@@ -55,8 +55,11 @@ namespace Molten.Samples
                         A = (byte)Rng.Next(0, 255),
                     },
 
-                    Texture = Rng.Next(0, 5001) < 2500 ? tex : null,
-                    Source = new Rectangle(0, 0, 128, 128),
+                    Data = new SpriteData()
+                    {
+                        Texture = Rng.Next(0, 5001) < 2500 ? tex : null,
+                        Source = new Rectangle(0, 0, 128, 128),
+                    },
                     Origin = new Vector2F(0.5f),
                 });
             }

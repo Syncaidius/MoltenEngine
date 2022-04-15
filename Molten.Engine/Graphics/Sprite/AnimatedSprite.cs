@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public class AnimatedSprite : Sprite
     {
@@ -17,14 +15,13 @@ namespace Molten.Graphics
         public AnimatedSprite(SpriteAnimation animation)
         {
             _animation = animation;
+            GetCurrentFrame();
         }
 
-        private void GetFrame()
+        private void GetCurrentFrame()
         {
             _curFrame = _animation.Frames[Frame];
-
-            Source = _curFrame.Source;
-            ArraySlice = _curFrame.ArrayIndex;
+            Data = _curFrame.Data; 
         }
 
         public void Play(bool reset = false)
@@ -55,10 +52,17 @@ namespace Molten.Graphics
 
         public void Update(Timing time)
         {
-            if (State == SpriteAnimationState.Stopped || _animation == null || _animation.Frames.Count == 0)
+            if (State == SpriteAnimationState.Stopped ||
+                _animation == null ||
+                _animation.ErrorFrame >= 0 ||
+                _animation.Frames.Count == 0)
+            {
                 return;
+            }
 
             _frameTime += time.ElapsedTime.TotalMilliseconds * AnimationSpeed;
+
+            // TODO lerp between current and next frame.
 
             if (_frameTime >= _curFrame.Time)
             {
@@ -78,7 +82,7 @@ namespace Molten.Graphics
                     }
                 }
 
-                GetFrame();
+                GetCurrentFrame();
             }
         }
 
@@ -88,10 +92,10 @@ namespace Molten.Graphics
         public double AnimationSpeed { get; set; } = 1.0f;
 
         /// <summary>
-        /// Gets or sets whether the current <see cref="AnimatedSprite"/>'s animation restarts from teh beginning once it reaches the end, or stops.<para/>
+        /// Gets whether the current <see cref="AnimatedSprite"/>'s animation restarts from the beginning once it reaches the end, or stops.<para/>
         /// The default value is true.
         /// </summary>
-        public bool IsLooping { get; set; } = true;
+        public bool IsLooping => _animation?.IsLooped ?? false;
 
         /// <summary>
         /// Gets or sets the frame number/ID of the current <see cref="AnimatedSprite"/> instance. <para/>
@@ -105,7 +109,7 @@ namespace Molten.Graphics
                 if (_animation != null)
                 {
                     _frame = MathHelper.Clamp(value, 0, _animation.Frames.Count - 1);
-                    GetFrame();
+                    GetCurrentFrame();
                 }
                 else
                 {
@@ -130,7 +134,7 @@ namespace Molten.Graphics
                     if (_animation == null)
                         _curFrame = null;
                     else
-                        GetFrame();
+                        GetCurrentFrame();
                 }
             }
         }
@@ -146,37 +150,5 @@ namespace Molten.Graphics
         Stopped = 0,
         Paused = 1,
         Playing = 2,
-    }
-
-    [DataContract]
-    public class SpriteAnimation
-    {
-        [DataContract]
-        public class KeyFrame
-        {
-            /// <summary>
-            /// The location of the sprite frame on a texture sheet.
-            /// </summary>
-            [DataMember]
-            public Rectangle Source { get; set; }
-
-            /// <summary>
-            /// The texture array index containing the frame's source texture/sprite. This will be ignored if the sprite is rendered with a non-array texture.
-            /// </summary>
-            [DataMember]
-            public int ArrayIndex { get; set; }
-
-            /// <summary>
-            /// The length of time the keyframe is held before moving onto the next, in milliseconds
-            /// </summary>
-            [DataMember]
-            public double Time { get; set; }
-        }
-
-        /// <summary>
-        /// A list containing all of the animation frames
-        /// </summary>
-        [DataMember]
-        public List<KeyFrame> Frames { get; set; } = new List<KeyFrame>();
     }
 }

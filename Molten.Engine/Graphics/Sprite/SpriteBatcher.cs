@@ -586,15 +586,15 @@ namespace Molten.Graphics
 
         public void Draw(Sprite sprite)
         {
-            Draw(sprite.Texture,
-                sprite.Source,
+            Draw(sprite.Data.Texture,
+                sprite.Data.Source,
                 sprite.Position,
-                sprite.Source.Size * sprite.Scale,
+                sprite.Data.Source.Size * sprite.Scale,
                 sprite.Color,
                 sprite.Rotation,
                 sprite.Origin,
                 sprite.Material,
-                sprite.ArraySlice);
+                sprite.Data.ArraySlice);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
