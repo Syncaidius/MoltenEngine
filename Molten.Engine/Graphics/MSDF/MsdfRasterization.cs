@@ -72,6 +72,27 @@ namespace Molten.Graphics.MSDF
             }
         }
 
+        public static unsafe void renderMTSDF(BitmapRef<float> output, BitmapRef<float> sdf, double pxRange, float midValue)
+        {
+            Validation.NPerPixel(output, 4);
+            Validation.NPerPixel(sdf, 4);
+
+            Vector2D scale = new Vector2D((double)sdf.Width / output.Width, (double)sdf.Height / output.Height);
+            pxRange *= (double)(output.Width + output.Height) / (sdf.Width + sdf.Height);
+            for (int y = 0; y < output.Height; ++y)
+            {
+                for (int x = 0; x < output.Width; ++x)
+                {
+                    float* sd = stackalloc float[4];
+                    interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
+                    output[x, y][0] = distVal(sd[0], pxRange, midValue);
+                    output[x, y][1] = distVal(sd[1], pxRange, midValue);
+                    output[x, y][2] = distVal(sd[2], pxRange, midValue);
+                    output[x, y][3] = distVal(sd[3], pxRange, midValue);
+                }
+            }
+        }
+
         public unsafe static void multiDistanceSignCorrection(BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, FillRule fillRule)
         {
             int w = sdf.Width, h = sdf.Height;

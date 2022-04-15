@@ -15,7 +15,9 @@ namespace Molten.Graphics.MSDF
     public class MultiAndTrueDistanceSelector : EdgeSelector<MultiAndTrueDistance>
     {
         Vector2D p;
-        PseudoDistanceSelector r, g, b;
+        PseudoDistanceSelector r = new PseudoDistanceSelector();
+        PseudoDistanceSelector g = new PseudoDistanceSelector();
+        PseudoDistanceSelector b = new PseudoDistanceSelector();
 
         public override void Reset(ref Vector2D p)
         {

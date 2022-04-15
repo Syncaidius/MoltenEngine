@@ -12,7 +12,11 @@ namespace Molten.Graphics
 
             public bool Initialized;
 
-            public CharData(ushort gIndex) { GlyphIndex = gIndex; Initialized = true; }
+            public CharData(ushort gIndex)
+            {
+                GlyphIndex = gIndex; 
+                Initialized = true;
+            }
         }
 
         public const int MIN_PAGE_SIZE = 128;

@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Molten.Graphics
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public class SpriteSheet 
+    public class SpriteSheet
     {
         ITexture2D _texture;
         Dictionary<string, SpriteData> _sprites = new Dictionary<string, SpriteData>();

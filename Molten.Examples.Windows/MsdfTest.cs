@@ -30,6 +30,7 @@ namespace Molten.Samples
         Vector2F _charOffset = new Vector2F(300, 300);
         MsdfGenerator _msdf;
         Dictionary<string, ITexture2D> _msdfTextures;
+        Dictionary<string, ITexture2D> _msdfResultTextures;
         bool _loaded;
 
         public MsdfTest() : base("Signed Distance Field (SDF)") { }
@@ -39,6 +40,7 @@ namespace Molten.Samples
             base.OnInitialize(engine);
 
             _msdfTextures = new Dictionary<string, ITexture2D>();
+            _msdfResultTextures = new Dictionary<string, ITexture2D>();
             _msdf = new MsdfGenerator();
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
@@ -92,6 +94,8 @@ namespace Molten.Samples
             GenerateSDF("SDF Legacy", true);
             GenerateMSDF("MSDF", false);
             GenerateMSDF("MSDF Legacy", true);
+            GenerateMTSDF("MTSDF", false);
+            GenerateMTSDF("MTSDF Legacy", true);
 
             _loaded = true;
         }
@@ -165,7 +169,7 @@ namespace Molten.Samples
             uint rowPitch = (uint)((testWidth * testNPerPixel * sizeof(Color)));
             tex.SetData(0, pData2, 0, (uint)pData2.Length, rowPitch);
 
-            _msdfTextures.Add(label, tex);
+            _msdfResultTextures.Add(label, tex);
         }
 
         private unsafe void GenerateMSDF(string label, bool legacy)
@@ -234,7 +238,76 @@ namespace Molten.Samples
             uint rowPitch = (uint)((testWidth * sizeof(Color)));
             tex.SetData(0, pData, 0, (uint)pData.Length, rowPitch);
 
-            _msdfTextures.Add(label, tex);
+            _msdfResultTextures.Add(label, tex);
+        }
+
+        private unsafe void GenerateMTSDF(string label, bool legacy)
+        {
+            int shapeSize = 50;
+            int pWidth = 64;
+            int pHeight = 64;
+            int nPerPixel = 4;
+            double pxRange = 4;
+
+            int testWidth = 256;
+            int testHeight = 256;
+            int testNPerPixel = 4;
+            Vector2D scale = new Vector2D(1);
+            Vector2D pOffset = new Vector2D(0, 8);
+            double avgScale = .5 * (scale.X + scale.Y);
+            double range = pxRange / MsdfMath.Min(scale.X, scale.Y);
+            FillRule fl = FillRule.NonZero;
+
+            float* pixels = EngineUtil.AllocArray<float>((nuint)(pWidth * pHeight * nPerPixel));
+            BitmapRef<float> sdf = new BitmapRef<float>(pixels, nPerPixel, pWidth, pHeight);
+            MsdfShape shape = CreateShape(new Vector2D(shapeSize));
+            shape.Normalize();
+
+            MsdfProjection projection = new MsdfProjection(scale, pOffset);
+            MSDFGeneratorConfig config = new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
+            {
+                DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
+                Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
+            });
+
+            if (legacy)
+                _msdf.GenerateMTSDF_Legacy(sdf, shape, range, scale, pOffset, config.ErrorCorrection);
+            else
+                _msdf.GenerateMTSDF(sdf, shape, projection, range, config);
+
+            MsdfRasterization.multiDistanceSignCorrection(sdf, shape, projection, fl);
+            ErrorCorrection.MsdfErrorCorrection(new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape), sdf, shape, projection, range, config);
+
+            // Output render test texture
+            int numElements = testWidth * testHeight * testNPerPixel;
+            float* oPixels = EngineUtil.AllocArray<float>((nuint)numElements);
+            BitmapRef<float> output = new BitmapRef<float>(oPixels, testNPerPixel, testWidth, testHeight);
+            MsdfRasterization.simulate8bit(sdf);
+            MsdfRasterization.renderMTSDF(output, sdf, avgScale * range, 0.5f);
+            ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
+            {
+                Width = (uint)testWidth,
+                Height = (uint)testHeight,
+                Format = GraphicsFormat.R8G8B8A8_UNorm
+            });
+
+            Color[] pData = new Color[testWidth * testHeight];
+            for (int i = 0; i < pData.Length; i++)
+            {
+                int pi = i * nPerPixel;
+                pData[i] = new Color()
+                {
+                    R = (byte)(255 * oPixels[pi]),
+                    G = (byte)(255 * oPixels[pi + 1]),
+                    B = (byte)(255 * oPixels[pi + 2]),
+                    A = (byte)(255 * oPixels[pi + 3] > 0 ? 255 : 0),
+                };
+            }
+
+            uint rowPitch = (uint)((testWidth * sizeof(Color)));
+            tex.SetData(0, pData, 0, (uint)pData.Length, rowPitch);
+
+            _msdfResultTextures.Add(label, tex);
         }
 
         private MsdfShape CreateShape(Vector2D size)
@@ -334,9 +407,9 @@ namespace Molten.Samples
                 {
                     Vector2F pos = new Vector2F(700, 65);
 
-                    foreach (string label in _msdfTextures.Keys)
+                    foreach (string label in _msdfResultTextures.Keys)
                     {
-                        ITexture2D tex = _msdfTextures[label];
+                        ITexture2D tex = _msdfResultTextures[label];
                         Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, (int)tex.Width, (int)tex.Height);
                         sb.Draw(tex, texBounds, Color.White);
                         sb.DrawRectOutline(texBounds, Color.Yellow, 1);
@@ -344,7 +417,15 @@ namespace Molten.Samples
                         Vector2F tPos = new Vector2F(texBounds.X, texBounds.Bottom + 5);
                         sb.DrawString(SampleFont, label, tPos, Color.White);
 
-                        pos.X += (float)tex.Width + 15;
+                        if (pos.X + (tex.Width + 15 + tex.Width) > Window.Width)
+                        {
+                            pos.X = 700;
+                            pos.Y += tex.Width + 15;
+                        }
+                        else
+                        {
+                            pos.X += (float)tex.Width + 15;
+                        }
                     }
                 }
             };

@@ -134,7 +134,7 @@ namespace Molten.Graphics.Textures
                     {
                         uint levelID = (a * data.MipMapLevels) + i;
                         byte[] levelData = CompressLevel(parser, levels[levelID], log);
-                        uint pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * BCHelper.GetBlockSize(gFormat));
+                        uint pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * GetBlockSize(gFormat));
 
                         data.Levels[levelID] = new TextureData.Slice()
                         {
