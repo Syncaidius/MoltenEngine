@@ -1,5 +1,156 @@
 ﻿namespace Molten.Graphics
 {
+    public static class GraphicsFormatExtensions
+    {
+        public static uint BitsPerPixel(this GraphicsFormat format)
+        {
+            switch (format)
+            {
+                case GraphicsFormat.R32G32B32A32_Typeless:
+                case GraphicsFormat.R32G32B32A32_Float:
+                case GraphicsFormat.R32G32B32A32_UInt:
+                case GraphicsFormat.R32G32B32A32_SInt:
+                    return 128;
+
+                case GraphicsFormat.R32G32B32_Typeless:
+                case GraphicsFormat.R32G32B32_Float:
+                case GraphicsFormat.R32G32B32_UInt:
+                case GraphicsFormat.R32G32B32_SInt:
+                    return 96;
+
+                case GraphicsFormat.R16G16B16A16_Typeless:
+                case GraphicsFormat.R16G16B16A16_Float:
+                case GraphicsFormat.R16G16B16A16_UNorm:
+                case GraphicsFormat.R16G16B16A16_UInt:
+                case GraphicsFormat.R16G16B16A16_SNorm:
+                case GraphicsFormat.R16G16B16A16_SInt:
+                case GraphicsFormat.R32G32_Typeless:
+                case GraphicsFormat.R32G32_Float:
+                case GraphicsFormat.R32G32_UInt:
+                case GraphicsFormat.R32G32_SInt:
+                case GraphicsFormat.R32G8X24_Typeless:
+                case GraphicsFormat.D32_Float_S8X24_UInt:
+                case GraphicsFormat.R32_Float_X8X24_Typeless:
+                case GraphicsFormat.X32_Typeless_G8X24_UInt:
+                case GraphicsFormat.Y416:
+                case GraphicsFormat.Y210:
+                case GraphicsFormat.Y216:
+                    return 64;
+
+                case GraphicsFormat.R10G10B10A2_Typeless:
+                case GraphicsFormat.R10G10B10A2_UNorm:
+                case GraphicsFormat.R10G10B10A2_UInt:
+                case GraphicsFormat.R11G11B10_Float:
+                case GraphicsFormat.R8G8B8A8_Typeless:
+                case GraphicsFormat.R8G8B8A8_UNorm:
+                case GraphicsFormat.R8G8B8A8_UNorm_SRgb:
+                case GraphicsFormat.R8G8B8A8_UInt:
+                case GraphicsFormat.R8G8B8A8_SNorm:
+                case GraphicsFormat.R8G8B8A8_SInt:
+                case GraphicsFormat.R16G16_Typeless:
+                case GraphicsFormat.R16G16_Float:
+                case GraphicsFormat.R16G16_UNorm:
+                case GraphicsFormat.R16G16_UInt:
+                case GraphicsFormat.R16G16_SNorm:
+                case GraphicsFormat.R16G16_SInt:
+                case GraphicsFormat.R32_Typeless:
+                case GraphicsFormat.D32_Float:
+                case GraphicsFormat.R32_Float:
+                case GraphicsFormat.R32_UInt:
+                case GraphicsFormat.R32_SInt:
+                case GraphicsFormat.R24G8_Typeless:
+                case GraphicsFormat.D24_UNorm_S8_UInt:
+                case GraphicsFormat.R24_UNorm_X8_Typeless:
+                case GraphicsFormat.X24_Typeless_G8_UInt:
+                case GraphicsFormat.R9G9B9E5_Sharedexp:
+                case GraphicsFormat.R8G8_B8G8_UNorm:
+                case GraphicsFormat.G8R8_G8B8_UNorm:
+                case GraphicsFormat.B8G8R8A8_UNorm:
+                case GraphicsFormat.B8G8R8X8_UNorm:
+                case GraphicsFormat.R10G10B10_Xr_Bias_A2_UNorm:
+                case GraphicsFormat.B8G8R8A8_Typeless:
+                case GraphicsFormat.B8G8R8A8_UNorm_SRgb:
+                case GraphicsFormat.B8G8R8X8_Typeless:
+                case GraphicsFormat.B8G8R8X8_UNorm_SRgb:
+                case GraphicsFormat.Ayuv:
+                case GraphicsFormat.Y410:
+                case GraphicsFormat.Yuy2:
+                    return 32;
+
+                case GraphicsFormat.P010:
+                case GraphicsFormat.P016:
+                case GraphicsFormat.V408:
+                    return 24;
+
+                case GraphicsFormat.R8G8_Typeless:
+                case GraphicsFormat.R8G8_UNorm:
+                case GraphicsFormat.R8G8_UInt:
+                case GraphicsFormat.R8G8_SNorm:
+                case GraphicsFormat.R8G8_SInt:
+                case GraphicsFormat.R16_Typeless:
+                case GraphicsFormat.R16_Float:
+                case GraphicsFormat.D16_UNorm:
+                case GraphicsFormat.R16_UNorm:
+                case GraphicsFormat.R16_UInt:
+                case GraphicsFormat.R16_SNorm:
+                case GraphicsFormat.R16_SInt:
+                case GraphicsFormat.B5G6R5_UNorm:
+                case GraphicsFormat.B5G5R5A1_UNorm:
+                case GraphicsFormat.A8P8:
+                case GraphicsFormat.B4G4R4A4_Unorm:
+                case GraphicsFormat.P208:
+                case GraphicsFormat.V208:
+                    return 16;
+
+                case GraphicsFormat.NV12:
+                case GraphicsFormat.Opaque_420:
+                case GraphicsFormat.NV11:
+                    return 12;
+
+                case GraphicsFormat.R8_Typeless:
+                case GraphicsFormat.R8_UNorm:
+                case GraphicsFormat.R8_UInt:
+                case GraphicsFormat.R8_SNorm:
+                case GraphicsFormat.R8_SInt:
+                case GraphicsFormat.A8_UNorm:
+                case GraphicsFormat.AI44:
+                case GraphicsFormat.IA44:
+                case GraphicsFormat.P8:
+                    return 8;
+
+                case GraphicsFormat.R1_UNorm:
+                    return 1;
+
+                case GraphicsFormat.BC1_Typeless:
+                case GraphicsFormat.BC1_UNorm:
+                case GraphicsFormat.BC1_UNorm_SRgb:
+                case GraphicsFormat.BC4_Typeless:
+                case GraphicsFormat.BC4_UNorm:
+                case GraphicsFormat.BC4_SNorm:
+                    return 4;
+
+                case GraphicsFormat.BC2_Typeless:
+                case GraphicsFormat.BC2_UNorm:
+                case GraphicsFormat.BC2_UNorm_SRgb:
+                case GraphicsFormat.BC3_Typeless:
+                case GraphicsFormat.BC3_UNorm:
+                case GraphicsFormat.BC3_UNorm_SRgb:
+                case GraphicsFormat.BC5_Typeless:
+                case GraphicsFormat.BC5_UNorm:
+                case GraphicsFormat.BC5_SNorm:
+                case GraphicsFormat.BC6H_Typeless:
+                case GraphicsFormat.BC6H_Uf16:
+                case GraphicsFormat.BC6H_Sf16:
+                case GraphicsFormat.BC7_Typeless:
+                case GraphicsFormat.BC7_UNorm:
+                case GraphicsFormat.BC7_UNorm_SRgb:
+                    return 8;
+            }
+
+            return 0;
+        }
+    }
+
     public enum GraphicsFormat : byte
     {
         ///<Summary>The format is not known.</Summary>
@@ -489,7 +640,7 @@
         /// Direct3D 11.1:  This value is not supported until Windows 8.
         /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
         /// </summary>
-        B4G4R4A4Unorm = 115,
+        B4G4R4A4_Unorm = 115,
 
         /// <summary>
         /// A video format; an 8-bit version of a hybrid planar 4:2:2 format.
