@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public partial class TextureData : ICloneable
+    public unsafe partial class TextureData : ICloneable
     {
         public uint Width;
         public uint Height;
@@ -43,7 +43,7 @@ namespace Molten.Graphics
                 foreach (Slice s in Levels)
                 {
                     byte temp = 0;
-                    for (uint i = 0; i < s.Data.Length; i += 4)
+                    for (uint i = 0; i < s.TotalBytes; i += 4)
                     {
                         temp = s.Data[i];
                         s.Data[i] = s.Data[i + 2];

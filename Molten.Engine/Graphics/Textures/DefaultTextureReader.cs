@@ -7,7 +7,7 @@ namespace Molten.Graphics.Textures
         Logger _log;
         string _filename;
 
-        public override TextureData Read(BinaryReader reader, Logger log, string filename = null)
+        public unsafe override TextureData Read(BinaryReader reader, Logger log, string filename = null)
         {
             _log = log;
             _filename = null;
@@ -28,16 +28,18 @@ namespace Molten.Graphics.Textures
                 data.Width = (uint)image.Width;
                 data.Height = (uint)image.Height;
                 IPixelCollection<byte> pixels = image.GetPixels();
-                TextureData.Slice slice = new TextureData.Slice()
+                byte[] bPixels = pixels.ToByteArray(PixelMapping.RGBA);
+                TextureData.Slice slice = new TextureData.Slice((uint)bPixels.Length)
                 {
-                    Data = pixels.ToByteArray(PixelMapping.RGBA),
                     Width = data.Width,
                     Height = data.Height,
                     Pitch = data.Width * 4 // We're using 4 bytes per pixel (RGBA)
                 };
 
-                slice.TotalBytes = (uint)slice.Data.Length;
                 data.Levels = new TextureData.Slice[] { slice };
+
+                fixed (byte* ptrPixels = bPixels)
+                    Buffer.MemoryCopy(ptrPixels, slice.Data, slice.TotalBytes, slice.TotalBytes);
 
                 image.Warning -= Image_Warning;
             }

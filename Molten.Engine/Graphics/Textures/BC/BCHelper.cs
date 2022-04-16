@@ -26,7 +26,7 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        public static void Decompress(TextureData data, Logger log)
+        public unsafe static void Decompress(TextureData data, Logger log)
         {
             // Cannot decompress uncompressed data.
             if (data.IsCompressed == false)
@@ -45,15 +45,17 @@ namespace Molten.Graphics.Textures
                     {
                         uint levelID = (a * data.MipMapLevels) + i;
                         byte[] decompressed = DecompressLevel(parser, levels[levelID], log);
+                        uint totalBytes = (uint)decompressed.Length;
 
-                        data.Levels[levelID] = new TextureData.Slice()
+                        data.Levels[levelID] = new TextureData.Slice(totalBytes)
                         {
-                            Data = decompressed,
                             Height = levels[i].Height,
                             Width = levels[i].Width,
                             Pitch = levels[i].Width * 4,
-                            TotalBytes = (uint)decompressed.Length,
                         };
+
+                        fixed (byte* ptrDecompressed = decompressed)
+                            Buffer.MemoryCopy(ptrDecompressed, data.Levels[levelID].Data, totalBytes, totalBytes);
                     }
                 }
 
@@ -62,12 +64,12 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private static byte[] DecompressLevel(BCBlockParser parser, TextureData.Slice compressed, Logger log)
+        private unsafe static byte[] DecompressLevel(BCBlockParser parser, TextureData.Slice compressed, Logger log)
         {
             // Pass to stream-based overload
             byte[] result = new byte[compressed.Width * compressed.Height * 4];
 
-            using (MemoryStream stream = new MemoryStream(compressed.Data))
+            using (UnmanagedMemoryStream stream = new UnmanagedMemoryStream(compressed.Data, compressed.TotalBytes))
             {
                 using (BinaryReader imageReader = new BinaryReader(stream))
                 {
@@ -112,7 +114,7 @@ namespace Molten.Graphics.Textures
 
         /// <summary>Compresses the texture data into DXT5 block-compressed format, if not already compressed.</summary>
         /// <param name="data"></param>
-        public static void Compress(TextureData data, DDSFormat compressionFormat, Logger log)
+        public unsafe static void Compress(TextureData data, DDSFormat compressionFormat, Logger log)
         {
             // Cannot compress data which is already compressed.
             if (data.IsCompressed)
@@ -135,15 +137,17 @@ namespace Molten.Graphics.Textures
                         uint levelID = (a * data.MipMapLevels) + i;
                         byte[] levelData = CompressLevel(parser, levels[levelID], log);
                         uint pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * GetBlockSize(gFormat));
+                        uint totalBytes = (uint)levelData.Length;
 
-                        data.Levels[levelID] = new TextureData.Slice()
+                        data.Levels[levelID] = new TextureData.Slice(totalBytes)
                         {
-                            Data = levelData,
                             Height = levels[i].Height,
                             Width = levels[i].Width,
                             Pitch = pitch,
-                            TotalBytes = (uint)levelData.Length,
                         };
+
+                        fixed (byte* ptrLevelData = levelData)
+                            Buffer.MemoryCopy(ptrLevelData, data.Levels[levelID].Data, totalBytes, totalBytes);
                     }
                 }
 
@@ -152,7 +156,7 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private static byte[] CompressLevel(BCBlockParser parser, TextureData.Slice uncompressed, Logger log)
+        private unsafe static byte[] CompressLevel(BCBlockParser parser, TextureData.Slice uncompressed, Logger log)
         {
             uint blockCountX = Math.Max(1, (uncompressed.Width + 3) / BLOCK_DIMENSIONS);
             uint blockCountY = Math.Max(1, (uncompressed.Height + 3) / BLOCK_DIMENSIONS);

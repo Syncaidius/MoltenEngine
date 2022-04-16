@@ -11,7 +11,7 @@ namespace Molten.Graphics.Textures
             _writeFormat = writeFormat;
         }
 
-        public override void WriteData(Stream stream, TextureData data, Logger log, string filename = null)
+        public unsafe override void WriteData(Stream stream, TextureData data, Logger log, string filename = null)
         {
             TextureData newData = data.Clone();
             newData.ToRGBA(log);
@@ -23,7 +23,9 @@ namespace Molten.Graphics.Textures
                 using (MagickImage image = new MagickImage(MagickColor.FromRgba(0, 0, 0, 0), (int)slice.Width, (int)slice.Height))
                 {
                     IPixelCollection<byte> p = image.GetPixels();
-                    p.SetPixels(slice.Data);
+
+                    Span<byte> sData = new Span<byte>(slice.Data, (int)slice.TotalBytes);
+                    p.SetPixels(sData);
 
                     image.Format = MagickFormat.Rgba;
                     image.Quality = 100;
