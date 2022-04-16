@@ -200,7 +200,7 @@ namespace Molten
                 {
                     IList<object> existingObjects = file.GetObjects(t);
                     context.Input.Add(t, new List<object>(existingObjects));
-                    _log.Log($"[CONTENT] [RELOAD] {file.Path}");
+                    _log.WriteLine($"[CONTENT] [RELOAD] {file.Path}");
                     DoRead(null, context, file.OriginalProcessor);
                 }
             }
@@ -210,7 +210,7 @@ namespace Molten
                 {
                     IList<object> existingObjects = file.GetObjects(t);
                     context.Input.Add(t, new List<object>(existingObjects));
-                    _log.Log($"[CONTENT] [RELOAD] {file.Path}");
+                    _log.WriteLine($"[CONTENT] [RELOAD] {file.Path}");
                     DoDeserialize(null, context);
                 }
             }
@@ -388,7 +388,7 @@ namespace Molten
                     object result = JsonConvert.DeserializeObject(json, context.ContentType, request.JsonSettings);
                     ContentFile file = GetContentFile(context, request);
                     file.AddObject(context.ContentType, result);
-                    _log.Log($"[CONTENT] [DESERIALIZE] '{result.GetType().Name}' from {context.Filename}");
+                    _log.WriteLine($"[CONTENT] [DESERIALIZE] '{result.GetType().Name}' from {context.Filename}");
                 }
                 catch (Exception ex)
                 {
@@ -404,14 +404,14 @@ namespace Molten
 
             if (context.Output.Count > 0)
             {
-                _log.Log($"[CONTENT] [READ] {context.Filename}:");
+                _log.WriteLine($"[CONTENT] [READ] {context.Filename}:");
 
                 foreach (Type t in context.Output.Keys)
                 {
                     ContentFile file = GetContentFile(context, request, proc);
                     List<object> result = context.Output[t];
                     file.AddObjects(t, result);
-                    _log.Log($"[CONTENT] [READ]    {result.Count}x {t.FullName}");
+                    _log.WriteLine($"[CONTENT] [READ]    {result.Count}x {t.FullName}");
                 }
             }
         }
@@ -419,7 +419,7 @@ namespace Molten
         private void DoWrite(ContentContext context, IContentProcessor proc)
         {
             proc.Write(context);
-            _log.Log($"[CONTENT] [WRITE] {context.Filename}");
+            _log.WriteLine($"[CONTENT] [WRITE] {context.Filename}");
         }
 
         private void DoSerialize(ContentRequest request, ContentContext context)
@@ -439,7 +439,7 @@ namespace Molten
                     }
                 }
 
-                _log.Log($"[CONTENT] [SERIALIZE] {context.Filename}");
+                _log.WriteLine($"[CONTENT] [SERIALIZE] {context.Filename}");
             }
             catch (Exception ex)
             {

@@ -50,7 +50,7 @@ namespace Molten.Graphics
 
             if (settings.EnableDebugLayer)
             {
-                _log.Log("Renderer debug layer enabled");
+                _log.WriteLine("Renderer debug layer enabled");
                 flags |= DeviceCreationFlags.Debug;
             }
 

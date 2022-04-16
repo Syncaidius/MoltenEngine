@@ -164,7 +164,7 @@ namespace Molten.Graphics
 
             string msgPrefix = string.IsNullOrWhiteSpace(filename) ? "" : $"{filename}: ";
             foreach (ShaderCompilerMessage msg in context.Messages)
-                Log.Log($"{msgPrefix}{msg.Text}");
+                Log.WriteLine($"{msgPrefix}{msg.Text}");
 
             return context.Result;
         }

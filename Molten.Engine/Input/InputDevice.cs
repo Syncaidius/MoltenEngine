@@ -150,9 +150,9 @@ namespace Molten.Input
         protected void LogFeatures()
         {
 #if DEBUG
-            Service.Log.Log($"Initialized device '{DeviceName}' with {_features.Count} features: ");
+            Service.Log.WriteLine($"Initialized device '{DeviceName}' with {_features.Count} features: ");
             foreach (InputDeviceFeature feature in _features)
-                Service.Log.Log($"   {feature.Name} - {feature.Description}");
+                Service.Log.WriteLine($"   {feature.Name} - {feature.Description}");
 #endif
         }
 

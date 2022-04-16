@@ -202,7 +202,7 @@ namespace Molten.Graphics.Textures
                 }
             }
             mainTimer.Stop();
-            log.Log($"Encoded {parser.ExpectedFormat} {uncompressed.Width}x{uncompressed.Height} mip-map level in {mainTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
+            log.WriteLine($"Encoded {parser.ExpectedFormat} {uncompressed.Width}x{uncompressed.Height} mip-map level in {mainTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
 
             return result;
         }

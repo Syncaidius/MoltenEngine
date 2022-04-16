@@ -52,12 +52,12 @@ namespace Molten
             _outputs.Remove(output);
         }
 
-        public void Log(string value)
+        public void WriteLine(string value)
         {
             Log(value, Color.White);
         }
 
-        /// <summary>A debug version of <see cref="Log(string)"/> which will be ignored and removed in release builds.</summary>
+        /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
         /// <param name="value">The text to be written.</param>
         [Conditional("DEBUG")]
         public void Debug(string value)
@@ -65,7 +65,7 @@ namespace Molten
             Log($"[DEBUG] {value}", Color.White);
         }
 
-        /// <summary>A debug version of <see cref="Log(string)"/> which will be ignored and removed in release builds.</summary>
+        /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
         /// <param name="value">The text to be written.</param>
         /// <param name="filename">The filename associated with the message.</param>
         [Conditional("DEBUG")]
@@ -77,7 +77,7 @@ namespace Molten
                 Log($"[DEBUG] {filename}: {value}", DebugColor);
         }
 
-        /// <summary>A debug version of <see cref="Log(string)"/> which will be ignored and removed in release builds.</summary>
+        /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
         /// <param name="value">The text to be written.</param>
         /// <param name="color">The color of the text.</param>
         [Conditional("DEBUG")]

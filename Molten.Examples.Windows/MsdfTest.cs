@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Molten.Collections;
 using Molten.Font;
 using Molten.Graphics;
@@ -102,6 +103,8 @@ namespace Molten.Samples
 
         private unsafe void GenerateSDF(string label, bool legacy)
         {
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             int shapeSize = 50;
             int pWidth = 64;
             int pHeight = 64;
@@ -170,10 +173,15 @@ namespace Molten.Samples
             tex.SetData(0, pData2, 0, (uint)pData2.Length, rowPitch);
 
             _msdfResultTextures.Add(label, tex);
+
+            timer.Stop();
+            Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
         }
 
         private unsafe void GenerateMSDF(string label, bool legacy)
         {
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             int shapeSize = 50;
             int pWidth = 64;
             int pHeight = 64;
@@ -238,11 +246,15 @@ namespace Molten.Samples
             uint rowPitch = (uint)((testWidth * sizeof(Color)));
             tex.SetData(0, pData, 0, (uint)pData.Length, rowPitch);
 
-            _msdfResultTextures.Add(label, tex);
+            _msdfResultTextures.Add(label, tex); 
+            timer.Stop();
+            Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
         }
 
         private unsafe void GenerateMTSDF(string label, bool legacy)
         {
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             int shapeSize = 50;
             int pWidth = 64;
             int pHeight = 64;
@@ -307,7 +319,9 @@ namespace Molten.Samples
             uint rowPitch = (uint)((testWidth * sizeof(Color)));
             tex.SetData(0, pData, 0, (uint)pData.Length, rowPitch);
 
-            _msdfResultTextures.Add(label, tex);
+            _msdfResultTextures.Add(label, tex); 
+            timer.Stop();
+            Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
         }
 
         private MsdfShape CreateShape(Vector2D size)

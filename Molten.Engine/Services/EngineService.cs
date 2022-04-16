@@ -38,13 +38,13 @@ namespace Molten
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                parentLog.Log($"Initializing service: {this.GetType()}");
+                parentLog.WriteLine($"Initializing service: {this.GetType()}");
                 OnInitialize(Settings);
-                parentLog.Log($"Completed initialization of service: {this}");
+                parentLog.WriteLine($"Completed initialization of service: {this}");
                 State = EngineServiceState.Ready;
 
                 sw.Stop();
-                Log.Log($"Initialized service in {sw.Elapsed.TotalMilliseconds:N2} milliseconds");
+                Log.WriteLine($"Initialized service in {sw.Elapsed.TotalMilliseconds:N2} milliseconds");
 
                 OnInitialized?.Invoke(this);
             }
@@ -87,15 +87,15 @@ namespace Molten
                 if (ThreadMode == ThreadingMode.SeparateThread)
                 {
                     Thread = threadManager.CreateThread($"service_{this}", true, false, Update);
-                    parentLog.Log($"Started service thread: {Thread.Name}");
+                    parentLog.WriteLine($"Started service thread: {Thread.Name}");
                 }
 
                 State = EngineServiceState.Running;
-                parentLog.Log($"Started service: {this}");
-                parentLog.Log($"Service log: {_logWriter.LogFileInfo.FullName}");
+                parentLog.WriteLine($"Started service: {this}");
+                parentLog.WriteLine($"Service log: {_logWriter.LogFileInfo.FullName}");
 
                 sw.Stop();
-                Log.Log($"Started service in {sw.Elapsed.TotalMilliseconds:N2} milliseconds");
+                Log.WriteLine($"Started service in {sw.Elapsed.TotalMilliseconds:N2} milliseconds");
 
                 OnStarted?.Invoke(this);
             }

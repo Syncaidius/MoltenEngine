@@ -121,7 +121,7 @@ namespace Molten
                 }
                 else
                 {
-                    _engine.Log.Log("Game exiting");
+                    _engine.Log.WriteLine("Game exiting");
                     OnClosing?.Invoke(this);
                     OnClose();
                     ForceExit();
@@ -227,7 +227,7 @@ namespace Molten
         /// Does not call <see cref="Dispose"/></summary>
         public void ForceExit()
         {
-            _engine.Log.Log("Game closed");
+            _engine.Log.WriteLine("Game closed");
             _engine.Dispose();
             RunState = GameRunState.Exited;
         }
