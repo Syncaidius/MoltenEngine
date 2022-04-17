@@ -15,7 +15,7 @@ namespace Molten.Graphics.Textures
             Color4[] colors = bc.Decode(false, log);
             Color4[] result = new Color4[colors.Length];
 
-            int colSize = Marshal.SizeOf<Color4>();
+            int colSize = sizeof(Color4);
             fixed (Color4* ptrResult = result)
             {
                 fixed (Color4* ptrColors = colors)
@@ -46,7 +46,7 @@ namespace Molten.Graphics.Textures
             Color4[] colors = bc.Decode(true, log);
             Color4[] result = new Color4[colors.Length];
 
-            int colSize = Marshal.SizeOf<Color4>();
+            int colSize = sizeof(Color4);
             fixed (Color4* ptrResult = result)
             {
                 fixed (Color4* ptrColors = colors)

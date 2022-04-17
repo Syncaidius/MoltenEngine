@@ -236,7 +236,7 @@ namespace Molten.Graphics
 
             TextureSet<T> change = new TextureSet<T>()
             {
-                Stride = (uint)Marshal.SizeOf(typeof(T)),
+                Stride = (uint)sizeof(T),
                 Count = count,
                 Data = new T[count],
                 Pitch = texturePitch,

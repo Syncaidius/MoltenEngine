@@ -136,7 +136,7 @@ namespace Molten.Graphics
         internal void SetDataImmediate<T>(DeviceContext context, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null) 
             where T : unmanaged
         {
-            uint tStride = (uint)Marshal.SizeOf<T>();
+            uint tStride = (uint)sizeof(T);
             uint dataSize = tStride * count;
             uint writeOffset = elementOffset * tStride;
             uint finalBytePos = dataSize + writeOffset + ByteOffset;
@@ -181,7 +181,7 @@ namespace Molten.Graphics
                 DestinationArray = destination,
                 DestinationIndex = startIndex,
                 Count = count,
-                DataStride = (uint)Marshal.SizeOf<T>(),
+                DataStride = (uint)sizeof(T),
                 CompletionCallback = completionCallback,
                 SourceSegment = this,
             };
