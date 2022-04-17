@@ -47,15 +47,12 @@ namespace Molten.Graphics.Textures
                         byte[] decompressed = DecompressLevel(parser, levels[levelID], log);
                         uint totalBytes = (uint)decompressed.Length;
 
-                        data.Levels[levelID] = new TextureData.Slice(totalBytes)
+                        data.Levels[levelID] = new TextureData.Slice(decompressed, totalBytes)
                         {
                             Height = levels[i].Height,
                             Width = levels[i].Width,
                             Pitch = levels[i].Width * 4,
                         };
-
-                        fixed (byte* ptrDecompressed = decompressed)
-                            Buffer.MemoryCopy(ptrDecompressed, data.Levels[levelID].Data, totalBytes, totalBytes);
                     }
                 }
 
@@ -139,15 +136,12 @@ namespace Molten.Graphics.Textures
                         uint pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * GetBlockSize(gFormat));
                         uint totalBytes = (uint)levelData.Length;
 
-                        data.Levels[levelID] = new TextureData.Slice(totalBytes)
+                        data.Levels[levelID] = new TextureData.Slice(levelData, totalBytes)
                         {
                             Height = levels[i].Height,
                             Width = levels[i].Width,
                             Pitch = pitch,
                         };
-
-                        fixed (byte* ptrLevelData = levelData)
-                            Buffer.MemoryCopy(ptrLevelData, data.Levels[levelID].Data, totalBytes, totalBytes);
                     }
                 }
 

@@ -29,7 +29,7 @@ namespace Molten.Graphics.Textures
                 data.Height = (uint)image.Height;
                 IPixelCollection<byte> pixels = image.GetPixels();
                 byte[] bPixels = pixels.ToByteArray(PixelMapping.RGBA);
-                TextureData.Slice slice = new TextureData.Slice((uint)bPixels.Length)
+                TextureData.Slice slice = new TextureData.Slice(bPixels, (uint)bPixels.Length)
                 {
                     Width = data.Width,
                     Height = data.Height,
@@ -37,10 +37,6 @@ namespace Molten.Graphics.Textures
                 };
 
                 data.Levels = new TextureData.Slice[] { slice };
-
-                fixed (byte* ptrPixels = bPixels)
-                    Buffer.MemoryCopy(ptrPixels, slice.Data, slice.TotalBytes, slice.TotalBytes);
-
                 image.Warning -= Image_Warning;
             }
 

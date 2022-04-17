@@ -238,15 +238,12 @@
                         levelByteSize = (uint)data.Length;
                     }
 
-                    TextureData.Slice level = new TextureData.Slice(levelByteSize)
+                    TextureData.Slice level = new TextureData.Slice(data, levelByteSize)
                     {
                         Pitch = blockPitch,
                         Width = levelWidth,
                         Height = levelHeight,
                     };
-
-                    fixed (byte* ptrData = data)
-                        Buffer.MemoryCopy(ptrData, level.Data, levelByteSize, levelByteSize);
 
                     uint dataID = (a * _header.MipMapCount) + i;
                     _levelData[dataID] = level;

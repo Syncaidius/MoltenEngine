@@ -9,17 +9,29 @@ namespace Molten.Graphics
 
     public partial class TextureData
     {
-        public unsafe class SliceRef<T>
+        public abstract unsafe class SliceRef
+        {
+            internal abstract void UpdateReference();
+        }
+
+        public unsafe class SliceRef<T> : SliceRef
             where T: unmanaged
         {
             Slice _slice;
+            T* _refData;
 
             internal SliceRef(Slice slice)
             {
                 _slice = slice;
+                UpdateReference();
             }
 
-            public T* this[uint x, uint y] => ((T*)_slice.Data) + _slice.ElementsPerPixel * (_slice.Width * y + x);
+            internal override void UpdateReference()
+            {
+                _refData = (T*)_slice.Data;
+            }
+
+            public T* this[uint x, uint y] => _refData + _slice.ElementsPerPixel * (_slice.Width * y + x);
         }
 
         /// <summary>Represents a slice of texture data. This can either be a mip map level or array element in a texture array (which could still technically a mip-map level of 0).</summary>
@@ -36,15 +48,32 @@ namespace Molten.Graphics
             public uint Width;
             public uint Height;
 
+            List<SliceRef> _references;
+
             public Slice(uint numBytes)
             {
                 Allocate(numBytes);
             }
 
+            public Slice(byte[] data, uint numBytes)
+            {
+                Allocate(numBytes);
+
+                fixed (byte* ptrData = data)
+                    Buffer.MemoryCopy(ptrData, Data, numBytes, numBytes);
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <typeparam name="T">The reference data type.</typeparam>
+            /// <returns></returns>
             public SliceRef<T> GetReference<T>() 
                 where T: unmanaged
             {
-                return new SliceRef<T>(this);
+                SliceRef<T> sr = new SliceRef<T>(this);
+                _references.Add(sr);
+                return sr;
             }
 
             public void Allocate(uint numBytes)
@@ -54,6 +83,8 @@ namespace Molten.Graphics
 
                 TotalBytes = numBytes;
                 _data = (byte*)EngineUtil.Alloc(numBytes);
+                foreach (SliceRef sr in _references)
+                    sr.UpdateReference();
             }
 
             ~Slice()

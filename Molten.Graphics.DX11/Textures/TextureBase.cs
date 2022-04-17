@@ -449,13 +449,11 @@ namespace Molten.Graphics
             }
             pipe.UnmapResource(_native, subID);
 
-            TextureData.Slice slice = new TextureData.Slice()
+            TextureData.Slice slice = new TextureData.Slice(sliceData, expectedSlicePitch)
             {
                 Width = subWidth,
                 Height = subHeight,
-                Data = sliceData,
                 Pitch = expectedRowPitch,
-                TotalBytes = expectedSlicePitch,
             };
 
             return slice;
