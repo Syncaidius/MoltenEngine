@@ -11,7 +11,7 @@ namespace Molten.Graphics.Textures
             _format = format;
         }
 
-        public unsafe override void WriteData(Stream stream, TextureData data, Logger log, string filename = null)
+        public override void WriteData(Stream stream, TextureData data, Logger log, string filename = null)
         {
             if (!MathHelper.IsPowerOfTwo(data.Width) || !MathHelper.IsPowerOfTwo(data.Height))
             {
@@ -67,10 +67,7 @@ namespace Molten.Graphics.Textures
 
                 // Write each mip map level
                 for (int i = 0; i < data.MipMapLevels; i++)
-                {
-                    Span<byte> pData = new Span<byte>(data.Levels[i].Data, (int)data.Levels[i].TotalBytes);
-                    writer.BaseStream.Write(pData);
-                }
+                    writer.Write(data.Levels[i].Data);
             }
         }
 

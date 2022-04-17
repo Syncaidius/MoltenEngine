@@ -209,7 +209,7 @@
             }
         }
 
-        private unsafe bool ReadData(BinaryReader reader, Logger log, string filename = null)
+        private bool ReadData(BinaryReader reader, Logger log, string filename = null)
         {
             // Check for invalid mip map values.
             if (_header.MipMapCount > 512)
@@ -231,22 +231,16 @@
                     uint blockPitch, levelByteSize;
                     BCHelper.GetBCLevelSizeAndPitch(levelWidth, levelHeight, blockSize, out levelByteSize, out blockPitch);
 
-                    byte[] data = reader.ReadBytes((int)levelByteSize);
-                    if (data.Length != levelByteSize)
+                    TextureData.Slice level = new TextureData.Slice()
                     {
-                        log.Warning($"Unexpeceted BC level size -- Expected: {levelByteSize} -- Actual: {data.Length}");
-                        levelByteSize = (uint)data.Length;
-                    }
-
-                    TextureData.Slice level = new TextureData.Slice(levelByteSize)
-                    {
+                        Data = reader.ReadBytes((int)levelByteSize),
                         Pitch = blockPitch,
+                        TotalBytes = levelByteSize,
                         Width = levelWidth,
                         Height = levelHeight,
                     };
 
-                    fixed (byte* ptrData = data)
-                        Buffer.MemoryCopy(ptrData, level.Data, levelByteSize, levelByteSize);
+                    level.TotalBytes = (uint)level.Data.Length;
 
                     uint dataID = (a * _header.MipMapCount) + i;
                     _levelData[dataID] = level;
