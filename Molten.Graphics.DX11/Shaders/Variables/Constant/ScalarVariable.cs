@@ -25,9 +25,15 @@ namespace Molten.Graphics
             Buffer.MemoryCopy(_value, pDest, SizeOf, SizeOf);
         }
 
+        ~ScalarVariable()
+        {
+            Dispose();
+        }
+
         public override void Dispose()
         {
-            EngineUtil.Free(ref _value);
+            if(_value != null)
+                EngineUtil.Free(ref _value);
         }
 
         public override object Value

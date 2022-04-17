@@ -4,23 +4,70 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    internal class TextureSet<T> : ITextureTask where T: unmanaged
+    internal unsafe class TextureSet<T> : ITextureTask, IDisposable
+        where T: unmanaged
     {
+        T* _data;
+
         public uint MipLevel;
-        public T[] Data;
+
+        public T* Data => _data;
+
         public uint StartIndex;
         public uint Pitch;
         public uint ArrayIndex;
 
-        public uint Count;
-        public uint Stride;
+        public uint NumElements { get; private set; }
+
+        public uint NumBytes { get; private set; }
+
+        public uint Stride { get; private set; }
+
         public RectangleUI? Area;
 
         public bool UpdatesTexture => true;
 
+        public TextureSet(T[] data, uint startIndex, uint numElements)
+        {
+            Stride = (uint)sizeof(T);
+            NumElements = numElements;
+            NumBytes = Stride * NumElements;
+
+            _data = (T*)EngineUtil.Alloc(NumBytes);
+
+            fixed (T* ptrData = data)
+            {
+                T* ptrStart = ptrData + startIndex;
+                Buffer.MemoryCopy(ptrStart, Data, NumBytes, NumBytes);
+            }
+        }
+
+        public TextureSet(T* data, uint startIndex, uint numElements)
+        {
+            Stride = (uint)sizeof(T);
+            NumElements = numElements;
+            NumBytes = Stride * NumElements;
+
+            _data = (T*)EngineUtil.Alloc(NumBytes);
+
+            T* ptrStart = data + startIndex;
+            Buffer.MemoryCopy(ptrStart, Data, NumBytes, NumBytes);
+        }
+
+        ~TextureSet()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            if (_data != null)
+                EngineUtil.Free(ref _data);
+        }
+
         public unsafe bool Process(DeviceContext context, TextureBase texture)
         {
-            //C alculate size of a single array slice
+            // Calculate size of a single array slice
             uint arraySliceBytes = 0;
             uint blockSize = 8; // default block size
             uint levelWidth = texture.Width;
@@ -53,88 +100,87 @@ namespace Molten.Graphics
             }
 
             //======DATA TRANSFER===========
-            EngineUtil.PinObject(Data, (ptr) =>
+            uint startBytes = StartIndex * Stride;
+            byte* ptrData = (byte*)Data;
+            ptrData += startBytes;
+
+            uint subLevel = (texture.MipMapCount * ArrayIndex) + MipLevel;
+
+            if (texture.HasFlags(TextureFlags.Dynamic))
             {
-                uint startBytes = StartIndex * Stride;
-                byte* ptrData = (byte*)ptr.ToPointer();
-                ptrData += startBytes;
+                RawStream stream = null;
 
-                uint subLevel = (texture.MipMapCount * ArrayIndex) + MipLevel;
+                MappedSubresource destBox = context.MapResource(
+                    texture.NativePtr,
+                    subLevel,
+                    Map.MapWriteDiscard,
+                    0,
+                    out stream);
 
-                if (texture.HasFlags(TextureFlags.Dynamic))
+                // Are we constrained to an area of the texture?
+                if (Area != null)
                 {
-                    RawStream stream = null;
+                    RectangleUI rect = Area.Value;
+                    uint areaPitch = Stride * rect.Width;
+                    uint aX = rect.X;
+                    uint aY = rect.Y;
 
-                    MappedSubresource destBox = context.MapResource(
-                        texture.NativePtr,
-                        subLevel, 
-                        Map.MapWriteDiscard, 
-                        0, 
-                        out stream);
+                    for (uint y = aY, end = rect.Bottom; y < end; y++)
+                    {
+                        stream.Position = (Pitch * aY) + (aX * Stride);
+                        stream.WriteRange(ptrData, areaPitch);
+                        ptrData += areaPitch;
+                        aY++;
+                    }
+                }
+                else
+                {
+                    long numBytes = NumElements * Stride;
+                    stream.WriteRange(ptrData, NumElements);
+                }
 
-                    // Are we constrained to an area of the texture?
+                context.UnmapResource(texture.NativePtr, subLevel);
+                context.Profiler.Current.MapDiscardCount++;
+            }
+            else
+            {
+                if (texture.IsBlockCompressed)
+                {
+                    // Calculate mip-map level size.
+                    levelWidth = texture.Width >> (int)MipLevel;
+                    levelHeight = texture.Height >> (int)MipLevel;
+                    uint bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
+
+                    // TODO support copy flags (DX11.1 feature)
+                    context.UpdateResource(texture, subLevel, null, ptrData, bcPitch, arraySliceBytes);
+                }
+                else
+                {
                     if (Area != null)
                     {
                         RectangleUI rect = Area.Value;
                         uint areaPitch = Stride * rect.Width;
-                        uint aX = rect.X;
-                        uint aY = rect.Y;
+                        Box region = new Box();
+                        region.Top = rect.Y;
+                        region.Front = 0;
+                        region.Back = 1;
+                        region.Bottom = rect.Bottom;
+                        region.Left = rect.X;
+                        region.Right = rect.Right;
 
-                        for (uint y = aY, end = rect.Bottom; y < end; y++)
-                        {
-                            stream.Position = (Pitch * aY) + (aX * Stride);
-                            stream.WriteRange(ptrData, areaPitch);
-                            ptrData += areaPitch;
-                            aY++;
-                        }
+                        uint numBytes = NumElements * Stride;
+                        context.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, numBytes);
                     }
                     else
                     {
-                        long numBytes = Count * Stride;
-                        stream.WriteRange(ptrData, Count);
-                    }
-
-                    context.UnmapResource(texture.NativePtr, subLevel);
-                    context.Profiler.Current.MapDiscardCount++;
-                }
-                else
-                {
-                    if (texture.IsBlockCompressed)
-                    {
-                        // Calculate mip-map level size.
-                        levelWidth = texture.Width >> (int)MipLevel;
-                        levelHeight = texture.Height >> (int)MipLevel;
-                        uint bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
-
-                        // TODO support copy flags (DX11.1 feature)
-                        context.UpdateResource(texture, subLevel, null, ptrData, bcPitch, arraySliceBytes);
-                    }
-                    else
-                    {
-                        if (Area != null)
-                        {
-                            RectangleUI rect = Area.Value;
-                            uint areaPitch = Stride * rect.Width;
-                            Box region = new Box();
-                            region.Top = rect.Y;
-                            region.Front = 0;
-                            region.Back = 1;
-                            region.Bottom = rect.Bottom;
-                            region.Left = rect.X;
-                            region.Right = rect.Right;
-                            context.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, (uint)Data.Length);
-                        }
-                        else
-                        {
-                            //uint x = 0;
-                            //uint y = 0;
-                            //uint w = Math.Max(texture.Width >> (int)MipLevel, 1);
-                            //uint h = Math.Max(texture.Height >> (int)MipLevel, 1);
-                            context.UpdateResource(texture, subLevel, null, ptrData, Pitch, arraySliceBytes);
-                        }
+                        //uint x = 0;
+                        //uint y = 0;
+                        //uint w = Math.Max(texture.Width >> (int)MipLevel, 1);
+                        //uint h = Math.Max(texture.Height >> (int)MipLevel, 1);
+                        context.UpdateResource(texture, subLevel, null, ptrData, Pitch, arraySliceBytes);
                     }
                 }
-            });
+            }
 
             return true;
         }

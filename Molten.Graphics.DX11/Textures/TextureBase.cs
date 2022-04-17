@@ -219,14 +219,20 @@ namespace Molten.Graphics
         public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0)
             where T : unmanaged
         {
-            uint count = (uint)data.Length;
+            fixed (T* ptrData = data)
+                SetData(area, ptrData, (uint)data.Length, bytesPerPixel, level, arrayIndex);
+        }
+
+        public void SetData<T>(RectangleUI area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0)
+            where T : unmanaged
+        {
             uint texturePitch = area.Width * bytesPerPixel;
             uint pixels = area.Width * area.Height;
 
             uint expectedBytes = pixels * bytesPerPixel;
-            uint dataBytes = (uint)(data.Length * Marshal.SizeOf<T>());
+            uint dataBytes = (uint)(numElements * sizeof(T));
 
-            if (pixels != data.Length)
+            if (pixels != numElements)
                 throw new Exception($"The provided data does not match the provided area of {area.Width}x{area.Height}. Expected {expectedBytes} bytes. {dataBytes} bytes were provided.");
 
             // Do a bounds check
@@ -234,20 +240,14 @@ namespace Molten.Graphics
             if (!texBounds.Contains(area))
                 throw new Exception("The provided area would go outside of the current texture's bounds.");
 
-            TextureSet<T> change = new TextureSet<T>()
+            TextureSet<T> change = new TextureSet<T>(data, 0, numElements)
             {
-                Stride = (uint)sizeof(T),
-                Count = count,
-                Data = new T[count],
                 Pitch = texturePitch,
                 StartIndex = 0,
                 ArrayIndex = arrayIndex,
                 MipLevel = level,
                 Area = area,
             };
-
-            //copy the data so that it is not affected by other threads
-            Array.Copy(data, 0, change.Data, 0, count);
 
             _pendingChanges.Enqueue(change);
         }
@@ -286,13 +286,9 @@ namespace Molten.Graphics
 
         public void SetData(TextureData.Slice data, uint mipIndex, uint arraySlice)
         {
-            TextureSet<byte> change = new TextureSet<byte>()
+            TextureSet<byte> change = new TextureSet<byte>(data.Data, 0, data.TotalBytes)
             {
-                Stride = 1,
-                Count = data.TotalBytes,
-                Data = data.Data.Clone() as byte[],
                 Pitch = data.Pitch,
-                StartIndex = 0,
                 ArrayIndex = arraySlice,
                 MipLevel = mipIndex,
             };
@@ -304,19 +300,26 @@ namespace Molten.Graphics
         public void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex) 
             where T : unmanaged
         {
-            TextureSet<T> change = new TextureSet<T>()
+            TextureSet<T> change = new TextureSet<T>(data, startIndex, count)
             {
-                Stride = (uint)Marshal.SizeOf(typeof(T)),
-                Count = count,
-                Data = new T[count],
                 Pitch = pitch,
-                StartIndex = startIndex,
                 ArrayIndex = arrayIndex,
                 MipLevel = level,
             };
 
-            //copy the data so that it is not affected by other threads
-            Array.Copy(data, startIndex, change.Data, 0, count);
+            // Store pending change.
+            _pendingChanges.Enqueue(change);
+        }
+
+        public void SetData<T>(uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex)
+            where T : unmanaged
+        {
+            TextureSet<T> change = new TextureSet<T>(data, startIndex, count)
+            {
+                Pitch = pitch,
+                ArrayIndex = arrayIndex,
+                MipLevel = level,
+            };
 
             // Store pending change.
             _pendingChanges.Enqueue(change);

@@ -16,9 +16,15 @@ namespace Molten.Graphics
             Name = SilkMarshal.PtrToString((nint)Ptr->Name);
         }
 
+        ~HlslInputBindDescription()
+        {
+            Dispose();
+        }
+
         public void Dispose()
         {
-            EngineUtil.Free(ref Ptr);
+            if(Ptr != null)
+                EngineUtil.Free(ref Ptr);
         }
     }
 }

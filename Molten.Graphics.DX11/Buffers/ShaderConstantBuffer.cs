@@ -64,7 +64,8 @@ namespace Molten.Graphics
 
         internal override void PipelineRelease()
         {
-            EngineUtil.Free(ref _constData);
+            if(_constData != null)
+                EngineUtil.Free(ref _constData);
             base.PipelineRelease();
         }
 

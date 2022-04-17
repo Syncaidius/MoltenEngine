@@ -35,7 +35,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Represents a slice of texture data. This can either be a mip map level or array element in a texture array (which could still technically a mip-map level of 0).</summary>
-        public unsafe class Slice
+        public unsafe class Slice : IDisposable
         {
             byte* _data;
 
@@ -48,7 +48,7 @@ namespace Molten.Graphics
             public uint Width;
             public uint Height;
 
-            List<SliceRef> _references;
+            List<SliceRef> _references = new List<SliceRef>();
 
             public Slice(uint numBytes)
             {
@@ -88,6 +88,11 @@ namespace Molten.Graphics
             }
 
             ~Slice()
+            {
+                Dispose();
+            }
+
+            public void Dispose()
             {
                 if (Data != null)
                     EngineUtil.Free(ref _data);
