@@ -305,7 +305,7 @@ namespace Molten.Graphics
             where T : unmanaged
         {
             if (dataStride == 0)
-                dataStride = (uint)Marshal.SizeOf<T>();
+                dataStride = (uint)sizeof(T);
 
             uint dataSize = count * dataStride;
 
@@ -518,9 +518,10 @@ namespace Molten.Graphics
         /// <param name="existing">The existing segment to be updated or reallocated if neccessary.</param>
         /// <param name="count">The new element count.</param>
         /// <returns></returns>
-        internal BufferSegment UpdateAllocation<T>(BufferSegment existing, uint count) where T : unmanaged
+        internal BufferSegment UpdateAllocation<T>(BufferSegment existing, uint count) 
+            where T : unmanaged
         {
-            uint newStride = (uint)Marshal.SizeOf(typeof(T));
+            uint newStride = (uint)sizeof(T);
             OnValidateAllocationStride(newStride);
 
             uint oldBytes = existing.ByteCount;
