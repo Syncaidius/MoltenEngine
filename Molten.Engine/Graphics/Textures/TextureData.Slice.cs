@@ -32,6 +32,16 @@ namespace Molten.Graphics
             }
 
             public T* this[uint x, uint y] => _refData + _slice.ElementsPerPixel * (_slice.Width * y + x);
+
+            public T* this[int x, int y] => _refData + _slice.ElementsPerPixel * (_slice.Width * y + x);
+
+            public uint ElementsPerPixel => _slice.ElementsPerPixel;
+
+            public T* Data => _refData;
+
+            public uint Width => _slice.Width;
+
+            public uint Height => _slice.Height;
         }
 
         /// <summary>Represents a slice of texture data. This can either be a mip map level or array element in a texture array (which could still technically a mip-map level of 0).</summary>

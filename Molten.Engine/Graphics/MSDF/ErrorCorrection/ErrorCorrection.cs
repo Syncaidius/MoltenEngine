@@ -8,7 +8,7 @@ namespace Molten.Graphics.MSDF
 {
     public static class ErrorCorrection
     {
-        public unsafe static void MsdfErrorCorrectionInner<ES, DT>(ContourCombiner<ES, DT> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public unsafe static void MsdfErrorCorrectionInner<ES, DT>(ContourCombiner<ES, DT> combiner, TextureData.SliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
@@ -18,6 +18,7 @@ namespace Molten.Graphics.MSDF
             Bitmap<byte> stencilBuffer = null;
             if (config.ErrorCorrection.Buffer == null)
                 stencilBuffer = new Bitmap<byte>(1, sdf.Width, sdf.Height);
+
             BitmapRef<byte> stencil = new BitmapRef<byte>(1);
             stencil.pixels = config.ErrorCorrection.Buffer != null ? config.ErrorCorrection.Buffer : (stencilBuffer == null ? null : stencilBuffer.Ptr);
             stencil.Width = sdf.Width;
@@ -68,7 +69,7 @@ namespace Molten.Graphics.MSDF
             ec.Apply(sdf);
         }
 
-        public static void MsdfErrorCorrection<ES, DT>(ContourCombiner<ES, DT> combiner, BitmapRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public static void MsdfErrorCorrection<ES, DT>(ContourCombiner<ES, DT> combiner, TextureData.SliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {

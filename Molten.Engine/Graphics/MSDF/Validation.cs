@@ -11,16 +11,10 @@ namespace Molten.Graphics.MSDF
     /// </summary>
     internal static class Validation
     {
-        public static void NPerPixel<T>(BitmapRef<T> bitmap, int expectedN) where T : unmanaged
+        public static void NPerPixel<T>(TextureData.SliceRef<T> bitmap, int expectedN) where T : unmanaged
         {
-            if(bitmap.NPerPixel != expectedN)
-                throw new IndexOutOfRangeException($"A {nameof(BitmapRef<T>)} of {expectedN} component{(expectedN > 1 ? "s" : "")}-per-pixel is expected, not {bitmap.NPerPixel}.");
-        }
-
-        public static void NPerPixel<T>(Bitmap<T> bitmap, int expectedN) where T : unmanaged
-        {
-            if (bitmap.NPerPixel != expectedN)
-                throw new IndexOutOfRangeException($"A {nameof(Bitmap<T>)} of {expectedN} component{(expectedN > 1 ? "s" : "")}-per-pixel is expected, not {bitmap.NPerPixel}.");
+            if(bitmap.ElementsPerPixel != expectedN)
+                throw new IndexOutOfRangeException($"A {nameof(TextureData.SliceRef<T>)} of {expectedN} component{(expectedN > 1 ? "s" : "")}-per-pixel is expected, not {bitmap.ElementsPerPixel}.");
         }
     }
 }

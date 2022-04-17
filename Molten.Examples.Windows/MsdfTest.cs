@@ -105,10 +105,10 @@ namespace Molten.Samples
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
+            uint pWidth = 64;
+            uint pHeight = 64;
             int shapeSize = 50;
-            int pWidth = 64;
-            int pHeight = 64;
-            int nPerPixel = 1;
+            uint nPerPixel = 1;
             double pxRange = 4;
 
             int testWidth = 256;
@@ -120,31 +120,46 @@ namespace Molten.Samples
             double range = pxRange / MsdfMath.Min(scale.X, scale.Y);
             FillRule fl = FillRule.NonZero;
 
-            float* pixels = EngineUtil.AllocArray<float>((nuint)(pWidth * pHeight * nPerPixel));
-            BitmapRef<float> sdf = new BitmapRef<float>(pixels, nPerPixel, pWidth, pHeight);
+            TextureData texData = new TextureData()
+            {
+                Levels = new TextureData.Slice[1]
+                {
+                    new TextureData.Slice(pWidth * pHeight * nPerPixel)
+                    {
+                        ElementsPerPixel = 1,
+                    }
+                },
+                ArraySize = 1,
+                Flags = TextureFlags.None,
+                Format = GraphicsFormat.R32_Float,
+                Width = pWidth,
+                Height = pHeight,
+            };
+
+            TextureData.SliceRef<float> sliceRef = texData.Levels[0].GetReference<float>();
             MsdfShape shape = CreateShape(new Vector2D(shapeSize));
             shape.Normalize();
 
             MsdfProjection projection = new MsdfProjection(scale, pOffset);
             if (legacy)
             {
-                _msdf.GeneratePseudoSDF_Legacy(sdf, shape, range, scale, pOffset);
+                _msdf.GeneratePseudoSDF_Legacy(sliceRef, shape, range, scale, pOffset);
             }
             else
             {
-                _msdf.GeneratePseudoSDF(sdf, shape, projection, range, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
+                _msdf.GeneratePseudoSDF(sliceRef, shape, projection, range, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
                 {
                     DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
                     Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
                 }));
             }
-            MsdfRasterization.distanceSignCorrection(sdf, shape, projection, fl);
+            MsdfRasterization.distanceSignCorrection(sliceRef, shape, projection, fl);
 
             // Output render test texture
             float* oPixels = EngineUtil.AllocArray<float>((nuint)(testWidth * testHeight * testNPerPixel));
             BitmapRef<float> output = new BitmapRef<float>(oPixels, testNPerPixel, testWidth, testHeight);
-            MsdfRasterization.simulate8bit(sdf);
-            MsdfRasterization.renderSDF(output, sdf, avgScale * range, 0.5f);
+            MsdfRasterization.simulate8bit(sliceRef);
+            MsdfRasterization.RenderSDF(output, sliceRef, avgScale * range, 0.5f);
             ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
             {
                 Width = (uint)testWidth,
@@ -222,7 +237,7 @@ namespace Molten.Samples
             float* oPixels = EngineUtil.AllocArray<float>((nuint)numElements);
             BitmapRef<float> output = new BitmapRef<float>(oPixels, testNPerPixel, testWidth, testHeight);
             MsdfRasterization.simulate8bit(sdf);
-            MsdfRasterization.renderMSDF(output, sdf, avgScale * range, 0.5f);
+            MsdfRasterization.RenderSDF(output, sdf, avgScale * range, 0.5f);
             ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
             {
                 Width = (uint)testWidth,
@@ -295,7 +310,7 @@ namespace Molten.Samples
             float* oPixels = EngineUtil.AllocArray<float>((nuint)numElements);
             BitmapRef<float> output = new BitmapRef<float>(oPixels, testNPerPixel, testWidth, testHeight);
             MsdfRasterization.simulate8bit(sdf);
-            MsdfRasterization.renderMTSDF(output, sdf, avgScale * range, 0.5f);
+            MsdfRasterization.RenderSDF(output, sdf, avgScale * range, 0.5f);
             ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
             {
                 Width = (uint)testWidth,

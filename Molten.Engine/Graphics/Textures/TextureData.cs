@@ -19,6 +19,16 @@ namespace Molten.Graphics
 
         public bool IsCompressed;
 
+        public TextureData(uint width, uint height, uint mipMapLevels, uint arraySize)
+        {
+            Width = width;
+            Height = height;
+            MipMapLevels = mipMapLevels;
+            ArraySize = arraySize;
+
+            Levels = new Slice[ArraySize];
+        }
+
         /// <summary>Decompresses the texture data to R8-G8-B8-A8 color format, if it is stored in a compressed format. This has no effect if already uncompressed.</summary>
         public void Decompress(Logger log)
         {

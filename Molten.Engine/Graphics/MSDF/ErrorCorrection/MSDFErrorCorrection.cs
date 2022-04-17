@@ -14,7 +14,7 @@ namespace Molten.Graphics.MSDF
         public const int CLASSIFIER_FLAG_CANDIDATE = 0x01;
         public const int CLASSIFIER_FLAG_ARTIFACT = 0x02;
 
-        BitmapRef<byte> stencil;
+        TextureData.SliceRef<byte> stencil;
         MsdfProjection projection;
         double invRange;
         double minDeviationRatio;
@@ -32,7 +32,7 @@ namespace Molten.Graphics.MSDF
             PROTECTED = 2
         };
 
-        public unsafe MSDFErrorCorrection(BitmapRef<byte> pStencil, MsdfProjection pProjection, double range)
+        public unsafe MSDFErrorCorrection(TextureData.SliceRef<byte> pStencil, MsdfProjection pProjection, double range)
         {
             Validation.NPerPixel(pStencil, 1);
 
@@ -42,7 +42,7 @@ namespace Molten.Graphics.MSDF
             invRange = 1 / range;
             minDeviationRatio = ErrorCorrectionConfig.defaultMinDeviationRatio;
             minImproveRatio = ErrorCorrectionConfig.defaultMinImproveRatio;
-            EngineUtil.MemSet(stencil.pixels, 0, (nuint)(sizeof(byte) * stencil.Width * stencil.Height));
+            EngineUtil.MemSet(stencil.Data, 0, (nuint)(sizeof(byte) * stencil.Width * stencil.Height));
         }
 
         public void SetMinDeviationRatio(double minDeviationRatio)
@@ -209,8 +209,8 @@ namespace Molten.Graphics.MSDF
 
         public unsafe void ProtectAll()
         {
-            byte* end = stencil.pixels + stencil.Width * stencil.Height;
-            for (byte* mask = stencil.pixels; mask < end; ++mask)
+            byte* end = stencil.Data + stencil.Width * stencil.Height;
+            for (byte* mask = stencil.Data; mask < end; ++mask)
                 *mask |= (byte)StencilFlags.PROTECTED;
         }
 
@@ -360,7 +360,7 @@ namespace Molten.Graphics.MSDF
             return false;
         }
 
-        public unsafe void FindErrors(BitmapRef<float> sdf)
+        public unsafe void FindErrors(TextureData.SliceRef<float> sdf)
         {
             // Compute the expected deltas between values of horizontally, vertically, and diagonally adjacent texels.
             double hSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange, 0)).Length();
@@ -394,7 +394,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void FindErrors<ES, DT>(ContourCombiner<ES, DT> combiner, BitmapRef<float> sdf, MsdfShape shape)
+        public unsafe void FindErrors<ES, DT>(ContourCombiner<ES, DT> combiner, TextureData.SliceRef<float> sdf, MsdfShape shape)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
@@ -407,12 +407,16 @@ namespace Molten.Graphics.MSDF
                 bool rightToLeft = false;
 
                 // Inspect all texels.
-                for (int y = 0; y < sdf.Height; ++y) {
-                    int row = shape.InverseYAxis ? sdf.Height - y - 1 : y;
-                    for (int col = 0; col < sdf.Width; ++col) {
-                        int x = rightToLeft ? sdf.Width - col - 1 : col;
+                for (int y = 0; y < sdf.Height; ++y)
+                {
+                    int row = (int)(shape.InverseYAxis ? sdf.Height - y - 1 : y);
+                    for (int col = 0; col < sdf.Width; ++col)
+                    {
+                        int x = (int)(rightToLeft ? sdf.Width - col - 1 : col);
+
                         if (((StencilFlags)(*stencil[x, row]) & StencilFlags.ERROR) == StencilFlags.ERROR)
                             continue;
+
                         float* c = sdf[x, row];
                         shapeDistanceChecker.shapeCoord = projection.Unproject(new Vector2D(x + .5, y + .5));
                         shapeDistanceChecker.sdfCoord = new Vector2D(x + .5, row + .5);
@@ -420,9 +424,9 @@ namespace Molten.Graphics.MSDF
                         shapeDistanceChecker.protectedFlag = ((StencilFlags)(*stencil[x, row]) & StencilFlags.PROTECTED) != 0;
                         float cm = MsdfMath.Median(c[0], c[1], c[2]);
 
-                        float* l = sdf[x - 1, row]; 
-                        float* b = sdf[x, row - 1]; 
-                        float* r = sdf[x + 1, row]; 
+                        float* l = sdf[x - 1, row];
+                        float* b = sdf[x, row - 1];
+                        float* r = sdf[x + 1, row];
                         float* t = sdf[x, row + 1];
 
                         // Mark current texel c with the error flag if an artifact occurs when it's interpolated with any of its 8 neighbors.
@@ -441,9 +445,9 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void Apply(BitmapRef<float> sdf) {
+        public unsafe void Apply(TextureData.SliceRef<float> sdf) {
             int texelCount = sdf.Width * sdf.Height;
-            byte* mask = stencil.pixels;
+            byte* mask = stencil.Data;
             float* texel = sdf.pixels;
             for (int i = 0; i < texelCount; ++i) {
                 if (((StencilFlags)(*mask) & StencilFlags.ERROR) == StencilFlags.ERROR) {
@@ -456,7 +460,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public BitmapRef<byte> GetStencil() {
+        public TextureData.SliceRef<byte> GetStencil() {
             return stencil;
         }
     }
