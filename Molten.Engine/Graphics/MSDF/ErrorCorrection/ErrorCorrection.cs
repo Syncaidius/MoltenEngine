@@ -8,44 +8,42 @@ namespace Molten.Graphics.MSDF
 {
     public static class ErrorCorrection
     {
-        public unsafe static void MsdfErrorCorrectionInner<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public unsafe static void MsdfErrorCorrectionInner<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MsdfConfig config)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
-            if (config.ErrorCorrection.Mode == ErrorCorrectionConfig.ErrorCorrectMode.DISABLED)
+            if (config.Mode == MsdfConfig.ErrorCorrectMode.DISABLED)
                 return;
 
             MSDFErrorCorrection ec = new MSDFErrorCorrection(sdf, projection, range);
-            ec.SetMinDeviationRatio(config.ErrorCorrection.MinDeviationRatio);
-            ec.SetMinImproveRatio(config.ErrorCorrection.MinImproveRatio);
-            switch (config.ErrorCorrection.Mode)
+            ec.SetMinDeviationRatio(config.MinDeviationRatio);
+            ec.SetMinImproveRatio(config.MinImproveRatio);
+            switch (config.Mode)
             {
-                case ErrorCorrectionConfig.ErrorCorrectMode.DISABLED:
-                case ErrorCorrectionConfig.ErrorCorrectMode.INDISCRIMINATE:
+                case MsdfConfig.ErrorCorrectMode.DISABLED:
+                case MsdfConfig.ErrorCorrectMode.INDISCRIMINATE:
                     break;
-                case ErrorCorrectionConfig.ErrorCorrectMode.EDGE_PRIORITY:
+                case MsdfConfig.ErrorCorrectMode.EDGE_PRIORITY:
                     ec.ProtectCorners(shape);
                     ec.ProtectEdges(sdf);
                     break;
-                case ErrorCorrectionConfig.ErrorCorrectMode.EDGE_ONLY:
+                case MsdfConfig.ErrorCorrectMode.EDGE_ONLY:
                     ec.ProtectAll();
                     break;
             }
-            if (config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE ||
-                (config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE &&
-                config.ErrorCorrection.Mode != ErrorCorrectionConfig.ErrorCorrectMode.EDGE_ONLY))
+            if (config.DistanceCheckMode == MsdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE ||
+                (config.DistanceCheckMode == MsdfConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE &&
+                config.Mode != MsdfConfig.ErrorCorrectMode.EDGE_ONLY))
             {
                 ec.FindErrors(sdf);
-                if (config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE)
+                if (config.DistanceCheckMode == MsdfConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE)
                     ec.ProtectAll();
             }
-            if (config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.ALWAYS_CHECK_DISTANCE ||
-                config.ErrorCorrection.DistanceCheckMode == ErrorCorrectionConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE)
+
+            if (config.DistanceCheckMode == MsdfConfig.DistanceErrorCheckMode.ALWAYS_CHECK_DISTANCE ||
+                config.DistanceCheckMode == MsdfConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE)
             {
-                if (config.OverlapSupport)
-                    ec.FindErrors(combiner, sdf, shape);
-                else
-                    ec.FindErrors(combiner, sdf, shape);
+                ec.FindErrors(combiner, sdf, shape);
             }
             ec.Apply(sdf);
         }
@@ -62,7 +60,7 @@ namespace Molten.Graphics.MSDF
             ec.Apply(sdf);
         }
 
-        public static void MsdfErrorCorrection<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public static void MsdfErrorCorrection<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, double range, MsdfConfig config)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {

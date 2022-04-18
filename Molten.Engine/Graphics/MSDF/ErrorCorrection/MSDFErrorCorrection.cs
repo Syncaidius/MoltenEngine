@@ -44,8 +44,8 @@ namespace Molten.Graphics.MSDF
             projection = pProjection;
 
             invRange = 1 / range;
-            minDeviationRatio = ErrorCorrectionConfig.defaultMinDeviationRatio;
-            minImproveRatio = ErrorCorrectionConfig.defaultMinImproveRatio;
+            minDeviationRatio = MsdfConfig.defaultMinDeviationRatio;
+            minImproveRatio = MsdfConfig.defaultMinImproveRatio;
             EngineUtil.MemSet(stencil.Data, 0, (nuint)(sizeof(byte) * stencil.Width * stencil.Height));
         }
 

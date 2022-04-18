@@ -15,7 +15,7 @@ namespace Molten.Graphics.MSDF
         where ES: EdgeSelector<DT>, new()
         where DT : unmanaged
     {
-        ES shapeEdgeSelector;
+        ES shapeEdgeSelector = new ES();
 
         public SimpleContourCombiner(MsdfShape shape) { }
 

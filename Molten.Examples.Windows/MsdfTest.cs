@@ -145,20 +145,20 @@ namespace Molten.Samples
             }
         }
 
-        private unsafe void RenderSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MSDFGeneratorConfig config, bool legacy)
+        private unsafe void RenderSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MsdfConfig config, bool legacy)
         {
             if (legacy)
                 _msdf.GeneratePseudoSDF_Legacy(sliceRef, shape, range, projection.Scale, projection.Translate);
             else
-                _msdf.GeneratePseudoSDF(sliceRef, shape, projection, range, config);
+                _msdf.GeneratePseudoSDF(sliceRef, shape, projection, range);
 
             MsdfRasterization.distanceSignCorrection(sliceRef, shape, projection, fl);
         }
 
-        private unsafe void RenderMSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MSDFGeneratorConfig config, bool legacy)
+        private unsafe void RenderMSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MsdfConfig config, bool legacy)
         {
             if (legacy)
-                _msdf.GenerateMSDF_Legacy(sliceRef, shape, range, projection.Scale, projection.Translate, config.ErrorCorrection);
+                _msdf.GenerateMSDF_Legacy(sliceRef, shape, range, projection.Scale, projection.Translate, config);
             else
                 _msdf.GenerateMSDF(sliceRef, shape, projection, range, config);
 
@@ -166,10 +166,10 @@ namespace Molten.Samples
             ErrorCorrection.MsdfErrorCorrection(new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance>(shape), sliceRef, shape, projection, range, config);
         }
 
-        private unsafe void RenderMTSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MSDFGeneratorConfig config, bool legacy)
+        private unsafe void RenderMTSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MsdfConfig config, bool legacy)
         {
             if (legacy)
-                _msdf.GenerateMTSDF_Legacy(sliceRef, shape, range, projection.Scale, projection.Translate, config.ErrorCorrection);
+                _msdf.GenerateMTSDF_Legacy(sliceRef, shape, range, projection.Scale, projection.Translate, config);
             else
                 _msdf.GenerateMTSDF(sliceRef, shape, projection, range, config);
 
@@ -178,7 +178,7 @@ namespace Molten.Samples
         }
 
         private unsafe void GenerateSDF(string label, uint elementsPerPixel, bool legacy,
-            Action<TextureSliceRef<float>, MsdfProjection, MsdfShape, double, FillRule, MSDFGeneratorConfig, bool> renderCallback, 
+            Action<TextureSliceRef<float>, MsdfProjection, MsdfShape, double, FillRule, MsdfConfig, bool> renderCallback, 
             Action<TextureSliceRef<float>, Color[]> convertCallback)
         {
             Stopwatch timer = new Stopwatch();
@@ -225,11 +225,11 @@ namespace Molten.Samples
                 Format = GraphicsFormat.R8G8B8A8_UNorm
             });
 
-            MSDFGeneratorConfig config = new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
+            MsdfConfig config = new MsdfConfig()
             {
-                DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
-                Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
-            });
+                DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
+                Mode = MsdfConfig.ErrorCorrectMode.DISABLED
+            };
 
             renderCallback(sliceRef, projection, shape, range, fl, config, legacy);
 
@@ -357,7 +357,7 @@ namespace Molten.Samples
                         if (pos.X + (tex.Width + 15 + tex.Width) > Window.Width)
                         {
                             pos.X = 700;
-                            pos.Y += tex.Width + 15;
+                            pos.Y += tex.Height + 30;
                         }
                         else
                         {

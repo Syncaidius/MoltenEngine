@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.MSDF
 {
-    public unsafe class ErrorCorrectionConfig
+    public unsafe class MsdfConfig
     {
         /// <summary>
         /// Mode of operation
@@ -63,7 +63,7 @@ namespace Molten.Graphics.MSDF
         /// </summary>
         public double MinImproveRatio;
 
-        public ErrorCorrectionConfig(
+        public MsdfConfig(
             ErrorCorrectMode mode = ErrorCorrectMode.EDGE_PRIORITY, 
             DistanceErrorCheckMode distanceCheckMode = DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE,
             double minDeviationRatio = defaultMinDeviationRatio,
