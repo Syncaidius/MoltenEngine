@@ -84,8 +84,11 @@ namespace Molten.Graphics.MSDF
                     if (windings[i] > 0)
                     {
                         DT contourDistance = edgeSelectors[i].Distance();
-                        if (Math.Abs(edgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(outerScalarDistance) && edgeSelectors[i].ResolveDistance(contourDistance) > edgeSelectors[i].ResolveDistance(distance))
+                        if (Math.Abs(edgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(outerScalarDistance) &&
+                            edgeSelectors[i].ResolveDistance(contourDistance) > edgeSelectors[i].ResolveDistance(distance))
+                        {
                             distance = contourDistance;
+                        }
                     }
                 }
             }
@@ -98,8 +101,11 @@ namespace Molten.Graphics.MSDF
                     if (windings[i] < 0)
                     {
                         DT contourDistance = edgeSelectors[i].Distance();
-                        if (Math.Abs(edgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(innerScalarDistance) && edgeSelectors[i].ResolveDistance(contourDistance) < edgeSelectors[i].ResolveDistance(distance))
+                        if (Math.Abs(edgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(innerScalarDistance) &&
+                            edgeSelectors[i].ResolveDistance(contourDistance) < edgeSelectors[i].ResolveDistance(distance))
+                        {
                             distance = contourDistance;
+                        }
                     }
                 }
             }
@@ -113,8 +119,11 @@ namespace Molten.Graphics.MSDF
                 if (windings[i] != winding)
                 {
                     DT contourDistance = edgeSelectors[i].Distance();
-                    if (edgeSelectors[i].ResolveDistance(contourDistance) * edgeSelectors[i].ResolveDistance(distance) >= 0 && Math.Abs(edgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(edgeSelectors[i].ResolveDistance(distance)))
+                    if (edgeSelectors[i].ResolveDistance(contourDistance) * edgeSelectors[i].ResolveDistance(distance) >= 0 &&
+                        Math.Abs(edgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(edgeSelectors[i].ResolveDistance(distance)))
+                    {
                         distance = contourDistance;
+                    }
                 }
             }
 

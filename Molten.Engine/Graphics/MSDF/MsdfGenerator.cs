@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.MSDF
 {
-    public enum MsdfMode
+    public enum SdfMode
     {
         /// <summary>
         /// Signed-distance field.
@@ -16,7 +16,7 @@ namespace Molten.Graphics.MSDF
         /// <summary>
         /// Pseudo signed-distance field.
         /// </summary>
-        PseudoSdf = 1,
+        Psdf = 1,
 
         /// <summary>
         /// Multi-channel signed-distance field.
@@ -34,6 +34,77 @@ namespace Molten.Graphics.MSDF
      */
     public class MsdfGenerator
     {
+        public unsafe void Generate(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MsdfConfig config, SdfMode mode, FillRule fl, bool legacy)
+        {
+            if (legacy)
+            {
+                switch (mode)
+                {
+                    case SdfMode.Sdf:
+                        GenerateSDF_Legacy(output, shape, range, projection.Scale, projection.Translate);
+                        break;
+
+                    case SdfMode.Psdf:
+                        GenerateSDF_Legacy(output, shape, range, projection.Scale, projection.Translate);
+                        break;
+
+                    case SdfMode.Msdf:
+                        GenerateMSDF_Legacy(output, shape, range, projection.Scale, projection.Translate, config);
+                        break;
+
+                    case SdfMode.Mtsdf:
+                        GenerateMTSDF_Legacy(output, shape, range, projection.Scale, projection.Translate, config);
+                        break;
+                }
+            }
+            else
+            {
+                switch (mode)
+                {
+                    case SdfMode.Sdf:
+                        GenerateSDF(output, shape, projection, range);
+                        break;
+
+                    case SdfMode.Psdf: 
+                        GeneratePseudoSDF(output, shape, projection, range); 
+                        break;
+
+                    case SdfMode.Msdf: 
+                        GenerateMSDF(output, shape, projection, range, config); 
+                        break;
+
+                    case SdfMode.Mtsdf: 
+                        GenerateMTSDF(output, shape, projection, range, config); 
+                        break;
+                }
+            }
+
+            // Error correction
+            switch (mode)
+            {
+                case SdfMode.Sdf:
+                case SdfMode.Psdf:
+                    MsdfRasterization.distanceSignCorrection(output, shape, projection, fl); 
+                    break;
+
+                case SdfMode.Msdf:
+                    {
+                        var combiner = new ContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
+                        MsdfRasterization.multiDistanceSignCorrection(output, shape, projection, fl);
+                        ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
+                        break;
+                    }
+
+                case SdfMode.Mtsdf:
+                    {
+                        var combiner = new ContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
+                        MsdfRasterization.multiDistanceSignCorrection(output, shape, projection, fl);
+                        ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
+                        break;
+                    }
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -43,7 +114,8 @@ namespace Molten.Graphics.MSDF
         /// <param name="output"></param>
         /// <param name="shape"></param>
         /// <param name="projection"></param>
-        private unsafe void GenerateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConversion, ContourCombiner<ES, DT> combiner, TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
+        private unsafe void GenerateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConvertor, ContourCombiner<ES, DT> combiner, 
+            TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
@@ -58,13 +130,13 @@ namespace Molten.Graphics.MSDF
                     int x = (int)(rightToLeft ? output.Width - col - 1 : col);
                     Vector2D p = projection.Unproject(new Vector2D(x + .5, y + .5));
                     DT distance = distanceFinder.distance(ref p);
-                    distancePixelConversion.Convert(output[x,row], distance);
+                    distancePixelConvertor.Convert(output[x,row], distance);
                 }
                 rightToLeft = !rightToLeft;
             }
         }
 
-        public void GenerateSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
+        private void GenerateSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
         {
             Validation.NPerPixel(output, 1);
 
@@ -74,7 +146,7 @@ namespace Molten.Graphics.MSDF
             GenerateDistanceField(dpc, combiner, output, shape, projection, range);
         }
 
-        public void GeneratePseudoSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
+        private void GeneratePseudoSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
         {
             Validation.NPerPixel(output, 1);
 
@@ -84,7 +156,7 @@ namespace Molten.Graphics.MSDF
             GenerateDistanceField(dpc, combiner, output, shape, projection, range);
         }
 
-        public void GenerateMSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MsdfConfig config)
+        private void GenerateMSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MsdfConfig config)
         {
             Validation.NPerPixel(output, 3);
 
@@ -95,7 +167,7 @@ namespace Molten.Graphics.MSDF
             ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
         }
 
-        public void GenerateMTSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MsdfConfig config)
+        private void GenerateMTSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MsdfConfig config)
         {
             Validation.NPerPixel(output, 4);
 
@@ -107,7 +179,7 @@ namespace Molten.Graphics.MSDF
         }
 
         // Legacy version
-        public unsafe void GenerateSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        private unsafe void GenerateSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
         {
             if (output.ElementsPerPixel != 1)
                 throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
@@ -135,7 +207,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void GeneratePseudoSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        private unsafe void GeneratePseudoSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
         {
             if (output.ElementsPerPixel != 1)
                 throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
@@ -172,7 +244,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void GenerateMSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, MsdfConfig config)
+        private unsafe void GenerateMSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, MsdfConfig config)
         {
             if (output.ElementsPerPixel != 3)
                 throw new IndexOutOfRangeException("A BitmapRef of 3 component-per-pixel is expected");
@@ -238,7 +310,7 @@ namespace Molten.Graphics.MSDF
             ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, config);
         }
 
-        public unsafe void GenerateMTSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, MsdfConfig config)
+        private unsafe void GenerateMTSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, MsdfConfig config)
         {
             if (output.ElementsPerPixel != 4)
                 throw new IndexOutOfRangeException("A BitmapRef of 4 components-per-pixel is expected");

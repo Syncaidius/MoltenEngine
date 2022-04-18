@@ -91,12 +91,14 @@ namespace Molten.Samples
             InitializeFontDebug();
             GenerateChar('Å');
 
-            GenerateSDF("SDF", 1, false, RenderSDF, ConvertSdfToRgb);
-            GenerateSDF("SDF Legacy", 1, true, RenderSDF, ConvertSdfToRgb);
-            GenerateSDF("MSDF", 3, false , RenderMSDF, ConvertMsdfToRgb);
-            GenerateSDF("MSDF Legacy", 3, true, RenderMSDF, ConvertMsdfToRgb);
-            GenerateSDF("MTSDF", 4, false, RenderMTSDF, ConvertMtsdfToRgb);
-            GenerateSDF("MTSDF Legacy", 4, true, RenderMTSDF, ConvertMtsdfToRgb);
+            GenerateSDF("SDF", 1, SdfMode.Sdf, false, ConvertSdfToRgb);
+            GenerateSDF("SDF Legacy", 1, SdfMode.Sdf, true, ConvertSdfToRgb);
+            GenerateSDF("PSDF", 1, SdfMode.Psdf, false, ConvertSdfToRgb);
+            GenerateSDF("PSDF Legacy", 1, SdfMode.Psdf, true, ConvertSdfToRgb);
+            GenerateSDF("MSDF", 3, SdfMode.Msdf, false, ConvertMsdfToRgb);
+            GenerateSDF("MSDF Legacy", 3, SdfMode.Msdf, true, ConvertMsdfToRgb);
+            GenerateSDF("MTSDF", 4, SdfMode.Mtsdf, false, ConvertMtsdfToRgb);
+            GenerateSDF("MTSDF Legacy", 4, SdfMode.Mtsdf, true, ConvertMtsdfToRgb);
 
             _loaded = true;
         }
@@ -145,40 +147,7 @@ namespace Molten.Samples
             }
         }
 
-        private unsafe void RenderSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MsdfConfig config, bool legacy)
-        {
-            if (legacy)
-                _msdf.GeneratePseudoSDF_Legacy(sliceRef, shape, range, projection.Scale, projection.Translate);
-            else
-                _msdf.GeneratePseudoSDF(sliceRef, shape, projection, range);
-
-            MsdfRasterization.distanceSignCorrection(sliceRef, shape, projection, fl);
-        }
-
-        private unsafe void RenderMSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MsdfConfig config, bool legacy)
-        {
-            if (legacy)
-                _msdf.GenerateMSDF_Legacy(sliceRef, shape, range, projection.Scale, projection.Translate, config);
-            else
-                _msdf.GenerateMSDF(sliceRef, shape, projection, range, config);
-
-            MsdfRasterization.multiDistanceSignCorrection(sliceRef, shape, projection, fl);
-            ErrorCorrection.MsdfErrorCorrection(new ContourCombiner<MultiDistanceSelector, MultiDistance>(shape), sliceRef, shape, projection, range, config);
-        }
-
-        private unsafe void RenderMTSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MsdfConfig config, bool legacy)
-        {
-            if (legacy)
-                _msdf.GenerateMTSDF_Legacy(sliceRef, shape, range, projection.Scale, projection.Translate, config);
-            else
-                _msdf.GenerateMTSDF(sliceRef, shape, projection, range, config);
-
-            MsdfRasterization.multiDistanceSignCorrection(sliceRef, shape, projection, fl);
-            ErrorCorrection.MsdfErrorCorrection(new ContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape), sliceRef, shape, projection, range, config);
-        }
-
-        private unsafe void GenerateSDF(string label, uint elementsPerPixel, bool legacy,
-            Action<TextureSliceRef<float>, MsdfProjection, MsdfShape, double, FillRule, MsdfConfig, bool> renderCallback, 
+        private unsafe void GenerateSDF(string label, uint elementsPerPixel, SdfMode mode, bool legacy, 
             Action<TextureSliceRef<float>, Color[]> convertCallback)
         {
             Stopwatch timer = new Stopwatch();
@@ -231,7 +200,7 @@ namespace Molten.Samples
                 Mode = MsdfConfig.ErrorCorrectMode.INDISCRIMINATE
             };
 
-            renderCallback(sliceRef, projection, shape, range, fl, config, legacy);
+            _msdf.Generate(sliceRef, shape, projection, range, config, mode, fl, legacy);
 
             MsdfRasterization.RenderSDF(outRef, sliceRef, avgScale * range, 0.5f);
 
@@ -263,7 +232,7 @@ namespace Molten.Samples
 
             Vector2D innerPos = size / 6;
             Vector2D innerSize = size / 2;
-            double peakSize = 5;
+            double peakSize = 15;
             Contour cInner = new Contour();
             cInner.AddEdge(new LinearSegment(innerPos + new Vector2D(innerSize.X, 0), innerPos));
             cInner.AddEdge(new LinearSegment(innerPos, innerPos + new Vector2D(0, innerSize.Y)));
@@ -342,11 +311,13 @@ namespace Molten.Samples
                 if (_loaded)
                 {
                     Vector2F pos = new Vector2F(700, 65);
+                    Color bgColor = new Color(255, 20, 0, 200);
 
                     foreach (string label in _msdfResultTextures.Keys)
                     {
                         ITexture2D tex = _msdfResultTextures[label];
                         Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, (int)tex.Width, (int)tex.Height);
+                        sb.DrawRect(texBounds, bgColor);
                         sb.Draw(tex, texBounds, Color.White);
                         sb.DrawRectOutline(texBounds, Color.Yellow, 1);
 
