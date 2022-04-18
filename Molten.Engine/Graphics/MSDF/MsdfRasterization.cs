@@ -42,7 +42,7 @@ namespace Molten.Graphics.MSDF
             {
                 for (int x = 0; x < output.Width; ++x)
                 {
-                    float* sd = stackalloc float[(int)output.ElementsPerPixel];
+                    float* sd = stackalloc float[(int)sdf.ElementsPerPixel];
                     Interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
                     for (uint i = 0; i < output.ElementsPerPixel; i++)
                         output[x, y][i] = distVal(sd[i], pxRange, midValue);
@@ -147,23 +147,6 @@ namespace Molten.Graphics.MSDF
                 float end = MathHelper.Lerp(bitmap[l, t][i], bitmap[r, t][i], lr);
                 output[i] = MathHelper.Lerp(start, end, bt);
             }
-        }
-
-        public unsafe static void simulate8bit(TextureSliceRef<float> bitmap)
-        {
-            float* end = bitmap.Data + bitmap.ElementsPerPixel * bitmap.Width * bitmap.Height;
-            for (float* p = bitmap.Data; p < end; ++p)
-                *p = pixelByteToFloat(pixelFloatToByte(*p));
-        }
-
-        public static float pixelByteToFloat(byte x)
-        {
-            return 1f / 255f * x;
-        }
-
-        public static byte pixelFloatToByte(float x)
-        {
-            return (byte)MathHelper.Clamp(256f * x, 0, 255f);
         }
     }
 }

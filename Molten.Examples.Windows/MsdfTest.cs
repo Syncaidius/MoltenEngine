@@ -140,7 +140,7 @@ namespace Molten.Samples
                     R = (byte)(255 * outRef[pi]),
                     G = (byte)(255 * outRef[pi + 1]),
                     B = (byte)(255 * outRef[pi + 2]),
-                    A = (byte)(255 * outRef[pi + 3] > 0 ? 255 : 0),
+                    A = (byte)(255 * outRef[pi + 3]),
                 };
             }
         }
@@ -227,13 +227,12 @@ namespace Molten.Samples
 
             MsdfConfig config = new MsdfConfig()
             {
-                DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
-                Mode = MsdfConfig.ErrorCorrectMode.DISABLED
+                DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.ALWAYS_CHECK_DISTANCE,
+                Mode = MsdfConfig.ErrorCorrectMode.INDISCRIMINATE
             };
 
             renderCallback(sliceRef, projection, shape, range, fl, config, legacy);
 
-            MsdfRasterization.simulate8bit(sliceRef);
             MsdfRasterization.RenderSDF(outRef, sliceRef, avgScale * range, 0.5f);
 
             convertCallback(outRef, finalData);            

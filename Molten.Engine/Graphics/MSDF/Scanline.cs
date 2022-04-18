@@ -140,11 +140,6 @@ namespace Molten.Graphics.MSDF
             return index;
         }
 
-        public int CountIntersections(double x)
-        {
-            return MoveTo(x) + 1;
-        }
-
         public int SumIntersections(double x)
         {
             int index = MoveTo(x);
