@@ -107,11 +107,12 @@ namespace Molten.Graphics.MSDF
             {
                 // Interpolate channel values at t.
                 float* c = stackalloc float[3];
-                c[0] = MsdfMath.Mix(a[0], b[0], t);
-                c[1] = MsdfMath.Mix(a[1], b[1], t);
-                c[2] = MsdfMath.Mix(a[2], b[2], t);
+                c[0] = MathHelper.Lerp(a[0], b[0], t);
+                c[1] = MathHelper.Lerp(a[1], b[1], t);
+                c[2] = MathHelper.Lerp(a[2], b[2], t);
+
                 // This is only an edge if the zero-distance channel is the median.
-                return MsdfMath.Median(c[0], c[1], c[2]) == c[channel] ? 1 : 0;
+                return MathHelper.Median(c[0], c[1], c[2]) == c[channel] ? 1 : 0;
             }
             return 0;
         }
@@ -145,8 +146,8 @@ namespace Molten.Graphics.MSDF
                 float* right = sdf[1, y];
                 for (int x = 0; x < sdf.Width - 1; ++x)
                 {
-                    float lm = MsdfMath.Median(left[0], left[1], left[2]);
-                    float rm = MsdfMath.Median(right[0], right[1], right[2]);
+                    float lm = MathHelper.Median(left[0], left[1], left[2]);
+                    float rm = MathHelper.Median(right[0], right[1], right[2]);
                     if (Math.Abs(lm - .5f) + Math.Abs(rm - .5f) < radius)
                     {
                         int mask = EdgeBetweenTexels(left, right);
@@ -163,16 +164,19 @@ namespace Molten.Graphics.MSDF
             {
                 float* bottom = sdf[0, y];
                 float* top = sdf[0, y + 1];
+
                 for (int x = 0; x < sdf.Width; ++x)
                 {
-                    float bm = MsdfMath.Median(bottom[0], bottom[1], bottom[2]);
-                    float tm = MsdfMath.Median(top[0], top[1], top[2]);
+                    float bm = MathHelper.Median(bottom[0], bottom[1], bottom[2]);
+                    float tm = MathHelper.Median(top[0], top[1], top[2]);
+
                     if (Math.Abs(bm - .5f) + Math.Abs(tm - .5f) < radius)
                     {
                         int mask = EdgeBetweenTexels(bottom, top);
                         ProtectExtremeChannels(stencil[x, y], bottom, bm, mask);
                         ProtectExtremeChannels(stencil[x, y + 1], top, tm, mask);
                     }
+
                     bottom += sdf.ElementsPerPixel;
                     top += sdf.ElementsPerPixel;
                 }
@@ -185,24 +189,28 @@ namespace Molten.Graphics.MSDF
                 float* rb = sdf[1, y];
                 float* lt = sdf[0, y + 1];
                 float* rt = sdf[1, y + 1];
+
                 for (int x = 0; x < sdf.Width - 1; ++x)
                 {
-                    float mlb = MsdfMath.Median(lb[0], lb[1], lb[2]);
-                    float mrb = MsdfMath.Median(rb[0], rb[1], rb[2]);
-                    float mlt = MsdfMath.Median(lt[0], lt[1], lt[2]);
-                    float mrt = MsdfMath.Median(rt[0], rt[1], rt[2]);
+                    float mlb = MathHelper.Median(lb[0], lb[1], lb[2]);
+                    float mrb = MathHelper.Median(rb[0], rb[1], rb[2]);
+                    float mlt = MathHelper.Median(lt[0], lt[1], lt[2]);
+                    float mrt = MathHelper.Median(rt[0], rt[1], rt[2]);
+
                     if (Math.Abs(mlb - .5f) + Math.Abs(mrt - .5f) < radius)
                     {
                         int mask = EdgeBetweenTexels(lb, rt);
                         ProtectExtremeChannels(stencil[x, y], lb, mlb, mask);
                         ProtectExtremeChannels(stencil[x + 1, y + 1], rt, mrt, mask);
                     }
+
                     if (Math.Abs(mrb - .5f) + Math.Abs(mlt - .5f) < radius)
                     {
                         int mask = EdgeBetweenTexels(rb, lt);
                         ProtectExtremeChannels(stencil[x + 1, y], rb, mrb, mask);
                         ProtectExtremeChannels(stencil[x, y + 1], lt, mlt, mask);
                     }
+
                     lb += sdf.ElementsPerPixel;
                     rb += sdf.ElementsPerPixel;
                     lt += sdf.ElementsPerPixel;
@@ -220,16 +228,16 @@ namespace Molten.Graphics.MSDF
 
         public unsafe float InterpolatedMedian(float* a, float* b, double t)
         {
-            return MsdfMath.Median(
-                MsdfMath.Mix(a[0], b[0], t),
-                MsdfMath.Mix(a[1], b[1], t),
-                MsdfMath.Mix(a[2], b[2], t)
+            return MathHelper.Median(
+                MathHelper.Lerp(a[0], b[0], t),
+                MathHelper.Lerp(a[1], b[1], t),
+                MathHelper.Lerp(a[2], b[2], t)
             );
         }
 
         public unsafe float InterpolatedMedian(float* a, float* l, float* q, double t)
         {
-            return (float)(MsdfMath.Median(
+            return (float)(MathHelperDP.Median(
                  t * (t * q[0] + l[0]) + a[0],
                 t * (t * q[1] + l[1]) + a[1],
                 t * (t * q[2] + l[2]) + a[2]
@@ -316,7 +324,7 @@ namespace Molten.Graphics.MSDF
 
         public unsafe bool HasLinearArtifact(BaseArtifactClassifier artifactClassifier, float am, float* a, float* b)
         {
-            float bm = MsdfMath.Median(b[0], b[1], b[2]);
+            float bm = MathHelper.Median(b[0], b[1], b[2]);
             return (
                 // Out of the pair, only report artifacts for the texel further from the edge to minimize side effects.
                 Math.Abs(am - .5f) >= Math.Abs(bm - .5f) && (
@@ -330,7 +338,7 @@ namespace Molten.Graphics.MSDF
 
         public unsafe bool HasDiagonalArtifact(BaseArtifactClassifier artifactClassifier, float am, float* a, float* b, float* c, float* d)
         {
-            float dm = MsdfMath.Median(d[0], d[1], d[2]);
+            float dm = MathHelper.Median(d[0], d[1], d[2]);
             // Out of the pair, only report artifacts for the texel further from the edge to minimize side effects.
             if (Math.Abs(am - .5f) >= Math.Abs(dm - .5f))
             {
@@ -377,7 +385,7 @@ namespace Molten.Graphics.MSDF
                 for (int x = 0; x < sdf.Width; ++x)
                 {
                     float* c = sdf[x, y];
-                    float cm = MsdfMath.Median(c[0], c[1], c[2]);
+                    float cm = MathHelper.Median(c[0], c[1], c[2]);
                     bool protectedFlag = ((StencilFlags)(*stencil[x, y]) & StencilFlags.PROTECTED) != 0;
                     float* l = sdf[x - 1, y];
                     float* b = sdf[x, y - 1];
@@ -427,7 +435,7 @@ namespace Molten.Graphics.MSDF
                         shapeDistanceChecker.sdfCoord = new Vector2D(x + .5, row + .5);
                         shapeDistanceChecker.msd = c;
                         shapeDistanceChecker.protectedFlag = ((StencilFlags)(*stencil[x, row]) & StencilFlags.PROTECTED) != 0;
-                        float cm = MsdfMath.Median(c[0], c[1], c[2]);
+                        float cm = MathHelper.Median(c[0], c[1], c[2]);
 
                         float* l = sdf[x - 1, row];
                         float* b = sdf[x, row - 1];
@@ -460,7 +468,7 @@ namespace Molten.Graphics.MSDF
                 if (((StencilFlags)(*mask) & StencilFlags.ERROR) == StencilFlags.ERROR)
                 {
                     // Set all color channels to the median.
-                    float m = MsdfMath.Median(texel[0], texel[1], texel[2]);
+                    float m = MathHelper.Median(texel[0], texel[1], texel[2]);
                     texel[0] = m; texel[1] = m; texel[2] = m;
                 }
                 ++mask;

@@ -19,7 +19,7 @@ namespace Molten.Graphics.MSDF
 
         public EdgeSegment ConvertToCubic()
         {
-            return new CubicSegment(p[0], MsdfMath.Mix(p[0], p[1], 2 / 3.0), MsdfMath.Mix(p[1], p[2], 1 / 3.0), p[2], Color);
+            return new CubicSegment(p[0], Vector2D.Lerp(p[0], p[1], 2 / 3.0), Vector2D.Lerp(p[1], p[2], 1 / 3.0), p[2], Color);
         }
 
         public override void Bound(ref double l, ref double b, ref double r, ref double t)
@@ -48,7 +48,7 @@ namespace Molten.Graphics.MSDF
 
         public override Vector2D Direction(double param)
         {
-            Vector2D tangent = MsdfMath.Mix(p[1] - p[0], p[2] - p[1], param);
+            Vector2D tangent = Vector2D.Lerp(p[1] - p[0], p[2] - p[1], param);
             if (tangent.X == 0 && tangent.Y == 0)
                 return p[2] - p[0];
             return tangent;
@@ -81,7 +81,7 @@ namespace Molten.Graphics.MSDF
 
         public override Vector2D Point(double param)
         {
-            return MsdfMath.Mix(MsdfMath.Mix(p[0], p[1], param), MsdfMath.Mix(p[1], p[2], param), param);
+            return Vector2D.Lerp(Vector2D.Lerp(ref p[0], ref p[1], param), Vector2D.Lerp(ref p[1], ref p[2], param), param);
         }
 
         public override void Reverse()
@@ -174,14 +174,14 @@ namespace Molten.Graphics.MSDF
             int solutions = EquationSolver.SolveCubic(t, a, b, c, d);
 
             Vector2D epDir = Direction(0);
-            double minDistance = MsdfMath.NonZeroSign(Vector2D.Cross(epDir, qa)) * qa.Length(); // distance from A
+            double minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(epDir, qa)) * qa.Length(); // distance from A
             param = -Vector2D.Dot(qa, epDir) / Vector2D.Dot(epDir, epDir);
             {
                 epDir = Direction(1);
                 double distance = (p[2] - origin).Length(); // distance from B
                 if (distance < Math.Abs(minDistance))
                 {
-                    minDistance = MsdfMath.NonZeroSign(Vector2D.Cross(epDir, p[2] - origin)) * distance;
+                    minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(epDir, p[2] - origin)) * distance;
                     param = Vector2D.Dot(origin - p[1], epDir) / Vector2D.Dot(epDir, epDir);
                 }
             }
@@ -193,7 +193,7 @@ namespace Molten.Graphics.MSDF
                     double distance = qe.Length();
                     if (distance <= Math.Abs(minDistance))
                     {
-                        minDistance = MsdfMath.NonZeroSign(Vector2D.Cross(ab + t[i] * br, qe)) * distance;
+                        minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(ab + t[i] * br, qe)) * distance;
                         param = t[i];
                     }
                 }
@@ -217,9 +217,9 @@ namespace Molten.Graphics.MSDF
 
         public override void SplitInThirds(ref EdgeSegment part1, ref EdgeSegment part2, ref EdgeSegment part3)
         {
-            part1 = new QuadraticSegment(p[0], MsdfMath.Mix(p[0], p[1], 1 / 3.0), Point(1 / 3.0), Color);
-            part2 = new QuadraticSegment(Point(1 / 3.0), MsdfMath.Mix(MsdfMath.Mix(p[0], p[1], 5 / 9.0), MsdfMath.Mix(p[1], p[2], 4 / 9.0), .5), Point(2 / 3.0), Color);
-            part3 = new QuadraticSegment(Point(2 / 3.0), MsdfMath.Mix(p[1], p[2], 2 / 3.0), p[2], Color);
+            part1 = new QuadraticSegment(p[0], Vector2D.Lerp(ref p[0], ref p[1], 1 / 3.0), Point(1 / 3.0), Color);
+            part2 = new QuadraticSegment(Point(1 / 3.0), Vector2D.Lerp(Vector2D.Lerp(ref p[0], ref p[1], 5 / 9.0), Vector2D.Lerp(ref p[1],ref  p[2], 4 / 9.0), .5), Point(2 / 3.0), Color);
+            part3 = new QuadraticSegment(Point(2 / 3.0), Vector2D.Lerp(ref p[1], ref p[2], 2 / 3.0), p[2], Color);
         }
 
         public double Length()

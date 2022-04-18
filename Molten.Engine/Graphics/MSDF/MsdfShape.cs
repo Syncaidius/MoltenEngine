@@ -39,7 +39,7 @@ namespace Molten.Graphics.MSDF
 
             public static int compare(Intersection a, Intersection b)
             {
-                return MsdfMath.Sign(a.x - b.x);
+                return Math.Sign(a.x - b.x);
             }
         };
 
@@ -263,7 +263,7 @@ namespace Molten.Graphics.MSDF
                         y1 = Contours[i].Edges[j].Point(1).Y;
                     for (int j = 0; j < Contours[i].Edges.Count && y0 == y1; j++)
                         y1 = Contours[i].Edges[j].Point(ratio).Y; // in case all endpoints are in a horizontal line
-                    double y = MsdfMath.Mix(y0, y1, ratio);
+                    double y = MathHelperDP.Lerp(y0, y1, ratio);
                     // Scanline through whole shape at Y
                     double* x = stackalloc double[3];
                     int* dy = stackalloc int[3];

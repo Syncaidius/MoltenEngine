@@ -47,7 +47,7 @@ namespace Molten.Graphics.MSDF
                     double miterLength = miterLimit;
                     double q = .5 * (1 - Vector2D.Dot(prevDir, dir));
                     if (q > 0)
-                        miterLength = MsdfMath.Min(1 / Math.Sqrt(q), miterLimit);
+                        miterLength = Math.Min(1 / Math.Sqrt(q), miterLimit);
                     Vector2D miter = edge.Point(0) + border * miterLength * (prevDir + dir).GetNormalized(true);
                     BoundPoint(ref l, ref b, ref r, ref t, miter);
                 }
@@ -81,7 +81,7 @@ namespace Molten.Graphics.MSDF
                     prev = cur;
                 }
             }
-            return MsdfMath.Sign(total);
+            return Math.Sign(total);
         }
 
         public void Reverse()

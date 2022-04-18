@@ -56,8 +56,8 @@ namespace Molten.Graphics.MSDF
                 t = Math.Acos(t);
                 q = -2 * Math.Sqrt(q);
                 x[0] = q * Math.Cos(1 / 3.0* t) - a;
-                x[1] = q * Math.Cos(1 / 3.0* (t + 2 * MsdfMath.M_PI)) - a;
-                x[2] = q * Math.Cos(1 / 3.0* (t - 2 * MsdfMath.M_PI)) - a;
+                x[1] = q * Math.Cos(1 / 3.0* (t + 2 * Math.PI)) - a;
+                x[2] = q * Math.Cos(1 / 3.0* (t - 2 * Math.PI)) - a;
                 return 3;
             }
             else

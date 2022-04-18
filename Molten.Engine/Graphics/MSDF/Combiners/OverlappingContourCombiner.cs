@@ -49,9 +49,11 @@ namespace Molten.Graphics.MSDF
             ES shapeEdgeSelector = new ES();
             ES innerEdgeSelector = new ES();
             ES outerEdgeSelector = new ES();
+
             shapeEdgeSelector.Reset(ref p);
             innerEdgeSelector.Reset(ref p);
             outerEdgeSelector.Reset(ref p);
+
             for (int i = 0; i < contourCount; ++i)
             {
                 DT edgeDistance = edgeSelectors[i].Distance();
@@ -65,8 +67,10 @@ namespace Molten.Graphics.MSDF
             DT shapeDistance = shapeEdgeSelector.Distance();
             DT innerDistance = innerEdgeSelector.Distance();
             DT outerDistance = outerEdgeSelector.Distance();
+
             double innerScalarDistance = shapeEdgeSelector.ResolveDistance(innerDistance);
             double outerScalarDistance = shapeEdgeSelector.ResolveDistance(outerDistance);
+
             DT distance = new DT();
             shapeEdgeSelector.InitDistance(ref distance);
 
@@ -76,27 +80,33 @@ namespace Molten.Graphics.MSDF
                 distance = innerDistance;
                 winding = 1;
                 for (int i = 0; i < contourCount; ++i)
+                {
                     if (windings[i] > 0)
                     {
                         DT contourDistance = edgeSelectors[i].Distance();
                         if (Math.Abs(edgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(outerScalarDistance) && edgeSelectors[i].ResolveDistance(contourDistance) > edgeSelectors[i].ResolveDistance(distance))
                             distance = contourDistance;
                     }
+                }
             }
             else if (outerScalarDistance <= 0 && Math.Abs(outerScalarDistance) < Math.Abs(innerScalarDistance))
             {
                 distance = outerDistance;
                 winding = -1;
                 for (int i = 0; i < contourCount; ++i)
+                {
                     if (windings[i] < 0)
                     {
                         DT contourDistance = edgeSelectors[i].Distance();
                         if (Math.Abs(edgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(innerScalarDistance) && edgeSelectors[i].ResolveDistance(contourDistance) < edgeSelectors[i].ResolveDistance(distance))
                             distance = contourDistance;
                     }
+                }
             }
             else
+            {
                 return shapeDistance;
+            }
 
             for (int i = 0; i < contourCount; ++i)
             {
@@ -107,8 +117,10 @@ namespace Molten.Graphics.MSDF
                         distance = contourDistance;
                 }
             }
+
             if (shapeEdgeSelector.ResolveDistance(distance) == shapeEdgeSelector.ResolveDistance(shapeDistance))
                 distance = shapeDistance;
+
             return distance;
         }
     }

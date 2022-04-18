@@ -16,8 +16,8 @@ namespace Molten.Graphics.MSDF
 
             if ((p1 == p0 || p1 == p3) && (p2 == p0 || p2 == p3))
             {
-                p1 = MsdfMath.Mix(p0, p3, 1 / 3.0);
-                p2 = MsdfMath.Mix(p0, p3, 2 / 3.0);
+                p1 = Vector2D.Lerp(p0, p3, 1 / 3.0);
+                p2 = Vector2D.Lerp(p0, p3, 2 / 3.0);
             }
             p[0] = p0;
             p[1] = p1;
@@ -33,10 +33,10 @@ namespace Molten.Graphics.MSDF
             switch (param)
             {
                 case 0:
-                    p[1] += amount * (dir + MsdfMath.Sign(h) * Math.Sqrt(Math.Abs(h)) * normal);
+                    p[1] += amount * (dir + Math.Sign(h) * Math.Sqrt(Math.Abs(h)) * normal);
                     break;
                 case 1:
-                    p[2] -= amount * (dir - MsdfMath.Sign(h) * Math.Sqrt(Math.Abs(h)) * normal);
+                    p[2] -= amount * (dir - Math.Sign(h) * Math.Sqrt(Math.Abs(h)) * normal);
                     break;
             }
         }
@@ -67,18 +67,27 @@ namespace Molten.Graphics.MSDF
 
         public override Vector2D Direction(double param)
         {
-            Vector2D tangent = MsdfMath.Mix(MsdfMath.Mix(p[1] - p[0], p[2] - p[1], param), MsdfMath.Mix(p[2] - p[1], p[3] - p[2], param), param);
+            Vector2D start = Vector2D.Lerp(p[1] - p[0], p[2] - p[1], param);
+            Vector2D end = Vector2D.Lerp(p[2] - p[1], p[3] - p[2], param);
+            Vector2D tangent = Vector2D.Lerp(ref start, ref end, param);
+
             if (tangent.X == 0 && tangent.Y == 0)
             {
-                if (param == 0) return p[2] - p[0];
-                if (param == 1) return p[3] - p[1];
+                if (param == 0)
+                    return p[2] - p[0];
+
+                if (param == 1)
+                    return p[3] - p[1];
             }
+
             return tangent;
         }
 
         public override Vector2D DirectionChange(double param)
         {
-            return MsdfMath.Mix((p[2] - p[1]) - (p[1] - p[0]), (p[3] - p[2]) - (p[2] - p[1]), param);
+            Vector2D start = (p[2] - p[1]) - (p[1] - p[0]);
+            Vector2D end = (p[3] - p[2]) - (p[2] - p[1]);
+            return Vector2D.Lerp(start, end, param);
         }
 
         public override void MoveEndPoint(Vector2D to)
@@ -95,8 +104,11 @@ namespace Molten.Graphics.MSDF
 
         public override Vector2D Point(double param)
         {
-            Vector2D p12 = MsdfMath.Mix(p[1], p[2], param);
-            return MsdfMath.Mix(MsdfMath.Mix(MsdfMath.Mix(p[0], p[1], param), p12, param), MsdfMath.Mix(p12, MsdfMath.Mix(p[2], p[3], param), param), param);
+            Vector2D p12 = Vector2D.Lerp(ref p[1], ref p[2], param);
+
+            Vector2D start = Vector2D.Lerp(Vector2D.Lerp(ref p[0], ref p[1], param), p12, param);
+            Vector2D end = Vector2D.Lerp(p12, Vector2D.Lerp(ref p[2], ref p[3], param), param);
+            return Vector2D.Lerp(ref start, ref end, param);
         }
 
         public override void Reverse()
@@ -207,14 +219,14 @@ namespace Molten.Graphics.MSDF
             Vector2D ass = (p[3] - p[2]) - (p[2] - p[1]) - br;
 
             Vector2D epDir = Direction(0);
-            double minDistance = MsdfMath.NonZeroSign(Vector2D.Cross(epDir, qa)) * qa.Length(); // distance from A
+            double minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(epDir, qa)) * qa.Length(); // distance from A
             param = -Vector2D.Dot(qa, epDir) / Vector2D.Dot(epDir, epDir);
             {
                 epDir = Direction(1);
                 double distance = (p[3] - origin).Length(); // distance from B
                 if (distance < Math.Abs(minDistance))
                 {
-                    minDistance = MsdfMath.NonZeroSign(Vector2D.Cross(epDir, p[3] - origin)) * distance;
+                    minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(epDir, p[3] - origin)) * distance;
                     param = Vector2D.Dot(epDir - (p[3] - origin), epDir) / Vector2D.Dot(epDir, epDir);
                 }
             }
@@ -235,7 +247,7 @@ namespace Molten.Graphics.MSDF
                     double distance = qe.Length();
                     if (distance < Math.Abs(minDistance))
                     {
-                        minDistance = MsdfMath.NonZeroSign(Vector2D.Cross(d1, qe)) * distance;
+                        minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(d1, qe)) * distance;
                         param = t;
                     }
                 }
@@ -251,12 +263,12 @@ namespace Molten.Graphics.MSDF
 
         public override void SplitInThirds(ref EdgeSegment part1, ref EdgeSegment part2, ref EdgeSegment part3)
         {
-            part1 = new CubicSegment(p[0], p[0] == p[1] ? p[0] : MsdfMath.Mix(p[0], p[1], 1 / 3.0), MsdfMath.Mix(MsdfMath.Mix(p[0], p[1], 1 / 3.0), MsdfMath.Mix(p[1], p[2], 1 / 3.0), 1 / 3.0), Point(1 / 3.0), Color);
+            part1 = new CubicSegment(p[0], p[0] == p[1] ? p[0] : Vector2D.Lerp(p[0], p[1], 1 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[0], p[1], 1 / 3.0), Vector2D.Lerp(p[1], p[2], 1 / 3.0), 1 / 3.0), Point(1 / 3.0), Color);
             part2 = new CubicSegment(Point(1 / 3.0),
-                MsdfMath.Mix(MsdfMath.Mix(MsdfMath.Mix(p[0], p[1], 1 / 3.0), MsdfMath.Mix(p[1], p[2], 1 / 3.0), 1 / 3.0), MsdfMath.Mix(MsdfMath.Mix(p[1], p[2], 1 / 3.0), MsdfMath.Mix(p[2], p[3], 1 / 3.0), 1 / 3.0), 2 / 3.0),
-                MsdfMath.Mix(MsdfMath.Mix(MsdfMath.Mix(p[0], p[1], 2 / 3.0), MsdfMath.Mix(p[1], p[2], 2 / 3.0), 2 / 3.0), MsdfMath.Mix(MsdfMath.Mix(p[1], p[2], 2 / 3.0), MsdfMath.Mix(p[2], p[3], 2 / 3.0), 2 / 3.0), 1 / 3.0),
+                Vector2D.Lerp(Vector2D.Lerp(Vector2D.Lerp(p[0], p[1], 1 / 3.0), Vector2D.Lerp(p[1], p[2], 1 / 3.0), 1 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[1], p[2], 1 / 3.0), Vector2D.Lerp(p[2], p[3], 1 / 3.0), 1 / 3.0), 2 / 3.0),
+                Vector2D.Lerp(Vector2D.Lerp(Vector2D.Lerp(p[0], p[1], 2 / 3.0), Vector2D.Lerp(p[1], p[2], 2 / 3.0), 2 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[1], p[2], 2 / 3.0), Vector2D.Lerp(p[2], p[3], 2 / 3.0), 2 / 3.0), 1 / 3.0),
                 Point(2 / 3.0), Color);
-            part3 = new CubicSegment(Point(2 / 3.0), MsdfMath.Mix(MsdfMath.Mix(p[1], p[2], 2 / 3.0), MsdfMath.Mix(p[2], p[3], 2 / 3.0), 2 / 3.0), p[2] == p[3] ? p[3] : MsdfMath.Mix(p[2], p[3], 2 / 3.0), p[3], Color);
+            part3 = new CubicSegment(Point(2 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[1], p[2], 2 / 3.0), Vector2D.Lerp(p[2], p[3], 2 / 3.0), 2 / 3.0), p[2] == p[3] ? p[3] : Vector2D.Lerp(p[2], p[3], 2 / 3.0), p[3], Color);
         }
     }
 }

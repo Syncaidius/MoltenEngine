@@ -14,7 +14,7 @@ namespace Molten.Graphics.MSDF
         public override void Reset(ref Vector2D p)
         {
             double delta = DISTANCE_DELTA_FACTOR * (p - this.p).Length();
-            minDistance.Distance += MsdfMath.NonZeroSign(minDistance.Distance) * delta;
+            minDistance.Distance += MathHelperDP.NonZeroSign(minDistance.Distance) * delta;
             this.p = p;
         }
 

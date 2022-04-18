@@ -49,7 +49,7 @@ namespace Molten.Graphics.MSDF
 
         public override Vector2D Point(double param)
         {
-            return MsdfMath.Mix(p[0], p[1], param);
+            return Vector2D.Lerp(ref p[0], ref p[1], param);
         }
 
         public override void Reverse()
@@ -64,8 +64,8 @@ namespace Molten.Graphics.MSDF
             if ((y >= p[0].Y && y < p[1].Y) || (y >= p[1].Y && y < p[0].Y))
             {
                 double param = (y - p[0].Y) / (p[1].Y - p[0].Y);
-                x[0] = MsdfMath.Mix(p[0].X, p[1].X, param);
-                dy[0] = MsdfMath.Sign(p[1].Y - p[0].Y);
+                x[0] = MathHelperDP.Lerp(p[0].X, p[1].X, param);
+                dy[0] = Math.Sign(p[1].Y - p[0].Y);
                 return 1;
             }
             return 0;
@@ -89,7 +89,7 @@ namespace Molten.Graphics.MSDF
 
             Vector2D abNormalized = Vector2D.Normalize(ab);
             Vector2D eqNormalized = Vector2D.Normalize(eq);
-            return new SignedDistance(MsdfMath.NonZeroSign(Vector2D.Cross(aq, ab)) * endpointDistance, Math.Abs(Vector2D.Dot(abNormalized, eqNormalized)));
+            return new SignedDistance(MathHelperDP.NonZeroSign(Vector2D.Cross(aq, ab)) * endpointDistance, Math.Abs(Vector2D.Dot(abNormalized, eqNormalized)));
         }
 
         public override void SplitInThirds(ref EdgeSegment part1, ref EdgeSegment part2, ref EdgeSegment part3)

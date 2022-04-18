@@ -346,6 +346,16 @@ namespace Molten
         }
 
         /// <summary>
+        /// Clamps the specified value between 0 and 1.0f
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of clamping a value between 0 and 1.0f</returns>
+        public static double Clamp(float value)
+        {
+            return value < 0f ? 0f : value > 1f ? 1f : value;
+        }
+
+        /// <summary>
         /// Clamps the specified float value.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -395,6 +405,22 @@ namespace Molten
         public static float Lerp(float from, float to, float amount)
         {
             return (1 - amount) * from + amount * to;
+        }
+
+        /// <summary>
+        /// Interpolates between two values using a linear function by a given amount.
+        /// </summary>
+        /// <remarks>
+        /// See http://www.encyclopediaofmath.org/index.php/Linear_interpolation and
+        /// http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
+        /// </remarks>
+        /// <param name="from">Value to interpolate from.</param>
+        /// <param name="to">Value to interpolate to.</param>
+        /// <param name="amount">Interpolation amount.</param>
+        /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        public static float Lerp(float from, float to, double amount)
+        {
+            return (float)((1 - amount) * from + amount * to);
         }
 
         /// <summary>
@@ -661,6 +687,34 @@ namespace Molten
         }
 
         /// <summary>
+        ///  Returns 1 for non-negative values and -1 for negative values.
+        /// </summary>
+        /// <param name="value">The value</param>
+        public static int NonZeroSign(float vaue)
+        {
+            return 2 * ((vaue > 0) ? 1 : 0) - 1;
+        }
+
+        /// <summary>
+        ///  Returns 1 for non-negative values and -1 for negative values.
+        /// </summary>
+        /// <param name="value">The value</param>
+        /// <returns></returns>
+        public static int NonZeroSign(int value)
+        {
+            return 2 * ((value > 0) ? 1 : 0) - 1;
+        }
+
+        /// <summary>
+        ///  Returns 1 for non-negative values and -1 for negative values.
+        /// </summary>
+        /// <param name="value">The value</param>
+        public static int NonZeroSign(long value)
+        {
+            return 2 * ((value > 0) ? 1 : 0) - 1;
+        }
+
+        /// <summary>
         /// Gets the barycentric coordinates of the point with respect to a triangle's vertices.
         /// </summary>
         /// <param name="p">Point to compute the barycentric coordinates of.</param>
@@ -812,6 +866,18 @@ namespace Molten
                 min = Math.Min(min, otherValues[i]);
 
             return min;
+        }
+
+        /// <summary>
+        /// Returns the middle out of three values
+        /// </summary>
+        /// <param name="a">First value.</param>
+        /// <param name="b">Second value.</param>
+        /// <param name="c">Third value.</param>
+        /// <returns></returns>
+        public static float Median(float a, float b, float c)
+        {
+            return Math.Max(Math.Min(a, b), Math.Min(Math.Max(a, b), c));
         }
     }
 }

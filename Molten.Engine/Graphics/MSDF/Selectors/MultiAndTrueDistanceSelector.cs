@@ -140,7 +140,7 @@ namespace Molten.Graphics.MSDF
 
         public override double ResolveDistance(MultiAndTrueDistance distance)
         {
-            return MsdfMath.Median(distance.r, distance.g, distance.b);
+            return MathHelperDP.Median(distance.r, distance.g, distance.b);
         }
 
         public override float GetRefPSD(ref MultiAndTrueDistance dist, double invRange)

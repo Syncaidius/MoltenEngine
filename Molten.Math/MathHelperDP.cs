@@ -298,6 +298,16 @@
         }
 
         /// <summary>
+        /// Clamps the specified value between 0 and 1.0
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of clamping a value between min and max</returns>
+        public static double Clamp(double value)
+        {
+            return value < 0.0 ? 0.0 : value > 1.0 ? 1.0 : value;
+        }
+
+        /// <summary>
         /// Clamps the specified float value.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -497,6 +507,15 @@
         }
 
         /// <summary>
+        ///  Returns 1 for non-negative values and -1 for negative values.
+        /// </summary>
+        /// <param name="value">The value</param>
+        public static int NonZeroSign(double vaue)
+        {
+            return 2 * ((vaue > 0) ? 1 : 0) - 1;
+        }
+
+        /// <summary>
         /// Gets the barycentric coordinates of the point with respect to a triangle's vertices.
         /// </summary>
         /// <param name="p">Point to compute the barycentric coordinates of.</param>
@@ -617,6 +636,18 @@
                 return -1;
 
             return 1;
+        }
+
+        /// <summary>
+        /// Returns the middle out of three values
+        /// </summary>
+        /// <param name="a">First value.</param>
+        /// <param name="b">Second value.</param>
+        /// <param name="c">Third value.</param>
+        /// <returns></returns>
+        public static double Median(double a, double b, double c)
+        {
+            return Math.Max(Math.Min(a, b), Math.Min(Math.Max(a, b), c));
         }
     }
 }

@@ -193,7 +193,7 @@ namespace Molten.Samples
             Vector2D scale = new Vector2D(1);
             Vector2D pOffset = new Vector2D(0, 8);
             double avgScale = .5 * (scale.X + scale.Y);
-            double range = pxRange / MsdfMath.Min(scale.X, scale.Y);
+            double range = pxRange / Math.Min(scale.X, scale.Y);
             FillRule fl = FillRule.NonZero;
 
             uint sliceNumBytes = pWidth * pHeight * elementsPerPixel * sizeof(float);
