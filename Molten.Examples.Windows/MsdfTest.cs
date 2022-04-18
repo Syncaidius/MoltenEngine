@@ -163,7 +163,7 @@ namespace Molten.Samples
                 _msdf.GenerateMSDF(sliceRef, shape, projection, range, config);
 
             MsdfRasterization.multiDistanceSignCorrection(sliceRef, shape, projection, fl);
-            ErrorCorrection.MsdfErrorCorrection(new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance>(shape), sliceRef, shape, projection, range, config);
+            ErrorCorrection.MsdfErrorCorrection(new ContourCombiner<MultiDistanceSelector, MultiDistance>(shape), sliceRef, shape, projection, range, config);
         }
 
         private unsafe void RenderMTSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MsdfConfig config, bool legacy)
@@ -174,7 +174,7 @@ namespace Molten.Samples
                 _msdf.GenerateMTSDF(sliceRef, shape, projection, range, config);
 
             MsdfRasterization.multiDistanceSignCorrection(sliceRef, shape, projection, fl);
-            ErrorCorrection.MsdfErrorCorrection(new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape), sliceRef, shape, projection, range, config);
+            ErrorCorrection.MsdfErrorCorrection(new ContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape), sliceRef, shape, projection, range, config);
         }
 
         private unsafe void GenerateSDF(string label, uint elementsPerPixel, bool legacy,

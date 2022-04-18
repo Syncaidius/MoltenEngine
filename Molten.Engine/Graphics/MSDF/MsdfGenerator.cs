@@ -69,7 +69,7 @@ namespace Molten.Graphics.MSDF
             Validation.NPerPixel(output, 1);
 
             var dpc = new DoubleDistancePixelConversion(range);
-            var combiner = new OverlappingContourCombiner<TrueDistanceSelector, double>(shape);
+            var combiner = new ContourCombiner<TrueDistanceSelector, double>(shape);
 
             GenerateDistanceField(dpc, combiner, output, shape, projection, range);
         }
@@ -79,7 +79,7 @@ namespace Molten.Graphics.MSDF
             Validation.NPerPixel(output, 1);
 
             var dpc = new DoubleDistancePixelConversion(range);
-            var combiner = new OverlappingContourCombiner<PseudoDistanceSelector, double>(shape);
+            var combiner = new ContourCombiner<PseudoDistanceSelector, double>(shape);
 
             GenerateDistanceField(dpc, combiner, output, shape, projection, range);
         }
@@ -89,7 +89,7 @@ namespace Molten.Graphics.MSDF
             Validation.NPerPixel(output, 3);
 
             var dpc = new MultiDistancePixelConversion(range);
-            var combiner = new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
+            var combiner = new ContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
 
             GenerateDistanceField(dpc, combiner, output, shape, projection, range);
             ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
@@ -100,7 +100,7 @@ namespace Molten.Graphics.MSDF
             Validation.NPerPixel(output, 4);
 
             var dpc = new MultiTrueDistancePixelConversion(range);
-            var combiner = new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
+            var combiner = new ContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
 
             GenerateDistanceField(dpc, combiner, output, shape, projection, range);
             ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
@@ -201,12 +201,14 @@ namespace Molten.Graphics.MSDF
                                 r.nearEdge = edge; // TODO clone here?
                                 r.nearParam = param;
                             }
+
                             if ((edge.Color & EdgeColor.Green) == EdgeColor.Green && distance < g.minDistance)
                             {
                                 g.minDistance = distance;
                                 g.nearEdge = edge; // TODO clone here?
                                 g.nearParam = param;
                             }
+
                             if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue && distance < b.minDistance)
                             {
                                 b.minDistance = distance;
@@ -218,10 +220,13 @@ namespace Molten.Graphics.MSDF
 
                     if (r.nearEdge != null)
                         r.nearEdge.DistanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
+
                     if (g.nearEdge != null)
                         g.nearEdge.DistanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
+
                     if (b.nearEdge != null)
                         b.nearEdge.DistanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
+
                     output[x, row][0] = (float)(r.minDistance.Distance / range + .5);
                     output[x, row][1] = (float)(g.minDistance.Distance / range + .5);
                     output[x, row][2] = (float)(b.minDistance.Distance / range + .5);
@@ -229,7 +234,7 @@ namespace Molten.Graphics.MSDF
             }
 
             config.DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
-            var combiner = new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
+            var combiner = new ContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
             ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, config);
         }
 
@@ -266,12 +271,14 @@ namespace Molten.Graphics.MSDF
                                 r.nearEdge = edge; // TODO .clone() here?
                                 r.nearParam = param;
                             }
+
                             if ((edge.Color & EdgeColor.Green) == EdgeColor.Green && distance < g.minDistance)
                             {
                                 g.minDistance = distance;
                                 g.nearEdge = edge; // TODO clone here?
                                 g.nearParam = param;
                             }
+
                             if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue && distance < b.minDistance)
                             {
                                 b.minDistance = distance;
@@ -295,7 +302,7 @@ namespace Molten.Graphics.MSDF
                 }
 
                 config.DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
-                var combiner = new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
+                var combiner = new ContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
                 ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, config);
             }
         }

@@ -97,12 +97,4 @@ namespace Molten.Graphics.MSDF
             return es.GetRefPSD(ref dist, invRange);
         }
     }
-
-    public class SimpleTrueShapeDistanceFinder : ShapeDistanceFinder<TrueDistanceSelector, double>
-    {
-        public SimpleTrueShapeDistanceFinder(MsdfShape shape) :
-            base(shape, new SimpleContourCombiner<TrueDistanceSelector, double>(shape))
-        {
-        }
-    }
 }
