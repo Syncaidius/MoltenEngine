@@ -33,11 +33,13 @@ namespace Molten.Graphics.MSDF
             PROTECTED = 2
         };
 
-        public unsafe MSDFErrorCorrection(TextureSlice pStencil, MsdfProjection pProjection, double range)
+        public unsafe MSDFErrorCorrection(TextureSliceRef<float> sdf, MsdfProjection pProjection, double range)
         {
-            Validation.NPerPixel<byte>(pStencil, 1);
+            stencilSlice = new TextureSlice(sdf.Width, sdf.Height, sdf.Width * sdf.Height)
+            {
+                ElementsPerPixel = 1
+            };
 
-            stencilSlice = pStencil;
             stencil = stencilSlice.GetReference<byte>();
             projection = pProjection;
 

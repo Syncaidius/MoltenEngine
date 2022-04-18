@@ -63,20 +63,16 @@ namespace Molten.Graphics.MSDF
         /// </summary>
         public double MinImproveRatio;
 
-        public byte* Buffer;
-
         public ErrorCorrectionConfig(
             ErrorCorrectMode mode = ErrorCorrectMode.EDGE_PRIORITY, 
             DistanceErrorCheckMode distanceCheckMode = DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE,
             double minDeviationRatio = defaultMinDeviationRatio,
-            double minImproveRatio = defaultMinImproveRatio,
-            byte* buffer = null)
+            double minImproveRatio = defaultMinImproveRatio)
         {
             Mode = mode;
             DistanceCheckMode = distanceCheckMode;
             MinDeviationRatio = minDeviationRatio;
             MinImproveRatio = minImproveRatio;
-            Buffer = buffer;
         }
     }
 }

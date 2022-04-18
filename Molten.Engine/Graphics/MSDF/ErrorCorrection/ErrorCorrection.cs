@@ -15,22 +15,7 @@ namespace Molten.Graphics.MSDF
             if (config.ErrorCorrection.Mode == ErrorCorrectionConfig.ErrorCorrectMode.DISABLED)
                 return;
 
-            TextureSlice stencilBuffer = null;
-            if (config.ErrorCorrection.Buffer == null)
-            {
-                stencilBuffer = new TextureSlice(sdf.Width, sdf.Height, sdf.Width * sdf.Height)
-                {
-                    ElementsPerPixel = 1
-                };
-            }
-
-            byte* sliceData = config.ErrorCorrection.Buffer != null ? config.ErrorCorrection.Buffer : (stencilBuffer == null ? null : stencilBuffer.Data);
-            TextureSlice stencil = new TextureSlice(sdf.Width, sdf.Height, sliceData, sdf.Width * sdf.Height)
-            {
-                ElementsPerPixel = 1
-            };
-
-            MSDFErrorCorrection ec = new MSDFErrorCorrection(stencil, projection, range);
+            MSDFErrorCorrection ec = new MSDFErrorCorrection(sdf, projection, range);
             ec.SetMinDeviationRatio(config.ErrorCorrection.MinDeviationRatio);
             ec.SetMinImproveRatio(config.ErrorCorrection.MinImproveRatio);
             switch (config.ErrorCorrection.Mode)
@@ -67,8 +52,7 @@ namespace Molten.Graphics.MSDF
 
         public static void MsdfErrorCorrectionShapeless(TextureSliceRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio, bool protectAll)
         {
-            TextureSlice stencilBuffer = new TextureSlice(sdf.Width, sdf.Height, sdf.Width * sdf.Height);
-            MSDFErrorCorrection ec = new MSDFErrorCorrection(stencilBuffer, projection, range);
+            MSDFErrorCorrection ec = new MSDFErrorCorrection(sdf, projection, range);
             ec.SetMinDeviationRatio(minDeviationRatio);
 
             if (protectAll)
