@@ -91,12 +91,12 @@ namespace Molten.Samples
             InitializeFontDebug();
             GenerateChar('Å');
 
-            GenerateSDF("SDF", false, RenderSDF, ConvertSdfToRgb);
-            GenerateSDF("SDF Legacy", true, RenderSDF, ConvertSdfToRgb);
-            GenerateSDF("MSDF", false, RenderMSDF, ConvertMsdfToRgb);
-            GenerateSDF("MSDF Legacy", true, RenderMSDF, ConvertMsdfToRgb);
-            GenerateSDF("MTSDF", false, RenderMTSDF, ConvertMtsdfToRgb);
-            GenerateSDF("MTSDF Legacy", true, RenderMTSDF, ConvertMtsdfToRgb);
+            GenerateSDF("SDF", 1, false, RenderSDF, ConvertSdfToRgb);
+            GenerateSDF("SDF Legacy", 1, true, RenderSDF, ConvertSdfToRgb);
+            GenerateSDF("MSDF", 3, false , RenderMSDF, ConvertMsdfToRgb);
+            GenerateSDF("MSDF Legacy", 3, true, RenderMSDF, ConvertMsdfToRgb);
+            GenerateSDF("MTSDF", 4, false, RenderMTSDF, ConvertMtsdfToRgb);
+            GenerateSDF("MTSDF Legacy", 4, true, RenderMTSDF, ConvertMtsdfToRgb);
 
             _loaded = true;
         }
@@ -177,7 +177,7 @@ namespace Molten.Samples
             ErrorCorrection.MsdfErrorCorrection(new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape), sliceRef, shape, projection, range, config);
         }
 
-        private unsafe void GenerateSDF(string label, bool legacy, 
+        private unsafe void GenerateSDF(string label, uint elementsPerPixel, bool legacy,
             Action<TextureSliceRef<float>, MsdfProjection, MsdfShape, double, FillRule, MSDFGeneratorConfig, bool> renderCallback, 
             Action<TextureSliceRef<float>, Color[]> convertCallback)
         {
@@ -186,21 +186,20 @@ namespace Molten.Samples
             uint pWidth = 64;
             uint pHeight = 64;
             int shapeSize = 50;
-            uint nPerPixel = 1;
             double pxRange = 4;
 
             uint testWidth = 256;
             uint testHeight = 256;
-            uint testNPerPixel = 1;
             Vector2D scale = new Vector2D(1);
             Vector2D pOffset = new Vector2D(0, 8);
             double avgScale = .5 * (scale.X + scale.Y);
             double range = pxRange / MsdfMath.Min(scale.X, scale.Y);
             FillRule fl = FillRule.NonZero;
 
-            TextureSlice slice = new TextureSlice(pWidth, pHeight, pWidth * pHeight * nPerPixel)
+            uint sliceNumBytes = pWidth * pHeight * elementsPerPixel * sizeof(float);
+            TextureSlice slice = new TextureSlice(pWidth, pHeight, sliceNumBytes)
             {
-                ElementsPerPixel = nPerPixel,
+                ElementsPerPixel = elementsPerPixel,
             };
 
             TextureSliceRef<float> sliceRef = slice.GetReference<float>();
@@ -208,13 +207,15 @@ namespace Molten.Samples
             shape.Normalize();
 
             MsdfProjection projection = new MsdfProjection(scale, pOffset);
-            TextureSlice outSlice = new TextureSlice(testWidth, testHeight, testWidth * testHeight * testNPerPixel)
+
+            uint numBytes = testWidth * testHeight * elementsPerPixel * sizeof(float);
+            TextureSlice outSlice = new TextureSlice(testWidth, testHeight, numBytes)
             {
-                ElementsPerPixel = testNPerPixel,
+                ElementsPerPixel = elementsPerPixel,
             };
 
             TextureSliceRef<float> outRef = outSlice.GetReference<float>();
-            uint rowPitch = (uint)((testWidth * testHeight * sizeof(Color)));
+            uint rowPitch = (uint)((testWidth * sizeof(Color)));
             Color[] finalData = new Color[testWidth * testHeight];
 
             ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
