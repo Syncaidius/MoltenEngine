@@ -20,12 +20,12 @@ namespace Molten.Graphics.MSDF
         public bool protectedFlag;
 
         internal ShapeDistanceFinder<ES, DT> distanceFinder;
-        internal TextureData.SliceRef<float> sdf;
+        internal TextureSliceRef<float> sdf;
         internal double invRange;
         internal Vector2D texelSize;
         internal double minImproveRatio;
 
-        public ShapeDistanceChecker(ContourCombiner<ES,DT> combiner, TextureData.SliceRef<float> pSdf, MsdfShape pShape, MsdfProjection pProjection, double pInvRange, double pMinImproveRatio)
+        public ShapeDistanceChecker(ContourCombiner<ES,DT> combiner, TextureSliceRef<float> pSdf, MsdfShape pShape, MsdfProjection pProjection, double pInvRange, double pMinImproveRatio)
         {
             distanceFinder = new ShapeDistanceFinder<ES,DT>(pShape, combiner);
             sdf = pSdf;

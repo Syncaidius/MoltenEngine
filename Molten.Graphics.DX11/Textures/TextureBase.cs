@@ -263,7 +263,7 @@ namespace Molten.Graphics
         public void SetData(TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount,
             uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0)
         {
-            TextureData.Slice level = null;
+            TextureSlice level = null;
 
             for(uint a = 0; a < arrayCount; a++)
             {
@@ -284,7 +284,7 @@ namespace Molten.Graphics
             }
         }
 
-        public void SetData(TextureData.Slice data, uint mipIndex, uint arraySlice)
+        public void SetData(TextureSlice data, uint mipIndex, uint arraySlice)
         {
             TextureSet<byte> change = new TextureSet<byte>(data.Data, 0, data.TotalBytes)
             {
@@ -334,7 +334,7 @@ namespace Molten.Graphics
             });
         }
 
-        public void GetData(ITexture stagingTexture, uint mipLevel, uint arrayIndex, Action<TextureData.Slice> callback)
+        public void GetData(ITexture stagingTexture, uint mipLevel, uint arrayIndex, Action<TextureSlice> callback)
         {
             _pendingChanges.Enqueue(new TextureGetSlice()
             {
@@ -370,17 +370,12 @@ namespace Molten.Graphics
                 resToMap = staging._native;
             }
 
-            TextureData data = new TextureData()
+            TextureData data = new TextureData(Width, Height, MipMapCount, ArraySize)
             {
-                ArraySize = ArraySize,
                 Flags = Flags,
                 Format = DataFormat,
-                Height = Height,
                 HighestMipMap = 0,
                 IsCompressed = IsBlockCompressed,
-                Levels = new TextureData.Slice[ArraySize * MipMapCount],
-                MipMapLevels = MipMapCount,
-                Width = Width,
             };
 
             uint blockSize = BCHelper.GetBlockSize(DataFormat);
@@ -407,7 +402,7 @@ namespace Molten.Graphics
         /// <param name="level">The mip-map level.</param>
         /// <param name="arraySlice">The array slice.</param>
         /// <returns></returns>
-        internal unsafe TextureData.Slice GetSliceData(DeviceContext pipe, TextureBase staging, uint level, uint arraySlice)
+        internal unsafe TextureSlice GetSliceData(DeviceContext pipe, TextureBase staging, uint level, uint arraySlice)
         {
             uint subID = (arraySlice * MipMapCount) + level;
             uint subWidth = Width >> (int)level;
@@ -452,7 +447,7 @@ namespace Molten.Graphics
             }
             pipe.UnmapResource(_native, subID);
 
-            TextureData.Slice slice = new TextureData.Slice(sliceData, expectedSlicePitch)
+            TextureSlice slice = new TextureSlice(sliceData, expectedSlicePitch)
             {
                 Width = subWidth,
                 Height = subHeight,

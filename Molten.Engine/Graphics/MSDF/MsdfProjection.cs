@@ -8,59 +8,59 @@ namespace Molten.Graphics.MSDF
 {
     public class MsdfProjection
     {
-        Vector2D _scale;
-        Vector2D _translate;
+        public Vector2D Scale;
+        public Vector2D Translate;
 
         public MsdfProjection()
         {
-            _scale = new Vector2D(1);
-            _translate = new Vector2D();
+            Scale = new Vector2D(1);
+            Translate = new Vector2D();
         }
 
         public MsdfProjection(Vector2D scale, Vector2D translate)
         {
-            _scale = scale;
-            _translate = translate;
+            Scale = scale;
+            Translate = translate;
         }
 
         public Vector2D Project(Vector2D coord)
         {
-            return _scale * (coord + _translate);
+            return Scale * (coord + Translate);
         }
 
         public Vector2D Unproject(Vector2D coord)
         {
-            return coord / _scale - _translate;
+            return coord / Scale - Translate;
         }
 
         public Vector2D ProjectVector(Vector2D vector)
         {
-            return _scale * vector;
+            return Scale * vector;
         }
 
         public Vector2D UnprojectVector(Vector2D vector)
         {
-            return vector / _scale;
+            return vector / Scale;
         }
 
         public double ProjectX(double x)
         {
-            return _scale.X * (x + _translate.X);
+            return Scale.X * (x + Translate.X);
         }
 
         public double ProjectY(double y)
         {
-            return _scale.Y * (y + _translate.Y);
+            return Scale.Y * (y + Translate.Y);
         }
 
         public double UnprojectX(double x)
         {
-            return x / _scale.X - _translate.X;
+            return x / Scale.X - Translate.X;
         }
 
         public double UnprojectY(double y)
         {
-            return y / _scale.Y - _translate.Y;
+            return y / Scale.Y - Translate.Y;
         }
     }
 }

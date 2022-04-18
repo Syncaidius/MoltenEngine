@@ -91,17 +91,95 @@ namespace Molten.Samples
             InitializeFontDebug();
             GenerateChar('Å');
 
-            GenerateSDF("SDF", false);
-            GenerateSDF("SDF Legacy", true);
-            GenerateMSDF("MSDF", false);
-            GenerateMSDF("MSDF Legacy", true);
-            GenerateMTSDF("MTSDF", false);
-            GenerateMTSDF("MTSDF Legacy", true);
+            GenerateSDF("SDF", false, RenderSDF, ConvertSdfToRgb);
+            GenerateSDF("SDF Legacy", true, RenderSDF, ConvertSdfToRgb);
+            GenerateSDF("MSDF", false, RenderMSDF, ConvertMsdfToRgb);
+            GenerateSDF("MSDF Legacy", true, RenderMSDF, ConvertMsdfToRgb);
+            GenerateSDF("MTSDF", false, RenderMTSDF, ConvertMtsdfToRgb);
+            GenerateSDF("MTSDF Legacy", true, RenderMTSDF, ConvertMtsdfToRgb);
 
             _loaded = true;
         }
 
-        private unsafe void GenerateSDF(string label, bool legacy)
+        private void ConvertSdfToRgb(TextureSliceRef<float> outRef, Color[] finalData)
+        {
+            for (int i = 0; i < finalData.Length; i++)
+            {
+                finalData[i] = new Color()
+                {
+                    R = (byte)(255 * outRef[i]),
+                    G = (byte)(255 * outRef[i]),
+                    B = (byte)(255 * outRef[i]),
+                    A = (byte)(255 * outRef[i] > 0 ? 255 : 0),
+                };
+            }
+        }
+
+        private void ConvertMsdfToRgb(TextureSliceRef<float> outRef, Color[] finalData)
+        {
+            for (uint i = 0; i < finalData.Length; i++)
+            {
+                uint pi = i * outRef.ElementsPerPixel;
+                finalData[i] = new Color()
+                {
+                    R = (byte)(255 * outRef[pi]),
+                    G = (byte)(255 * outRef[pi + 1]),
+                    B = (byte)(255 * outRef[pi + 2]),
+                    A = (byte)(255 * outRef[pi + 3] > 0 ? 255 : 0),
+                };
+            }
+        }
+
+        private void ConvertMtsdfToRgb(TextureSliceRef<float> outRef, Color[] finalData)
+        {
+            for (uint i = 0; i < finalData.Length; i++)
+            {
+                uint pi = i * outRef.ElementsPerPixel;
+                finalData[i] = new Color()
+                {
+                    R = (byte)(255 * outRef[pi]),
+                    G = (byte)(255 * outRef[pi + 1]),
+                    B = (byte)(255 * outRef[pi + 2]),
+                    A = (byte)(255 * outRef[pi + 3] > 0 ? 255 : 0),
+                };
+            }
+        }
+
+        private unsafe void RenderSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MSDFGeneratorConfig config, bool legacy)
+        {
+            if (legacy)
+                _msdf.GeneratePseudoSDF_Legacy(sliceRef, shape, range, projection.Scale, projection.Translate);
+            else
+                _msdf.GeneratePseudoSDF(sliceRef, shape, projection, range, config);
+
+            MsdfRasterization.distanceSignCorrection(sliceRef, shape, projection, fl);
+        }
+
+        private unsafe void RenderMSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MSDFGeneratorConfig config, bool legacy)
+        {
+            if (legacy)
+                _msdf.GenerateMSDF_Legacy(sliceRef, shape, range, projection.Scale, projection.Translate, config.ErrorCorrection);
+            else
+                _msdf.GenerateMSDF(sliceRef, shape, projection, range, config);
+
+            MsdfRasterization.multiDistanceSignCorrection(sliceRef, shape, projection, fl);
+            ErrorCorrection.MsdfErrorCorrection(new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance>(shape), sliceRef, shape, projection, range, config);
+        }
+
+        private unsafe void RenderMTSDF(TextureSliceRef<float> sliceRef, MsdfProjection projection, MsdfShape shape, double range, FillRule fl, MSDFGeneratorConfig config, bool legacy)
+        {
+            if (legacy)
+                _msdf.GenerateMTSDF_Legacy(sliceRef, shape, range, projection.Scale, projection.Translate, config.ErrorCorrection);
+            else
+                _msdf.GenerateMTSDF(sliceRef, shape, projection, range, config);
+
+            MsdfRasterization.multiDistanceSignCorrection(sliceRef, shape, projection, fl);
+            ErrorCorrection.MsdfErrorCorrection(new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape), sliceRef, shape, projection, range, config);
+        }
+
+        private unsafe void GenerateSDF(string label, bool legacy, 
+            Action<TextureSliceRef<float>, MsdfProjection, MsdfShape, double, FillRule, MSDFGeneratorConfig, bool> renderCallback, 
+            Action<TextureSliceRef<float>, Color[]> convertCallback)
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
@@ -111,230 +189,59 @@ namespace Molten.Samples
             uint nPerPixel = 1;
             double pxRange = 4;
 
-            int testWidth = 256;
-            int testHeight = 256;
-            int testNPerPixel = 1;
+            uint testWidth = 256;
+            uint testHeight = 256;
+            uint testNPerPixel = 1;
             Vector2D scale = new Vector2D(1);
             Vector2D pOffset = new Vector2D(0, 8);
             double avgScale = .5 * (scale.X + scale.Y);
             double range = pxRange / MsdfMath.Min(scale.X, scale.Y);
             FillRule fl = FillRule.NonZero;
 
-            TextureData texData = new TextureData()
+            TextureSlice slice = new TextureSlice(pWidth, pHeight, pWidth * pHeight * nPerPixel)
             {
-                Levels = new TextureData.Slice[1]
-                {
-                    new TextureData.Slice(pWidth * pHeight * nPerPixel)
-                    {
-                        ElementsPerPixel = 1,
-                    }
-                },
-                ArraySize = 1,
-                Flags = TextureFlags.None,
-                Format = GraphicsFormat.R32_Float,
-                Width = pWidth,
-                Height = pHeight,
+                ElementsPerPixel = nPerPixel,
             };
 
-            TextureData.SliceRef<float> sliceRef = texData.Levels[0].GetReference<float>();
+            TextureSliceRef<float> sliceRef = slice.GetReference<float>();
             MsdfShape shape = CreateShape(new Vector2D(shapeSize));
             shape.Normalize();
 
             MsdfProjection projection = new MsdfProjection(scale, pOffset);
-            if (legacy)
+            TextureSlice outSlice = new TextureSlice(testWidth, testHeight, testWidth * testHeight * testNPerPixel)
             {
-                _msdf.GeneratePseudoSDF_Legacy(sliceRef, shape, range, scale, pOffset);
-            }
-            else
-            {
-                _msdf.GeneratePseudoSDF(sliceRef, shape, projection, range, new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
-                {
-                    DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
-                    Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
-                }));
-            }
-            MsdfRasterization.distanceSignCorrection(sliceRef, shape, projection, fl);
+                ElementsPerPixel = testNPerPixel,
+            };
 
-            // Output render test texture
-            float* oPixels = EngineUtil.AllocArray<float>((nuint)(testWidth * testHeight * testNPerPixel));
-            BitmapRef<float> output = new BitmapRef<float>(oPixels, testNPerPixel, testWidth, testHeight);
-            MsdfRasterization.simulate8bit(sliceRef);
-            MsdfRasterization.RenderSDF(output, sliceRef, avgScale * range, 0.5f);
+            TextureSliceRef<float> outRef = outSlice.GetReference<float>();
+            uint rowPitch = (uint)((testWidth * testNPerPixel * sizeof(Color)));
+            Color[] finalData = new Color[testWidth * testHeight];
+
             ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
             {
-                Width = (uint)testWidth,
-                Height = (uint)testHeight,
+                Width = testWidth,
+                Height = testHeight,
                 Format = GraphicsFormat.R8G8B8A8_UNorm
             });
 
-            float[] pData = new float[testWidth * testHeight * testNPerPixel];
-            fixed (float* ptrData = pData)
-                Buffer.MemoryCopy(oPixels, ptrData, pData.Length * sizeof(float), pData.Length * sizeof(float));
-
-            Color[] pData2 = new Color[testWidth * testHeight];
-            for (int i = 0; i < pData2.Length; i++)
+            MSDFGeneratorConfig config = new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
             {
-                pData2[i] = new Color()
-                {
-                    R = (byte)(255 * oPixels[i]),
-                    G = (byte)(255 * oPixels[i]),
-                    B = (byte)(255 * oPixels[i]),
-                    A = (byte)(255 * oPixels[i] > 0 ? 255 : 0),
-                };
+                DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
+                Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
+            });
 
-            }
+            renderCallback(sliceRef, projection, shape, range, fl, config, legacy);
 
-            uint rowPitch = (uint)((testWidth * testNPerPixel * sizeof(Color)));
-            tex.SetData(0, pData2, 0, (uint)pData2.Length, rowPitch);
+            MsdfRasterization.simulate8bit(sliceRef);
+            MsdfRasterization.RenderSDF(outRef, sliceRef, avgScale * range, 0.5f);
+
+            convertCallback(outRef, finalData);            
+            tex.SetData(0, finalData, 0, (uint)finalData.Length, rowPitch);
 
             _msdfResultTextures.Add(label, tex);
 
-            timer.Stop();
-            Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
-        }
-
-        private unsafe void GenerateMSDF(string label, bool legacy)
-        {
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-            int shapeSize = 50;
-            int pWidth = 64;
-            int pHeight = 64;
-            int nPerPixel = 3;
-            double pxRange = 4;
-
-            int testWidth = 256;
-            int testHeight = 256;
-            int testNPerPixel = 3;
-            Vector2D scale = new Vector2D(1);
-            Vector2D pOffset = new Vector2D(0, 8);
-            double avgScale = .5 * (scale.X + scale.Y);
-            double range = pxRange / MsdfMath.Min(scale.X, scale.Y);
-            FillRule fl = FillRule.NonZero;
-
-            float* pixels = EngineUtil.AllocArray<float>((nuint)(pWidth * pHeight * nPerPixel));
-            BitmapRef<float> sdf = new BitmapRef<float>(pixels, nPerPixel, pWidth, pHeight);
-            MsdfShape shape = CreateShape(new Vector2D(shapeSize));
-            shape.Normalize();
-
-            MsdfProjection projection = new MsdfProjection(scale, pOffset);
-            MSDFGeneratorConfig config = new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
-            {
-                DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
-                Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
-            });
-
-            if (legacy)
-                _msdf.GenerateMSDF_Legacy(sdf, shape, range, scale, pOffset, config.ErrorCorrection);
-            else
-                _msdf.GenerateMSDF(sdf, shape, projection, range, config);
-
-            MsdfRasterization.multiDistanceSignCorrection(sdf, shape, projection, fl);
-            ErrorCorrection.MsdfErrorCorrection(new OverlappingContourCombiner<MultiDistanceSelector, MultiDistance>(shape), sdf, shape, projection, range, config);
-
-            // Output render test texture
-            int numElements = testWidth * testHeight * testNPerPixel;
-            float* oPixels = EngineUtil.AllocArray<float>((nuint)numElements);
-            BitmapRef<float> output = new BitmapRef<float>(oPixels, testNPerPixel, testWidth, testHeight);
-            MsdfRasterization.simulate8bit(sdf);
-            MsdfRasterization.RenderSDF(output, sdf, avgScale * range, 0.5f);
-            ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
-            {
-                Width = (uint)testWidth,
-                Height = (uint)testHeight,
-                Format = GraphicsFormat.R8G8B8A8_UNorm
-            });
-
-            Color[] pData = new Color[testWidth * testHeight];
-            for (int i = 0; i < pData.Length; i++)
-            {
-                int pi = i * nPerPixel;
-                pData[i] = new Color()
-                {
-                    R = (byte)(255 * oPixels[pi]),
-                    G = (byte)(255 * oPixels[pi+1]),
-                    B = (byte)(255 * oPixels[pi+2]),
-                    A = (byte)(255 * oPixels[pi+3] > 0 ? 255 : 0),
-                };
-            }
-
-            uint rowPitch = (uint)((testWidth * sizeof(Color)));
-            tex.SetData(0, pData, 0, (uint)pData.Length, rowPitch);
-
-            _msdfResultTextures.Add(label, tex); 
-            timer.Stop();
-            Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
-        }
-
-        private unsafe void GenerateMTSDF(string label, bool legacy)
-        {
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-            int shapeSize = 50;
-            int pWidth = 64;
-            int pHeight = 64;
-            int nPerPixel = 4;
-            double pxRange = 4;
-
-            int testWidth = 256;
-            int testHeight = 256;
-            int testNPerPixel = 4;
-            Vector2D scale = new Vector2D(1);
-            Vector2D pOffset = new Vector2D(0, 8);
-            double avgScale = .5 * (scale.X + scale.Y);
-            double range = pxRange / MsdfMath.Min(scale.X, scale.Y);
-            FillRule fl = FillRule.NonZero;
-
-            float* pixels = EngineUtil.AllocArray<float>((nuint)(pWidth * pHeight * nPerPixel));
-            BitmapRef<float> sdf = new BitmapRef<float>(pixels, nPerPixel, pWidth, pHeight);
-            MsdfShape shape = CreateShape(new Vector2D(shapeSize));
-            shape.Normalize();
-
-            MsdfProjection projection = new MsdfProjection(scale, pOffset);
-            MSDFGeneratorConfig config = new MSDFGeneratorConfig(true, new ErrorCorrectionConfig()
-            {
-                DistanceCheckMode = ErrorCorrectionConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE,
-                Mode = ErrorCorrectionConfig.ErrorCorrectMode.DISABLED
-            });
-
-            if (legacy)
-                _msdf.GenerateMTSDF_Legacy(sdf, shape, range, scale, pOffset, config.ErrorCorrection);
-            else
-                _msdf.GenerateMTSDF(sdf, shape, projection, range, config);
-
-            MsdfRasterization.multiDistanceSignCorrection(sdf, shape, projection, fl);
-            ErrorCorrection.MsdfErrorCorrection(new OverlappingContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape), sdf, shape, projection, range, config);
-
-            // Output render test texture
-            int numElements = testWidth * testHeight * testNPerPixel;
-            float* oPixels = EngineUtil.AllocArray<float>((nuint)numElements);
-            BitmapRef<float> output = new BitmapRef<float>(oPixels, testNPerPixel, testWidth, testHeight);
-            MsdfRasterization.simulate8bit(sdf);
-            MsdfRasterization.RenderSDF(output, sdf, avgScale * range, 0.5f);
-            ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
-            {
-                Width = (uint)testWidth,
-                Height = (uint)testHeight,
-                Format = GraphicsFormat.R8G8B8A8_UNorm
-            });
-
-            Color[] pData = new Color[testWidth * testHeight];
-            for (int i = 0; i < pData.Length; i++)
-            {
-                int pi = i * nPerPixel;
-                pData[i] = new Color()
-                {
-                    R = (byte)(255 * oPixels[pi]),
-                    G = (byte)(255 * oPixels[pi + 1]),
-                    B = (byte)(255 * oPixels[pi + 2]),
-                    A = (byte)(255 * oPixels[pi + 3] > 0 ? 255 : 0),
-                };
-            }
-
-            uint rowPitch = (uint)((testWidth * sizeof(Color)));
-            tex.SetData(0, pData, 0, (uint)pData.Length, rowPitch);
-
-            _msdfResultTextures.Add(label, tex); 
+            slice.Dispose();
+            outSlice.Dispose();
             timer.Stop();
             Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
         }

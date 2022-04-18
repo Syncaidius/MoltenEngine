@@ -82,7 +82,7 @@
         /// <param name="mipCount">The number of mip maps to copy from the source data.</param>
         /// <param name="mipLevel">The mip-map level at which to start copying to within the texture.</param>
         /// <param name="arraySlice">The position in the texture array to start copying the texture data to. For a non-array texture, this should be 0.</param>
-        void SetData(TextureData.Slice data, uint mipLevel, uint arraySlice);
+        void SetData(TextureSlice data, uint mipLevel, uint arraySlice);
 
         void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : unmanaged;
 
@@ -97,7 +97,7 @@
         /// <param name="level">The mip-map level to retrieve.</param>
         /// <param name="arrayIndex">The array slice/index to access.</param>
         /// <param name="callback">The callback for when the data retrieval is completed.</param>
-        void GetData(ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureData.Slice> callback);
+        void GetData(ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> callback);
 
         /// <summary>
         /// Returns true if the texture was created with the specified flags.

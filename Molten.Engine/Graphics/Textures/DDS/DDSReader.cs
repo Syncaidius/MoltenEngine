@@ -2,7 +2,7 @@
 {
     public class DDSReader : TextureReader
     {
-        TextureData.Slice[] _levelData;
+        TextureSlice[] _levelData;
         string _magicWord;
         DDSHeader _header;
         DDSHeaderDXT10 _headerDXT10;
@@ -218,7 +218,7 @@
                 return false;
             }
 
-            _levelData = new TextureData.Slice[_header.MipMapCount * _headerDXT10.ArraySize];
+            _levelData = new TextureSlice[_header.MipMapCount * _headerDXT10.ArraySize];
             uint blockSize = BCHelper.GetBlockSize(_headerDXT10.ImageFormat);
 
             for (uint a = 0; a < _headerDXT10.ArraySize; a++)
@@ -238,7 +238,7 @@
                         levelByteSize = (uint)data.Length;
                     }
 
-                    TextureData.Slice level = new TextureData.Slice(data, levelByteSize)
+                    TextureSlice level = new TextureSlice(data, levelByteSize)
                     {
                         Pitch = blockPitch,
                         Width = levelWidth,

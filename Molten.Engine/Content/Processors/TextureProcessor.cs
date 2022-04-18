@@ -73,13 +73,10 @@ namespace Molten.Content
                     }
                 }
 
-                finalData = finalData ?? new TextureData()
+                uint arraySize = typeof(ITextureCube).IsAssignableFrom(context.ContentType) ? 6U : parameters.ArraySize;
+                finalData = finalData ?? new TextureData(data.Width, data.Height, data.MipMapLevels, arraySize)
                 {
-                    Width = data.Width,
-                    Height = data.Height,
-                    MipMapLevels = data.MipMapLevels,
                     Format = data.Format,
-                    ArraySize = typeof(ITextureCube).IsAssignableFrom(context.ContentType) ? 6U : parameters.ArraySize, // Override specified array size if we're loading a cube map.
                     IsCompressed = data.IsCompressed,
                 };
 

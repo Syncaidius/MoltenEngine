@@ -12,34 +12,28 @@ namespace Molten.Graphics.Textures
             _log = log;
             _filename = null;
 
-            TextureData data = new TextureData()
+            MagickImage image = new MagickImage(reader.BaseStream);
+            image.Warning += Image_Warning;
+            IPixelCollection<byte> pixels = image.GetPixels();
+            byte[] bPixels = pixels.ToByteArray(PixelMapping.RGBA);
+            TextureSlice slice = new TextureSlice(bPixels, (uint)bPixels.Length)
+            {
+                Width = (uint)image.Width,
+                Height = (uint)image.Height,
+                Pitch = (uint)image.Width * 4U // We're using 4 bytes per pixel (RGBA)
+            };
+
+            TextureData data = new TextureData(1, slice)
             {
                 IsCompressed = false,
                 HighestMipMap = 0,
-                MipMapLevels = 1,
                 MultiSampleLevel = AntiAliasLevel.None,
                 Flags = TextureFlags.None,
                 Format = GraphicsFormat.R8G8B8A8_UNorm,
             };
 
-            using (MagickImage image = new MagickImage(reader.BaseStream))
-            {
-                image.Warning += Image_Warning;
-                data.Width = (uint)image.Width;
-                data.Height = (uint)image.Height;
-                IPixelCollection<byte> pixels = image.GetPixels();
-                byte[] bPixels = pixels.ToByteArray(PixelMapping.RGBA);
-                TextureData.Slice slice = new TextureData.Slice(bPixels, (uint)bPixels.Length)
-                {
-                    Width = data.Width,
-                    Height = data.Height,
-                    Pitch = data.Width * 4 // We're using 4 bytes per pixel (RGBA)
-                };
-
-                data.Levels = new TextureData.Slice[] { slice };
-                image.Warning -= Image_Warning;
-            }
-
+            image.Warning -= Image_Warning;
+            image.Dispose();
             _log = null;
             return data;
         }

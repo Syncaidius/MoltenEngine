@@ -14,7 +14,7 @@ namespace Molten.Graphics.MSDF
         public const int CLASSIFIER_FLAG_CANDIDATE = 0x01;
         public const int CLASSIFIER_FLAG_ARTIFACT = 0x02;
 
-        TextureData.SliceRef<byte> stencil;
+        TextureSlice stencil;
         MsdfProjection projection;
         double invRange;
         double minDeviationRatio;
@@ -32,9 +32,9 @@ namespace Molten.Graphics.MSDF
             PROTECTED = 2
         };
 
-        public unsafe MSDFErrorCorrection(TextureData.SliceRef<byte> pStencil, MsdfProjection pProjection, double range)
+        public unsafe MSDFErrorCorrection(TextureSlice pStencil, MsdfProjection pProjection, double range)
         {
-            Validation.NPerPixel(pStencil, 1);
+            Validation.NPerPixel<byte>(pStencil, 1);
 
             stencil = pStencil;
             projection = pProjection;
@@ -130,7 +130,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void ProtectEdges(BitmapRef<float> sdf)
+        public unsafe void ProtectEdges(TextureSliceRef<float> sdf)
         {
             float radius;
             // Horizontal texel pairs
@@ -149,8 +149,8 @@ namespace Molten.Graphics.MSDF
                         ProtectExtremeChannels(stencil[x, y], left, lm, mask);
                         ProtectExtremeChannels(stencil[x + 1, y], right, rm, mask);
                     }
-                    left += sdf.NPerPixel;
-                    right += sdf.NPerPixel;
+                    left += sdf.ElementsPerPixel;
+                    right += sdf.ElementsPerPixel;
                 }
             }
             // Vertical texel pairs
@@ -169,8 +169,8 @@ namespace Molten.Graphics.MSDF
                         ProtectExtremeChannels(stencil[x, y], bottom, bm, mask);
                         ProtectExtremeChannels(stencil[x, y + 1], top, tm, mask);
                     }
-                    bottom += sdf.NPerPixel;
-                    top += sdf.NPerPixel;
+                    bottom += sdf.ElementsPerPixel;
+                    top += sdf.ElementsPerPixel;
                 }
             }
             // Diagonal texel pairs
@@ -199,10 +199,10 @@ namespace Molten.Graphics.MSDF
                         ProtectExtremeChannels(stencil[x + 1, y], rb, mrb, mask);
                         ProtectExtremeChannels(stencil[x, y + 1], lt, mlt, mask);
                     }
-                    lb += sdf.NPerPixel;
-                    rb += sdf.NPerPixel;
-                    lt += sdf.NPerPixel;
-                    rt += sdf.NPerPixel;
+                    lb += sdf.ElementsPerPixel;
+                    rb += sdf.ElementsPerPixel;
+                    lt += sdf.ElementsPerPixel;
+                    rt += sdf.ElementsPerPixel;
                 }
             }
         }
@@ -360,7 +360,7 @@ namespace Molten.Graphics.MSDF
             return false;
         }
 
-        public unsafe void FindErrors(TextureData.SliceRef<float> sdf)
+        public unsafe void FindErrors(TextureSliceRef<float> sdf)
         {
             // Compute the expected deltas between values of horizontally, vertically, and diagonally adjacent texels.
             double hSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange, 0)).Length();
@@ -394,7 +394,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void FindErrors<ES, DT>(ContourCombiner<ES, DT> combiner, TextureData.SliceRef<float> sdf, MsdfShape shape)
+        public unsafe void FindErrors<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, MsdfShape shape)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
@@ -445,7 +445,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void Apply(TextureData.SliceRef<float> sdf) {
+        public unsafe void Apply(TextureSliceRef<float> sdf) {
             int texelCount = sdf.Width * sdf.Height;
             byte* mask = stencil.Data;
             float* texel = sdf.pixels;
@@ -460,7 +460,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public TextureData.SliceRef<byte> GetStencil() {
+        public TextureSliceRef<byte> GetStencil() {
             return stencil;
         }
     }

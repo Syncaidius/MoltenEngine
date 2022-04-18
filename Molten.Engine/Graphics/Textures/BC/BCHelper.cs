@@ -32,8 +32,8 @@ namespace Molten.Graphics.Textures
             if (data.IsCompressed == false)
                 return;
 
-            TextureData.Slice[] levels = data.Levels;
-            data.Levels = new TextureData.Slice[levels.Length];
+            TextureSlice[] levels = data.Levels;
+            data.Levels = new TextureSlice[levels.Length];
 
             BCBlockParser parser = null;
 
@@ -47,7 +47,7 @@ namespace Molten.Graphics.Textures
                         byte[] decompressed = DecompressLevel(parser, levels[levelID], log);
                         uint totalBytes = (uint)decompressed.Length;
 
-                        data.Levels[levelID] = new TextureData.Slice(decompressed, totalBytes)
+                        data.Levels[levelID] = new TextureSlice(decompressed, totalBytes)
                         {
                             Height = levels[i].Height,
                             Width = levels[i].Width,
@@ -61,7 +61,7 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private unsafe static byte[] DecompressLevel(BCBlockParser parser, TextureData.Slice compressed, Logger log)
+        private unsafe static byte[] DecompressLevel(BCBlockParser parser, TextureSlice compressed, Logger log)
         {
             // Pass to stream-based overload
             byte[] result = new byte[compressed.Width * compressed.Height * 4];
@@ -120,8 +120,8 @@ namespace Molten.Graphics.Textures
             if (data.Width % 4 > 0 || data.Height % 4 > 0)
                 throw new DDSSizeException(compressionFormat, data.Width, data.Height);
 
-            TextureData.Slice[] levels = data.Levels;
-            data.Levels = new TextureData.Slice[levels.Length];
+            TextureSlice[] levels = data.Levels;
+            data.Levels = new TextureSlice[levels.Length];
             GraphicsFormat gFormat = compressionFormat.ToGraphicsFormat();
 
             BCBlockParser parser = null;
@@ -136,7 +136,7 @@ namespace Molten.Graphics.Textures
                         uint pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * GetBlockSize(gFormat));
                         uint totalBytes = (uint)levelData.Length;
 
-                        data.Levels[levelID] = new TextureData.Slice(levelData, totalBytes)
+                        data.Levels[levelID] = new TextureSlice(levelData, totalBytes)
                         {
                             Height = levels[i].Height,
                             Width = levels[i].Width,
@@ -150,7 +150,7 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private unsafe static byte[] CompressLevel(BCBlockParser parser, TextureData.Slice uncompressed, Logger log)
+        private unsafe static byte[] CompressLevel(BCBlockParser parser, TextureSlice uncompressed, Logger log)
         {
             uint blockCountX = Math.Max(1, (uncompressed.Width + 3) / BLOCK_DIMENSIONS);
             uint blockCountY = Math.Max(1, (uncompressed.Height + 3) / BLOCK_DIMENSIONS);

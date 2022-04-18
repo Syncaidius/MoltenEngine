@@ -7,121 +7,134 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
 
-    public partial class TextureData
+    public abstract unsafe class TextureSliceRef
     {
-        public abstract unsafe class SliceRef
+        internal abstract void UpdateReference();
+    }
+
+    public unsafe class TextureSliceRef<T> : TextureSliceRef
+        where T : unmanaged
+    {
+        TextureSlice _slice;
+        T* _refData;
+
+        internal TextureSliceRef(TextureSlice slice)
         {
-            internal abstract void UpdateReference();
+            _slice = slice;
+            UpdateReference();
         }
 
-        public unsafe class SliceRef<T> : SliceRef
-            where T: unmanaged
+        internal override void UpdateReference()
         {
-            Slice _slice;
-            T* _refData;
-
-            internal SliceRef(Slice slice)
-            {
-                _slice = slice;
-                UpdateReference();
-            }
-
-            internal override void UpdateReference()
-            {
-                _refData = (T*)_slice.Data;
-            }
-
-            public T* this[uint x, uint y] => _refData + _slice.ElementsPerPixel * (_slice.Width * y + x);
-
-            public T* this[int x, int y] => _refData + _slice.ElementsPerPixel * (_slice.Width * y + x);
-
-            public uint ElementsPerPixel => _slice.ElementsPerPixel;
-
-            public T* Data => _refData;
-
-            public uint Width => _slice.Width;
-
-            public uint Height => _slice.Height;
+            _refData = (T*)_slice.Data;
         }
 
-        /// <summary>Represents a slice of texture data. This can either be a mip map level or array element in a texture array (which could still technically a mip-map level of 0).</summary>
-        public unsafe class Slice : IDisposable
+        public T this[uint p] => _refData[p];
+
+        public T this[int p] => _refData[p];
+
+        public T* this[uint x, uint y] => _refData + _slice.ElementsPerPixel * (_slice.Width * y + x);
+
+        public T* this[int x, int y] => _refData + _slice.ElementsPerPixel * (_slice.Width * y + x);
+
+        public uint ElementsPerPixel => _slice.ElementsPerPixel;
+
+        public T* Data => _refData;
+
+        public uint Width => _slice.Width;
+
+        public uint Height => _slice.Height;
+    }
+
+    /// <summary>Represents a slice of texture data. This can either be a mip map level or array element in a texture array (which could still technically a mip-map level of 0).</summary>
+    public unsafe class TextureSlice : IDisposable
+    {
+        byte* _data;
+
+        public byte* Data => _data;
+
+        public uint ElementsPerPixel;
+        public uint Pitch;
+        public uint TotalBytes { get; private set; }
+
+        public uint Width { get; private set; }
+        public uint Height { get; private set; }
+
+        List<TextureSliceRef> _references = new List<TextureSliceRef>();
+
+        public TextureSlice(uint width, uint height, uint numBytes)
         {
-            byte* _data;
+            Width = width;
+            Height = height;
+            Allocate(numBytes);
+        }
 
-            public byte* Data => _data;
+        public TextureSlice(uint width, uint height, byte* data, uint numBytes)
+        {
+            Width = width;
+            Height = height;
+            _data = data;
+            TotalBytes = numBytes;
+        }
 
-            public uint ElementsPerPixel;
-            public uint Pitch;
-            public uint TotalBytes { get; private set; }
+        public TextureSlice(uint width, uint height, byte[] data, uint numBytes)
+        {
+            Width = width;
+            Height = height;
+            Allocate(numBytes);
 
-            public uint Width;
-            public uint Height;
+            fixed (byte* ptrData = data)
+                Buffer.MemoryCopy(ptrData, Data, numBytes, numBytes);
+        }
 
-            List<SliceRef> _references = new List<SliceRef>();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The reference data type.</typeparam>
+        /// <returns></returns>
+        public TextureSliceRef<T> GetReference<T>()
+            where T : unmanaged
+        {
+            TextureSliceRef<T> sr = new TextureSliceRef<T>(this);
+            _references.Add(sr);
+            return sr;
+        }
 
-            public Slice(uint numBytes)
+        public void Allocate(uint numBytes)
+        {
+            if (Data != null)
+                EngineUtil.Free(ref _data);
+
+            TotalBytes = numBytes;
+            _data = (byte*)EngineUtil.Alloc(numBytes);
+            foreach (TextureSliceRef sr in _references)
+                sr.UpdateReference();
+        }
+
+        ~TextureSlice()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            if (Data != null)
+                EngineUtil.Free(ref _data);
+        }
+
+        public TextureSlice Clone()
+        {
+            TextureSlice result = new TextureSlice(TotalBytes)
             {
-                Allocate(numBytes);
-            }
+                Pitch = Pitch,
+                TotalBytes = TotalBytes,
+                Width = Width,
+                Height = Height,
+            };
 
-            public Slice(byte[] data, uint numBytes)
-            {
-                Allocate(numBytes);
+            Buffer.MemoryCopy(_data, result._data, TotalBytes, TotalBytes);
 
-                fixed (byte* ptrData = data)
-                    Buffer.MemoryCopy(ptrData, Data, numBytes, numBytes);
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <typeparam name="T">The reference data type.</typeparam>
-            /// <returns></returns>
-            public SliceRef<T> GetReference<T>() 
-                where T: unmanaged
-            {
-                SliceRef<T> sr = new SliceRef<T>(this);
-                _references.Add(sr);
-                return sr;
-            }
-
-            public void Allocate(uint numBytes)
-            {
-                if (Data != null)
-                    EngineUtil.Free(ref _data);
-
-                TotalBytes = numBytes;
-                _data = (byte*)EngineUtil.Alloc(numBytes);
-                foreach (SliceRef sr in _references)
-                    sr.UpdateReference();
-            }
-
-            ~Slice()
-            {
-                Dispose();
-            }
-
-            public void Dispose()
-            {
-                if (Data != null)
-                    EngineUtil.Free(ref _data);
-            }
-
-            public Slice Clone()
-            {
-                Slice result = new Slice(TotalBytes)
-                {
-                    Pitch = Pitch,
-                    TotalBytes = TotalBytes,
-                    Width = Width,
-                    Height = Height,
-                };
-
-                Buffer.MemoryCopy(_data, result._data, TotalBytes, TotalBytes);
-
-                return result;
-            }
+            return result;
         }
     }
 }

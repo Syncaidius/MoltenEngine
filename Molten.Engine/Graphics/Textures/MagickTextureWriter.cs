@@ -16,7 +16,7 @@ namespace Molten.Graphics.Textures
             TextureData newData = data.Clone();
             newData.ToRGBA(log);
 
-            TextureData.Slice slice;
+            TextureSlice slice;
             for (int i = 0; i < newData.Levels.Length; i++)
             {
                 slice = newData.Levels[i];

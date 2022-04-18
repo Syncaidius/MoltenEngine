@@ -2,18 +2,19 @@
 
 namespace Molten.Graphics
 {
-    public unsafe partial class TextureData : ICloneable
+    public unsafe class TextureData : ICloneable
     {
-        public uint Width;
-        public uint Height;
-        public uint MipMapLevels;
-        public uint ArraySize = 1;
+        public uint Width { get; private set; }
+        public uint Height { get; private set; }
+        public uint MipMapLevels { get; private set; }
+        public uint ArraySize { get; private set; }
+
         public AntiAliasLevel MultiSampleLevel = AntiAliasLevel.None;
 
         /// <summary>The most detailed mip map level. by default, this is 0.</summary>
         public uint HighestMipMap = 0;
 
-        public Slice[] Levels;
+        public TextureSlice[] Levels;
         public GraphicsFormat Format;
         public TextureFlags Flags;
 
@@ -26,7 +27,17 @@ namespace Molten.Graphics
             MipMapLevels = mipMapLevels;
             ArraySize = arraySize;
 
-            Levels = new Slice[ArraySize];
+            Levels = new TextureSlice[mipMapLevels * arraySize];
+        }
+
+        public TextureData(uint arraySize, params TextureSlice[] slices)
+        {
+            Width = slices[0].Width;
+            Height = slices[0].Height;
+            MipMapLevels = (uint)(slices.Length / arraySize);
+            ArraySize = arraySize;
+
+            Levels = slices;
         }
 
         /// <summary>Decompresses the texture data to R8-G8-B8-A8 color format, if it is stored in a compressed format. This has no effect if already uncompressed.</summary>
@@ -50,7 +61,7 @@ namespace Molten.Graphics
 
             if (Format == GraphicsFormat.B8G8R8A8_UNorm || Format == GraphicsFormat.B8G8R8A8_Typeless || Format == GraphicsFormat.B8G8R8A8_UNorm_SRgb)
             {
-                foreach (Slice s in Levels)
+                foreach (TextureSlice s in Levels)
                 {
                     byte temp = 0;
                     for (uint i = 0; i < s.TotalBytes; i += 4)
@@ -129,14 +140,14 @@ namespace Molten.Graphics
         /// <returns></returns>
         public TextureData Clone()
         {
-            TextureData result = new TextureData()
+            TextureData result = new TextureData(this.Width, this.Height, this.MipMapLevels, this.ArraySize)
             {
                 ArraySize = this.ArraySize,
                 Format = this.Format,
                 Flags = this.Flags,
                 IsCompressed = this.IsCompressed,
                 Height = this.Height,
-                Levels = new Slice[this.Levels.Length],
+                Levels = new TextureSlice[this.Levels.Length],
                 MipMapLevels = this.MipMapLevels,
                 Width = this.Width,
                 MultiSampleLevel = this.MultiSampleLevel,

@@ -8,7 +8,7 @@ namespace Molten.Graphics.MSDF
 {
     public static class MsdfRasterization
     {
-        public static unsafe void distanceSignCorrection(TextureData.SliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, FillRule fillRule)
+        public static unsafe void distanceSignCorrection(TextureSliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, FillRule fillRule)
         {
             Validation.NPerPixel(sdf, 1);
             Scanline scanline = new Scanline();
@@ -34,7 +34,7 @@ namespace Molten.Graphics.MSDF
             return (float)MsdfMath.Clamp((dist - midValue) * pxRange + 0.5);
         }
 
-        public static unsafe void RenderSDF(TextureData.SliceRef<float> output, TextureData.SliceRef<float> sdf, double pxRange, float midValue)
+        public static unsafe void RenderSDF(TextureSliceRef<float> output, TextureSliceRef<float> sdf, double pxRange, float midValue)
         {
             Vector2D scale = new Vector2D((double)sdf.Width / output.Width, (double)sdf.Height / output.Height);
             pxRange *= (double)(output.Width + output.Height) / (sdf.Width + sdf.Height);
@@ -50,7 +50,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe static void multiDistanceSignCorrection(TextureData.SliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, FillRule fillRule)
+        public unsafe static void multiDistanceSignCorrection(TextureSliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, FillRule fillRule)
         {
             uint w = sdf.Width, h = sdf.Height;
             if ((w * h) == 0)
@@ -126,7 +126,7 @@ namespace Molten.Graphics.MSDF
         /// <param name="output"></param>
         /// <param name="bitmap"></param>
         /// <param name="pos"></param>
-        public unsafe static void Interpolate(float* output, TextureData.SliceRef<float> bitmap, Vector2D pos)
+        public unsafe static void Interpolate(float* output, TextureSliceRef<float> bitmap, Vector2D pos)
         {
             pos -= .5;
             int l = (int)Math.Floor(pos.X);
@@ -141,7 +141,7 @@ namespace Molten.Graphics.MSDF
                 output[i] = MsdfMath.Mix(MsdfMath.Mix(bitmap[l, b][i], bitmap[r, b][i], lr), MsdfMath.Mix(bitmap[l, t][i], bitmap[r, t][i], lr), bt);
         }
 
-        public unsafe static void simulate8bit(TextureData.SliceRef<float> bitmap)
+        public unsafe static void simulate8bit(TextureSliceRef<float> bitmap)
         {
             float* end = bitmap.Data + bitmap.ElementsPerPixel * bitmap.Width * bitmap.Height;
             for (float* p = bitmap.Data; p < end; ++p)

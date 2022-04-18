@@ -4,7 +4,7 @@
     {
         public TextureBase StagingTexture;
 
-        public Action<TextureData.Slice> Callback;
+        public Action<TextureSlice> Callback;
 
         public uint MipMapLevel;
 
@@ -37,7 +37,7 @@
                 StagingTexture = null;
             }
 
-            TextureData.Slice slice = texture.GetSliceData(pipe, StagingTexture, MipMapLevel, ArrayIndex);
+            TextureSlice slice = texture.GetSliceData(pipe, StagingTexture, MipMapLevel, ArrayIndex);
 
             // Return resulting data
             Callback(slice);

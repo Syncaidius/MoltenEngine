@@ -155,7 +155,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void SetData(TextureData.Slice data, uint mipLevel, uint arraySlice)
+        public void SetData(TextureSlice data, uint mipLevel, uint arraySlice)
         {
             throw new NotImplementedException();
         }
@@ -170,7 +170,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void GetData(ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureData.Slice> callback)
+        public void GetData(ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> callback)
         {
             throw new NotImplementedException();
         }

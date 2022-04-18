@@ -20,7 +20,7 @@ namespace Molten.Graphics.MSDF
         /// <param name="output"></param>
         /// <param name="shape"></param>
         /// <param name="projection"></param>
-        private unsafe void GenerateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConversion, ContourCombiner<ES, DT> combiner, TextureData.SliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
+        private unsafe void GenerateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConversion, ContourCombiner<ES, DT> combiner, TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
@@ -41,7 +41,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public void GenerateSDF(TextureData.SliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
+        public void GenerateSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
         {
             Validation.NPerPixel(output, 1);
             var dpc = new DoubleDistancePixelConversion(range);
@@ -58,7 +58,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public void GeneratePseudoSDF(TextureData.SliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
+        public void GeneratePseudoSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, GeneratorConfig config)
         {
             Validation.NPerPixel(output, 1);
             var dpc = new DoubleDistancePixelConversion(range);
@@ -75,7 +75,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public void GenerateMSDF(TextureData.SliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public void GenerateMSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
         {
             Validation.NPerPixel(output, 3);
             var dpc = new MultiDistancePixelConversion(range);
@@ -94,7 +94,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public void GenerateMTSDF(TextureData.SliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
+        public void GenerateMTSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MSDFGeneratorConfig config)
         {
             Validation.NPerPixel(output, 4);
             var dpc = new MultiTrueDistancePixelConversion(range);
@@ -114,28 +114,28 @@ namespace Molten.Graphics.MSDF
 
         // Legacy API
 
-        public void GenerateSDF(TextureData.SliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
+        public void GenerateSDF(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
         {
             GenerateSDF(output, shape, new MsdfProjection(scale, translate), range, new GeneratorConfig(overlapSupport));
         }
 
-        public void GeneratePseudoSDF(TextureData.SliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
+        public void GeneratePseudoSDF(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, bool overlapSupport)
         {
             GeneratePseudoSDF(output, shape, new MsdfProjection(scale, translate), range, new GeneratorConfig(overlapSupport));
         }
 
-        public void GenerateMSDF(TextureData.SliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
+        public void GenerateMSDF(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
         {
             GenerateMSDF(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(overlapSupport, errorCorrectionConfig));
         }
 
-        void GenerateMTSDF(TextureData.SliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
+        void GenerateMTSDF(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig, bool overlapSupport)
         {
             GenerateMTSDF(output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(overlapSupport, errorCorrectionConfig));
         }
 
         // Legacy version
-        public unsafe void GenerateSDF_Legacy(TextureData.SliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        public unsafe void GenerateSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
         {
             if (output.ElementsPerPixel != 1)
                 throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
@@ -163,7 +163,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void GeneratePseudoSDF_Legacy(TextureData.SliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        public unsafe void GeneratePseudoSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
         {
             if (output.ElementsPerPixel != 1)
                 throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
@@ -200,7 +200,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void GenerateMSDF_Legacy(TextureData.SliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
+        public unsafe void GenerateMSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
         {
             if (output.ElementsPerPixel != 3)
                 throw new IndexOutOfRangeException("A BitmapRef of 3 component-per-pixel is expected");
@@ -261,7 +261,7 @@ namespace Molten.Graphics.MSDF
             ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, new MSDFGeneratorConfig(false, errorCorrectionConfig));
         }
 
-        public unsafe void GenerateMTSDF_Legacy(TextureData.SliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
+        public unsafe void GenerateMTSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, ErrorCorrectionConfig errorCorrectionConfig)
         {
             if (output.ElementsPerPixel != 4)
                 throw new IndexOutOfRangeException("A BitmapRef of 4 components-per-pixel is expected");
