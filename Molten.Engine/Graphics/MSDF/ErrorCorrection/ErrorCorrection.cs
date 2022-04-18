@@ -67,11 +67,13 @@ namespace Molten.Graphics.MSDF
 
         public static void MsdfErrorCorrectionShapeless(TextureSliceRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio, bool protectAll)
         {
-            Bitmap<byte> stencilBuffer = new Bitmap<byte>(1, sdf.Width, sdf.Height);
+            TextureSlice stencilBuffer = new TextureSlice(sdf.Width, sdf.Height, sdf.Width * sdf.Height);
             MSDFErrorCorrection ec = new MSDFErrorCorrection(stencilBuffer, projection, range);
             ec.SetMinDeviationRatio(minDeviationRatio);
+
             if (protectAll)
                 ec.ProtectAll();
+
             ec.FindErrors(sdf);
             ec.Apply(sdf);
         }
@@ -83,12 +85,12 @@ namespace Molten.Graphics.MSDF
             MsdfErrorCorrectionInner(combiner, sdf, shape, projection, range, config);
         }
 
-        public static void MsdfFastDistanceErrorCorrection(BitmapRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio)
+        public static void MsdfFastDistanceErrorCorrection(TextureSliceRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio)
         {
             MsdfErrorCorrectionShapeless(sdf, projection, range, minDeviationRatio, false);
         }
 
-        public static void MsdfFastEdgeErrorCorrection(BitmapRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio)
+        public static void MsdfFastEdgeErrorCorrection(TextureSliceRef<float> sdf, MsdfProjection projection, double range, double minDeviationRatio)
         {
             MsdfErrorCorrectionShapeless(sdf, projection, range, minDeviationRatio, true);
         }

@@ -214,7 +214,7 @@ namespace Molten.Samples
             };
 
             TextureSliceRef<float> outRef = outSlice.GetReference<float>();
-            uint rowPitch = (uint)((testWidth * testNPerPixel * sizeof(Color)));
+            uint rowPitch = (uint)((testWidth * testHeight * sizeof(Color)));
             Color[] finalData = new Color[testWidth * testHeight];
 
             ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()

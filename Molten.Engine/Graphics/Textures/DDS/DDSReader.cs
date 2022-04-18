@@ -27,14 +27,10 @@
             if (!ReadHeader(reader, log, filename) || !ReadData(reader, log, filename))
                 return null;
 
-            TextureData data = new TextureData()
+            TextureData data = new TextureData(_headerDXT10.ArraySize, _levelData)
             {
                 Levels = _levelData,
-                Width = _header.Width,
-                Height = _header.Height,
                 Format = _headerDXT10.ImageFormat,
-                MipMapLevels = _header.MipMapCount,
-                ArraySize = _headerDXT10.ArraySize,
                 Flags = TextureFlags.None,
                 IsCompressed = true,
                 MultiSampleLevel = AntiAliasLevel.None,
@@ -238,11 +234,9 @@
                         levelByteSize = (uint)data.Length;
                     }
 
-                    TextureSlice level = new TextureSlice(data, levelByteSize)
+                    TextureSlice level = new TextureSlice(levelWidth, levelHeight, data)
                     {
                         Pitch = blockPitch,
-                        Width = levelWidth,
-                        Height = levelHeight,
                     };
 
                     uint dataID = (a * _header.MipMapCount) + i;

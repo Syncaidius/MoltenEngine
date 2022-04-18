@@ -16,10 +16,8 @@ namespace Molten.Graphics.Textures
             image.Warning += Image_Warning;
             IPixelCollection<byte> pixels = image.GetPixels();
             byte[] bPixels = pixels.ToByteArray(PixelMapping.RGBA);
-            TextureSlice slice = new TextureSlice(bPixels, (uint)bPixels.Length)
+            TextureSlice slice = new TextureSlice((uint)image.Width, (uint)image.Height, bPixels)
             {
-                Width = (uint)image.Width,
-                Height = (uint)image.Height,
                 Pitch = (uint)image.Width * 4U // We're using 4 bytes per pixel (RGBA)
             };
 

@@ -14,7 +14,8 @@ namespace Molten.Graphics.MSDF
         public const int CLASSIFIER_FLAG_CANDIDATE = 0x01;
         public const int CLASSIFIER_FLAG_ARTIFACT = 0x02;
 
-        TextureSlice stencil;
+        TextureSlice stencilSlice;
+        TextureSliceRef<byte> stencil;
         MsdfProjection projection;
         double invRange;
         double minDeviationRatio;
@@ -36,7 +37,8 @@ namespace Molten.Graphics.MSDF
         {
             Validation.NPerPixel<byte>(pStencil, 1);
 
-            stencil = pStencil;
+            stencilSlice = pStencil;
+            stencil = stencilSlice.GetReference<byte>();
             projection = pProjection;
 
             invRange = 1 / range;
@@ -328,7 +330,8 @@ namespace Molten.Graphics.MSDF
         {
             float dm = MsdfMath.Median(d[0], d[1], d[2]);
             // Out of the pair, only report artifacts for the texel further from the edge to minimize side effects.
-            if (Math.Abs(am - .5f) >= Math.Abs(dm - .5f)) {
+            if (Math.Abs(am - .5f) >= Math.Abs(dm - .5f))
+            {
                 float* abc = stackalloc float[3];
                 abc[0] = a[0] - b[0] - c[0];
                 abc[1] = a[1] - b[1] - c[1];
@@ -374,9 +377,9 @@ namespace Molten.Graphics.MSDF
                     float* c = sdf[x, y];
                     float cm = MsdfMath.Median(c[0], c[1], c[2]);
                     bool protectedFlag = ((StencilFlags)(*stencil[x, y]) & StencilFlags.PROTECTED) != 0;
-                    float* l = sdf[x - 1, y]; 
-                    float* b = sdf[x, y - 1]; 
-                    float* r = sdf[x + 1, y]; 
+                    float* l = sdf[x - 1, y];
+                    float* b = sdf[x, y - 1];
+                    float* r = sdf[x + 1, y];
                     float* t = sdf[x, y + 1];
 
                     // Mark current texel c with the error flag if an artifact occurs when it's interpolated with any of its 8 neighbors.
@@ -445,22 +448,26 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void Apply(TextureSliceRef<float> sdf) {
-            int texelCount = sdf.Width * sdf.Height;
+        public unsafe void Apply(TextureSliceRef<float> sdf)
+        {
+            uint texelCount = sdf.Width * sdf.Height;
             byte* mask = stencil.Data;
-            float* texel = sdf.pixels;
-            for (int i = 0; i < texelCount; ++i) {
-                if (((StencilFlags)(*mask) & StencilFlags.ERROR) == StencilFlags.ERROR) {
+            float* texel = sdf.Data;
+            for (int i = 0; i < texelCount; ++i)
+            {
+                if (((StencilFlags)(*mask) & StencilFlags.ERROR) == StencilFlags.ERROR)
+                {
                     // Set all color channels to the median.
                     float m = MsdfMath.Median(texel[0], texel[1], texel[2]);
                     texel[0] = m; texel[1] = m; texel[2] = m;
                 }
                 ++mask;
-                texel += sdf.NPerPixel;
+                texel += sdf.ElementsPerPixel;
             }
         }
 
-        public TextureSliceRef<byte> GetStencil() {
+        public TextureSliceRef<byte> GetStencil()
+        {
             return stencil;
         }
     }

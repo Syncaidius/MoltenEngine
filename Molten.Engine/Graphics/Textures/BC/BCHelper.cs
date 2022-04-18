@@ -45,12 +45,9 @@ namespace Molten.Graphics.Textures
                     {
                         uint levelID = (a * data.MipMapLevels) + i;
                         byte[] decompressed = DecompressLevel(parser, levels[levelID], log);
-                        uint totalBytes = (uint)decompressed.Length;
 
-                        data.Levels[levelID] = new TextureSlice(decompressed, totalBytes)
+                        data.Levels[levelID] = new TextureSlice(levels[i].Width, levels[i].Height, decompressed)
                         {
-                            Height = levels[i].Height,
-                            Width = levels[i].Width,
                             Pitch = levels[i].Width * 4,
                         };
                     }
@@ -134,12 +131,9 @@ namespace Molten.Graphics.Textures
                         uint levelID = (a * data.MipMapLevels) + i;
                         byte[] levelData = CompressLevel(parser, levels[levelID], log);
                         uint pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * GetBlockSize(gFormat));
-                        uint totalBytes = (uint)levelData.Length;
 
-                        data.Levels[levelID] = new TextureSlice(levelData, totalBytes)
+                        data.Levels[levelID] = new TextureSlice(levels[i].Width, levels[i].Height, levelData)
                         {
-                            Height = levels[i].Height,
-                            Width = levels[i].Width,
                             Pitch = pitch,
                         };
                     }

@@ -6,46 +6,6 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-
-    public abstract unsafe class TextureSliceRef
-    {
-        internal abstract void UpdateReference();
-    }
-
-    public unsafe class TextureSliceRef<T> : TextureSliceRef
-        where T : unmanaged
-    {
-        TextureSlice _slice;
-        T* _refData;
-
-        internal TextureSliceRef(TextureSlice slice)
-        {
-            _slice = slice;
-            UpdateReference();
-        }
-
-        internal override void UpdateReference()
-        {
-            _refData = (T*)_slice.Data;
-        }
-
-        public T this[uint p] => _refData[p];
-
-        public T this[int p] => _refData[p];
-
-        public T* this[uint x, uint y] => _refData + _slice.ElementsPerPixel * (_slice.Width * y + x);
-
-        public T* this[int x, int y] => _refData + _slice.ElementsPerPixel * (_slice.Width * y + x);
-
-        public uint ElementsPerPixel => _slice.ElementsPerPixel;
-
-        public T* Data => _refData;
-
-        public uint Width => _slice.Width;
-
-        public uint Height => _slice.Height;
-    }
-
     /// <summary>Represents a slice of texture data. This can either be a mip map level or array element in a texture array (which could still technically a mip-map level of 0).</summary>
     public unsafe class TextureSlice : IDisposable
     {
@@ -77,10 +37,25 @@ namespace Molten.Graphics
             TotalBytes = numBytes;
         }
 
-        public TextureSlice(uint width, uint height, byte[] data, uint numBytes)
+        public TextureSlice(uint width, uint height, byte[] data, uint startIndex, uint numBytes)
         {
             Width = width;
             Height = height;
+            Allocate(numBytes);
+
+            fixed (byte* ptrData = data)
+            {
+                byte* ptr = ptrData + startIndex;
+                Buffer.MemoryCopy(ptr, Data, numBytes, numBytes);
+            }
+        }
+
+        public TextureSlice(uint width, uint height, byte[] data)
+        {
+            Width = width;
+            Height = height;
+            uint numBytes = (uint)data.Length;
+
             Allocate(numBytes);
 
             fixed (byte* ptrData = data)
@@ -124,12 +99,10 @@ namespace Molten.Graphics
 
         public TextureSlice Clone()
         {
-            TextureSlice result = new TextureSlice(TotalBytes)
+            TextureSlice result = new TextureSlice(Width, Height, TotalBytes)
             {
                 Pitch = Pitch,
                 TotalBytes = TotalBytes,
-                Width = Width,
-                Height = Height,
             };
 
             Buffer.MemoryCopy(_data, result._data, TotalBytes, TotalBytes);
