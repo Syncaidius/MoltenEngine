@@ -8,7 +8,7 @@ namespace Molten.Samples
 {
     public class FontFileTest : SampleSceneGame
     {
-        const int CHAR_CURVE_RESOLUTION = 3;
+        const int CHAR_CURVE_RESOLUTION = 8;
 
         public override string Description => "A test area for the WIP FontFile system.";
 
@@ -208,7 +208,7 @@ namespace Molten.Samples
 
 
             foreach (ContourShape s in _shapes)
-                s.Triangulate(_glyphTriPoints, Vector2F.Zero, 1);
+                s.Triangulate(_glyphTriPoints, Vector2F.Zero, 1, CHAR_CURVE_RESOLUTION);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -249,7 +249,7 @@ namespace Molten.Samples
                 {
                     foreach (ContourShape s in _shapes)
                     {
-                        if (s.Contains(_clickPoint))
+                        if (s.Contains(_clickPoint, CHAR_CURVE_RESOLUTION))
                             _clickColor = Color.Green;
                     }
                 }

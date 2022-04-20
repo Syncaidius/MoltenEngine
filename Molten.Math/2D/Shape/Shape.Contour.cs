@@ -86,51 +86,47 @@ namespace Molten
             public bool Contains(Vector2D point, int edgeResolution = 3)
             {
                 // Thanks to: https://codereview.stackexchange.com/a/108903
-                int polygonLength = Edges.Count;
+                int eCount = Edges.Count;
                 int j = 0;
                 bool inside = false;
-                double pointX = point.X;
-                double pointY = point.Y;
+                double pointX = point.X, pointY = point.Y; // x, y for tested point.
 
                 // start / end point for the current polygon segment.
                 double startX, startY, endX, endY;
-                Vector2D endPoint = Edges[polygonLength - 1].Points[Edge.P0];
+                Vector2D endPoint = Edges[eCount - 1].Points[Edge.P1];
                 endX = endPoint.X;
                 endY = endPoint.Y;
 
+                // Curve mid-points
+                int mpCount = edgeResolution - 2;
+                int incPoints = edgeResolution - 1;
+                double distInc = 1.0 / incPoints;
 
-                while (j < polygonLength)
+                while (j < eCount)
                 {
-                    Edge edge = Edges[j++];
-
-                    // Are we using a curve edge?
-                    if (edge is not LinearEdge)
+                    // Test mid-points of curve, if not linear edge.
+                    if(Edges[j] is not LinearEdge)
                     {
-                        // Get points along the edge, with respect to edge resolution.
-                        double distInc = 1.0 / edgeResolution;
-                        for (int i = 0; i < edgeResolution; i++)
+                        for (int mp = 1; mp <= mpCount; mp++)
                         {
-                            double dist = (distInc * i);
+                            double dist = (distInc * mp);
 
                             startX = endX; startY = endY;
-                            endPoint = edge.PointAlongEdge(dist);
+                            endPoint = Edges[j].PointAlongEdge(dist);
                             endX = endPoint.X; endY = endPoint.Y;
-
                             inside ^= (endY > pointY ^ startY > pointY) /* ? pointY inside [startY;endY] segment ? */
                                       && /* if so, test if it is under the segment */
                                       ((pointX - endX) < (pointY - endY) * (startX - endX) / (startY - endY));
                         }
                     }
-                    else
-                    {
-                        startX = endX; startY = endY;
-                        endPoint = edge.Points[Edge.P1];
-                        endX = endPoint.X; endY = endPoint.Y;
-                        //
-                        inside ^= (endY > pointY ^ startY > pointY) /* ? pointY inside [startY;endY] segment ? */
-                                  && /* if so, test if it is under the segment */
-                                  ((pointX - endX) < (pointY - endY) * (startX - endX) / (startY - endY));
-                    }
+
+                    // Test edge end-point
+                    startX = endX; startY = endY;
+                    endPoint = Edges[j++].Points[Edge.P1];
+                    endX = endPoint.X; endY = endPoint.Y;
+                    inside ^= (endY > pointY ^ startY > pointY) /* ? pointY inside [startY;endY] segment ? */
+                              && /* if so, test if it is under the segment */
+                              ((pointX - endX) < (pointY - endY) * (startX - endX) / (startY - endY));
                 }
 
                 return inside;

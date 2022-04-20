@@ -193,7 +193,7 @@ namespace Molten
                 if(c.GetWinding() == -1)
                 {
                     if (c.Contains(dPoint, edgeResolution))
-                        return false;
+                        return true;
                 }
             }
 
@@ -203,7 +203,7 @@ namespace Molten
                 if (c.GetWinding() > -1)
                 {
                     if (c.Contains(dPoint, edgeResolution))
-                        return true;
+                        return false;
                 }
             }
 
