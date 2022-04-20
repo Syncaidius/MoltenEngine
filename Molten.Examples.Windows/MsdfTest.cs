@@ -10,6 +10,8 @@ namespace Molten.Samples
 {
     public class MsdfTest : SampleSceneGame
     {
+        const int CHAR_CURVE_RESOLUTION = 3;
+
         public override string Description => "An example of using signed-distance-field (SDF), multi-channel signed-distance-field (MSDF) and multi-channel true signed-distance-field (MTSDF) rendering.";
 
         SceneObject _parent;
@@ -89,7 +91,7 @@ namespace Molten.Samples
             _font2Test = cr.Get<SpriteFont>(0);
             _fontFile = _font2Test.Font;
             InitializeFontDebug();
-            GenerateChar('Å');
+            GenerateChar('h');
 
             GenerateSDF("SDF", 1, SdfMode.Sdf, false, ConvertSdfToRgb);
             GenerateSDF("SDF Legacy", 1, SdfMode.Sdf, true, ConvertSdfToRgb);
@@ -344,7 +346,7 @@ namespace Molten.Samples
         private void GenerateChar(char glyphChar)
         {
             Glyph glyph = _fontFile.GetGlyph(glyphChar);
-             _shapes = glyph.CreateShapes(16);
+             _shapes = glyph.CreateShapes(CHAR_CURVE_RESOLUTION);
 
             // Add 5 colors. The last color will be used when we have more points than colors.
             _linePoints = new List<List<Vector2F>>();

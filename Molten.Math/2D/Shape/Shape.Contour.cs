@@ -173,26 +173,32 @@ namespace Molten
                     throw new Exception("Edge resolution must be at least 3");
 
                 List<TriPoint> points = new List<TriPoint>();
-                foreach (Edge edge in Edges)
+
+                // Curve mid-points
+                int mpCount = edgeResolution - 2;
+                int incPoints = edgeResolution - 1;
+                double distInc = 1.0 / incPoints; 
+
+                for (int i = 0; i < Edges.Count; i++)
                 {
-                    // Are we using a curve edge?
-                    if (edge is not LinearEdge)
+                    Edge e = Edges[i];
+
+                    if (i == 0)
+                        points.Add(new TriPoint((Vector2F)e.Points[Edge.P0]));
+                    
+                    if (e is not LinearEdge)
                     {
-                        double distInc = 1.0 / edgeResolution;
-                        for (int i = points.Count > 0 ? 1 : 0; i < edgeResolution; i++)
+                        for (int mp = 1; mp <= mpCount; mp++)
                         {
-                            double dist = (distInc * i);
-                            Vector2F ep = (Vector2F)edge.PointAlongEdge(dist);
+                            double dist = (distInc * mp);
+                            Vector2F ep = (Vector2F)e.PointAlongEdge(dist);
+
                             points.Add(new TriPoint(ep));
                         }
                     }
-                    else
-                    {
-                        if (points.Count == 0)
-                            points.Add(new TriPoint((Vector2F)edge.Points[Edge.P0]));
 
-                        points.Add(new TriPoint((Vector2F)edge.Points[Edge.P1]));
-                    }
+                    if (i != Edges.Count - 1)
+                        points.Add(new TriPoint((Vector2F)e.Points[Edge.P1]));
                 }
 
                 return points;

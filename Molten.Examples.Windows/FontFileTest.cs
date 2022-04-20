@@ -8,6 +8,8 @@ namespace Molten.Samples
 {
     public class FontFileTest : SampleSceneGame
     {
+        const int CHAR_CURVE_RESOLUTION = 3;
+
         public override string Description => "A test area for the WIP FontFile system.";
 
         SceneObject _parent;
@@ -59,7 +61,7 @@ namespace Molten.Samples
         private void Keyboard_OnCharacterKey(KeyboardKeyState state)
         {
             if(state.Action == InputAction.Pressed && _font2Test != null)
-                GenerateChar(state.Character);
+                GenerateChar(state.Character, CHAR_CURVE_RESOLUTION);
         }
 
         private void LoadFontFile(string loadString, int size)
@@ -79,7 +81,8 @@ namespace Molten.Samples
             _font2Test = cr.Get<SpriteFont>(0);
             _fontFile = _font2Test.Font;
             InitializeFontDebug();
-            GenerateChar('g');
+            GenerateChar('h', CHAR_CURVE_RESOLUTION);
+            _font2Test.MeasureString("abcdefghijklmnopqrstuvwxyz1234567890{}[]:@~<>?!£$%^&*()-=_+");
         }
 
         private void InitializeFontDebug()
