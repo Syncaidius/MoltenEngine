@@ -8,19 +8,18 @@ namespace Molten.Graphics.MSDF
 {
     public static class MsdfRasterization
     {
-        public static unsafe void distanceSignCorrection(TextureSliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, FillRule fillRule)
+        public static unsafe void distanceSignCorrection(TextureSliceRef<float> sdf, ContourShape shape, MsdfProjection projection, FillRule fillRule)
         {
             Validation.NPerPixel(sdf, 1);
             Scanline scanline = new Scanline();
 
             for (int y = 0; y < sdf.Height; ++y)
             {
-                int row = (int)(shape.InverseYAxis ? sdf.Height - y - 1 : y);
-                shape.scanline(scanline, projection.UnprojectY(y + .5));
+                MsdfShapeProcessing.scanline(shape, scanline, projection.UnprojectY(y + .5));
                 for (int x = 0; x < sdf.Width; ++x)
                 {
                     bool fill = scanline.Filled(projection.UnprojectX(x + .5), fillRule);
-                    float* sd = sdf[x, row];
+                    float* sd = sdf[x, y];
                     if ((*sd > 0.5f) != fill)
                         *sd = 1.0f - sd[0];
                 }
@@ -50,7 +49,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe static void multiDistanceSignCorrection(TextureSliceRef<float> sdf, MsdfShape shape, MsdfProjection projection, FillRule fillRule)
+        public unsafe static void multiDistanceSignCorrection(TextureSliceRef<float> sdf, ContourShape shape, MsdfProjection projection, FillRule fillRule)
         {
             uint w = sdf.Width, h = sdf.Height;
             if ((w * h) == 0)
@@ -65,12 +64,11 @@ namespace Molten.Graphics.MSDF
 
                 for (int y = 0; y < h; ++y)
                 {
-                    int row = (int)(shape.InverseYAxis ? h - y - 1 : y);
-                    shape.scanline(scanline, projection.UnprojectY(y + .5));
+                    MsdfShapeProcessing.scanline(shape, scanline, projection.UnprojectY(y + .5));
                     for (int x = 0; x < w; ++x)
                     {
                         bool fill = scanline.Filled(projection.UnprojectX(x + .5), fillRule);
-                        float* msd = sdf[x, row];
+                        float* msd = sdf[x, y];
                         float sd = MathHelper.Median(msd[0], msd[1], msd[2]);
                         if (sd == .5f)
                             ambiguous = true;
@@ -94,7 +92,6 @@ namespace Molten.Graphics.MSDF
                     match = &ptrMap[0];
                     for (int y = 0; y < h; ++y)
                     {
-                        int row = (int)(shape.InverseYAxis ? h - y - 1 : y);
                         for (int x = 0; x < w; ++x)
                         {
                             if (*match == 0)
@@ -106,7 +103,7 @@ namespace Molten.Graphics.MSDF
                                 if (y < h - 1) neighborMatch += *(match + w);
                                 if (neighborMatch < 0)
                                 {
-                                    float* msd = sdf[x, row];
+                                    float* msd = sdf[x, y];
                                     msd[0] = 1.0f - msd[0];
                                     msd[1] = 1.0f - msd[1];
                                     msd[2] = 1.0f - msd[2];

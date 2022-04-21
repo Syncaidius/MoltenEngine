@@ -229,11 +229,6 @@ namespace Molten.Samples
             _mesh.Material = mat;
         }
 
-        private void Window_OnClose(INativeSurface surface)
-        {
-            Exit();
-        }
-
         protected override void OnUpdate(Timing time)
         {
             RotateParentChild(_parent, _child, time);

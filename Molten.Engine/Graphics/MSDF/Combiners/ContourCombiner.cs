@@ -20,11 +20,11 @@ namespace Molten.Graphics.MSDF
         List<int> windings;
         List<ES> edgeSelectors;
 
-        public ContourCombiner(MsdfShape shape)
+        public ContourCombiner(ContourShape shape)
         {
             windings = new List<int>(shape.Contours.Count);
-            foreach (Contour contour in shape.Contours)
-                windings.Add(contour.Winding());
+            foreach (ContourShape.Contour contour in shape.Contours)
+                windings.Add(contour.GetWinding());
 
             edgeSelectors = new List<ES>(shape.Contours.Count);
             for (int i = 0; i < shape.Contours.Count; i++)

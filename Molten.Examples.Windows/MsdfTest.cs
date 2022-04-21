@@ -174,8 +174,8 @@ namespace Molten.Samples
             };
 
             TextureSliceRef<float> sliceRef = slice.GetReference<float>();
-            MsdfShape shape = CreateShape(new Vector2D(shapeSize));
-            shape.Normalize();
+            ContourShape shape = CreateShape(new Vector2D(shapeSize));
+            MsdfShapeProcessing.Normalize(shape);
 
             MsdfProjection projection = new MsdfProjection(scale, pOffset);
 
@@ -217,30 +217,30 @@ namespace Molten.Samples
             Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
         }
 
-        private MsdfShape CreateShape(Vector2D size)
+        private ContourShape CreateShape(Vector2D size)
         {
-            MsdfShape shape = new MsdfShape();
-            Contour c = new Contour();
+            ContourShape shape = new ContourShape();
+            ContourShape.Contour c = new ContourShape.Contour();
 
-            c.AddEdge(new QuadraticSegment(new Vector2D(0), new Vector2D(size.X / 2f, -(size.Y / 4)), new Vector2D(size.X, 0)));
+            c.AddEdge(new ContourShape.QuadraticEdge(new Vector2D(0), new Vector2D(size.X / 2f, -(size.Y / 4)), new Vector2D(size.X, 0)));
 
-            c.AddEdge(new LinearSegment(new Vector2D(size.X, 0), size));
+            c.AddEdge(new ContourShape.LinearEdge(new Vector2D(size.X, 0), size));
 
-            c.AddEdge(new LinearSegment(size, new Vector2D(0, size.Y)));
+            c.AddEdge(new ContourShape.LinearEdge(size, new Vector2D(0, size.Y)));
 
-            c.AddEdge(new LinearSegment(new Vector2D(0, size.Y), new Vector2D(0)));
+            c.AddEdge(new ContourShape.LinearEdge(new Vector2D(0, size.Y), new Vector2D(0)));
 
             shape.Contours.Add(c);
 
             Vector2D innerPos = size / 6;
             Vector2D innerSize = size / 2;
             double peakSize = 15;
-            Contour cInner = new Contour();
-            cInner.AddEdge(new LinearSegment(innerPos + new Vector2D(innerSize.X, 0), innerPos));
-            cInner.AddEdge(new LinearSegment(innerPos, innerPos + new Vector2D(0, innerSize.Y)));
-            cInner.AddEdge(new LinearSegment(innerPos + new Vector2D(0, innerSize.Y), innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize)));
-            cInner.AddEdge(new LinearSegment(innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize), innerPos + innerSize));
-            cInner.AddEdge(new LinearSegment(innerPos + innerSize, innerPos + new Vector2D(innerSize.X, 0)));
+            ContourShape.Contour cInner = new ContourShape.Contour();
+            cInner.AddEdge(new ContourShape.LinearEdge(innerPos + new Vector2D(innerSize.X, 0), innerPos));
+            cInner.AddEdge(new ContourShape.LinearEdge(innerPos, innerPos + new Vector2D(0, innerSize.Y)));
+            cInner.AddEdge(new ContourShape.LinearEdge(innerPos + new Vector2D(0, innerSize.Y), innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize)));
+            cInner.AddEdge(new ContourShape.LinearEdge(innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize), innerPos + innerSize));
+            cInner.AddEdge(new ContourShape.LinearEdge(innerPos + innerSize, innerPos + new Vector2D(innerSize.X, 0)));
 
             shape.Contours.Add(cInner);
             return shape;

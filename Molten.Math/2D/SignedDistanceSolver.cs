@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.MSDF
+namespace Molten
 {
-    internal unsafe static class EquationSolver
+    public unsafe static class SignedDistanceSolver
     {
         public static int SolveQuadratic(double* x, double a, double b, double c)
         {

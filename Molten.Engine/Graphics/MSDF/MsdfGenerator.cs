@@ -34,7 +34,7 @@ namespace Molten.Graphics.MSDF
      */
     public class MsdfGenerator
     {
-        public unsafe void Generate(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MsdfConfig config, SdfMode mode, FillRule fl, bool legacy)
+        public unsafe void Generate(TextureSliceRef<float> output, ContourShape shape, MsdfProjection projection, double range, MsdfConfig config, SdfMode mode, FillRule fl, bool legacy)
         {
             if (legacy)
             {
@@ -114,8 +114,8 @@ namespace Molten.Graphics.MSDF
         /// <param name="output"></param>
         /// <param name="shape"></param>
         /// <param name="projection"></param>
-        private unsafe void GenerateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConvertor, ContourCombiner<ES, DT> combiner, 
-            TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
+        private unsafe void GenerateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConvertor, ContourCombiner<ES, DT> combiner,
+            TextureSliceRef<float> output, ContourShape shape, MsdfProjection projection, double range)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
@@ -124,19 +124,18 @@ namespace Molten.Graphics.MSDF
             bool rightToLeft = false;
             for (int y = 0; y < output.Height; ++y)
             {
-                int row = (int)(shape.InverseYAxis ? output.Height - y - 1 : y);
                 for (int col = 0; col < output.Width; ++col)
                 {
                     int x = (int)(rightToLeft ? output.Width - col - 1 : col);
                     Vector2D p = projection.Unproject(new Vector2D(x + .5, y + .5));
                     DT distance = distanceFinder.distance(ref p);
-                    distancePixelConvertor.Convert(output[x,row], distance);
+                    distancePixelConvertor.Convert(output[x, y], distance);
                 }
                 rightToLeft = !rightToLeft;
             }
         }
 
-        private void GenerateSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
+        private void GenerateSDF(TextureSliceRef<float> output, ContourShape shape, MsdfProjection projection, double range)
         {
             Validation.NPerPixel(output, 1);
 
@@ -146,7 +145,7 @@ namespace Molten.Graphics.MSDF
             GenerateDistanceField(dpc, combiner, output, shape, projection, range);
         }
 
-        private void GeneratePseudoSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range)
+        private void GeneratePseudoSDF(TextureSliceRef<float> output, ContourShape shape, MsdfProjection projection, double range)
         {
             Validation.NPerPixel(output, 1);
 
@@ -156,7 +155,7 @@ namespace Molten.Graphics.MSDF
             GenerateDistanceField(dpc, combiner, output, shape, projection, range);
         }
 
-        private void GenerateMSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MsdfConfig config)
+        private void GenerateMSDF(TextureSliceRef<float> output, ContourShape shape, MsdfProjection projection, double range, MsdfConfig config)
         {
             Validation.NPerPixel(output, 3);
 
@@ -167,7 +166,7 @@ namespace Molten.Graphics.MSDF
             ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
         }
 
-        private void GenerateMTSDF(TextureSliceRef<float> output, MsdfShape shape, MsdfProjection projection, double range, MsdfConfig config)
+        private void GenerateMTSDF(TextureSliceRef<float> output, ContourShape shape, MsdfProjection projection, double range, MsdfConfig config)
         {
             Validation.NPerPixel(output, 4);
 
@@ -179,22 +178,21 @@ namespace Molten.Graphics.MSDF
         }
 
         // Legacy version
-        private unsafe void GenerateSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        private unsafe void GenerateSDF_Legacy(TextureSliceRef<float> output, ContourShape shape, double range, Vector2D scale, Vector2D translate)
         {
             if (output.ElementsPerPixel != 1)
                 throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
 
             for (int y = 0; y < output.Height; ++y)
             {
-                int row = (int)(shape.InverseYAxis ? output.Height - y - 1 : y);
                 for (int x = 0; x < output.Width; ++x)
                 {
                     double dummy;
                     Vector2D p = new Vector2D(x + .5, y + .5) / scale - translate;
                     SignedDistance minDistance = new SignedDistance();
-                    foreach (Contour contour in shape.Contours)
+                    foreach (ContourShape.Contour contour in shape.Contours)
                     {
-                        foreach (EdgeSegment edge in contour.Edges)
+                        foreach (ContourShape.Edge edge in contour.Edges)
                         {
                             SignedDistance distance = edge.SignedDistance(p, out dummy);
                             if (distance < minDistance)
@@ -202,28 +200,27 @@ namespace Molten.Graphics.MSDF
                         } 
                     }
 
-                    *output[x, row] = (float)(minDistance.Distance / range + .5);
+                    *output[x, y] = (float)(minDistance.Distance / range + .5);
                 }
             }
         }
 
-        private unsafe void GeneratePseudoSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate)
+        private unsafe void GeneratePseudoSDF_Legacy(TextureSliceRef<float> output, ContourShape shape, double range, Vector2D scale, Vector2D translate)
         {
             if (output.ElementsPerPixel != 1)
                 throw new IndexOutOfRangeException("A BitmapRef of 1 component-per-pixel is expected");
 
             for (int y = 0; y < output.Height; ++y)
             {
-                int row = (int)(shape.InverseYAxis ? output.Height - y - 1 : y);
                 for (int x = 0; x < output.Width; ++x)
                 {
                     Vector2D p = new Vector2D(x + .5, y + .5) / scale - translate;
                     SignedDistance minDistance = new SignedDistance();
-                    EdgeSegment nearEdge = null;
+                    ContourShape.Edge nearEdge = null;
                     double nearParam = 0;
-                    foreach (Contour contour in shape.Contours)
+                    foreach (ContourShape.Contour contour in shape.Contours)
                     {
-                        foreach (EdgeSegment edge in contour.Edges)
+                        foreach (ContourShape.Edge edge in contour.Edges)
                         {
                             double param;
                             SignedDistance distance = edge.SignedDistance(p, out param);
@@ -239,19 +236,18 @@ namespace Molten.Graphics.MSDF
                     if (nearEdge != null)
                         nearEdge.DistanceToPseudoDistance(ref minDistance, p, nearParam);
 
-                    *output[x, row] = (float)(minDistance.Distance / range + .5);
+                    *output[x, y] = (float)(minDistance.Distance / range + .5);
                 }
             }
         }
 
-        private unsafe void GenerateMSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, MsdfConfig config)
+        private unsafe void GenerateMSDF_Legacy(TextureSliceRef<float> output, ContourShape shape, double range, Vector2D scale, Vector2D translate, MsdfConfig config)
         {
             if (output.ElementsPerPixel != 3)
                 throw new IndexOutOfRangeException("A BitmapRef of 3 component-per-pixel is expected");
 
             for (int y = 0; y < output.Height; ++y)
             {
-                int row = (int)(shape.InverseYAxis ? output.Height - y - 1 : y);
                 for (int x = 0; x < output.Width; ++x)
                 {
                     Vector2D p = new Vector2D(x + .5, y + .5) / scale - translate;
@@ -261,9 +257,9 @@ namespace Molten.Graphics.MSDF
                     r.nearEdge = g.nearEdge = b.nearEdge = null;
                     r.nearParam = g.nearParam = b.nearParam = 0;
 
-                    foreach (Contour contour in shape.Contours)
+                    foreach (ContourShape.Contour contour in shape.Contours)
                     {
-                        foreach (EdgeSegment edge in contour.Edges)
+                        foreach (ContourShape.Edge edge in contour.Edges)
                         {
                             double param;
                             SignedDistance distance = edge.SignedDistance(p, out param);
@@ -299,9 +295,9 @@ namespace Molten.Graphics.MSDF
                     if (b.nearEdge != null)
                         b.nearEdge.DistanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
 
-                    output[x, row][0] = (float)(r.minDistance.Distance / range + .5);
-                    output[x, row][1] = (float)(g.minDistance.Distance / range + .5);
-                    output[x, row][2] = (float)(b.minDistance.Distance / range + .5);
+                    output[x, y][0] = (float)(r.minDistance.Distance / range + .5);
+                    output[x, y][1] = (float)(g.minDistance.Distance / range + .5);
+                    output[x, y][2] = (float)(b.minDistance.Distance / range + .5);
                 }
             }
 
@@ -310,14 +306,13 @@ namespace Molten.Graphics.MSDF
             ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, new MsdfProjection(scale, translate), range, config);
         }
 
-        private unsafe void GenerateMTSDF_Legacy(TextureSliceRef<float> output, MsdfShape shape, double range, Vector2D scale, Vector2D translate, MsdfConfig config)
+        private unsafe void GenerateMTSDF_Legacy(TextureSliceRef<float> output, ContourShape shape, double range, Vector2D scale, Vector2D translate, MsdfConfig config)
         {
             if (output.ElementsPerPixel != 4)
                 throw new IndexOutOfRangeException("A BitmapRef of 4 components-per-pixel is expected");
 
             for (int y = 0; y < output.Height; ++y)
             {
-                int row = (int)(shape.InverseYAxis ? output.Height - y - 1 : y);
                 for (int x = 0; x < output.Width; ++x)
                 {
                     Vector2D p = new Vector2D(x + .5, y + .5) / scale - translate;
@@ -328,9 +323,9 @@ namespace Molten.Graphics.MSDF
                     r.nearEdge = g.nearEdge = b.nearEdge = null;
                     r.nearParam = g.nearParam = b.nearParam = 0;
 
-                    foreach (Contour contour in shape.Contours)
+                    foreach (ContourShape.Contour contour in shape.Contours)
                     {
-                        foreach (EdgeSegment edge in contour.Edges)
+                        foreach (ContourShape.Edge edge in contour.Edges)
                         {
                             double param = 0;
                             SignedDistance distance = edge.SignedDistance(p, out param);
@@ -366,10 +361,10 @@ namespace Molten.Graphics.MSDF
                         if (b.nearEdge != null)
                             b.nearEdge.DistanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
 
-                        output[x, row][0] = (float)(r.minDistance.Distance / range + .5);
-                        output[x, row][1] = (float)(g.minDistance.Distance / range + .5);
-                        output[x, row][2] = (float)(b.minDistance.Distance / range + .5);
-                        output[x, row][3] = (float)(minDistance.Distance / range + .5);
+                        output[x, y][0] = (float)(r.minDistance.Distance / range + .5);
+                        output[x, y][1] = (float)(g.minDistance.Distance / range + .5);
+                        output[x, y][2] = (float)(b.minDistance.Distance / range + .5);
+                        output[x, y][3] = (float)(minDistance.Distance / range + .5);
                     }
                 }
 

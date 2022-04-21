@@ -17,31 +17,31 @@ namespace Molten
                 Edges.Add(edge);
             }
 
-            public void AppendLinearPoint(Vector2D p)
+            public void AppendLinearPoint(Vector2D p, EdgeColor color = EdgeColor.White)
             {
                 if (Edges.Count == 0)
                     throw new Exception("Cannot append edge point without at least 1 existing edge.");
 
                 Edge last = Edges.Last();
-                Edges.Add(new LinearEdge(last.Points[Edge.P1], p));
+                Edges.Add(new LinearEdge(last.p[Edge.P1], p, color));
             }
 
-            public void AppendQuadraticPoint(Vector2D p, Vector2D pControl)
+            public void AppendQuadraticPoint(Vector2D p, Vector2D pControl, EdgeColor color = EdgeColor.White)
             {
                 if (Edges.Count == 0)
                     throw new Exception("Cannot append edge point without at least 1 existing edge.");
 
                 Edge last = Edges.Last();
-                Edges.Add(new QuadraticEdge(last.Points[Edge.P1], p, pControl));
+                Edges.Add(new QuadraticEdge(last.p[Edge.P1], p, pControl, color));
             }
 
-            public void AppendCubicPoint(Vector2D p, Vector2D pControl1, Vector2D pControl2)
+            public void AppendCubicPoint(Vector2D p, Vector2D pControl1, Vector2D pControl2, EdgeColor color = EdgeColor.White)
             {
                 if (Edges.Count == 0)
                     throw new Exception("Cannot append edge point without at least 1 existing edge.");
 
                 Edge last = Edges.Last();
-                Edges.Add(new CubicEdge(last.Points[Edge.P1], p, pControl1, pControl2));
+                Edges.Add(new CubicEdge(last.p[Edge.P1], p, pControl1, pControl2, color));
             }
 
             private double Shoelace(Vector2D a, Vector2D b)
@@ -93,7 +93,7 @@ namespace Molten
 
                 // start / end point for the current polygon segment.
                 double startX, startY, endX, endY;
-                Vector2D endPoint = Edges[eCount - 1].Points[Edge.P1];
+                Vector2D endPoint = Edges[eCount - 1].p[Edge.P1];
                 endX = endPoint.X;
                 endY = endPoint.Y;
 
@@ -122,7 +122,7 @@ namespace Molten
 
                     // Test edge end-point
                     startX = endX; startY = endY;
-                    endPoint = Edges[j++].Points[Edge.P1];
+                    endPoint = Edges[j++].p[Edge.P1];
                     endX = endPoint.X; endY = endPoint.Y;
                     inside ^= (endY > pointY ^ startY > pointY) /* ? pointY inside [startY;endY] segment ? */
                               && /* if so, test if it is under the segment */
@@ -180,7 +180,7 @@ namespace Molten
                     Edge e = Edges[i];
 
                     if (i == 0)
-                        points.Add(new TriPoint((Vector2F)e.Points[Edge.P0]));
+                        points.Add(new TriPoint((Vector2F)e.p[Edge.P0]));
                     
                     if (e is not LinearEdge)
                     {
@@ -194,7 +194,7 @@ namespace Molten
                     }
 
                     if (i != Edges.Count - 1)
-                        points.Add(new TriPoint((Vector2F)e.Points[Edge.P1]));
+                        points.Add(new TriPoint((Vector2F)e.p[Edge.P1]));
                 }
 
                 return points;

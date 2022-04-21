@@ -128,8 +128,8 @@ namespace Molten
             {
                 foreach (Edge e in contour.Edges)
                 {
-                    for (int i = 0; i < e.Points.Length; i++)
-                        e.Points[i] *= dScale;
+                    for (int i = 0; i < e.p.Length; i++)
+                        e.p[i] *= dScale;
                 }
             }
         }
@@ -142,8 +142,8 @@ namespace Molten
             {
                 foreach (Edge e in contour.Edges)
                 {
-                    for (int i = 0; i < e.Points.Length; i++)
-                        e.Points[i] += dOffset;
+                    for (int i = 0; i < e.p.Length; i++)
+                        e.p[i] += dOffset;
                 }
             }
         }
@@ -162,10 +162,10 @@ namespace Molten
             {
                 foreach (Edge e in contour.Edges)
                 {
-                    for (int i = 0; i < e.Points.Length; i++)
+                    for (int i = 0; i < e.p.Length; i++)
                     {
-                        e.Points[i] *= dScale;
-                        e.Points[i] += dOffset;
+                        e.p[i] *= dScale;
+                        e.p[i] += dOffset;
                     }
                 }
             }

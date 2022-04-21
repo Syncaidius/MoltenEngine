@@ -28,7 +28,7 @@ namespace Molten.Graphics.MSDF
             this.p = p;
         }
 
-        public override void AddEdge(ref EdgeCache cache, EdgeSegment prevEdge, EdgeSegment edge, EdgeSegment nextEdge)
+        public override void AddEdge(ref EdgeCache cache, ContourShape.Edge prevEdge, ContourShape.Edge edge, ContourShape.Edge nextEdge)
         {
             if (
                 ((edge.Color & EdgeColor.Red) == EdgeColor.Red && r.IsEdgeRelevant(cache, edge, p)) ||
@@ -49,10 +49,10 @@ namespace Molten.Graphics.MSDF
 
                 Vector2D ap = p - edge.Point(0);
                 Vector2D bp = p - edge.Point(1);
-                Vector2D aDir = edge.Direction(0).GetNormalized(true);
-                Vector2D bDir = edge.Direction(1).GetNormalized(true);
-                Vector2D prevDir = prevEdge.Direction(1).GetNormalized(true);
-                Vector2D nextDir = nextEdge.Direction(0).GetNormalized(true);
+                Vector2D aDir = edge.GetDirection(0).GetNormalized(true);
+                Vector2D bDir = edge.GetDirection(1).GetNormalized(true);
+                Vector2D prevDir = prevEdge.GetDirection(1).GetNormalized(true);
+                Vector2D nextDir = nextEdge.GetDirection(0).GetNormalized(true);
                 double add = Vector2D.Dot(ap, (prevDir + aDir).GetNormalized(true));
                 double bdd = -Vector2D.Dot(bp, (bDir + nextDir).GetNormalized(true));
                 if (add > 0)

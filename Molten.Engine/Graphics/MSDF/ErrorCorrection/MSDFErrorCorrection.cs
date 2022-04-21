@@ -59,14 +59,14 @@ namespace Molten.Graphics.MSDF
             this.minImproveRatio = minImproveRatio;
         }
 
-        public unsafe void ProtectCorners(MsdfShape shape)
+        public unsafe void ProtectCorners(ContourShape shape)
         {
-            foreach (Contour contour in shape.Contours)
+            foreach (ContourShape.Contour contour in shape.Contours)
             {
                 if (contour.Edges.Count > 0)
                 {
-                    EdgeSegment prevEdge = contour.Edges.Last();
-                    foreach (EdgeSegment edge in contour.Edges)
+                    ContourShape.Edge prevEdge = contour.Edges.Last();
+                    foreach (ContourShape.Edge edge in contour.Edges)
                     {
                         EdgeColor commonColor = prevEdge.Color & edge.Color;
                         // If the color changes from prevEdge to edge, this is a corner.
@@ -74,8 +74,7 @@ namespace Molten.Graphics.MSDF
                         {
                             // Find the four texels that envelop the corner and mark them as protected.
                             Vector2D p = projection.Project(edge.Point(0));
-                            if (shape.InverseYAxis)
-                                p.Y = stencil.Height - p.Y;
+
                             int l = (int)Math.Floor(p.X - .5);
                             int b = (int)Math.Floor(p.Y - .5);
                             int r = l + 1;
@@ -284,7 +283,7 @@ namespace Molten.Graphics.MSDF
         {
             // Find interpolation ratios t (0 < t[i] < 1) where two color channels are equal.
             double* t = stackalloc double[2];
-            int solutions = EquationSolver.SolveQuadratic(t, dD - dBC + dA, dBC - dA - dA, dA);
+            int solutions = SignedDistanceSolver.SolveQuadratic(t, dD - dBC + dA, dBC - dA - dA, dA);
             for (int i = 0; i < solutions; ++i)
             {
                 // Solutions t[i] == 0 and t[i] == 1 are singularities and occur very often because two channels are usually equal at texels.
@@ -407,7 +406,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void FindErrors<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, MsdfShape shape)
+        public unsafe void FindErrors<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, ContourShape shape)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
@@ -422,36 +421,35 @@ namespace Molten.Graphics.MSDF
                 // Inspect all texels.
                 for (int y = 0; y < sdf.Height; ++y)
                 {
-                    int row = (int)(shape.InverseYAxis ? sdf.Height - y - 1 : y);
                     for (int col = 0; col < sdf.Width; ++col)
                     {
                         int x = (int)(rightToLeft ? sdf.Width - col - 1 : col);
 
-                        if (((StencilFlags)(*stencil[x, row]) & StencilFlags.ERROR) == StencilFlags.ERROR)
+                        if (((StencilFlags)(*stencil[x, y]) & StencilFlags.ERROR) == StencilFlags.ERROR)
                             continue;
 
-                        float* c = sdf[x, row];
+                        float* c = sdf[x, y];
                         shapeDistanceChecker.shapeCoord = projection.Unproject(new Vector2D(x + .5, y + .5));
-                        shapeDistanceChecker.sdfCoord = new Vector2D(x + .5, row + .5);
+                        shapeDistanceChecker.sdfCoord = new Vector2D(x + .5, y + .5);
                         shapeDistanceChecker.msd = c;
-                        shapeDistanceChecker.protectedFlag = ((StencilFlags)(*stencil[x, row]) & StencilFlags.PROTECTED) != 0;
+                        shapeDistanceChecker.protectedFlag = ((StencilFlags)(*stencil[x, y]) & StencilFlags.PROTECTED) != 0;
                         float cm = MathHelper.Median(c[0], c[1], c[2]);
 
-                        float* l = sdf[x - 1, row];
-                        float* b = sdf[x, row - 1];
-                        float* r = sdf[x + 1, row];
-                        float* t = sdf[x, row + 1];
+                        float* l = sdf[x - 1, y];
+                        float* b = sdf[x, y - 1];
+                        float* r = sdf[x + 1, y];
+                        float* t = sdf[x, y + 1];
 
                         // Mark current texel c with the error flag if an artifact occurs when it's interpolated with any of its 8 neighbors.
-                        *stencil[x, row] |= (byte)((int)StencilFlags.ERROR * ((
+                        *stencil[x, y] |= (byte)((int)StencilFlags.ERROR * ((
                             (x > 0 && HasLinearArtifact(shapeDistanceChecker.Classifier(new Vector2D(-1, 0), hSpan), cm, c, l)) ||
-                            (row > 0 && HasLinearArtifact(shapeDistanceChecker.Classifier(new Vector2D(0, -1), vSpan), cm, c, b)) ||
+                            (y > 0 && HasLinearArtifact(shapeDistanceChecker.Classifier(new Vector2D(0, -1), vSpan), cm, c, b)) ||
                             (x < sdf.Width - 1 && HasLinearArtifact(shapeDistanceChecker.Classifier(new Vector2D(+1, 0), hSpan), cm, c, r)) ||
-                            (row < sdf.Height - 1 && HasLinearArtifact(shapeDistanceChecker.Classifier(new Vector2D(0, +1), vSpan), cm, c, t)) ||
-                            (x > 0 && row > 0 && HasDiagonalArtifact(shapeDistanceChecker.Classifier(new Vector2D(-1, -1), dSpan), cm, c, l, b, sdf[x - 1, row - 1])) ||
-                            (x < sdf.Width - 1 && row > 0 && HasDiagonalArtifact(shapeDistanceChecker.Classifier(new Vector2D(+1, -1), dSpan), cm, c, r, b, sdf[x + 1, row - 1])) ||
-                            (x > 0 && row < sdf.Height - 1 && HasDiagonalArtifact(shapeDistanceChecker.Classifier(new Vector2D(-1, +1), dSpan), cm, c, l, t, sdf[x - 1, row + 1])) ||
-                            (x < sdf.Width - 1 && row < sdf.Height - 1 && HasDiagonalArtifact(shapeDistanceChecker.Classifier(new Vector2D(+1, +1), dSpan), cm, c, r, t, sdf[x + 1, row + 1]))
+                            (y < sdf.Height - 1 && HasLinearArtifact(shapeDistanceChecker.Classifier(new Vector2D(0, +1), vSpan), cm, c, t)) ||
+                            (x > 0 && y > 0 && HasDiagonalArtifact(shapeDistanceChecker.Classifier(new Vector2D(-1, -1), dSpan), cm, c, l, b, sdf[x - 1, y - 1])) ||
+                            (x < sdf.Width - 1 && y > 0 && HasDiagonalArtifact(shapeDistanceChecker.Classifier(new Vector2D(+1, -1), dSpan), cm, c, r, b, sdf[x + 1, y - 1])) ||
+                            (x > 0 && y < sdf.Height - 1 && HasDiagonalArtifact(shapeDistanceChecker.Classifier(new Vector2D(-1, +1), dSpan), cm, c, l, t, sdf[x - 1, y + 1])) ||
+                            (x < sdf.Width - 1 && y < sdf.Height - 1 && HasDiagonalArtifact(shapeDistanceChecker.Classifier(new Vector2D(+1, +1), dSpan), cm, c, r, t, sdf[x + 1, y + 1]))
                         ) ? 1 : 0));
                     }
                 }
