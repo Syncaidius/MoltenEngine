@@ -22,7 +22,7 @@ namespace Molten.Samples
 
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
-        List<Shape> _shapes;
+        ContourShape _shape;
         RectangleF _glyphBounds;
         RectangleF _fontBounds;
         float _scale = 0.3f;
@@ -91,7 +91,7 @@ namespace Molten.Samples
             _font2Test = cr.Get<SpriteFont>(0);
             _fontFile = _font2Test.Font;
             InitializeFontDebug();
-            GenerateChar('h');
+            GenerateChar('j');
 
             GenerateSDF("SDF", 1, SdfMode.Sdf, false, ConvertSdfToRgb);
             GenerateSDF("SDF Legacy", 1, SdfMode.Sdf, true, ConvertSdfToRgb);
@@ -299,7 +299,7 @@ namespace Molten.Samples
                 }
 
                 Rectangle clickRect;
-                if (_shapes != null)
+                if (_shape != null)
                 {
                     clickRect = new Rectangle((int)_clickPoint.X, (int)_clickPoint.Y, 0, 0);
                     clickRect.Inflate(8);
@@ -343,36 +343,32 @@ namespace Molten.Samples
         /// <summary>
         /// A test for a new WIP sprite font system.
         /// </summary>
-        private void GenerateChar(char glyphChar)
+        /// <summary>
+        /// A test for a new WIP sprite font system.
+        /// </summary>
+        private void GenerateChar(char glyphChar, int curveResolution = 16)
         {
             Glyph glyph = _fontFile.GetGlyph(glyphChar);
-             _shapes = glyph.CreateShapes(CHAR_CURVE_RESOLUTION);
+            _shape = glyph.CreateShape();
+            _shape.ScaleAndOffset(_charOffset, _scale);
 
             // Add 5 colors. The last color will be used when we have more points than colors.
             _linePoints = new List<List<Vector2F>>();
             _holePoints = new List<List<Vector2F>>();
 
             // Draw outline
-            foreach (Shape s in _shapes)
-                s.ScaleAndOffset(_charOffset, _scale);
-
-            for (int i = 0; i < _shapes.Count; i++)
+            foreach (ContourShape.Contour c in _shape.Contours)
             {
-                Shape shape = _shapes[i];
+                List<TriPoint> edgePoints = c.GetEdgePoints(curveResolution);
                 List<Vector2F> points = new List<Vector2F>();
-                _linePoints.Add(points);
 
-                for (int j = 0; j < shape.Points.Count; j++)
-                    points.Add((Vector2F)shape.Points[j]);
+                for (int j = 0; j < edgePoints.Count; j++)
+                    points.Add((Vector2F)edgePoints[j]);
 
-                foreach (Shape h in shape.Holes)
-                {
-                    List<Vector2F> hPoints = new List<Vector2F>();
-                    _holePoints.Add(hPoints);
-
-                    for (int j = 0; j < h.Points.Count; j++)
-                        hPoints.Add((Vector2F)h.Points[j]);
-                }
+                if (c.GetWinding() < 1)
+                    _holePoints.Add(points);
+                else
+                    _linePoints.Add(points);
             }
 
             _glyphBounds = glyph.Bounds;
@@ -384,8 +380,7 @@ namespace Molten.Samples
             _glyphBounds.Y += _charOffset.Y;
             _glyphTriPoints = new List<Vector2F>();
 
-            foreach (Shape s in _shapes)
-                s.Triangulate(_glyphTriPoints, Vector2F.Zero, 1);
+            _shape.Triangulate(_glyphTriPoints, Vector2F.Zero, 1, CHAR_CURVE_RESOLUTION);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -422,13 +417,10 @@ namespace Molten.Samples
                 _clickPoint = (Vector2F)Mouse.Position;
                 _clickColor = Color.Red;
 
-                if (_shapes != null)
+                if (_shape != null)
                 {
-                    foreach (Shape s in _shapes)
-                    {
-                        if (s.Contains(_clickPoint))
-                            _clickColor = Color.Green;
-                    }
+                    if (_shape.Contains(_clickPoint))
+                        _clickColor = Color.Green;
                 }
             }
 

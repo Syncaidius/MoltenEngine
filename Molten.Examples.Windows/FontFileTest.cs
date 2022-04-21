@@ -20,7 +20,7 @@ namespace Molten.Samples
 
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
-        List<ContourShape> _shapes;
+        ContourShape _shape;
         RectangleF _glyphBounds;
         RectangleF _fontBounds;
         float _scale = 0.3f;
@@ -81,7 +81,7 @@ namespace Molten.Samples
             _font2Test = cr.Get<SpriteFont>(0);
             _fontFile = _font2Test.Font;
             InitializeFontDebug();
-            GenerateChar('h', CHAR_CURVE_RESOLUTION);
+            GenerateChar('j', CHAR_CURVE_RESOLUTION);
             _font2Test.MeasureString("abcdefghijklmnopqrstuvwxyz1234567890{}[]:@~<>?!£$%^&*()-=_+");
         }
 
@@ -139,7 +139,7 @@ namespace Molten.Samples
                 }
 
                 Rectangle clickRect;
-                if (_shapes != null)
+                if (_shape != null)
                 {
                     clickRect = new Rectangle((int)_clickPoint.X, (int)_clickPoint.Y, 0, 0);
                     clickRect.Inflate(8);
@@ -171,30 +171,26 @@ namespace Molten.Samples
         private void GenerateChar(char glyphChar, int curveResolution = 16)
         {
             Glyph glyph = _fontFile.GetGlyph(glyphChar);
-             _shapes = glyph.CreateShapes2();
+             _shape = glyph.CreateShape();
+            _shape.ScaleAndOffset(_charOffset, _scale);
 
             // Add 5 colors. The last color will be used when we have more points than colors.
             _linePoints = new List<List<Vector2F>>();
             _holePoints = new List<List<Vector2F>>();
 
             // Draw outline
-            foreach (ContourShape s in _shapes)
+            foreach(ContourShape.Contour c in _shape.Contours)
             {
-                s.ScaleAndOffset(_charOffset, _scale);
+                List<TriPoint> edgePoints = c.GetEdgePoints(curveResolution);
+                List<Vector2F> points = new List<Vector2F>();
 
-                foreach(ContourShape.Contour c in s.Contours)
-                {
-                    List<TriPoint> edgePoints = c.GetEdgePoints(curveResolution);
-                    List<Vector2F> points = new List<Vector2F>();
+                for (int j = 0; j < edgePoints.Count; j++)
+                    points.Add((Vector2F)edgePoints[j]);
 
-                    for (int j = 0; j < edgePoints.Count; j++)
-                        points.Add((Vector2F)edgePoints[j]);
-
-                    if (c.GetWinding() < 1)
-                        _holePoints.Add(points);
-                    else
-                        _linePoints.Add(points);
-                }
+                if (c.GetWinding() < 1)
+                    _holePoints.Add(points);
+                else
+                    _linePoints.Add(points);
             }
 
             _glyphBounds = glyph.Bounds;
@@ -207,8 +203,7 @@ namespace Molten.Samples
             _glyphTriPoints = new List<Vector2F>();
 
 
-            foreach (ContourShape s in _shapes)
-                s.Triangulate(_glyphTriPoints, Vector2F.Zero, 1, CHAR_CURVE_RESOLUTION);
+            _shape.Triangulate(_glyphTriPoints, Vector2F.Zero, 1, CHAR_CURVE_RESOLUTION);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -240,13 +235,10 @@ namespace Molten.Samples
                 _clickPoint = (Vector2F)Mouse.Position;
                 _clickColor = Color.Red;
 
-                if (_shapes != null)
+                if (_shape != null)
                 {
-                    foreach (ContourShape s in _shapes)
-                    {
-                        if (s.Contains(_clickPoint, CHAR_CURVE_RESOLUTION))
-                            _clickColor = Color.Green;
-                    }
+                    if (_shape.Contains(_clickPoint, CHAR_CURVE_RESOLUTION))
+                        _clickColor = Color.Green;
                 }
             }
 

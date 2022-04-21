@@ -74,15 +74,14 @@
         /// </summary>
         /// <param name="curveResolution">The maximum number of points per curve in a glyph contour.</param>
         /// <returns></returns>
-        public List<ContourShape> CreateShapes2()
+        public ContourShape CreateShape()
         {
-            List<ContourShape> result = new List<ContourShape>();
             List<Vector2D> cp = new List<Vector2D>();
             int start = 0;
             GlyphPoint p = GlyphPoint.Empty;
 
             ContourShape shape = new ContourShape();
-            result.Add(shape);
+
             for (int i = 0; i < ContourEndPoints.Length; i++)
             {
                 ContourShape.Contour contour = new ContourShape.Contour();
@@ -152,7 +151,7 @@
                 start = end + 1;
             }
 
-            return result;
+            return shape;
         }
 
         /// <summary>
