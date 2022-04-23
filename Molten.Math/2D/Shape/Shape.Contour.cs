@@ -83,6 +83,58 @@ namespace Molten
                 return MathHelperDP.Sign(total);
             }
 
+            public ContainmentType Contains(Contour other, int edgeResolution = 3)
+            {
+                bool contains = true;
+                bool intersects = false;
+
+                // Curve mid-points
+                int mpCount = edgeResolution - 2;
+                int incPoints = edgeResolution - 1;
+                double distInc = 1.0 / incPoints;
+
+                for (int i = 0; i < other.Edges.Count; i++)
+                {
+                    Edge e = other.Edges[i];
+
+                    if (i == 0)
+                    {
+                        bool r = Contains(e.p[Edge.P0], edgeResolution);
+                        contains = r && contains;
+                        intersects = r || intersects;
+                    }
+
+                    if (e is not LinearEdge)
+                    {
+                        for (int mp = 1; mp <= mpCount; mp++)
+                        {
+                            double dist = (distInc * mp);
+                            Vector2F ep = (Vector2F)e.PointAlongEdge(dist);
+
+                            bool r = Contains((Vector2D)ep, edgeResolution);
+                            contains = r && contains;
+                            intersects = r || intersects;
+                        }
+                    }
+
+                    if (i != Edges.Count - 1)
+                    {
+                        bool rl = Contains(e.p[Edge.P0], edgeResolution);
+                        contains = rl && contains;
+                        intersects = rl || intersects;
+                    }
+
+                    // Exit early if containment already failed
+                    if (intersects && !contains)
+                        return ContainmentType.Intersects;
+                }
+
+                if (contains)
+                    return ContainmentType.Contains;
+                else
+                    return ContainmentType.Intersects;
+            }
+
             public bool Contains(Vector2D point, int edgeResolution = 3)
             {
                 // Thanks to: https://codereview.stackexchange.com/a/108903
@@ -193,8 +245,7 @@ namespace Molten
                         }
                     }
 
-                    //if (i != Edges.Count - 1)
-                        points.Add(new TriPoint((Vector2F)e.p[Edge.P1]));
+                    points.Add(new TriPoint((Vector2F)e.p[Edge.P1]));
                 }
 
                 return points;

@@ -38,8 +38,8 @@ namespace Molten
         public void Triangulate(List<Triangle> output, Vector2F offset, float scale = 1f, int edgeResolution = 3)
         {
             // Group contours
-            List<List<TriPoint>> holes = new List<List<TriPoint>>();
-            List<List<TriPoint>> outlines = new List<List<TriPoint>>();
+            List<(Contour c, List<TriPoint> edgeList)> holes =  new List<(Contour c, List<TriPoint> edgeList)> ();
+            List<(Contour c, List<TriPoint> edgeList)> outlines = new List<(Contour c, List<TriPoint> edgeList)>();
             Sweep sweep = new Sweep();
 
             // Group contours into outlines and holes
@@ -67,27 +67,29 @@ namespace Molten
                         continue;
 
                     case -1: // Outline
-                        outlines.Add(points);
+                        outlines.Add((c, points));
                         break;
 
                     case 1: // Hole
                         points.Reverse();
-                        holes.Add(points);
+                        holes.Add((c, points));
                         break;
-                }
+                };
             }
 
-            foreach(List<TriPoint> edgePoints in outlines)
+            foreach((Contour c, List<TriPoint> edgePoints) in outlines)
             {
                 sweep.Reset();
                 SweepContext tcx = new SweepContext();
                 tcx.AddPoints(edgePoints);
 
                 // Add all holes to context
-                foreach(List<TriPoint> holePoints in holes)
-                    tcx.AddHole(holePoints);
+                foreach ((Contour h, List<TriPoint> holePoints) in holes)
+                {
+                    if (c.Contains(h, edgeResolution) == ContainmentType.Contains)
+                        tcx.AddHole(holePoints);
+                }
 
-                tcx.InitTriangulation();
                 sweep.Triangulate(tcx);
 
                 List<Triangle> r = tcx.GetTriangles();
@@ -102,9 +104,7 @@ namespace Molten
                         output.Add(tri);
                     }
                 }
-            }
-
-            
+            }            
         }
 
         /// <summary>
