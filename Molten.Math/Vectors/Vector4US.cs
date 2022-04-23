@@ -774,6 +774,26 @@ namespace Molten
 			result.W = (ushort)((1F - amount) * start.W + amount * end.W);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector4US"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static Vector4US Lerp(Vector4US start, Vector4US end, float amount)
+        {
+			return new Vector4US()
+			{
+				X = (ushort)((1F - amount) * start.X + amount * end.X),
+				Y = (ushort)((1F - amount) * start.Y + amount * end.Y),
+				Z = (ushort)((1F - amount) * start.Z + amount * end.Z),
+				W = (ushort)((1F - amount) * start.W + amount * end.W),
+			};
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Vector4US"/>.
         /// </summary>

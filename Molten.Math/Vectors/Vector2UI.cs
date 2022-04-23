@@ -696,6 +696,24 @@ namespace Molten
 			result.Y = (uint)((1F - amount) * start.Y + amount * end.Y);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector2UI"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static Vector2UI Lerp(Vector2UI start, Vector2UI end, float amount)
+        {
+			return new Vector2UI()
+			{
+				X = (uint)((1F - amount) * start.X + amount * end.X),
+				Y = (uint)((1F - amount) * start.Y + amount * end.Y),
+			};
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Vector2UI"/>.
         /// </summary>

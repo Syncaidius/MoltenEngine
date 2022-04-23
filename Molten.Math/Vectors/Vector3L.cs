@@ -765,6 +765,25 @@ namespace Molten
 			result.Z = (long)((1D - amount) * start.Z + amount * end.Z);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector3L"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static Vector3L Lerp(Vector3L start, Vector3L end, double amount)
+        {
+			return new Vector3L()
+			{
+				X = (long)((1D - amount) * start.X + amount * end.X),
+				Y = (long)((1D - amount) * start.Y + amount * end.Y),
+				Z = (long)((1D - amount) * start.Z + amount * end.Z),
+			};
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Vector3L"/>.
         /// </summary>

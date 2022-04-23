@@ -193,7 +193,7 @@ namespace Molten
                         }
                     }
 
-                    if (i != Edges.Count - 1)
+                    //if (i != Edges.Count - 1)
                         points.Add(new TriPoint((Vector2F)e.p[Edge.P1]));
                 }
 

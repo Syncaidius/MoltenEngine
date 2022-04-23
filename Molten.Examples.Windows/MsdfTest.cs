@@ -343,9 +343,6 @@ namespace Molten.Samples
         /// <summary>
         /// A test for a new WIP sprite font system.
         /// </summary>
-        /// <summary>
-        /// A test for a new WIP sprite font system.
-        /// </summary>
         private void GenerateChar(char glyphChar, int curveResolution = 16)
         {
             Glyph glyph = _fontFile.GetGlyph(glyphChar);

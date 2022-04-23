@@ -806,6 +806,26 @@ namespace Molten
 			result.W = ((1D - amount) * start.W + amount * end.W);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector4D"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static Vector4D Lerp(Vector4D start, Vector4D end, double amount)
+        {
+			return new Vector4D()
+			{
+				X = ((1D - amount) * start.X + amount * end.X),
+				Y = ((1D - amount) * start.Y + amount * end.Y),
+				Z = ((1D - amount) * start.Z + amount * end.Z),
+				W = ((1D - amount) * start.W + amount * end.W),
+			};
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Vector4D"/>.
         /// </summary>

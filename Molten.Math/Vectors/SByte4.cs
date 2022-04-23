@@ -806,6 +806,26 @@ namespace Molten
 			result.W = (sbyte)((1F - amount) * start.W + amount * end.W);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="SByte4"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static SByte4 Lerp(SByte4 start, SByte4 end, float amount)
+        {
+			return new SByte4()
+			{
+				X = (sbyte)((1F - amount) * start.X + amount * end.X),
+				Y = (sbyte)((1F - amount) * start.Y + amount * end.Y),
+				Z = (sbyte)((1F - amount) * start.Z + amount * end.Z),
+				W = (sbyte)((1F - amount) * start.W + amount * end.W),
+			};
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="SByte4"/>.
         /// </summary>

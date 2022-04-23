@@ -42,6 +42,20 @@ namespace Molten
             {
                 List<TriPoint> points = contour.GetEdgePoints(edgeResolution);
 
+                // Check start/end points
+                if (points.Count > 2)
+                {
+                    TriPoint p0 = points[0];
+                    TriPoint p1 = points[points.Count - 1];
+                    TriPoint p2 = points[points.Count - 2];
+                    if (p1 == p2)
+                        points.Remove(p2);
+
+                    if (p1 == p0)
+                        points.Remove(p1);
+                }
+
+
                 int winding = contour.GetWinding();
                 switch (winding)
                 {
