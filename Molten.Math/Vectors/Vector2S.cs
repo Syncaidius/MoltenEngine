@@ -121,7 +121,7 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Vector2S))
+            if (value is not Vector2S)
                 return false;
 
             var strongValue = (Vector2S)value;

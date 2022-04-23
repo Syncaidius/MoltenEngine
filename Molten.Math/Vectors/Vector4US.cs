@@ -159,7 +159,7 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Vector4US))
+            if (value is not Vector4US)
                 return false;
 
             var strongValue = (Vector4US)value;

@@ -139,7 +139,7 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Vector3D))
+            if (value is not Vector3D)
                 return false;
 
             var strongValue = (Vector3D)value;

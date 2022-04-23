@@ -139,7 +139,7 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Vector3I))
+            if (value is not Vector3I)
                 return false;
 
             var strongValue = (Vector3I)value;

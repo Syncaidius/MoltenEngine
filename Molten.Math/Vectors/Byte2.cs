@@ -121,7 +121,7 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Byte2))
+            if (value is not Byte2)
                 return false;
 
             var strongValue = (Byte2)value;

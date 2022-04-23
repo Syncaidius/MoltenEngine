@@ -350,6 +350,8 @@ namespace Molten.Samples
         {
             Glyph glyph = _fontFile.GetGlyph(glyphChar);
             _shape = glyph.CreateShape();
+            List<Shape> shapes = glyph.CreateShapes(curveResolution);
+
             _shape.ScaleAndOffset(_charOffset, _scale);
 
             // Add 5 colors. The last color will be used when we have more points than colors.

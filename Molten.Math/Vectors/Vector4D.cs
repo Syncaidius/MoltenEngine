@@ -159,7 +159,7 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Vector4D))
+            if (value is not Vector4D)
                 return false;
 
             var strongValue = (Vector4D)value;

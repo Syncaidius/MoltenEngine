@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -121,7 +121,7 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Vector2D))
+            if (value is not Vector2D)
                 return false;
 
             var strongValue = (Vector2D)value;
@@ -726,25 +726,7 @@ namespace Molten
 			result.Y = ((1D - amount) * start.Y + amount * end.Y);
         }
 
-        /// <summary>
-        /// Performs a linear interpolation between two <see cref="Vector2D"/>.
-        /// </summary>
-        /// <param name="start">The start vector.</param>
-        /// <param name="end">The end vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <remarks>
-        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-        /// </remarks>
-        public static Vector2D Lerp(Vector2D start, Vector2D end, double amount)
-        {
-            return new Vector2D()
-            {
-                X = ((1D - amount) * start.X + amount * end.X),
-                Y = ((1D - amount) * start.Y + amount * end.Y),
-            };
-        }
-
-        /// <summary>
+		/// <summary>
         /// Performs a linear interpolation between two <see cref="Vector2D"/>.
         /// </summary>
         /// <param name="start">The start vector.</param>

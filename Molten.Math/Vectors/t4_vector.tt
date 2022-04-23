@@ -210,7 +210,7 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is <#=fName#>))
+            if (value is not <#=fName#>)
                 return false;
 
             var strongValue = (<#=fName#>)value;
