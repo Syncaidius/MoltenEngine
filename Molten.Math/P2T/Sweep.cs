@@ -20,7 +20,7 @@
 
         public void Reset()
         {
-            _nodes.Clear();
+            _nodes?.Clear();
         }
 
         private void SweepPoints(SweepContext tcx)

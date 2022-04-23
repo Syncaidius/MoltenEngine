@@ -37,10 +37,15 @@ namespace Molten
         /// <param name="edgeResolution">The maximum number of points that are allowed to represent an edge. For bezier curves, this will affect the curve smoothness.</param>
         public void Triangulate(List<Triangle> output, Vector2F offset, float scale = 1f, int edgeResolution = 3)
         {
-            SweepContext tcx = new SweepContext();
-            foreach (Contour contour in Contours)
+            // Group contours
+            List<List<TriPoint>> holes = new List<List<TriPoint>>();
+            List<List<TriPoint>> outlines = new List<List<TriPoint>>();
+            Sweep sweep = new Sweep();
+
+            // Group contours into outlines and holes
+            foreach (Contour c in Contours)
             {
-                List<TriPoint> points = contour.GetEdgePoints(edgeResolution);
+                List<TriPoint> points = c.GetEdgePoints(edgeResolution);
 
                 // Check start/end points
                 if (points.Count > 2)
@@ -55,40 +60,51 @@ namespace Molten
                         points.Remove(p1);
                 }
 
-
-                int winding = contour.GetWinding();
+                int winding = c.GetWinding();
                 switch (winding)
                 {
                     case 0: // Unknown
                         continue;
 
                     case -1: // Outline
-                        tcx.AddPoints(points);
+                        outlines.Add(points);
                         break;
 
                     case 1: // Hole
                         points.Reverse();
-                        tcx.AddHole(points);
+                        holes.Add(points);
                         break;
                 }
             }
 
-            tcx.InitTriangulation();
-            Sweep sweep = new Sweep();
-            sweep.Triangulate(tcx);
-
-            List<Triangle> result = tcx.GetTriangles();
-
-            // Scale and offset triangles
-            foreach (Triangle tri in result)
+            foreach(List<TriPoint> edgePoints in outlines)
             {
-                for (int i = 0; i < 3; i++)
+                sweep.Reset();
+                SweepContext tcx = new SweepContext();
+                tcx.AddPoints(edgePoints);
+
+                // Add all holes to context
+                foreach(List<TriPoint> holePoints in holes)
+                    tcx.AddHole(holePoints);
+
+                tcx.InitTriangulation();
+                sweep.Triangulate(tcx);
+
+                List<Triangle> r = tcx.GetTriangles();
+
+                // Scale and offset triangles
+                foreach (Triangle tri in r)
                 {
-                    tri.Points[i].X = (tri.Points[i].X * scale) + offset.X;
-                    tri.Points[i].Y = (tri.Points[i].Y * scale) + offset.Y;
-                    output.Add(tri);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        tri.Points[i].X = (tri.Points[i].X * scale) + offset.X;
+                        tri.Points[i].Y = (tri.Points[i].Y * scale) + offset.Y;
+                        output.Add(tri);
+                    }
                 }
             }
+
+            
         }
 
         /// <summary>

@@ -289,13 +289,13 @@ namespace Molten.Samples
                 if (_linePoints != null)
                 {
                     for (int i = 0; i < _linePoints.Count; i++)
-                        sb.DrawLinePath(_linePoints[i], Color.Red, 2);
+                        sb.DrawLinePath(_linePoints[i], Color.SkyBlue, 2);
                 }
 
                 if (_holePoints != null)
                 {
                     for (int i = 0; i < _holePoints.Count; i++)
-                        sb.DrawLinePath(_holePoints[i], Color.SkyBlue, 2);
+                        sb.DrawLinePath(_holePoints[i], Color.Red, 2);
                 }
 
                 Rectangle clickRect;
@@ -347,7 +347,6 @@ namespace Molten.Samples
         {
             Glyph glyph = _fontFile.GetGlyph(glyphChar);
             _shape = glyph.CreateShape();
-            List<Shape> shapes = glyph.CreateShapes(curveResolution);
 
             _shape.ScaleAndOffset(_charOffset, _scale);
 
@@ -365,9 +364,9 @@ namespace Molten.Samples
                     points.Add((Vector2F)edgePoints[j]);
 
                 if (c.GetWinding() < 1)
-                    _holePoints.Add(points);
-                else
                     _linePoints.Add(points);
+                else
+                    _holePoints.Add(points);
             }
 
             _glyphBounds = glyph.Bounds;
