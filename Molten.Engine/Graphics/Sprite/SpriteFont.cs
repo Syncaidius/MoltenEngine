@@ -351,7 +351,7 @@ namespace Molten.Graphics
 
             _charData[c] = new CharData(gIndex);
             _glyphCache[gIndex] = new GlyphCache(advWidth, advHeight, loc, yOffset);
-            ContourShape shape = g.CreateShape();
+            Shape shape = g.CreateShape();
             shape.ScaleAndOffset(glyphOffset, glyphScale);
             shape.Triangulate(_glyphCache[gIndex].GlyphMesh, Vector2F.Zero, 1);
 

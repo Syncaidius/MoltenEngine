@@ -27,7 +27,7 @@ namespace Molten.Graphics.MSDF
             this.p = p;
         }
 
-        public override void AddEdge(ref EdgeCache cache, ContourShape.Edge prevEdge, ContourShape.Edge edge, ContourShape.Edge nextEdge)
+        public override void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
         {
             if (
                 ((edge.Color & EdgeColor.Red) == EdgeColor.Red && r.IsEdgeRelevant(cache, edge, p)) ||

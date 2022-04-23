@@ -8,7 +8,7 @@ namespace Molten.Graphics.MSDF
 {
     public static class ErrorCorrection
     {
-        public unsafe static void MsdfErrorCorrection<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, ContourShape shape, MsdfProjection projection, double range, MsdfConfig config)
+        public unsafe static void MsdfErrorCorrection<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, double range, MsdfConfig config)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {

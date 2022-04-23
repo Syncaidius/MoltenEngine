@@ -15,11 +15,11 @@ namespace Molten.Graphics.MSDF
         where ES : EdgeSelector<DT>, new()
         where DT : unmanaged
     {
-        ContourShape shape;
+        Shape shape;
         ContourCombiner<ES, DT> contourCombiner;
         EdgeCache[] shapeEdgeCache;
 
-        public ShapeDistanceFinder(ContourShape shape, ContourCombiner<ES, DT> combiner)
+        public ShapeDistanceFinder(Shape shape, ContourCombiner<ES, DT> combiner)
         {
             this.shape = shape;
             contourCombiner = combiner;
@@ -35,18 +35,18 @@ namespace Molten.Graphics.MSDF
 
             for (int i = 0; i < shape.Contours.Count; i++)
             {
-                ContourShape.Contour contour = shape.Contours[i];
+                Shape.Contour contour = shape.Contours[i];
                 int edgeCount = contour.Edges.Count;
 
                 if (edgeCount > 0)
                 {
                     ES edgeSelector = contourCombiner.EdgeSelector(i);
 
-                    ContourShape.Edge prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
-                    ContourShape.Edge curEdge = contour.Edges.Last();
-                    foreach (ContourShape.Edge edge in contour.Edges)
+                    Shape.Edge prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
+                    Shape.Edge curEdge = contour.Edges.Last();
+                    foreach (Shape.Edge edge in contour.Edges)
                     {
-                        ContourShape.Edge nextEdge = edge;
+                        Shape.Edge nextEdge = edge;
                         edgeSelector.AddEdge(ref edgeCache, prevEdge, curEdge, nextEdge);
                         ecIndex++;
                         prevEdge = curEdge;
@@ -58,25 +58,25 @@ namespace Molten.Graphics.MSDF
             return contourCombiner.Distance();
         }
 
-        public DT oneShotDistance(ContourCombiner<ES, DT> combiner, ContourShape shape, ref Vector2D origin) {
+        public DT oneShotDistance(ContourCombiner<ES, DT> combiner, Shape shape, ref Vector2D origin) {
             contourCombiner = combiner;
             contourCombiner.Reset(ref origin);
 
             for (int i = 0; i < shape.Contours.Count; i++)
             {
-                ContourShape.Contour contour = shape.Contours[i];
+                Shape.Contour contour = shape.Contours[i];
                 int edgeCount = contour.Edges.Count;
 
                 if (edgeCount > 0)
                 {
                     ES edgeSelector = contourCombiner.EdgeSelector(i);
 
-                    ContourShape.Edge prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
-                    ContourShape.Edge curEdge = contour.Edges.Last();
+                    Shape.Edge prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
+                    Shape.Edge curEdge = contour.Edges.Last();
 
-                    foreach (ContourShape.Edge edge in contour.Edges)
+                    foreach (Shape.Edge edge in contour.Edges)
                     {
-                        ContourShape.Edge nextEdge = edge;
+                        Shape.Edge nextEdge = edge;
                         EdgeCache dummy = new EdgeCache();
                         edgeSelector.AddEdge(ref dummy, prevEdge, curEdge, nextEdge);
                         prevEdge = curEdge;

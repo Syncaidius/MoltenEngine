@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public partial class ContourShape
+    public partial class Shape
     {
         public class Contour
         {

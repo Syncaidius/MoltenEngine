@@ -6,26 +6,26 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public partial class ContourShape
+    public partial class Shape
     {
         public List<Contour> Contours { get; } = new List<Contour>();
 
         /// <summary>
-        /// Creates a new instance of <see cref="ContourShape"/>.
+        /// Creates a new instance of <see cref="Shape"/>.
         /// </summary>
-        public ContourShape() { }
+        public Shape() { }
 
         /// <summary>
-        /// Creates a new instance of <see cref="ContourShape"/> from a list of linear points.
+        /// Creates a new instance of <see cref="Shape"/> from a list of linear points.
         /// </summary>
         /// <param name="points"></param>
-        public ContourShape(List<Vector2F> points) : this(points, Vector2F.Zero, 1f) { }
+        public Shape(List<Vector2F> points) : this(points, Vector2F.Zero, 1f) { }
 
         /// <summary>
-        /// Creates a new instance of <see cref="ContourShape"/> from a list of linear points.
+        /// Creates a new instance of <see cref="Shape"/> from a list of linear points.
         /// </summary>
         /// <param name="points"></param>
-        public ContourShape(List<Vector2F> points, Vector2F offset, float scale = 1.0f)
+        public Shape(List<Vector2F> points, Vector2F offset, float scale = 1.0f)
         {
             Contour c = new Contour();
             Contours.Add(c);
@@ -158,7 +158,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns the total number of edges in the current <see cref="ContourShape"/>.
+        /// Returns the total number of edges in the current <see cref="Shape"/>.
         /// </summary>
         /// <returns></returns>
         public int GetEdgeCount()
@@ -226,13 +226,15 @@ namespace Molten
             }
         }
 
-        public bool Contains(Shape shape)
+        public bool Contains(Shape other, int edgeResolution = 3)
         {
-            for (int i = 0; i < shape.Points.Count; i++)
+            foreach(Contour contour in Contours)
             {
-                // We only need 1 point to be outside to invalidate a containment.
-                if (!Contains((Vector2F)shape.Points[i]))
-                    return false;
+                foreach(Contour otherContour in other.Contours)
+                {
+                    if (contour.Contains(otherContour, edgeResolution) != ContainmentType.Contains)
+                        return false;
+                }
             }
 
             return true;

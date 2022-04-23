@@ -18,7 +18,7 @@ namespace Molten.Graphics.MSDF
             this.p = p;
         }
 
-        public override unsafe void AddEdge(ref EdgeCache cache, ContourShape.Edge prevEdge, ContourShape.Edge edge, ContourShape.Edge nextEdge)
+        public override unsafe void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
         {
             double delta = DISTANCE_DELTA_FACTOR * (p - cache.point).Length();
             if (cache.absDistance - delta <= Math.Abs(minDistance.Distance))

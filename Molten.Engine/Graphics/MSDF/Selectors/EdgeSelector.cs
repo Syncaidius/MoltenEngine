@@ -23,7 +23,7 @@ namespace Molten.Graphics.MSDF
     {
         public abstract DT Distance();
 
-        public abstract void AddEdge(ref EdgeCache cache, ContourShape.Edge prevEdge, ContourShape.Edge edge, ContourShape.Edge nextEdge);
+        public abstract void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge);
 
         public abstract void Merge(EdgeSelector<DT> other);
 

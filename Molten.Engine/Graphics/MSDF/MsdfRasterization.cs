@@ -8,7 +8,7 @@ namespace Molten.Graphics.MSDF
 {
     public static class MsdfRasterization
     {
-        public static unsafe void distanceSignCorrection(TextureSliceRef<float> sdf, ContourShape shape, MsdfProjection projection, FillRule fillRule)
+        public static unsafe void distanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
         {
             Validation.NPerPixel(sdf, 1);
             Scanline scanline = new Scanline();
@@ -49,7 +49,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe static void multiDistanceSignCorrection(TextureSliceRef<float> sdf, ContourShape shape, MsdfProjection projection, FillRule fillRule)
+        public unsafe static void multiDistanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
         {
             uint w = sdf.Width, h = sdf.Height;
             if ((w * h) == 0)

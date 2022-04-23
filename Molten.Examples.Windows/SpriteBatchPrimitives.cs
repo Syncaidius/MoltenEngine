@@ -205,7 +205,7 @@ namespace Molten.Samples
                 new Vector2F(563.42839f,2350.2286f),
             };
 
-            ContourShape testShape = new ContourShape(pList, new Vector2F(100, 400), 0.0625f);
+            Shape testShape = new Shape(pList, new Vector2F(100, 400), 0.0625f);
 
             List<Vector2F> shapeTriList = new List<Vector2F>();
             testShape.Triangulate(shapeTriList, Vector2F.Zero, 1);

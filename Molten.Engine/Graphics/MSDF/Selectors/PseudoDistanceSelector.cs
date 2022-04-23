@@ -11,7 +11,7 @@ namespace Molten.Graphics.MSDF
         SignedDistance minTrueDistance;
         double minNegativePseudoDistance;
         double minPositivePseudoDistance;
-        ContourShape.Edge nearEdge;
+        Shape.Edge nearEdge;
         double nearEdgeParam;
         Vector2D p;
 
@@ -23,7 +23,7 @@ namespace Molten.Graphics.MSDF
             nearEdgeParam = 0;
         }
 
-        public override void AddEdge(ref EdgeCache cache, ContourShape.Edge prevEdge, ContourShape.Edge edge, ContourShape.Edge nextEdge)
+        public override void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
         {
             if (IsEdgeRelevant(cache, edge, p))
             {
@@ -111,7 +111,7 @@ namespace Molten.Graphics.MSDF
             nearEdgeParam = 0;
         }
 
-        public bool IsEdgeRelevant(in EdgeCache cache, ContourShape.Edge edge, in Vector2D p)
+        public bool IsEdgeRelevant(in EdgeCache cache, Shape.Edge edge, in Vector2D p)
         {
             double delta = DISTANCE_DELTA_FACTOR * (p - cache.point).Length();
             return (
@@ -129,7 +129,7 @@ namespace Molten.Graphics.MSDF
             );
         }
 
-        public void AddEdgeTrueDistance(ContourShape.Edge edge, in SignedDistance distance, double param)
+        public void AddEdgeTrueDistance(Shape.Edge edge, in SignedDistance distance, double param)
         {
             if (distance < minTrueDistance)
             {

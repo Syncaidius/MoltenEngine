@@ -20,7 +20,7 @@ namespace Molten.Samples
 
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
-        ContourShape _shape;
+        Shape _shape;
         RectangleF _glyphBounds;
         RectangleF _fontBounds;
         float _scale = 0.3f;
@@ -179,7 +179,7 @@ namespace Molten.Samples
             _holePoints = new List<List<Vector2F>>();
 
             // Draw outline
-            foreach(ContourShape.Contour c in _shape.Contours)
+            foreach(Shape.Contour c in _shape.Contours)
             {
                 List<TriPoint> edgePoints = c.GetEdgePoints(curveResolution);
                 List<Vector2F> points = new List<Vector2F>();

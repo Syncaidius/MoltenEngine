@@ -1,6 +1,6 @@
 ﻿namespace Molten
 {
-    public class Shape
+    public class Shape_Old
     {
         /// <summary>
         /// A list of shape outline points.
@@ -16,7 +16,7 @@
         /// A list of subtraction shapes fully contained inside this shape.<para/>
         /// Shapes added to this list will be used to create holes during triangulation. Any that are outside or intersect the shape outline are invalid.
         /// </summary>
-        public readonly List<Shape> Holes = new List<Shape>();
+        public readonly List<Shape_Old> Holes = new List<Shape_Old>();
 
         /// <summary>
         /// Gets or sets the shape's color.
@@ -24,15 +24,15 @@
         public Color Color { get; set; } = Color.White;
 
         /// <summary>
-        /// Creates a new instance of <see cref="Shape"/>.
+        /// Creates a new instance of <see cref="Shape_Old"/>.
         /// </summary>
-        public Shape() { }
+        public Shape_Old() { }
 
         /// <summary>
         /// Create a polygon from a list of at least 3 points with no duplicates.
         /// </summary>
         /// <param name="points">A list of unique points</param>
-        public Shape(IList<TriPoint> points)
+        public Shape_Old(IList<TriPoint> points)
         {
             Points.AddRange(points);
         }
@@ -41,13 +41,13 @@
         /// Create a polygon from a list of at least 3 points with no duplicates.
         /// </summary>
         /// <param name="points">A list of unique points.</param>
-        public Shape(IEnumerable<TriPoint> points) : this((points as IList<TriPoint>) ?? points.ToArray()) { }
+        public Shape_Old(IEnumerable<TriPoint> points) : this((points as IList<TriPoint>) ?? points.ToArray()) { }
 
         /// <summary>
         /// Create a polygon from a list of at least 3 points with no duplicates.
         /// </summary>
         /// <param name="points">A list of unique points.</param>
-        public Shape(params TriPoint[] points) : this((IList<TriPoint>)points) { }
+        public Shape_Old(params TriPoint[] points) : this((IList<TriPoint>)points) { }
 
         /// <summary>
         /// Creates a polygon from a list of at least 3 Vector3 points, with no duplicates.
@@ -55,7 +55,7 @@
         /// <param name="points">The input points.</param>
         /// <param name="offset">An offset to apply to all of the provided points.</param>
         /// <param name="scale">The scale of the provided points. 0.5f is half size. 2.0f is 2x the normal size.</param>
-        public Shape(IList<Vector2F> points, Vector2F offset, float scale)
+        public Shape_Old(IList<Vector2F> points, Vector2F offset, float scale)
         {
             for (int i = 0; i < points.Count; i++)
                 Points.Add(new TriPoint(offset + (points[i] * scale)));
@@ -65,7 +65,7 @@
         /// Creates a polygon from a list of at least 3 Vector3 points, with no duplicates.
         /// </summary>
         /// <param name="points">The input points.</param>
-        public Shape(IList<Vector2F> points) : this(points, Vector2F.Zero, 1.0f) { }
+        public Shape_Old(IList<Vector2F> points) : this(points, Vector2F.Zero, 1.0f) { }
 
         /// <summary>
         /// Produces a <see cref="RectangleF"/> which contains all of the shape's points.
@@ -107,7 +107,7 @@
             tcx.AddPoints(Points);
 
             // Hole edges
-            foreach (Shape h in Holes)
+            foreach (Shape_Old h in Holes)
                 tcx.AddHole(h.Points);
 
             tcx.InitTriangulation();
@@ -133,7 +133,7 @@
             SweepContext tcx = new SweepContext();
             tcx.AddPoints(Points);
 
-            foreach (Shape p in Holes)
+            foreach (Shape_Old p in Holes)
                 tcx.AddHole(p.Points);
 
             tcx.InitTriangulation();
@@ -150,7 +150,7 @@
             for (int i = 0; i < Points.Count; i++)
                 Points[i] *= scale;
 
-            foreach (Shape h in Holes)
+            foreach (Shape_Old h in Holes)
                 h.Scale(scale);
         }
 
@@ -159,7 +159,7 @@
             for (int i = 0; i < Points.Count; i++)
                 Points[i] *= scale;
 
-            foreach (Shape h in Holes)
+            foreach (Shape_Old h in Holes)
                 h.Scale(scale);
         }
 
@@ -168,7 +168,7 @@
             for (int i = 0; i < Points.Count; i++)
                 Points[i] += offset;
 
-            foreach (Shape h in Holes)
+            foreach (Shape_Old h in Holes)
                 h.Offset(offset);
         }
 
@@ -180,7 +180,7 @@
                 Points[i] += offset;
             }
 
-            foreach (Shape h in Holes)
+            foreach (Shape_Old h in Holes)
                 h.ScaleAndOffset(offset, scale);
         }
 
@@ -192,11 +192,11 @@
                 Points[i] += offset;
             }
 
-            foreach (Shape h in Holes)
+            foreach (Shape_Old h in Holes)
                 h.ScaleAndOffset(offset, scale);
         }
 
-        public bool Contains(Shape shape)
+        public bool Contains(Shape_Old shape)
         {
             for(int i = 0; i < shape.Points.Count; i++)
             {

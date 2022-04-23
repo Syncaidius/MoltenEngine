@@ -59,14 +59,14 @@ namespace Molten.Graphics.MSDF
             this.minImproveRatio = minImproveRatio;
         }
 
-        public unsafe void ProtectCorners(ContourShape shape)
+        public unsafe void ProtectCorners(Shape shape)
         {
-            foreach (ContourShape.Contour contour in shape.Contours)
+            foreach (Shape.Contour contour in shape.Contours)
             {
                 if (contour.Edges.Count > 0)
                 {
-                    ContourShape.Edge prevEdge = contour.Edges.Last();
-                    foreach (ContourShape.Edge edge in contour.Edges)
+                    Shape.Edge prevEdge = contour.Edges.Last();
+                    foreach (Shape.Edge edge in contour.Edges)
                     {
                         EdgeColor commonColor = prevEdge.Color & edge.Color;
                         // If the color changes from prevEdge to edge, this is a corner.
@@ -406,7 +406,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void FindErrors<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, ContourShape shape)
+        public unsafe void FindErrors<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, Shape shape)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
