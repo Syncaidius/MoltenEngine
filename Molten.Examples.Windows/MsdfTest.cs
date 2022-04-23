@@ -62,8 +62,8 @@ namespace Molten.Samples
             CameraController.AcceptInput = false;
             Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
 
-            LoadFontFile("Ananda Namaste Regular.ttf", 24);
-            //LoadFontFile("BroshK.ttf", 24);
+            //LoadFontFile("Ananda Namaste Regular.ttf", 24);
+            LoadFontFile("BroshK.ttf", 24);
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
@@ -92,15 +92,6 @@ namespace Molten.Samples
             _fontFile = _font2Test.Font;
             InitializeFontDebug();
             GenerateChar('j');
-
-            GenerateSDF("SDF", 1, SdfMode.Sdf, false, ConvertSdfToRgb);
-            GenerateSDF("SDF Legacy", 1, SdfMode.Sdf, true, ConvertSdfToRgb);
-            GenerateSDF("PSDF", 1, SdfMode.Psdf, false, ConvertSdfToRgb);
-            GenerateSDF("PSDF Legacy", 1, SdfMode.Psdf, true, ConvertSdfToRgb);
-            GenerateSDF("MSDF", 3, SdfMode.Msdf, false, ConvertMsdfToRgb);
-            GenerateSDF("MSDF Legacy", 3, SdfMode.Msdf, true, ConvertMsdfToRgb);
-            GenerateSDF("MTSDF", 4, SdfMode.Mtsdf, false, ConvertMtsdfToRgb);
-            GenerateSDF("MTSDF Legacy", 4, SdfMode.Mtsdf, true, ConvertMtsdfToRgb);
 
             _loaded = true;
         }
@@ -156,7 +147,6 @@ namespace Molten.Samples
             timer.Start();
             uint pWidth = 64;
             uint pHeight = 64;
-            int shapeSize = 50;
             double pxRange = 4;
 
             uint testWidth = 256;
@@ -174,9 +164,6 @@ namespace Molten.Samples
             };
 
             TextureSliceRef<float> sliceRef = slice.GetReference<float>();
-            ContourShape shape = CreateShape(new Vector2D(shapeSize));
-            MsdfShapeProcessing.Normalize(shape);
-
             MsdfProjection projection = new MsdfProjection(scale, pOffset);
 
             uint numBytes = testWidth * testHeight * elementsPerPixel * sizeof(float);
@@ -202,7 +189,7 @@ namespace Molten.Samples
                 Mode = MsdfConfig.ErrorCorrectMode.INDISCRIMINATE
             };
 
-            _msdf.Generate(sliceRef, shape, projection, range, config, mode, fl, legacy);
+            _msdf.Generate(sliceRef, _shape, projection, range, config, mode, fl, legacy);
 
             MsdfRasterization.RenderSDF(outRef, sliceRef, avgScale * range, 0.5f);
 
@@ -217,34 +204,6 @@ namespace Molten.Samples
             Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
         }
 
-        private ContourShape CreateShape(Vector2D size)
-        {
-            ContourShape shape = new ContourShape();
-            ContourShape.Contour c = new ContourShape.Contour();
-
-            c.AddEdge(new ContourShape.QuadraticEdge(new Vector2D(0), new Vector2D(size.X / 2f, -(size.Y / 4)), new Vector2D(size.X, 0)));
-
-            c.AddEdge(new ContourShape.LinearEdge(new Vector2D(size.X, 0), size));
-
-            c.AddEdge(new ContourShape.LinearEdge(size, new Vector2D(0, size.Y)));
-
-            c.AddEdge(new ContourShape.LinearEdge(new Vector2D(0, size.Y), new Vector2D(0)));
-
-            shape.Contours.Add(c);
-
-            Vector2D innerPos = size / 6;
-            Vector2D innerSize = size / 2;
-            double peakSize = 15;
-            ContourShape.Contour cInner = new ContourShape.Contour();
-            cInner.AddEdge(new ContourShape.LinearEdge(innerPos + new Vector2D(innerSize.X, 0), innerPos));
-            cInner.AddEdge(new ContourShape.LinearEdge(innerPos, innerPos + new Vector2D(0, innerSize.Y)));
-            cInner.AddEdge(new ContourShape.LinearEdge(innerPos + new Vector2D(0, innerSize.Y), innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize)));
-            cInner.AddEdge(new ContourShape.LinearEdge(innerPos + new Vector2D(innerSize.X / 2, innerSize.Y + peakSize), innerPos + innerSize));
-            cInner.AddEdge(new ContourShape.LinearEdge(innerPos + innerSize, innerPos + new Vector2D(innerSize.X, 0)));
-
-            shape.Contours.Add(cInner);
-            return shape;
-        }
         private void InitializeFontDebug()
         {
             _fontBounds = _fontFile.ContainerBounds;
@@ -379,6 +338,20 @@ namespace Molten.Samples
             _glyphTriPoints = new List<Vector2F>();
 
             _shape.Triangulate(_glyphTriPoints, Vector2F.Zero, 1, CHAR_CURVE_RESOLUTION);
+
+            _msdfResultTextures.Clear();
+            _msdfTextures.Clear();
+            _shape.ScaleAndOffset(new Vector2F(-45, -60), 0.20f);
+            MsdfShapeProcessing.Normalize(_shape);
+
+            GenerateSDF("SDF", 1, SdfMode.Sdf, false, ConvertSdfToRgb);
+            GenerateSDF("SDF Legacy", 1, SdfMode.Sdf, true, ConvertSdfToRgb);
+            GenerateSDF("PSDF", 1, SdfMode.Psdf, false, ConvertSdfToRgb);
+            GenerateSDF("PSDF Legacy", 1, SdfMode.Psdf, true, ConvertSdfToRgb);
+            GenerateSDF("MSDF", 3, SdfMode.Msdf, false, ConvertMsdfToRgb);
+            GenerateSDF("MSDF Legacy", 3, SdfMode.Msdf, true, ConvertMsdfToRgb);
+            GenerateSDF("MTSDF", 4, SdfMode.Mtsdf, false, ConvertMtsdfToRgb);
+            GenerateSDF("MTSDF Legacy", 4, SdfMode.Mtsdf, true, ConvertMtsdfToRgb);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -397,11 +370,6 @@ namespace Molten.Samples
 
             mat.SetDefaultResource(tex, 0);
             _mesh.Material = mat;
-        }
-
-        private void Window_OnClose(INativeSurface surface)
-        {
-            Exit();
         }
 
         protected override void OnUpdate(Timing time)
