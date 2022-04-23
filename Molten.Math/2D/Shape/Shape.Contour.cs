@@ -17,6 +17,11 @@ namespace Molten
                 Edges.Add(edge);
             }
 
+            public void AddLinearEdge(Vector2D p1, Vector2D p2, EdgeColor color = EdgeColor.White)
+            {
+                Edges.Add(new LinearEdge(p1, p2, color));
+            }
+
             public void AppendLinearPoint(Vector2D p, EdgeColor color = EdgeColor.White)
             {
                 if (Edges.Count == 0)

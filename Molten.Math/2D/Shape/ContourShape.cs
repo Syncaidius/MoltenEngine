@@ -11,6 +11,30 @@ namespace Molten
         public List<Contour> Contours { get; } = new List<Contour>();
 
         /// <summary>
+        /// Creates a new instance of <see cref="ContourShape"/>.
+        /// </summary>
+        public ContourShape() { }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="ContourShape"/> from a list of linear points.
+        /// </summary>
+        /// <param name="points"></param>
+        public ContourShape(List<Vector2F> points) : this(points, Vector2F.Zero, 1f) { }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="ContourShape"/> from a list of linear points.
+        /// </summary>
+        /// <param name="points"></param>
+        public ContourShape(List<Vector2F> points, Vector2F offset, float scale = 1.0f)
+        {
+            Contour c = new Contour();
+            Contours.Add(c);
+            c.AddLinearEdge((Vector2D)points[0], (Vector2D)points[1]);
+            for (int i = 2; i < points.Count; i++)
+                c.AppendLinearPoint((Vector2D)(offset + (points[i] * scale)), EdgeColor.White);
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="output"></param>
@@ -101,8 +125,9 @@ namespace Molten
                     {
                         tri.Points[i].X = (tri.Points[i].X * scale) + offset.X;
                         tri.Points[i].Y = (tri.Points[i].Y * scale) + offset.Y;
-                        output.Add(tri);
                     }
+
+                    output.Add(tri);
                 }
             }            
         }

@@ -141,7 +141,7 @@ namespace Molten.Samples
             triPoints.Add(new Vector2F(770, 280));
 
             // Define a test shape
-            Shape testShape = new Shape(new List<Vector2F>()
+            List<Vector2F> pList = new List<Vector2F>()
             {
                 new Vector2F(2158.9981f,2350.2286f),
                 new Vector2F(2158.9981f,3245.4557f),
@@ -203,7 +203,9 @@ namespace Molten.Samples
                 new Vector2F(1544.4495f,1000.9025f),
                 new Vector2F(1114.8304f,1605.018f),
                 new Vector2F(563.42839f,2350.2286f),
-            }, new Vector2F(100, 400), 0.0625f);
+            };
+
+            ContourShape testShape = new ContourShape(pList, new Vector2F(100, 400), 0.0625f);
 
             List<Vector2F> shapeTriList = new List<Vector2F>();
             testShape.Triangulate(shapeTriList, Vector2F.Zero, 1);

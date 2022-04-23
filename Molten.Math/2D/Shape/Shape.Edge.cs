@@ -58,6 +58,11 @@ namespace Molten
                 }
             }
 
+            public override string ToString()
+            {
+                return $"{this.GetType().Name} - P0: {p[P0]} -- P1: {p[P1]}";
+            }
+
             public abstract Vector2D Point(double param);
 
             public abstract Vector2D PointAlongEdge(double percentage);
