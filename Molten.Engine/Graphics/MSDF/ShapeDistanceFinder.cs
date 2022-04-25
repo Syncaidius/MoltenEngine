@@ -30,8 +30,7 @@ namespace Molten.Graphics.MSDF
         {
             contourCombiner.Reset(ref origin);
 
-            int ecIndex = 0;
-            ref EdgeCache edgeCache = ref shapeEdgeCache[ecIndex];
+            int edgeCache = 0;
 
             for (int i = 0; i < shape.Contours.Count; i++)
             {
@@ -40,45 +39,14 @@ namespace Molten.Graphics.MSDF
 
                 if (edgeCount > 0)
                 {
-                    ES edgeSelector = contourCombiner.EdgeSelector(i);
+                    ES edgeSelector = contourCombiner.EdgeSelector(0);
 
                     Shape.Edge prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
                     Shape.Edge curEdge = contour.Edges.Last();
                     foreach (Shape.Edge edge in contour.Edges)
                     {
                         Shape.Edge nextEdge = edge;
-                        edgeSelector.AddEdge(ref edgeCache, prevEdge, curEdge, nextEdge);
-                        ecIndex++;
-                        prevEdge = curEdge;
-                        curEdge = nextEdge;
-                    }
-                }
-            }
-
-            return contourCombiner.Distance();
-        }
-
-        public DT oneShotDistance(ContourCombiner<ES, DT> combiner, Shape shape, ref Vector2D origin) {
-            contourCombiner = combiner;
-            contourCombiner.Reset(ref origin);
-
-            for (int i = 0; i < shape.Contours.Count; i++)
-            {
-                Shape.Contour contour = shape.Contours[i];
-                int edgeCount = contour.Edges.Count;
-
-                if (edgeCount > 0)
-                {
-                    ES edgeSelector = contourCombiner.EdgeSelector(i);
-
-                    Shape.Edge prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
-                    Shape.Edge curEdge = contour.Edges.Last();
-
-                    foreach (Shape.Edge edge in contour.Edges)
-                    {
-                        Shape.Edge nextEdge = edge;
-                        EdgeCache dummy = new EdgeCache();
-                        edgeSelector.AddEdge(ref dummy, prevEdge, curEdge, nextEdge);
+                        edgeSelector.AddEdge(ref shapeEdgeCache[edgeCache++], prevEdge, curEdge, nextEdge);
                         prevEdge = curEdge;
                         curEdge = nextEdge;
                     }
