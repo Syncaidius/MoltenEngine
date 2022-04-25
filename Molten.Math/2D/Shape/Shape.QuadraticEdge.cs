@@ -42,7 +42,7 @@ namespace Molten
 
             public override Vector2D GetDirectionChange(double param)
             {
-                return (p[2] - p[1]) - (p[1] - p[0]);
+                return (p[CP1] - p[P1]) - (p[P1] - p[P0]);
             }
 
             public override void SplitInThirds(ref Edge part1, ref Edge part2, ref Edge part3)
@@ -174,23 +174,6 @@ namespace Molten
                     Vector2D p2n = (p[2] - origin).GetNormalized();
                     return new SignedDistance(minDistance, Math.Abs(Vector2D.Dot(d1n, p2n)));
                 }
-            }
-
-            public double Length()
-            {
-                Vector2D ab = p[1] - p[0];
-                Vector2D br = p[2] - p[1] - ab;
-                double abab = Vector2D.Dot(ab, ab);
-                double abbr = Vector2D.Dot(ab, br);
-                double brbr = Vector2D.Dot(br, br);
-                double abLen = Math.Sqrt(abab);
-                double brLen = Math.Sqrt(brbr);
-                double crs = Vector2D.Cross(ab, br);
-                double h = Math.Sqrt(abab + abbr + abbr + brbr);
-                return (
-                    brLen * ((abbr + brbr) * h - abbr * abLen) +
-                    crs * crs * Math.Log((brLen * h + abbr + brbr) / (brLen * abLen + abbr))
-                ) / (brbr * brLen);
             }
         }
     }

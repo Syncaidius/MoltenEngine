@@ -62,8 +62,9 @@ namespace Molten.Samples
             CameraController.AcceptInput = false;
             Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
 
-            //LoadFontFile("Ananda Namaste Regular.ttf", 24);
-            LoadFontFile("BroshK.ttf", 24);
+            LoadFontFile("Ananda Namaste Regular.ttf", 24);
+            //LoadFontFile("BroshK.ttf", 24);
+            //LoadFontFile("Arial", 16);
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }

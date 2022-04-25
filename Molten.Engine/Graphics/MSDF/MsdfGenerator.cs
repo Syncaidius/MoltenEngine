@@ -34,8 +34,12 @@ namespace Molten.Graphics.MSDF
      */
     public class MsdfGenerator
     {
+        const double DEFAULT_ANGLE_THRESHOLD = 3;
+
         public unsafe void Generate(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, MsdfConfig config, SdfMode mode, FillRule fl, bool legacy)
         {
+            const string edgeAssignment = null; // "cmywCMYW";
+
             if (legacy)
             {
                 switch (mode)
@@ -49,10 +53,14 @@ namespace Molten.Graphics.MSDF
                         break;
 
                     case SdfMode.Msdf:
+                        EdgeColouring.edgeColoringSimple(shape, DEFAULT_ANGLE_THRESHOLD, 0);
+                        EdgeColouring.parseColoring(shape, edgeAssignment);
                         GenerateMSDF_Legacy(output, shape, range, projection.Scale, projection.Translate, config);
                         break;
 
                     case SdfMode.Mtsdf:
+                        EdgeColouring.edgeColoringSimple(shape, DEFAULT_ANGLE_THRESHOLD, 0);
+                        EdgeColouring.parseColoring(shape, edgeAssignment);
                         GenerateMTSDF_Legacy(output, shape, range, projection.Scale, projection.Translate, config);
                         break;
                 }

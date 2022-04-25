@@ -510,9 +510,9 @@
         ///  Returns 1 for non-negative values and -1 for negative values.
         /// </summary>
         /// <param name="value">The value</param>
-        public static int NonZeroSign(double vaue)
+        public static int NonZeroSign(double value)
         {
-            return 2 * ((vaue > 0) ? 1 : 0) - 1;
+            return 2 * (value > 0 ? 1 : 0) - 1;
         }
 
         /// <summary>
