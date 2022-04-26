@@ -187,67 +187,6 @@
             cp.Clear();
         }
 
-        private void PlotCurve(Shape_Old shape, Vector2F prevPoint, Vector2F curPoint, List<Vector2F> cp, float curveResolution)
-        {
-            float curveIncrement = 1.0f / curveResolution;
-            float curvePercent = 0f;
-            switch (cp.Count)
-            {
-                case 0: // Line
-                    shape.Points.Add(new TriPoint(curPoint));
-                    break;
-
-                case 1: // Quadratic bezier curve
-                    curvePercent = 0f;
-                    for (int c = 0; c < curveResolution; c++)
-                    {
-                        curvePercent += curveIncrement;
-                        Vector2F cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[0]);
-                        shape.Points.Add(new TriPoint(cPos));
-                    }
-                    break;
-
-                case 2: // Cubic curve
-                    curvePercent = 0f;
-                    for (int c = 0; c < curveResolution; c++)
-                    {
-                        curvePercent += curveIncrement;
-                        Vector2F cPos = BezierCurve2D.CalculateCubic(curvePercent, prevPoint, curPoint, cp[0], cp[1]);
-                        shape.Points.Add(new TriPoint(cPos));
-                    }
-                    break;
-
-                default:
-                    // There are at least 3 control points.
-                    for (int i = 0; i < cp.Count - 1; i++)
-                    {
-                        Vector2F midPoint = (cp[i] + cp[i + 1]) / 2f;
-
-                        curvePercent = 0f;
-                        for (int c = 0; c < curveResolution; c++)
-                        {
-                            curvePercent += curveIncrement;
-                            Vector2F cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, midPoint, cp[i]);
-                            shape.Points.Add(new TriPoint(cPos));
-                        }
-
-                        prevPoint = midPoint;
-                    }
-
-                    // Calculate last bezier 
-                    curvePercent = 0f;
-                    for (int c = 0; c < curveResolution; c++)
-                    {
-                        curvePercent += curveIncrement;
-                        Vector2F cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[cp.Count - 1]);
-                        shape.Points.Add(new TriPoint(cPos));
-                    }
-                    break;
-            }
-
-            cp.Clear();
-        }
-
         object ICloneable.Clone()
         {
             return Clone();
