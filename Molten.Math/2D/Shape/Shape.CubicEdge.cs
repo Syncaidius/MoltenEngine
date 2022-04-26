@@ -47,7 +47,7 @@ namespace Molten
                 return tangent;
             }
 
-            public override Vector2D GetDirectionChange(double param)
+            public Vector2D GetDirectionChange(double param)
             {
                 Vector2D start = (p[2] - p[1]) - (p[1] - p[0]);
                 Vector2D end = (p[3] - p[2]) - (p[2] - p[1]);

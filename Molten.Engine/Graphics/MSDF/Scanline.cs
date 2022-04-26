@@ -47,50 +47,6 @@ namespace Molten.Graphics.MSDF
             return false;
         }
 
-        public double Overlap(Scanline a, Scanline b, double xFrom, double xTo, FillRule fillRule)
-        {
-            double total = 0;
-            bool aInside = false, bInside = false;
-            int ai = 0, bi = 0;
-            double ax = a.intersections.Count > 0 ? a.intersections[ai].x : xTo;
-            double bx = b.intersections.Count > 0 ? b.intersections[bi].x : xTo;
-            while (ax < xFrom || bx < xFrom)
-            {
-                double xNext = Math.Min(ax, bx);
-                if (ax == xNext && ai < a.intersections.Count)
-                {
-                    aInside = InterpretFillRule(a.intersections[ai].direction, fillRule);
-                    ax = ++ai < a.intersections.Count ? a.intersections[ai].x : xTo;
-                }
-                if (bx == xNext && bi < b.intersections.Count)
-                {
-                    bInside = InterpretFillRule(b.intersections[bi].direction, fillRule);
-                    bx = ++bi < b.intersections.Count ? b.intersections[bi].x : xTo;
-                }
-            }
-            double x = xFrom;
-            while (ax < xTo || bx < xTo)
-            {
-                double xNext = Math.Min(ax, bx);
-                if (aInside == bInside)
-                    total += xNext - x;
-                if (ax == xNext && ai < a.intersections.Count)
-                {
-                    aInside = InterpretFillRule(a.intersections[ai].direction, fillRule);
-                    ax = ++ai < a.intersections.Count ? a.intersections[ai].x : xTo;
-                }
-                if (bx == xNext && bi < b.intersections.Count)
-                {
-                    bInside = InterpretFillRule(b.intersections[bi].direction, fillRule);
-                    bx = ++bi < b.intersections.Count ? b.intersections[bi].x : xTo;
-                }
-                x = xNext;
-            }
-            if (aInside == bInside)
-                total += xTo - x;
-            return total;
-        }
-
         public void Preprocess()
         {
             lastIndex = 0;

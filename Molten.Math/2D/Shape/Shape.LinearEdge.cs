@@ -35,11 +35,6 @@ namespace Molten
                 return p[P1] - p[P0];
             }
 
-            public override Vector2D GetDirectionChange(double param)
-            {
-                return new Vector2D();
-            }
-
             public override void SplitInThirds(ref Edge part1, ref Edge part2, ref Edge part3)
             {
                 part1 = new LinearEdge(p[P0], Point(1 / 3.0), Color);

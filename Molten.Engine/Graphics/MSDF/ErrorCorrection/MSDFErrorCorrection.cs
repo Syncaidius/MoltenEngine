@@ -243,16 +243,6 @@ namespace Molten.Graphics.MSDF
             ));
         }
 
-        public bool IsArtifact(bool isProtected, double axSpan, double bxSpan, float am, float bm, float xm)
-        {
-            return (
-                // For protected texels, only report an artifact if it would cause fill inversion (change between positive and negative distance).
-                (!isProtected || (am > .5f && bm > .5f && xm <= .5f) || (am < .5f && bm < .5f && xm >= .5f)) &&
-                // This is an artifact if the interpolated median is outside the range of possible values based on its distance from a, b.
-                !(xm >= am - axSpan && xm <= am + axSpan && xm >= bm - bxSpan && xm <= bm + bxSpan)
-            );
-        }
-
         /// <summary>
         /// Checks if a linear interpolation artifact will occur at a point where two specific color channels are equal - such points have extreme median values.
         /// </summary>

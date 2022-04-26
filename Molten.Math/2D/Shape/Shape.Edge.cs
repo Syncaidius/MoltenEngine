@@ -69,8 +69,6 @@ namespace Molten
 
             public abstract Vector2D GetDirection(double param);
 
-            public abstract Vector2D GetDirectionChange(double param);
-
             public abstract void SplitInThirds(ref Edge part1, ref Edge part2, ref Edge part3);
 
             public unsafe abstract int ScanlineIntersections(double* x, int* dy, double y);

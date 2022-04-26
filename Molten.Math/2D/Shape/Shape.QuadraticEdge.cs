@@ -40,11 +40,6 @@ namespace Molten
                 return tangent;
             }
 
-            public override Vector2D GetDirectionChange(double param)
-            {
-                return (p[CP1] - p[P1]) - (p[P1] - p[P0]);
-            }
-
             public override void SplitInThirds(ref Edge part1, ref Edge part2, ref Edge part3)
             {
                 part1 = new QuadraticEdge(p[P0], Vector2D.Lerp(ref p[P0], ref p[P1], 1 / 3.0), Point(1 / 3.0), Color);

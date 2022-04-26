@@ -141,7 +141,7 @@ namespace Molten.Samples
             }
         }
 
-        private unsafe void GenerateSDF(string label, uint elementsPerPixel, SdfMode mode, bool legacy, 
+        private unsafe void GenerateSDF(string label, uint elementsPerPixel, SdfMode mode, 
             Action<TextureSliceRef<float>, Color[]> convertCallback)
         {
             Stopwatch timer = new Stopwatch();
@@ -186,11 +186,11 @@ namespace Molten.Samples
 
             MsdfConfig config = new MsdfConfig()
             {
-                DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.ALWAYS_CHECK_DISTANCE,
-                Mode = MsdfConfig.ErrorCorrectMode.INDISCRIMINATE
+                DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE,
+                Mode = MsdfConfig.ErrorCorrectMode.EDGE_PRIORITY
             };
 
-            _msdf.Generate(sliceRef, _shape, projection, range, config, mode, fl, legacy);
+            _msdf.Generate(sliceRef, _shape, projection, range, config, mode, fl);
 
             MsdfRasterization.RenderSDF(outRef, sliceRef, avgScale * range, 0.5f);
 
@@ -345,14 +345,10 @@ namespace Molten.Samples
             _shape.ScaleAndOffset(new Vector2F(-45, -60), 0.20f);
             MsdfShapeProcessing.Normalize(_shape);
 
-            GenerateSDF("SDF", 1, SdfMode.Sdf, false, ConvertSdfToRgb);
-            GenerateSDF("SDF Legacy", 1, SdfMode.Sdf, true, ConvertSdfToRgb);
-            GenerateSDF("PSDF", 1, SdfMode.Psdf, false, ConvertSdfToRgb);
-            GenerateSDF("PSDF Legacy", 1, SdfMode.Psdf, true, ConvertSdfToRgb);
-            GenerateSDF("MSDF", 3, SdfMode.Msdf, false, ConvertMsdfToRgb);
-            GenerateSDF("MSDF Legacy", 3, SdfMode.Msdf, true, ConvertMsdfToRgb);
-            GenerateSDF("MTSDF", 4, SdfMode.Mtsdf, false, ConvertMtsdfToRgb);
-            GenerateSDF("MTSDF Legacy", 4, SdfMode.Mtsdf, true, ConvertMtsdfToRgb);
+            GenerateSDF("SDF", 1, SdfMode.Sdf, ConvertSdfToRgb);
+            GenerateSDF("PSDF", 1, SdfMode.Psdf, ConvertSdfToRgb);
+            GenerateSDF("MSDF", 3, SdfMode.Msdf, ConvertMsdfToRgb);
+            GenerateSDF("MTSDF", 4, SdfMode.Mtsdf, ConvertMtsdfToRgb);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
