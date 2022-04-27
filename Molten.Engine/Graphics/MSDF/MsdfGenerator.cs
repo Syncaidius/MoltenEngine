@@ -121,7 +121,7 @@ namespace Molten.Graphics.MSDF
 
         private void GenerateSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range)
         {
-            Validation.NPerPixel(output, 1);
+            NPerPixel(output, 1);
 
             var dpc = new DoubleDistancePixelConversion(range);
             var combiner = new ContourCombiner<TrueDistanceSelector, double>(shape);
@@ -131,7 +131,7 @@ namespace Molten.Graphics.MSDF
 
         private void GeneratePseudoSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range)
         {
-            Validation.NPerPixel(output, 1);
+            NPerPixel(output, 1);
 
             var dpc = new DoubleDistancePixelConversion(range);
             var combiner = new ContourCombiner<PseudoDistanceSelector, double>(shape);
@@ -141,7 +141,7 @@ namespace Molten.Graphics.MSDF
 
         private void GenerateMSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, MsdfConfig config)
         {
-            Validation.NPerPixel(output, 3);
+            NPerPixel(output, 3);
 
             var dpc = new MultiDistancePixelConversion(range);
             var combiner = new ContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
@@ -152,13 +152,25 @@ namespace Molten.Graphics.MSDF
 
         private void GenerateMTSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, MsdfConfig config)
         {
-            Validation.NPerPixel(output, 4);
+            NPerPixel(output, 4);
 
             var dpc = new MultiTrueDistancePixelConversion(range);
             var combiner = new ContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
 
             GenerateDistanceField(dpc, combiner, output, shape, projection, range);
             ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
+        }
+
+        internal static void NPerPixel<T>(TextureSliceRef<T> bitmap, int expectedN) where T : unmanaged
+        {
+            if (bitmap.ElementsPerPixel != expectedN)
+                throw new IndexOutOfRangeException($"A {nameof(TextureSliceRef<T>)} of {expectedN} component{(expectedN > 1 ? "s" : "")}-per-pixel is expected, not {bitmap.ElementsPerPixel}.");
+        }
+
+        internal static void NPerPixel<T>(TextureSlice bitmap, int expectedN) where T : unmanaged
+        {
+            if (bitmap.ElementsPerPixel != expectedN)
+                throw new IndexOutOfRangeException($"A {nameof(TextureSliceRef<T>)} of {expectedN} component{(expectedN > 1 ? "s" : "")}-per-pixel is expected, not {bitmap.ElementsPerPixel}.");
         }
     }
 }

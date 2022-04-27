@@ -10,7 +10,7 @@ namespace Molten.Graphics.MSDF
     {
         public static unsafe void distanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
         {
-            Validation.NPerPixel(sdf, 1);
+            MsdfGenerator.NPerPixel(sdf, 1);
             Scanline scanline = new Scanline();
 
             for (int y = 0; y < sdf.Height; ++y)
