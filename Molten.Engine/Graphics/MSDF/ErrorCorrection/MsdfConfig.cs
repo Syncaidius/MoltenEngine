@@ -74,5 +74,13 @@ namespace Molten.Graphics.MSDF
             MinDeviationRatio = minDeviationRatio;
             MinImproveRatio = minImproveRatio;
         }
+
+        public MsdfConfig(MsdfConfig other)
+        {
+            Mode = other.Mode;
+            DistanceCheckMode = other.DistanceCheckMode;
+            MinDeviationRatio = other.MinDeviationRatio;
+            MinImproveRatio = other.MinImproveRatio;
+        }
     }
 }

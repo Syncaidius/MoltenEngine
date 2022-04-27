@@ -17,15 +17,17 @@ namespace Molten.Graphics.MSDF
     {
         ShapeDistanceChecker<ES, DT> parent;
         Vector2D direction;
+        uint _nPerPixel;
 
         public ArtifactClassifier(ShapeDistanceChecker<ES, DT> parent, in Vector2D direction, double span) :
             base(span, parent.protectedFlag)
         {
             this.parent = parent;
             this.direction = direction;
+            _nPerPixel = parent.sdf.ElementsPerPixel;
         }
 
-        public unsafe bool Evaluate(int N, double t, float m, int flags)
+        public override unsafe bool Evaluate(double t, float m, int flags)
         {
             if ((flags & MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE) == MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE)
             {
@@ -34,7 +36,7 @@ namespace Molten.Graphics.MSDF
                     return true;
 
                 Vector2D tVector = t * direction;
-                float* oldMSD = stackalloc float[N];
+                float* oldMSD = stackalloc float[(int)_nPerPixel];
                 float* newMSD = stackalloc float[3];
 
                 // Compute the color that would be currently interpolated at the artifact candidate's position.

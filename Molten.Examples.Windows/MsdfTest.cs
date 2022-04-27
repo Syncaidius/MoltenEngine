@@ -152,8 +152,8 @@ namespace Molten.Samples
 
             uint testWidth = 256;
             uint testHeight = 256;
-            Vector2D scale = new Vector2D(1);
-            Vector2D pOffset = new Vector2D(0, 8);
+            Vector2D scale = new Vector2D(0.2);
+            Vector2D pOffset = new Vector2D(-240, -250);
             double avgScale = .5 * (scale.X + scale.Y);
             double range = pxRange / Math.Min(scale.X, scale.Y);
             FillRule fl = FillRule.NonZero;
@@ -342,7 +342,6 @@ namespace Molten.Samples
 
             _msdfResultTextures.Clear();
             _msdfTextures.Clear();
-            _shape.ScaleAndOffset(new Vector2F(-45, -60), 0.20f);
             MsdfShapeProcessing.Normalize(_shape);
 
             GenerateSDF("SDF", 1, SdfMode.Sdf, ConvertSdfToRgb);

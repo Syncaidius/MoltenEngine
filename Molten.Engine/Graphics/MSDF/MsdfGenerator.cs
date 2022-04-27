@@ -39,6 +39,10 @@ namespace Molten.Graphics.MSDF
         public unsafe void Generate(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, MsdfConfig config, SdfMode mode, FillRule fl)
         {
             const string edgeAssignment = null; // "cmywCMYW";
+            MsdfConfig postGenConfig = new MsdfConfig(config);
+
+            config.Mode = MsdfConfig.ErrorCorrectMode.DISABLED;
+            //postGenConfig.DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
 
             switch (mode)
             {
@@ -75,7 +79,7 @@ namespace Molten.Graphics.MSDF
                     {
                         var combiner = new ContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
                         MsdfRasterization.multiDistanceSignCorrection(output, shape, projection, fl);
-                        ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
+                        ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, postGenConfig);
                         break;
                     }
 
@@ -83,7 +87,7 @@ namespace Molten.Graphics.MSDF
                     {
                         var combiner = new ContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
                         MsdfRasterization.multiDistanceSignCorrection(output, shape, projection, fl);
-                        ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
+                        ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, postGenConfig);
                         break;
                     }
             }

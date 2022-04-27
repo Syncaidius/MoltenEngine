@@ -254,7 +254,7 @@ namespace Molten.Graphics.MSDF
         /// <param name="dA"></param>
         /// <param name="dB"></param>
         /// <returns></returns>
-        public unsafe bool HasLinearArtifactInner(BaseArtifactClassifier artifactClassifier, float am, float bm, float* a, float* b, float dA, float dB)
+        private unsafe bool HasLinearArtifactInner(BaseArtifactClassifier artifactClassifier, float am, float bm, float* a, float* b, float dA, float dB)
         {
             // Find interpolation ratio t (0 < t < 1) where two color channels are equal (mix(dA, dB, t) == 0).
             double t = (double)dA / (dA - dB);
@@ -267,7 +267,7 @@ namespace Molten.Graphics.MSDF
             return false;
         }
 
-        public unsafe bool HasDiagonalArtifactInner(BaseArtifactClassifier artifactClassifier,
+        private unsafe bool HasDiagonalArtifactInner(BaseArtifactClassifier artifactClassifier,
             float am, float dm, float* a, float* l, float* q,
             float dA, float dBC, float dD, double tEx0, double tEx1)
         {
