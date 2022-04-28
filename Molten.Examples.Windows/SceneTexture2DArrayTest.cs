@@ -6,18 +6,11 @@ namespace Molten.Samples
     {
         public override string Description => "A simple test of texture arrays via a material shared between two parented objects.";
 
-        SceneObject _parent;
-        SceneObject _child;
-        IMesh<CubeArrayVertex> _mesh;
-
         public SceneTexture2DArrayTest() : base("2D Texture Array") { }
 
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-            _mesh = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
-            _mesh.SetVertices(SampleVertexData.TextureArrayCubeVertices);
-
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<IMaterial>("BasicTextureArray2D.mfx");
             cr.Load<ITexture2D>("128.dds", new TextureParameters()
@@ -26,8 +19,13 @@ namespace Molten.Samples
             });
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
+        }
 
-            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
+        protected override IMesh GetTestCubeMesh()
+        {
+            IMesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
+            cube.SetVertices(SampleVertexData.TextureArrayCubeVertices);
+            return cube;
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -42,13 +40,7 @@ namespace Molten.Samples
 
             ITexture2D texture = cr.Get<ITexture2D>(1);
             mat.SetDefaultResource(texture, 0);
-            _mesh.Material = mat;
-        }
-
-        protected override void OnUpdate(Timing time)
-        {
-            RotateParentChild(_parent, _child, time);
-            base.OnUpdate(time);
+            TestMesh.Material = mat;
         }
     }
 }

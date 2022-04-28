@@ -6,26 +6,24 @@ namespace Molten.Samples
     {
         public override string Description => "A simple test for 1D texture loading and usage.";
 
-        SceneObject _parent;
-        SceneObject _child;
-        IMesh<CubeArrayVertex> _mesh;
-
         public OneDTextureTest() : base("1D Texture Test") { }
 
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);    
 
-            _mesh = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
-            _mesh.SetVertices(SampleVertexData.TextureArrayCubeVertices);
-
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<IMaterial>("BasicTexture1D.mfx");
             cr.Load<ITexture>("1d_1.png");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
+        }
 
-            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
+        protected override IMesh GetTestCubeMesh()
+        {
+            IMesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
+            cube.SetVertices(SampleVertexData.TextureArrayCubeVertices);
+            return cube;
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -42,13 +40,7 @@ namespace Molten.Samples
             ITexture texture = cr.Get<ITexture>(1);
 
             mat.SetDefaultResource(texture, 0);
-            _mesh.Material = mat;
-        }
-
-        protected override void OnUpdate(Timing time)
-        {
-            RotateParentChild(_parent, _child, time);
-            base.OnUpdate(time);
+            TestMesh.Material = mat;
         }
     }
 }

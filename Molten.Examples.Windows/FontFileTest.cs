@@ -12,9 +12,6 @@ namespace Molten.Samples
 
         public override string Description => "A test area for the WIP FontFile system.";
 
-        SceneObject _parent;
-        SceneObject _child;
-        IMesh<VertexTexture> _mesh;
         FontFile _fontFile;
         SpriteFont _font2Test;
 
@@ -46,9 +43,6 @@ namespace Molten.Samples
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
-            _mesh = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
-            _mesh.SetVertices(SampleVertexData.TexturedCube);
-            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
             CameraController.AcceptInput = false;
             Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
 
@@ -202,7 +196,6 @@ namespace Molten.Samples
             _glyphBounds.Y += _charOffset.Y;
             _glyphTriPoints = new List<Vector2F>();
 
-
             _shape.Triangulate(_glyphTriPoints, Vector2F.Zero, 1, CHAR_CURVE_RESOLUTION);
         }
 
@@ -221,13 +214,11 @@ namespace Molten.Samples
             }
 
             mat.SetDefaultResource(tex, 0);
-            _mesh.Material = mat;
+            TestMesh.Material = mat;
         }
 
         protected override void OnUpdate(Timing time)
         {
-            RotateParentChild(_parent, _child, time);
-
             // Perform a collision test against the rendered font character
             // when left mouse button is clicked.
             if (Mouse.IsTapped(MouseButton.Left))
@@ -242,6 +233,11 @@ namespace Molten.Samples
                 }
             }
 
+            base.OnUpdate(time);
+        }
+
+        protected override void OnGamepadInput(Timing time)
+        {
             // React to gamepad ABXY buttons
             if (Gamepad.IsTapped(GamepadButton.A))
                 GenerateChar('A');
@@ -259,12 +255,6 @@ namespace Molten.Samples
             if (Gamepad.IsTapped(GamepadButton.LeftShoulder) ||
                 Gamepad.IsTapped(GamepadButton.RightShoulder))
                 GenerateChar('S');
-
-            // Apply left and right vibration equal to left and right trigger values 
-            Gamepad.VibrationLeft.Value = Gamepad.LeftTrigger.Value;
-            Gamepad.VibrationRight.Value = Gamepad.RightTrigger.Value;
-
-            base.OnUpdate(time);
         }
     }
 }

@@ -58,11 +58,6 @@ namespace Molten.Samples
             MainScene.AddObject(obj);
         }
 
-        private void Window_OnClose(INativeSurface surface)
-        {
-            Exit();
-        }
-
         protected override void OnUpdate(Timing time)
         {
             var rotateAngle = 1.2f * time.Delta;

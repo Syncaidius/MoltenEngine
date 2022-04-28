@@ -6,9 +6,6 @@ namespace Molten.Samples
     {
         public override string Description => "An example of using a SpriteRenderComponent to draw sprites.";
 
-        SceneObject _parent;
-        SceneObject _child;
-        IMesh<VertexTexture> _mesh;
         List<Sprite> _sprites;
 
         public SpriteBatchSample() : base("Sprite Batch") { }
@@ -25,10 +22,6 @@ namespace Molten.Samples
             });
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
-
-            _mesh = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
-            _mesh.SetVertices(SampleVertexData.TexturedCube);
-            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -45,7 +38,7 @@ namespace Molten.Samples
 
             ITexture2D tex = cr.Get<ITexture2D>(1);
             mat.SetDefaultResource(tex, 0);
-            _mesh.Material = mat;
+            TestMesh.Material = mat;
             SetupSprites(tex);
             SetupSprites(null);
         }
@@ -89,13 +82,6 @@ namespace Molten.Samples
                 for (int i = 0; i < _sprites.Count; i++)
                     sb.Draw(_sprites[i]);
             };
-        }
-
-        protected override void OnUpdate(Timing time)
-        {
-            RotateParentChild(_parent, _child, time);
-
-            base.OnUpdate(time);
         }
     }
 }

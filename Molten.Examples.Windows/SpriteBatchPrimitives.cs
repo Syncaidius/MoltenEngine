@@ -6,9 +6,6 @@ namespace Molten.Samples
     {
         public override string Description => "Draws various primitives using sprite batch.";
 
-        SceneObject _parent;
-        SceneObject _child;
-        IMesh<VertexTexture> _mesh;
         Rectangle[] _rectangles;
         Color[] _rectangleColors;
 
@@ -26,55 +23,6 @@ namespace Molten.Samples
             });
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
-
-            _mesh = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
-
-            VertexTexture[] verts = new VertexTexture[]{
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)), //front
-               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(0,0)),
-               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(1, 0)),
-               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(1,1)),
-
-               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(1,0)), //back
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(1,1)),
-               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(0, 0)),
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
-
-               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(0,1)), //top
-               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(0,0)),
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(1, 0)),
-               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(1,1)),
-
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(1,0)), //bottom
-               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(1,1)),
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(0, 0)),
-               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(0,1)),
-
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)), //left
-               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(0,0)),
-               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(1, 0)),
-               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(1,1)),
-
-               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(1,0)), //right
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
-               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(1,1)),
-               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(1,0)),
-               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(0, 0)),
-               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
-            };
-
-            _mesh.SetVertices(verts);
-            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -91,7 +39,7 @@ namespace Molten.Samples
 
             ITexture2D tex = cr.Get<ITexture2D>(1);
             mat.SetDefaultResource(tex, 0);
-            _mesh.Material = mat;
+            TestMesh.Material = mat;
 
             // Create points for zig-zagging lines.
             List<Vector2F> linePoints = new List<Vector2F>();
@@ -258,13 +206,5 @@ namespace Molten.Samples
                     circleSides /= 2;
                 }
             };
-        }
-
-        protected override void OnUpdate(Timing time)
-        {
-            RotateParentChild(_parent, _child, time);
-
-            base.OnUpdate(time);
-        }
-    }
+        }    }
 }

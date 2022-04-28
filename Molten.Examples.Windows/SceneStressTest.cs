@@ -7,7 +7,6 @@ namespace Molten.Samples
         public override string Description => "A simple scene test using colored cubes with";
 
         List<SceneObject> _objects;
-        IMesh<VertexColor> _mesh;
 
         public SceneStressTest() : base("Scene Stress") { }
 
@@ -21,11 +20,15 @@ namespace Molten.Samples
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
-            _mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
-            _mesh.SetVertices(SampleVertexData.ColoredCube);
-
             for (int i = 0; i < 10000; i++)
-                SpawnRandomTestCube(_mesh, 70);
+                SpawnRandomTestCube(TestMesh, 70);
+        }
+
+        protected override IMesh GetTestCubeMesh()
+        {
+            IMesh<VertexColor> cube = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
+            cube.SetVertices(SampleVertexData.ColoredCube);
+            return cube;
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -38,7 +41,7 @@ namespace Molten.Samples
                 return;
             }
 
-            _mesh.Material = mat;
+            TestMesh.Material = mat;
         }
 
         private void SpawnRandomTestCube(IMesh mesh, int spawnRadius)
@@ -57,11 +60,6 @@ namespace Molten.Samples
 
             _objects.Add(obj);
             MainScene.AddObject(obj);
-        }
-
-        private void Window_OnClose(INativeSurface surface)
-        {
-            Exit();
         }
 
         protected override void OnUpdate(Timing time)

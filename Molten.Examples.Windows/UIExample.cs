@@ -7,9 +7,6 @@ namespace Molten.Samples
     {
         public override string Description => "Demonstrates Molten's UI system.";
 
-        SceneObject _parent;
-        SceneObject _child;
-        IMesh<VertexTexture> _mesh;
         UIManagerComponent _ui;
 
         public UIExample() : base("UI Example") { }
@@ -26,11 +23,6 @@ namespace Molten.Samples
             });
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
-
-            _mesh = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
-            _mesh.SetVertices(SampleVertexData.TexturedCube);
-
-            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -47,7 +39,7 @@ namespace Molten.Samples
 
             ITexture2D tex = cr.Get<ITexture2D>(1);
             mat.SetDefaultResource(tex, 0);
-            _mesh.Material = mat;
+            TestMesh.Material = mat;
 
             _ui = SpriteLayer.AddObjectWithComponent<UIManagerComponent>();
             _ui.Root = new UIPanel()
@@ -61,7 +53,7 @@ namespace Molten.Samples
                 Parent = _ui.Root,
                 Properties = new UIPanelData()
                 {
-                    BackgroundColor = new Color(0,128, 0, 200),
+                    BackgroundColor = new Color(0, 128, 0, 200),
                     BorderColor = Color.LimeGreen
                 },
             };
@@ -73,15 +65,11 @@ namespace Molten.Samples
             };
         }
 
-        protected override void OnUpdate(Timing time)
-        {
-            RotateParentChild(_parent, _child, time);
-
-            base.OnUpdate(time);
-        }
-
         protected override void OnHudDraw(SpriteBatcher sb)
         {
+            if (SampleFont == null)
+                return;
+
             base.OnHudDraw(sb);
 
             string text = $"Hovered UI Element: {(_ui.HoverElement != null ? _ui.HoverElement.Name : "None")}";

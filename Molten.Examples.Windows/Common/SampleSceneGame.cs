@@ -3,10 +3,16 @@ using Molten.Input;
 
 namespace Molten.Samples
 {
+    /// <summary>
+    /// Provides a basic test scene with one rotating cube parented to a larger rotating cube.
+    /// </summary>
     public abstract class SampleSceneGame : SampleGame
     {
         SceneObject _player;
         SampleCameraController _camController;
+        SceneObject _parent;
+        SceneObject _child;
+        protected IMesh TestMesh { get; private set; }
 
         public SampleSceneGame(string title) : base(title) { }
 
@@ -14,6 +20,16 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
             SpawnPlayer();
+
+            TestMesh = GetTestCubeMesh();
+            SpawnParentChild(TestMesh, Vector3F.Zero, out _parent, out _child);
+        }
+
+        protected virtual IMesh GetTestCubeMesh()
+        {
+            IMesh<VertexTexture> cube = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
+            cube.SetVertices(SampleVertexData.TexturedCube);
+            return cube;
         }
 
         private void SpawnPlayer()
@@ -29,12 +45,7 @@ namespace Molten.Samples
             MainScene.AddObject(_player);
         }
 
-        protected SceneObject SpawnTestCube(IMesh mesh)
-        {
-            return SpawnTestCube(mesh, Vector3F.Zero);
-        }
-
-        protected SceneObject SpawnTestCube(IMesh mesh, Vector3F pos)
+        private SceneObject SpawnTestCube(IMesh mesh, Vector3F pos)
         {
             SceneObject obj = CreateObject(pos, MainScene);
             MeshComponent meshCom = obj.Components.Add<MeshComponent>();
@@ -44,8 +55,8 @@ namespace Molten.Samples
 
         protected void SpawnParentChild(IMesh mesh, Vector3F origin, out SceneObject parent, out SceneObject child)
         {
-            parent = SpawnTestCube(mesh);
-            child = SpawnTestCube(mesh);
+            parent = SpawnTestCube(mesh, Vector3F.Zero);
+            child = SpawnTestCube(mesh, Vector3F.Zero);
 
             child.Transform.LocalScale = new Vector3F(0.5f);
             child.Transform.LocalPosition = new Vector3F(0, 0, 2);
@@ -72,6 +83,20 @@ namespace Molten.Samples
 
             if (Keyboard.IsTapped(KeyCode.Escape))
                 Exit();
+
+            RotateParentChild(_parent, _child, time);
+            OnGamepadInput(time);
+        }
+
+        /// <summary>
+        /// Called when the <see cref="SampleSceneGame"/> should update and handle gamepad input. <see cref="SampleSceneGame"/> provides default handling.
+        /// </summary> 
+        /// <param name="time"></param>
+        protected virtual void OnGamepadInput(Timing time)
+        {
+            // Apply left and right vibration equal to left and right trigger values 
+            Gamepad.VibrationLeft.Value = Gamepad.LeftTrigger.Value;
+            Gamepad.VibrationRight.Value = Gamepad.RightTrigger.Value;
         }
 
         protected override void OnHudDraw(SpriteBatcher sb)
