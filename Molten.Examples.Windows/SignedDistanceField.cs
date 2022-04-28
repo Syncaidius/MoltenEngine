@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
-using Molten.Collections;
 using Molten.Font;
 using Molten.Graphics;
 using Molten.Graphics.MSDF;
@@ -8,14 +6,12 @@ using Molten.Input;
 
 namespace Molten.Samples
 {
-    public class MsdfTest : SampleSceneGame
+    public class SignedDistanceField : SampleSceneGame
     {
         const int CHAR_CURVE_RESOLUTION = 3;
 
         public override string Description => "An example of using signed-distance-field (SDF), multi-channel signed-distance-field (MSDF) and multi-channel true signed-distance-field (MTSDF) rendering.";
 
-        
-        
         FontFile _fontFile;
         SpriteFont _font2Test;
 
@@ -30,12 +26,12 @@ namespace Molten.Samples
         List<List<Vector2F>> _holePoints;
         List<Color> _colors;
         Vector2F _charOffset = new Vector2F(300, 300);
-        SdfGenerator _msdf;
+        SdfGenerator _sdf;
         Dictionary<string, ITexture2D> _msdfTextures;
         Dictionary<string, ITexture2D> _msdfResultTextures;
         bool _loaded;
 
-        public MsdfTest() : base("Signed Distance Field (SDF)") { }
+        public SignedDistanceField() : base("Signed Distance Field (SDF)") { }
 
         protected override void OnInitialize(Engine engine)
         {
@@ -43,7 +39,7 @@ namespace Molten.Samples
 
             _msdfTextures = new Dictionary<string, ITexture2D>();
             _msdfResultTextures = new Dictionary<string, ITexture2D>();
-            _msdf = new SdfGenerator();
+            _sdf = new SdfGenerator();
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<ITexture2D>("dds_test.dds", new TextureParameters()
@@ -93,76 +89,31 @@ namespace Molten.Samples
             _loaded = true;
         }
 
-        private void ConvertSdfToRgb(TextureSliceRef<float> outRef, Color[] finalData)
-        {
-            for (int i = 0; i < finalData.Length; i++)
-            {
-                finalData[i] = new Color()
-                {
-                    R = (byte)(255 * outRef[i]),
-                    G = (byte)(255 * outRef[i]),
-                    B = (byte)(255 * outRef[i]),
-                    A = (byte)(255 * outRef[i] > 0 ? 255 : 0),
-                };
-            }
-        }
-
-        private void ConvertMsdfToRgb(TextureSliceRef<float> outRef, Color[] finalData)
-        {
-            for (uint i = 0; i < finalData.Length; i++)
-            {
-                uint pi = i * outRef.ElementsPerPixel;
-                finalData[i] = new Color()
-                {
-                    R = (byte)(255 * outRef[pi]),
-                    G = (byte)(255 * outRef[pi + 1]),
-                    B = (byte)(255 * outRef[pi + 2]),
-                    A = (byte)(255 * outRef[pi + 3] > 0 ? 255 : 0),
-                };
-            }
-        }
-
-        private void ConvertMtsdfToRgb(TextureSliceRef<float> outRef, Color[] finalData)
-        {
-            for (uint i = 0; i < finalData.Length; i++)
-            {
-                uint pi = i * outRef.ElementsPerPixel;
-                finalData[i] = new Color()
-                {
-                    R = (byte)(255 * outRef[pi]),
-                    G = (byte)(255 * outRef[pi + 1]),
-                    B = (byte)(255 * outRef[pi + 2]),
-                    A = (byte)(255 * outRef[pi + 3]),
-                };
-            }
-        }
-
-        private unsafe void GenerateSDF(string label, uint elementsPerPixel, SdfMode mode, 
-            Action<TextureSliceRef<float>, Color[]> convertCallback)
+        private unsafe void GenerateSDF(string label, SdfMode mode)
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
             uint pWidth = 64;
             uint pHeight = 64;
-            double pxRange = 4;
+            double pxRange = 5;
+            uint renderNPerPixel = 1;
 
             uint testWidth = 256;
             uint testHeight = 256;
             Vector2D scale = new Vector2D(0.2);
             Vector2D pOffset = new Vector2D(-240, -270);
-            double avgScale = .5 * (scale.X + scale.Y);
             double range = pxRange / Math.Min(scale.X, scale.Y);
             FillRule fl = FillRule.NonZero;
 
             MsdfProjection projection = new MsdfProjection(scale, pOffset);
 
-            uint numBytes = testWidth * testHeight * elementsPerPixel * sizeof(float);
-            TextureSlice outSlice = new TextureSlice(testWidth, testHeight, numBytes)
+            uint numBytes = testWidth * testHeight * renderNPerPixel * sizeof(float);
+            TextureSlice renderSlice = new TextureSlice(testWidth, testHeight, numBytes)
             {
-                ElementsPerPixel = elementsPerPixel,
+                ElementsPerPixel = renderNPerPixel,
             };
 
-            TextureSliceRef<float> outRef = outSlice.GetReference<float>();
+            TextureSliceRef<float> renderRef = renderSlice.GetReference<float>();
             uint rowPitch = (uint)((testWidth * sizeof(Color)));
             Color[] finalData = new Color[testWidth * testHeight];
 
@@ -179,16 +130,27 @@ namespace Molten.Samples
                 Mode = MsdfConfig.ErrorCorrectMode.EDGE_PRIORITY
             };
 
-            TextureSliceRef<float> sdf = _msdf.Generate(pWidth, pHeight, _shape, projection, range, config, mode, fl);
-            _msdf.Rasterize(sdf, outRef, projection, range);
+            TextureSliceRef<float> sdf = _sdf.Generate(pWidth, pHeight, _shape, projection, range, config, mode, fl);
+            _sdf.Rasterize(sdf, renderRef, projection, range);
 
-            convertCallback(outRef, finalData);            
+            // Convert rasterized SDF to RGBA
+            for (int i = 0; i < finalData.Length; i++)
+            {
+                finalData[i] = new Color()
+                {
+                    R = (byte)(255 * renderRef[i]),
+                    G = (byte)(255 * renderRef[i]),
+                    B = (byte)(255 * renderRef[i]),
+                    A = (byte)(255 * renderRef[i]),
+                };
+            }
+
             tex.SetData(0, finalData, 0, (uint)finalData.Length, rowPitch);
 
             _msdfResultTextures.Add(label, tex);
 
             sdf.Slice.Dispose();
-            outSlice.Dispose();
+            renderSlice.Dispose();
             timer.Stop();
             Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
         }
@@ -332,10 +294,10 @@ namespace Molten.Samples
             _msdfTextures.Clear();
             MsdfShapeProcessing.Normalize(_shape);
 
-            GenerateSDF("SDF", 1, SdfMode.Sdf, ConvertSdfToRgb);
-            GenerateSDF("PSDF", 1, SdfMode.Psdf, ConvertSdfToRgb);
-            GenerateSDF("MSDF", 3, SdfMode.Msdf, ConvertMsdfToRgb);
-            GenerateSDF("MTSDF", 4, SdfMode.Mtsdf, ConvertMtsdfToRgb);
+            GenerateSDF("SDF", SdfMode.Sdf);
+            GenerateSDF("PSDF", SdfMode.Psdf);
+            GenerateSDF("MSDF", SdfMode.Msdf);
+            GenerateSDF("MTSDF", SdfMode.Mtsdf);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)

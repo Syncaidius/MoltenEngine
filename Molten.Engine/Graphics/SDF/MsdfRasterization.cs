@@ -37,15 +37,35 @@ namespace Molten.Graphics.MSDF
         {
             Vector2D scale = new Vector2D((double)sdf.Width / output.Width, (double)sdf.Height / output.Height);
             pxRange *= (double)(output.Width + output.Height) / (sdf.Width + sdf.Height);
-            for (int y = 0; y < output.Height; ++y)
+
+            if (sdf.ElementsPerPixel >= 3 && output.ElementsPerPixel == 1)
             {
-                for (int x = 0; x < output.Width; ++x)
+                for (int y = 0; y < output.Height; ++y)
                 {
-                    float* sd = stackalloc float[(int)sdf.ElementsPerPixel];
-                    Interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
-                    for (uint i = 0; i < output.ElementsPerPixel; i++)
-                        output[x, y][i] = distVal(sd[i], pxRange, midValue);
+                    for (int x = 0; x < output.Width; ++x)
+                    {
+                        float* sd = stackalloc float[(int)sdf.ElementsPerPixel];
+                        Interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
+                        output[x, y][0] = distVal(MathHelper.Median(sd[0], sd[1], sd[2]), pxRange, midValue);
+                    }
                 }
+            }
+            else if(sdf.ElementsPerPixel == output.ElementsPerPixel)
+            {
+                for (int y = 0; y < output.Height; ++y)
+                {
+                    for (int x = 0; x < output.Width; ++x)
+                    {
+                        float* sd = stackalloc float[(int)sdf.ElementsPerPixel];
+                        Interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
+                        for (uint i = 0; i < output.ElementsPerPixel; i++)
+                            output[x, y][i] = distVal(sd[i], pxRange, midValue);
+                    }
+                }
+            }
+            else
+            {
+                // TODO handle other configurations.
             }
         }
 
@@ -133,10 +153,10 @@ namespace Molten.Graphics.MSDF
             double lr = pos.X - l;
             double bt = pos.Y - b;
 
-            l = (int)MathHelper.Clamp(l, 0, bitmap.Width - 1); 
-            r = (int)MathHelper.Clamp(r, 0, bitmap.Width - 1);
-            b = (int)MathHelper.Clamp(b, 0, bitmap.Height - 1); 
-            t = (int)MathHelper.Clamp(t, 0, bitmap.Height - 1);
+            l = (int)MathHelper.Clamp(l, 0, (int)bitmap.Width - 1); 
+            r = (int)MathHelper.Clamp(r, 0, (int)bitmap.Width - 1);
+            b = (int)MathHelper.Clamp(b, 0, (int)bitmap.Height - 1); 
+            t = (int)MathHelper.Clamp(t, 0, (int)bitmap.Height - 1);
 
             for (int i = 0; i < bitmap.ElementsPerPixel; ++i)
             {
