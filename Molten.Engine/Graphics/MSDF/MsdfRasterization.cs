@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.MSDF
 {
-    public static class MsdfRasterization
+    internal static class MsdfRasterization
     {
-        public static unsafe void distanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
+        internal static unsafe void distanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
         {
-            MsdfGenerator.NPerPixel(sdf, 1);
+            SdfGenerator.NPerPixel(sdf, 1);
             Scanline scanline = new Scanline();
 
             for (int y = 0; y < sdf.Height; ++y)
@@ -26,14 +26,14 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        static float distVal(float dist, double pxRange, float midValue)
+        private static float distVal(float dist, double pxRange, float midValue)
         {
             if (pxRange == 0)
                 return (dist > midValue ? 1f : 0);
             return (float)MathHelperDP.Clamp((dist - midValue) * pxRange + 0.5);
         }
 
-        public static unsafe void RenderSDF(TextureSliceRef<float> output, TextureSliceRef<float> sdf, double pxRange, float midValue)
+        internal static unsafe void RenderSDF(TextureSliceRef<float> output, TextureSliceRef<float> sdf, double pxRange, float midValue)
         {
             Vector2D scale = new Vector2D((double)sdf.Width / output.Width, (double)sdf.Height / output.Height);
             pxRange *= (double)(output.Width + output.Height) / (sdf.Width + sdf.Height);
@@ -49,7 +49,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe static void multiDistanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
+        internal unsafe static void multiDistanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
         {
             uint w = sdf.Width, h = sdf.Height;
             if ((w * h) == 0)
@@ -123,7 +123,7 @@ namespace Molten.Graphics.MSDF
         /// <param name="output"></param>
         /// <param name="bitmap"></param>
         /// <param name="pos"></param>
-        public unsafe static void Interpolate(float* output, TextureSliceRef<float> bitmap, Vector2D pos)
+        internal unsafe static void Interpolate(float* output, TextureSliceRef<float> bitmap, Vector2D pos)
         {
             pos -= .5;
             int l = (int)Math.Floor(pos.X);

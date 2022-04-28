@@ -14,34 +14,35 @@ namespace Molten.Graphics
     public unsafe class TextureSliceRef<T> : TextureSliceRef
         where T : unmanaged
     {
-        TextureSlice _slice;
         T* _refData;
 
         internal TextureSliceRef(TextureSlice slice)
         {
-            _slice = slice;
+            Slice = slice;
             UpdateReference();
         }
 
         internal override void UpdateReference()
         {
-            _refData = (T*)_slice.Data;
+            _refData = (T*)Slice.Data;
         }
 
         public T this[uint p] => _refData[p];
 
         public T this[int p] => _refData[p];
 
-        public T* this[uint x, uint y] => _refData + _slice.ElementsPerPixel * (_slice.Width * y + x);
+        public T* this[uint x, uint y] => _refData + Slice.ElementsPerPixel * (Slice.Width * y + x);
 
-        public T* this[int x, int y] => _refData + _slice.ElementsPerPixel * (_slice.Width * y + x);
+        public T* this[int x, int y] => _refData + Slice.ElementsPerPixel * (Slice.Width * y + x);
 
-        public uint ElementsPerPixel => _slice.ElementsPerPixel;
+        public uint ElementsPerPixel => Slice.ElementsPerPixel;
 
         public T* Data => _refData;
 
-        public uint Width => _slice.Width;
+        public uint Width => Slice.Width;
 
-        public uint Height => _slice.Height;
+        public uint Height => Slice.Height;
+
+        public TextureSlice Slice { get; }
     }
 }

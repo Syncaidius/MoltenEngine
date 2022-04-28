@@ -31,7 +31,7 @@ namespace Molten.Samples
         List<List<Vector2F>> _holePoints;
         List<Color> _colors;
         Vector2F _charOffset = new Vector2F(300, 300);
-        MsdfGenerator _msdf;
+        SdfGenerator _msdf;
         Dictionary<string, ITexture2D> _msdfTextures;
         Dictionary<string, ITexture2D> _msdfResultTextures;
         bool _loaded;
@@ -44,7 +44,7 @@ namespace Molten.Samples
 
             _msdfTextures = new Dictionary<string, ITexture2D>();
             _msdfResultTextures = new Dictionary<string, ITexture2D>();
-            _msdf = new MsdfGenerator();
+            _msdf = new SdfGenerator();
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<ITexture2D>("dds_test.dds", new TextureParameters()
@@ -153,18 +153,11 @@ namespace Molten.Samples
             uint testWidth = 256;
             uint testHeight = 256;
             Vector2D scale = new Vector2D(0.2);
-            Vector2D pOffset = new Vector2D(-240, -250);
+            Vector2D pOffset = new Vector2D(-240, -270);
             double avgScale = .5 * (scale.X + scale.Y);
             double range = pxRange / Math.Min(scale.X, scale.Y);
             FillRule fl = FillRule.NonZero;
 
-            uint sliceNumBytes = pWidth * pHeight * elementsPerPixel * sizeof(float);
-            TextureSlice slice = new TextureSlice(pWidth, pHeight, sliceNumBytes)
-            {
-                ElementsPerPixel = elementsPerPixel,
-            };
-
-            TextureSliceRef<float> sliceRef = slice.GetReference<float>();
             MsdfProjection projection = new MsdfProjection(scale, pOffset);
 
             uint numBytes = testWidth * testHeight * elementsPerPixel * sizeof(float);
@@ -190,16 +183,15 @@ namespace Molten.Samples
                 Mode = MsdfConfig.ErrorCorrectMode.EDGE_PRIORITY
             };
 
-            _msdf.Generate(sliceRef, _shape, projection, range, config, mode, fl);
-
-            MsdfRasterization.RenderSDF(outRef, sliceRef, avgScale * range, 0.5f);
+            TextureSliceRef<float> sdf = _msdf.Generate(pWidth, pHeight, _shape, projection, range, config, mode, fl);
+            _msdf.Rasterize(sdf, outRef, projection, range);
 
             convertCallback(outRef, finalData);            
             tex.SetData(0, finalData, 0, (uint)finalData.Length, rowPitch);
 
             _msdfResultTextures.Add(label, tex);
 
-            slice.Dispose();
+            sdf.Slice.Dispose();
             outSlice.Dispose();
             timer.Stop();
             Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
