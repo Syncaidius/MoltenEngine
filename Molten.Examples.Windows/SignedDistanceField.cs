@@ -96,42 +96,29 @@ namespace Molten.Samples
             uint pWidth = 64;
             uint pHeight = 64;
             double pxRange = 5;
-            uint renderNPerPixel = 1;
 
             uint testWidth = 256;
             uint testHeight = 256;
-            Vector2D scale = new Vector2D(0.2);
-            Vector2D pOffset = new Vector2D(-240, -270);
-            double range = pxRange / Math.Min(scale.X, scale.Y);
             FillRule fl = FillRule.NonZero;
 
-            MsdfProjection projection = new MsdfProjection(scale, pOffset);
-
-            uint numBytes = testWidth * testHeight * renderNPerPixel * sizeof(float);
-            TextureSlice renderSlice = new TextureSlice(testWidth, testHeight, numBytes)
+            MsdfProjection projection = new MsdfProjection()
             {
-                ElementsPerPixel = renderNPerPixel,
+                Scale = new Vector2D(0.2),
+                Translate = new Vector2D(-240, -270)
             };
 
-            TextureSliceRef<float> renderRef = renderSlice.GetReference<float>();
             uint rowPitch = (uint)((testWidth * sizeof(Color)));
-            Color[] finalData = new Color[testWidth * testHeight];
 
+            TextureSliceRef<float> sdf = _sdf.Generate(pWidth, pHeight, _shape, projection, pxRange, mode, fl);
+            TextureSliceRef<float> renderRef  = _sdf.Rasterize(testWidth, testHeight, sdf, projection, pxRange);
+
+            Color[] finalData = new Color[testWidth * testHeight];
             ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
             {
                 Width = testWidth,
                 Height = testHeight,
                 Format = GraphicsFormat.R8G8B8A8_UNorm
             });
-
-            MsdfConfig config = new MsdfConfig()
-            {
-                DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE,
-                Mode = MsdfConfig.ErrorCorrectMode.EDGE_PRIORITY
-            };
-
-            TextureSliceRef<float> sdf = _sdf.Generate(pWidth, pHeight, _shape, projection, range, config, mode, fl);
-            _sdf.Rasterize(sdf, renderRef, projection, range);
 
             // Convert rasterized SDF to RGBA
             for (int i = 0; i < finalData.Length; i++)
@@ -150,7 +137,7 @@ namespace Molten.Samples
             _msdfResultTextures.Add(label, tex);
 
             sdf.Slice.Dispose();
-            renderSlice.Dispose();
+            renderRef.Slice.Dispose();
             timer.Stop();
             Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
         }

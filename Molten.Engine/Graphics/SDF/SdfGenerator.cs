@@ -36,8 +36,15 @@ namespace Molten.Graphics.MSDF
     {
         const double DEFAULT_ANGLE_THRESHOLD = 3;
 
-        public unsafe TextureSliceRef<float> Generate(uint pWidth, uint pHeight, Shape shape, MsdfProjection projection, double range, MsdfConfig config, SdfMode mode, FillRule fl)
+        public unsafe TextureSliceRef<float> Generate(uint pWidth, uint pHeight, Shape shape, MsdfProjection projection, double pxRange, SdfMode mode, FillRule fl)
         {
+            MsdfConfig config = new MsdfConfig()
+            {
+                DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE,
+                Mode = MsdfConfig.ErrorCorrectMode.EDGE_PRIORITY
+            };
+
+            double range = pxRange / Math.Min(projection.Scale.X, projection.Scale.Y);
             uint nPerPixel = GetNPerPixel(mode);
             const string edgeAssignment = null; // "cmywCMYW";
             MsdfConfig postGenConfig = new MsdfConfig(config);
@@ -104,10 +111,21 @@ namespace Molten.Graphics.MSDF
             return sdfRef;
         }
 
-        public unsafe void Rasterize(TextureSliceRef<float> sdf, TextureSliceRef<float> output, MsdfProjection projection, double range)
+        public unsafe TextureSliceRef<float> Rasterize(uint width, uint height, TextureSliceRef<float> sdf, MsdfProjection projection, double pxRange)
         {
+            uint numBytes = width * height * sizeof(float);
+            TextureSlice output = new TextureSlice(width, height, numBytes)
+            {
+                ElementsPerPixel = 1,
+            };
+
+            TextureSliceRef<float> outRef = output.GetReference<float>();
+
+            double range = pxRange / Math.Min(projection.Scale.X, projection.Scale.Y);
             double avgScale = (projection.Scale.X + projection.Scale.Y) / 2;
-            MsdfRasterization.RenderSDF(output, sdf, avgScale * range, 0.5f);
+            MsdfRasterization.RenderSDF(outRef, sdf, avgScale * range, 0.5f);
+
+            return outRef;
         }
 
         private uint GetNPerPixel(SdfMode mode)
