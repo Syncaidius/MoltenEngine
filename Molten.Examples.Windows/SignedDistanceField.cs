@@ -107,39 +107,83 @@ namespace Molten.Samples
                 Translate = new Vector2D(-240, -270)
             };
 
-            uint rowPitch = (uint)((testWidth * sizeof(Color)));
-
             TextureSliceRef<float> sdf = _sdf.Generate(pWidth, pHeight, _shape, projection, pxRange, mode, fl);
             TextureSliceRef<float> renderRef  = _sdf.Rasterize(testWidth, testHeight, sdf, projection, pxRange);
 
-            Color[] finalData = new Color[testWidth * testHeight];
-            ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
-            {
-                Width = testWidth,
-                Height = testHeight,
-                Format = GraphicsFormat.R8G8B8A8_UNorm
-            });
+            ITexture2D texSdf = ConvertToTexture(sdf);
+            _msdfTextures.Add(label, texSdf);
 
-            // Convert rasterized SDF to RGBA
-            for (int i = 0; i < finalData.Length; i++)
-            {
-                finalData[i] = new Color()
-                {
-                    R = (byte)(255 * renderRef[i]),
-                    G = (byte)(255 * renderRef[i]),
-                    B = (byte)(255 * renderRef[i]),
-                    A = (byte)(255 * renderRef[i]),
-                };
-            }
-
-            tex.SetData(0, finalData, 0, (uint)finalData.Length, rowPitch);
-
-            _msdfResultTextures.Add(label, tex);
+            ITexture2D tex = ConvertToTexture(renderRef);
+            _msdfResultTextures.Add($"{label} Render", tex);
 
             sdf.Slice.Dispose();
             renderRef.Slice.Dispose();
             timer.Stop();
             Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
+        }
+
+        private unsafe ITexture2D ConvertToTexture(TextureSliceRef<float> src)
+        {
+            uint rowPitch = (src.Width * (uint)sizeof(Color));
+            Color[] finalData = new Color[src.Width * src.Height];
+            ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
+            {
+                Width = src.Width,
+                Height = src.Height,
+                Format = GraphicsFormat.R8G8B8A8_UNorm
+            });
+
+            switch (src.ElementsPerPixel)
+            {
+                case 1: // SDF or PSDF is one-channel. The render result of all SDF modes are also generally greyscale/white/black.
+                    for (int i = 0; i < finalData.Length; i++)
+                    {
+                        byte c = (byte)(255 * src[i]);
+                        finalData[i] = new Color()
+                        {
+                            R = c,
+                            G = c,
+                            B = c,
+                            A = c,
+                        };
+                    }
+                    break;
+
+                case 3: // MSDF - 3 RGB 32-bit
+                    for (uint i = 0; i < finalData.Length; i++)
+                    {
+                        uint p = i * src.ElementsPerPixel;
+
+                        finalData[i] = new Color()
+                        {
+                            R = (byte)(255 * src[p]),
+                            G = (byte)(255 * src[p + 1]),
+                            B = (byte)(255 * src[p + 2]),
+                            A = 255,
+                        };
+                    }
+
+                    break;
+
+                case 4: // MTSDF - 3 RGB 32-bit
+                    for (uint i = 0; i < finalData.Length; i++)
+                    {
+                        uint p = i * src.ElementsPerPixel;
+
+                        finalData[i] = new Color()
+                        {
+                            R = (byte)(255 * src[p]),
+                            G = (byte)(255 * src[p + 1]),
+                            B = (byte)(255 * src[p + 2]),
+                            A = (byte)(255 * src[p + 3]),
+                        };
+                    }
+
+                    break;
+            }
+
+            tex.SetData(0, finalData, 0, (uint)finalData.Length, rowPitch);
+            return tex;
         }
 
         private void InitializeFontDebug()
@@ -209,32 +253,37 @@ namespace Molten.Samples
 
                 if (_loaded)
                 {
-                    Vector2F pos = new Vector2F(700, 65);
-                    Color bgColor = new Color(255, 20, 0, 200);
-
-                    foreach (string label in _msdfResultTextures.Keys)
-                    {
-                        ITexture2D tex = _msdfResultTextures[label];
-                        Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, (int)tex.Width, (int)tex.Height);
-                        sb.DrawRect(texBounds, bgColor);
-                        sb.Draw(tex, texBounds, Color.White);
-                        sb.DrawRectOutline(texBounds, Color.Yellow, 1);
-
-                        Vector2F tPos = new Vector2F(texBounds.X, texBounds.Bottom + 5);
-                        sb.DrawString(SampleFont, label, tPos, Color.White);
-
-                        if (pos.X + (tex.Width + 15 + tex.Width) > Window.Width)
-                        {
-                            pos.X = 700;
-                            pos.Y += tex.Height + 30;
-                        }
-                        else
-                        {
-                            pos.X += (float)tex.Width + 15;
-                        }
-                    }
+                    DrawTextureList(sb, _msdfResultTextures, new Vector2F(700, 65));
+                    DrawTextureList(sb, _msdfTextures, new Vector2F(700, 665));
                 }
             };
+        }
+
+        private void DrawTextureList(SpriteBatcher sb, Dictionary<string, ITexture2D> textures, Vector2F pos)
+        {
+            Color bgColor = new Color(255, 20, 0, 200);
+
+            foreach (string label in textures.Keys)
+            {
+                ITexture2D tex = textures[label];
+                Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, (int)tex.Width, (int)tex.Height);
+                sb.DrawRect(texBounds, bgColor);
+                sb.Draw(tex, texBounds, Color.White);
+                sb.DrawRectOutline(texBounds, Color.Yellow, 1);
+
+                Vector2F tPos = new Vector2F(texBounds.X, texBounds.Bottom + 5);
+                sb.DrawString(SampleFont, label, tPos, Color.White);
+
+                if (pos.X + (tex.Width + 15 + tex.Width) > Window.Width)
+                {
+                    pos.X = 700;
+                    pos.Y += tex.Height + 30;
+                }
+                else
+                {
+                    pos.X += (float)tex.Width + 15;
+                }
+            }
         }
 
         /// <summary>

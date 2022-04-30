@@ -59,6 +59,7 @@ namespace Molten
                     else
                         nextDY = 1;
                 }
+
                 {
                     Vector2D ab = p[1] - p[0];
                     Vector2D br = p[2] - p[1] - ab;
@@ -86,6 +87,7 @@ namespace Molten
                         }
                     }
                 }
+
                 if (p[2].Y == y)
                 {
                     if (nextDY > 0 && total > 0)
@@ -103,6 +105,7 @@ namespace Molten
                         }
                     }
                 }
+
                 if (nextDY != (y >= p[2].Y ? 1 : -1))
                 {
                     if (total > 0)
