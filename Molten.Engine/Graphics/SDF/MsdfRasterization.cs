@@ -38,13 +38,16 @@ namespace Molten.Graphics.MSDF
             Vector2D scale = new Vector2D((double)sdf.Width / output.Width, (double)sdf.Height / output.Height);
             pxRange *= (double)(output.Width + output.Height) / (sdf.Width + sdf.Height);
 
+            float* sd = stackalloc float[(int)sdf.ElementsPerPixel];
             if (sdf.ElementsPerPixel >= 3 && output.ElementsPerPixel == 1)
             {
                 for (int y = 0; y < output.Height; ++y)
                 {
                     for (int x = 0; x < output.Width; ++x)
                     {
-                        float* sd = stackalloc float[(int)sdf.ElementsPerPixel];
+                        for (int i = 0; i < sdf.ElementsPerPixel; i++)
+                            sd[i] = 0;
+
                         Interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
                         output[x, y][0] = distVal(MathHelper.Median(sd[0], sd[1], sd[2]), pxRange, midValue);
                     }
@@ -56,8 +59,10 @@ namespace Molten.Graphics.MSDF
                 {
                     for (int x = 0; x < output.Width; ++x)
                     {
-                        float* sd = stackalloc float[(int)sdf.ElementsPerPixel];
-                        Interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
+                        for (int i = 0; i < sdf.ElementsPerPixel; i++)
+                            sd[i] = 0;
+
+                       Interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
                         for (uint i = 0; i < output.ElementsPerPixel; i++)
                             output[x, y][i] = distVal(sd[i], pxRange, midValue);
                     }

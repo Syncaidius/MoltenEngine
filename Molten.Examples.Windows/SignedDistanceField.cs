@@ -95,10 +95,10 @@ namespace Molten.Samples
             timer.Start();
             uint pWidth = 64;
             uint pHeight = 64;
-            double pxRange = 7;
+            double pxRange = 10;
 
-            uint testWidth = 256;
-            uint testHeight = 256;
+            uint testWidth = 512;
+            uint testHeight = 512;
             FillRule fl = FillRule.NonZero;
 
             MsdfProjection projection = new MsdfProjection()
