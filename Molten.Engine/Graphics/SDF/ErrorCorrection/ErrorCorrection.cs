@@ -8,7 +8,7 @@ namespace Molten.Graphics.MSDF
 {
     public static class ErrorCorrection
     {
-        public unsafe static void MsdfErrorCorrection<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, double range, MsdfConfig config)
+        public unsafe static void MsdfErrorCorrection<ES, DT>(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, double range, MsdfConfig config)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
@@ -43,7 +43,7 @@ namespace Molten.Graphics.MSDF
             if (config.DistanceCheckMode == MsdfConfig.DistanceErrorCheckMode.ALWAYS_CHECK_DISTANCE ||
                 config.DistanceCheckMode == MsdfConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE)
             {
-                ec.FindErrors(combiner, sdf, shape);
+                ec.FindErrors<ES,DT>(sdf, shape);
             }
             ec.Apply(sdf);
         }

@@ -51,7 +51,7 @@ namespace Molten
             {
                 Vector2D start = (p[2] - p[1]) - (p[1] - p[0]);
                 Vector2D end = (p[3] - p[2]) - (p[2] - p[1]);
-                return Vector2D.Lerp(start, end, param);
+                return Vector2D.Lerp(ref start, ref end, param);
             }
 
             public override void SplitInThirds(ref Edge part1, ref Edge part2, ref Edge part3)

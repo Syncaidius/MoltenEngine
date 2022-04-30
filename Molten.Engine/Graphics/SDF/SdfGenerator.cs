@@ -93,17 +93,15 @@ namespace Molten.Graphics.MSDF
 
                 case SdfMode.Msdf:
                     {
-                        var combiner = new ContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
                         MsdfRasterization.multiDistanceSignCorrection(sdfRef, shape, projection, fl);
-                        ErrorCorrection.MsdfErrorCorrection(combiner, sdfRef, shape, projection, range, postGenConfig);
+                        ErrorCorrection.MsdfErrorCorrection<MultiDistanceSelector, MultiDistance>(sdfRef, shape, projection, range, postGenConfig);
                         break;
                     }
 
                 case SdfMode.Mtsdf:
                     {
-                        var combiner = new ContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
                         MsdfRasterization.multiDistanceSignCorrection(sdfRef, shape, projection, fl);
-                        ErrorCorrection.MsdfErrorCorrection(combiner, sdfRef, shape, projection, range, postGenConfig);
+                        ErrorCorrection.MsdfErrorCorrection<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(sdfRef, shape, projection, range, postGenConfig);
                         break;
                     }
             }
@@ -155,12 +153,12 @@ namespace Molten.Graphics.MSDF
         /// <param name="output"></param>
         /// <param name="shape"></param>
         /// <param name="projection"></param>
-        private unsafe void GenerateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConvertor, ContourCombiner<ES, DT> combiner,
+        private unsafe void GenerateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConvertor,
             TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
-            ShapeDistanceFinder<ES, DT> distanceFinder = new ShapeDistanceFinder<ES, DT>(shape, combiner);
+            ShapeDistanceFinder<ES, DT> distanceFinder = new ShapeDistanceFinder<ES, DT>(shape);
 
             bool rightToLeft = false;
             for (int y = 0; y < output.Height; ++y)
@@ -181,9 +179,7 @@ namespace Molten.Graphics.MSDF
             NPerPixel(output, 1);
 
             var dpc = new DoubleDistancePixelConversion(range);
-            var combiner = new ContourCombiner<TrueDistanceSelector, double>(shape);
-
-            GenerateDistanceField(dpc, combiner, output, shape, projection, range);
+            GenerateDistanceField<TrueDistanceSelector, double>(dpc, output, shape, projection, range);
         }
 
         private void GeneratePseudoSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range)
@@ -191,9 +187,7 @@ namespace Molten.Graphics.MSDF
             NPerPixel(output, 1);
 
             var dpc = new DoubleDistancePixelConversion(range);
-            var combiner = new ContourCombiner<PseudoDistanceSelector, double>(shape);
-
-            GenerateDistanceField(dpc, combiner, output, shape, projection, range);
+            GenerateDistanceField<PseudoDistanceSelector, double>(dpc, output, shape, projection, range);
         }
 
         private void GenerateMSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, MsdfConfig config)
@@ -201,10 +195,9 @@ namespace Molten.Graphics.MSDF
             NPerPixel(output, 3);
 
             var dpc = new MultiDistancePixelConversion(range);
-            var combiner = new ContourCombiner<MultiDistanceSelector, MultiDistance>(shape);
 
-            GenerateDistanceField(dpc, combiner, output, shape, projection, range);
-            ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
+            GenerateDistanceField<MultiDistanceSelector, MultiDistance>(dpc, output, shape, projection, range);
+            ErrorCorrection.MsdfErrorCorrection<MultiDistanceSelector, MultiDistance>(output, shape, projection, range, config);
         }
 
         private void GenerateMTSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, MsdfConfig config)
@@ -212,10 +205,8 @@ namespace Molten.Graphics.MSDF
             NPerPixel(output, 4);
 
             var dpc = new MultiTrueDistancePixelConversion(range);
-            var combiner = new ContourCombiner<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(shape);
-
-            GenerateDistanceField(dpc, combiner, output, shape, projection, range);
-            ErrorCorrection.MsdfErrorCorrection(combiner, output, shape, projection, range, config);
+            GenerateDistanceField<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(dpc, output, shape, projection, range);
+            ErrorCorrection.MsdfErrorCorrection<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(output, shape, projection, range, config);
         }
 
         internal static void NPerPixel<T>(TextureSliceRef<T> bitmap, int expectedN) where T : unmanaged

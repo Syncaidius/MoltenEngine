@@ -29,7 +29,7 @@ namespace Molten
 
             public CubicEdge ConvertToCubic()
             {
-                return new CubicEdge(p[P0], Vector2D.Lerp(p[P0], p[P1], 2 / 3.0), Vector2D.Lerp(p[P1], p[CP1], 1 / 3.0), p[2], Color);
+                return new CubicEdge(p[P0], Vector2D.Lerp(p[P0], p[P1], 2 / 3.0), Vector2D.Lerp(p[P1], p[CP1], 1 / 3.0), p[CP1], Color);
             }
 
             public override Vector2D GetDirection(double param)
@@ -59,7 +59,6 @@ namespace Molten
                     else
                         nextDY = 1;
                 }
-
                 {
                     Vector2D ab = p[1] - p[0];
                     Vector2D br = p[2] - p[1] - ab;
@@ -87,7 +86,6 @@ namespace Molten
                         }
                     }
                 }
-
                 if (p[2].Y == y)
                 {
                     if (nextDY > 0 && total > 0)
@@ -105,7 +103,6 @@ namespace Molten
                         }
                     }
                 }
-
                 if (nextDY != (y >= p[2].Y ? 1 : -1))
                 {
                     if (total > 0)
@@ -117,6 +114,7 @@ namespace Molten
                         dy[total++] = nextDY;
                     }
                 }
+
                 return total;
             }
 

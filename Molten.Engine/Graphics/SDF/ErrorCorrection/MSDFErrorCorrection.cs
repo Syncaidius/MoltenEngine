@@ -396,7 +396,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        public unsafe void FindErrors<ES, DT>(ContourCombiner<ES, DT> combiner, TextureSliceRef<float> sdf, Shape shape)
+        public unsafe void FindErrors<ES, DT>(TextureSliceRef<float> sdf, Shape shape)
             where ES : EdgeSelector<DT>, new()
             where DT : unmanaged
         {
@@ -405,7 +405,7 @@ namespace Molten.Graphics.MSDF
             double vSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(0, invRange)).Length();
             double dSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange)).Length();
             {
-                ShapeDistanceChecker<ES, DT> shapeDistanceChecker = new ShapeDistanceChecker<ES, DT>(combiner, sdf, shape, projection, invRange, minImproveRatio);
+                ShapeDistanceChecker<ES, DT> shapeDistanceChecker = new ShapeDistanceChecker<ES, DT>(sdf, shape, projection, invRange, minImproveRatio);
                 bool rightToLeft = false;
 
                 // Inspect all texels.

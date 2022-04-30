@@ -19,10 +19,10 @@ namespace Molten.Graphics.MSDF
         ContourCombiner<ES, DT> contourCombiner;
         EdgeCache[] shapeEdgeCache;
 
-        public ShapeDistanceFinder(Shape shape, ContourCombiner<ES, DT> combiner)
+        public ShapeDistanceFinder(Shape shape)
         {
             this.shape = shape;
-            contourCombiner = combiner;
+            contourCombiner = new ContourCombiner<ES, DT>(shape);
             shapeEdgeCache = new EdgeCache[shape.GetEdgeCount()];
         }
 

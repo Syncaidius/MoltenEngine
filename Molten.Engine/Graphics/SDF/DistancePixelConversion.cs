@@ -21,8 +21,6 @@ namespace Molten.Graphics.MSDF
         public unsafe abstract void Convert(float* pixels, DT distance);
 
         public double InvRange { get; }
-
-        public abstract int NPerPixel { get; }
     }
 
     public class DoubleDistancePixelConversion : DistancePixelConversion<double>
@@ -33,8 +31,6 @@ namespace Molten.Graphics.MSDF
         {
             *pixels = (float)(InvRange * distance + .5);
         }
-
-        public override int NPerPixel => 1;
     }
 
     public class MultiDistancePixelConversion : DistancePixelConversion<MultiDistance>
@@ -47,8 +43,6 @@ namespace Molten.Graphics.MSDF
             pixels[1] = (float)(InvRange * distance.g + .5);
             pixels[2] = (float)(InvRange * distance.b + .5);
         }
-
-        public override int NPerPixel => 3;
     }
 
     public class MultiTrueDistancePixelConversion : DistancePixelConversion<MultiAndTrueDistance>
@@ -62,7 +56,5 @@ namespace Molten.Graphics.MSDF
             pixels[2] = (float)(InvRange * distance.b + .5);
             pixels[3] = (float)(InvRange * distance.a + .5);
         }
-
-        public override int NPerPixel => 4;
     }
 }

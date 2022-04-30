@@ -59,7 +59,7 @@ namespace Molten.Graphics.MSDF
                     Shape.Edge prevEdge = contour.Edges.Last();
                     foreach (Shape.Edge edge in contour.Edges)
                     {
-                        Vector2D prevDir = edge.GetDirection(1).GetNormalized();
+                        Vector2D prevDir = prevEdge.GetDirection(1).GetNormalized();
                         Vector2D curDir = edge.GetDirection(0).GetNormalized();
                         if (Vector2D.Dot(prevDir, curDir) < MSDFGEN_CORNER_DOT_EPSILON - 1)
                         {

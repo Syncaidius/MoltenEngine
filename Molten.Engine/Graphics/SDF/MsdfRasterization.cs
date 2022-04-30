@@ -50,7 +50,7 @@ namespace Molten.Graphics.MSDF
                     }
                 }
             }
-            else if(sdf.ElementsPerPixel == output.ElementsPerPixel)
+            else if (sdf.ElementsPerPixel == output.ElementsPerPixel)
             {
                 for (int y = 0; y < output.Height; ++y)
                 {
@@ -153,9 +153,9 @@ namespace Molten.Graphics.MSDF
             double lr = pos.X - l;
             double bt = pos.Y - b;
 
-            l = (int)MathHelper.Clamp(l, 0, (int)bitmap.Width - 1); 
+            l = (int)MathHelper.Clamp(l, 0, (int)bitmap.Width - 1);
             r = (int)MathHelper.Clamp(r, 0, (int)bitmap.Width - 1);
-            b = (int)MathHelper.Clamp(b, 0, (int)bitmap.Height - 1); 
+            b = (int)MathHelper.Clamp(b, 0, (int)bitmap.Height - 1);
             t = (int)MathHelper.Clamp(t, 0, (int)bitmap.Height - 1);
 
             for (int i = 0; i < bitmap.ElementsPerPixel; ++i)
