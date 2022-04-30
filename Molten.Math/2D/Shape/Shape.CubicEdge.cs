@@ -17,31 +17,31 @@ namespace Molten
 
             public override Vector2D Point(double param)
             {
-                Vector2D p12 = Vector2D.Lerp(ref p[P1], ref p[CP1], param);
-                Vector2D start = Vector2D.Lerp(Vector2D.Lerp(ref p[P0], ref p[P1], param), p12, param);
-                Vector2D end = Vector2D.Lerp(p12, Vector2D.Lerp(p[CP1], p[CP2], param), param);
+                Vector2D p12 = Vector2D.Lerp(ref p[1], ref p[2], param);
+                Vector2D start = Vector2D.Lerp(Vector2D.Lerp(ref p[0], ref p[1], param), p12, param);
+                Vector2D end = Vector2D.Lerp(p12, Vector2D.Lerp(p[2], p[3], param), param);
 
                 return Vector2D.Lerp(start, end, param);
             }
 
             public override Vector2D PointAlongEdge(double percentage)
             {
-                return BezierCurve2D.CalculateCubic(percentage, p[P0], p[P1], p[CP1], p[CP2]);
+                return BezierCurve2D.CalculateCubic(percentage, p[0], p[1], p[2], p[3]);
             }
 
             public override Vector2D GetDirection(double param)
             {
-                Vector2D start = Vector2D.Lerp(p[P1] - p[P0], p[CP1] - p[P1], param);
-                Vector2D end = Vector2D.Lerp(p[CP1] - p[P1], p[CP2] - p[CP1], param);
+                Vector2D start = Vector2D.Lerp(p[1] - p[0], p[2] - p[1], param);
+                Vector2D end = Vector2D.Lerp(p[2] - p[1], p[3] - p[2], param);
                 Vector2D tangent = Vector2D.Lerp(ref start, ref end, param);
 
                 if (tangent.X == 0 && tangent.Y == 0)
                 {
                     if (param == 0)
-                        return p[CP1] - p[P0];
+                        return p[2] - p[0];
 
                     if (param == 1)
-                        return p[CP2] - p[P1];
+                        return p[3] - p[1];
                 }
 
                 return tangent;
@@ -56,12 +56,12 @@ namespace Molten
 
             public override void SplitInThirds(ref Edge part1, ref Edge part2, ref Edge part3)
             {
-                part1 = new CubicEdge(p[P0], p[P0] == p[P1] ? p[P0] : Vector2D.Lerp(p[P0], p[P1], 1 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[P0], p[P1], 1 / 3.0), Vector2D.Lerp(p[P1], p[CP1], 1 / 3.0), 1 / 3.0), Point(1 / 3.0), Color);
+                part1 = new CubicEdge(p[0], p[0] == p[1] ? p[0] : Vector2D.Lerp(p[0], p[1], 1 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[0], p[1], 1 / 3.0), Vector2D.Lerp(p[1], p[2], 1 / 3.0), 1 / 3.0), Point(1 / 3.0), Color);
                 part2 = new CubicEdge(Point(1 / 3.0),
-                    Vector2D.Lerp(Vector2D.Lerp(Vector2D.Lerp(p[P0], p[P1], 1 / 3.0), Vector2D.Lerp(p[P1], p[CP1], 1 / 3.0), 1 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[P1], p[CP1], 1 / 3.0), Vector2D.Lerp(p[CP1], p[CP2], 1 / 3.0), 1 / 3.0), 2 / 3.0),
-                    Vector2D.Lerp(Vector2D.Lerp(Vector2D.Lerp(p[P0], p[P1], 2 / 3.0), Vector2D.Lerp(p[P1], p[CP1], 2 / 3.0), 2 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[P1], p[CP1], 2 / 3.0), Vector2D.Lerp(p[CP1], p[CP2], 2 / 3.0), 2 / 3.0), 1 / 3.0),
+                    Vector2D.Lerp(Vector2D.Lerp(Vector2D.Lerp(p[0], p[1], 1 / 3.0), Vector2D.Lerp(p[1], p[2], 1 / 3.0), 1 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[1], p[2], 1 / 3.0), Vector2D.Lerp(p[2], p[3], 1 / 3.0), 1 / 3.0), 2 / 3.0),
+                    Vector2D.Lerp(Vector2D.Lerp(Vector2D.Lerp(p[0], p[1], 2 / 3.0), Vector2D.Lerp(p[1], p[2], 2 / 3.0), 2 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[1], p[2], 2 / 3.0), Vector2D.Lerp(p[2], p[3], 2 / 3.0), 2 / 3.0), 1 / 3.0),
                     Point(2 / 3.0), Color);
-                part3 = new CubicEdge(Point(2 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[P1], p[CP1], 2 / 3.0), Vector2D.Lerp(p[CP1], p[CP2], 2 / 3.0), 2 / 3.0), p[CP1] == p[CP2] ? p[CP2] : Vector2D.Lerp(p[CP1], p[CP2], 2 / 3.0), p[CP2], Color);
+                part3 = new CubicEdge(Point(2 / 3.0), Vector2D.Lerp(Vector2D.Lerp(p[1], p[2], 2 / 3.0), Vector2D.Lerp(p[2], p[3], 2 / 3.0), 2 / 3.0), p[2] == p[3] ? p[3] : Vector2D.Lerp(p[2], p[3], 2 / 3.0), p[3], Color);
             }
 
             public unsafe override int ScanlineIntersections(double* x, int* dy, double y)

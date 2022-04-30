@@ -10,11 +10,6 @@ namespace Molten
     {
         public abstract class Edge
         {
-            public const int P0 = 0;
-            public const int P1 = 1;
-            public const int CP1 = 2;
-            public const int CP2 = 3;
-
             public Vector2D[] p { get; protected init; }
 
             public EdgeColor Color;
@@ -60,7 +55,7 @@ namespace Molten
 
             public override string ToString()
             {
-                return $"{this.GetType().Name} - P0: {p[P0]} -- P1: {p[P1]}";
+                return $"{this.GetType().Name} - P0: {p[0]} -- P1: {p[1]}";
             }
 
             public abstract Vector2D Point(double param);

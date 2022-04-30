@@ -126,7 +126,7 @@
                         }
                     }
 
-                    Vector2D startPoint = contour.Edges[0].p[Shape.Edge.P0];
+                    Vector2D startPoint = contour.Edges[0].p[0];
 
                     // Close contour, by linking the end point back to the start point.
                     if (!startPoint.Equals(p.Point))

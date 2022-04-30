@@ -95,7 +95,7 @@ namespace Molten.Samples
             timer.Start();
             uint pWidth = 64;
             uint pHeight = 64;
-            double pxRange = 5;
+            double pxRange = 7;
 
             uint testWidth = 256;
             uint testHeight = 256;

@@ -17,34 +17,34 @@ namespace Molten
 
             public override Vector2D Point(double param)
             {
-                Vector2D start = Vector2D.Lerp(ref p[P0], ref p[P1], param);
-                Vector2D end = Vector2D.Lerp(ref p[P1], ref p[CP1], param);
+                Vector2D start = Vector2D.Lerp(ref p[0], ref p[1], param);
+                Vector2D end = Vector2D.Lerp(ref p[1], ref p[2], param);
                 return Vector2D.Lerp(ref start, ref end, param);
             }
 
             public override Vector2D PointAlongEdge(double percentage)
             {
-                return BezierCurve2D.CalculateQuadratic(percentage, p[P0], p[P1], p[CP1]);
+                return BezierCurve2D.CalculateQuadratic(percentage, p[0], p[1], p[2]);
             }
 
             public CubicEdge ConvertToCubic()
             {
-                return new CubicEdge(p[P0], Vector2D.Lerp(p[P0], p[P1], 2 / 3.0), Vector2D.Lerp(p[P1], p[CP1], 1 / 3.0), p[CP1], Color);
+                return new CubicEdge(p[0], Vector2D.Lerp(p[0], p[1], 2 / 3.0), Vector2D.Lerp(p[1], p[2], 1 / 3.0), p[2], Color);
             }
 
             public override Vector2D GetDirection(double param)
             {
-                Vector2D tangent = Vector2D.Lerp(p[P1] - p[P0], p[CP1] - p[P1], param);
+                Vector2D tangent = Vector2D.Lerp(p[1] - p[0], p[2] - p[1], param);
                 if (tangent.X == 0 && tangent.Y == 0)
-                    return p[CP1] - p[P0];
+                    return p[2] - p[0];
                 return tangent;
             }
 
             public override void SplitInThirds(ref Edge part1, ref Edge part2, ref Edge part3)
             {
-                part1 = new QuadraticEdge(p[P0], Vector2D.Lerp(ref p[P0], ref p[P1], 1 / 3.0), Point(1 / 3.0), Color);
-                part2 = new QuadraticEdge(Point(1 / 3.0), Vector2D.Lerp(Vector2D.Lerp(ref p[P0], ref p[P1], 5 / 9.0), Vector2D.Lerp(ref p[P1], ref p[CP1], 4 / 9.0), .5), Point(2 / 3.0), Color);
-                part3 = new QuadraticEdge(Point(2 / 3.0), Vector2D.Lerp(ref p[P1], ref p[CP1], 2 / 3.0), p[CP1], Color);
+                part1 = new QuadraticEdge(p[0], Vector2D.Lerp(ref p[0], ref p[1], 1 / 3.0), Point(1 / 3.0), Color);
+                part2 = new QuadraticEdge(Point(1 / 3.0), Vector2D.Lerp(Vector2D.Lerp(ref p[0], ref p[1], 5 / 9.0), Vector2D.Lerp(ref p[1], ref p[2], 4 / 9.0), .5), Point(2 / 3.0), Color);
+                part3 = new QuadraticEdge(Point(2 / 3.0), Vector2D.Lerp(ref p[1], ref p[2], 2 / 3.0), p[2], Color);
             }
 
             public unsafe override int ScanlineIntersections(double* x, int* dy, double y)

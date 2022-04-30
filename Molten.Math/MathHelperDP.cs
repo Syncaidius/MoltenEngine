@@ -603,7 +603,7 @@
         /// Forumla to calculate signed area. Positive if CCW. Negative if CW. 0 if collinear
         /// 
         /// </summary>
-        /// <remarks>A[P1,P2,P3]  =  (x1*y2 - y1*x2) + (x2*y3 - y2*x3) + (x3*y1 - y3*x1)
+        /// <remarks>A[1,P2,P3]  =  (x1*y2 - y1*x2) + (x2*y3 - y2*x3) + (x3*y1 - y3*x1)
         ///              =  (x1-x3)*(y2-y3) - (y1-y3)*(x2-x3)
         /// </remarks>
         /// <param name="pa"></param>

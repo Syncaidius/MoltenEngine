@@ -22,24 +22,24 @@ namespace Molten
             /// <returns></returns>
             public override Vector2D Point(double param)
             {
-                return Vector2D.Lerp(ref p[P0], ref p[P1], param);
+                return Vector2D.Lerp(ref p[0], ref p[1], param);
             }
 
             public override Vector2D PointAlongEdge(double percentage)
             {
-                return Vector2D.Lerp(ref p[P0], ref p[P1], percentage);
+                return Vector2D.Lerp(ref p[0], ref p[1], percentage);
             }
 
             public override Vector2D GetDirection(double param)
             {
-                return p[P1] - p[P0];
+                return p[1] - p[0];
             }
 
             public override void SplitInThirds(ref Edge part1, ref Edge part2, ref Edge part3)
             {
-                part1 = new LinearEdge(p[P0], Point(1 / 3.0), Color);
+                part1 = new LinearEdge(p[0], Point(1 / 3.0), Color);
                 part2 = new LinearEdge(Point(1 / 3.0), Point(2 / 3.0), Color);
-                part3 = new LinearEdge(Point(2 / 3.0), p[P1], Color);
+                part3 = new LinearEdge(Point(2 / 3.0), p[1], Color);
             }
 
             public unsafe override int ScanlineIntersections(double* x, int* dy, double y)
