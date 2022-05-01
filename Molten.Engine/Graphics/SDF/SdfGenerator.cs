@@ -111,6 +111,8 @@ namespace Molten.Graphics.MSDF
 
         public unsafe TextureSliceRef<float> Rasterize(uint width, uint height, TextureSliceRef<float> sdf, MsdfProjection projection, double pxRange)
         {
+            MsdfRasterization.Simulate8bit(sdf);
+
             uint numBytes = width * height * sizeof(float);
             TextureSlice output = new TextureSlice(width, height, numBytes)
             {

@@ -95,16 +95,16 @@ namespace Molten.Samples
             timer.Start();
             uint pWidth = 64;
             uint pHeight = 64;
-            double pxRange = 10;
+            double pxRange = 4;
 
-            uint testWidth = 512;
-            uint testHeight = 512;
+            uint testWidth = 256;
+            uint testHeight = 256;
             FillRule fl = FillRule.NonZero;
 
             MsdfProjection projection = new MsdfProjection()
             {
                 Scale = new Vector2D(0.2),
-                Translate = new Vector2D(-240, -270)
+                Translate = new Vector2D(-240, -280)
             };
 
             TextureSliceRef<float> sdf = _sdf.Generate(pWidth, pHeight, _shape, projection, pxRange, mode, fl);

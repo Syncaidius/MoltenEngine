@@ -12,7 +12,6 @@ namespace Molten.Graphics.MSDF
         {
             SdfGenerator.NPerPixel(sdf, 1);
             Scanline scanline = new Scanline();
-
             for (int y = 0; y < sdf.Height; ++y)
             {
                 MsdfShapeProcessing.scanline(shape, scanline, projection.UnprojectY(y + .5));
@@ -23,54 +22,6 @@ namespace Molten.Graphics.MSDF
                     if ((*sd > 0.5f) != fill)
                         *sd = 1.0f - sd[0];
                 }
-            }
-        }
-
-        private static float distVal(float dist, double pxRange, float midValue)
-        {
-            if (pxRange == 0)
-                return (dist > midValue ? 1f : 0);
-            return (float)MathHelperDP.Clamp((dist - midValue) * pxRange + 0.5);
-        }
-
-        internal static unsafe void RenderSDF(TextureSliceRef<float> output, TextureSliceRef<float> sdf, double pxRange, float midValue)
-        {
-            Vector2D scale = new Vector2D((double)sdf.Width / output.Width, (double)sdf.Height / output.Height);
-            pxRange *= (double)(output.Width + output.Height) / (sdf.Width + sdf.Height);
-
-            float* sd = stackalloc float[(int)sdf.ElementsPerPixel];
-            if (sdf.ElementsPerPixel >= 3 && output.ElementsPerPixel == 1)
-            {
-                for (int y = 0; y < output.Height; ++y)
-                {
-                    for (int x = 0; x < output.Width; ++x)
-                    {
-                        for (int i = 0; i < sdf.ElementsPerPixel; i++)
-                            sd[i] = 0;
-
-                        Interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
-                        output[x, y][0] = distVal(MathHelper.Median(sd[0], sd[1], sd[2]), pxRange, midValue);
-                    }
-                }
-            }
-            else if (sdf.ElementsPerPixel == output.ElementsPerPixel)
-            {
-                for (int y = 0; y < output.Height; ++y)
-                {
-                    for (int x = 0; x < output.Width; ++x)
-                    {
-                        for (int i = 0; i < sdf.ElementsPerPixel; i++)
-                            sd[i] = 0;
-
-                       Interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
-                        for (uint i = 0; i < output.ElementsPerPixel; i++)
-                            output[x, y][i] = distVal(sd[i], pxRange, midValue);
-                    }
-                }
-            }
-            else
-            {
-                // TODO handle other configurations.
             }
         }
 
@@ -158,10 +109,10 @@ namespace Molten.Graphics.MSDF
             double lr = pos.X - l;
             double bt = pos.Y - b;
 
-            l = (int)MathHelper.Clamp(l, 0, (int)bitmap.Width - 1);
-            r = (int)MathHelper.Clamp(r, 0, (int)bitmap.Width - 1);
-            b = (int)MathHelper.Clamp(b, 0, (int)bitmap.Height - 1);
-            t = (int)MathHelper.Clamp(t, 0, (int)bitmap.Height - 1);
+            l = MathHelper.Clamp(l, 0, (int)bitmap.Width - 1);
+            r = MathHelper.Clamp(r, 0, (int)bitmap.Width - 1);
+            b = MathHelper.Clamp(b, 0, (int)bitmap.Height - 1);
+            t = MathHelper.Clamp(t, 0, (int)bitmap.Height - 1);
 
             for (int i = 0; i < bitmap.ElementsPerPixel; ++i)
             {
@@ -169,6 +120,71 @@ namespace Molten.Graphics.MSDF
                 float end = MathHelper.Lerp(bitmap[l, t][i], bitmap[r, t][i], lr);
                 output[i] = MathHelper.Lerp(start, end, bt);
             }
+        }
+
+        private static float distVal(float dist, double pxRange, float midValue)
+        {
+            if (pxRange == 0)
+                return (dist > midValue ? 1f : 0);
+            return (float)MathHelperDP.Clamp((dist - midValue) * pxRange + 0.5);
+        }
+
+        internal static unsafe void RenderSDF(TextureSliceRef<float> output, TextureSliceRef<float> sdf, double pxRange, float midValue)
+        {
+            Vector2D scale = new Vector2D((double)sdf.Width / output.Width, (double)sdf.Height / output.Height);
+            pxRange *= (double)(output.Width + output.Height) / (sdf.Width + sdf.Height);
+
+            float* sd = stackalloc float[(int)sdf.ElementsPerPixel];
+            if (sdf.ElementsPerPixel >= 3 && output.ElementsPerPixel == 1)
+            {
+                for (int y = 0; y < output.Height; ++y)
+                {
+                    for (int x = 0; x < output.Width; ++x)
+                    {
+                        for (int i = 0; i < sdf.ElementsPerPixel; i++)
+                            sd[i] = 0;
+
+                        Interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
+                        output[x, y][0] = distVal(MathHelper.Median(sd[0], sd[1], sd[2]), pxRange, midValue);
+                    }
+                }
+            }
+            else if (sdf.ElementsPerPixel == output.ElementsPerPixel)
+            {
+                for (int y = 0; y < output.Height; ++y)
+                {
+                    for (int x = 0; x < output.Width; ++x)
+                    {
+                        for (int i = 0; i < sdf.ElementsPerPixel; i++)
+                            sd[i] = 0;
+
+                        Interpolate(sd, sdf, scale * new Vector2D(x + 0.5, y + 0.5));
+                        for (uint i = 0; i < output.ElementsPerPixel; i++)
+                            output[x, y][i] = distVal(sd[i], pxRange, midValue);
+                    }
+                }
+            }
+            else
+            {
+                // TODO handle other configurations.
+            }
+        }
+
+        internal unsafe static void Simulate8bit(TextureSliceRef<float> bitmap)
+        {
+            float* end = bitmap.Data + bitmap.ElementsPerPixel * bitmap.Width * bitmap.Height;
+            for (float* p = bitmap.Data; p < end; ++p)
+                *p = pixelByteToFloat(pixelFloatToByte(*p));
+        }
+
+        private static byte pixelFloatToByte(float x)
+        {
+            return (byte)(MathHelper.Clamp(256f * x, 0, 255f));
+        }
+
+        private static float pixelByteToFloat(byte x)
+        {
+            return 1f / 255f * x;
         }
     }
 }

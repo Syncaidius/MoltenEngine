@@ -59,33 +59,32 @@ namespace Molten
                     else
                         nextDY = 1;
                 }
-                {
-                    Vector2D ab = p[1] - p[0];
-                    Vector2D br = p[2] - p[1] - ab;
-                    double* t = stackalloc double[2];
-                    int solutions = SignedDistanceSolver.SolveQuadratic(t, br.Y, 2 * ab.Y, p[0].Y - y);
-                    // Sort solutions
-                    double tmp;
-                    if (solutions >= 2 && t[0] > t[1])
-                    {
-                        tmp = t[0];
-                        t[0] = t[1];
-                        t[1] = tmp;
-                    }
 
-                    for (int i = 0; i < solutions && total < 2; ++i)
+                Vector2D ab = p[1] - p[0];
+                Vector2D br = p[2] - p[1] - ab;
+                double* t = stackalloc double[2];
+                int solutions = SignedDistanceSolver.SolveQuadratic(t, br.Y, 2 * ab.Y, p[0].Y - y);
+                // Sort solutions
+                double tmp;
+                if (solutions >= 2 && t[0] > t[1])
+                {
+                    tmp = t[0]; t[0] = t[1]; 
+                    t[1] = tmp;
+                }
+
+                for (int i = 0; i < solutions && total < 2; ++i)
+                {
+                    if (t[i] >= 0 && t[i] <= 1)
                     {
-                        if (t[i] >= 0 && t[i] <= 1)
+                        x[total] = p[0].X + 2 * t[i] * ab.X + t[i] * t[i] * br.X;
+                        if (nextDY * (ab.Y + t[i] * br.Y) >= 0)
                         {
-                            x[total] = p[0].X + 2 * t[i] * ab.X + t[i] * t[i] * br.X;
-                            if (nextDY * (ab.Y + t[i] * br.Y) >= 0)
-                            {
-                                dy[total++] = nextDY;
-                                nextDY = -nextDY;
-                            }
+                            dy[total++] = nextDY;
+                            nextDY = -nextDY;
                         }
                     }
                 }
+
                 if (p[2].Y == y)
                 {
                     if (nextDY > 0 && total > 0)
@@ -103,6 +102,7 @@ namespace Molten
                         }
                     }
                 }
+
                 if (nextDY != (y >= p[2].Y ? 1 : -1))
                 {
                     if (total > 0)
