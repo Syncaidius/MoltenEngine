@@ -15,6 +15,10 @@ namespace Molten
                 p = new Vector2D[] { p0, p1 };
             }
 
+            public override ref Vector2D Start => ref p[0];
+
+            public override ref Vector2D End => ref p[1];
+
             /// <summary>
             /// 
             /// </summary>

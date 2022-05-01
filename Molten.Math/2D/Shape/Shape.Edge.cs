@@ -61,7 +61,7 @@ namespace Molten
 
             public override string ToString()
             {
-                return $"{this.GetType().Name} - P0: {p[0]} -- P1: {p[1]}";
+                return $"{this.GetType().Name} - P0: {Start} -- P1: {End}";
             }
 
             public abstract Vector2D Point(double param);
@@ -75,6 +75,10 @@ namespace Molten
             public unsafe abstract int ScanlineIntersections(double* x, int* dy, double y);
 
             public abstract SignedDistance SignedDistance(Vector2D origin, out double param);
+
+            public abstract ref Vector2D Start { get; }
+
+            public abstract ref Vector2D End { get; }
         }
     }
 }

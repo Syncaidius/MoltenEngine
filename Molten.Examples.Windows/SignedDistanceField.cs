@@ -95,16 +95,16 @@ namespace Molten.Samples
             timer.Start();
             uint pWidth = 64;
             uint pHeight = 64;
-            double pxRange = 4;
+            double pxRange = 8;
 
-            uint testWidth = 256;
-            uint testHeight = 256;
+            uint testWidth = 128;
+            uint testHeight = 128;
             FillRule fl = FillRule.NonZero;
 
             MsdfProjection projection = new MsdfProjection()
             {
-                Scale = new Vector2D(0.2),
-                Translate = new Vector2D(-240, -280)
+                Scale = new Vector2D(0.08), // new Vector2D(0.2),
+                Translate = new Vector2D(190, 60)//new Vector2D(-240, -280)
             };
 
             TextureSliceRef<float> sdf = _sdf.Generate(pWidth, pHeight, _shape, projection, pxRange, mode, fl);
@@ -293,6 +293,15 @@ namespace Molten.Samples
         {
             Glyph glyph = _fontFile.GetGlyph(glyphChar);
             _shape = glyph.CreateShape();
+            
+            _msdfResultTextures.Clear();
+            _msdfTextures.Clear();
+            MsdfShapeProcessing.Normalize(_shape);
+
+            GenerateSDF("SDF", SdfMode.Sdf);
+            GenerateSDF("PSDF", SdfMode.Psdf);
+            GenerateSDF("MSDF", SdfMode.Msdf);
+            GenerateSDF("MTSDF", SdfMode.Mtsdf);
 
             _shape.ScaleAndOffset(_charOffset, _scale);
 
@@ -325,15 +334,6 @@ namespace Molten.Samples
             _glyphTriPoints = new List<Vector2F>();
 
             _shape.Triangulate(_glyphTriPoints, Vector2F.Zero, 1, CHAR_CURVE_RESOLUTION);
-
-            _msdfResultTextures.Clear();
-            _msdfTextures.Clear();
-            MsdfShapeProcessing.Normalize(_shape);
-
-            GenerateSDF("SDF", SdfMode.Sdf);
-            GenerateSDF("PSDF", SdfMode.Psdf);
-            GenerateSDF("MSDF", SdfMode.Msdf);
-            GenerateSDF("MTSDF", SdfMode.Mtsdf);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)

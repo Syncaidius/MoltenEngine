@@ -12,8 +12,22 @@ namespace Molten
         {
             public CubicEdge(Vector2D p0, Vector2D p1, Vector2D pControl1, Vector2D pControl2, EdgeColor color = EdgeColor.White) : base(color)
             {
-                p = new Vector2D[] { p0, p1, pControl1, pControl2 };
+                if ((p1 == p0 || p1 == pControl2) && (pControl1 == p0 || pControl1 == pControl2))
+                {
+                    p1 = Vector2D.Lerp(p0, pControl2, 1 / 3.0);
+                    pControl1 = Vector2D.Lerp(p0, pControl2, 2 / 3.0);
+                }
+
+                p = new Vector2D[] { p0, pControl1, pControl2, p1 };
             }
+
+            public override ref Vector2D Start => ref p[0];
+
+            public override ref Vector2D End => ref p[3];
+
+            public ref Vector2D ControlPoint1 => ref p[1];
+
+            public ref Vector2D ControlPoint2 => ref p[2];
 
             public override Vector2D Point(double param)
             {
@@ -26,7 +40,7 @@ namespace Molten
 
             public override Vector2D PointAlongEdge(double percentage)
             {
-                return BezierCurve2D.CalculateCubic(percentage, p[0], p[1], p[2], p[3]);
+                return BezierCurve2D.CalculateCubic(percentage, Start, End, ControlPoint1, ControlPoint2);
             }
 
             public override Vector2D GetDirection(double param)

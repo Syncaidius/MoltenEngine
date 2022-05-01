@@ -12,8 +12,17 @@ namespace Molten
         {
             public QuadraticEdge(Vector2D p0, Vector2D p1, Vector2D pControl, EdgeColor color = EdgeColor.White) : base(color)
             {
-                p = new Vector2D[] { p0, p1, pControl };
+                if (p1 == p0 || p1 == pControl)
+                    p1 = 0.5 * (p0 + pControl);
+
+                p = new Vector2D[] { p0, pControl, p1 };
             }
+
+            public override ref Vector2D Start => ref p[0];
+
+            public override ref Vector2D End => ref p[2];
+
+            public ref Vector2D ControlPoint => ref p[1];
 
             public override Vector2D Point(double param)
             {
@@ -24,7 +33,7 @@ namespace Molten
 
             public override Vector2D PointAlongEdge(double percentage)
             {
-                return BezierCurve2D.CalculateQuadratic(percentage, p[0], p[1], p[2]);
+                return BezierCurve2D.CalculateQuadratic(percentage, Start, End, ControlPoint);
             }
 
             public CubicEdge ConvertToCubic()
@@ -68,7 +77,8 @@ namespace Molten
                 double tmp;
                 if (solutions >= 2 && t[0] > t[1])
                 {
-                    tmp = t[0]; t[0] = t[1]; 
+                    tmp = t[0]; 
+                    t[0] = t[1]; 
                     t[1] = tmp;
                 }
 

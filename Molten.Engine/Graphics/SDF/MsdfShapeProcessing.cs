@@ -17,7 +17,7 @@ namespace Molten.Graphics.MSDF
         /// <param name=""></param>
         /// <param name=""></param>
         /// <param name="y"></param>
-        public static unsafe void scanline(Shape shape, Scanline line, double y)
+        public static unsafe void Scanline(Shape shape, Scanline line, double y)
         {
             List<Scanline.Intersection> intersections = new List<Scanline.Intersection>();
             double* x = stackalloc double[3];

@@ -8,13 +8,13 @@ namespace Molten.Graphics.MSDF
 {
     internal static class MsdfRasterization
     {
-        internal static unsafe void distanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
+        internal static unsafe void DistanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
         {
             SdfGenerator.NPerPixel(sdf, 1);
             Scanline scanline = new Scanline();
             for (int y = 0; y < sdf.Height; ++y)
             {
-                MsdfShapeProcessing.scanline(shape, scanline, projection.UnprojectY(y + .5));
+                MsdfShapeProcessing.Scanline(shape, scanline, projection.UnprojectY(y + .5));
                 for (int x = 0; x < sdf.Width; ++x)
                 {
                     bool fill = scanline.Filled(projection.UnprojectX(x + .5), fillRule);
@@ -25,7 +25,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        internal unsafe static void multiDistanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
+        internal unsafe static void MultiDistanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
         {
             uint w = sdf.Width, h = sdf.Height;
             if ((w * h) == 0)
@@ -40,7 +40,7 @@ namespace Molten.Graphics.MSDF
 
                 for (int y = 0; y < h; ++y)
                 {
-                    MsdfShapeProcessing.scanline(shape, scanline, projection.UnprojectY(y + .5));
+                    MsdfShapeProcessing.Scanline(shape, scanline, projection.UnprojectY(y + .5));
                     for (int x = 0; x < w; ++x)
                     {
                         bool fill = scanline.Filled(projection.UnprojectX(x + .5), fillRule);
@@ -174,15 +174,15 @@ namespace Molten.Graphics.MSDF
         {
             float* end = bitmap.Data + bitmap.ElementsPerPixel * bitmap.Width * bitmap.Height;
             for (float* p = bitmap.Data; p < end; ++p)
-                *p = pixelByteToFloat(pixelFloatToByte(*p));
+                *p = PixelByteToFloat(PixelFloatToByte(*p));
         }
 
-        private static byte pixelFloatToByte(float x)
+        private static byte PixelFloatToByte(float x)
         {
             return (byte)(MathHelper.Clamp(256f * x, 0, 255f));
         }
 
-        private static float pixelByteToFloat(byte x)
+        private static float PixelByteToFloat(byte x)
         {
             return 1f / 255f * x;
         }
