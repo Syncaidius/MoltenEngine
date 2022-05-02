@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.MSDF
+namespace Molten.Graphics.SDF
 {
     public enum SdfMode
     {
@@ -38,6 +38,9 @@ namespace Molten.Graphics.MSDF
 
         public unsafe TextureSliceRef<float> Generate(uint pWidth, uint pHeight, Shape shape, MsdfProjection projection, double pxRange, SdfMode mode, FillRule fl)
         {
+            if (pWidth == 0 || pHeight == 0)
+                throw new Exception("Texture slice width and height must be at least 1 pixel");
+
             MsdfConfig config = new MsdfConfig()
             {
                 DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE,
@@ -111,6 +114,9 @@ namespace Molten.Graphics.MSDF
 
         public unsafe TextureSliceRef<float> Rasterize(uint width, uint height, TextureSliceRef<float> sdf, MsdfProjection projection, double pxRange)
         {
+            if (width == 0 || height == 0)
+                throw new Exception("Width and height must be at least 1 pixel");
+
             MsdfRasterization.Simulate8bit(sdf);
 
             uint numBytes = width * height * sizeof(float);
@@ -126,6 +132,70 @@ namespace Molten.Graphics.MSDF
             MsdfRasterization.RenderSDF(outRef, sdf, avgScale * range, 0.5f);
 
             return outRef;
+        }
+
+        public unsafe ITexture2D ConvertToTexture(RenderService renderer, TextureSliceRef<float> src)
+        {
+            uint rowPitch = (src.Width * (uint)sizeof(Color));
+            Color[] finalData = new Color[src.Width * src.Height];
+            ITexture2D tex = renderer.Resources.CreateTexture2D(new Texture2DProperties()
+            {
+                Width = src.Width,
+                Height = src.Height,
+                Format = GraphicsFormat.R8G8B8A8_UNorm
+            });
+
+            switch (src.ElementsPerPixel)
+            {
+                case 1: // SDF or PSDF is one-channel. The render result of all SDF modes are also generally greyscale/white/black.
+                    for (int i = 0; i < finalData.Length; i++)
+                    {
+                        byte c = (byte)(255 * src[i]);
+                        finalData[i] = new Color()
+                        {
+                            R = c,
+                            G = c,
+                            B = c,
+                            A = c,
+                        };
+                    }
+                    break;
+
+                case 3: // MSDF - 3 RGB 32-bit
+                    for (uint i = 0; i < finalData.Length; i++)
+                    {
+                        uint p = i * src.ElementsPerPixel;
+
+                        finalData[i] = new Color()
+                        {
+                            R = (byte)(255 * src[p]),
+                            G = (byte)(255 * src[p + 1]),
+                            B = (byte)(255 * src[p + 2]),
+                            A = 255,
+                        };
+                    }
+
+                    break;
+
+                case 4: // MTSDF - 3 RGB 32-bit
+                    for (uint i = 0; i < finalData.Length; i++)
+                    {
+                        uint p = i * src.ElementsPerPixel;
+
+                        finalData[i] = new Color()
+                        {
+                            R = (byte)(255 * src[p]),
+                            G = (byte)(255 * src[p + 1]),
+                            B = (byte)(255 * src[p + 2]),
+                            A = (byte)(255 * src[p + 3]),
+                        };
+                    }
+
+                    break;
+            }
+
+            tex.SetData(0, finalData, 0, (uint)finalData.Length, rowPitch);
+            return tex;
         }
 
         private uint GetNPerPixel(SdfMode mode)

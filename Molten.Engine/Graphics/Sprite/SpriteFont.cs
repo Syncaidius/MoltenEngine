@@ -1,5 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Font;
+using Molten.Graphics.SDF;
 using System.Diagnostics;
 
 namespace Molten.Graphics
@@ -32,8 +33,7 @@ namespace Molten.Graphics
             /// <summary>The location of the character glyph on the font atlas texture.</summary>
             public readonly Rectangle Location;
 
-            // The shapes which make up the character glyph. Required for rendering to sheet or generating a 3D model.
-            internal List<Vector2F> GlyphMesh = new List<Vector2F>();
+            internal ITexture2D GlyphTex;
 
             /// <summary> The advance width (horizontal advance) of the character glyph, in pixels. </summary>
             public readonly int AdvanceWidth;
@@ -57,13 +57,13 @@ namespace Molten.Graphics
 
         FontFile _font;
         IRenderSurface2D _rt;
-        int _fontSize;
+        uint _charResolution;
         int _tabSize;
         int _pageSize;
-        int _pointsPerCurve;
         int _charPadding;
         int _lineSpace;
 
+        SdfGenerator _sdf;
         BinPacker _packer;
         GlyphCache[] _glyphCache;
         CharData[] _charData;
@@ -77,27 +77,24 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="renderer">The renderer with which to prepare and update the sprite font's character sheet.</param>
         /// <param name="font">The font file from which to source character glyphs.</param>
-        /// <param name="ptSize">The size of the characters ,in font points (e.g. 12pt, 16pt, 18pt, etc).</param>
         /// <param name="tabSize">The number of spaces which represent a single tab character (\t).</param>
         /// <param name="texturePageSize">The size (in pixels) of a single sprite font texture page.</param>
-        /// <param name="pointsPerCurve">The number of points allowed per curve when generating glyph shapes. This can be used as a detail level for character glyphs. <para/>
         /// A higher number produces smoother curves, while a lower one will produce faceted, low-poly representations of curves. Setting this too low may produce invalid curves.</param>
         /// <param name="initialPages">The initial number of pages in the underlying sprite font texture atlas. Minimum is 1.</param>
         /// <param name="charPadding">The number of pixels to add as padding around each character placed on to the font atlas. 
         /// Default value is 2. Negative padding can cause characters to overlap.</param>
         internal SpriteFont(RenderService renderer,
             FontFile font,
-            int ptSize,
             int tabSize,
             int texturePageSize,
-            int pointsPerCurve,
             int initialPages,
-            int charPadding )
+            int charPadding,
+            uint charResolution)
         {
             Debug.Assert(texturePageSize >= MIN_PAGE_SIZE, $"Texture page size must be at least {MIN_PAGE_SIZE}");
-            Debug.Assert(pointsPerCurve >= 2, $"Points per curve must be at least {MIN_POINTS_PER_CURVE}");
             Debug.Assert(initialPages >= 1, $"Initial pages must be at least 1");
 
+            _sdf = new SdfGenerator();
             _renderer = renderer;
             _font = font;
             _interlocker = new Interlocker();
@@ -115,18 +112,15 @@ namespace Molten.Graphics
 
             _charData = new CharData[char.MaxValue];
             _tabSize = tabSize;
-            _fontSize = ptSize;
+            _charResolution = charResolution;
             _pageSize = texturePageSize;
-            _pointsPerCurve = pointsPerCurve;
             _packer = new BinPacker(_pageSize, _pageSize);
             _pendingGlyphs = new ThreadedQueue<ushort>();
             _charPadding = charPadding;
 
-            FontHash = (ulong)_fontSize << 56;          // [ptSize - 1 byte/8-bit]
-            FontHash |= (ulong)_tabSize << 48;          // [tabSize - 1 byte/8-bit]
-            FontHash |= (ulong)_pageSize << 32;         // [texturePageSize - 2 bytes/16-bit]
-            FontHash |= (ulong)_pointsPerCurve << 16;   // [pointsPerCurve - 2 bytes/16-bit]
-            FontHash |= (ulong)_charPadding << 8;       // [charPadding - 1 byte/8-bit]
+            FontHash =  (ulong)_tabSize << 56;          // [tabSize - 1 byte/8-bit]
+            FontHash |= (ulong)_pageSize << 48;         // [texturePageSize - 2 bytes/16-bit]
+            FontHash |= (ulong)_charPadding << 32;       // [charPadding - 1 byte/8-bit]
             FontHash |= 0;                              // [RESERVERD - 1 byte/8-bit]
 
 
@@ -168,7 +162,7 @@ namespace Molten.Graphics
             while (_pendingGlyphs.TryDequeue(out ushort gIndex))
             {
                 GlyphCache cache = _glyphCache[gIndex];
-                sb.DrawTriangleList(cache.GlyphMesh, Color.White);
+                sb.Draw(cache.GlyphTex,cache.Location, Color.White);
             }
 
             _renderData.IsVisible = false;
@@ -181,7 +175,12 @@ namespace Molten.Graphics
 
         private int ToPixels(float designUnits)
         {
-            return (int)Math.Ceiling(_fontSize * designUnits / _font.Header.DesignUnitsPerEm);
+            return (int)Math.Ceiling(_charResolution * designUnits / _font.Header.DesignUnitsPerEm);
+        }
+
+        private float GetResolutionScale(float fontSize)
+        {
+            return (fontSize / _charResolution);
         }
 
         /// <summary>
@@ -189,12 +188,12 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="c">The character.</param>
         /// <returns></returns>
-        public int GetAdvanceWidth(char c)
+        public float GetAdvanceWidth(char c, float fontSize)
         {
             if (!_charData[c].Initialized)
                 AddCharacter(c, true);
 
-            return _glyphCache[_charData[c].GlyphIndex].AdvanceWidth;
+            return _glyphCache[_charData[c].GlyphIndex].AdvanceWidth * GetResolutionScale(fontSize);
         }
 
         /// <summary>
@@ -202,12 +201,12 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="c">The character.</param>
         /// <returns></returns>
-        public int GetHeight(char c)
+        public float GetHeight(char c, float fontSize)
         {
             if (!_charData[c].Initialized)
                 AddCharacter(c, true);
 
-            return _glyphCache[_charData[c].GlyphIndex].AdvanceHeight;
+            return _glyphCache[_charData[c].GlyphIndex].AdvanceHeight * GetResolutionScale(fontSize);
         }
 
         /// <summary>
@@ -227,18 +226,18 @@ namespace Molten.Graphics
         /// <summary>Measures the provided string and returns it's width and height, in pixels.</summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public Vector2F MeasureString(string text)
+        public Vector2F MeasureString(string text, float fontSize)
         {
-            return MeasureString(text, 0, text.Length);
+            return MeasureString(text, fontSize, 0, text.Length);
         }
 
         /// <summary>Measures part (or all) of the provided string based on the provided maximum length. Returns its width and height in pixels.</summary>
         /// <param name="text">The text.</param>
         /// <param name="maxLength">The maximum length of the string to measure.</param>
         /// <returns></returns>
-        public Vector2F MeasureString(string text, int maxLength)
+        public Vector2F MeasureString(string text, float fontSize, int maxLength)
         {
-            return MeasureString(text, 0, maxLength);
+            return MeasureString(text, fontSize, 0, maxLength);
         }
 
         /// <summary>Measures part (or all) of the provided string and returns its width and height, in pixels.</summary>
@@ -246,16 +245,20 @@ namespace Molten.Graphics
         /// <param name="startIndex">The starting character index within the string from which to begin measuring.</param>
         /// <param name="length">The number of characters to measure from the start index.</param>
         /// <returns></returns>
-        public Vector2F MeasureString(string text, int startIndex, int length)
+        public Vector2F MeasureString(string text, float fontSize, int startIndex, int length)
         {
             Vector2F result = new Vector2F();
             int end = startIndex + Math.Min(text.Length, length);
+            float resScale = GetResolutionScale(fontSize);
+
             for (int i = startIndex; i < end; i++)
             {
                 GlyphCache cache = GetCharGlyph(text[i]);
-                result.X += cache.AdvanceWidth;
+                result.X += cache.AdvanceWidth * resScale;
                 result.Y = Math.Max(result.Y, cache.AdvanceHeight);
             }
+
+            result.Y *= resScale;
 
             return result;
         }
@@ -297,6 +300,9 @@ namespace Molten.Graphics
             GlyphMetrics gm = _font.GetMetricsByIndex(gIndex);
 
             Rectangle gBounds = g.Bounds;
+            gBounds.Width = Math.Max(1, gBounds.Width);
+            gBounds.Height = Math.Max(1, gBounds.Height);
+
             int padding2 = _charPadding * 2;
             int pWidth, pHeight;
             int advWidth = ToPixels(gm.AdvanceWidth);
@@ -345,15 +351,22 @@ namespace Molten.Graphics
             float yOffset = ToPixels(g.Bounds.Top);
             Vector2F glyphOffset = new Vector2F()
             {
-                X = loc.X - ToPixels(g.Bounds.Left),
-                Y = loc.Y - yOffset,
+                X = -ToPixels(g.Bounds.Left),
+                Y = -yOffset,
             };
 
             _charData[c] = new CharData(gIndex);
             _glyphCache[gIndex] = new GlyphCache(advWidth, advHeight, loc, yOffset);
+
             Shape shape = g.CreateShape();
+            MsdfShapeProcessing.Normalize(shape);
             shape.ScaleAndOffset(glyphOffset, glyphScale);
-            shape.Triangulate(_glyphCache[gIndex].GlyphMesh, Vector2F.Zero, 1);
+
+            TextureSliceRef<float> sdfRef = _sdf.Generate((uint)pWidth, (uint)pHeight, shape, MsdfProjection.Default, 8, SdfMode.Msdf, FillRule.NonZero);
+
+            MsdfRasterization.Simulate8bit(sdfRef);
+            _glyphCache[gIndex].GlyphTex = _sdf.ConvertToTexture(_renderer, sdfRef);
+            sdfRef.Slice.Dispose();
 
             if (renderGlyph)
             {
@@ -370,9 +383,9 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// The font size, in font points (e.g. 12pt, 16pt, 18pt, etc).
+        /// Gets the base font-size of character signed-distance field textures.
         /// </summary>
-        public int FontSize => _fontSize;
+        public uint CharResolution => _charResolution;
 
         /// <summary>ToPixels(g.Bounds.Top)
         /// Gets the underlying font used to generate the sprite-font.

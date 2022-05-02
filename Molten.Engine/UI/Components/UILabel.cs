@@ -31,7 +31,7 @@ namespace Molten.UI
                 return;
 
             Properties.Position = (Vector2F)LocalBounds.TopLeft;
-            Vector2F textSize = Properties.Font.MeasureString(Properties.Text);
+            Vector2F textSize = Properties.Font.MeasureString(Properties.Text, 16);
 
             switch (_hAlign)
             {

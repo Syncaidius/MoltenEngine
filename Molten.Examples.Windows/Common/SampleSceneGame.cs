@@ -107,44 +107,44 @@ namespace Molten.Samples
                 return;
 
             string text = "[W][A][S][D] to move -- [ESC] close -- [LMB] and [MOUSE] to rotate";
-            Vector2F tSize = SampleFont.MeasureString(text);
+            Vector2F tSize = SampleFont.MeasureString(text, 16);
             Vector2F pos = new Vector2F()
             {
                 X = Window.Width / 2 + (-tSize.X / 2),
                 Y = Window.Height - tSize.Y - 20,
             };
 
-            sb.DrawString(SampleFont, text, pos, Color.White);
+            sb.DrawString(SampleFont, 16, text, pos, Color.White);
 
             // Gamepad instructions
             text = "OR";
-            tSize = SampleFont.MeasureString(text);
+            tSize = SampleFont.MeasureString(text, 16);
             pos.X = Window.Width / 2 + (-tSize.X / 2);
             pos.Y -= tSize.Y + 5;
-            sb.DrawString(SampleFont, text, pos, Color.White);
+            sb.DrawString(SampleFont, 16, text, pos, Color.White);
 
             if (Gamepad.IsConnected)
             {
                 text = "Gamepad [LEFT STICK] or [D-PAD] to move -- [RIGHT STICK] to aim";
-                tSize = SampleFont.MeasureString(text);
+                tSize = SampleFont.MeasureString(text, 16);
                 pos.X = Window.Width / 2 + (-tSize.X / 2);
                 pos.Y -= tSize.Y + 5;
-                sb.DrawString(SampleFont, text, pos, Color.White);
+                sb.DrawString(SampleFont, 16, text, pos, Color.White);
 
                 // Stats
                 pos.X = 5;
-                pos.Y = 300; sb.DrawString(SampleFont, $"Left stick: {Gamepad.LeftStick.X},{Gamepad.LeftStick.Y}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, $"Right stick: {Gamepad.RightStick.X},{Gamepad.RightStick.Y}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, $"Left Trigger: {Gamepad.LeftTrigger.Value}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, $"Right Trigger: {Gamepad.RightTrigger.Value}", pos, Color.White);
+                pos.Y = 300; sb.DrawString(SampleFont, 16, $"Left stick: {Gamepad.LeftStick.X},{Gamepad.LeftStick.Y}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, 16, $"Right stick: {Gamepad.RightStick.X},{Gamepad.RightStick.Y}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, 16, $"Left Trigger: {Gamepad.LeftTrigger.Value}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, 16, $"Right Trigger: {Gamepad.RightTrigger.Value}", pos, Color.White);
             }
             else
             {
                 text = "Connect a gamepad / controller";
-                tSize = SampleFont.MeasureString(text);
+                tSize = SampleFont.MeasureString(text, 16);
                 pos.X = Window.Width / 2 + (-tSize.X / 2);
                 pos.Y -= tSize.Y + 5;
-                sb.DrawString(SampleFont, text, pos, Color.White);
+                sb.DrawString(SampleFont, 16, text, pos, Color.White);
             }
         }
 

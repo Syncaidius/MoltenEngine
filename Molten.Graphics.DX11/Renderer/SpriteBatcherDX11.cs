@@ -20,13 +20,14 @@
         Action<DeviceContext, RenderCamera, Range, ObjectRenderData>[] _flushFuncs;
         SpriteVertex[] _vertices;
         Rectangle _vpBounds;
-
         Material _defaultMaterial; 
         Material _defaultMaterialMS;
         Material _defaultNoTextureMaterial;
         Material _defaultLineMaterial;
         Material _defaultCircleMaterial;
         Material _defaultTriMaterial;
+
+        Material _defaultMsdfMaterial;
 
         internal SpriteBatcherDX11(RendererDX11 renderer, uint capacity = 3000) : base(capacity)
         {
@@ -48,13 +49,15 @@
             _defaultCircleMaterial = result[ShaderClassType.Material, "circle"] as Material;
             _defaultTriMaterial = result[ShaderClassType.Material, "triangle"] as Material;
 
-            _flushFuncs = new Action<DeviceContext, RenderCamera, Range, ObjectRenderData>[4]
-            {
-                FlushSpriteRange,
-                FlushLineRange,
-                FlushTriangleRange,
-                FlushCircleRange,
-            };
+            ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_sdf.mfx");
+            _defaultMsdfMaterial = resultSdf[ShaderClassType.Material, "sprite-msdf"] as Material;
+
+            _flushFuncs = new Action<DeviceContext, RenderCamera, Range, ObjectRenderData>[5];
+            _flushFuncs[(int)SpriteFormat.Sprite] = FlushSpriteRange;
+            _flushFuncs[(int)SpriteFormat.MSDF] = FlushMtsdfRange;
+            _flushFuncs[(int)SpriteFormat.Line] = FlushLineRange;
+            _flushFuncs[(int)SpriteFormat.Triangle] = FlushTriangleRange;
+            _flushFuncs[(int)SpriteFormat.Circle] = FlushCircleRange;
         }
 
         internal unsafe void Flush(DeviceContext context, RenderCamera camera, ObjectRenderData data)
@@ -167,6 +170,41 @@
                 {
                     mat = mat ?? _defaultMaterial;
                     mat.Textures.DiffuseTexture.Value = range.Texture; 
+                }
+
+                Vector2F texSize = new Vector2F(range.Texture.Width, range.Texture.Height);
+                mat.SpriteBatch.TextureSize.Value = texSize;
+            }
+            else
+            {
+                mat = mat ?? _defaultNoTextureMaterial;
+            }
+
+            if (range.ClipID <= 0)
+                context.State.SetScissorRectangles(_vpBounds);
+            else
+                context.State.SetScissorRectangles(Clips[range.ClipID]);
+
+            mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
+            context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.Start);
+        }
+
+        private void FlushMtsdfRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
+        {
+            Material mat = range.Material as Material;
+
+            if (range.Texture != null)
+            {
+                if (range.Texture.IsMultisampled)
+                {
+                    //mat = mat ?? _defaultMaterialMS;
+                    //mat.Textures.DiffuseTextureMS.Value = range.Texture;
+                   // mat.Textures.SampleCount.Value = (uint)range.Texture.MultiSampleLevel;
+                }
+                else
+                {
+                    mat = mat ?? _defaultMsdfMaterial;
+                    mat.Textures.DiffuseTexture.Value = range.Texture;
                 }
 
                 Vector2F texSize = new Vector2F(range.Texture.Width, range.Texture.Height);

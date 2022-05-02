@@ -10,7 +10,7 @@ namespace Molten.Content
 
         protected override void OnRead(ContentContext context, SpriteFontParameters p)
         {
-            SpriteFont sf = context.Engine.Fonts.GetFont(context.Log, context.Filename, p.FontSize);
+            SpriteFont sf = context.Engine.Fonts.GetFont(context.Log, context.Filename);
             if (sf != null)
                 context.AddOutput(sf);
         }

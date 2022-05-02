@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.MSDF
+namespace Molten.Graphics.SDF
 {
     internal static class MsdfRasterization
     {
@@ -170,7 +170,7 @@ namespace Molten.Graphics.MSDF
             }
         }
 
-        internal unsafe static void Simulate8bit(TextureSliceRef<float> bitmap)
+        public unsafe static void Simulate8bit(TextureSliceRef<float> bitmap)
         {
             float* end = bitmap.Data + bitmap.ElementsPerPixel * bitmap.Width * bitmap.Height;
             for (float* p = bitmap.Data; p < end; ++p)

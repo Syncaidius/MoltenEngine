@@ -35,19 +35,11 @@ namespace Molten
         /// <param name="charPadding">The spacing between characters.</param>
         /// <returns></returns>
         internal SpriteFont GetFont(Logger log, string path, 
-            int ptSize,
             int tabSize = 3,
             int texturePageSize = 512,
-            int pointsPerCurve = 16,
             int initialPages = 1,
             int charPadding = 2)
         {
-            if(ptSize > byte.MaxValue)
-            {
-                log.Error($"Font size cannot be greater than {byte.MaxValue}");
-                return null;
-            }
-
             if (tabSize > byte.MaxValue)
             {
                 log.Error($"Tab size cannot be greater than {byte.MaxValue}");
@@ -60,12 +52,6 @@ namespace Molten
                 return null;
             }
 
-            if (pointsPerCurve > ushort.MaxValue)
-            {
-                log.Error($"The number of points per curve cannot be greater than {ushort.MaxValue}");
-                return null;
-            }
-
             if (charPadding > byte.MaxValue)
             {
                 log.Error($"Character padding cannot be greater than {byte.MaxValue}");
@@ -74,11 +60,9 @@ namespace Molten
 
             path = path.ToLower();
 
-            ulong hash = (ulong)ptSize << 56;       // [ptSize - 1 byte/8-bit]
-            hash |= (ulong)tabSize << 48;           // [tabSize - 1 byte/8-bit]
-            hash |= (ulong)texturePageSize << 32;   // [texturePageSize - 2 bytes/16-bit]
-            hash |= (ulong)pointsPerCurve << 16;    // [pointsPerCurve - 2 bytes/16-bit]
-            hash |= (ulong)charPadding << 8;        // [charPadding - 1 byte/8-bit]
+            ulong hash = (ulong)tabSize << 56;           // [tabSize - 1 byte/8-bit]
+            hash |= (ulong)texturePageSize << 48;   // [texturePageSize - 2 bytes/16-bit]
+            hash |= (ulong)charPadding << 32;        // [charPadding - 1 byte/8-bit]
             hash |= 0;                              // [RESERVERD - 1 byte/8-bit]
 
             FontFile fFile = null;
@@ -120,8 +104,8 @@ namespace Molten
             }
 
             // Create a new instance of the font
-            SpriteFont newFont = new SpriteFont(_engine.Renderer, fFile, ptSize,
-                tabSize, texturePageSize, pointsPerCurve, initialPages, charPadding);
+            SpriteFont newFont = new SpriteFont(_engine.Renderer, fFile,
+                tabSize, texturePageSize, initialPages, charPadding, 64);
 
             if(cache == null)
             {

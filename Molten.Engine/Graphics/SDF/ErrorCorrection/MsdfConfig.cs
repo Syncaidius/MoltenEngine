@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.MSDF
+namespace Molten.Graphics.SDF
 {
     public unsafe class MsdfConfig
     {

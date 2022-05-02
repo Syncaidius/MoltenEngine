@@ -31,6 +31,7 @@ namespace Molten.Threading
             _threads = new List<WorkerThread>();
             _name = name;
             _manager = manager;
+            Reset = new ManualResetEvent(false);
             IsPaused = paused;
             ThreadApartment = apartment;
 
@@ -65,7 +66,7 @@ namespace Molten.Threading
         {
             _queue.Enqueue(task);
             for (int i = 0; i < _threads.Count; i++)
-                _threads[i].Wake();
+                Reset.Set();
         }
 
         /// <summary>
@@ -87,7 +88,7 @@ namespace Molten.Threading
         {
             _queue.EnqueueRange(tasks);
             for (int i = 0; i < _threads.Count; i++)
-                _threads[i].Wake();
+                Reset.Set();
         }
 
         public void SetWorkerCount(int count)
@@ -140,6 +141,9 @@ namespace Molten.Threading
         /// </summary>
         public ApartmentState ThreadApartment { get; }
 
+
+        internal ManualResetEvent Reset { get; }
+
         /// <summary>
         /// Gets or sets whether the worker group is paused. If true, the group's workers will not process the group's task queue.
         /// </summary>
@@ -156,7 +160,7 @@ namespace Molten.Threading
                     if (!_paused)
                     {
                         for (int i = 0; i < _threads.Count; i++)
-                            _threads[i].Wake();
+                            Reset.Set();
                     }
                 }
             }

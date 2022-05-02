@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Molten.Font;
 using Molten.Graphics;
-using Molten.Graphics.MSDF;
+using Molten.Graphics.SDF;
 using Molten.Input;
 
 namespace Molten.Samples
@@ -54,9 +54,9 @@ namespace Molten.Samples
             CameraController.AcceptInput = false;
             Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
 
-            LoadFontFile("Ananda Namaste Regular.ttf", 24);
-            //LoadFontFile("BroshK.ttf", 24);
-            //LoadFontFile("Arial", 16);
+            //LoadFontFile("Ananda Namaste Regular.ttf");
+            LoadFontFile("BroshK.ttf");
+            //LoadFontFile("Arial");
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
@@ -67,13 +67,10 @@ namespace Molten.Samples
                 GenerateChar(state.Character);
         }
 
-        private void LoadFontFile(string loadString, int size)
+        private void LoadFontFile(string loadString)
         {
             ContentRequest cr = Engine.Content.BeginRequest("assets/");
-            cr.Load<SpriteFont>(loadString, new SpriteFontParameters()
-            {
-                FontSize = size,
-            });
+            cr.Load<SpriteFont>(loadString);
             OnContentRequested(cr);
             cr.OnCompleted += FontLoad_OnCompleted;
             cr.Commit();
@@ -93,6 +90,7 @@ namespace Molten.Samples
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
+
             uint pWidth = 64;
             uint pHeight = 64;
             double pxRange = 8;
@@ -110,80 +108,16 @@ namespace Molten.Samples
             TextureSliceRef<float> sdf = _sdf.Generate(pWidth, pHeight, _shape, projection, pxRange, mode, fl);
             TextureSliceRef<float> renderRef  = _sdf.Rasterize(testWidth, testHeight, sdf, projection, pxRange);
 
-            ITexture2D texSdf = ConvertToTexture(sdf);
+            ITexture2D texSdf = _sdf.ConvertToTexture(Engine.Renderer, sdf);
             _msdfTextures.Add(label, texSdf);
 
-            ITexture2D tex = ConvertToTexture(renderRef);
+            ITexture2D tex = _sdf.ConvertToTexture(Engine.Renderer, renderRef);
             _msdfResultTextures.Add($"{label} Render", tex);
 
             sdf.Slice.Dispose();
             renderRef.Slice.Dispose();
             timer.Stop();
             Log.WriteLine($"Generated {pWidth}x{pHeight} {label} texture, rendered to {testWidth}x{testHeight} texture in {timer.Elapsed.TotalMilliseconds:N2}ms");
-        }
-
-        private unsafe ITexture2D ConvertToTexture(TextureSliceRef<float> src)
-        {
-            uint rowPitch = (src.Width * (uint)sizeof(Color));
-            Color[] finalData = new Color[src.Width * src.Height];
-            ITexture2D tex = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
-            {
-                Width = src.Width,
-                Height = src.Height,
-                Format = GraphicsFormat.R8G8B8A8_UNorm
-            });
-
-            switch (src.ElementsPerPixel)
-            {
-                case 1: // SDF or PSDF is one-channel. The render result of all SDF modes are also generally greyscale/white/black.
-                    for (int i = 0; i < finalData.Length; i++)
-                    {
-                        byte c = (byte)(255 * src[i]);
-                        finalData[i] = new Color()
-                        {
-                            R = c,
-                            G = c,
-                            B = c,
-                            A = c,
-                        };
-                    }
-                    break;
-
-                case 3: // MSDF - 3 RGB 32-bit
-                    for (uint i = 0; i < finalData.Length; i++)
-                    {
-                        uint p = i * src.ElementsPerPixel;
-
-                        finalData[i] = new Color()
-                        {
-                            R = (byte)(255 * src[p]),
-                            G = (byte)(255 * src[p + 1]),
-                            B = (byte)(255 * src[p + 2]),
-                            A = 255,
-                        };
-                    }
-
-                    break;
-
-                case 4: // MTSDF - 3 RGB 32-bit
-                    for (uint i = 0; i < finalData.Length; i++)
-                    {
-                        uint p = i * src.ElementsPerPixel;
-
-                        finalData[i] = new Color()
-                        {
-                            R = (byte)(255 * src[p]),
-                            G = (byte)(255 * src[p + 1]),
-                            B = (byte)(255 * src[p + 2]),
-                            A = (byte)(255 * src[p + 3]),
-                        };
-                    }
-
-                    break;
-            }
-
-            tex.SetData(0, finalData, 0, (uint)finalData.Length, rowPitch);
-            return tex;
         }
 
         private void InitializeFontDebug()
@@ -214,7 +148,7 @@ namespace Molten.Samples
                 if (dif != 0)
                 {
                     sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Top), new Vector2F(_glyphBounds.Right, _fontBounds.Top + dif), Color.Red, 1);
-                    sb.DrawString(SampleFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Top + (dif / 2)), Color.White);
+                    sb.DrawString(SampleFont, 16, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Top + (dif / 2)), Color.White);
                 }
 
                 // Bottom difference marker
@@ -222,7 +156,7 @@ namespace Molten.Samples
                 if (dif != 0)
                 {
                     sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Bottom), new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - dif), Color.Red, 1);
-                    sb.DrawString(SampleFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - (dif / 2)), Color.White);
+                    sb.DrawString(SampleFont, 16, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - (dif / 2)), Color.White);
                 }
 
                 sb.DrawTriangleList(_glyphTriPoints, _colors);
@@ -247,9 +181,9 @@ namespace Molten.Samples
                     sb.DrawRect(clickRect, _clickColor);
                 }
 
-                sb.DrawString(SampleFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
+                sb.DrawString(SampleFont, 16, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
 
-                sb.DrawString(SampleFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
+                sb.DrawString(SampleFont, 16, $"Font atlas: ", new Vector2F(700, 45), Color.White);
 
                 if (_loaded)
                 {
@@ -272,7 +206,7 @@ namespace Molten.Samples
                 sb.DrawRectOutline(texBounds, Color.Yellow, 1);
 
                 Vector2F tPos = new Vector2F(texBounds.X, texBounds.Bottom + 5);
-                sb.DrawString(SampleFont, label, tPos, Color.White);
+                sb.DrawString(SampleFont, 16, label, tPos, Color.White);
 
                 if (pos.X + (tex.Width + 15 + tex.Width) > Window.Width)
                 {

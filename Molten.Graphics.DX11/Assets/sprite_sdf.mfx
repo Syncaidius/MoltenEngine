@@ -1,0 +1,40 @@
+<material>
+    <name value="sprite-msdf" />
+    <author value="James Yarwood"/>
+	<description>The default material for signed-distance field textures/sprites in a SpriteBatch</description>
+	<pass>
+        <name value="main"/>
+        <iterations value="1"/>
+        <vertex value="VS"/>
+        <geometry value="GS"/>
+        <fragment value="PS_MSDF" />
+        <blend preset="PreMultipliedAlpha" />
+        <rasterizer preset="ScissorTest" />
+        <rasterizer preset="DefaultMultisample">
+            <condition value="Multisampling"/>
+        </rasterizer>
+        <rasterizer preset="ScissorTestMultiSample">
+            <condition value="Multisampling"/>
+            <condition value="ScissorTest"/>
+        </rasterizer>
+	</pass>
+</material>
+
+#include "sprite_common.mfx";
+
+float pxRange = 8;
+float midValue = 0.5;
+
+float median(float r, float g, float b) {
+	return max(min(r, g), min(max(r, g), b));
+}
+
+float4 PS_MSDF( PS_IN input ) : SV_Target
+{
+    float2 msdfUnit = float2(pxRange, pxRange) / textureSize;
+    float4 samp = mapDiffuse.Sample(diffuseSampler, input.uv) * input.col;
+	float sigDist = median(samp.r, samp.g, samp.b) - 0.5;
+    sigDist *= dot(msdfUnit, 0.5 / fwidth(input.uv));
+    float opacity = saturate(sigDist + 0.5);
+	return opacity;
+}

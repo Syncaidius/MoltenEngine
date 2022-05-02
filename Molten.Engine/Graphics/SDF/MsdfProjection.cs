@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.MSDF
+namespace Molten.Graphics.SDF
 {
     public class MsdfProjection
     {
         public Vector2D Scale;
         public Vector2D Translate;
+
+        public static readonly MsdfProjection Default = new MsdfProjection(new Vector2D(1), new Vector2D(0));
 
         public MsdfProjection()
         {

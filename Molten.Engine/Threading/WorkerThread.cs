@@ -5,14 +5,12 @@ namespace Molten.Threading
     internal class WorkerThread
     {
         ThreadedQueue<WorkerTask> _queue;
-        AutoResetEvent _reset;
         Thread _thread;
         bool _shouldExit;
 
         internal WorkerThread(string name, WorkerGroup grp, ThreadedQueue<WorkerTask> taskQueue)
         {
             Group = grp;
-            _reset = new AutoResetEvent(false);
             _queue = taskQueue;
 
             _thread = new Thread(() =>
@@ -31,7 +29,7 @@ namespace Molten.Threading
                     }
                     else
                     {
-                        _reset.WaitOne();
+                        Group.Reset.Reset();
                     }
                 }
             });
@@ -45,11 +43,6 @@ namespace Molten.Threading
             finally { }
         }
 
-        internal void Wake()
-        {
-            _reset.Set();
-        }
-
         internal void Start()
         {
             _thread.Start();
@@ -58,7 +51,6 @@ namespace Molten.Threading
         internal void Exit()
         {
             _shouldExit = true;
-            Wake();
         }
 
         internal void ExitAndJoin()

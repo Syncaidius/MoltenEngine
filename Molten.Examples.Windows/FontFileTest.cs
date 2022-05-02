@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Molten.Font;
 using Molten.Graphics;
-using Molten.Graphics.MSDF;
+using Molten.Graphics.SDF;
 using Molten.Input;
 
 namespace Molten.Samples
@@ -14,6 +14,7 @@ namespace Molten.Samples
 
         FontFile _fontFile;
         SpriteFont _font2Test;
+        char _c;
 
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
@@ -46,8 +47,10 @@ namespace Molten.Samples
             CameraController.AcceptInput = false;
             Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
 
-            LoadFontFile("Ananda Namaste Regular.ttf", 24);
-            //LoadFontFile("BroshK.ttf", 24);
+            //LoadFontFile("Ananda Namaste Regular.ttf");
+            LoadFontFile("BroshK.ttf");
+            //LoadFontFile("MICROSS");
+            //LoadFontFile("CASTELAR");
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
@@ -58,13 +61,10 @@ namespace Molten.Samples
                 GenerateChar(state.Character, CHAR_CURVE_RESOLUTION);
         }
 
-        private void LoadFontFile(string loadString, int size)
+        private void LoadFontFile(string loadString)
         {
             ContentRequest cr = Engine.Content.BeginRequest("assets/");
-            cr.Load<SpriteFont>(loadString, new SpriteFontParameters()
-            {
-                FontSize = size,
-            });
+            cr.Load<SpriteFont>(loadString);
             OnContentRequested(cr);
             cr.OnCompleted += FontLoad_OnCompleted;
             cr.Commit();
@@ -73,10 +73,13 @@ namespace Molten.Samples
         private unsafe void FontLoad_OnCompleted(ContentRequest cr)
         {
             _font2Test = cr.Get<SpriteFont>(0);
+            if (_font2Test == null)
+                return;
+
             _fontFile = _font2Test.Font;
             InitializeFontDebug();
             GenerateChar('j', CHAR_CURVE_RESOLUTION);
-            _font2Test.MeasureString("abcdefghijklmnopqrstuvwxyz1234567890{}[]:@~<>?!£$%^&*()-=_+");
+            _font2Test.MeasureString("abcdefghijklmnopqrstuvwxyz1234567890", 16);
         }
 
         private void InitializeFontDebug()
@@ -107,7 +110,7 @@ namespace Molten.Samples
                 if (dif != 0)
                 {
                     sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Top), new Vector2F(_glyphBounds.Right, _fontBounds.Top + dif), Color.Red, 1);
-                    sb.DrawString(SampleFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Top + (dif / 2)), Color.White);
+                    sb.DrawString(SampleFont, 16, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Top + (dif / 2)), Color.White);
                 }
 
                 // Bottom difference marker
@@ -115,7 +118,7 @@ namespace Molten.Samples
                 if (dif != 0)
                 {
                     sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Bottom), new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - dif), Color.Red, 1);
-                    sb.DrawString(SampleFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - (dif / 2)), Color.White);
+                    sb.DrawString(SampleFont, 16, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - (dif / 2)), Color.White);
                 }
 
                 sb.DrawTriangleList(_glyphTriPoints, _colors);
@@ -140,9 +143,9 @@ namespace Molten.Samples
                     sb.DrawRect(clickRect, _clickColor);
                 }
 
-                sb.DrawString(SampleFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
+                sb.DrawString(SampleFont, 16, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
 
-                sb.DrawString(SampleFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
+                sb.DrawString(SampleFont, 16, $"Font atlas: ", new Vector2F(700, 45), Color.White);
 
                 // Only draw test font if it's loaded
                 if (_font2Test != null && _font2Test.UnderlyingTexture != null)
@@ -152,9 +155,10 @@ namespace Molten.Samples
                     sb.Draw(_font2Test.UnderlyingTexture, texBounds, Color.White);
                     sb.DrawRectOutline(texBounds, Color.Red, 1);
                     pos.Y += 517;
-                    sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
+                    sb.DrawString(_font2Test, 16, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
                     pos.Y += _font2Test.LineSpace;
-                    sb.DrawString(_font2Test, $"Font Name: {_font2Test.Font.Info.FullName}", pos, Color.White);
+                    sb.DrawString(_font2Test, 16, $"Font Name: {_font2Test.Font.Info.FullName}", pos, Color.White);
+                    pos.Y += 30;
                 }
             };
         }
@@ -195,6 +199,7 @@ namespace Molten.Samples
             _glyphBounds.X += _charOffset.X;
             _glyphBounds.Y += _charOffset.Y;
             _glyphTriPoints = new List<Vector2F>();
+            _c = glyphChar;
 
             _shape.Triangulate(_glyphTriPoints, Vector2F.Zero, 1, CHAR_CURVE_RESOLUTION);
         }

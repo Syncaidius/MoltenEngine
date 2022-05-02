@@ -88,7 +88,7 @@ namespace Molten.Font
             int[] result = new int[valCount];
 
             for (int i = 0; i < valCount; i++)
-                _deltas[i] = (packed << (16 + (bitsPerValue * i))) >> rShift;
+                result[i] = (packed << (16 + (bitsPerValue * i))) >> rShift;
 
             // ushort bits for 4 packed values: 
             //      0000|0000|0000|0000
