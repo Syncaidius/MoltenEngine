@@ -30,11 +30,11 @@ float median(float r, float g, float b) {
 }
 
 float4 PS_MSDF( PS_IN input ) : SV_Target
-{
+{        
     float2 msdfUnit = float2(pxRange, pxRange) / textureSize;
-    float4 samp = mapDiffuse.Sample(diffuseSampler, input.uv) * input.col;
+    float4 samp = mapDiffuse.Sample(diffuseSampler, input.uv);
 	float sigDist = median(samp.r, samp.g, samp.b) - 0.5;
     sigDist *= dot(msdfUnit, 0.5 / fwidth(input.uv));
     float opacity = saturate(sigDist + 0.5);
-	return opacity;
+	return float4(input.col.rgb, opacity);
 }
