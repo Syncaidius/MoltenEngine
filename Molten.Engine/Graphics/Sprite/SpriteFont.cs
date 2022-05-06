@@ -359,12 +359,12 @@ namespace Molten.Graphics
             _glyphCache[gIndex] = new GlyphCache(advWidth, advHeight, loc, yOffset);
 
             Shape shape = g.CreateShape();
-            MsdfShapeProcessing.Normalize(shape);
+            _sdf.Normalize(shape);
             shape.ScaleAndOffset(glyphOffset, glyphScale);
 
             TextureSliceRef<float> sdfRef = _sdf.Generate((uint)pWidth, (uint)pHeight, shape, MsdfProjection.Default, 8, SdfMode.Msdf, FillRule.NonZero);
 
-            MsdfRasterization.Simulate8bit(sdfRef);
+            _sdf.Simulate8bit(sdfRef);
             _glyphCache[gIndex].GlyphTex = _sdf.ConvertToTexture(_renderer, sdfRef);
             sdfRef.Slice.Dispose();
 

@@ -39,7 +39,7 @@ namespace Molten.Graphics.SDF
 
                 if (edgeCount > 0)
                 {
-                    ES edgeSelector = contourCombiner.EdgeSelector(0);
+                    ES edgeSelector = contourCombiner.EdgeSelectors[0];
 
                     Shape.Edge prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
                     Shape.Edge curEdge = contour.Edges.Last();

@@ -29,10 +29,10 @@ namespace Molten.Graphics.SDF
 
         public override unsafe bool Evaluate(double t, float m, int flags)
         {
-            if ((flags & MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE) == MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE)
+            if ((flags & SdfErrorCorrection.CLASSIFIER_FLAG_CANDIDATE) == SdfErrorCorrection.CLASSIFIER_FLAG_CANDIDATE)
             {
                 // Skip expensive distance evaluation if the point has already been classified as an artifact by the base classifier.
-                if ((flags & MSDFErrorCorrection.CLASSIFIER_FLAG_ARTIFACT) == MSDFErrorCorrection.CLASSIFIER_FLAG_ARTIFACT)
+                if ((flags & SdfErrorCorrection.CLASSIFIER_FLAG_ARTIFACT) == SdfErrorCorrection.CLASSIFIER_FLAG_ARTIFACT)
                     return true;
 
                 Vector2D tVector = t * direction;
@@ -41,7 +41,7 @@ namespace Molten.Graphics.SDF
 
                 // Compute the color that would be currently interpolated at the artifact candidate's position.
                 Vector2D sdfCoord = parent.sdfCoord + tVector;
-                MsdfRasterization.Interpolate(oldMSD, parent.sdf, sdfCoord);
+                SdfErrorCorrection.Interpolate(oldMSD, parent.sdf, sdfCoord);
 
                 // Compute the color that would be interpolated at the artifact candidate's position if error correction was applied on the current texel.
                 double aWeight = (1 - Math.Abs(tVector.X)) * (1 - Math.Abs(tVector.Y));

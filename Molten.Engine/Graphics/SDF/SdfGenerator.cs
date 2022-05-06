@@ -34,26 +34,28 @@ namespace Molten.Graphics.SDF
     /// </summary>
     public class SdfGenerator
     {
-        const double DEFAULT_ANGLE_THRESHOLD = 3;
+        internal const double DEFAULT_ANGLE_THRESHOLD = 3;
+        internal const double MSDFGEN_CORNER_DOT_EPSILON = 0.000001;
+        internal const double MSDFGEN_DECONVERGENCE_FACTOR = 0.000001;
 
         public unsafe TextureSliceRef<float> Generate(uint pWidth, uint pHeight, Shape shape, MsdfProjection projection, double pxRange, SdfMode mode, FillRule fl)
         {
             if (pWidth == 0 || pHeight == 0)
                 throw new Exception("Texture slice width and height must be at least 1 pixel");
 
-            MsdfConfig config = new MsdfConfig()
+            SdfConfig config = new SdfConfig()
             {
-                DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE,
-                Mode = MsdfConfig.ErrorCorrectMode.EDGE_PRIORITY
+                DistanceCheckMode = SdfConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE,
+                Mode = SdfConfig.ErrorCorrectMode.EDGE_PRIORITY
             };
 
             double range = pxRange / Math.Min(projection.Scale.X, projection.Scale.Y);
             uint nPerPixel = GetNPerPixel(mode);
             const string edgeAssignment = null; // "cmywCMYW";
-            MsdfConfig postGenConfig = new MsdfConfig(config);
+            SdfConfig postGenConfig = new SdfConfig(config);
 
-            config.Mode = MsdfConfig.ErrorCorrectMode.DISABLED;
-            postGenConfig.DistanceCheckMode = MsdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
+            config.Mode = SdfConfig.ErrorCorrectMode.DISABLED;
+            postGenConfig.DistanceCheckMode = SdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
 
             uint numBytes = pWidth * pHeight * nPerPixel * sizeof(float);
             TextureSlice sdf = new TextureSlice(pWidth, pHeight, numBytes)
@@ -91,47 +93,25 @@ namespace Molten.Graphics.SDF
             {
                 case SdfMode.Sdf:
                 case SdfMode.Psdf:
-                    MsdfRasterization.DistanceSignCorrection(sdfRef, shape, projection, fl);
+                    ErrorCorrection.DistanceSignCorrection(sdfRef, shape, projection, fl);
                     break;
 
                 case SdfMode.Msdf:
                     {
-                        MsdfRasterization.MultiDistanceSignCorrection(sdfRef, shape, projection, fl);
+                        ErrorCorrection.MultiDistanceSignCorrection(sdfRef, shape, projection, fl);
                         ErrorCorrection.MsdfErrorCorrection<MultiDistanceSelector, MultiDistance>(sdfRef, shape, projection, range, postGenConfig);
                         break;
                     }
 
                 case SdfMode.Mtsdf:
                     {
-                        MsdfRasterization.MultiDistanceSignCorrection(sdfRef, shape, projection, fl);
+                        ErrorCorrection.MultiDistanceSignCorrection(sdfRef, shape, projection, fl);
                         ErrorCorrection.MsdfErrorCorrection<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(sdfRef, shape, projection, range, postGenConfig);
                         break;
                     }
             }
 
             return sdfRef;
-        }
-
-        public unsafe TextureSliceRef<float> Rasterize(uint width, uint height, TextureSliceRef<float> sdf, MsdfProjection projection, double pxRange)
-        {
-            if (width == 0 || height == 0)
-                throw new Exception("Width and height must be at least 1 pixel");
-
-            MsdfRasterization.Simulate8bit(sdf);
-
-            uint numBytes = width * height * sizeof(float);
-            TextureSlice output = new TextureSlice(width, height, numBytes)
-            {
-                ElementsPerPixel = 1,
-            };
-
-            TextureSliceRef<float> outRef = output.GetReference<float>();
-
-            double range = pxRange / Math.Min(projection.Scale.X, projection.Scale.Y);
-            double avgScale = (projection.Scale.X + projection.Scale.Y) / 2;
-            MsdfRasterization.RenderSDF(outRef, sdf, avgScale * range, 0.5f);
-
-            return outRef;
         }
 
         public unsafe ITexture2D ConvertToTexture(RenderService renderer, TextureSliceRef<float> src)
@@ -262,7 +242,7 @@ namespace Molten.Graphics.SDF
             GenerateDistanceField<PseudoDistanceSelector, double>(dpc, output, shape, projection, range);
         }
 
-        private void GenerateMSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, MsdfConfig config)
+        private void GenerateMSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, SdfConfig config)
         {
             NPerPixel(output, 3);
 
@@ -272,7 +252,7 @@ namespace Molten.Graphics.SDF
             ErrorCorrection.MsdfErrorCorrection<MultiDistanceSelector, MultiDistance>(output, shape, projection, range, config);
         }
 
-        private void GenerateMTSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, MsdfConfig config)
+        private void GenerateMTSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, SdfConfig config)
         {
             NPerPixel(output, 4);
 
@@ -291,6 +271,89 @@ namespace Molten.Graphics.SDF
         {
             if (bitmap.ElementsPerPixel != expectedN)
                 throw new IndexOutOfRangeException($"A {nameof(TextureSliceRef<T>)} of {expectedN} component{(expectedN > 1 ? "s" : "")}-per-pixel is expected, not {bitmap.ElementsPerPixel}.");
+        }
+
+        internal static void DeconvergeCubicEdge(Shape.CubicEdge edge, int param, double amount)
+        {
+            Vector2D dir = edge.GetDirection(param);
+            Vector2D normal = dir.GetOrthonormal();
+            double h = Vector2D.Dot(edge.GetDirectionChange(param) - dir, normal);
+            switch (param)
+            {
+                case 0:
+                    edge.p[1] += amount * (dir + Math.Sign(h) * Math.Sqrt(Math.Abs(h)) * normal);
+                    break;
+                case 1:
+                    edge.p[2] -= amount * (dir - Math.Sign(h) * Math.Sqrt(Math.Abs(h)) * normal);
+                    break;
+            }
+        }
+
+        internal static void DeconvergeEdge(Shape.Edge edge, int param)
+        {
+            {
+                if (edge is Shape.QuadraticEdge quadratic)
+                    edge = quadratic.ConvertToCubic();
+            }
+            {
+                if (edge is Shape.CubicEdge cubic)
+                    DeconvergeCubicEdge(cubic, param, MSDFGEN_DECONVERGENCE_FACTOR);
+            }
+        }
+
+        /// <summary>
+        /// Normalizes the shape geometry for distance field generation.
+        /// </summary>
+        public void Normalize(Shape shape)
+        {
+            foreach (Shape.Contour contour in shape.Contours)
+            {
+                if (contour.Edges.Count == 1)
+                {
+                    Shape.Edge[] parts = new Shape.Edge[3];
+
+                    contour.Edges[0].SplitInThirds(ref parts[0], ref parts[1], ref parts[2]);
+                    contour.Edges.Clear();
+                    contour.Edges.Add(parts[0]);
+                    contour.Edges.Add(parts[1]);
+                    contour.Edges.Add(parts[2]);
+                }
+                else
+                {
+                    Shape.Edge prevEdge = contour.Edges.Last();
+
+                    foreach (Shape.Edge edge in contour.Edges)
+                    {
+                        Vector2D prevDir = prevEdge.GetDirection(1).GetNormalized();
+                        Vector2D curDir = edge.GetDirection(0).GetNormalized();
+
+                        if (Vector2D.Dot(prevDir, curDir) < SdfGenerator.MSDFGEN_CORNER_DOT_EPSILON - 1)
+                        {
+                            SdfGenerator.DeconvergeEdge(prevEdge, 1);
+                            SdfGenerator.DeconvergeEdge(edge, 0);
+                        }
+
+                        prevEdge = edge;
+                    }
+                }
+            }
+        }
+
+        public unsafe void Simulate8bit(TextureSliceRef<float> bitmap)
+        {
+            float* end = bitmap.Data + bitmap.ElementsPerPixel * bitmap.Width * bitmap.Height;
+            for (float* p = bitmap.Data; p < end; ++p)
+                *p = PixelByteToFloat(PixelFloatToByte(*p));
+        }
+
+        private static byte PixelFloatToByte(float x)
+        {
+            return (byte)(MathHelper.Clamp(256f * x, 0, 255f));
+        }
+
+        private static float PixelByteToFloat(byte x)
+        {
+            return 1f / 255f * x;
         }
     }
 }

@@ -25,8 +25,8 @@ namespace Molten.Graphics.SDF
                 double axSpan = (xt - at) * span, bxSpan = (bt - xt) * span;
                 // Check if the interpolated median's value is in the expected range based on its distance (span) from boundaries a, b.
                 if (!(xm >= am - axSpan && xm <= am + axSpan && xm >= bm - bxSpan && xm <= bm + bxSpan))
-                    return MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE | MSDFErrorCorrection.CLASSIFIER_FLAG_ARTIFACT;
-                return MSDFErrorCorrection.CLASSIFIER_FLAG_CANDIDATE;
+                    return SdfErrorCorrection.CLASSIFIER_FLAG_CANDIDATE | SdfErrorCorrection.CLASSIFIER_FLAG_ARTIFACT;
+                return SdfErrorCorrection.CLASSIFIER_FLAG_CANDIDATE;
             }
             return 0;
         }

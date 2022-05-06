@@ -18,7 +18,7 @@ namespace Molten.Graphics.SDF
     {
         Vector2D p;
         List<int> windings;
-        List<ES> edgeSelectors;
+        internal List<ES> EdgeSelectors { get; }
 
         public ContourCombiner(Shape shape)
         {
@@ -26,26 +26,21 @@ namespace Molten.Graphics.SDF
             foreach (Shape.Contour contour in shape.Contours)
                 windings.Add(contour.GetWinding());
 
-            edgeSelectors = new List<ES>(shape.Contours.Count);
+            EdgeSelectors = new List<ES>(shape.Contours.Count);
             for (int i = 0; i < shape.Contours.Count; i++)
-                edgeSelectors.Add(new ES());
+                EdgeSelectors.Add(new ES());
         }
 
         public void Reset(ref Vector2D p)
         {
             this.p = p;
-            foreach (EdgeSelector<DT> contourEdgeSelector in edgeSelectors)
+            foreach (EdgeSelector<DT> contourEdgeSelector in EdgeSelectors)
                 contourEdgeSelector.Reset(ref p);
-        }
-
-        public ES EdgeSelector(int i)
-        {
-            return edgeSelectors[i];
         }
 
         public DT Distance()
         {
-            int contourCount = edgeSelectors.Count;
+            int contourCount = EdgeSelectors.Count;
             ES shapeEdgeSelector = new ES();
             ES innerEdgeSelector = new ES();
             ES outerEdgeSelector = new ES();
@@ -56,12 +51,12 @@ namespace Molten.Graphics.SDF
 
             for (int i = 0; i < contourCount; ++i)
             {
-                DT edgeDistance = edgeSelectors[i].Distance();
-                shapeEdgeSelector.Merge(edgeSelectors[i]);
-                if (windings[i] > 0 && edgeSelectors[i].ResolveDistance(edgeDistance) >= 0)
-                    innerEdgeSelector.Merge(edgeSelectors[i]);
-                if (windings[i] < 0 && edgeSelectors[i].ResolveDistance(edgeDistance) <= 0)
-                    outerEdgeSelector.Merge(edgeSelectors[i]);
+                DT edgeDistance = EdgeSelectors[i].Distance();
+                shapeEdgeSelector.Merge(EdgeSelectors[i]);
+                if (windings[i] > 0 && EdgeSelectors[i].ResolveDistance(edgeDistance) >= 0)
+                    innerEdgeSelector.Merge(EdgeSelectors[i]);
+                if (windings[i] < 0 && EdgeSelectors[i].ResolveDistance(edgeDistance) <= 0)
+                    outerEdgeSelector.Merge(EdgeSelectors[i]);
             }
 
             DT shapeDistance = shapeEdgeSelector.Distance();
@@ -83,9 +78,9 @@ namespace Molten.Graphics.SDF
                 {
                     if (windings[i] > 0)
                     {
-                        DT contourDistance = edgeSelectors[i].Distance();
-                        if (Math.Abs(edgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(outerScalarDistance) &&
-                            edgeSelectors[i].ResolveDistance(contourDistance) > edgeSelectors[i].ResolveDistance(distance))
+                        DT contourDistance = EdgeSelectors[i].Distance();
+                        if (Math.Abs(EdgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(outerScalarDistance) &&
+                            EdgeSelectors[i].ResolveDistance(contourDistance) > EdgeSelectors[i].ResolveDistance(distance))
                         {
                             distance = contourDistance;
                         }
@@ -100,9 +95,9 @@ namespace Molten.Graphics.SDF
                 {
                     if (windings[i] < 0)
                     {
-                        DT contourDistance = edgeSelectors[i].Distance();
-                        if (Math.Abs(edgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(innerScalarDistance) &&
-                            edgeSelectors[i].ResolveDistance(contourDistance) < edgeSelectors[i].ResolveDistance(distance))
+                        DT contourDistance = EdgeSelectors[i].Distance();
+                        if (Math.Abs(EdgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(innerScalarDistance) &&
+                            EdgeSelectors[i].ResolveDistance(contourDistance) < EdgeSelectors[i].ResolveDistance(distance))
                         {
                             distance = contourDistance;
                         }
@@ -118,9 +113,9 @@ namespace Molten.Graphics.SDF
             {
                 if (windings[i] != winding)
                 {
-                    DT contourDistance = edgeSelectors[i].Distance();
-                    if (edgeSelectors[i].ResolveDistance(contourDistance) * edgeSelectors[i].ResolveDistance(distance) >= 0 &&
-                        Math.Abs(edgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(edgeSelectors[i].ResolveDistance(distance)))
+                    DT contourDistance = EdgeSelectors[i].Distance();
+                    if (EdgeSelectors[i].ResolveDistance(contourDistance) * EdgeSelectors[i].ResolveDistance(distance) >= 0 &&
+                        Math.Abs(EdgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(EdgeSelectors[i].ResolveDistance(distance)))
                     {
                         distance = contourDistance;
                     }

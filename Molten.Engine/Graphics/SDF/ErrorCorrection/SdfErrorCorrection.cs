@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SDF
 {
-    internal class MSDFErrorCorrection
+    internal class SdfErrorCorrection
     {
         public const double ARTIFACT_T_EPSILON = 0.01;
         public const double PROTECTION_RADIUS_TOLERANCE = 1.001;
@@ -33,7 +33,7 @@ namespace Molten.Graphics.SDF
             PROTECTED = 2
         };
 
-        public unsafe MSDFErrorCorrection(TextureSliceRef<float> sdf, MsdfProjection pProjection, double range)
+        public unsafe SdfErrorCorrection(TextureSliceRef<float> sdf, MsdfProjection pProjection, double range)
         {
             stencilSlice = new TextureSlice(sdf.Width, sdf.Height, sdf.Width * sdf.Height)
             {
@@ -44,8 +44,8 @@ namespace Molten.Graphics.SDF
             projection = pProjection;
 
             invRange = 1 / range;
-            minDeviationRatio = MsdfConfig.defaultMinDeviationRatio;
-            minImproveRatio = MsdfConfig.defaultMinImproveRatio;
+            minDeviationRatio = SdfConfig.defaultMinDeviationRatio;
+            minImproveRatio = SdfConfig.defaultMinImproveRatio;
             EngineUtil.MemSet(stencil.Data, 0, (nuint)(sizeof(byte) * stencil.Width * stencil.Height));
         }
 
@@ -446,6 +446,36 @@ namespace Molten.Graphics.SDF
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="output"></param>
+        /// <param name="bitmap"></param>
+        /// <param name="pos"></param>
+        internal unsafe static void Interpolate(float* output, TextureSliceRef<float> bitmap, Vector2D pos)
+        {
+            pos -= .5;
+            int l = (int)Math.Floor(pos.X);
+            int b = (int)Math.Floor(pos.Y);
+            int r = l + 1;
+            int t = b + 1;
+            double lr = pos.X - l;
+            double bt = pos.Y - b;
+
+            l = MathHelper.Clamp(l, 0, (int)bitmap.Width - 1);
+            r = MathHelper.Clamp(r, 0, (int)bitmap.Width - 1);
+            b = MathHelper.Clamp(b, 0, (int)bitmap.Height - 1);
+            t = MathHelper.Clamp(t, 0, (int)bitmap.Height - 1);
+
+            for (int i = 0; i < bitmap.ElementsPerPixel; ++i)
+            {
+                float start = MathHelper.Lerp(bitmap[l, b][i], bitmap[r, b][i], lr);
+                float end = MathHelper.Lerp(bitmap[l, t][i], bitmap[r, t][i], lr);
+                output[i] = MathHelper.Lerp(start, end, bt);
+            }
+        }
+
         public unsafe void Apply(TextureSliceRef<float> sdf)
         {
             uint texelCount = sdf.Width * sdf.Height;
@@ -459,14 +489,10 @@ namespace Molten.Graphics.SDF
                     float m = MathHelper.Median(texel[0], texel[1], texel[2]);
                     texel[0] = m; texel[1] = m; texel[2] = m;
                 }
+
                 ++mask;
                 texel += sdf.ElementsPerPixel;
             }
-        }
-
-        public TextureSliceRef<byte> GetStencil()
-        {
-            return stencil;
         }
     }
 }
