@@ -11,22 +11,20 @@ namespace Molten.Graphics.SDF
     /// </summary>
     /// <typeparam name="ES">Edge selector type</typeparam>
     /// <typeparam name="DT">Distance Type</typeparam>
-    public class ShapeDistanceFinder<ES, DT>
-        where ES : EdgeSelector<DT>, new()
-        where DT : unmanaged
+    public class ShapeDistanceFinder
     {
         Shape shape;
-        ContourCombiner<ES, DT> contourCombiner;
+        ContourCombiner contourCombiner;
         EdgeCache[] shapeEdgeCache;
 
         public ShapeDistanceFinder(Shape shape)
         {
             this.shape = shape;
-            contourCombiner = new ContourCombiner<ES, DT>(shape);
+            contourCombiner = new ContourCombiner(shape);
             shapeEdgeCache = new EdgeCache[shape.GetEdgeCount()];
         }
 
-        public DT distance(ref Vector2D origin)
+        public MultiDistance distance(ref Vector2D origin)
         {
             contourCombiner.Reset(ref origin);
 
@@ -39,7 +37,7 @@ namespace Molten.Graphics.SDF
 
                 if (edgeCount > 0)
                 {
-                    ES edgeSelector = contourCombiner.EdgeSelectors[0];
+                    MultiDistanceSelector edgeSelector = contourCombiner.EdgeSelectors[0];
 
                     Shape.Edge prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
                     Shape.Edge curEdge = contour.Edges.Last();
@@ -58,9 +56,9 @@ namespace Molten.Graphics.SDF
 
         public float getRefPSD(ref Vector2D origin, double invRange)
         {
-            DT dist = distance(ref origin);
-            
-            ES es = new ES();
+            MultiDistance dist = distance(ref origin);
+
+            MultiDistanceSelector es = new MultiDistanceSelector();
 
             return es.GetRefPSD(ref dist, invRange);
         }

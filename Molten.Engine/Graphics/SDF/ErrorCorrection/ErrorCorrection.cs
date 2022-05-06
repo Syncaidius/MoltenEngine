@@ -36,9 +36,7 @@ namespace Molten.Graphics.SDF
             line.SetIntersections(intersections);
         }
 
-        public unsafe static void MsdfErrorCorrection<ES, DT>(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, double range, SdfConfig config)
-            where ES : EdgeSelector<DT>, new()
-            where DT : unmanaged
+        public unsafe static void MsdfErrorCorrection(TextureSliceRef<float> sdf, Shape shape, SdfProjection projection, double range, SdfConfig config)
         {
             if (config.Mode == SdfConfig.ErrorCorrectMode.DISABLED)
                 return;
@@ -71,29 +69,12 @@ namespace Molten.Graphics.SDF
             if (config.DistanceCheckMode == SdfConfig.DistanceErrorCheckMode.ALWAYS_CHECK_DISTANCE ||
                 config.DistanceCheckMode == SdfConfig.DistanceErrorCheckMode.CHECK_DISTANCE_AT_EDGE)
             {
-                ec.FindErrors<ES,DT>(sdf, shape);
+                ec.FindErrors(sdf, shape);
             }
             ec.Apply(sdf);
         }
 
-        internal static unsafe void DistanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
-        {
-            SdfGenerator.NPerPixel(sdf, 1);
-            Scanline scanline = new Scanline();
-            for (int y = 0; y < sdf.Height; ++y)
-            {
-                CalcScanelineIntersections(shape, scanline, projection.UnprojectY(y + .5));
-                for (int x = 0; x < sdf.Width; ++x)
-                {
-                    bool fill = scanline.Filled(projection.UnprojectX(x + .5), fillRule);
-                    float* sd = sdf[x, y];
-                    if ((*sd > 0.5f) != fill)
-                        *sd = 1.0f - sd[0];
-                }
-            }
-        }
-
-        internal unsafe static void MultiDistanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, MsdfProjection projection, FillRule fillRule)
+        internal unsafe static void MultiDistanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, SdfProjection projection, FillRule fillRule)
         {
             uint w = sdf.Width;
             uint h = sdf.Height;

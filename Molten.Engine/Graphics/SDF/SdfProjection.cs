@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SDF
 {
-    public class MsdfProjection
+    public class SdfProjection
     {
         public Vector2D Scale;
         public Vector2D Translate;
 
-        public static readonly MsdfProjection Default = new MsdfProjection(new Vector2D(1), new Vector2D(0));
+        public static readonly SdfProjection Default = new SdfProjection(new Vector2D(1), new Vector2D(0));
 
-        public MsdfProjection()
+        public SdfProjection()
         {
             Scale = new Vector2D(1);
             Translate = new Vector2D();
         }
 
-        public MsdfProjection(Vector2D scale, Vector2D translate)
+        public SdfProjection(Vector2D scale, Vector2D translate)
         {
             Scale = scale;
             Translate = translate;

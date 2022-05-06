@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SDF
 {
-    public class PseudoDistanceSelector : EdgeSelector<double>
+    public class PseudoDistanceSelector
     {
         SignedDistance minTrueDistance;
         double minNegativePseudoDistance;
@@ -23,7 +23,7 @@ namespace Molten.Graphics.SDF
             nearEdgeParam = 0;
         }
 
-        public override void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
+        public void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
         {
             if (IsEdgeRelevant(cache, edge, p))
             {
@@ -60,29 +60,29 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        public override void Reset(ref Vector2D p)
+        public void Reset(ref Vector2D p)
         {
-            double delta = DISTANCE_DELTA_FACTOR * (p - this.p).Length();
+            double delta = SdfGenerator.DISTANCE_DELTA_FACTOR * (p - this.p).Length();
             Reset(delta);
             this.p = p;
         }
 
-        public override void InitDistance(ref double distance)
+        public void InitDistance(ref double distance)
         {
             distance = -double.MaxValue;
         }
 
-        public override double ResolveDistance(double distance)
+        public double ResolveDistance(double distance)
         {
             return distance;
         }
 
-        public override float GetRefPSD(ref double dist, double invRange)
+        public float GetRefPSD(ref double dist, double invRange)
         {
             return (float)(invRange * dist + .5);
         }
 
-        public override double Distance()
+        public double Distance()
         {
             return ComputeDistance(p);
         }
@@ -113,7 +113,7 @@ namespace Molten.Graphics.SDF
 
         public bool IsEdgeRelevant(in EdgeCache cache, Shape.Edge edge, in Vector2D p)
         {
-            double delta = DISTANCE_DELTA_FACTOR * (p - cache.point).Length();
+            double delta = SdfGenerator.DISTANCE_DELTA_FACTOR * (p - cache.point).Length();
             return (
                 cache.absDistance - delta <= Math.Abs(minTrueDistance.Distance) ||
                 Math.Abs(cache.aDomainDistance) < delta ||
@@ -147,20 +147,18 @@ namespace Molten.Graphics.SDF
                 minPositivePseudoDistance = distance;
         }
 
-        public override void Merge(EdgeSelector<double> other)
+        public void Merge(PseudoDistanceSelector other)
         {
-            PseudoDistanceSelector pd = other as PseudoDistanceSelector;
-
-            if (pd.minTrueDistance < minTrueDistance)
+            if (other.minTrueDistance < minTrueDistance)
             {
-                minTrueDistance = pd.minTrueDistance;
-                nearEdge = pd.nearEdge;
-                nearEdgeParam = pd.nearEdgeParam;
+                minTrueDistance = other.minTrueDistance;
+                nearEdge = other.nearEdge;
+                nearEdgeParam = other.nearEdgeParam;
             }
-            if (pd.minNegativePseudoDistance > minNegativePseudoDistance)
-                minNegativePseudoDistance = pd.minNegativePseudoDistance;
-            if (pd.minPositivePseudoDistance < minPositivePseudoDistance)
-                minPositivePseudoDistance = pd.minPositivePseudoDistance;
+            if (other.minNegativePseudoDistance > minNegativePseudoDistance)
+                minNegativePseudoDistance = other.minNegativePseudoDistance;
+            if (other.minPositivePseudoDistance < minPositivePseudoDistance)
+                minPositivePseudoDistance = other.minPositivePseudoDistance;
         }
 
         public double ComputeDistance(in Vector2D p)

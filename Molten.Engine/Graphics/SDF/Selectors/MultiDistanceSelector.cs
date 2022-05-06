@@ -11,23 +11,23 @@ namespace Molten.Graphics.SDF
         public double r, g, b;
     };
 
-    public class MultiDistanceSelector : EdgeSelector<MultiDistance>
+    public class MultiDistanceSelector
     {
         Vector2D p;
         PseudoDistanceSelector r = new PseudoDistanceSelector();
         PseudoDistanceSelector g = new PseudoDistanceSelector();
         PseudoDistanceSelector b = new PseudoDistanceSelector();
 
-        public override void Reset(ref Vector2D p)
+        public void Reset(ref Vector2D p)
         {
-            double delta = DISTANCE_DELTA_FACTOR * (p - this.p).Length();
+            double delta = SdfGenerator.DISTANCE_DELTA_FACTOR * (p - this.p).Length();
             r.Reset(delta);
             g.Reset(delta);
             b.Reset(delta);
             this.p = p;
         }
 
-        public override void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
+        public void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
         {
             if (
                 ((edge.Color & EdgeColor.Red) == EdgeColor.Red && r.IsEdgeRelevant(cache, edge, p)) ||
@@ -88,7 +88,7 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        public override void Merge(EdgeSelector<MultiDistance> other)
+        public void Merge(MultiDistanceSelector other)
         {
             MultiDistanceSelector md = other as MultiDistanceSelector;
             r.Merge(md.r);
@@ -96,7 +96,7 @@ namespace Molten.Graphics.SDF
             b.Merge(md.b);
         }
 
-        public override MultiDistance Distance()
+        public MultiDistance Distance()
         {
             MultiDistance multiDistance;
             multiDistance.r = r.ComputeDistance(p);
@@ -115,19 +115,19 @@ namespace Molten.Graphics.SDF
             return distance;
         }
 
-        public override void InitDistance(ref MultiDistance distance)
+        public void InitDistance(ref MultiDistance distance)
         {
             distance.r = -double.MaxValue;
             distance.g = -double.MaxValue;
             distance.b = -double.MaxValue;
         }
 
-        public override double ResolveDistance(MultiDistance distance)
+        public double ResolveDistance(MultiDistance distance)
         {
             return MathHelperDP.Median(distance.r, distance.g, distance.b);
         }
 
-        public override float GetRefPSD(ref MultiDistance dist, double invRange)
+        public float GetRefPSD(ref MultiDistance dist, double invRange)
         {
             return (float)(invRange * dist.r + .5);
         }

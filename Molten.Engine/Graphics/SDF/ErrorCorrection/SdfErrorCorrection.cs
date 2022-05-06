@@ -16,11 +16,10 @@ namespace Molten.Graphics.SDF
 
         TextureSlice stencilSlice;
         TextureSliceRef<byte> stencil;
-        MsdfProjection projection;
+        SdfProjection projection;
         double invRange;
         double minDeviationRatio;
         double minImproveRatio;
-
 
         /// <summary>
         /// Stencil flags
@@ -33,7 +32,7 @@ namespace Molten.Graphics.SDF
             PROTECTED = 2
         };
 
-        public unsafe SdfErrorCorrection(TextureSliceRef<float> sdf, MsdfProjection pProjection, double range)
+        public unsafe SdfErrorCorrection(TextureSliceRef<float> sdf, SdfProjection pProjection, double range)
         {
             stencilSlice = new TextureSlice(sdf.Width, sdf.Height, sdf.Width * sdf.Height)
             {
@@ -396,16 +395,14 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        public unsafe void FindErrors<ES, DT>(TextureSliceRef<float> sdf, Shape shape)
-            where ES : EdgeSelector<DT>, new()
-            where DT : unmanaged
+        public unsafe void FindErrors(TextureSliceRef<float> sdf, Shape shape)
         {
             // Compute the expected deltas between values of horizontally, vertically, and diagonally adjacent texels.
             double hSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange, 0)).Length();
             double vSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(0, invRange)).Length();
             double dSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange)).Length();
             {
-                ShapeDistanceChecker<ES, DT> shapeDistanceChecker = new ShapeDistanceChecker<ES, DT>(sdf, shape, projection, invRange, minImproveRatio);
+                ShapeDistanceChecker shapeDistanceChecker = new ShapeDistanceChecker(sdf, shape, projection, invRange, minImproveRatio);
                 bool rightToLeft = false;
 
                 // Inspect all texels.

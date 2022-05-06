@@ -163,14 +163,14 @@ namespace Molten.Samples
                 return;
 
             string text = "[F1] debug overlay";
-            Vector2F tSize = SampleFont.MeasureString(text, 16);
+            Vector2F tSize = SampleFont.MeasureString(text, 30);
             Vector2F pos = new Vector2F()
             {
                 X = Window.Width / 2 + (-tSize.X / 2),
                 Y = 5,
             };
 
-            sb.DrawString(SampleFont, 16, text, pos, Color.White);
+            sb.DrawString(SampleFont, 30, text, pos, Color.White);
         }
 
         public abstract string Description { get; }

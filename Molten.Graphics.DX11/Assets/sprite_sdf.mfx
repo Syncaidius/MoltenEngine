@@ -22,8 +22,7 @@
 
 #include "sprite_common.mfx";
 
-float pxRange = 8;
-float midValue = 0.5;
+float pxRange = 6;
 
 float median(float r, float g, float b) {
 	return max(min(r, g), min(max(r, g), b));

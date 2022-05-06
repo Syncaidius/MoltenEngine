@@ -6,39 +6,19 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SDF
 {
-    public enum SdfMode
-    {
-        /// <summary>
-        /// Signed-distance field.
-        /// </summary>
-        Sdf = 0,
-
-        /// <summary>
-        /// Pseudo signed-distance field.
-        /// </summary>
-        Psdf = 1,
-
-        /// <summary>
-        /// Multi-channel signed-distance field.
-        /// </summary>
-        Msdf = 2,
-
-        /// <summary>
-        /// Multi-channel, true signed-distance field.
-        /// </summary>
-        Mtsdf = 3,
-    }
-
     /// <summary>
     /// A utility class for generating signed-distance-field (SDF) textures. Also capable of rasterizing them to an output texture.
+    /// <para>See readme.md here for shader details: https://github.com/Chlumsky/msdfgen</para>
     /// </summary>
     public class SdfGenerator
     {
+        public const double DISTANCE_DELTA_FACTOR = 1.001;
         internal const double DEFAULT_ANGLE_THRESHOLD = 3;
         internal const double MSDFGEN_CORNER_DOT_EPSILON = 0.000001;
         internal const double MSDFGEN_DECONVERGENCE_FACTOR = 0.000001;
+        internal const int N_PER_PIXEL = 3;
 
-        public unsafe TextureSliceRef<float> Generate(uint pWidth, uint pHeight, Shape shape, MsdfProjection projection, double pxRange, SdfMode mode, FillRule fl)
+        public unsafe TextureSliceRef<float> Generate(uint pWidth, uint pHeight, Shape shape, SdfProjection projection, double pxRange, FillRule fl)
         {
             if (pWidth == 0 || pHeight == 0)
                 throw new Exception("Texture slice width and height must be at least 1 pixel");
@@ -50,67 +30,27 @@ namespace Molten.Graphics.SDF
             };
 
             double range = pxRange / Math.Min(projection.Scale.X, projection.Scale.Y);
-            uint nPerPixel = GetNPerPixel(mode);
             const string edgeAssignment = null; // "cmywCMYW";
             SdfConfig postGenConfig = new SdfConfig(config);
 
             config.Mode = SdfConfig.ErrorCorrectMode.DISABLED;
             postGenConfig.DistanceCheckMode = SdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
 
-            uint numBytes = pWidth * pHeight * nPerPixel * sizeof(float);
+            uint numBytes = pWidth * pHeight * N_PER_PIXEL * sizeof(float);
             TextureSlice sdf = new TextureSlice(pWidth, pHeight, numBytes)
             {
-                ElementsPerPixel = nPerPixel,
+                ElementsPerPixel = N_PER_PIXEL,
             };
 
             TextureSliceRef<float> sdfRef = sdf.GetReference<float>();
 
-            switch (mode)
-            {
-                case SdfMode.Sdf:
-                    GenerateSDF(sdfRef, shape, projection, range);
-                    break;
+            EdgeColouring.edgeColoringSimple(shape, DEFAULT_ANGLE_THRESHOLD, 0);
+            EdgeColouring.parseColoring(shape, edgeAssignment);
+            GenerateMSDF(sdfRef, shape, projection, range, config);
 
-                case SdfMode.Psdf:
-                    GeneratePseudoSDF(sdfRef, shape, projection, range);
-                    break;
-
-                case SdfMode.Msdf:
-                    EdgeColouring.edgeColoringSimple(shape, DEFAULT_ANGLE_THRESHOLD, 0);
-                    EdgeColouring.parseColoring(shape, edgeAssignment);
-                    GenerateMSDF(sdfRef, shape, projection, range, config);
-                    break;
-
-                case SdfMode.Mtsdf:
-                    EdgeColouring.edgeColoringSimple(shape, DEFAULT_ANGLE_THRESHOLD, 0);
-                    EdgeColouring.parseColoring(shape, edgeAssignment);
-                    GenerateMTSDF(sdfRef, shape, projection, range, config);
-                    break;
-            }
-
-            // Error correction
-            switch (mode)
-            {
-                case SdfMode.Sdf:
-                case SdfMode.Psdf:
-                    ErrorCorrection.DistanceSignCorrection(sdfRef, shape, projection, fl);
-                    break;
-
-                case SdfMode.Msdf:
-                    {
-                        ErrorCorrection.MultiDistanceSignCorrection(sdfRef, shape, projection, fl);
-                        ErrorCorrection.MsdfErrorCorrection<MultiDistanceSelector, MultiDistance>(sdfRef, shape, projection, range, postGenConfig);
-                        break;
-                    }
-
-                case SdfMode.Mtsdf:
-                    {
-                        ErrorCorrection.MultiDistanceSignCorrection(sdfRef, shape, projection, fl);
-                        ErrorCorrection.MsdfErrorCorrection<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(sdfRef, shape, projection, range, postGenConfig);
-                        break;
-                    }
-            }
-
+            ErrorCorrection.MultiDistanceSignCorrection(sdfRef, shape, projection, fl);
+            ErrorCorrection.MsdfErrorCorrection(sdfRef, shape, projection, range, postGenConfig);
+ 
             return sdfRef;
         }
 
@@ -178,39 +118,13 @@ namespace Molten.Graphics.SDF
             return tex;
         }
 
-        private uint GetNPerPixel(SdfMode mode)
+        private unsafe void GenerateMSDF(TextureSliceRef<float> output, Shape shape, SdfProjection projection, double range, SdfConfig config)
         {
-            // Get elements per pixel
-            switch (mode)
-            {
-                default:
-                case SdfMode.Psdf:
-                case SdfMode.Sdf:
-                    return 1;
+            NPerPixel(output, 3);
 
-                case SdfMode.Msdf:
-                    return 3;
+            var dpc = new MultiDistancePixelConversion(range);
 
-                case SdfMode.Mtsdf:
-                    return 4;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="ES">Edge selector type</typeparam>
-        /// <typeparam name="DT">Distance Type</typeparam>
-        /// <typeparam name="EC">Edge cache Type</typeparam>
-        /// <param name="output"></param>
-        /// <param name="shape"></param>
-        /// <param name="projection"></param>
-        private unsafe void GenerateDistanceField<ES, DT>(DistancePixelConversion<DT> distancePixelConvertor,
-            TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range)
-            where ES : EdgeSelector<DT>, new()
-            where DT : unmanaged
-        {
-            ShapeDistanceFinder<ES, DT> distanceFinder = new ShapeDistanceFinder<ES, DT>(shape);
+            ShapeDistanceFinder distanceFinder = new ShapeDistanceFinder(shape);
 
             bool rightToLeft = false;
             for (int y = 0; y < output.Height; ++y)
@@ -219,55 +133,16 @@ namespace Molten.Graphics.SDF
                 {
                     int x = (int)(rightToLeft ? output.Width - col - 1 : col);
                     Vector2D p = projection.Unproject(new Vector2D(x + .5, y + .5));
-                    DT distance = distanceFinder.distance(ref p);
-                    distancePixelConvertor.Convert(output[x, y], distance);
+                    MultiDistance distance = distanceFinder.distance(ref p);
+                    dpc.Convert(output[x, y], distance);
                 }
                 rightToLeft = !rightToLeft;
             }
-        }
 
-        private void GenerateSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range)
-        {
-            NPerPixel(output, 1);
-
-            var dpc = new DoubleDistancePixelConversion(range);
-            GenerateDistanceField<TrueDistanceSelector, double>(dpc, output, shape, projection, range);
-        }
-
-        private void GeneratePseudoSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range)
-        {
-            NPerPixel(output, 1);
-
-            var dpc = new DoubleDistancePixelConversion(range);
-            GenerateDistanceField<PseudoDistanceSelector, double>(dpc, output, shape, projection, range);
-        }
-
-        private void GenerateMSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, SdfConfig config)
-        {
-            NPerPixel(output, 3);
-
-            var dpc = new MultiDistancePixelConversion(range);
-
-            GenerateDistanceField<MultiDistanceSelector, MultiDistance>(dpc, output, shape, projection, range);
-            ErrorCorrection.MsdfErrorCorrection<MultiDistanceSelector, MultiDistance>(output, shape, projection, range, config);
-        }
-
-        private void GenerateMTSDF(TextureSliceRef<float> output, Shape shape, MsdfProjection projection, double range, SdfConfig config)
-        {
-            NPerPixel(output, 4);
-
-            var dpc = new MultiTrueDistancePixelConversion(range);
-            GenerateDistanceField<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(dpc, output, shape, projection, range);
-            ErrorCorrection.MsdfErrorCorrection<MultiAndTrueDistanceSelector, MultiAndTrueDistance>(output, shape, projection, range, config);
+            ErrorCorrection.MsdfErrorCorrection(output, shape, projection, range, config);
         }
 
         internal static void NPerPixel<T>(TextureSliceRef<T> bitmap, int expectedN) where T : unmanaged
-        {
-            if (bitmap.ElementsPerPixel != expectedN)
-                throw new IndexOutOfRangeException($"A {nameof(TextureSliceRef<T>)} of {expectedN} component{(expectedN > 1 ? "s" : "")}-per-pixel is expected, not {bitmap.ElementsPerPixel}.");
-        }
-
-        internal static void NPerPixel<T>(TextureSlice bitmap, int expectedN) where T : unmanaged
         {
             if (bitmap.ElementsPerPixel != expectedN)
                 throw new IndexOutOfRangeException($"A {nameof(TextureSliceRef<T>)} of {expectedN} component{(expectedN > 1 ? "s" : "")}-per-pixel is expected, not {bitmap.ElementsPerPixel}.");
@@ -327,10 +202,10 @@ namespace Molten.Graphics.SDF
                         Vector2D prevDir = prevEdge.GetDirection(1).GetNormalized();
                         Vector2D curDir = edge.GetDirection(0).GetNormalized();
 
-                        if (Vector2D.Dot(prevDir, curDir) < SdfGenerator.MSDFGEN_CORNER_DOT_EPSILON - 1)
+                        if (Vector2D.Dot(prevDir, curDir) < MSDFGEN_CORNER_DOT_EPSILON - 1)
                         {
-                            SdfGenerator.DeconvergeEdge(prevEdge, 1);
-                            SdfGenerator.DeconvergeEdge(edge, 0);
+                            DeconvergeEdge(prevEdge, 1);
+                            DeconvergeEdge(edge, 0);
                         }
 
                         prevEdge = edge;

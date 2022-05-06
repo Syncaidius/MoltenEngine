@@ -11,15 +11,13 @@ namespace Molten.Graphics.SDF
     /// </summary>
     /// <typeparam name="ES">Edge selector type</typeparam>
     /// <typeparam name="DT">Distance Type</typeparam>
-    public class ArtifactClassifier<ES, DT> : BaseArtifactClassifier
-        where ES : EdgeSelector<DT>, new()
-        where DT : unmanaged
+    public class ArtifactClassifier : BaseArtifactClassifier
     {
-        ShapeDistanceChecker<ES, DT> parent;
+        ShapeDistanceChecker parent;
         Vector2D direction;
         uint _nPerPixel;
 
-        public ArtifactClassifier(ShapeDistanceChecker<ES, DT> parent, in Vector2D direction, double span) :
+        public ArtifactClassifier(ShapeDistanceChecker parent, in Vector2D direction, double span) :
             base(span, parent.protectedFlag)
         {
             this.parent = parent;
