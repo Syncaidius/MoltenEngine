@@ -80,7 +80,7 @@ namespace Molten.Samples
                 Y = 25,
             };
 
-            sb.DrawString(SampleFont, 16, text, pos, Color.White);
+            sb.DrawString(SampleFont, text, pos, Color.White);
         }
     }
 }

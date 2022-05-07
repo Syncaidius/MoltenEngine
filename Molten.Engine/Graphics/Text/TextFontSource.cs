@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Molten.Graphics
 {
-    public class SpriteFont : EngineObject
+    public class TextFontSource : EngineObject
     {
         struct CharData
         {
@@ -26,7 +26,11 @@ namespace Molten.Graphics
 
         public const char PLACEHOLDER_CHAR = ' ';
 
-        public class GlyphCache
+        public const int BASE_FONT_SIZE = 64;
+
+        public const int TAB_SIZE = 3; //Number of spaces that one tab character is equivilent to.
+
+        public class CachedGlyph
         {
             // TODO store kerning/GPOS/GSUB offsets in pairs, on-demand.  
 
@@ -46,7 +50,7 @@ namespace Molten.Graphics
             /// <summary>The number of pixels along the Y-axis that the glyph was offset, before fitting on to the font atlas. </summary>
             public readonly float YOffset;
 
-            internal GlyphCache(int advWidth, int advHeight, Rectangle location, float yOffset)
+            internal CachedGlyph(int advWidth, int advHeight, Rectangle location, float yOffset)
             {
                 AdvanceWidth = advWidth;
                 AdvanceHeight = advHeight;
@@ -57,15 +61,12 @@ namespace Molten.Graphics
 
         FontFile _font;
         IRenderSurface2D _rt;
-        uint _charResolution;
-        int _tabSize;
         int _pageSize;
         int _charPadding;
-        int _lineSpace;
 
         SdfGenerator _sdf;
         BinPacker _packer;
-        GlyphCache[] _glyphCache;
+        CachedGlyph[] _glyphCache;
         CharData[] _charData;
         SceneRenderData _renderData;
         RenderService _renderer;
@@ -73,7 +74,7 @@ namespace Molten.Graphics
         Interlocker _interlocker;
 
         /// <summary>
-        /// Creates a new instance of <see cref="SpriteFont"/>.
+        /// Creates a new instance of <see cref="TextFontSource"/>.
         /// </summary>
         /// <param name="renderer">The renderer with which to prepare and update the sprite font's character sheet.</param>
         /// <param name="font">The font file from which to source character glyphs.</param>
@@ -83,13 +84,11 @@ namespace Molten.Graphics
         /// <param name="initialPages">The initial number of pages in the underlying sprite font texture atlas. Minimum is 1.</param>
         /// <param name="charPadding">The number of pixels to add as padding around each character placed on to the font atlas. 
         /// Default value is 2. Negative padding can cause characters to overlap.</param>
-        internal SpriteFont(RenderService renderer,
+        internal TextFontSource(RenderService renderer,
             FontFile font,
-            int tabSize,
             int texturePageSize,
             int initialPages,
-            int charPadding,
-            uint charResolution)
+            int charPadding)
         {
             Debug.Assert(texturePageSize >= MIN_PAGE_SIZE, $"Texture page size must be at least {MIN_PAGE_SIZE}");
             Debug.Assert(initialPages >= 1, $"Initial pages must be at least 1");
@@ -102,29 +101,20 @@ namespace Molten.Graphics
 
             if (_font.GlyphCount > 0)
             {
-                _glyphCache = new GlyphCache[_font.GlyphCount];
+                _glyphCache = new CachedGlyph[_font.GlyphCount];
             }
             else
             {
-                _glyphCache = new GlyphCache[1];
-                _glyphCache[0] = new GlyphCache(1, 1, new Rectangle(0, 0, 1, 1), 0);
+                _glyphCache = new CachedGlyph[1];
+                _glyphCache[0] = new CachedGlyph(1, 1, new Rectangle(0, 0, 1, 1), 0);
             }
 
             _charData = new CharData[char.MaxValue];
-            _tabSize = tabSize;
-            _charResolution = charResolution;
             _pageSize = texturePageSize;
             _packer = new BinPacker(_pageSize, _pageSize);
             _pendingGlyphs = new ThreadedQueue<ushort>();
             _charPadding = charPadding;
 
-            FontHash =  (ulong)_tabSize << 56;          // [tabSize - 1 byte/8-bit]
-            FontHash |= (ulong)_pageSize << 48;         // [texturePageSize - 2 bytes/16-bit]
-            FontHash |= (ulong)_charPadding << 32;       // [charPadding - 1 byte/8-bit]
-            FontHash |= 0;                              // [RESERVERD - 1 byte/8-bit]
-
-
-            _lineSpace = ToPixels(_font.HorizonalHeader.LineSpace);
             _rt = renderer.Resources.CreateSurface((uint)_pageSize, (uint)_pageSize, arraySize: (uint)initialPages, flags: TextureFlags.AllowMipMapGeneration);
             _rt.Clear(Color.Transparent);
 
@@ -146,14 +136,13 @@ namespace Molten.Graphics
             _renderData.AddObject(new RenderCamera(RenderCameraMode.Orthographic)
             {
                 OutputSurface = _rt,
-                Flags = RenderCameraFlags.DoNotClear,
-                //MultiSampleLevel = AntiAliasLevel.X8
+                Flags = RenderCameraFlags.DoNotClear
             });
 
             // Add placeholder character.
             AddCharacter(PLACEHOLDER_CHAR, false);
             Rectangle pcRect = _glyphCache[_charData[' '].GlyphIndex].Location;
-            pcRect.Width *= tabSize;
+            pcRect.Width *= TAB_SIZE;
             AddCharacter('\t', false, pcRect);
         }
 
@@ -161,7 +150,7 @@ namespace Molten.Graphics
         {
             while (_pendingGlyphs.TryDequeue(out ushort gIndex))
             {
-                GlyphCache cache = _glyphCache[gIndex];
+                CachedGlyph cache = _glyphCache[gIndex];
                 sb.Draw(cache.GlyphTex,cache.Location, Color.White);
             }
 
@@ -173,40 +162,9 @@ namespace Molten.Graphics
             _rt.GenerateMipMaps();
         }
 
-        private int ToPixels(float designUnits)
+        internal int ToPixels(float designUnits)
         {
-            return (int)Math.Ceiling(_charResolution * designUnits / _font.Header.DesignUnitsPerEm);
-        }
-
-        private float GetResolutionScale(float fontSize)
-        {
-            return (fontSize / _charResolution);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="c">The character.</param>
-        /// <returns></returns>
-        public float GetAdvanceWidth(char c, float fontSize)
-        {
-            if (!_charData[c].Initialized)
-                AddCharacter(c, true);
-
-            return _glyphCache[_charData[c].GlyphIndex].AdvanceWidth * GetResolutionScale(fontSize);
-        }
-
-        /// <summary>
-        /// Gets the height of a character glyph.
-        /// </summary>
-        /// <param name="c">The character.</param>
-        /// <returns></returns>
-        public float GetHeight(char c, float fontSize)
-        {
-            if (!_charData[c].Initialized)
-                AddCharacter(c, true);
-
-            return _glyphCache[_charData[c].GlyphIndex].AdvanceHeight * GetResolutionScale(fontSize);
+            return (int)Math.Ceiling(BASE_FONT_SIZE * designUnits / _font.Header.DesignUnitsPerEm);
         }
 
         /// <summary>
@@ -214,65 +172,12 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
-        public GlyphCache GetCharGlyph(char c)
+        internal CachedGlyph GetCharGlyph(char c)
         {
-            Rectangle rect = Rectangle.Empty;
             if (!_charData[c].Initialized)
                 AddCharacter(c, true);
 
             return _glyphCache[_charData[c].GlyphIndex] ?? _glyphCache[_charData[PLACEHOLDER_CHAR].GlyphIndex];
-        }
-
-        /// <summary>Measures the provided string and returns it's width and height, in pixels.</summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        public Vector2F MeasureString(string text, float fontSize)
-        {
-            return MeasureString(text, fontSize, 0, text.Length);
-        }
-
-        /// <summary>Measures part (or all) of the provided string based on the provided maximum length. Returns its width and height in pixels.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="maxLength">The maximum length of the string to measure.</param>
-        /// <returns></returns>
-        public Vector2F MeasureString(string text, float fontSize, int maxLength)
-        {
-            return MeasureString(text, fontSize, 0, maxLength);
-        }
-
-        /// <summary>Measures part (or all) of the provided string and returns its width and height, in pixels.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="startIndex">The starting character index within the string from which to begin measuring.</param>
-        /// <param name="length">The number of characters to measure from the start index.</param>
-        /// <returns></returns>
-        public Vector2F MeasureString(string text, float fontSize, int startIndex, int length)
-        {
-            Vector2F result = new Vector2F();
-            int end = startIndex + Math.Min(text.Length, length);
-            float resScale = GetResolutionScale(fontSize);
-
-            for (int i = startIndex; i < end; i++)
-            {
-                GlyphCache cache = GetCharGlyph(text[i]);
-                result.X += cache.AdvanceWidth * resScale;
-                result.Y = Math.Max(result.Y, cache.AdvanceHeight);
-            }
-
-            result.Y *= resScale;
-
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the index of the nearest character within the specified string, based on the provided local point position.
-        /// </summary>
-        /// <param name="text">A string of text.</param>
-        /// <param name="localPoint">The local point to test, relative to the string's screen or world position.</param>
-        /// <returns></returns>
-        public int NearestCharacter(string text, Vector2F localPoint)
-        {
-            // TODO This is needed when hit-testing for text editing.
-            throw new NotImplementedException();
         }
 
         private void AddCharacter(char c, bool renderGlyph, Rectangle? customBounds = null)
@@ -356,7 +261,7 @@ namespace Molten.Graphics
             };
 
             _charData[c] = new CharData(gIndex);
-            _glyphCache[gIndex] = new GlyphCache(advWidth, advHeight, loc, yOffset);
+            _glyphCache[gIndex] = new CachedGlyph(advWidth, advHeight, loc, yOffset);
 
             Shape shape = g.CreateShape();
             _sdf.Normalize(shape);
@@ -383,11 +288,6 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Gets the base font-size of character signed-distance field textures.
-        /// </summary>
-        public uint CharResolution => _charResolution;
-
-        /// <summary>ToPixels(g.Bounds.Top)
         /// Gets the underlying font used to generate the sprite-font.
         /// </summary>
         public FontFile Font => _font;
@@ -396,12 +296,5 @@ namespace Molten.Graphics
         /// Gets the underlying texture atlas of the sprite font.
         /// </summary>
         public ITexture2D UnderlyingTexture => _rt;
-
-        /// <summary>
-        /// Gets the font's recommended line spacing between two lines, in pixels.
-        /// </summary>
-        public int LineSpace => _lineSpace;
-
-        public ulong FontHash { get; }
     }
 }

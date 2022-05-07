@@ -6,16 +6,14 @@ namespace Molten.Graphics
     public class ResourceFactoryDX11 : ResourceFactory
     {
         RendererDX11 _renderer;
-        Device _device;
-        List<SpriteFont> _fontTable;
 
         internal ResourceFactoryDX11(RendererDX11 renderer) : 
             base(renderer, renderer.ShaderCompiler)
         {
             _renderer = renderer;
-            _device = _renderer.Device;
-            _fontTable = new List<SpriteFont>();
         }
+
+        protected override void OnDispose() { }
 
         public override IDepthStencilSurface CreateDepthSurface(
             uint width,
@@ -186,14 +184,6 @@ namespace Molten.Graphics
             task.Source = source as TextureBase;
             task.Destination = destination as TextureBase;
             _renderer.PushTask(task);
-        }
-
-        protected override void OnDispose()
-        {
-            for (int i = 0; i < _fontTable.Count; i++)
-                _fontTable[i].Dispose();
-
-            _fontTable.Clear();
         }
 
         public override ISpriteRenderer CreateSpriteRenderer(Action<SpriteBatcher> callback = null)

@@ -63,7 +63,7 @@ namespace Molten.UI
         public void RequestFont(Engine engine, ContentRequestHandler loadCallback)
         {
             ContentRequest cr = engine.Content.BeginRequest("");
-            cr.Load<SpriteFont>(FontName);
+            cr.Load<TextFontSource>(FontName);
             cr.OnCompleted += loadCallback;
             cr.Commit();
         }

@@ -79,9 +79,9 @@ namespace Molten.Graphics
         /// <param name="color">The color of the text.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DrawString(SpriteFont font, float fontSize, string text, Vector2F position, Color color, IMaterial material = null)
+        public void DrawString(TextFont font, string text, Vector2F position, Color color, IMaterial material = null)
         {
-            DrawString(font, fontSize, text, position, color, Vector2F.One, material);
+            DrawString(font, text, position, color, Vector2F.One, material);
         }
 
         /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data..</summary>
@@ -91,36 +91,34 @@ namespace Molten.Graphics
         /// <param name="color">The color of the text.</param>
         /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
-        public void DrawString(SpriteFont font, float fontSize, string text, Vector2F position, Color color, Vector2F scale, IMaterial material = null)
+        public void DrawString(TextFont font, string text, Vector2F position, Color color, Vector2F scale, IMaterial material = null)
         {
             int strLength = text.Length;
 
             if (text.Length == 0)
                 return;
 
-            float fontScale = fontSize / font.CharResolution;
-
             // Cycle through all characters in the string and process them
             Vector2F charPos = position;
             for (int i = 0; i < strLength; i++)
             {
-                SpriteFont.GlyphCache cache = font.GetCharGlyph(text[i]);
+                TextFontSource.CachedGlyph cache = font.Source.GetCharGlyph(text[i]);
 
                 ref SpriteItem item = ref GetItem();
-                item.Texture = font.UnderlyingTexture;
+                item.Texture = font.Source.UnderlyingTexture;
                 item.Material = material;
                 item.Format = SpriteFormat.MSDF;
 
-                item.Vertex.Position = new Vector2F(charPos.X, charPos.Y + ((cache.YOffset * fontScale) * scale.Y));
+                item.Vertex.Position = new Vector2F(charPos.X, charPos.Y + ((cache.YOffset * font.Scale) * scale.Y));
                 item.Vertex.Rotation = 0; // TODO 2D text rotation.
                 item.Vertex.ArraySlice = 0; // TODO SpriteFont array slice support.
-                item.Vertex.Size = (new Vector2F(cache.Location.Width, cache.Location.Height) * fontScale) * scale;
+                item.Vertex.Size = (new Vector2F(cache.Location.Width, cache.Location.Height) * font.Scale) * scale;
                 item.Vertex.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
                 item.Vertex.Color = color;
                 item.Vertex.Origin = Vector2F.Zero;
 
                 // Increase pos by size of char (along X)
-                charPos.X += (cache.AdvanceWidth * fontScale) * scale.X;
+                charPos.X += (cache.AdvanceWidth * font.Scale) * scale.X;
             }
         }
 

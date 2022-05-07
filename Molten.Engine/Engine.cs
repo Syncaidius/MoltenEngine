@@ -62,7 +62,7 @@ namespace Molten
         private void Renderer_OnStarted(EngineService o)
         {
             UITheme theme = Settings.UI.Theme.Value;
-            DefaultFont = Fonts.GetFont(Log, theme.FontName, theme.FontSize);
+            DefaultFont = Fonts.GetFont(Log, theme.FontName);
             Log.Error("Failed to load default font.");
         }
 
@@ -252,7 +252,7 @@ namespace Molten
         /// <summary>
         /// Gets the default font as defined in <see cref="EngineSettings"/>.
         /// </summary>
-        public SpriteFont DefaultFont { get; private set; }
+        public TextFontSource DefaultFont { get; private set; }
 
         /// <summary>Gets the <see cref="InputService"/> attached to the current <see cref="Engine"/> instance.</summary>
         public InputService Input { get; private set; }

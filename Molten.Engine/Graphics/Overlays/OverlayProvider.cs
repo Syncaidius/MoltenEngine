@@ -80,6 +80,6 @@ namespace Molten.Graphics.Overlays
         /// <summary>
         /// Gets or sets the font used when rendering overlay text.
         /// </summary>
-        public SpriteFont Font { get; set; }
+        public TextFont Font { get; set; }
     }
 }

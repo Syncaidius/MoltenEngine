@@ -16,7 +16,7 @@ namespace Molten.UI
         [DataMember]
         public string Text;
 
-        public SpriteFont Font;
+        public TextFont Font;
 
         [DataMember]
         public Vector2F Position;
@@ -26,7 +26,7 @@ namespace Molten.UI
         public void Render(SpriteBatcher sb, UIRenderData data)
         {
             if (Font != null && Color.A > 0)
-                sb.DrawString(Font, 16, Text, Position, Color, Material);
+                sb.DrawString(Font, Text, Position, Color, Material);
         }
     }
 }

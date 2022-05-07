@@ -19,7 +19,7 @@ namespace Molten.UI
 
         private void LoadFont_Request(ContentRequest cr)
         {
-            Properties.Font = cr.Get<SpriteFont>(0);
+            Properties.Font = cr.Get<TextFont>(0);
             OnUpdateBounds();
         }
 
@@ -31,7 +31,7 @@ namespace Molten.UI
                 return;
 
             Properties.Position = (Vector2F)LocalBounds.TopLeft;
-            Vector2F textSize = Properties.Font.MeasureString(Properties.Text, 16);
+            Vector2F textSize = Properties.Font.MeasureString(Properties.Text);
 
             switch (_hAlign)
             {

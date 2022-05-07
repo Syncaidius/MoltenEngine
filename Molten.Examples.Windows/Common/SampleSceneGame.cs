@@ -114,14 +114,14 @@ namespace Molten.Samples
                 Y = Window.Height - tSize.Y - 20,
             };
 
-            sb.DrawString(SampleFont, 16, text, pos, Color.White);
+            sb.DrawString(SampleFont, text, pos, Color.White);
 
             // Gamepad instructions
             text = "OR";
             tSize = SampleFont.MeasureString(text, 16);
             pos.X = Window.Width / 2 + (-tSize.X / 2);
             pos.Y -= tSize.Y + 5;
-            sb.DrawString(SampleFont, 16, text, pos, Color.White);
+            sb.DrawString(SampleFont, text, pos, Color.White);
 
             if (Gamepad.IsConnected)
             {
@@ -129,14 +129,14 @@ namespace Molten.Samples
                 tSize = SampleFont.MeasureString(text, 16);
                 pos.X = Window.Width / 2 + (-tSize.X / 2);
                 pos.Y -= tSize.Y + 5;
-                sb.DrawString(SampleFont, 16, text, pos, Color.White);
+                sb.DrawString(SampleFont, text, pos, Color.White);
 
                 // Stats
                 pos.X = 5;
-                pos.Y = 300; sb.DrawString(SampleFont, 16, $"Left stick: {Gamepad.LeftStick.X},{Gamepad.LeftStick.Y}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, 16, $"Right stick: {Gamepad.RightStick.X},{Gamepad.RightStick.Y}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, 16, $"Left Trigger: {Gamepad.LeftTrigger.Value}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, 16, $"Right Trigger: {Gamepad.RightTrigger.Value}", pos, Color.White);
+                pos.Y = 300; sb.DrawString(SampleFont, $"Left stick: {Gamepad.LeftStick.X},{Gamepad.LeftStick.Y}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Right stick: {Gamepad.RightStick.X},{Gamepad.RightStick.Y}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Left Trigger: {Gamepad.LeftTrigger.Value}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Right Trigger: {Gamepad.RightTrigger.Value}", pos, Color.White);
             }
             else
             {
@@ -144,7 +144,7 @@ namespace Molten.Samples
                 tSize = SampleFont.MeasureString(text, 16);
                 pos.X = Window.Width / 2 + (-tSize.X / 2);
                 pos.Y -= tSize.Y + 5;
-                sb.DrawString(SampleFont, 16, text, pos, Color.White);
+                sb.DrawString(SampleFont, text, pos, Color.White);
             }
         }
 

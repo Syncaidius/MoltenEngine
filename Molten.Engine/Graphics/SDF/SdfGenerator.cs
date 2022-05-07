@@ -166,14 +166,11 @@ namespace Molten.Graphics.SDF
 
         internal static void DeconvergeEdge(Shape.Edge edge, int param)
         {
-            {
-                if (edge is Shape.QuadraticEdge quadratic)
-                    edge = quadratic.ConvertToCubic();
-            }
-            {
-                if (edge is Shape.CubicEdge cubic)
-                    DeconvergeCubicEdge(cubic, param, MSDFGEN_DECONVERGENCE_FACTOR);
-            }
+            if (edge is Shape.QuadraticEdge quadratic)
+                edge = quadratic.ConvertToCubic();
+
+            if (edge is Shape.CubicEdge cubic)
+                DeconvergeCubicEdge(cubic, param, MSDFGEN_DECONVERGENCE_FACTOR);
         }
 
         /// <summary>
