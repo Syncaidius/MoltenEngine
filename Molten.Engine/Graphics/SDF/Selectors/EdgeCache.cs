@@ -8,29 +8,29 @@ namespace Molten.Graphics.SDF
 {
     public struct EdgeCache
     {
-        public Vector2D point;
-        public double absDistance;
-        public double aDomainDistance, bDomainDistance;
-        public double aPseudoDistance, bPseudoDistance;
+        public Vector2D Point;
+        public double AbsDistance;
+        public double ADomainDistance, BDomainDistance;
+        public double APseudoDistance, BPseudoDistance;
 
         public EdgeCache(Vector2D p, double absDist)
         {
-            point = p;
-            absDistance = absDist;
-            aDomainDistance = 0;
-            bDomainDistance = 0;
-            aPseudoDistance = 0;
-            bPseudoDistance = 0;
+            Point = p;
+            AbsDistance = absDist;
+            ADomainDistance = 0;
+            BDomainDistance = 0;
+            APseudoDistance = 0;
+            BPseudoDistance = 0;
         }
 
         public EdgeCache(Vector2D p, double absDist, double aDomainDist, double bDomainDist, double aPseudoDist, double bPseudoDist)
         {
-            point = p;
-            absDistance = absDist;
-            aDomainDistance = aDomainDist;
-            bDomainDistance = bDomainDist;
-            aPseudoDistance = aPseudoDist;
-            bPseudoDistance = bPseudoDist;
+            Point = p;
+            AbsDistance = absDist;
+            ADomainDistance = aDomainDist;
+            BDomainDistance = bDomainDist;
+            APseudoDistance = aPseudoDist;
+            BPseudoDistance = bPseudoDist;
         }
     }
 }

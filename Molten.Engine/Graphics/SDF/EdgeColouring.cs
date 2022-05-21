@@ -45,6 +45,7 @@ namespace Molten.Graphics.SDF
         public const int MAX_RECOLOR_STEPS = 16;
         public const int EDGE_DISTANCE_PRECISION = 16;
         static int[] FIRST_POSSIBLE_COLOR = { -1, 0, 1, 0, 2, 2, 1, 0 };
+
         static DoublePtrComparer _doubleComparer = new DoublePtrComparer();
 
         static bool isCorner(Vector2D aDir, Vector2D bDir, double crossThreshold) {

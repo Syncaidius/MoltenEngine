@@ -13,24 +13,25 @@ namespace Molten.Graphics.SDF
     /// <typeparam name="DT">Distance Type</typeparam>
     public unsafe class ShapeDistanceChecker
     {
-        public Vector2D shapeCoord, sdfCoord;
-        public Color3* msd;
-        public bool protectedFlag;
+        public Vector2D ShapeCoord;
+        public Vector2D SdfCoord;
+        public Color3* Msd;
+        public bool ProtectedFlag;
 
-        internal ShapeDistanceFinder distanceFinder;
-        internal TextureSliceRef<Color3> sdf;
-        internal double invRange;
-        internal Vector2D texelSize;
-        internal double minImproveRatio;
+        internal ShapeDistanceFinder DistanceFinder;
+        internal TextureSliceRef<Color3> Sdf;
+        internal double InvRange;
+        internal Vector2D TexelSize;
+        internal double MinImproveRatio;
 
         public ShapeDistanceChecker(TextureSliceRef<Color3> pSdf, Shape pShape, SdfProjection pProjection, double pInvRange, double pMinImproveRatio)
         {
-            distanceFinder = new ShapeDistanceFinder(pShape);
-            sdf = pSdf;
-            invRange = pInvRange;
-            minImproveRatio = pMinImproveRatio;
+            DistanceFinder = new ShapeDistanceFinder(pShape);
+            Sdf = pSdf;
+            InvRange = pInvRange;
+            MinImproveRatio = pMinImproveRatio;
 
-            texelSize = pProjection.UnprojectVector(new Vector2D(1));
+            TexelSize = pProjection.UnprojectVector(new Vector2D(1));
         }
 
         public ArtifactClassifier Classifier(Vector2D direction, double span)

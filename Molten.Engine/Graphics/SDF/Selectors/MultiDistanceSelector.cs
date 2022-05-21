@@ -8,41 +8,41 @@ namespace Molten.Graphics.SDF
 {
     public class MultiDistanceSelector
     {
-        Vector2D p;
+        Vector2D P;
         PseudoDistanceSelector R = new PseudoDistanceSelector();
         PseudoDistanceSelector G = new PseudoDistanceSelector();
         PseudoDistanceSelector B = new PseudoDistanceSelector();
 
         public void Reset(ref Vector2D p)
         {
-            double delta = SdfGenerator.DISTANCE_DELTA_FACTOR * (p - this.p).Length();
+            double delta = SdfGenerator.DISTANCE_DELTA_FACTOR * (p - P).Length();
             R.Reset(delta);
             G.Reset(delta);
             B.Reset(delta);
-            this.p = p;
+            P = p;
         }
 
         public void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
         {
             if (
-                ((edge.Color & EdgeColor.Red) == EdgeColor.Red && R.IsEdgeRelevant(cache, edge, p)) ||
-                ((edge.Color & EdgeColor.Green) == EdgeColor.Green && G.IsEdgeRelevant(cache, edge, p)) ||
-                ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue && B.IsEdgeRelevant(cache, edge, p))
+                ((edge.Color & EdgeColor.Red) == EdgeColor.Red && R.IsEdgeRelevant(cache, edge, P)) ||
+                ((edge.Color & EdgeColor.Green) == EdgeColor.Green && G.IsEdgeRelevant(cache, edge, P)) ||
+                ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue && B.IsEdgeRelevant(cache, edge, P))
             )
             {
                 double param;
-                SignedDistance distance = edge.SignedDistance(p, out param);
+                SignedDistance distance = edge.SignedDistance(P, out param);
                 if ((edge.Color & EdgeColor.Red) == EdgeColor.Red)
                     R.AddEdgeTrueDistance(edge, distance, param);
                 if ((edge.Color & EdgeColor.Green) == EdgeColor.Green)
                     G.AddEdgeTrueDistance(edge, distance, param);
                 if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue)
                     B.AddEdgeTrueDistance(edge, distance, param);
-                cache.point = p;
-                cache.absDistance = Math.Abs(distance.Distance);
+                cache.Point = P;
+                cache.AbsDistance = Math.Abs(distance.Distance);
 
-                Vector2D ap = p - edge.Point(0);
-                Vector2D bp = p - edge.Point(1);
+                Vector2D ap = P - edge.Point(0);
+                Vector2D bp = P - edge.Point(1);
                 Vector2D aDir = edge.GetDirection(0).GetNormalized(true);
                 Vector2D bDir = edge.GetDirection(1).GetNormalized(true);
                 Vector2D prevDir = prevEdge.GetDirection(1).GetNormalized(true);
@@ -62,7 +62,7 @@ namespace Molten.Graphics.SDF
                         if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue)
                             B.AddEdgePseudoDistance(pd);
                     }
-                    cache.aPseudoDistance = pd;
+                    cache.APseudoDistance = pd;
                 }
                 if (bdd > 0)
                 {
@@ -76,10 +76,10 @@ namespace Molten.Graphics.SDF
                         if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue)
                             B.AddEdgePseudoDistance(pd);
                     }
-                    cache.bPseudoDistance = pd;
+                    cache.BPseudoDistance = pd;
                 }
-                cache.aDomainDistance = add;
-                cache.bDomainDistance = bdd;
+                cache.ADomainDistance = add;
+                cache.BDomainDistance = bdd;
             }
         }
 
@@ -94,9 +94,9 @@ namespace Molten.Graphics.SDF
         public Color3D Distance()
         {
             Color3D multiDistance;
-            multiDistance.R = R.ComputeDistance(p);
-            multiDistance.G = G.ComputeDistance(p);
-            multiDistance.B = B.ComputeDistance(p);
+            multiDistance.R = R.ComputeDistance(P);
+            multiDistance.G = G.ComputeDistance(P);
+            multiDistance.B = B.ComputeDistance(P);
             return multiDistance;
         }
 

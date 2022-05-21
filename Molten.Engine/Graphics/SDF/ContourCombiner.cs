@@ -14,15 +14,16 @@ namespace Molten.Graphics.SDF
     /// <typeparam name="EC">Edge cache type.</typeparam>
     public class ContourCombiner
     {
-        Vector2D p;
-        List<int> windings;
+        Vector2D _p;
+        List<int> _windings;
+
         internal List<MultiDistanceSelector> EdgeSelectors { get; }
 
         public ContourCombiner(Shape shape)
         {
-            windings = new List<int>(shape.Contours.Count);
+            _windings = new List<int>(shape.Contours.Count);
             foreach (Shape.Contour contour in shape.Contours)
-                windings.Add(contour.GetWinding());
+                _windings.Add(contour.GetWinding());
 
             EdgeSelectors = new List<MultiDistanceSelector>(shape.Contours.Count);
             for (int i = 0; i < shape.Contours.Count; i++)
@@ -31,7 +32,7 @@ namespace Molten.Graphics.SDF
 
         public void Reset(ref Vector2D p)
         {
-            this.p = p;
+            this._p = p;
             foreach (MultiDistanceSelector contourEdgeSelector in EdgeSelectors)
                 contourEdgeSelector.Reset(ref p);
         }
@@ -43,17 +44,17 @@ namespace Molten.Graphics.SDF
             MultiDistanceSelector innerEdgeSelector = new MultiDistanceSelector();
             MultiDistanceSelector outerEdgeSelector = new MultiDistanceSelector();
 
-            shapeEdgeSelector.Reset(ref p);
-            innerEdgeSelector.Reset(ref p);
-            outerEdgeSelector.Reset(ref p);
+            shapeEdgeSelector.Reset(ref _p);
+            innerEdgeSelector.Reset(ref _p);
+            outerEdgeSelector.Reset(ref _p);
 
             for (int i = 0; i < contourCount; ++i)
             {
                 Color3D edgeDistance = EdgeSelectors[i].Distance();
                 shapeEdgeSelector.Merge(EdgeSelectors[i]);
-                if (windings[i] > 0 && EdgeSelectors[i].ResolveDistance(edgeDistance) >= 0)
+                if (_windings[i] > 0 && EdgeSelectors[i].ResolveDistance(edgeDistance) >= 0)
                     innerEdgeSelector.Merge(EdgeSelectors[i]);
-                if (windings[i] < 0 && EdgeSelectors[i].ResolveDistance(edgeDistance) <= 0)
+                if (_windings[i] < 0 && EdgeSelectors[i].ResolveDistance(edgeDistance) <= 0)
                     outerEdgeSelector.Merge(EdgeSelectors[i]);
             }
 
@@ -74,7 +75,7 @@ namespace Molten.Graphics.SDF
                 winding = 1;
                 for (int i = 0; i < contourCount; ++i)
                 {
-                    if (windings[i] > 0)
+                    if (_windings[i] > 0)
                     {
                         Color3D contourDistance = EdgeSelectors[i].Distance();
                         if (Math.Abs(EdgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(outerScalarDistance) &&
@@ -91,7 +92,7 @@ namespace Molten.Graphics.SDF
                 winding = -1;
                 for (int i = 0; i < contourCount; ++i)
                 {
-                    if (windings[i] < 0)
+                    if (_windings[i] < 0)
                     {
                         Color3D contourDistance = EdgeSelectors[i].Distance();
                         if (Math.Abs(EdgeSelectors[i].ResolveDistance(contourDistance)) < Math.Abs(innerScalarDistance) &&
@@ -109,7 +110,7 @@ namespace Molten.Graphics.SDF
 
             for (int i = 0; i < contourCount; ++i)
             {
-                if (windings[i] != winding)
+                if (_windings[i] != winding)
                 {
                     Color3D contourDistance = EdgeSelectors[i].Distance();
                     if (EdgeSelectors[i].ResolveDistance(contourDistance) * EdgeSelectors[i].ResolveDistance(distance) >= 0 &&

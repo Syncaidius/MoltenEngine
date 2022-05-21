@@ -23,8 +23,8 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        public List<Intersection> intersections;
-        public int lastIndex;
+        public List<Intersection> Intersections;
+        public int LastIndex;
 
         public int CompareIntersections(Intersection a, Intersection b)
         {
@@ -49,50 +49,50 @@ namespace Molten.Graphics.SDF
 
         public void Preprocess()
         {
-            lastIndex = 0;
-            if (intersections.Count > 0)
+            LastIndex = 0;
+            if (Intersections.Count > 0)
             {
-                intersections.Sort(CompareIntersections);
+                Intersections.Sort(CompareIntersections);
                 int totalDirection = 0;
-                for (int i = 0; i < intersections.Count; i++)
+                for (int i = 0; i < Intersections.Count; i++)
                 {
-                    Intersection isec = intersections[i];
+                    Intersection isec = Intersections[i];
                     totalDirection += isec.direction;
                     isec.direction = totalDirection;
-                    intersections[i] = isec;
+                    Intersections[i] = isec;
                 }
             }
         }
 
         public void SetIntersections(List<Intersection> newIntersections)
         {
-            intersections = newIntersections;
+            Intersections = newIntersections;
             Preprocess();
         }
 
         public int MoveTo(double x)
         {
-            if (intersections.Count == 0)
+            if (Intersections.Count == 0)
                 return -1;
-            int index = lastIndex;
-            if (x < intersections[index].x)
+            int index = LastIndex;
+            if (x < Intersections[index].x)
             {
                 do
                 {
                     if (index == 0)
                     {
-                        lastIndex = 0;
+                        LastIndex = 0;
                         return -1;
                     }
                     --index;
-                } while (x < intersections[index].x);
+                } while (x < Intersections[index].x);
             }
             else
             {
-                while (index < intersections.Count - 1 && x >= intersections[index + 1].x)
+                while (index < Intersections.Count - 1 && x >= Intersections[index + 1].x)
                     ++index;
             }
-            lastIndex = index;
+            LastIndex = index;
             return index;
         }
 
@@ -100,7 +100,7 @@ namespace Molten.Graphics.SDF
         {
             int index = MoveTo(x);
             if (index >= 0)
-                return intersections[index].direction;
+                return Intersections[index].direction;
             return 0;
         }
 

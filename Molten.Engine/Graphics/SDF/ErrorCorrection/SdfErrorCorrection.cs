@@ -14,12 +14,12 @@ namespace Molten.Graphics.SDF
         public const int CLASSIFIER_FLAG_CANDIDATE = 0x01;
         public const int CLASSIFIER_FLAG_ARTIFACT = 0x02;
 
-        TextureSlice stencilSlice;
-        TextureSliceRef<byte> stencil;
-        SdfProjection projection;
-        double invRange;
-        double minDeviationRatio;
-        double minImproveRatio;
+        TextureSlice _stencilSlice;
+        TextureSliceRef<byte> _stencil;
+        SdfProjection _projection;
+        double _invRange;
+        double _minDeviationRatio;
+        double _minImproveRatio;
 
         /// <summary>
         /// Stencil flags
@@ -34,24 +34,24 @@ namespace Molten.Graphics.SDF
 
         public unsafe SdfErrorCorrection(TextureSliceRef<Color3> sdf, SdfProjection pProjection, double range)
         {
-            stencilSlice = new TextureSlice(sdf.Width, sdf.Height, sdf.Width * sdf.Height);
-            stencil = stencilSlice.GetReference<byte>();
-            projection = pProjection;
+            _stencilSlice = new TextureSlice(sdf.Width, sdf.Height, sdf.Width * sdf.Height);
+            _stencil = _stencilSlice.GetReference<byte>();
+            _projection = pProjection;
 
-            invRange = 1 / range;
-            minDeviationRatio = SdfConfig.defaultMinDeviationRatio;
-            minImproveRatio = SdfConfig.defaultMinImproveRatio;
-            EngineUtil.MemSet(stencil.Data, 0, (nuint)(sizeof(byte) * stencil.Width * stencil.Height));
+            _invRange = 1 / range;
+            _minDeviationRatio = SdfConfig.defaultMinDeviationRatio;
+            _minImproveRatio = SdfConfig.defaultMinImproveRatio;
+            EngineUtil.MemSet(_stencil.Data, 0, (nuint)(sizeof(byte) * _stencil.Width * _stencil.Height));
         }
 
         public void SetMinDeviationRatio(double minDeviationRatio)
         {
-            this.minDeviationRatio = minDeviationRatio;
+            this._minDeviationRatio = minDeviationRatio;
         }
 
         public void SetMinImproveRatio(double minImproveRatio)
         {
-            this.minImproveRatio = minImproveRatio;
+            this._minImproveRatio = minImproveRatio;
         }
 
         public unsafe void ProtectCorners(Shape shape)
@@ -68,23 +68,23 @@ namespace Molten.Graphics.SDF
                         if ((commonColor & (commonColor - 1)) != (commonColor - 1))
                         {
                             // Find the four texels that envelop the corner and mark them as protected.
-                            Vector2D p = projection.Project(edge.Point(0));
+                            Vector2D p = _projection.Project(edge.Point(0));
 
                             int l = (int)Math.Floor(p.X - .5);
                             int b = (int)Math.Floor(p.Y - .5);
                             int r = l + 1;
                             int t = b + 1;
                             // Check that the positions are within bounds.
-                            if (l < stencil.Width && b < stencil.Height && r >= 0 && t >= 0)
+                            if (l < _stencil.Width && b < _stencil.Height && r >= 0 && t >= 0)
                             {
                                 if (l >= 0 && b >= 0)
-                                    *stencil[l, b] |= (byte)StencilFlags.PROTECTED;
-                                if (r < stencil.Width && b >= 0)
-                                    *stencil[r, b] |= (byte)StencilFlags.PROTECTED;
-                                if (l >= 0 && t < stencil.Height)
-                                    *stencil[l, t] |= (byte)StencilFlags.PROTECTED;
-                                if (r < stencil.Width && t < stencil.Height)
-                                    *stencil[r, t] |= (byte)StencilFlags.PROTECTED;
+                                    *_stencil[l, b] |= (byte)StencilFlags.PROTECTED;
+                                if (r < _stencil.Width && b >= 0)
+                                    *_stencil[r, b] |= (byte)StencilFlags.PROTECTED;
+                                if (l >= 0 && t < _stencil.Height)
+                                    *_stencil[l, t] |= (byte)StencilFlags.PROTECTED;
+                                if (r < _stencil.Width && t < _stencil.Height)
+                                    *_stencil[r, t] |= (byte)StencilFlags.PROTECTED;
                             }
                         }
                         prevEdge = edge;
@@ -135,7 +135,7 @@ namespace Molten.Graphics.SDF
         public unsafe void ProtectEdges(TextureSliceRef<Color3> sdf)
         {
             // Horizontal texel pairs
-            float radius = (float)(PROTECTION_RADIUS_TOLERANCE * projection.UnprojectVector(new Vector2D(invRange, 0)).Length());
+            float radius = (float)(PROTECTION_RADIUS_TOLERANCE * _projection.UnprojectVector(new Vector2D(_invRange, 0)).Length());
 
             for (int y = 0; y < sdf.Height; ++y)
             {
@@ -150,8 +150,8 @@ namespace Molten.Graphics.SDF
                     if (Math.Abs(lm - .5f) + Math.Abs(rm - .5f) < radius)
                     {
                         int mask = EdgeBetweenTexels(ref *left, ref *right);
-                        ProtectExtremeChannels(stencil[x, y], left, lm, mask);
-                        ProtectExtremeChannels(stencil[x + 1, y], right, rm, mask);
+                        ProtectExtremeChannels(_stencil[x, y], left, lm, mask);
+                        ProtectExtremeChannels(_stencil[x + 1, y], right, rm, mask);
                     }
 
                     left++;
@@ -160,7 +160,7 @@ namespace Molten.Graphics.SDF
             }
 
             // Vertical texel pairs
-            radius = (float)(PROTECTION_RADIUS_TOLERANCE * projection.UnprojectVector(new Vector2D(0, invRange)).Length());
+            radius = (float)(PROTECTION_RADIUS_TOLERANCE * _projection.UnprojectVector(new Vector2D(0, _invRange)).Length());
             for (int y = 0; y < sdf.Height - 1; ++y)
             {
                 Color3* bottom = sdf[0, y];
@@ -174,8 +174,8 @@ namespace Molten.Graphics.SDF
                     if (Math.Abs(bm - .5f) + Math.Abs(tm - .5f) < radius)
                     {
                         int mask = EdgeBetweenTexels(ref *bottom, ref *top);
-                        ProtectExtremeChannels(stencil[x, y], bottom, bm, mask);
-                        ProtectExtremeChannels(stencil[x, y + 1], top, tm, mask);
+                        ProtectExtremeChannels(_stencil[x, y], bottom, bm, mask);
+                        ProtectExtremeChannels(_stencil[x, y + 1], top, tm, mask);
                     }
 
                     bottom++;
@@ -184,7 +184,7 @@ namespace Molten.Graphics.SDF
             }
 
             // Diagonal texel pairs
-            radius = (float)(PROTECTION_RADIUS_TOLERANCE * projection.UnprojectVector(new Vector2D(invRange)).Length());
+            radius = (float)(PROTECTION_RADIUS_TOLERANCE * _projection.UnprojectVector(new Vector2D(_invRange)).Length());
             for (int y = 0; y < sdf.Height - 1; ++y)
             {
                 Color3* lb = sdf[0, y];
@@ -202,15 +202,15 @@ namespace Molten.Graphics.SDF
                     if (Math.Abs(mlb - .5f) + Math.Abs(mrt - .5f) < radius)
                     {
                         int mask = EdgeBetweenTexels(ref *lb, ref *rt);
-                        ProtectExtremeChannels(stencil[x, y], lb, mlb, mask);
-                        ProtectExtremeChannels(stencil[x + 1, y + 1], rt, mrt, mask);
+                        ProtectExtremeChannels(_stencil[x, y], lb, mlb, mask);
+                        ProtectExtremeChannels(_stencil[x + 1, y + 1], rt, mrt, mask);
                     }
 
                     if (Math.Abs(mrb - .5f) + Math.Abs(mlt - .5f) < radius)
                     {
                         int mask = EdgeBetweenTexels(ref *rb, ref *lt);
-                        ProtectExtremeChannels(stencil[x + 1, y], rb, mrb, mask);
-                        ProtectExtremeChannels(stencil[x, y + 1], lt, mlt, mask);
+                        ProtectExtremeChannels(_stencil[x + 1, y], rb, mrb, mask);
+                        ProtectExtremeChannels(_stencil[x, y + 1], lt, mlt, mask);
                     }
 
                     lb++;
@@ -223,8 +223,8 @@ namespace Molten.Graphics.SDF
 
         public unsafe void ProtectAll()
         {
-            byte* end = stencil.Data + stencil.Width * stencil.Height;
-            for (byte* mask = stencil.Data; mask < end; ++mask)
+            byte* end = _stencil.Data + _stencil.Width * _stencil.Height;
+            for (byte* mask = _stencil.Data; mask < end; ++mask)
                 *mask |= (byte)StencilFlags.PROTECTED;
         }
 
@@ -380,9 +380,9 @@ namespace Molten.Graphics.SDF
         public unsafe void FindErrors(TextureSliceRef<Color3> sdf)
         {
             // Compute the expected deltas between values of horizontally, vertically, and diagonally adjacent texels.
-            double hSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange, 0)).Length();
-            double vSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(0, invRange)).Length();
-            double dSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange)).Length();
+            double hSpan = _minDeviationRatio * _projection.UnprojectVector(new Vector2D(_invRange, 0)).Length();
+            double vSpan = _minDeviationRatio * _projection.UnprojectVector(new Vector2D(0, _invRange)).Length();
+            double dSpan = _minDeviationRatio * _projection.UnprojectVector(new Vector2D(_invRange)).Length();
             // Inspect all texels.
             for (int y = 0; y < sdf.Height; ++y)
             {
@@ -390,14 +390,14 @@ namespace Molten.Graphics.SDF
                 {
                     Color3* c = sdf[x, y];
                     float cm = MathHelper.Median(c->R, c->G, c->B);
-                    bool protectedFlag = ((StencilFlags)(*stencil[x, y]) & StencilFlags.PROTECTED) != 0;
+                    bool protectedFlag = ((StencilFlags)(*_stencil[x, y]) & StencilFlags.PROTECTED) != 0;
                     Color3* l = sdf[x - 1, y];
                     Color3* b = sdf[x, y - 1];
                     Color3* r = sdf[x + 1, y];
                     Color3* t = sdf[x, y + 1];
 
                     // Mark current texel c with the error flag if an artifact occurs when it's interpolated with any of its 8 neighbors.
-                    *stencil[x, y] |= (byte)((int)StencilFlags.ERROR * ((
+                    *_stencil[x, y] |= (byte)((int)StencilFlags.ERROR * ((
                         (x > 0 && HasLinearArtifact(new BaseArtifactClassifier(hSpan, protectedFlag), cm, c, l)) ||
                         (y > 0 && HasLinearArtifact(new BaseArtifactClassifier(vSpan, protectedFlag), cm, c, b)) ||
                         (x < sdf.Width - 1 && HasLinearArtifact(new BaseArtifactClassifier(hSpan, protectedFlag), cm, c, r)) ||
@@ -414,11 +414,11 @@ namespace Molten.Graphics.SDF
         public unsafe void FindErrors(TextureSliceRef<Color3> sdf, Shape shape)
         {
             // Compute the expected deltas between values of horizontally, vertically, and diagonally adjacent texels.
-            double hSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange, 0)).Length();
-            double vSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(0, invRange)).Length();
-            double dSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange)).Length();
+            double hSpan = _minDeviationRatio * _projection.UnprojectVector(new Vector2D(_invRange, 0)).Length();
+            double vSpan = _minDeviationRatio * _projection.UnprojectVector(new Vector2D(0, _invRange)).Length();
+            double dSpan = _minDeviationRatio * _projection.UnprojectVector(new Vector2D(_invRange)).Length();
             {
-                ShapeDistanceChecker shapeDistanceChecker = new ShapeDistanceChecker(sdf, shape, projection, invRange, minImproveRatio);
+                ShapeDistanceChecker shapeDistanceChecker = new ShapeDistanceChecker(sdf, shape, _projection, _invRange, _minImproveRatio);
                 bool rightToLeft = false;
 
                 // Inspect all texels.
@@ -428,14 +428,14 @@ namespace Molten.Graphics.SDF
                     {
                         int x = (int)(rightToLeft ? sdf.Width - col - 1 : col);
 
-                        if (((StencilFlags)(*stencil[x, y]) & StencilFlags.ERROR) == StencilFlags.ERROR)
+                        if (((StencilFlags)(*_stencil[x, y]) & StencilFlags.ERROR) == StencilFlags.ERROR)
                             continue;
 
                         Color3* c = sdf[x, y];
-                        shapeDistanceChecker.shapeCoord = projection.Unproject(new Vector2D(x + .5, y + .5));
-                        shapeDistanceChecker.sdfCoord = new Vector2D(x + .5, y + .5);
-                        shapeDistanceChecker.msd = c;
-                        shapeDistanceChecker.protectedFlag = ((StencilFlags)(*stencil[x, y]) & StencilFlags.PROTECTED) != 0;
+                        shapeDistanceChecker.ShapeCoord = _projection.Unproject(new Vector2D(x + .5, y + .5));
+                        shapeDistanceChecker.SdfCoord = new Vector2D(x + .5, y + .5);
+                        shapeDistanceChecker.Msd = c;
+                        shapeDistanceChecker.ProtectedFlag = ((StencilFlags)(*_stencil[x, y]) & StencilFlags.PROTECTED) != 0;
                         float cm = MathHelper.Median(c->R, c->G, c->B);
 
                         Color3* l = sdf[x - 1, y];
@@ -444,7 +444,7 @@ namespace Molten.Graphics.SDF
                         Color3* t = sdf[x, y + 1];
 
                         // Mark current texel c with the error flag if an artifact occurs when it's interpolated with any of its 8 neighbors.
-                        *stencil[x, y] |= (byte)((int)StencilFlags.ERROR * ((
+                        *_stencil[x, y] |= (byte)((int)StencilFlags.ERROR * ((
                             (x > 0 && HasLinearArtifact(shapeDistanceChecker.Classifier(new Vector2D(-1, 0), hSpan), cm, c, l)) ||
                             (y > 0 && HasLinearArtifact(shapeDistanceChecker.Classifier(new Vector2D(0, -1), vSpan), cm, c, b)) ||
                             (x < sdf.Width - 1 && HasLinearArtifact(shapeDistanceChecker.Classifier(new Vector2D(+1, 0), hSpan), cm, c, r)) ||
@@ -492,7 +492,7 @@ namespace Molten.Graphics.SDF
         public unsafe void Apply(TextureSliceRef<Color3> sdf)
         {
             uint texelCount = sdf.Width * sdf.Height;
-            byte* mask = stencil.Data;
+            byte* mask = _stencil.Data;
             Color3* texel = sdf.Data;
 
             for (int i = 0; i < texelCount; ++i)

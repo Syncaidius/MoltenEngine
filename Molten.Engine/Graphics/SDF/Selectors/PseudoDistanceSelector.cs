@@ -8,33 +8,33 @@ namespace Molten.Graphics.SDF
 {
     public class PseudoDistanceSelector
     {
-        SignedDistance minTrueDistance;
-        double minNegativePseudoDistance;
-        double minPositivePseudoDistance;
-        Shape.Edge nearEdge;
-        double nearEdgeParam;
-        Vector2D p;
+        SignedDistance MinTrueDistance;
+        double MinNegativePseudoDistance;
+        double MinPositivePseudoDistance;
+        Shape.Edge NearEdge;
+        double NearEdgeParam;
+        Vector2D P;
 
         public PseudoDistanceSelector()
         {
-            minNegativePseudoDistance = -Math.Abs(minTrueDistance.Distance);
-            minPositivePseudoDistance = Math.Abs(minTrueDistance.Distance);
-            nearEdge = null;
-            nearEdgeParam = 0;
+            MinNegativePseudoDistance = -Math.Abs(MinTrueDistance.Distance);
+            MinPositivePseudoDistance = Math.Abs(MinTrueDistance.Distance);
+            NearEdge = null;
+            NearEdgeParam = 0;
         }
 
         public void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
         {
-            if (IsEdgeRelevant(cache, edge, p))
+            if (IsEdgeRelevant(cache, edge, P))
             {
                 double param;
-                SignedDistance distance = edge.SignedDistance(p, out param);
+                SignedDistance distance = edge.SignedDistance(P, out param);
                 AddEdgeTrueDistance(edge, distance, param);
-                cache.point = p;
-                cache.absDistance = Math.Abs(distance.Distance);
+                cache.Point = P;
+                cache.AbsDistance = Math.Abs(distance.Distance);
 
-                Vector2D ap = p - edge.Point(0);
-                Vector2D bp = p - edge.Point(1);
+                Vector2D ap = P - edge.Point(0);
+                Vector2D bp = P - edge.Point(1);
                 Vector2D aDir = edge.GetDirection(0).GetNormalized(true);
                 Vector2D bDir = edge.GetDirection(1).GetNormalized(true);
                 Vector2D prevDir = prevEdge.GetDirection(1).GetNormalized(true);
@@ -46,25 +46,25 @@ namespace Molten.Graphics.SDF
                     double pd = distance.Distance;
                     if (GetPseudoDistance(pd, ap, -aDir))
                         AddEdgePseudoDistance(pd = -pd);
-                    cache.aPseudoDistance = pd;
+                    cache.APseudoDistance = pd;
                 }
                 if (bdd > 0)
                 {
                     double pd = distance.Distance;
                     if (GetPseudoDistance(pd, bp, bDir))
                         AddEdgePseudoDistance(pd);
-                    cache.bPseudoDistance = pd;
+                    cache.BPseudoDistance = pd;
                 }
-                cache.aDomainDistance = add;
-                cache.bDomainDistance = bdd;
+                cache.ADomainDistance = add;
+                cache.BDomainDistance = bdd;
             }
         }
 
         public void Reset(ref Vector2D p)
         {
-            double delta = SdfGenerator.DISTANCE_DELTA_FACTOR * (p - this.p).Length();
+            double delta = SdfGenerator.DISTANCE_DELTA_FACTOR * (p - this.P).Length();
             Reset(delta);
-            this.p = p;
+            this.P = p;
         }
 
         public void InitDistance(ref double distance)
@@ -84,7 +84,7 @@ namespace Molten.Graphics.SDF
 
         public double Distance()
         {
-            return ComputeDistance(p);
+            return ComputeDistance(P);
         }
 
         public static bool GetPseudoDistance(double distance, in Vector2D ep, in Vector2D edgeDir)
@@ -104,70 +104,70 @@ namespace Molten.Graphics.SDF
 
         public void Reset(in double delta)
         {
-            minTrueDistance.Distance += MathHelperDP.NonZeroSign(minTrueDistance.Distance) * delta;
-            minNegativePseudoDistance = -Math.Abs(minTrueDistance.Distance);
-            minPositivePseudoDistance = Math.Abs(minTrueDistance.Distance);
-            nearEdge = null;
-            nearEdgeParam = 0;
+            MinTrueDistance.Distance += MathHelperDP.NonZeroSign(MinTrueDistance.Distance) * delta;
+            MinNegativePseudoDistance = -Math.Abs(MinTrueDistance.Distance);
+            MinPositivePseudoDistance = Math.Abs(MinTrueDistance.Distance);
+            NearEdge = null;
+            NearEdgeParam = 0;
         }
 
         public bool IsEdgeRelevant(in EdgeCache cache, Shape.Edge edge, in Vector2D p)
         {
-            double delta = SdfGenerator.DISTANCE_DELTA_FACTOR * (p - cache.point).Length();
+            double delta = SdfGenerator.DISTANCE_DELTA_FACTOR * (p - cache.Point).Length();
             return (
-                cache.absDistance - delta <= Math.Abs(minTrueDistance.Distance) ||
-                Math.Abs(cache.aDomainDistance) < delta ||
-                Math.Abs(cache.bDomainDistance) < delta ||
-                (cache.aDomainDistance > 0 && (cache.aPseudoDistance < 0 ?
-                    cache.aPseudoDistance + delta >= minNegativePseudoDistance :
-                    cache.aPseudoDistance - delta <= minPositivePseudoDistance
+                cache.AbsDistance - delta <= Math.Abs(MinTrueDistance.Distance) ||
+                Math.Abs(cache.ADomainDistance) < delta ||
+                Math.Abs(cache.BDomainDistance) < delta ||
+                (cache.ADomainDistance > 0 && (cache.APseudoDistance < 0 ?
+                    cache.APseudoDistance + delta >= MinNegativePseudoDistance :
+                    cache.APseudoDistance - delta <= MinPositivePseudoDistance
                 )) ||
-                (cache.bDomainDistance > 0 && (cache.bPseudoDistance < 0 ?
-                    cache.bPseudoDistance + delta >= minNegativePseudoDistance :
-                    cache.bPseudoDistance - delta <= minPositivePseudoDistance
+                (cache.BDomainDistance > 0 && (cache.BPseudoDistance < 0 ?
+                    cache.BPseudoDistance + delta >= MinNegativePseudoDistance :
+                    cache.BPseudoDistance - delta <= MinPositivePseudoDistance
                 ))
             );
         }
 
         public void AddEdgeTrueDistance(Shape.Edge edge, in SignedDistance distance, double param)
         {
-            if (distance < minTrueDistance)
+            if (distance < MinTrueDistance)
             {
-                minTrueDistance = distance;
-                nearEdge = edge;
-                nearEdgeParam = param;
+                MinTrueDistance = distance;
+                NearEdge = edge;
+                NearEdgeParam = param;
             }
         }
 
         public void AddEdgePseudoDistance(double distance)
         {
-            if (distance <= 0 && distance > minNegativePseudoDistance)
-                minNegativePseudoDistance = distance;
-            if (distance >= 0 && distance < minPositivePseudoDistance)
-                minPositivePseudoDistance = distance;
+            if (distance <= 0 && distance > MinNegativePseudoDistance)
+                MinNegativePseudoDistance = distance;
+            if (distance >= 0 && distance < MinPositivePseudoDistance)
+                MinPositivePseudoDistance = distance;
         }
 
         public void Merge(PseudoDistanceSelector other)
         {
-            if (other.minTrueDistance < minTrueDistance)
+            if (other.MinTrueDistance < MinTrueDistance)
             {
-                minTrueDistance = other.minTrueDistance;
-                nearEdge = other.nearEdge;
-                nearEdgeParam = other.nearEdgeParam;
+                MinTrueDistance = other.MinTrueDistance;
+                NearEdge = other.NearEdge;
+                NearEdgeParam = other.NearEdgeParam;
             }
-            if (other.minNegativePseudoDistance > minNegativePseudoDistance)
-                minNegativePseudoDistance = other.minNegativePseudoDistance;
-            if (other.minPositivePseudoDistance < minPositivePseudoDistance)
-                minPositivePseudoDistance = other.minPositivePseudoDistance;
+            if (other.MinNegativePseudoDistance > MinNegativePseudoDistance)
+                MinNegativePseudoDistance = other.MinNegativePseudoDistance;
+            if (other.MinPositivePseudoDistance < MinPositivePseudoDistance)
+                MinPositivePseudoDistance = other.MinPositivePseudoDistance;
         }
 
         public double ComputeDistance(in Vector2D p)
         {
-            double minDistance = minTrueDistance.Distance < 0 ? minNegativePseudoDistance : minPositivePseudoDistance;
-            if (nearEdge != null)
+            double minDistance = MinTrueDistance.Distance < 0 ? MinNegativePseudoDistance : MinPositivePseudoDistance;
+            if (NearEdge != null)
             {
-                SignedDistance distance = minTrueDistance;
-                nearEdge.DistanceToPseudoDistance(ref distance, p, nearEdgeParam);
+                SignedDistance distance = MinTrueDistance;
+                NearEdge.DistanceToPseudoDistance(ref distance, p, NearEdgeParam);
                 if (Math.Abs(distance.Distance) < Math.Abs(minDistance))
                     minDistance = distance.Distance;
             }
@@ -176,7 +176,7 @@ namespace Molten.Graphics.SDF
 
         public SignedDistance TrueDistance()
         {
-            return minTrueDistance;
+            return MinTrueDistance;
         }
     }
 }

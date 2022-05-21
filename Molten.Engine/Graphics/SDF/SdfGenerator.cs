@@ -16,7 +16,6 @@ namespace Molten.Graphics.SDF
         internal const double DEFAULT_ANGLE_THRESHOLD = 3;
         internal const double MSDFGEN_CORNER_DOT_EPSILON = 0.000001;
         internal const double MSDFGEN_DECONVERGENCE_FACTOR = 0.000001;
-        internal const int N_PER_PIXEL = 3;
 
         public unsafe TextureSliceRef<Color3> Generate(uint pWidth, uint pHeight, Shape shape, SdfProjection projection, double pxRange, FillRule fl)
         {
@@ -36,7 +35,7 @@ namespace Molten.Graphics.SDF
             config.Mode = SdfConfig.ErrorCorrectMode.DISABLED;
             postGenConfig.DistanceCheckMode = SdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
 
-            uint numBytes = pWidth * pHeight * N_PER_PIXEL * sizeof(float);
+            uint numBytes = pWidth * pHeight * (uint)sizeof(Color3);
             TextureSlice sdf = new TextureSlice(pWidth, pHeight, numBytes);
 
             TextureSliceRef<Color3> sdfRef = sdf.GetReference<Color3>();
