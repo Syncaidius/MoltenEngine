@@ -18,7 +18,7 @@ namespace Molten.Graphics.SDF
         internal const double MSDFGEN_DECONVERGENCE_FACTOR = 0.000001;
         internal const int N_PER_PIXEL = 3;
 
-        public unsafe TextureSliceRef<float> Generate(uint pWidth, uint pHeight, Shape shape, SdfProjection projection, double pxRange, FillRule fl)
+        public unsafe TextureSliceRef<Color3> Generate(uint pWidth, uint pHeight, Shape shape, SdfProjection projection, double pxRange, FillRule fl)
         {
             if (pWidth == 0 || pHeight == 0)
                 throw new Exception("Texture slice width and height must be at least 1 pixel");
@@ -37,12 +37,9 @@ namespace Molten.Graphics.SDF
             postGenConfig.DistanceCheckMode = SdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
 
             uint numBytes = pWidth * pHeight * N_PER_PIXEL * sizeof(float);
-            TextureSlice sdf = new TextureSlice(pWidth, pHeight, numBytes)
-            {
-                ElementsPerPixel = N_PER_PIXEL,
-            };
+            TextureSlice sdf = new TextureSlice(pWidth, pHeight, numBytes);
 
-            TextureSliceRef<float> sdfRef = sdf.GetReference<float>();
+            TextureSliceRef<Color3> sdfRef = sdf.GetReference<Color3>();
 
             EdgeColouring.edgeColoringSimple(shape, DEFAULT_ANGLE_THRESHOLD, 0);
             EdgeColouring.parseColoring(shape, edgeAssignment);
@@ -54,7 +51,7 @@ namespace Molten.Graphics.SDF
             return sdfRef;
         }
 
-        public unsafe ITexture2D ConvertToTexture(RenderService renderer, TextureSliceRef<float> src)
+        public unsafe ITexture2D ConvertToTexture(RenderService renderer, TextureSliceRef<Color3> src)
         {
             uint rowPitch = (src.Width * (uint)sizeof(Color));
             Color[] finalData = new Color[src.Width * src.Height];
@@ -65,63 +62,24 @@ namespace Molten.Graphics.SDF
                 Format = GraphicsFormat.R8G8B8A8_UNorm
             });
 
-            switch (src.ElementsPerPixel)
+
+            for (uint i = 0; i < finalData.Length; i++)
             {
-                case 1: // SDF or PSDF is one-channel. The render result of all SDF modes are also generally greyscale/white/black.
-                    for (int i = 0; i < finalData.Length; i++)
-                    {
-                        byte c = (byte)(255 * src[i]);
-                        finalData[i] = new Color()
-                        {
-                            R = c,
-                            G = c,
-                            B = c,
-                            A = c,
-                        };
-                    }
-                    break;
-
-                case 3: // MSDF - 3 RGB 32-bit
-                    for (uint i = 0; i < finalData.Length; i++)
-                    {
-                        uint p = i * src.ElementsPerPixel;
-
-                        finalData[i] = new Color()
-                        {
-                            R = (byte)(255 * src[p]),
-                            G = (byte)(255 * src[p + 1]),
-                            B = (byte)(255 * src[p + 2]),
-                            A = 255,
-                        };
-                    }
-
-                    break;
-
-                case 4: // MTSDF - 3 RGB 32-bit
-                    for (uint i = 0; i < finalData.Length; i++)
-                    {
-                        uint p = i * src.ElementsPerPixel;
-
-                        finalData[i] = new Color()
-                        {
-                            R = (byte)(255 * src[p]),
-                            G = (byte)(255 * src[p + 1]),
-                            B = (byte)(255 * src[p + 2]),
-                            A = (byte)(255 * src[p + 3]),
-                        };
-                    }
-
-                    break;
+                finalData[i] = new Color()
+                {
+                    R = (byte)(255 * src[i].R),
+                    G = (byte)(255 * src[i].G),
+                    B = (byte)(255 * src[i].B),
+                    A = 255,
+                };
             }
 
             tex.SetData(0, finalData, 0, (uint)finalData.Length, rowPitch);
             return tex;
         }
 
-        private unsafe void GenerateMSDF(TextureSliceRef<float> output, Shape shape, SdfProjection projection, double range, SdfConfig config)
+        private unsafe void GenerateMSDF(TextureSliceRef<Color3> output, Shape shape, SdfProjection projection, double range, SdfConfig config)
         {
-            NPerPixel(output, 3);
-
             var dpc = new MultiDistancePixelConversion(range);
 
             ShapeDistanceFinder distanceFinder = new ShapeDistanceFinder(shape);
@@ -140,12 +98,6 @@ namespace Molten.Graphics.SDF
             }
 
             ErrorCorrection.MsdfErrorCorrection(output, shape, projection, range, config);
-        }
-
-        internal static void NPerPixel<T>(TextureSliceRef<T> bitmap, int expectedN) where T : unmanaged
-        {
-            if (bitmap.ElementsPerPixel != expectedN)
-                throw new IndexOutOfRangeException($"A {nameof(TextureSliceRef<T>)} of {expectedN} component{(expectedN > 1 ? "s" : "")}-per-pixel is expected, not {bitmap.ElementsPerPixel}.");
         }
 
         internal static void DeconvergeCubicEdge(Shape.CubicEdge edge, int param, double amount)
@@ -211,21 +163,31 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        public unsafe void Simulate8bit(TextureSliceRef<float> bitmap)
+        public unsafe void Simulate8bit(TextureSliceRef<Color3> bitmap)
         {
-            float* end = bitmap.Data + bitmap.ElementsPerPixel * bitmap.Width * bitmap.Height;
-            for (float* p = bitmap.Data; p < end; ++p)
-                *p = PixelByteToFloat(PixelFloatToByte(*p));
+            Color3* end = bitmap.Data + (bitmap.Width * bitmap.Height);
+            for (Color3* p = bitmap.Data; p < end; ++p)
+                *p = PixelByteToFloat(PixelFloatToByte(p));
         }
 
-        private static byte PixelFloatToByte(float x)
+        private unsafe static Color PixelFloatToByte(Color3* x)
         {
-            return (byte)(MathHelper.Clamp(256f * x, 0, 255f));
+            return new Color()
+            {
+                R = (byte)MathHelper.Clamp(256f * x->R, 0, 255f),
+                G = (byte)MathHelper.Clamp(256f * x->G, 0, 255f),
+                B = (byte)MathHelper.Clamp(256f * x->B, 0, 255f)
+            };
         }
 
-        private static float PixelByteToFloat(byte x)
+        private static Color3 PixelByteToFloat(Color x)
         {
-            return 1f / 255f * x;
+            return new Color3()
+            {
+                R = 1f / 255f * x.R,
+                G = 1f / 255f * x.G,
+                B = 1f / 255f * x.B,
+            };
         }
     }
 }

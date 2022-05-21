@@ -36,7 +36,7 @@ namespace Molten.Graphics.SDF
             line.SetIntersections(intersections);
         }
 
-        public unsafe static void MsdfErrorCorrection(TextureSliceRef<float> sdf, Shape shape, SdfProjection projection, double range, SdfConfig config)
+        public unsafe static void MsdfErrorCorrection(TextureSliceRef<Color3> sdf, Shape shape, SdfProjection projection, double range, SdfConfig config)
         {
             if (config.Mode == SdfConfig.ErrorCorrectMode.DISABLED)
                 return;
@@ -74,7 +74,7 @@ namespace Molten.Graphics.SDF
             ec.Apply(sdf);
         }
 
-        internal unsafe static void MultiDistanceSignCorrection(TextureSliceRef<float> sdf, Shape shape, SdfProjection projection, FillRule fillRule)
+        internal unsafe static void MultiDistanceSignCorrection(TextureSliceRef<Color3> sdf, Shape shape, SdfProjection projection, FillRule fillRule)
         {
             uint w = sdf.Width;
             uint h = sdf.Height;
@@ -97,8 +97,8 @@ namespace Molten.Graphics.SDF
                     for (int x = 0; x < w; ++x)
                     {
                         bool fill = scanline.Filled(projection.UnprojectX(x + .5), fillRule);
-                        float* msd = sdf[x, y];
-                        float sd = MathHelper.Median(msd[0], msd[1], msd[2]);
+                        Color3* msd = sdf[x, y];
+                        float sd = MathHelper.Median(msd->R, msd->G, msd->B);
 
                         if (sd == .5f)
                         {
@@ -106,18 +106,15 @@ namespace Molten.Graphics.SDF
                         }
                         else if ((sd > .5f) != fill)
                         {
-                            msd[0] = 1.0f - msd[0];
-                            msd[1] = 1.0f - msd[1];
-                            msd[2] = 1.0f - msd[2];
+                            msd->R = 1.0f - msd->R;
+                            msd->G = 1.0f - msd->G;
+                            msd->B = 1.0f - msd->B;
                             *match = -1;
                         }
                         else
                         {
                             *match = 1;
                         }
-
-                        if (sdf.ElementsPerPixel >= 4 && (msd[3] > .5f) != fill)
-                            msd[3] = 1.0f - msd[3];
 
                         ++match;
                     }
@@ -140,10 +137,10 @@ namespace Molten.Graphics.SDF
                                 if (y < h - 1) neighborMatch += *(match + w);
                                 if (neighborMatch < 0)
                                 {
-                                    float* msd = sdf[x, y];
-                                    msd[0] = 1.0f - msd[0];
-                                    msd[1] = 1.0f - msd[1];
-                                    msd[2] = 1.0f - msd[2];
+                                    Color3* msd = sdf[x, y];
+                                    msd->R = 1.0f - msd->R;
+                                    msd->G = 1.0f - msd->G;
+                                    msd->B = 1.0f - msd->B;
                                 }
                             }
                             ++match;

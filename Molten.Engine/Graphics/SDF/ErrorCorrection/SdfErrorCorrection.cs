@@ -32,13 +32,9 @@ namespace Molten.Graphics.SDF
             PROTECTED = 2
         };
 
-        public unsafe SdfErrorCorrection(TextureSliceRef<float> sdf, SdfProjection pProjection, double range)
+        public unsafe SdfErrorCorrection(TextureSliceRef<Color3> sdf, SdfProjection pProjection, double range)
         {
-            stencilSlice = new TextureSlice(sdf.Width, sdf.Height, sdf.Width * sdf.Height)
-            {
-                ElementsPerPixel = 1
-            };
-
+            stencilSlice = new TextureSlice(sdf.Width, sdf.Height, sdf.Width * sdf.Height);
             stencil = stencilSlice.GetReference<byte>();
             projection = pProjection;
 
@@ -97,122 +93,130 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        public unsafe int EdgeBetweenTexelsChannel(float* a, float* b, int channel)
+        public unsafe int EdgeBetweenTexelsChannel(ref Color3 a, ref Color3 b, int channel)
         {
             // Find interpolation ratio t (0 < t < 1) where an edge is expected (mix(a[channel], b[channel], t) == 0.5).
             double t = (a[channel] - .5) / (a[channel] - b[channel]);
             if (t > 0 && t < 1)
             {
                 // Interpolate channel values at t.
-                float* c = stackalloc float[3];
-                c[0] = MathHelper.Lerp(a[0], b[0], t);
-                c[1] = MathHelper.Lerp(a[1], b[1], t);
-                c[2] = MathHelper.Lerp(a[2], b[2], t);
+                Color3 c = new Color3()
+                {
+                    R = MathHelper.Lerp(a.R, b.R, t),
+                    G = MathHelper.Lerp(a.G, b.G, t),
+                    B = MathHelper.Lerp(a.B, b.B, t)
+                };
 
                 // This is only an edge if the zero-distance channel is the median.
-                return MathHelper.Median(c[0], c[1], c[2]) == c[channel] ? 1 : 0;
+                return MathHelper.Median(c.R, c.G, c.B) == c[channel] ? 1 : 0;
             }
+
             return 0;
         }
 
-        public unsafe int EdgeBetweenTexels(float* a, float* b)
+        public int EdgeBetweenTexels(ref Color3 a, ref Color3 b)
         {
-            return (int)EdgeColor.Red * EdgeBetweenTexelsChannel(a, b, 0) +
-                (int)EdgeColor.Green * EdgeBetweenTexelsChannel(a, b, 1) +
-                (int)EdgeColor.Blue * EdgeBetweenTexelsChannel(a, b, 2);
+            return (int)EdgeColor.Red * EdgeBetweenTexelsChannel(ref a, ref b, 0) +
+                (int)EdgeColor.Green * EdgeBetweenTexelsChannel(ref a, ref b, 1) +
+                (int)EdgeColor.Blue * EdgeBetweenTexelsChannel(ref a, ref b, 2);
         }
 
-        public unsafe void ProtectExtremeChannels(byte* stencil, float* msd, float m, int mask)
+        public unsafe void ProtectExtremeChannels(byte* stencil, Color3* msd, float m, int mask)
         {
-            if ((((EdgeColor)mask & EdgeColor.Red) == EdgeColor.Red && msd[0] != m) ||
-                (((EdgeColor)mask & EdgeColor.Green) == EdgeColor.Green && msd[1] != m) ||
-                (((EdgeColor)mask & EdgeColor.Blue) == EdgeColor.Blue && msd[2] != m)
+            if ((((EdgeColor)mask & EdgeColor.Red) == EdgeColor.Red && msd->R != m) ||
+                (((EdgeColor)mask & EdgeColor.Green) == EdgeColor.Green && msd->G != m) ||
+                (((EdgeColor)mask & EdgeColor.Blue) == EdgeColor.Blue && msd->B != m)
             )
             {
                 *stencil |= (byte)StencilFlags.PROTECTED;
             }
         }
 
-        public unsafe void ProtectEdges(TextureSliceRef<float> sdf)
+        public unsafe void ProtectEdges(TextureSliceRef<Color3> sdf)
         {
-            float radius;
             // Horizontal texel pairs
-            radius = (float)(PROTECTION_RADIUS_TOLERANCE * projection.UnprojectVector(new Vector2D(invRange, 0)).Length());
+            float radius = (float)(PROTECTION_RADIUS_TOLERANCE * projection.UnprojectVector(new Vector2D(invRange, 0)).Length());
+
             for (int y = 0; y < sdf.Height; ++y)
             {
-                float* left = sdf[0, y];
-                float* right = sdf[1, y];
+                Color3* left = sdf[0, y];
+                Color3* right = sdf[1, y];
+
                 for (int x = 0; x < sdf.Width - 1; ++x)
                 {
-                    float lm = MathHelper.Median(left[0], left[1], left[2]);
-                    float rm = MathHelper.Median(right[0], right[1], right[2]);
+                    float lm = MathHelper.Median(left->R, left->G, left->B);
+                    float rm = MathHelper.Median(right->R, right->G, right->B);
+
                     if (Math.Abs(lm - .5f) + Math.Abs(rm - .5f) < radius)
                     {
-                        int mask = EdgeBetweenTexels(left, right);
+                        int mask = EdgeBetweenTexels(ref *left, ref *right);
                         ProtectExtremeChannels(stencil[x, y], left, lm, mask);
                         ProtectExtremeChannels(stencil[x + 1, y], right, rm, mask);
                     }
-                    left += sdf.ElementsPerPixel;
-                    right += sdf.ElementsPerPixel;
+
+                    left++;
+                    right++;
                 }
             }
+
             // Vertical texel pairs
             radius = (float)(PROTECTION_RADIUS_TOLERANCE * projection.UnprojectVector(new Vector2D(0, invRange)).Length());
             for (int y = 0; y < sdf.Height - 1; ++y)
             {
-                float* bottom = sdf[0, y];
-                float* top = sdf[0, y + 1];
+                Color3* bottom = sdf[0, y];
+                Color3* top = sdf[0, y + 1];
 
                 for (int x = 0; x < sdf.Width; ++x)
                 {
-                    float bm = MathHelper.Median(bottom[0], bottom[1], bottom[2]);
-                    float tm = MathHelper.Median(top[0], top[1], top[2]);
+                    float bm = MathHelper.Median(bottom->R, bottom->G, bottom->B);
+                    float tm = MathHelper.Median(top->R, top->G, top->B);
 
                     if (Math.Abs(bm - .5f) + Math.Abs(tm - .5f) < radius)
                     {
-                        int mask = EdgeBetweenTexels(bottom, top);
+                        int mask = EdgeBetweenTexels(ref *bottom, ref *top);
                         ProtectExtremeChannels(stencil[x, y], bottom, bm, mask);
                         ProtectExtremeChannels(stencil[x, y + 1], top, tm, mask);
                     }
 
-                    bottom += sdf.ElementsPerPixel;
-                    top += sdf.ElementsPerPixel;
+                    bottom++;
+                    top++;
                 }
             }
+
             // Diagonal texel pairs
             radius = (float)(PROTECTION_RADIUS_TOLERANCE * projection.UnprojectVector(new Vector2D(invRange)).Length());
             for (int y = 0; y < sdf.Height - 1; ++y)
             {
-                float* lb = sdf[0, y];
-                float* rb = sdf[1, y];
-                float* lt = sdf[0, y + 1];
-                float* rt = sdf[1, y + 1];
+                Color3* lb = sdf[0, y];
+                Color3* rb = sdf[1, y];
+                Color3* lt = sdf[0, y + 1];
+                Color3* rt = sdf[1, y + 1];
 
                 for (int x = 0; x < sdf.Width - 1; ++x)
                 {
-                    float mlb = MathHelper.Median(lb[0], lb[1], lb[2]);
-                    float mrb = MathHelper.Median(rb[0], rb[1], rb[2]);
-                    float mlt = MathHelper.Median(lt[0], lt[1], lt[2]);
-                    float mrt = MathHelper.Median(rt[0], rt[1], rt[2]);
+                    float mlb = MathHelper.Median(lb->R, lb->G, lb->B);
+                    float mrb = MathHelper.Median(rb->R, rb->G, rb->B);
+                    float mlt = MathHelper.Median(lt->R, lt->G, lt->B);
+                    float mrt = MathHelper.Median(rt->R, rt->G, rt->B);
 
                     if (Math.Abs(mlb - .5f) + Math.Abs(mrt - .5f) < radius)
                     {
-                        int mask = EdgeBetweenTexels(lb, rt);
+                        int mask = EdgeBetweenTexels(ref *lb, ref *rt);
                         ProtectExtremeChannels(stencil[x, y], lb, mlb, mask);
                         ProtectExtremeChannels(stencil[x + 1, y + 1], rt, mrt, mask);
                     }
 
                     if (Math.Abs(mrb - .5f) + Math.Abs(mlt - .5f) < radius)
                     {
-                        int mask = EdgeBetweenTexels(rb, lt);
+                        int mask = EdgeBetweenTexels(ref *rb, ref *lt);
                         ProtectExtremeChannels(stencil[x + 1, y], rb, mrb, mask);
                         ProtectExtremeChannels(stencil[x, y + 1], lt, mlt, mask);
                     }
 
-                    lb += sdf.ElementsPerPixel;
-                    rb += sdf.ElementsPerPixel;
-                    lt += sdf.ElementsPerPixel;
-                    rt += sdf.ElementsPerPixel;
+                    lb++;
+                    rb++;
+                    lt++;
+                    rt++;
                 }
             }
         }
@@ -224,21 +228,21 @@ namespace Molten.Graphics.SDF
                 *mask |= (byte)StencilFlags.PROTECTED;
         }
 
-        public unsafe float InterpolatedMedian(float* a, float* b, double t)
+        public unsafe float InterpolatedMedian(Color3* a, Color3* b, double t)
         {
             return MathHelper.Median(
-                MathHelper.Lerp(a[0], b[0], t),
-                MathHelper.Lerp(a[1], b[1], t),
-                MathHelper.Lerp(a[2], b[2], t)
+                MathHelper.Lerp(a->R, b->R, t),
+                MathHelper.Lerp(a->G, b->G, t),
+                MathHelper.Lerp(a->B, b->B, t)
             );
         }
 
-        public unsafe float InterpolatedMedian(float* a, float* l, float* q, double t)
+        public unsafe float InterpolatedMedian(Color3* a, Color3* l, Color3* q, double t)
         {
             return (float)(MathHelperDP.Median(
-                 t * (t * q[0] + l[0]) + a[0],
-                t * (t * q[1] + l[1]) + a[1],
-                t * (t * q[2] + l[2]) + a[2]
+                 t * (t * q->R + l->R) + a->R,
+                t * (t * q->G + l->G) + a->G,
+                t * (t * q->B + l->B) + a->B
             ));
         }
 
@@ -253,7 +257,7 @@ namespace Molten.Graphics.SDF
         /// <param name="dA"></param>
         /// <param name="dB"></param>
         /// <returns></returns>
-        private unsafe bool HasLinearArtifactInner(BaseArtifactClassifier artifactClassifier, float am, float bm, float* a, float* b, float dA, float dB)
+        private unsafe bool HasLinearArtifactInner(BaseArtifactClassifier artifactClassifier, float am, float bm, Color3* a, Color3* b, float dA, float dB)
         {
             // Find interpolation ratio t (0 < t < 1) where two color channels are equal (mix(dA, dB, t) == 0).
             double t = (double)dA / (dA - dB);
@@ -267,7 +271,7 @@ namespace Molten.Graphics.SDF
         }
 
         private unsafe bool HasDiagonalArtifactInner(BaseArtifactClassifier artifactClassifier,
-            float am, float dm, float* a, float* l, float* q,
+            float am, float dm, Color3* a, Color3* l, Color3* q,
             float dA, float dBC, float dD, double tEx0, double tEx1)
         {
             // Find interpolation ratios t (0 < t[i] < 1) where two color channels are equal.
@@ -310,58 +314,70 @@ namespace Molten.Graphics.SDF
             return false;
         }
 
-        public unsafe bool HasLinearArtifact(BaseArtifactClassifier artifactClassifier, float am, float* a, float* b)
+        public unsafe bool HasLinearArtifact(BaseArtifactClassifier artifactClassifier, float am, Color3* a, Color3* b)
         {
-            float bm = MathHelper.Median(b[0], b[1], b[2]);
+            float bm = MathHelper.Median(b->R, b->G, b->B);
             return (
                 // Out of the pair, only report artifacts for the texel further from the edge to minimize side effects.
                 Math.Abs(am - .5f) >= Math.Abs(bm - .5f) && (
                     // Check points where each pair of color channels meets.
-                    HasLinearArtifactInner(artifactClassifier, am, bm, a, b, a[1] - a[0], b[1] - b[0]) ||
-                    HasLinearArtifactInner(artifactClassifier, am, bm, a, b, a[2] - a[1], b[2] - b[1]) ||
-                    HasLinearArtifactInner(artifactClassifier, am, bm, a, b, a[0] - a[2], b[0] - b[2])
+                    HasLinearArtifactInner(artifactClassifier, am, bm, a, b, a->G - a->R, b->G - b->R) ||
+                    HasLinearArtifactInner(artifactClassifier, am, bm, a, b, a->B - a->G, b->B - b->G) ||
+                    HasLinearArtifactInner(artifactClassifier, am, bm, a, b, a->R - a->B, b->R - b->B)
                 )
             );
         }
 
-        public unsafe bool HasDiagonalArtifact(BaseArtifactClassifier artifactClassifier, float am, float* a, float* b, float* c, float* d)
+        public unsafe bool HasDiagonalArtifact(BaseArtifactClassifier artifactClassifier, float am, Color3* a, Color3* b, Color3* c, Color3* d)
         {
-            float dm = MathHelper.Median(d[0], d[1], d[2]);
+            float dm = MathHelper.Median(d->R, d->G, d->B);
+
             // Out of the pair, only report artifacts for the texel further from the edge to minimize side effects.
             if (Math.Abs(am - .5f) >= Math.Abs(dm - .5f))
             {
-                float* abc = stackalloc float[3];
-                abc[0] = a[0] - b[0] - c[0];
-                abc[1] = a[1] - b[1] - c[1];
-                abc[2] = a[2] - b[2] - c[2];
+                Color3 abc = new Color3()
+                {
+                    R = a->R - b->R - c->R,
+                    G = a->G - b->G - c->G,
+                    B = a->B - b->B - c->B
+                };
+
                 // Compute the linear terms for bilinear interpolation.
-                float* l = stackalloc float[3];
-                l[0] = -a[0] - abc[0];
-                l[1] = -a[1] - abc[1];
-                l[2] = -a[2] - abc[2];
+                Color3 l = new Color3()
+                {
+                    R = -a->R - abc.R,
+                    G = -a->G - abc.G,
+                    B = -a->B - abc.B
+                };
 
                 // Compute the quadratic terms for bilinear interpolation.
-                float* q = stackalloc float[3];
-                q[0] = d[0] + abc[0];
-                q[1] = d[1] + abc[1];
-                q[2] = d[2] + abc[2];
+                Color3 q = new Color3()
+                {
+                    R = d->R + abc.R,
+                    G = d->G + abc.G,
+                    B = d->B + abc.B
+                };
 
                 // Compute interpolation ratios tEx (0 < tEx[i] < 1) for the local extremes of each color channel (the derivative 2*q[i]*tEx[i]+l[i] == 0).
-                double* tEx = stackalloc double[3];
-                tEx[0] = -.5 * l[0] / q[0];
-                tEx[1] = -.5 * l[1] / q[1];
-                tEx[2] = -.5 * l[2] / q[2];
+                Color3D tEx = new Color3D()
+                {
+                    R = -.5 * l.R / q.R,
+                    G = -.5 * l.G / q.G,
+                    B = -.5 * l.B / q.B
+                };
+                
+
                 // Check points where each pair of color channels meets.
                 return (
-                    HasDiagonalArtifactInner(artifactClassifier, am, dm, a, l, q, a[1] - a[0], b[1] - b[0] + c[1] - c[0], d[1] - d[0], tEx[0], tEx[1]) ||
-                    HasDiagonalArtifactInner(artifactClassifier, am, dm, a, l, q, a[2] - a[1], b[2] - b[1] + c[2] - c[1], d[2] - d[1], tEx[1], tEx[2]) ||
-                    HasDiagonalArtifactInner(artifactClassifier, am, dm, a, l, q, a[0] - a[2], b[0] - b[2] + c[0] - c[2], d[0] - d[2], tEx[2], tEx[0])
+                    HasDiagonalArtifactInner(artifactClassifier, am, dm, a, &l, &q, a->G - a->R, b->G - b->R + c->G - c->R, d->G - d->R, tEx.R, tEx.G) ||
+                    HasDiagonalArtifactInner(artifactClassifier, am, dm, a, &l, &q, a->B - a->G, b->B - b->G + c->B - c->G, d->B - d->G, tEx.G, tEx.B) ||
+                    HasDiagonalArtifactInner(artifactClassifier, am, dm, a, &l, &q, a->R - a->B, b->R - b->B + c->R - c->B, d->R - d->B, tEx.B, tEx.R)
                 );
             }
             return false;
         }
 
-        public unsafe void FindErrors(TextureSliceRef<float> sdf)
+        public unsafe void FindErrors(TextureSliceRef<Color3> sdf)
         {
             // Compute the expected deltas between values of horizontally, vertically, and diagonally adjacent texels.
             double hSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange, 0)).Length();
@@ -372,13 +388,13 @@ namespace Molten.Graphics.SDF
             {
                 for (int x = 0; x < sdf.Width; ++x)
                 {
-                    float* c = sdf[x, y];
-                    float cm = MathHelper.Median(c[0], c[1], c[2]);
+                    Color3* c = sdf[x, y];
+                    float cm = MathHelper.Median(c->R, c->G, c->B);
                     bool protectedFlag = ((StencilFlags)(*stencil[x, y]) & StencilFlags.PROTECTED) != 0;
-                    float* l = sdf[x - 1, y];
-                    float* b = sdf[x, y - 1];
-                    float* r = sdf[x + 1, y];
-                    float* t = sdf[x, y + 1];
+                    Color3* l = sdf[x - 1, y];
+                    Color3* b = sdf[x, y - 1];
+                    Color3* r = sdf[x + 1, y];
+                    Color3* t = sdf[x, y + 1];
 
                     // Mark current texel c with the error flag if an artifact occurs when it's interpolated with any of its 8 neighbors.
                     *stencil[x, y] |= (byte)((int)StencilFlags.ERROR * ((
@@ -395,7 +411,7 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        public unsafe void FindErrors(TextureSliceRef<float> sdf, Shape shape)
+        public unsafe void FindErrors(TextureSliceRef<Color3> sdf, Shape shape)
         {
             // Compute the expected deltas between values of horizontally, vertically, and diagonally adjacent texels.
             double hSpan = minDeviationRatio * projection.UnprojectVector(new Vector2D(invRange, 0)).Length();
@@ -415,17 +431,17 @@ namespace Molten.Graphics.SDF
                         if (((StencilFlags)(*stencil[x, y]) & StencilFlags.ERROR) == StencilFlags.ERROR)
                             continue;
 
-                        float* c = sdf[x, y];
+                        Color3* c = sdf[x, y];
                         shapeDistanceChecker.shapeCoord = projection.Unproject(new Vector2D(x + .5, y + .5));
                         shapeDistanceChecker.sdfCoord = new Vector2D(x + .5, y + .5);
                         shapeDistanceChecker.msd = c;
                         shapeDistanceChecker.protectedFlag = ((StencilFlags)(*stencil[x, y]) & StencilFlags.PROTECTED) != 0;
-                        float cm = MathHelper.Median(c[0], c[1], c[2]);
+                        float cm = MathHelper.Median(c->R, c->G, c->B);
 
-                        float* l = sdf[x - 1, y];
-                        float* b = sdf[x, y - 1];
-                        float* r = sdf[x + 1, y];
-                        float* t = sdf[x, y + 1];
+                        Color3* l = sdf[x - 1, y];
+                        Color3* b = sdf[x, y - 1];
+                        Color3* r = sdf[x + 1, y];
+                        Color3* t = sdf[x, y + 1];
 
                         // Mark current texel c with the error flag if an artifact occurs when it's interpolated with any of its 8 neighbors.
                         *stencil[x, y] |= (byte)((int)StencilFlags.ERROR * ((
@@ -450,7 +466,7 @@ namespace Molten.Graphics.SDF
         /// <param name="output"></param>
         /// <param name="bitmap"></param>
         /// <param name="pos"></param>
-        internal unsafe static void Interpolate(float* output, TextureSliceRef<float> bitmap, Vector2D pos)
+        internal unsafe static void Interpolate(Color3* output, TextureSliceRef<Color3> bitmap, Vector2D pos)
         {
             pos -= .5;
             int l = (int)Math.Floor(pos.X);
@@ -465,30 +481,31 @@ namespace Molten.Graphics.SDF
             b = MathHelper.Clamp(b, 0, (int)bitmap.Height - 1);
             t = MathHelper.Clamp(t, 0, (int)bitmap.Height - 1);
 
-            for (int i = 0; i < bitmap.ElementsPerPixel; ++i)
+            for (int i = 0; i < 3; ++i)
             {
-                float start = MathHelper.Lerp(bitmap[l, b][i], bitmap[r, b][i], lr);
-                float end = MathHelper.Lerp(bitmap[l, t][i], bitmap[r, t][i], lr);
-                output[i] = MathHelper.Lerp(start, end, bt);
+                float start = MathHelper.Lerp((*bitmap[l, b])[i], (*bitmap[r, b])[i], lr);
+                float end = MathHelper.Lerp((*bitmap[l, t])[i], (*bitmap[r, t])[i], lr);
+                (*output)[i] = MathHelper.Lerp(start, end, bt);
             }
         }
 
-        public unsafe void Apply(TextureSliceRef<float> sdf)
+        public unsafe void Apply(TextureSliceRef<Color3> sdf)
         {
             uint texelCount = sdf.Width * sdf.Height;
             byte* mask = stencil.Data;
-            float* texel = sdf.Data;
+            Color3* texel = sdf.Data;
+
             for (int i = 0; i < texelCount; ++i)
             {
                 if (((StencilFlags)(*mask) & StencilFlags.ERROR) == StencilFlags.ERROR)
                 {
                     // Set all color channels to the median.
-                    float m = MathHelper.Median(texel[0], texel[1], texel[2]);
-                    texel[0] = m; texel[1] = m; texel[2] = m;
+                    float m = MathHelper.Median(texel->R, texel->G, texel->B);
+                    *texel = new Color3(m);
                 }
 
                 ++mask;
-                texel += sdf.ElementsPerPixel;
+                texel++;
             }
         }
     }

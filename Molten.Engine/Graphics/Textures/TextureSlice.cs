@@ -13,7 +13,6 @@ namespace Molten.Graphics
 
         public byte* Data => _data;
 
-        public uint ElementsPerPixel;
         public uint Pitch;
         public uint TotalBytes { get; private set; }
 

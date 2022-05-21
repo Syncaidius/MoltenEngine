@@ -14,16 +14,16 @@ namespace Molten.Graphics.SDF
     public unsafe class ShapeDistanceChecker
     {
         public Vector2D shapeCoord, sdfCoord;
-        public float* msd;
+        public Color3* msd;
         public bool protectedFlag;
 
         internal ShapeDistanceFinder distanceFinder;
-        internal TextureSliceRef<float> sdf;
+        internal TextureSliceRef<Color3> sdf;
         internal double invRange;
         internal Vector2D texelSize;
         internal double minImproveRatio;
 
-        public ShapeDistanceChecker(TextureSliceRef<float> pSdf, Shape pShape, SdfProjection pProjection, double pInvRange, double pMinImproveRatio)
+        public ShapeDistanceChecker(TextureSliceRef<Color3> pSdf, Shape pShape, SdfProjection pProjection, double pInvRange, double pMinImproveRatio)
         {
             distanceFinder = new ShapeDistanceFinder(pShape);
             sdf = pSdf;

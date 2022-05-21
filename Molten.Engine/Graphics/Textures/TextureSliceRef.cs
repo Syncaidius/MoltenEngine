@@ -27,15 +27,13 @@ namespace Molten.Graphics
             _refData = (T*)Slice.Data;
         }
 
-        public T this[uint p] => _refData[p];
+        public ref T this[uint p] => ref _refData[p];
 
-        public T this[int p] => _refData[p];
+        public ref T this[int p] => ref _refData[p];
 
-        public T* this[uint x, uint y] => _refData + Slice.ElementsPerPixel * (Slice.Width * y + x);
+        public T* this[uint x, uint y] => _refData + (Slice.Width * y + x);
 
-        public T* this[int x, int y] => _refData + Slice.ElementsPerPixel * (Slice.Width * y + x);
-
-        public uint ElementsPerPixel => Slice.ElementsPerPixel;
+        public T* this[int x, int y] => _refData + (Slice.Width * y + x);
 
         public T* Data => _refData;
 

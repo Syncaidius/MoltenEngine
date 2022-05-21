@@ -267,7 +267,7 @@ namespace Molten.Graphics
             _sdf.Normalize(shape);
             shape.ScaleAndOffset(glyphOffset, glyphScale);
 
-            TextureSliceRef<float> sdfRef = _sdf.Generate((uint)pWidth, (uint)pHeight, shape, SdfProjection.Default, 6, FillRule.NonZero);
+            TextureSliceRef<Color3> sdfRef = _sdf.Generate((uint)pWidth, (uint)pHeight, shape, SdfProjection.Default, 6, FillRule.NonZero);
 
             _sdf.Simulate8bit(sdfRef);
             _glyphCache[gIndex].GlyphTex = _sdf.ConvertToTexture(_renderer, sdfRef);

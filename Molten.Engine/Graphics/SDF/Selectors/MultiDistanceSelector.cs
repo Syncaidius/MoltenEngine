@@ -14,35 +14,35 @@ namespace Molten.Graphics.SDF
     public class MultiDistanceSelector
     {
         Vector2D p;
-        PseudoDistanceSelector r = new PseudoDistanceSelector();
-        PseudoDistanceSelector g = new PseudoDistanceSelector();
-        PseudoDistanceSelector b = new PseudoDistanceSelector();
+        PseudoDistanceSelector R = new PseudoDistanceSelector();
+        PseudoDistanceSelector G = new PseudoDistanceSelector();
+        PseudoDistanceSelector B = new PseudoDistanceSelector();
 
         public void Reset(ref Vector2D p)
         {
             double delta = SdfGenerator.DISTANCE_DELTA_FACTOR * (p - this.p).Length();
-            r.Reset(delta);
-            g.Reset(delta);
-            b.Reset(delta);
+            R.Reset(delta);
+            G.Reset(delta);
+            B.Reset(delta);
             this.p = p;
         }
 
         public void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
         {
             if (
-                ((edge.Color & EdgeColor.Red) == EdgeColor.Red && r.IsEdgeRelevant(cache, edge, p)) ||
-                ((edge.Color & EdgeColor.Green) == EdgeColor.Green && g.IsEdgeRelevant(cache, edge, p)) ||
-                ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue && b.IsEdgeRelevant(cache, edge, p))
+                ((edge.Color & EdgeColor.Red) == EdgeColor.Red && R.IsEdgeRelevant(cache, edge, p)) ||
+                ((edge.Color & EdgeColor.Green) == EdgeColor.Green && G.IsEdgeRelevant(cache, edge, p)) ||
+                ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue && B.IsEdgeRelevant(cache, edge, p))
             )
             {
                 double param;
                 SignedDistance distance = edge.SignedDistance(p, out param);
                 if ((edge.Color & EdgeColor.Red) == EdgeColor.Red)
-                    r.AddEdgeTrueDistance(edge, distance, param);
+                    R.AddEdgeTrueDistance(edge, distance, param);
                 if ((edge.Color & EdgeColor.Green) == EdgeColor.Green)
-                    g.AddEdgeTrueDistance(edge, distance, param);
+                    G.AddEdgeTrueDistance(edge, distance, param);
                 if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue)
-                    b.AddEdgeTrueDistance(edge, distance, param);
+                    B.AddEdgeTrueDistance(edge, distance, param);
                 cache.point = p;
                 cache.absDistance = Math.Abs(distance.Distance);
 
@@ -61,11 +61,11 @@ namespace Molten.Graphics.SDF
                     {
                         pd = -pd;
                         if ((edge.Color & EdgeColor.Red) == EdgeColor.Red)
-                            r.AddEdgePseudoDistance(pd);
+                            R.AddEdgePseudoDistance(pd);
                         if ((edge.Color & EdgeColor.Green) == EdgeColor.Green)
-                            g.AddEdgePseudoDistance(pd);
+                            G.AddEdgePseudoDistance(pd);
                         if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue)
-                            b.AddEdgePseudoDistance(pd);
+                            B.AddEdgePseudoDistance(pd);
                     }
                     cache.aPseudoDistance = pd;
                 }
@@ -75,11 +75,11 @@ namespace Molten.Graphics.SDF
                     if (PseudoDistanceSelector.GetPseudoDistance(pd, bp, bDir))
                     {
                         if ((edge.Color & EdgeColor.Red) == EdgeColor.Red)
-                            r.AddEdgePseudoDistance(pd);
+                            R.AddEdgePseudoDistance(pd);
                         if ((edge.Color & EdgeColor.Green) == EdgeColor.Green)
-                            g.AddEdgePseudoDistance(pd);
+                            G.AddEdgePseudoDistance(pd);
                         if ((edge.Color & EdgeColor.Blue) == EdgeColor.Blue)
-                            b.AddEdgePseudoDistance(pd);
+                            B.AddEdgePseudoDistance(pd);
                     }
                     cache.bPseudoDistance = pd;
                 }
@@ -91,27 +91,27 @@ namespace Molten.Graphics.SDF
         public void Merge(MultiDistanceSelector other)
         {
             MultiDistanceSelector md = other as MultiDistanceSelector;
-            r.Merge(md.r);
-            g.Merge(md.g);
-            b.Merge(md.b);
+            R.Merge(md.R);
+            G.Merge(md.G);
+            B.Merge(md.B);
         }
 
         public MultiDistance Distance()
         {
             MultiDistance multiDistance;
-            multiDistance.r = r.ComputeDistance(p);
-            multiDistance.g = g.ComputeDistance(p);
-            multiDistance.b = b.ComputeDistance(p);
+            multiDistance.r = R.ComputeDistance(p);
+            multiDistance.g = G.ComputeDistance(p);
+            multiDistance.b = B.ComputeDistance(p);
             return multiDistance;
         }
 
         public SignedDistance TrueDistance()
         {
-            SignedDistance distance = r.TrueDistance();
-            if (g.TrueDistance() < distance)
-                distance = g.TrueDistance();
-            if (b.TrueDistance() < distance)
-                distance = b.TrueDistance();
+            SignedDistance distance = R.TrueDistance();
+            if (G.TrueDistance() < distance)
+                distance = G.TrueDistance();
+            if (B.TrueDistance() < distance)
+                distance = B.TrueDistance();
             return distance;
         }
 
