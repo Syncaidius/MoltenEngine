@@ -24,7 +24,7 @@ namespace Molten.Graphics.SDF
             shapeEdgeCache = new EdgeCache[shape.GetEdgeCount()];
         }
 
-        public MultiDistance distance(ref Vector2D origin)
+        public Color3D distance(ref Vector2D origin)
         {
             contourCombiner.Reset(ref origin);
 
@@ -56,8 +56,7 @@ namespace Molten.Graphics.SDF
 
         public float getRefPSD(ref Vector2D origin, double invRange)
         {
-            MultiDistance dist = distance(ref origin);
-
+            Color3D dist = distance(ref origin);
             MultiDistanceSelector es = new MultiDistanceSelector();
 
             return es.GetRefPSD(ref dist, invRange);

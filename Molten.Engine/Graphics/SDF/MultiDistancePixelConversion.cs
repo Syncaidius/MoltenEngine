@@ -13,11 +13,11 @@ namespace Molten.Graphics.SDF
             InvRange = 1.0 / range;
         }
 
-        public unsafe void Convert(Color3* pixels, MultiDistance distance)
+        public unsafe void Convert(Color3* pixels, Color3D distance)
         {
-            pixels->R = (float)(InvRange * distance.r + .5);
-            pixels->G = (float)(InvRange * distance.g + .5);
-            pixels->B = (float)(InvRange * distance.b + .5);
+            pixels->R = (float)(InvRange * distance.R + .5);
+            pixels->G = (float)(InvRange * distance.G + .5);
+            pixels->B = (float)(InvRange * distance.B + .5);
         }
         
         public double InvRange { get; }

@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.SDF
 {
-    public struct MultiDistance
-    {
-        public double r, g, b;
-    };
-
     public class MultiDistanceSelector
     {
         Vector2D p;
@@ -96,12 +91,12 @@ namespace Molten.Graphics.SDF
             B.Merge(md.B);
         }
 
-        public MultiDistance Distance()
+        public Color3D Distance()
         {
-            MultiDistance multiDistance;
-            multiDistance.r = R.ComputeDistance(p);
-            multiDistance.g = G.ComputeDistance(p);
-            multiDistance.b = B.ComputeDistance(p);
+            Color3D multiDistance;
+            multiDistance.R = R.ComputeDistance(p);
+            multiDistance.G = G.ComputeDistance(p);
+            multiDistance.B = B.ComputeDistance(p);
             return multiDistance;
         }
 
@@ -115,21 +110,21 @@ namespace Molten.Graphics.SDF
             return distance;
         }
 
-        public void InitDistance(ref MultiDistance distance)
+        public void InitDistance(ref Color3D distance)
         {
-            distance.r = -double.MaxValue;
-            distance.g = -double.MaxValue;
-            distance.b = -double.MaxValue;
+            distance.R = -double.MaxValue;
+            distance.G = -double.MaxValue;
+            distance.B = -double.MaxValue;
         }
 
-        public double ResolveDistance(MultiDistance distance)
+        public double ResolveDistance(Color3D distance)
         {
-            return MathHelperDP.Median(distance.r, distance.g, distance.b);
+            return MathHelperDP.Median(distance.R, distance.G, distance.B);
         }
 
-        public float GetRefPSD(ref MultiDistance dist, double invRange)
+        public float GetRefPSD(ref Color3D dist, double invRange)
         {
-            return (float)(invRange * dist.r + .5);
+            return (float)(invRange * dist.R + .5);
         }
     }
 }

@@ -81,7 +81,6 @@ namespace Molten.Graphics.SDF
         private unsafe void GenerateMSDF(TextureSliceRef<Color3> output, Shape shape, SdfProjection projection, double range, SdfConfig config)
         {
             var dpc = new MultiDistancePixelConversion(range);
-
             ShapeDistanceFinder distanceFinder = new ShapeDistanceFinder(shape);
 
             bool rightToLeft = false;
@@ -91,7 +90,7 @@ namespace Molten.Graphics.SDF
                 {
                     int x = (int)(rightToLeft ? output.Width - col - 1 : col);
                     Vector2D p = projection.Unproject(new Vector2D(x + .5, y + .5));
-                    MultiDistance distance = distanceFinder.distance(ref p);
+                    Color3D distance = distanceFinder.distance(ref p);
                     dpc.Convert(output[x, y], distance);
                 }
                 rightToLeft = !rightToLeft;
