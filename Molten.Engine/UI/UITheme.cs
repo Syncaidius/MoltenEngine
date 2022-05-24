@@ -53,17 +53,10 @@ namespace Molten.UI
         [DataMember]
         public int CharacterPadding { get; set; } = 2;
 
-        string _fontName;
-        int _fontSize = 16;
-        int _tabSize = 3;
-        int _texSize = 512;
-        int _pointsPerCurve = 12;
-        int _charPadding = 2;
-
         public void RequestFont(Engine engine, ContentRequestHandler loadCallback)
         {
             ContentRequest cr = engine.Content.BeginRequest("");
-            cr.Load<TextFontSource>(FontName);
+            cr.Load<TextFont>(FontName);
             cr.OnCompleted += loadCallback;
             cr.Commit();
         }
