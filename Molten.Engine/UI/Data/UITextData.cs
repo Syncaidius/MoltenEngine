@@ -16,7 +16,7 @@ namespace Molten.UI
         [DataMember]
         public string Text;
 
-        public TextFont Font;
+        internal TextFont Font;
 
         [DataMember]
         public Vector2F Position;

@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace Molten.UI
 {
+    /// <summary>
+    /// Provides text rendering capabilty for the UI system, with the aim of labeling elements to the user.
+    /// </summary>
     public class UILabel : UIElement<UITextData>
     {
         UIHorizonalAlignment _hAlign;
@@ -13,14 +16,13 @@ namespace Molten.UI
             base.OnInitialize(engine, settings, theme);
 
             Properties.Color = theme.TextColor;
-            Properties.Text = this.Name;
+            Properties.Text = Name;
             theme.RequestFont(engine, LoadFont_Request);
         }
 
         private void LoadFont_Request(ContentRequest cr)
         {
-            Properties.Font = cr.Get<TextFont>(0);
-            OnUpdateBounds();
+            Font = cr.Get<TextFont>(0);
         }
 
         protected override void OnUpdateBounds()
@@ -56,6 +58,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the horizontal alignment.
+        /// </summary>
         public UIHorizonalAlignment HorizontalAlign
         {
             get => _hAlign;
@@ -69,6 +74,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the vertical alignment.
+        /// </summary>
         public UIVerticalAlignment VerticalAlign
         {
             get => _vAlign;
@@ -77,6 +85,22 @@ namespace Molten.UI
                 if (_vAlign != value)
                 {
                     _vAlign = value;
+                    OnUpdateBounds();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="TextFont"/> of the current <see cref="UILabel"/>.
+        /// </summary>
+        public TextFont Font
+        {
+            get => Properties.Font;
+            set
+            {
+                if(Properties.Font != value)
+                {
+                    Properties.Font = value;
                     OnUpdateBounds();
                 }
             }
