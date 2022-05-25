@@ -61,6 +61,16 @@ namespace Molten.Graphics
             if (_curClipID == Clips.Length)
                 Array.Resize(ref Clips, Clips.Length * 2);
 
+            // Cull the bounds to the current clip, if any.
+            if (_curClipID > 0)
+            {
+                Rectangle cur = Clips[_curClipID];
+                bounds.X = Math.Max(bounds.X, cur.X);
+                bounds.Y = Math.Max(bounds.Y, cur.Y);
+                bounds.Right = Math.Min(bounds.Right, cur.Right);
+                bounds.Bottom = Math.Min(bounds.Bottom, cur.Bottom);
+            }
+
             Clips[++_curClipID] = bounds;
         }
 

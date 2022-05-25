@@ -61,6 +61,9 @@ namespace Molten.UI
             BaseData.RenderBounds = BaseData.BorderBounds;
             BaseData.RenderBounds.Inflate(-pad.Left, -pad.Top, -pad.Right, -pad.Bottom);
 
+            foreach (UIElement e in _children)
+                e.UpdateBounds();
+
             OnUpdateBounds();
         }
 

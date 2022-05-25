@@ -63,6 +63,13 @@ namespace Molten.Samples
                 LocalBounds = new Rectangle(300, 150, 200, 20),
                 Parent = _ui.Root
             };
+
+            UIButton button = new UIButton()
+            {
+                LocalBounds = new Rectangle(0, 250, 200, 20),
+                Parent = _ui.Root
+            };
+            button.Properties.Text.Text = "Click Me!";
         }
 
         protected override void OnHudDraw(SpriteBatcher sb)
