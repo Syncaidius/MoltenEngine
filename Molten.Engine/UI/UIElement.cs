@@ -69,7 +69,7 @@ namespace Molten.UI
 
         internal void HandleInput(Timing time, SceneClickTracker tracker)
         {
-            return;
+            
         }
 
         internal void Update(Timing time)

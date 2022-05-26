@@ -58,7 +58,7 @@ namespace Molten.Samples
                 },
             };
 
-            UILabel label = new UILabel()
+            UIText label = new UIText()
             {
                 LocalBounds = new Rectangle(300, 150, 200, 20),
                 Parent = _ui.Root

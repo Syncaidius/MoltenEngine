@@ -4,9 +4,9 @@ using System.Runtime.Serialization;
 namespace Molten.UI
 {
     /// <summary>
-    /// Provides text rendering capabilty for the UI system, with the aim of labeling elements to the user.
+    /// A UI component dedicated to presenting text.
     /// </summary>
-    public class UILabel : UIElement<UITextData>
+    public class UIText : UIElement<UITextData>
     {
         UIHorizonalAlignment _hAlign;
         UIVerticalAlignment _vAlign;
@@ -91,7 +91,7 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="TextFont"/> of the current <see cref="UILabel"/>.
+        /// Gets or sets the <see cref="TextFont"/> of the current <see cref="UIText"/>.
         /// </summary>
         public TextFont Font
         {
