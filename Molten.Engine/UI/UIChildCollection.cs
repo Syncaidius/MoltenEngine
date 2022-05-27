@@ -25,8 +25,24 @@ namespace Molten.UI
             _readOnly = _elements.AsReadOnly();
         }
 
-        internal void Add(UIElement element)
+        public T Add<T>()
+            where T : UIElement, new()
         {
+            T e = new T();
+            Add(e);
+            return e;
+        }
+
+        public void Add(UIElement element)
+        {
+            if (element.Parent == _owner)
+                return;
+
+            // Remove from old parent, if any.
+            if (element.Parent != null)
+                element.Parent.Children.Remove(element);
+
+            // Set new element parent.
             element.Root = _owner.Root;
             _elements.Add(element);
             _owner.Root.RenderComponent.QueueChange(new UIAddChildChange()
@@ -38,9 +54,14 @@ namespace Molten.UI
             OnElementAdded?.Invoke(element);
         }
 
-        internal void Remove(UIElement element)
+        public void Remove(UIElement element)
         {
+            if (element.Parent != _owner)
+                return;
+
             _elements.Remove(element);
+            element.Parent = null;
+
             _owner.Root.RenderComponent.QueueChange(new UIRemoveChildChange()
             {
                 Child = element.BaseData,

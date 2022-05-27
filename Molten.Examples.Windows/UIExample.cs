@@ -50,7 +50,6 @@ namespace Molten.Samples
             UIPanel childPanel = new UIPanel()
             {
                 LocalBounds = new Rectangle(100, 50, 220, 200),
-                Parent = _ui.Root,
                 Properties = new UIPanelData()
                 {
                     BackgroundColor = new Color(0, 128, 0, 200),
@@ -61,15 +60,17 @@ namespace Molten.Samples
             UIText label = new UIText()
             {
                 LocalBounds = new Rectangle(300, 150, 200, 20),
-                Parent = _ui.Root
             };
 
             UIButton button = new UIButton()
             {
                 LocalBounds = new Rectangle(0, 250, 200, 20),
-                Parent = _ui.Root
             };
             button.Properties.Text.Text = "Click Me!";
+
+            _ui.Root.Children.Add(childPanel);
+            _ui.Root.Children.Add(label);
+            _ui.Root.Children.Add(button);
         }
 
         protected override void OnHudDraw(SpriteBatcher sb)

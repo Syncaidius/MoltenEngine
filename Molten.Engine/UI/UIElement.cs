@@ -12,7 +12,6 @@ namespace Molten.UI
         [DataMember]
         internal UIRenderData BaseData;
 
-        UIElement _parent;
         UIElement _root;
 
         public UIElement()
@@ -36,12 +35,12 @@ namespace Molten.UI
 
         private void UpdateBounds()
         {
-            if (_parent != null)
+            if (Parent != null)
             {
                 BaseData.GlobalBounds = new Rectangle()
                 {
-                    X = _parent.BaseData.GlobalBounds.X + BaseData.LocalBounds.X,
-                    Y = _parent.BaseData.GlobalBounds.Y + BaseData.LocalBounds.Y,
+                    X = Parent.BaseData.GlobalBounds.X + BaseData.LocalBounds.X,
+                    Y = Parent.BaseData.GlobalBounds.Y + BaseData.LocalBounds.Y,
                     Width = BaseData.LocalBounds.Width,
                     Height = BaseData.LocalBounds.Height,
                 };
@@ -126,23 +125,7 @@ namespace Molten.UI
         /// </summary>
         public UIChildCollection Children { get; }
 
-        public UIElement Parent
-        {
-            get => _parent;
-            set
-            {
-                if(_parent != value)
-                {
-                    if (_parent != null)
-                        _parent.Children.Remove(this);
-
-                    _parent = value;
-
-                    if (_parent != null)
-                        _parent.Children.Add(this);
-                }
-            }
-        }
+        public UIElement Parent { get; internal set; }
 
         public Engine Engine { get; private set; }
 

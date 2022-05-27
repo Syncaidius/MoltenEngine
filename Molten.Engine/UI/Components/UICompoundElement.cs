@@ -20,8 +20,7 @@ namespace Molten.UI.Components
             base.OnUpdateBounds();
 
             Rectangle gBounds = GlobalBounds;
-            OnUpdateCompoundBounds(ref gBounds, CompoundElements);
-            
+            OnUpdateCompoundBounds(ref gBounds, CompoundElements);            
         }
 
         protected abstract void OnUpdateCompoundBounds(ref Rectangle globalBounds, IEnumerable<UIElement> compoundElements);
