@@ -10,17 +10,9 @@ namespace Molten.UI.Components
     internal abstract class UICompoundElement<EP> : UIElement<EP>
         where EP : struct, IUIRenderData
     {
-        class CompoundContainer
-        {
-            public UIElement Element;
-            public Vector2I Offset;
-        }
-
-        List<CompoundContainer> _compoundElements;
-
         public UICompoundElement()
         {
-            _compoundElements = new List<CompoundContainer>();
+            CompoundElements = new UIChildCollection(this);
         }
 
         protected override void OnUpdateBounds()
@@ -28,20 +20,18 @@ namespace Molten.UI.Components
             base.OnUpdateBounds();
 
             Rectangle gBounds = GlobalBounds;
-
-            foreach (CompoundContainer cc in _compoundElements)
-            {
-                cc.Element.BaseData.LocalBounds.X = gBounds.X + cc.Offset.X;
-                cc.Element.BaseData.LocalBounds.Y = gBounds.Y + cc.Offset.Y;
-            }
+            OnUpdateCompoundBounds(ref gBounds, CompoundElements);
+            
         }
+
+        protected abstract void OnUpdateCompoundBounds(ref Rectangle globalBounds, IEnumerable<UIElement> compoundElements);
 
         protected override void OnUpdate(Timing time)
         {
             base.OnUpdate(time);
 
-            for (int i = _compoundElements.Count - 1; i >= 0; i--)
-                _compoundElements[i].Element.Update(time);
+            for (int i = CompoundElements.Count - 1; i >= 0; i--)
+                CompoundElements[i].Update(time);
         }
 
         internal override void Render(SpriteBatcher sb)
@@ -53,15 +43,17 @@ namespace Molten.UI.Components
             if (BaseData.IsClipEnabled)
             {
                 sb.PushClip(BaseData.GlobalBounds);
-                foreach (CompoundContainer cc in _compoundElements)
-                    cc.Element.Render(sb);
+                foreach (UIElement e in CompoundElements)
+                    e.Render(sb);
                 sb.PopClip();
             }
             else
             {
-                foreach (CompoundContainer cc in _compoundElements)
-                    cc.Element.Render(sb);
+                foreach (UIElement e in CompoundElements)
+                    e.Render(sb);
             }
         }
+
+        internal UIChildCollection CompoundElements { get; }
     }
 }

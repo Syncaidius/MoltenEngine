@@ -13,13 +13,11 @@ namespace Molten.UI
         internal UIRenderData BaseData;
 
         UIElement _parent;
-        List<UIElement> _children;
         UIElement _root;
 
         public UIElement()
         {
-            _children = new List<UIElement>();
-            Children = _children.AsReadOnly();
+            Children = new UIChildCollection(this);
             Engine = Engine.Current;
             BaseData = new UIRenderData();
             OnInitialize(Engine, Engine.Settings.UI, Engine.Settings.UI.Theme.Value);
@@ -61,7 +59,7 @@ namespace Molten.UI
             BaseData.RenderBounds = BaseData.BorderBounds;
             BaseData.RenderBounds.Inflate(-pad.Left, -pad.Top, -pad.Right, -pad.Bottom);
 
-            foreach (UIElement e in _children)
+            foreach (UIElement e in Children)
                 e.UpdateBounds();
 
             OnUpdateBounds();
@@ -76,8 +74,8 @@ namespace Molten.UI
         {
             OnUpdate(time);
 
-            for (int i = _children.Count - 1; i >= 0; i--)
-                _children[i].Update(time);
+            for (int i = Children.Count - 1; i >= 0; i--)
+                Children[i].Update(time);
         }
 
         /// <summary>
@@ -126,7 +124,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets a read-only list of child components attached to the current <see cref="UIElement"/>.
         /// </summary>
-        public IReadOnlyList<UIElement> Children { get; }
+        public UIChildCollection Children { get; }
 
         public UIElement Parent
         {
@@ -136,27 +134,12 @@ namespace Molten.UI
                 if(_parent != value)
                 {
                     if (_parent != null)
-                    {
-                        _parent._children.Remove(this);
-                        _root.RenderComponent.QueueChange(new UIRemoveChildChange()
-                        {
-                            Child = BaseData,
-                            Parent = _parent.BaseData
-                        });
-                    }
+                        _parent.Children.Remove(this);
 
                     _parent = value;
 
                     if (_parent != null)
-                    {
-                        Root = _parent.Root;
-                        _parent._children.Add(this);
-                        _root.RenderComponent.QueueChange(new UIAddChildChange()
-                        {
-                            Child = BaseData,
-                            Parent = _parent.BaseData
-                        });
-                    }
+                        _parent.Children.Add(this);
                 }
             }
         }
