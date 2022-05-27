@@ -35,7 +35,7 @@ namespace Molten.UI
                 Parent = _owner.BaseData
             });
 
-            OnElementAdded(element);
+            OnElementAdded?.Invoke(element);
         }
 
         internal void Remove(UIElement element)
@@ -47,7 +47,7 @@ namespace Molten.UI
                 Parent = _owner.BaseData
             });
 
-            OnElementRemoved(element);
+            OnElementRemoved?.Invoke(element);
         }
 
         internal void Render(SpriteBatcher sb)
