@@ -12,7 +12,7 @@
             ParentScene = null;
         }
 
-        internal override void Process(Scene scene)
+        internal override void Process()
         {
             Layer.LayerID = ParentScene.Layers.Count;
             ParentScene.Layers.Add(Layer);

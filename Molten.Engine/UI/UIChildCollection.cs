@@ -16,11 +16,11 @@ namespace Molten.UI
 
         List<UIElement> _elements;
         IReadOnlyList<UIElement> _readOnly;
-        UIElement _owner;
+        UIElement _element;
 
         internal UIChildCollection(UIElement parent)
         {
-            _owner = parent;
+            _element = parent;
             _elements = new List<UIElement>();
             _readOnly = _elements.AsReadOnly();
         }
@@ -33,49 +33,49 @@ namespace Molten.UI
             return e;
         }
 
-        public void Add(UIElement element)
+        public void Add(UIElement child)
         {
-            if (element.Parent == _owner)
+            if (child.Parent == _element)
                 return;
 
-            // Remove from old parent, if any.
-            if (element.Parent != null)
-                element.Parent.Children.Remove(element);
+            if (child.Parent != null && child.Parent != _element)
+                throw new Exception("Element already has a parent. Remove from previous first.");
 
             // Set new element parent.
-            element.Root = _owner.Root;
-            _elements.Add(element);
-            _owner.Root.RenderComponent.QueueChange(new UIAddChildChange()
+            child.Owner = _element.Owner;
+            _elements.Add(child);
+            _element.Engine.Scenes.QueueChange(null, new SceneUIAddChild()
             {
-                Child = _owner.BaseData,
-                Parent = _owner.BaseData
+                Child = _element.BaseData,
+                Parent = _element.BaseData
             });
 
-            OnElementAdded?.Invoke(element);
+            OnElementAdded?.Invoke(child);
         }
 
-        public void Remove(UIElement element)
+        public void Remove(UIElement child)
         {
-            if (element.Parent != _owner)
+            if (child.Parent != _element)
                 return;
 
-            _elements.Remove(element);
-            element.Parent = null;
+            _elements.Remove(child);
+            child.Parent = null;
 
-            _owner.Root.RenderComponent.QueueChange(new UIRemoveChildChange()
+            _element.Engine.Scenes.QueueChange(null, new SceneUIRemoveChild()
             {
-                Child = element.BaseData,
-                Parent = _owner.BaseData
+                Child = child.BaseData,
+                Parent = _element.BaseData
             });
 
-            OnElementRemoved?.Invoke(element);
+            _element.Owner = null;
+            OnElementRemoved?.Invoke(child);
         }
 
         internal void Render(SpriteBatcher sb)
         {
-            if (_owner.BaseData.IsClipEnabled)
+            if (_element.BaseData.IsClipEnabled)
             {
-                sb.PushClip(_owner.BaseData.RenderBounds);
+                sb.PushClip(_element.BaseData.RenderBounds);
                 foreach (UIElement child in _elements)
                     child.Render(sb);
                 sb.PopClip();

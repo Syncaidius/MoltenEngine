@@ -50,11 +50,8 @@ namespace Molten.Samples
             UIPanel childPanel = new UIPanel()
             {
                 LocalBounds = new Rectangle(100, 50, 220, 200),
-                Properties = new UIPanelData()
-                {
-                    BackgroundColor = new Color(0, 128, 0, 200),
-                    BorderColor = Color.LimeGreen
-                },
+                BackgroundColor = new Color(0, 128, 0, 200),
+                BorderColor = Color.LimeGreen
             };
 
             UIText label = new UIText()
@@ -65,8 +62,8 @@ namespace Molten.Samples
             UIButton button = new UIButton()
             {
                 LocalBounds = new Rectangle(0, 250, 200, 20),
+                Text = "Click Me!"
             };
-            button.Properties.Text.Text = "Click Me!";
 
             _ui.Root.Children.Add(childPanel);
             _ui.Root.Children.Add(label);

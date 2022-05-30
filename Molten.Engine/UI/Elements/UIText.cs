@@ -105,5 +105,17 @@ namespace Molten.UI
                 }
             }
         }
+
+        public Color Color
+        {
+            get => Properties.Color;
+            set => Properties.Color = value;
+        }
+
+        public string Text
+        {
+            get => Properties.Text;
+            set => Properties.Text = value;
+        }
     }
 }

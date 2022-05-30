@@ -12,11 +12,12 @@ namespace Molten.UI
         [DataMember]
         internal UIRenderData BaseData;
 
-        UIElement _root;
+        UIManagerComponent _owner;
 
         public UIElement()
         {
             Children = new UIChildCollection(this);
+            CompoundElements = new UIChildCollection(this);
             Engine = Engine.Current;
             BaseData = new UIRenderData();
             OnInitialize(Engine, Engine.Settings.UI, Engine.Settings.UI.Theme.Value);
@@ -61,7 +62,16 @@ namespace Molten.UI
             foreach (UIElement e in Children)
                 e.UpdateBounds();
 
+            foreach (UIElement e in CompoundElements)
+                e.UpdateBounds();
+
             OnUpdateBounds();
+        }
+
+        protected virtual void ApplyOwner(UIManagerComponent owner)
+        {
+            foreach (UIElement child in Children)
+                child.Owner = owner;
         }
 
         internal void HandleInput(Timing time, SceneClickTracker tracker)
@@ -72,6 +82,9 @@ namespace Molten.UI
         internal void Update(Timing time)
         {
             OnUpdate(time);
+
+            for (int i = CompoundElements.Count - 1; i >= 0; i--)
+                CompoundElements[i].Update(time);
 
             for (int i = Children.Count - 1; i >= 0; i--)
                 Children[i].Update(time);
@@ -92,8 +105,47 @@ namespace Molten.UI
 
         protected virtual void OnUpdate(Timing time) { }
 
-        internal abstract void Render(SpriteBatcher sb);
+        internal virtual void Render(SpriteBatcher sb)
+        {
+            // Render compound components, inside global bounds rather than render bounds.
+            // Note - RenderBounds is intended for rendering child elements, not compound component elements.
+            if (CompoundElements.Count > 0)
+            {
+                if (BaseData.IsClipEnabled)
+                {
+                    sb.PushClip(BaseData.GlobalBounds);
+                    foreach (UIElement e in CompoundElements)
+                        e.Render(sb);
+                    sb.PopClip();
+                }
+                else
+                {
+                    foreach (UIElement e in CompoundElements)
+                        e.Render(sb);
+                }
+            }
 
+            // Render children.
+            if (Children.Count > 0)
+            {
+                if (BaseData.IsClipEnabled)
+                {
+                    sb.PushClip(BaseData.RenderBounds);
+                    foreach (UIElement child in Children)
+                        child.Render(sb);
+                    sb.PopClip();
+                }
+                else
+                {
+                    foreach (UIElement child in Children)
+                        child.Render(sb);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the local bounds of the current <see cref="UIElement"/>.
+        /// </summary>
         [DataMember]
         public Rectangle LocalBounds
         {
@@ -125,40 +177,46 @@ namespace Molten.UI
         /// </summary>
         public UIChildCollection Children { get; }
 
+        /// <summary>
+        /// Gets a list of compound child <see cref="UIElement"/>. These cannot be externally-modified outside of the current <see cref="UIElement"/>.
+        /// </summary>
+        protected UIChildCollection CompoundElements { get; }
+
+        /// <summary>
+        /// Gets the parent of the current <see cref="UIElement"/>.
+        /// </summary>
         public UIElement Parent { get; internal set; }
 
+        /// <summary>
+        /// Gets the <see cref="Engine"/> instance that the current <see cref="UIElement"/> is bound to.
+        /// </summary>
         public Engine Engine { get; private set; }
 
         /// <summary>
-        /// Gets the root <see cref="UIElement"/>.
+        /// Gets the internal <see cref="UIManagerComponent"/> that will draw the current <see cref="UIElement"/>.
         /// </summary>
-        public UIElement Root
+        internal UIManagerComponent Owner
         {
-            get => _root;
-            internal set
+            get => _owner;
+            set
             {
-                if(_root != value)
+                if (_owner != value)
                 {
-                    _root = value;
-                    RenderComponent = _root.RenderComponent;
-                    foreach (UIElement child in Children)
-                        child.Root = _root;
+                    _owner = value;
+                    ApplyOwner(_owner);
                 }
             }
         }
 
         /// <summary>
-        /// Gets the internal <see cref="UIManagerComponent"/> that will draw the current <see cref="UIElement"/>.
+        /// Gets or sets the <see cref="UITheme"/> that should be applied to the current <see cref="UIElement"/>. Themes provide a set of default appearance values and configuration.
         /// </summary>
-        internal UIManagerComponent RenderComponent { get; set; }
-
         public UITheme Theme { get; set; }
     }
 
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="R"></typeparam>
     /// <typeparam name="EP">Extended property structure.</typeparam>
     public abstract class UIElement<EP> : UIElement
         where EP : struct, IUIRenderData
@@ -168,21 +226,9 @@ namespace Molten.UI
         internal override void Render(SpriteBatcher sb)
         {
             _data.Render(sb, BaseData);
-
-            if (BaseData.IsClipEnabled)
-            {
-                sb.PushClip(BaseData.RenderBounds);
-                foreach (UIElement child in Children)
-                    child.Render(sb);
-                sb.PopClip();
-            }
-            else
-            {
-                foreach (UIElement child in Children)
-                    child.Render(sb);
-            }
+            base.Render(sb);
         }
 
-        public ref EP Properties => ref _data;
+        protected ref EP Properties => ref _data;
     }
 }

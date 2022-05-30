@@ -13,13 +13,10 @@ namespace Molten.UI
     /// </summary>
     public struct UIPanelData : IUIRenderData
     {
-        [DataMember]
         public Color BorderColor;
 
-        [DataMember]
         public float BorderThickness;
 
-        [DataMember]
         public Color BackgroundColor;
 
         public void Render(SpriteBatcher sb, UIRenderData data)

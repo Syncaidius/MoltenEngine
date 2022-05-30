@@ -11,47 +11,47 @@
             Layer = null;
         }
 
-        internal override void Process(Scene scene)
+        internal override void Process()
         {
-            int indexOf = scene.Layers.IndexOf(Layer);
+            int indexOf = Scene.Layers.IndexOf(Layer);
             if (indexOf > -1)
             {
-                scene.Layers.RemoveAt(indexOf);
+                Scene.Layers.RemoveAt(indexOf);
 
                 switch (Mode)
                 {
                     case ReorderMode.PushBackward:
                         Layer.LayerID = Math.Max(0, indexOf - 1);
-                        scene.Layers.Insert(Layer.LayerID, Layer);
+                        Scene.Layers.Insert(Layer.LayerID, Layer);
                         break;
 
                     case ReorderMode.BringToFront:
-                        Layer.LayerID = scene.Layers.Count;
-                        scene.Layers.Add(Layer);
+                        Layer.LayerID = Scene.Layers.Count;
+                        Scene.Layers.Add(Layer);
                         break;
 
                     case ReorderMode.PushForward:
-                        if (indexOf + 1 < scene.Layers.Count)
+                        if (indexOf + 1 < Scene.Layers.Count)
                         {
                             Layer.LayerID = indexOf + 1;
-                            scene.Layers.Insert(Layer.LayerID, Layer);
+                            Scene.Layers.Insert(Layer.LayerID, Layer);
                         }
                         else
                         {
-                            Layer.LayerID = scene.Layers.Count;
-                            scene.Layers.Add(Layer);
+                            Layer.LayerID = Scene.Layers.Count;
+                            Scene.Layers.Add(Layer);
                         }
                         break;
 
                     case ReorderMode.SendToBack:
-                        scene.Layers.Insert(0, Layer);
+                        Scene.Layers.Insert(0, Layer);
                         Layer.LayerID = 0;
                         break;
                 }
             }
 
             // Now pass this change to the render data too.
-            scene.RenderData.ReorderLayer(Layer.Data, Mode);
+            Scene.RenderData.ReorderLayer(Layer.Data, Mode);
             Recycle(this);
         }
     }

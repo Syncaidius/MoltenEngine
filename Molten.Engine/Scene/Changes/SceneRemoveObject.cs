@@ -12,7 +12,7 @@
             Layer = null;
         }
 
-        internal override void Process(Scene scene)
+        internal override void Process()
         {
             if (Object.Layer == Layer)
             {

@@ -11,9 +11,9 @@
             Object = null;
         }
 
-        internal override void Process(Scene scene)
+        internal override void Process()
         {
-            if (Object.Scene != scene)
+            if (Object.Scene != Scene)
             {
                 // Remove from other scene
                 if (Object.Layer != null)

@@ -12,7 +12,7 @@
             ParentScene = null;
         }
 
-        internal override void Process(Scene scene)
+        internal override void Process()
         {
             ParentScene.Layers.Remove(Layer);
             Recycle(this);

@@ -1,4 +1,5 @@
-﻿using Molten.Input;
+﻿using Molten.Collections;
+using Molten.Input;
 
 namespace Molten
 {
@@ -9,11 +10,13 @@ namespace Molten
 
         List<Scene> _scenes;
         List<SceneClickTracker> _trackers;
+        ThreadedQueue<SceneChange> _pendingChanges;
 
         internal SceneManager()
         {
             _trackers = new List<SceneClickTracker>();
             _scenes = new List<Scene>();
+            _pendingChanges = new ThreadedQueue<SceneChange>();
 
             MouseButton[] buttons = ReflectionHelper.GetEnumValues<MouseButton>();
             foreach(MouseButton b in buttons)
@@ -25,6 +28,11 @@ namespace Molten
             }
         }
 
+        internal void QueueChange(Scene scene, SceneChange change)
+        {
+            change.Scene = scene;
+            _pendingChanges.Enqueue(change);
+        }
         internal void Add(Scene scene)
         {
             _scenes.Add(scene);
@@ -158,6 +166,10 @@ namespace Molten
 
         internal void Update(Timing time)
         {
+            // TODO implement scene-management-wide queue
+            while (_pendingChanges.TryDequeue(out SceneChange change))
+                change.Process();
+
             // Run through all the scenes and update if enabled.
             foreach (Scene scene in _scenes)
             {

@@ -10,7 +10,6 @@ namespace Molten.UI
     public sealed class UIManagerComponent : SpriteRenderComponent, IPointerReceiver
     {
         UIElement _root;
-        ThreadedQueue<IUIChange> _pendingChanges = new ThreadedQueue<IUIChange>();
 
         protected override void OnDispose()
         {
@@ -20,11 +19,6 @@ namespace Molten.UI
         public void HandleInput(Vector2F inputPos)
         {
             // TODO Handle keyboard input/focusing here.
-        }
-
-        internal void QueueChange(IUIChange change)
-        {
-            _pendingChanges.Enqueue(change);
         }
 
         public override void OnUpdate(Timing time)
@@ -41,10 +35,6 @@ namespace Molten.UI
         {
             if (Root == null)
                 return;
-
-            IUIChange change;
-            while (_pendingChanges.TryDequeue(out change))
-                change.Process();
 
             Root.Render(sb);
         }
@@ -165,18 +155,19 @@ namespace Molten.UI
             {
                 if (_root != value)
                 {
+                    // Un-set owner of current root UIElement, if any.
                     if (_root != null)
-                    {
-                        _root.Root = null;
-                        _root.RenderComponent = null;
-                    }
+                        _root.Owner = null;
 
+                    // Set new root UIElement and it's owner.
                     _root = value;
-
                     if (_root != null)
                     {
-                        _root.RenderComponent = this;
-                        _root.Root = _root;
+                        // A root element cannot have a parent.
+                        if (_root.Parent != null)
+                            _root.Parent.Children.Remove(_root);
+
+                        _root.Owner = this;
                     }
                 }
             }

@@ -10,7 +10,7 @@ namespace Molten
         internal SceneRenderData RenderData;
         internal List<SceneLayer> Layers;
 
-        ThreadedQueue<SceneChange> _pendingChanges;
+    
         SceneLayer _defaultLayer;
 
         /// <summary>Creates a new instance of <see cref="Scene"/></summary>
@@ -27,7 +27,6 @@ namespace Molten
             engine.AddScene(this);
 
             Layers = new List<SceneLayer>();
-            _pendingChanges = new ThreadedQueue<SceneChange>();
 
             _defaultLayer = AddLayer("default");
             engine.Log.WriteLine($"Created scene '{name}'");
@@ -60,7 +59,7 @@ namespace Molten
             };
 
             change.Layer = layer;
-            _pendingChanges.Enqueue(change);
+            Engine.Scenes.QueueChange(this, change);
             return layer;
         }
 
@@ -79,7 +78,7 @@ namespace Molten
             SceneLayerRemove change = SceneLayerRemove.Get();
             change.ParentScene = this;
             change.Layer = layer;
-            _pendingChanges.Enqueue(change);
+            Engine.Scenes.QueueChange(this, change);
         }
 
         internal void QueueLayerReorder(SceneLayer layer, ReorderMode mode)
@@ -87,7 +86,7 @@ namespace Molten
             SceneLayerReorder change = SceneLayerReorder.Get();
             change.Layer = layer;
             change.Mode = mode;
-            _pendingChanges.Enqueue(change);
+            Engine.Scenes.QueueChange(this, change);
         }
 
         /// <summary>
@@ -139,7 +138,7 @@ namespace Molten
             SceneAddObject change = SceneAddObject.Get();
             change.Object = obj;
             change.Layer = layer;
-            _pendingChanges.Enqueue(change);
+            Engine.Scenes.QueueChange(this, change);
         }
 
         /// <summary>Removes a <see cref="SceneObject"/> from the scene.</summary>
@@ -155,7 +154,7 @@ namespace Molten
             SceneRemoveObject change = SceneRemoveObject.Get();
             change.Object = obj;
             change.Layer = layer;
-            _pendingChanges.Enqueue(change);
+            Engine.Scenes.QueueChange(this, change);
         }
 
         /// <summary>
@@ -185,9 +184,6 @@ namespace Molten
         /// <param name="time">A <see cref="Timing"/> instance.</param>
         internal void Update(Timing time)
         {
-            while (_pendingChanges.TryDequeue(out SceneChange change))
-                change.Process(this);
-
             foreach (SceneLayer layer in Layers)
             {
                 foreach (SceneObject up in layer.Objects)
