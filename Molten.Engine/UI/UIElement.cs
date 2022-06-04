@@ -13,6 +13,7 @@ namespace Molten.UI
         internal UIRenderData BaseData;
 
         UIManagerComponent _owner;
+        UIElement _parent;
 
         public UIElement()
         {
@@ -40,8 +41,8 @@ namespace Molten.UI
             {
                 BaseData.GlobalBounds = new Rectangle()
                 {
-                    X = Parent.BaseData.GlobalBounds.X + BaseData.LocalBounds.X,
-                    Y = Parent.BaseData.GlobalBounds.Y + BaseData.LocalBounds.Y,
+                    X = Parent.BaseData.RenderBounds.X + BaseData.LocalBounds.X,
+                    Y = Parent.BaseData.RenderBounds.Y + BaseData.LocalBounds.Y,
                     Width = BaseData.LocalBounds.Width,
                     Height = BaseData.LocalBounds.Height,
                 };
@@ -158,7 +159,8 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets the global bounds, relative to the <see cref="UIManagerComponent"/> that is drawing the current <see cref="UIElement"/>.s
+        /// Gets the global bounds, relative to the <see cref="UIManagerComponent"/> that is drawing the current <see cref="UIElement"/>.
+        /// <para>Global bounds are the area in which input is accepted and from which <see cref="RenderBounds"/> is calculated, based on padding, borders and other properties.</para>
         /// </summary>
         public Rectangle GlobalBounds => BaseData.GlobalBounds;
 
@@ -185,7 +187,18 @@ namespace Molten.UI
         /// <summary>
         /// Gets the parent of the current <see cref="UIElement"/>.
         /// </summary>
-        public UIElement Parent { get; internal set; }
+        public UIElement Parent
+        {
+            get => _parent;
+            internal set
+            {
+                if(_parent != value)
+                {
+                    _parent = value;
+                    UpdateBounds();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the <see cref="Engine"/> instance that the current <see cref="UIElement"/> is bound to.

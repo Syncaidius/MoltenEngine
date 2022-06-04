@@ -56,7 +56,7 @@ namespace Molten.Samples
 
             UIText label = new UIText()
             {
-                LocalBounds = new Rectangle(300, 150, 200, 20),
+                LocalBounds = new Rectangle(300, 100, 200, 20),
             };
 
             UIButton button = new UIButton()

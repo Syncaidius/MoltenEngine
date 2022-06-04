@@ -32,28 +32,29 @@ namespace Molten.UI
             if (Properties.Font == null)
                 return;
 
-            Properties.Position = (Vector2F)LocalBounds.TopLeft;
+            Rectangle gBounds = GlobalBounds;
+            Properties.Position = (Vector2F)gBounds.TopLeft;
             Vector2F textSize = Properties.Font.MeasureString(Properties.Text);
 
             switch (_hAlign)
             {
                 case UIHorizonalAlignment.Center:
-                    Properties.Position.X = RenderBounds.Center.X - (textSize.X / 2);
+                    Properties.Position.X = gBounds.Center.X - (textSize.X / 2);
                     break;
 
                 case UIHorizonalAlignment.Right:
-                    Properties.Position.X = RenderBounds.Right - textSize.X;
+                    Properties.Position.X = gBounds.Right - textSize.X;
                     break;
             }
 
             switch (_vAlign)
             {
                 case UIVerticalAlignment.Center:
-                    Properties.Position.Y = RenderBounds.Center.Y - (textSize.Y / 2);
+                    Properties.Position.Y = gBounds.Center.Y - (textSize.Y / 2);
                     break;
 
                 case UIVerticalAlignment.Bottom:
-                    Properties.Position.Y = RenderBounds.Bottom - textSize.Y;
+                    Properties.Position.Y = gBounds.Bottom - textSize.Y;
                     break;
             }
         }

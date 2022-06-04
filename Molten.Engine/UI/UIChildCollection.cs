@@ -44,6 +44,8 @@ namespace Molten.UI
             // Set new element parent.
             child.Owner = _element.Owner;
             _elements.Add(child);
+            child.Parent = _element;
+
             _element.Engine.Scenes.QueueChange(null, new SceneUIAddChild()
             {
                 Child = _element.BaseData,
