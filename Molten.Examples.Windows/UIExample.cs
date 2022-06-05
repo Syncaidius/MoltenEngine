@@ -44,7 +44,7 @@ namespace Molten.Samples
             _ui = SpriteLayer.AddObjectWithComponent<UIManagerComponent>();
             _ui.Root = new UIPanel()
             {
-                LocalBounds = new Rectangle(100, 150, 600, 450),
+                LocalBounds = new Rectangle(100, 150, 94, 450),
             };
 
             UIPanel childPanel = new UIPanel()
@@ -56,7 +56,8 @@ namespace Molten.Samples
 
             UIText label = new UIText()
             {
-                LocalBounds = new Rectangle(300, 100, 200, 20),
+                LocalBounds = new Rectangle(_ui.Root.LocalBounds.Width / 2, 100, 200, 20),
+                HorizontalAlign = UIHorizonalAlignment.Center
             };
 
             UIButton button = new UIButton()

@@ -4,8 +4,7 @@
     {
         class Range
         {
-            public uint Start;
-            public uint End;
+            public uint BufferOffset;
             public uint VertexCount;
             public ITexture2D Texture;
             public IMaterial Material;
@@ -77,10 +76,10 @@
                 // Reset vertex array pointer and ranges, so we can prepare the next batch of vertices.
                 uint remaining = NextID - i;
                 uint end = i + Math.Min(remaining, _spriteCapacity);
+                uint start = i;
 
                 _curRange = 0;
                 range = _ranges[_curRange];
-                range.Start = i;
 
                 ref SpriteItem item = ref Sprites[i];
                 range.Format = item.Format;
@@ -100,12 +99,11 @@
                         item.Format != range.Format ||
                         item.ClipID != range.ClipID)
                     {
-                        range.VertexCount = i - range.Start;
-                        range.End = i;
+                        range.VertexCount = i - start;
                         _curRange++;
 
                         range = _ranges[_curRange];
-                        range.Start = i;
+                        start = i;
                         range.Format = item.Format;
                         range.Texture = item.Texture;
                         range.Material = item.Material;
@@ -114,12 +112,9 @@
                 }
 
                 // Include the last range, if it has any vertices.
-                range.VertexCount = i - range.Start;
+                range.VertexCount = i - start;
                 if (range.VertexCount > 0)
-                {
-                    range.End = i;
                     _curRange++;
-                }
 
                 if (_curRange > 0)
                     FlushBuffer(context, camera, data, v);
@@ -132,24 +127,16 @@
         private void FlushBuffer(DeviceContext context, RenderCamera camera, ObjectRenderData data, uint vertexCount)
         {
             Range range;
-            uint writeIndex = 0;
-
-            // Map buffer segment
-            _segment.Map(context, (buffer, stream) =>
-            {
-                for (uint i = 0; i < _curRange; i++)
-                {
-                    range = _ranges[i];
-                    stream.WriteRange(_vertices, writeIndex, range.VertexCount);
-                    range.Start = writeIndex;
-                    writeIndex += range.VertexCount;
-                }
-            });
+            _segment.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
 
             // Draw calls
-            for(uint i = 0; i < _curRange; i++)
+            uint bufferOffset = 0;
+            for (uint i = 0; i < _curRange; i++)
             {
                 range = _ranges[i];
+                range.BufferOffset = bufferOffset;
+                bufferOffset += range.VertexCount;
+
                 _flushFuncs[(int)range.Format](context, camera, range, data);
             }
         }
@@ -186,7 +173,7 @@
                 context.State.SetScissorRectangles(Clips[range.ClipID]);
 
             mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.Start);
+            context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
         }
 
         private void FlushMtsdfRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
@@ -221,31 +208,32 @@
                 context.State.SetScissorRectangles(Clips[range.ClipID]);
 
             mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.Start);
+            context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
         }
 
         private void FlushLineRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
         {
             _defaultLineMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            context.Draw(_defaultLineMaterial, range.VertexCount, VertexTopology.PointList, range.Start);
+            context.Draw(_defaultLineMaterial, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
         }
 
         private void FlushTriangleRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
         {
             _defaultTriMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            context.Draw(_defaultTriMaterial, range.VertexCount, VertexTopology.PointList, range.Start);
+            context.Draw(_defaultTriMaterial, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
         }
 
         private void FlushCircleRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
         {
             _defaultCircleMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            context.Draw(_defaultCircleMaterial, range.VertexCount, VertexTopology.PointList, range.Start);
+            context.Draw(_defaultCircleMaterial, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
         }
 
         public override void Dispose()
         {
             _defaultMaterial.Dispose();
             _defaultNoTextureMaterial.Dispose();
+            _defaultMsdfMaterial.Dispose();
             _defaultLineMaterial.Dispose();
             _defaultCircleMaterial.Dispose();
             _defaultTriMaterial.Dispose();
