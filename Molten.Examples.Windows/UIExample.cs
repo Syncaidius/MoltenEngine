@@ -54,7 +54,7 @@ namespace Molten.Samples
                 BorderColor = Color.LimeGreen
             };
 
-            UIText label = new UIText()
+            /*UIText label = new UIText()
             {
                 LocalBounds = new Rectangle(_ui.Root.LocalBounds.Width / 2, 100, 200, 20),
                 HorizontalAlign = UIHorizonalAlignment.Center
@@ -62,13 +62,13 @@ namespace Molten.Samples
 
             UIButton button = new UIButton()
             {
-                LocalBounds = new Rectangle(0, 250, 200, 20),
+                LocalBounds = new Rectangle(-50, 250, 200, 20),
                 Text = "Click Me!"
-            };
+            };*/
 
             _ui.Root.Children.Add(childPanel);
-            _ui.Root.Children.Add(label);
-            _ui.Root.Children.Add(button);
+            //_ui.Root.Children.Add(label);
+            //_ui.Root.Children.Add(button);
         }
 
         protected override void OnHudDraw(SpriteBatcher sb)

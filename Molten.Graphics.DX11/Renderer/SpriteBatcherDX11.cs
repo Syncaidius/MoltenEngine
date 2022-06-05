@@ -18,7 +18,6 @@
         uint _spriteCapacity;
         Action<DeviceContext, RenderCamera, Range, ObjectRenderData>[] _flushFuncs;
         SpriteVertex[] _vertices;
-        Rectangle _vpBounds;
         Material _defaultMaterial; 
         Material _defaultMaterialMS;
         Material _defaultNoTextureMaterial;
@@ -66,7 +65,7 @@
 
             Range range;
 
-            _vpBounds = (Rectangle)camera.OutputSurface.Viewport.Bounds;
+            Clips[0] = (Rectangle)camera.OutputSurface.Viewport.Bounds;
             context.State.VertexBuffers[0].Value = _segment;
 
             // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.            
@@ -167,10 +166,7 @@
                 mat = mat ?? _defaultNoTextureMaterial;
             }
 
-            if (range.ClipID <= 0)
-                context.State.SetScissorRectangles(_vpBounds);
-            else
-                context.State.SetScissorRectangles(Clips[range.ClipID]);
+            context.State.SetScissorRectangles(Clips[range.ClipID]);
 
             mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
             context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
@@ -202,10 +198,7 @@
                 mat = mat ?? _defaultNoTextureMaterial;
             }
 
-            if (range.ClipID <= 0)
-                context.State.SetScissorRectangles(_vpBounds);
-            else
-                context.State.SetScissorRectangles(Clips[range.ClipID]);
+            context.State.SetScissorRectangles(Clips[range.ClipID]);
 
             mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
             context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.BufferOffset);

@@ -72,10 +72,10 @@ namespace Molten.Graphics
             {
                 Rectangle cur = Clips[_curClipID];
 
-                bounds.X = Math.Min(Math.Max(bounds.X, cur.X), cur.Right);
-                bounds.Y = Math.Min(Math.Max(bounds.Y, cur.Y), cur.Bottom);
-                bounds.Right = Math.Max(Math.Min(bounds.Right, cur.Right), cur.X);
-                bounds.Bottom = Math.Max(Math.Min(bounds.Bottom, cur.Bottom), cur.Y);
+                bounds.X = MathHelper.Clamp(bounds.X, cur.X, cur.Right);
+                bounds.Y = MathHelper.Clamp(bounds.Y, cur.Y, cur.Bottom);
+                bounds.Right = MathHelper.Clamp(bounds.Right, cur.X, cur.Right);
+                bounds.Bottom = MathHelper.Clamp(bounds.Bottom, cur.Y, cur.Bottom);
             }
 
             if (bounds.Width > 0 && bounds.Height > 0)
