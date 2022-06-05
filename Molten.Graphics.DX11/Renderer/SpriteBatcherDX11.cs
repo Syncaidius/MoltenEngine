@@ -53,7 +53,7 @@
 
             _flushFuncs = new Action<DeviceContext, RenderCamera, Range, ObjectRenderData>[5];
             _flushFuncs[(int)SpriteFormat.Sprite] = FlushSpriteRange;
-            _flushFuncs[(int)SpriteFormat.MSDF] = FlushMtsdfRange;
+            _flushFuncs[(int)SpriteFormat.MSDF] = FlushMsdfRange;
             _flushFuncs[(int)SpriteFormat.Line] = FlushLineRange;
             _flushFuncs[(int)SpriteFormat.Triangle] = FlushTriangleRange;
             _flushFuncs[(int)SpriteFormat.Circle] = FlushCircleRange;
@@ -176,7 +176,7 @@
             context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
         }
 
-        private void FlushMtsdfRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
+        private void FlushMsdfRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
         {
             Material mat = range.Material as Material;
 

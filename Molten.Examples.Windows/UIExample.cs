@@ -49,7 +49,7 @@ namespace Molten.Samples
 
             UIPanel childPanel = new UIPanel()
             {
-                LocalBounds = new Rectangle(100, 50, 220, 200),
+                LocalBounds = new Rectangle(100, -100, 220, 200),
                 BackgroundColor = new Color(0, 128, 0, 200),
                 BorderColor = Color.LimeGreen
             };

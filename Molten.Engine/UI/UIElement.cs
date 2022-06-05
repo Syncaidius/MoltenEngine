@@ -114,10 +114,12 @@ namespace Molten.UI
             {
                 if (BaseData.IsClipEnabled)
                 {
-                    sb.PushClip(BaseData.GlobalBounds);
-                    foreach (UIElement e in CompoundElements)
-                        e.Render(sb);
-                    sb.PopClip();
+                    if (sb.PushClip(BaseData.GlobalBounds))
+                    {
+                        foreach (UIElement e in CompoundElements)
+                            e.Render(sb);
+                        sb.PopClip();
+                    }
                 }
                 else
                 {
@@ -131,10 +133,12 @@ namespace Molten.UI
             {
                 if (BaseData.IsClipEnabled)
                 {
-                    sb.PushClip(BaseData.RenderBounds);
-                    foreach (UIElement child in Children)
-                        child.Render(sb);
-                    sb.PopClip();
+                    if (sb.PushClip(BaseData.RenderBounds))
+                    {
+                        foreach (UIElement child in Children)
+                            child.Render(sb);
+                        sb.PopClip();
+                    }
                 }
                 else
                 {

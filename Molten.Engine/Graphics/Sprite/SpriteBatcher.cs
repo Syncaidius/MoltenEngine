@@ -56,7 +56,13 @@ namespace Molten.Graphics
             return ref Sprites[NextID++];
         }
 
-        public void PushClip(Rectangle bounds)
+        /// <summary>
+        /// Pushes a new clipping <see cref="Rectangle"/> into the current <see cref="SpriteBatcher"/>.
+        /// </summary>
+        /// <param name="bounds"></param>
+        /// <returns>Returns true if the clip was valid. 
+        /// False will be returned if <paramref name="bounds"/> is invalid, or if the clip is outside of a previously-pushed clip.</returns>
+        public bool PushClip(Rectangle bounds)
         {
             if (_curClipID == Clips.Length)
                 Array.Resize(ref Clips, Clips.Length * 2);
@@ -65,13 +71,20 @@ namespace Molten.Graphics
             if (_curClipID > 0)
             {
                 Rectangle cur = Clips[_curClipID];
-                bounds.X = Math.Max(bounds.X, cur.X);
-                bounds.Y = Math.Max(bounds.Y, cur.Y);
-                bounds.Right = Math.Min(bounds.Right, cur.Right);
-                bounds.Bottom = Math.Min(bounds.Bottom, cur.Bottom);
+
+                bounds.X = Math.Min(Math.Max(bounds.X, cur.X), cur.Right);
+                bounds.Y = Math.Min(Math.Max(bounds.Y, cur.Y), cur.Bottom);
+                bounds.Right = Math.Max(Math.Min(bounds.Right, cur.Right), cur.X);
+                bounds.Bottom = Math.Max(Math.Min(bounds.Bottom, cur.Bottom), cur.Y);
             }
 
-            Clips[++_curClipID] = bounds;
+            if (bounds.Width > 0 && bounds.Height > 0)
+            {
+                Clips[++_curClipID] = bounds;
+                return true;
+            }
+
+            return false;
         }
 
         public void PopClip()
