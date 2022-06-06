@@ -42,29 +42,9 @@ namespace Molten.UI
         public bool Contains(Vector2F point)
         {
             if (Root != null)
-                return PickElement(Root, point) != null;
+                return Root.Pick(point) != null;
             else
                 return false;
-        }
-
-        private UIElement PickElement(UIElement e, in Vector2F point)
-        {
-            UIElement result = null;
-
-            if (e.Contains(point))
-            {
-                for (int i = e.Children.Count - 1; i >= 0; i--)
-                {
-                    result = PickElement(e.Children[i], point);
-                    if (result != null)
-                        return result;
-                }
-
-                if (e.Contains(point))
-                    return e;
-            }
-
-            return result;
         }
 
         public void CursorClickStarted(Vector2F pos, MouseButton button)

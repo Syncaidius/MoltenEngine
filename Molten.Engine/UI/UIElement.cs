@@ -96,6 +96,30 @@ namespace Molten.UI
             return BaseData.GlobalBounds.Contains(point);
         }
 
+        /// <summary>
+        /// Returns the current <see cref="UIElement"/> or one of it's children (recursive), depending on which contains <paramref name="point"/>.
+        /// </summary>
+        /// <param name="point">The point to use for picking a <see cref="UIElement"/>.</param>
+        /// <returns></returns>
+        public UIElement Pick(Vector2F point)
+        {
+            UIElement result = null;
+
+            if (Contains(point))
+            {
+                for (int i = Children.Count - 1; i >= 0; i--)
+                {
+                    result = Children[i].Pick(point);
+                    if (result != null)
+                        return result;
+                }
+
+                return this;
+            }
+
+            return result;
+        }
+
         protected override void OnDispose() { }
 
         protected virtual void OnUpdateBounds() { }
