@@ -44,25 +44,25 @@ namespace Molten.Samples
             _ui = SpriteLayer.AddObjectWithComponent<UIManagerComponent>();
             _ui.Root = new UIPanel()
             {
-                LocalBounds = new Rectangle(100, 150, 94, 450),
+                LocalBounds = new Rectangle(100, 150, 600, 450),
             };
 
             UIPanel childPanel = new UIPanel()
             {
-                LocalBounds = new Rectangle(100, -100, 220, 200),
+                LocalBounds = new Rectangle(100, 10, 220, 200),
                 BackgroundColor = new Color(0, 128, 0, 200),
                 BorderColor = Color.LimeGreen
             };
 
             UIText label = new UIText()
             {
-                LocalBounds = new Rectangle(_ui.Root.LocalBounds.Width / 2, 100, 200, 20),
+                LocalBounds = new Rectangle(0, 10, _ui.Root.LocalBounds.Width, 20),
                 HorizontalAlign = UIHorizonalAlignment.Center
             };
 
             UIButton button = new UIButton()
             {
-                LocalBounds = new Rectangle(-50, 250, 200, 20),
+                LocalBounds = new Rectangle(10, 250, 150, 20),
                 Text = "Click Me!"
             };
 

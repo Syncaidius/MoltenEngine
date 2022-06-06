@@ -9,8 +9,8 @@ namespace Molten.UI
         {
             base.OnInitialize(engine, settings, theme);
 
-            Properties.BorderColor = theme.BorderColor;
-            Properties.BackgroundColor = theme.BackgroundColor;
+            Properties.BorderColor = theme.DefaultColors.Border;
+            Properties.BackgroundColor = theme.DefaultColors.Background;
             Properties.BorderThickness = theme.BorderThickness;
         }
 

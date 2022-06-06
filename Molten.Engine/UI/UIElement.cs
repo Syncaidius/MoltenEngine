@@ -75,11 +75,6 @@ namespace Molten.UI
                 child.Owner = owner;
         }
 
-        internal void HandleInput(Timing time, SceneClickTracker tracker)
-        {
-            
-        }
-
         internal void Update(Timing time)
         {
             OnUpdate(time);
@@ -96,12 +91,13 @@ namespace Molten.UI
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public virtual bool Contains(Vector2F point)
+        public bool Contains(Vector2F point)
         {
             return BaseData.GlobalBounds.Contains(point);
         }
 
         protected override void OnDispose() { }
+
         protected virtual void OnUpdateBounds() { }
 
         protected virtual void OnUpdate(Timing time) { }

@@ -5,14 +5,48 @@ namespace Molten.UI
 {
     public class UITheme
     {
-        [DataMember]
-        public Color TextColor { get; set; } = Color.White;
+        public class ColorSet
+        {
+            [DataMember]
+            public Color Text { get; set; } = Color.White;
 
-        [DataMember]
-        public Color BackgroundColor { get; set; } = new Color(40, 40, 150, 200);
+            [DataMember]
+            public Color Background { get; set; } = new Color(40, 40, 150, 200);
 
+            [DataMember]
+            public Color Border { get; set; } = new Color(80, 80, 190);
+        }
+
+        /// <summary>
+        /// Gets or sets the default colors used when representing a a normal, unmodified state of functionality
+        /// </summary>
         [DataMember]
-        public Color BorderColor { get; set; } = new Color(80, 80, 190);
+        public ColorSet DefaultColors { get; set; } = new ColorSet();
+
+        /// <summary>
+        /// Gets or sets the colors used when represending a hover action. e.g. mouse or touch-hold gesture.
+        /// </summary>
+        [DataMember]
+        public ColorSet HoverColors { get; set; } = new ColorSet();
+
+        /// <summary>
+        /// Gets or sets the colors used when representing a click, press or touch interaction.
+        /// </summary>
+        [DataMember]
+        public ColorSet PressColors { get; set; } = new ColorSet();
+
+        /// <summary>
+        /// Gets or sets the colors used by elements to represent a disabled state of functionality.
+        /// </summary>
+        [DataMember]
+        public ColorSet DisabledColors { get; set; } = new ColorSet();
+
+        /// <summary>
+        /// Gets or sets the colors used when representing active or selected functionality.
+        /// </summary>
+        [DataMember]
+        public ColorSet ActiveColors { get; set; } = new ColorSet();
+
 
         [DataMember]
         public float BorderThickness { get; set; } = 2f;
