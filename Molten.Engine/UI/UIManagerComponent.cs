@@ -80,7 +80,7 @@ namespace Molten.UI
         public void CursorHover(Vector2F pos)
         {
             if (Root != null)
-                HoverElement = PickElement(Root, pos);
+                HoverElement = Root.Pick(pos);
             else
                 HoverElement = null;
         }
