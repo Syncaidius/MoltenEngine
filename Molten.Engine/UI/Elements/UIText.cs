@@ -15,7 +15,7 @@ namespace Molten.UI
         {
             base.OnInitialize(engine, settings, theme);
 
-            Properties.Color = theme.TextColor;
+            Properties.Color = theme.DefaultColors.Text;
             Properties.Text = Name;
             theme.RequestFont(engine, LoadFont_Request);
         }
