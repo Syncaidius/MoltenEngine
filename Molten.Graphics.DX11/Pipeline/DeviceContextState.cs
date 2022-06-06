@@ -9,7 +9,6 @@ namespace Molten.Graphics
     /// </summary>
     internal unsafe class DeviceContextState : EngineObject
     {
-        Rectangle<int>[] _apiScissorRects;
         Rectangle[] _scissorRects;
         bool _scissorRectsDirty;
 
@@ -41,7 +40,6 @@ namespace Molten.Graphics
             uint maxRTs = context.Device.Features.SimultaneousRenderSurfaces;
             _scissorRects = new Rectangle[maxRTs];
             _viewports = new ViewportF[maxRTs];
-            _apiScissorRects = new Rectangle<int>[maxRTs];
             _apiViewports = new Silk.NET.Direct3D11.Viewport[maxRTs];
 
             uint maxVBuffers = Context.Device.Features.MaxVertexBufferSlots;
@@ -126,12 +124,9 @@ namespace Molten.Graphics
 
             // Check if scissor rects need updating
             if (_scissorRectsDirty)
-            {
-                for (int i = 0; i < _scissorRects.Length; i++)
-                    _apiScissorRects[i] = _scissorRects[i].ToApi();
-
-                fixed (Rectangle<int>* ptrRect = _apiScissorRects)
-                    Context.Native->RSSetScissorRects((uint)_apiScissorRects.Length, ptrRect);
+            {                
+                fixed (Rectangle* ptrRect = _scissorRects)
+                    Context.Native->RSSetScissorRects((uint)_scissorRects.Length, (Rectangle<int>*)ptrRect);
 
                 _scissorRectsDirty = false;
             }
