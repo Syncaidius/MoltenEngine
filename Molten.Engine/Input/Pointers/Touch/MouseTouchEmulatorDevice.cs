@@ -25,8 +25,8 @@ namespace Molten.Input
                     // Unbind old mouse, if available.
                     if(_mouse != null)
                     {
-                        _mouse.OnButtonDown -= QueueTouchState;
-                        _mouse.OnButtonUp -= QueueTouchState;
+                        _mouse.OnPressed -= QueueTouchState;
+                        _mouse.OnReleased -= QueueTouchState;
                         _mouse.OnMoved -= QueueTouchState;
                         _mouse.OnHeld -= QueueTouchState;
                         _mouse.OnConnected -= MouseConnectionChanged;
@@ -37,8 +37,8 @@ namespace Molten.Input
                     _mouse = value;
                     if(_mouse != null)
                     {
-                        _mouse.OnButtonDown += QueueTouchState;
-                        _mouse.OnButtonUp += QueueTouchState;
+                        _mouse.OnPressed += QueueTouchState;
+                        _mouse.OnReleased += QueueTouchState;
                         _mouse.OnMoved += QueueTouchState;
                         _mouse.OnHeld += QueueTouchState;
                         _mouse.OnConnected += MouseConnectionChanged;
@@ -55,11 +55,16 @@ namespace Molten.Input
 
         MouseDevice _mouse;
 
+        protected override void OnSetPointerPosition(Vector2F position)
+        {
+            // TODO Implement - Allow the pointer/finger ID to be passed in. For a mouse this would always be 0.
+        }
+
         protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
             List<InputDeviceFeature> baseFeatures =  base.OnInitialize(service);
             
-            Service.Settings.Input.TouchBufferSize.OnChanged += TouchSampleBufferSize_OnChanged;
+            Service.Settings.Input.PointerBufferSize.OnChanged += TouchSampleBufferSize_OnChanged;
 
             return baseFeatures;
         }
@@ -71,14 +76,14 @@ namespace Molten.Input
 
         private void QueueTouchState(PointingDevice<MouseButton> mouse, PointerState<MouseButton> state)
         {
-            QueueState(new TouchPointState()
+            QueueState(new PointerState<int>()
             {
                 Action = state.Action,
                 PressTimestamp = state.PressTimestamp,
                 ID = 0,
-                Delta = (Vector2F)state.Delta,
+                Delta = state.Delta,
                 Orientation = 0,
-                Position = (Vector2F)state.Position,
+                Position = state.Position,
                 Pressure = 1,
                 Size = 1
             });

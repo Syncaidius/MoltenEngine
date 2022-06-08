@@ -9,35 +9,27 @@ namespace Molten
     {
         bool Contains(Vector2F point);
 
-        void CursorClickStarted(Vector2F pos, MouseButton button);
+        void PointerPressed(Vector2F pos, MouseButton button);
 
-        void CursorClickCompletedOutside(Vector2F pos, MouseButton button);
+        void PointerReleasedOutside(Vector2F pos, MouseButton button);
 
-        void CursorClickCompleted(Vector2F pos, bool wasDragged, MouseButton button);
+        void PointerReleased(Vector2F pos, bool wasDragged, MouseButton button);
 
-        void CursorDrag(Vector2F pos, Vector2F delta, MouseButton button);
+        void PointerDrag(Vector2F pos, Vector2F delta, MouseButton button);
 
-        void CursorHeld(Vector2F pos, Vector2F delta, MouseButton button);
+        void PointerHeld(Vector2F pos, Vector2F delta, MouseButton button);
 
-        void CursorWheelScroll(InputScrollWheel wheel);
+        void PointerScroll(InputScrollWheel wheel);
 
-        void CursorEnter(Vector2F pos);
+        void PointerEnter(Vector2F pos);
 
-        void CursorLeave(Vector2F pos);
+        void PointerLeave(Vector2F pos);
 
-        void CursorHover(Vector2F pos);
+        void PointerHover(Vector2F pos);
 
-        void CursorFocus();
+        void PointerFocus();
 
-        void CursorUnfocus();
-
-        void TouchStarted(Vector2F pos, in TouchPointState state);
-
-        void TouchCompleted(Vector2F pos, in TouchPointState state);
-
-        void TouchDrag(Vector2F pos, in TouchPointState state);
-
-        void TouchHeld(Vector2F pos, in TouchPointState state);
+        void PointerUnfocus();
 
         /// <summary>
         /// Gets the tooltip that is displayed when the object is hovered over by a mouse cursor.

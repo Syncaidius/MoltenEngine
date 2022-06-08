@@ -56,7 +56,7 @@ namespace Molten
         {
             if (Focused != acceptor && acceptor != null)
             {
-                acceptor.CursorFocus();
+                acceptor.PointerFocus();
 
                 OnObjectFocused?.Invoke(new SceneInputData<MouseButton>()
                 {
@@ -72,7 +72,7 @@ namespace Molten
         {
             if (Focused != null)
             {
-                Focused.CursorUnfocus();
+                Focused.PointerUnfocus();
 
                 OnObjectUnfocused?.Invoke(new SceneInputData<MouseButton>()
                 {
@@ -132,7 +132,7 @@ namespace Molten
                 if (newHover == null)
                 {
                     // Trigger leave on previous hover component.
-                    Hovered?.CursorLeave(cursorPos);
+                    Hovered?.PointerLeave(cursorPos);
                     Hovered = null;
                 }
                 else
@@ -140,22 +140,22 @@ namespace Molten
                     if (Hovered != newHover)
                     {
                         //trigger leave on old hover component.
-                        Hovered?.CursorLeave(cursorPos);
+                        Hovered?.PointerLeave(cursorPos);
 
                         //set new hover component and trigger it's enter event
                         Hovered = newHover;
-                        Hovered.CursorEnter(cursorPos);
+                        Hovered.PointerEnter(cursorPos);
                     }
                 }
 
                 // Invoke hover event if possible
                 if (Hovered != null)
                 {
-                    Hovered.CursorHover(cursorPos);
+                    Hovered.PointerHover(cursorPos);
 
                     // Handle scroll wheel event
                     if (mouse.ScrollWheel.Delta != 0)
-                        Hovered.CursorWheelScroll(mouse.ScrollWheel);
+                        Hovered.PointerScroll(mouse.ScrollWheel);
                 }
             }
 

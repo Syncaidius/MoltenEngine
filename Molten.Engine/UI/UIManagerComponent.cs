@@ -47,37 +47,37 @@ namespace Molten.UI
                 return false;
         }
 
-        public void CursorClickStarted(Vector2F pos, MouseButton button)
+        public void PointerPressed(Vector2F pos, MouseButton button)
         {
             
         }
 
-        public void CursorClickCompletedOutside(Vector2F pos, MouseButton button)
+        public void PointerReleasedOutside(Vector2F pos, MouseButton button)
         {
             
         }
 
-        public void CursorClickCompleted(Vector2F pos, bool wasDragged, MouseButton button)
+        public void PointerReleased(Vector2F pos, bool wasDragged, MouseButton button)
         {
             
         }
 
-        public void CursorWheelScroll(InputScrollWheel wheel)
+        public void PointerScroll(InputScrollWheel wheel)
         {
             
         }
 
-        public void CursorEnter(Vector2F pos)
+        public void PointerEnter(Vector2F pos)
         {
             
         }
 
-        public void CursorLeave(Vector2F pos)
+        public void PointerLeave(Vector2F pos)
         {
            
         }
 
-        public void CursorHover(Vector2F pos)
+        public void PointerHover(Vector2F pos)
         {
             if (Root != null)
                 HoverElement = Root.Pick(pos);
@@ -85,42 +85,22 @@ namespace Molten.UI
                 HoverElement = null;
         }
 
-        public void CursorFocus()
+        public void PointerFocus()
         {
             
         }
 
-        public void CursorDrag(Vector2F pos, Vector2F delta, MouseButton button)
+        public void PointerDrag(Vector2F pos, Vector2F delta, MouseButton button)
         {
             
         }
 
-        public void CursorUnfocus()
+        public void PointerUnfocus()
         {
            
         }
 
-        public void CursorHeld(Vector2F pos, Vector2F delta, MouseButton button)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void TouchStarted(Vector2F pos, in TouchPointState state)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void TouchCompleted(Vector2F pos, in TouchPointState state)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void TouchDrag(Vector2F pos, in TouchPointState state)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void TouchHeld(Vector2F pos, in TouchPointState state)
+        public void PointerHeld(Vector2F pos, Vector2F delta, MouseButton button)
         {
             throw new NotImplementedException();
         }

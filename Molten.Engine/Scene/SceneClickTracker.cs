@@ -39,7 +39,7 @@ namespace Molten
                         }
 
                         // Trigger press-start event
-                        PressedObject.CursorClickStarted(mousePos, Button);
+                        PressedObject.PointerPressed(mousePos, Button);
                     }
 
                     InputDragged = false;
@@ -54,7 +54,7 @@ namespace Molten
                     if (distDragged >= DragThreshold)
                     {
                         InputDragged = true;
-                        PressedObject.CursorDrag(mousePos, mouseMove, Button);
+                        PressedObject.PointerDrag(mousePos, mouseMove, Button);
                     }
                 }
             }
@@ -64,9 +64,9 @@ namespace Molten
                 if (PressedObject != null)
                 {
                     if (PressedObject.Contains(mousePos) == true)
-                        PressedObject.CursorClickCompleted(mousePos, InputDragged, Button);
+                        PressedObject.PointerReleased(mousePos, InputDragged, Button);
                     else
-                        PressedObject.CursorClickCompletedOutside(mousePos, Button);
+                        PressedObject.PointerReleasedOutside(mousePos, Button);
 
                     PressedObject = null;
                 }

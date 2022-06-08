@@ -13,6 +13,10 @@ namespace Molten.Input
         where T : struct
     {
         /// <summary>
+        /// Invoked when any type of input event occurs for the current <see cref="PointingDevice{T}"/>.
+        /// </summary>
+        public event PointingDeviceHandler<T> OnEvent;
+        /// <summary>
         /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
         /// </summary>
         public event PointingDeviceHandler<T> OnLeaveSurface;
@@ -28,9 +32,9 @@ namespace Molten.Input
 
         public event PointingDeviceHandler<T> OnHover;
 
-        public event PointingDeviceHandler<T> OnButtonDown;
+        public event PointingDeviceHandler<T> OnPressed;
 
-        public event PointingDeviceHandler<T> OnButtonUp;
+        public event PointingDeviceHandler<T> OnReleased;
 
         INativeSurface _surface;
         bool _wasInsideControl;
@@ -123,6 +127,8 @@ namespace Molten.Input
 
             CheckInside(insideControl, ref newState);
 
+            OnEvent?.Invoke(this, newState);
+
             if (newState.UpdateID == prevState.UpdateID && newState.Action == prevState.Action)
                 return true;
 
@@ -137,11 +143,11 @@ namespace Molten.Input
                     break;
 
                 case InputAction.Pressed:
-                    OnButtonDown?.Invoke(this, newState);
+                    OnPressed?.Invoke(this, newState);
                     break;
 
                 case InputAction.Released:
-                    OnButtonUp?.Invoke(this, newState);
+                    OnReleased?.Invoke(this, newState);
                     break;
 
                 case InputAction.Hover:
