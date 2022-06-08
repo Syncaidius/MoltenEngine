@@ -6,7 +6,7 @@ namespace Molten.Input
     {
         protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
-            InitializeBuffer(service.Settings.Input.TouchBufferSize);
+            InitializeBuffer(service.Settings.Input.PointerBufferSize);
             return null;
         }
 
