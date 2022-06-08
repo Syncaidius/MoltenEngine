@@ -172,8 +172,8 @@ namespace Molten.Input
             int lParam)
         {
             WinMouseButtonFlags btns = (WinMouseButtonFlags)(wParam & 0xFFFFFFFF);
-            MouseButtonState state = new MouseButtonState();
-            state.Position = new Vector2I()
+            PointerState<MouseButton> state = new PointerState<MouseButton>();
+            state.Position = new Vector2F()
             {
                 X = lParam & 0xFFFF,
                 Y = (lParam >> 16) & 0xFFFF,
@@ -186,7 +186,7 @@ namespace Molten.Input
                 {
                     if (b != btn && (btns & b) == b)
                     {
-                        state.Button = TranslateButton(b);
+                        state.ID = TranslateButton(b);
                         state.Action = InputAction.Held;
                         state.ActionType = InputActionType.None;
                         QueueState(state);
@@ -198,7 +198,7 @@ namespace Molten.Input
             state.ActionType = aType;
             state.Action = action;
             state.PressTimestamp = DateTime.UtcNow;
-            state.Button = TranslateButton(btn);
+            state.ID = TranslateButton(btn);
 
             switch (action)
             {
@@ -308,9 +308,9 @@ namespace Molten.Input
             _requestedVisibility = visible;
         }
 
-        protected override void OnSetCursorPosition(Vector2I position)
+        protected override void OnSetPointerPosition(Vector2F position)
         {
-            Cursor.Position = new System.Drawing.Point(position.X, position.Y);
+            Cursor.Position = new Point((int)position.X, (int)position.Y);
         }
 
         protected override void OnDispose()

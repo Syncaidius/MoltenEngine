@@ -69,7 +69,7 @@ namespace Molten.Input
             IsConnected = Mouse.IsConnected;
         }
 
-        private void QueueTouchState(MouseDevice mouse, in MouseButtonState state)
+        private void QueueTouchState(PointingDevice<MouseButton> mouse, PointerState<MouseButton> state)
         {
             QueueState(new TouchPointState()
             {

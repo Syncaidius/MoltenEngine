@@ -1,51 +1,43 @@
-﻿using Molten.Graphics;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Molten.Graphics;
 
 namespace Molten.Input
 {
-    public delegate void MouseEventHandler(MouseDevice mouse, in MouseButtonState state);
+    public delegate void PointingDeviceHandler<T>(PointingDevice<T> mouse, PointerState<T> state) where T : struct;
 
-    /// <summary>
-    /// Represents an implementation of a mouse or pointer device.
-    /// </summary>
-    public abstract class MouseDevice : InputDevice<MouseButtonState, MouseButton>
+    public abstract class PointingDevice<T> : InputDevice<PointerState<T>, T>
+        where T : struct
     {
         /// <summary>
         /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
         /// </summary>
-        public event MouseEventHandler OnLeaveSurface;
+        public event PointingDeviceHandler<T> OnLeaveSurface;
 
         /// <summary>
         /// Occurs when the mouse cursor was outside of the parent window/control, but just entered it.
         /// </summary>
-        public event MouseEventHandler OnEnterSurface;
+        public event PointingDeviceHandler<T> OnEnterSurface;
 
-        public event MouseEventHandler OnMoved;
+        public event PointingDeviceHandler<T> OnMoved;
 
-        public event MouseEventHandler OnHeld;
+        public event PointingDeviceHandler<T> OnHeld;
 
-        public event MouseEventHandler OnHover;
+        public event PointingDeviceHandler<T> OnHover;
 
-        public event MouseEventHandler OnButtonDown;
+        public event PointingDeviceHandler<T> OnButtonDown;
 
-        public event MouseEventHandler OnButtonUp;
-
-        /// <summary>
-        /// Invoked when the mouse performs a vertical scroll action.
-        /// </summary>
-        public event MouseEventHandler OnVScroll;
-
-        /// <summary>
-        /// Invoked when the mouse performs a horizontal scroll action.
-        /// </summary>
-        public event MouseEventHandler OnHScroll;
+        public event PointingDeviceHandler<T> OnButtonUp;
 
         INativeSurface _surface;
-        bool _cursorVisible;
         bool _wasInsideControl;
 
         protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
-            InitializeBuffer(service.Settings.Input.MouseBufferSize);
+            InitializeBuffer(service.Settings.Input.PointerBufferSize);
             return null;
         }
 
@@ -56,8 +48,8 @@ namespace Molten.Input
                 return;
 
             Rectangle winBounds = _surface.Bounds;
-            Position = winBounds.Center;
-            OnSetCursorPosition(Position);
+            Position = (Vector2F)winBounds.Center;
+            OnSetPointerPosition(Position);
         }
 
         protected override void OnBind(INativeSurface surface)
@@ -72,22 +64,12 @@ namespace Molten.Input
                 _surface = null;
         }
 
-        protected override int GetStateID(ref MouseButtonState state)
-        {
-            return (int)state.Button;
-        }
-
-        protected override int TranslateStateID(MouseButton idValue)
-        {
-            return (int)idValue;
-        }
-
-        protected override bool ProcessState(ref MouseButtonState newState, ref MouseButtonState prevState)
+        protected override bool ProcessState(ref PointerState<T> newState, ref PointerState<T> prevState)
         {
             if (_surface == null)
                 return true;
 
-            Delta = Vector2I.Zero;
+            Delta = Vector2F.Zero;
 
             // Is the cursor constrained to it's parent control/window?
             Rectangle sBounds = _surface.Bounds;
@@ -133,7 +115,7 @@ namespace Molten.Input
             // Perform error checking on delta vs action
             if (newState.Action == InputAction.Held || newState.Action == InputAction.Moved)
             {
-                newState.Action = newState.Delta != Vector2I.Zero ?
+                newState.Action = newState.Delta != Vector2F.Zero ?
                     InputAction.Moved : InputAction.Held;
             }
 
@@ -162,16 +144,6 @@ namespace Molten.Input
                     OnButtonUp?.Invoke(this, newState);
                     break;
 
-                case InputAction.VerticalScroll:
-                    ScrollWheel.SetValues(newState.Delta.Y);
-                    OnVScroll?.Invoke(this, newState);
-                    break;
-
-                case InputAction.HorizontalScroll:
-                    ScrollWheel.SetValues(newState.Delta.X);
-                    OnHScroll?.Invoke(this, newState);
-                    break;
-
                 case InputAction.Hover:
                     OnHover?.Invoke(this, newState);
                     break;
@@ -180,7 +152,7 @@ namespace Molten.Input
             return true;
         }
 
-        private void CheckInside(bool insideControl, ref MouseButtonState state)
+        private void CheckInside(bool insideControl, ref PointerState<T> state)
         {
             if (insideControl && !_wasInsideControl)
                 OnEnterSurface?.Invoke(this, state);
@@ -190,69 +162,25 @@ namespace Molten.Input
             _wasInsideControl = insideControl;
         }
 
-        protected override bool GetIsDown(ref MouseButtonState state)
-        {
-            if (state.Button != MouseButton.None)
-            {
-                return state.Action == InputAction.Pressed ||
-                    state.Action == InputAction.Held ||
-                    state.Action == InputAction.Moved;
-            }
-
-            return false;
-        }
-
-        protected override bool GetIsHeld(ref MouseButtonState state)
+        protected override bool GetIsHeld(ref PointerState<T> state)
         {
             return state.Action == InputAction.Held || state.Action == InputAction.Moved;
         }
 
-        protected override bool GetIsTapped(ref MouseButtonState state)
+        protected override bool GetIsTapped(ref PointerState<T> state)
         {
             return state.Action == InputAction.Pressed && state.UpdateID == Service.UpdateID;
         }
 
-        protected override void OnUpdate(Timing time) { }
-
-        protected abstract void OnSetCursorPosition(Vector2I position);
-
-        /// <summary>
-        /// Invoked when cursor visibility has changed.
-        /// </summary>
-        /// <param name="visible"></param>
-        protected abstract void OnSetCursorVisibility(bool visible);
+        protected abstract void OnSetPointerPosition(Vector2F position);
 
         /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
-        public Vector2I Delta { get; private set; }
-
-        /// <summary>
-        /// Gets the vertical scroll wheel, if one is present. Returns null if not.
-        /// </summary>
-        public abstract InputScrollWheel ScrollWheel { get; protected set; }
-
-        /// <summary>
-        /// Gets the horizontal scroll wheel, if one is present. Returns null if not.
-        /// </summary>
-        public abstract InputScrollWheel HScrollWheel { get; protected set; }
+        public Vector2F Delta { get; private set; }
 
         /// <summary>
         /// Gets the position of the mouse cursor, relative to the bound <see cref="INativeSurface"/>.
         /// </summary>
-        public Vector2I Position { get; private set; }
-
-        /// <summary>Gets or sets whether or not the native mouse cursor is visible.</summary>
-        public bool IsCursorVisible
-        {
-            get => _cursorVisible;
-            set
-            {
-                if(_cursorVisible != value)
-                {
-                    _cursorVisible = value;
-                    OnSetCursorVisibility(value);
-                }
-            }
-        }
+        public Vector2F Position { get; private set; }
 
         /// <summary>Gets or sets whether or not the mouse is contrained to the bounds of the main output.</summary>
         public bool IsConstrained { get; set; }
@@ -260,6 +188,6 @@ namespace Molten.Input
         /// <summary>
         /// Gets whether or not the cursor inside the bounds of the bound <see cref="INativeSurface"/>.
         /// </summary>
-        public bool IsCursorInSurface { get; private set; }
+        public bool IsInSurface { get; private set; }
     }
 }

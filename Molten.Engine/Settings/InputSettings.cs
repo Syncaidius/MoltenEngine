@@ -8,7 +8,7 @@ namespace Molten.Input
         internal InputSettings()
         {
             TouchBufferSize = AddSetting<int>("touch_buffer_size", 256);
-            MouseBufferSize = AddSetting<int>("mouse_buffer_size", 300);
+            PointerBufferSize = AddSetting<int>("mouse_buffer_size", 300);
             KeyboardBufferSize = AddSetting<int>("kb_buffer_size", 300);
             GamepadBufferSize = AddSetting<int>("gpad_buffer_size", 300);
         }
@@ -19,7 +19,7 @@ namespace Molten.Input
 
         /// <summary>Gets or sets the mouse input buffer size.</summary>
         [DataMember]
-        public SettingValue<int> MouseBufferSize { get; }
+        public SettingValue<int> PointerBufferSize { get; }
 
         /// <summary>Gets or sets the keyboard input buffer size.</summary>
         [DataMember]
