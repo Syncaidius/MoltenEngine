@@ -226,7 +226,7 @@ namespace Molten.Samples
         {
             // Perform a collision test against the rendered font character
             // when left mouse button is clicked.
-            if (Mouse.IsTapped(MouseButton.Left))
+            if (Mouse.IsTapped(PointerButton.Left))
             {
                 _clickPoint = (Vector2F)Mouse.Position;
                 _clickColor = Color.Red;

@@ -27,7 +27,7 @@ namespace Molten.Input
 
         protected override int GetMaxSimultaneousStates()
         {
-            return (int)MouseButton.XButton2 + 1;
+            return (int)PointerButton.XButton2 + 1;
         }
 
         protected override List<InputDeviceFeature> OnInitialize(InputService service)
@@ -172,7 +172,7 @@ namespace Molten.Input
             int lParam)
         {
             WinMouseButtonFlags btns = (WinMouseButtonFlags)(wParam & 0xFFFFFFFF);
-            PointerState<MouseButton> state = new PointerState<MouseButton>();
+            PointerState<PointerButton> state = new PointerState<PointerButton>();
             state.Position = new Vector2F()
             {
                 X = lParam & 0xFFFF,
@@ -233,7 +233,7 @@ namespace Molten.Input
             return (int)((wParam >> 16) & 0xFFFFFFFF);
         }
 
-        private MouseButton TranslateButton(WinMouseButtonFlags btn)
+        private PointerButton TranslateButton(WinMouseButtonFlags btn)
         {
             switch (btn)
             {
@@ -241,22 +241,22 @@ namespace Molten.Input
                 case WinMouseButtonFlags.None:
                 case WinMouseButtonFlags.MK_SHIFT:
                 case WinMouseButtonFlags.MK_CONTROL:
-                    return MouseButton.None;
+                    return PointerButton.None;
 
                 case WinMouseButtonFlags.MK_LBUTTON:
-                    return MouseButton.Left;
+                    return PointerButton.Left;
 
                 case WinMouseButtonFlags.MK_MBUTTON:
-                    return MouseButton.Middle;
+                    return PointerButton.Middle;
 
                 case WinMouseButtonFlags.MK_RBUTTON:
-                    return MouseButton.Right;
+                    return PointerButton.Right;
 
                 case WinMouseButtonFlags.MK_XBUTTON1:
-                    return MouseButton.XButton1;
+                    return PointerButton.XButton1;
 
                 case WinMouseButtonFlags.MK_XBUTTON2:
-                    return MouseButton.XButton2;
+                    return PointerButton.XButton2;
 
             }
         }

@@ -7,31 +7,31 @@ namespace Molten.Input
     /// <summary>
     /// Represents an implementation of a mouse or pointer device.
     /// </summary>
-    public abstract class MouseDevice : PointingDevice<MouseButton>
+    public abstract class MouseDevice : PointingDevice<PointerButton>
     {
         /// <summary>
         /// Invoked when the mouse performs a vertical scroll action.
         /// </summary>
-        public event PointingDeviceHandler<MouseButton> OnVScroll;
+        public event PointingDeviceHandler<PointerButton> OnVScroll;
 
         /// <summary>
         /// Invoked when the mouse performs a horizontal scroll action.
         /// </summary>
-        public event PointingDeviceHandler<MouseButton> OnHScroll;
+        public event PointingDeviceHandler<PointerButton> OnHScroll;
 
         bool _cursorVisible;
 
-        protected override int GetStateID(ref PointerState<MouseButton> state)
+        protected override int GetStateID(ref PointerState<PointerButton> state)
         {
             return (int)state.ID;
         }
 
-        protected override int TranslateStateID(MouseButton idValue)
+        protected override int TranslateStateID(PointerButton idValue)
         {
             return (int)idValue;
         }
 
-        protected override bool ProcessState(ref PointerState<MouseButton> newState, ref PointerState<MouseButton> prevState)
+        protected override bool ProcessState(ref PointerState<PointerButton> newState, ref PointerState<PointerButton> prevState)
         {
             bool result =  base.ProcessState(ref newState, ref prevState);
 
@@ -51,9 +51,9 @@ namespace Molten.Input
             return result;
         }
 
-        protected override bool GetIsDown(ref PointerState<MouseButton> state)
+        protected override bool GetIsDown(ref PointerState<PointerButton> state)
         {
-            if (state.ID != MouseButton.None)
+            if (state.ID != PointerButton.None)
             {
                 return state.Action == InputAction.Pressed ||
                     state.Action == InputAction.Held ||

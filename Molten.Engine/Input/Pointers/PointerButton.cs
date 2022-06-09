@@ -1,6 +1,6 @@
 ﻿namespace Molten.Input
 {
-    public enum MouseButton : byte
+    public enum PointerButton : byte
     {
         None = 0,
         Left = 1,

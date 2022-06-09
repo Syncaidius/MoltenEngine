@@ -8,9 +8,9 @@ namespace Molten
         internal Vector2F DragDistance;
         internal bool InputDragged = false;
         internal float DragThreshold = 10; // Pixels
-        public MouseButton Button { get; private set; }
+        public PointerButton Button { get; private set; }
 
-        public SceneClickTracker(MouseButton button)
+        public SceneClickTracker(PointerButton button)
         {
             Button = button;
         }

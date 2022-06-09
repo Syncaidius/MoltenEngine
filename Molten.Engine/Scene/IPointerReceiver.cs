@@ -9,15 +9,15 @@ namespace Molten
     {
         bool Contains(Vector2F point);
 
-        void PointerPressed(Vector2F pos, MouseButton button);
+        void PointerPressed(Vector2F pos, PointerButton button);
 
-        void PointerReleasedOutside(Vector2F pos, MouseButton button);
+        void PointerReleasedOutside(Vector2F pos, PointerButton button);
 
-        void PointerReleased(Vector2F pos, bool wasDragged, MouseButton button);
+        void PointerReleased(Vector2F pos, bool wasDragged, PointerButton button);
 
-        void PointerDrag(Vector2F pos, Vector2F delta, MouseButton button);
+        void PointerDrag(Vector2F pos, Vector2F delta, PointerButton button);
 
-        void PointerHeld(Vector2F pos, Vector2F delta, MouseButton button);
+        void PointerHeld(Vector2F pos, Vector2F delta, PointerButton button);
 
         void PointerScroll(InputScrollWheel wheel);
 

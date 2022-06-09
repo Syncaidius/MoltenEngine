@@ -20,7 +20,7 @@ namespace Molten
 
             Vector2F axisDelta = Vector2F.Zero;
 
-            if (AcceptInput && mouse.IsDown(MouseButton.Left))
+            if (AcceptInput && mouse.IsDown(PointerButton.Left))
                 axisDelta = new Vector2F(mouse.Delta.Y, mouse.Delta.X) * rotSpeed;
 
             // Gamepad movement

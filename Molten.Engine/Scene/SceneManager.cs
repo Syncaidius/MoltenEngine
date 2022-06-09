@@ -5,8 +5,8 @@ namespace Molten
 {
     internal class SceneManager : IDisposable
     {
-        public event SceneInputEventHandler<MouseButton> OnObjectFocused;
-        public event SceneInputEventHandler<MouseButton> OnObjectUnfocused;
+        public event SceneInputEventHandler<PointerButton> OnObjectFocused;
+        public event SceneInputEventHandler<PointerButton> OnObjectUnfocused;
 
         List<Scene> _scenes;
         List<SceneClickTracker> _trackers;
@@ -18,10 +18,10 @@ namespace Molten
             _scenes = new List<Scene>();
             _pendingChanges = new ThreadedQueue<SceneChange>();
 
-            MouseButton[] buttons = ReflectionHelper.GetEnumValues<MouseButton>();
-            foreach(MouseButton b in buttons)
+            PointerButton[] buttons = ReflectionHelper.GetEnumValues<PointerButton>();
+            foreach(PointerButton b in buttons)
             {
-                if (b == MouseButton.None)
+                if (b == PointerButton.None)
                     continue;
 
                 _trackers.Add(new SceneClickTracker(b));
@@ -58,10 +58,10 @@ namespace Molten
             {
                 acceptor.PointerFocus();
 
-                OnObjectFocused?.Invoke(new SceneInputData<MouseButton>()
+                OnObjectFocused?.Invoke(new SceneInputData<PointerButton>()
                 {
                     Object = acceptor,
-                    InputValue = MouseButton.None,
+                    InputValue = PointerButton.None,
                 });
             }
 
@@ -74,10 +74,10 @@ namespace Molten
             {
                 Focused.PointerUnfocus();
 
-                OnObjectUnfocused?.Invoke(new SceneInputData<MouseButton>()
+                OnObjectUnfocused?.Invoke(new SceneInputData<PointerButton>()
                 {
                     Object = Focused,
-                    InputValue = MouseButton.None,
+                    InputValue = PointerButton.None,
                 });
             }
 
