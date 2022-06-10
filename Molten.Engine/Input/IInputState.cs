@@ -14,6 +14,11 @@
         ulong UpdateID { get; set; }
 
         /// <summary>
+        /// Gets or sets the state set ID.
+        /// </summary>
+        int SetID { get; set; }
+
+        /// <summary>
         /// Gets the current press state.
         /// </summary>
         InputAction Action { get; set; }

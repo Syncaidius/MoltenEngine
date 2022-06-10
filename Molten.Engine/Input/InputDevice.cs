@@ -9,6 +9,22 @@ namespace Molten.Input
 
     public abstract class InputDevice : EngineObject
     {
+        protected class StateParameters
+        {
+            /// <summary>
+            /// The number of separate state sets to keep track of. Each state set will track 1 or more states (e.g. buttons). 
+            /// This is useful when a device has multiple pointers, each with 1 or more button states to track e.g. fingers or dual-hand pointing device.
+            /// </summary>
+            public int SetCount { get; init; }
+
+            /// <summary>
+            /// The number of states to track per state set.
+            /// </summary>
+            public int StatesPerSet { get; init; }
+
+            public StateParameters() { }
+        }
+
         /// <summary>
         /// Invoked when the device is connected.
         /// </summary>
@@ -34,14 +50,14 @@ namespace Molten.Input
         public abstract int BufferSize { get; protected set; }
 
         /// <summary>
+        /// Gets the number of simultaneous states that each state-set can keep track of on the current <see cref="InputDevice"/>.
+        /// </summary>
+        public abstract int StatesPerSet { get; protected set; }
+
+        /// <summary>
         /// Gets the <see cref="InputService"/> that the current <see cref="InputDevice"/> is bound to.
         /// </summary>
         public InputService Service { get; private set; }
-
-        /// <summary>
-        /// Gets the maximum number of simultaneous states that the current <see cref="InputDevice"/> can keep track of.
-        /// </summary>
-        public abstract int MaxSimultaneousStates { get; protected set; }
 
         /// <summary>
         /// Gets a list of features bound to the current <see cref="InputDevice"/>.
@@ -89,18 +105,34 @@ namespace Molten.Input
             }
         }
 
+        /// <summary>
+        /// Gets the number of state sets in the current <see cref="InputDevice"/>. E.g. fingers, mouse pointers or multi-part device count.
+        /// </summary>
+        public int StateSetCount => _stateParams.SetCount;
+
         bool _connected;
         bool _enabled;
         List<InputDeviceFeature> _features;
+        StateParameters _stateParams;
         
         internal void Initialize(InputService service) 
         {
             _enabled = true;
-            Service = service; 
+            Service = service;
 
-            MaxSimultaneousStates = GetMaxSimultaneousStates();
+            _stateParams = GetStateParameters();
+
+            SettingValue<int> bufferSizeSetting = GetBufferSizeSetting(service.Settings.Input);
+            InitializeBuffer(_stateParams, bufferSizeSetting.Value);
+            bufferSizeSetting.OnChanged += BufferSizeSetting_OnChanged;
+
             _features = OnInitialize(service) ?? new List<InputDeviceFeature>(); 
             Features = _features.AsReadOnly();
+        }
+
+        private void BufferSizeSetting_OnChanged(int oldValue, int newValue)
+        {
+            InitializeBuffer(_stateParams, newValue);
         }
 
         /// <summary>
@@ -108,7 +140,10 @@ namespace Molten.Input
         /// </summary>
         /// <param name="features"></param>
         /// <returns>A list of detected <see cref="InputDeviceFeature"/> objects.</returns>
-        protected abstract List<InputDeviceFeature> OnInitialize(InputService service);
+        protected virtual List<InputDeviceFeature> OnInitialize(InputService service)
+        {
+            return null;
+        }
 
         /// <summary>
         /// Clears the current state of the input handler.
@@ -121,7 +156,11 @@ namespace Molten.Input
                 f.ClearState();
         }
 
-        protected abstract int GetMaxSimultaneousStates();
+        protected abstract StateParameters GetStateParameters();
+
+        protected abstract SettingValue<int> GetBufferSizeSetting(InputSettings settings);
+
+        protected abstract void InitializeBuffer(StateParameters stateParams, int bufferSize);
 
         protected abstract void OnClearState();
 
@@ -264,7 +303,7 @@ namespace Molten.Input
         /// <summary>
         /// Gets the maximum number of simultaneous states that the current <see cref="InputDevice"/> can keep track of.
         /// </summary>
-        public override sealed int MaxSimultaneousStates
+        public override sealed int StatesPerSet
         {
             get => _states.Length;
             protected set
@@ -277,16 +316,20 @@ namespace Molten.Input
         public event InputBufferSizeChangedHandler OnBufferSizeChanged;
 
         S[] _buffer;
-        S[] _states;
+        S[][] _states;
         int _bStart;
         int _bEnd;
 
-        protected void InitializeBuffer(int bufferSize)
+        protected override sealed void InitializeBuffer(StateParameters stateParams, int bufferSize)
         {
-            _buffer = new S[bufferSize]; 
-            
+            _buffer = new S[bufferSize];
+
             if (_states == null)
-                _states = new S[5];
+            {
+                _states = new S[stateParams.SetCount][];
+                for (int i = 0; i < stateParams.SetCount; i++)
+                    _states[i] = new S[stateParams.StatesPerSet];
+            }
         }
 
         /// <summary>
@@ -307,8 +350,11 @@ namespace Molten.Input
             _bStart = 0;
             _bEnd = 0;
 
-            for (int i = 0; i < _states.Length; i++)
-                _states[i] = new S();
+            for (int s = 0; s < _states.Length; s++)
+            {
+                for (int i = 0; i < _states.Length; i++)
+                    _states[s][i] = new S();
+            }
 
             base.ClearState();
         }
@@ -316,15 +362,16 @@ namespace Molten.Input
         /// <summary>
         /// Retrieves the state of the given state ID. 
         /// </summary>
+        /// <param name="setID">The state set in which the state exists</param>
         /// <param name="stateID">The state ID. For example, a mouse button, key or touch-point ID.</param>
         /// <returns></returns>
-        public S GetState(T state)
+        public S GetState(T state, int setID = 0)
         {
             int stateID = TranslateStateID(state);
-            if (stateID > MaxSimultaneousStates)
-                throw new IndexOutOfRangeException($"stateID was greater than or equal to {nameof(MaxSimultaneousStates)}, which is {MaxSimultaneousStates}.");
+            if (stateID > StatesPerSet)
+                throw new IndexOutOfRangeException($"stateID was greater than or equal to {nameof(StatesPerSet)}, which is {StatesPerSet}.");
 
-            return _states[stateID];
+            return _states[setID][stateID];
         }
 
         internal override void Update(Timing time)
@@ -343,12 +390,11 @@ namespace Molten.Input
                 state.UpdateID = Service.UpdateID;
                 int stateID = GetStateID(ref state);
 
-                S prev = _states[stateID];
-                bool accept = ProcessState(ref state, ref prev);
+                S prev = _states[state.SetID][stateID];
 
                 // Replace state with new state, if accepted.
-                if (accept)
-                    _states[stateID] = state;
+                if (ProcessState(ref state, ref prev))
+                    _states[state.SetID][stateID] = state;
 
                 _bStart++;
             }
@@ -357,38 +403,22 @@ namespace Molten.Input
                 f.Update(time);
         }
 
-        public bool IsAnyDown(params T[] stateIDs)
-        {
-            for (int i = 0; i < stateIDs.Length; i++)
-            {
-                int id = TranslateStateID(stateIDs[i]);
-
-                if (id > _states.Length)
-                    continue;
-
-                if (GetIsDown(ref _states[id]))
-                    return true;
-            }
-
-            return false;
-        }
-
-        public bool IsHeld(T stateID)
+        public bool IsHeld(T stateID, int setID = 0)
         {
             int id = TranslateStateID(stateID);
-            return GetIsHeld(ref _states[id]);
+            return GetIsHeld(ref _states[setID][id]);
         }
 
-        public bool IsDown(T stateID)
+        public bool IsDown(T stateID, int setID = 0)
         {
             int id = TranslateStateID(stateID);
-            return GetIsDown(ref _states[id]);
+            return GetIsDown(ref _states[setID][id]);
         }
 
-        public bool IsTapped(T stateID)
+        public bool IsTapped(T stateID, int setID = 0)
         {
             int id = TranslateStateID(stateID);
-            return GetIsTapped(ref _states[id]);
+            return GetIsTapped(ref _states[setID][id]);
         }
 
         /// <summary>

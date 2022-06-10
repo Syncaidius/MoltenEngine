@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Input
 {
-    public struct PointerState<T> : IInputState
-        where T : struct
+    public struct PointerState : IInputState
     {
         /// <summary>
         /// An empty <see cref="PointerState"/>.
         /// </summary>
-        public static readonly PointerState<T> Empty = new PointerState<T>();
+        public static readonly PointerState Empty = new PointerState();
 
         /// <summary>
         /// Gets the screen position of the touch point.
@@ -30,9 +29,14 @@ namespace Molten.Input
         public InputAction Action { get; set; }
 
         /// <summary>
-        /// The pointer/cursor/finger ID.
+        /// The set/finger ID.
         /// </summary>
-        public T ID;
+        public int SetID { get; set; }
+
+        /// <summary>
+        /// The pointer button.
+        /// </summary>
+        public PointerButton Button;
 
         /// <summary>
         /// The orientation of the pointer, relative to the default upright orientation of the device.

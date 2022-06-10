@@ -25,9 +25,13 @@ namespace Molten.Input
         bool _requestedVisibility = true;
         bool _cursorVisibility = true;
 
-        protected override int GetMaxSimultaneousStates()
+        protected override StateParameters GetStateParameters()
         {
-            return (int)PointerButton.XButton2 + 1;
+            return new StateParameters()
+            {
+                SetCount = 1,
+                StatesPerSet = (int)PointerButton.XButton2 + 1,
+            };
         }
 
         protected override List<InputDeviceFeature> OnInitialize(InputService service)

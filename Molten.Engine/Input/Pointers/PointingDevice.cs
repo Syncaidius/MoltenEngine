@@ -7,42 +7,40 @@ using Molten.Graphics;
 
 namespace Molten.Input
 {
-    public delegate void PointingDeviceHandler<T>(PointingDevice<T> mouse, PointerState<T> state) where T : struct;
+    public delegate void PointingDeviceHandler(PointingDevice mouse, PointerState state);
 
-    public abstract class PointingDevice<T> : InputDevice<PointerState<T>, T>
-        where T : struct
+    public abstract class PointingDevice: InputDevice<PointerState, PointerButton>
     {
         /// <summary>
         /// Invoked when any type of input event occurs for the current <see cref="PointingDevice{T}"/>.
         /// </summary>
-        public event PointingDeviceHandler<T> OnEvent;
+        public event PointingDeviceHandler OnEvent;
         /// <summary>
         /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
         /// </summary>
-        public event PointingDeviceHandler<T> OnLeaveSurface;
+        public event PointingDeviceHandler OnLeaveSurface;
 
         /// <summary>
         /// Occurs when the mouse cursor was outside of the parent window/control, but just entered it.
         /// </summary>
-        public event PointingDeviceHandler<T> OnEnterSurface;
+        public event PointingDeviceHandler OnEnterSurface;
 
-        public event PointingDeviceHandler<T> OnMoved;
+        public event PointingDeviceHandler OnMoved;
 
-        public event PointingDeviceHandler<T> OnHeld;
+        public event PointingDeviceHandler OnHeld;
 
-        public event PointingDeviceHandler<T> OnHover;
+        public event PointingDeviceHandler OnHover;
 
-        public event PointingDeviceHandler<T> OnPressed;
+        public event PointingDeviceHandler OnPressed;
 
-        public event PointingDeviceHandler<T> OnReleased;
+        public event PointingDeviceHandler OnReleased;
 
         INativeSurface _surface;
         bool _wasInsideControl;
 
-        protected override List<InputDeviceFeature> OnInitialize(InputService service)
+        protected override SettingValue<int> GetBufferSizeSetting(InputSettings settings)
         {
-            InitializeBuffer(service.Settings.Input.PointerBufferSize);
-            return null;
+            return settings.PointerBufferSize;
         }
 
         /// <summary>Positions the mouse cursor at the center of the currently-bound <see cref="IInputCamera.OutputSurface"/>.</summary>
@@ -68,7 +66,17 @@ namespace Molten.Input
                 _surface = null;
         }
 
-        protected override bool ProcessState(ref PointerState<T> newState, ref PointerState<T> prevState)
+        protected override sealed int GetStateID(ref PointerState state)
+        {
+            return (int)state.Button;
+        }
+
+        protected override sealed int TranslateStateID(PointerButton idValue)
+        {
+            return (int)idValue;
+        }
+
+        protected override bool ProcessState(ref PointerState newState, ref PointerState prevState)
         {
             if (_surface == null)
                 return true;
@@ -158,7 +166,7 @@ namespace Molten.Input
             return true;
         }
 
-        private void CheckInside(bool insideControl, ref PointerState<T> state)
+        private void CheckInside(bool insideControl, ref PointerState state)
         {
             if (insideControl && !_wasInsideControl)
                 OnEnterSurface?.Invoke(this, state);
@@ -168,12 +176,12 @@ namespace Molten.Input
             _wasInsideControl = insideControl;
         }
 
-        protected override bool GetIsHeld(ref PointerState<T> state)
+        protected override bool GetIsHeld(ref PointerState state)
         {
             return state.Action == InputAction.Held || state.Action == InputAction.Moved;
         }
 
-        protected override bool GetIsTapped(ref PointerState<T> state)
+        protected override bool GetIsTapped(ref PointerState state)
         {
             return state.Action == InputAction.Pressed && state.UpdateID == Service.UpdateID;
         }
@@ -195,5 +203,10 @@ namespace Molten.Input
         /// Gets whether or not the cursor inside the bounds of the bound <see cref="INativeSurface"/>.
         /// </summary>
         public bool IsInSurface { get; private set; }
+
+        /// <summary>
+        /// Gets the type of the current <see cref="PointingDevice"/>.
+        /// </summary>
+        public abstract PointingDeviceType PointerType { get; }
     }
 }

@@ -2,10 +2,18 @@
 {
     public abstract class GamepadDevice : InputDevice<GamepadButtonState, GamepadButton>
     {
-        protected override List<InputDeviceFeature> OnInitialize(InputService service)
+        protected override StateParameters GetStateParameters()
         {
-            InitializeBuffer(service.Settings.Input.GamepadBufferSize);
-            return null;
+            return new StateParameters()
+            {
+                SetCount = 1,
+                StatesPerSet = (int)GamepadButton.Y + 1
+            };
+        }
+
+        protected override SettingValue<int> GetBufferSizeSetting(InputSettings settings)
+        {
+            return settings.GamepadBufferSize;
         }
 
         protected override bool ProcessState(ref GamepadButtonState newState, ref GamepadButtonState prevState)
