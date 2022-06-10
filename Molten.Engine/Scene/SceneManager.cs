@@ -87,21 +87,10 @@ namespace Molten
         internal void HandleInput(MouseDevice mouse, TouchDevice touch, KeyboardDevice kb, GamepadDevice gamepad, Timing timing)
         {
             if (mouse != null)
-                HandleMouseInput(mouse, timing);
+                HandlePointerInput(mouse, timing);
 
             if (touch != null)
-            {
-                if (mouse != null && mouse.IsConnected && mouse.IsEnabled)
-                {
-                    // Make sure we're not emulating touch input using the same mouse device as above, if available.
-                    if (touch is MouseTouchEmulatorDevice mted && mted.Mouse != mouse)
-                        HandleTouchInput(touch, timing);
-                }
-                else
-                {
-                    HandleTouchInput(touch, timing);
-                }
-            }
+                HandlePointerInput(touch, timing);
 
             for (int i = _scenes.Count - 1; i >= 0; i--)
             {
@@ -115,53 +104,50 @@ namespace Molten
             }
         }
 
-        private void HandleTouchInput(TouchDevice touch ,Timing time)
+        private void HandlePointerInput(PointingDevice pDevice, Timing time)
         {
-            // TODO implement SceneTouchTracker class
-            // TODO do touch-specific input handling and call relevant IInputAcceptor methods.
-        }
+            Vector2F cursorPos = pDevice.Position;
 
-        private void HandleMouseInput(MouseDevice mouse, Timing time)
-        {
-            Vector2F cursorPos = (Vector2F)mouse.Position;
-
-            for (int i = _scenes.Count - 1; i >= 0; i--)
+            if (pDevice is MouseDevice mouse)
             {
-                IPointerReceiver newHover = _scenes[i].PickObject(cursorPos);
+                for (int i = _scenes.Count - 1; i >= 0; i--)
+                {
+                    IPointerReceiver newHover = _scenes[i].PickObject(cursorPos);
 
-                if (newHover == null)
-                {
-                    // Trigger leave on previous hover component.
-                    Hovered?.PointerLeave(cursorPos);
-                    Hovered = null;
-                }
-                else
-                {
-                    if (Hovered != newHover)
+                    if (newHover == null)
                     {
-                        //trigger leave on old hover component.
+                        // Trigger leave on previous hover component.
                         Hovered?.PointerLeave(cursorPos);
-
-                        //set new hover component and trigger it's enter event
-                        Hovered = newHover;
-                        Hovered.PointerEnter(cursorPos);
+                        Hovered = null;
                     }
-                }
+                    else
+                    {
+                        if (Hovered != newHover)
+                        {
+                            //trigger leave on old hover component.
+                            Hovered?.PointerLeave(cursorPos);
 
-                // Invoke hover event if possible
-                if (Hovered != null)
-                {
-                    Hovered.PointerHover(cursorPos);
+                            //set new hover component and trigger it's enter event
+                            Hovered = newHover;
+                            Hovered.PointerEnter(cursorPos);
+                        }
+                    }
 
-                    // Handle scroll wheel event
-                    if (mouse.ScrollWheel.Delta != 0)
-                        Hovered.PointerScroll(mouse.ScrollWheel);
+                    // Invoke hover event if possible
+                    if (Hovered != null)
+                    {
+                        Hovered.PointerHover(cursorPos);
+
+                        // Handle scroll wheel event
+                        if (mouse.ScrollWheel.Delta != 0)
+                            Hovered.PointerScroll(mouse.ScrollWheel);
+                    }
                 }
             }
 
             // Update all button trackers
             for (int j = 0; j < _trackers.Count; j++)
-                _trackers[j].Update(this, mouse, time);
+                _trackers[j].Update(this, pDevice, time);
         }
 
         internal void Update(Timing time)
