@@ -38,7 +38,7 @@ namespace Molten.Input
         INativeSurface _surface;
         bool _wasInsideControl;
 
-        protected override SettingValue<int> GetBufferSizeSetting(InputSettings settings)
+        protected override sealed SettingValue<int> GetBufferSizeSetting(InputSettings settings)
         {
             return settings.PointerBufferSize;
         }
@@ -184,6 +184,18 @@ namespace Molten.Input
         protected override bool GetIsTapped(ref PointerState state)
         {
             return state.Action == InputAction.Pressed && state.UpdateID == Service.UpdateID;
+        }
+
+        protected override bool GetIsDown(ref PointerState state)
+        {
+            if (state.Button != PointerButton.None)
+            {
+                return state.Action == InputAction.Pressed ||
+                    state.Action == InputAction.Held ||
+                    state.Action == InputAction.Moved;
+            }
+
+            return false;
         }
 
         protected abstract void OnSetPointerPosition(Vector2F position);

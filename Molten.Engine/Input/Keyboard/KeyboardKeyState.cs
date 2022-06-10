@@ -10,6 +10,8 @@
 
         public InputAction Action { get; set; }
 
+        public int SetID { get; set; }
+
         public ulong UpdateID { get; set; }
 
         /// <summary>Gets the character value of the key. 

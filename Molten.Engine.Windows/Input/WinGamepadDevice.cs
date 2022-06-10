@@ -54,11 +54,6 @@ namespace Molten.Input
             return features;
         }
 
-        protected override int GetMaxSimultaneousStates()
-        {
-            return (int)GamepadButton.Y + 1;
-        }
-
         protected override void OnBind(INativeSurface surface)
         {
             // TODO simply store the window we're bound to and only accept input if it is focused.
@@ -128,6 +123,7 @@ namespace Molten.Input
                         {
                             Button = TranslateButton(b),
                             Pressure = 1.0f,
+                            SetID = 0, // A standard gamepad only has one set of buttons.
                         };
 
                         bool pressed = gp.Buttons.HasFlag(b);

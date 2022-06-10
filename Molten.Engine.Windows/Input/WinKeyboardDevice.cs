@@ -20,11 +20,6 @@ namespace Molten.Input
 
         public override string DeviceName => "Windows Keyboard";
 
-        protected override int GetMaxSimultaneousStates()
-        {
-            return (int)KeyCode.OemClear + 1;
-        }
-
         protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
             List<InputDeviceFeature> baseFeatures = base.OnInitialize(service);
@@ -49,9 +44,10 @@ namespace Molten.Input
             KeyboardKeyState state = new KeyboardKeyState()
             {
                 Key = 0,
+                SetID = 0, // Keyboard only has one set of keys, always at ID 0.
                 KeyType = KeyboardKeyType.Normal,
                 Action = InputAction.Pressed,
-                Character = char.MinValue
+                Character = char.MinValue,
             };
 
             if (windowHandle == forewindow)

@@ -5,10 +5,18 @@
 
     public abstract class KeyboardDevice : InputDevice<KeyboardKeyState, KeyCode>
     {
-        protected override List<InputDeviceFeature> OnInitialize(InputService service)
+        protected override SettingValue<int> GetBufferSizeSetting(InputSettings settings)
         {
-            InitializeBuffer(service.Settings.Input.KeyboardBufferSize);
-            return null;
+            return settings.KeyboardBufferSize;
+        }
+
+        protected override StateParameters GetStateParameters()
+        {
+            return new StateParameters()
+            {
+                SetCount = 1,
+                StatesPerSet = (int)KeyCode.OemClear + 1,
+            };
         }
 
         protected override int TranslateStateID(KeyCode idValue)

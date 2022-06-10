@@ -7,6 +7,8 @@
         /// </summary>
         public GamepadButton Button;
 
+        public int SetID { get; set; }
+
         /// <summary>
         /// Gets the pressure of the button, if pressed, between 0.0f and 1.0f. 
         /// This may always be 1.0f if the device button is not pressure-sensitive.

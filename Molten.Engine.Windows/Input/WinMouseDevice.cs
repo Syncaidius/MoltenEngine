@@ -176,7 +176,9 @@ namespace Molten.Input
             int lParam)
         {
             WinMouseButtonFlags btns = (WinMouseButtonFlags)(wParam & 0xFFFFFFFF);
-            PointerState<PointerButton> state = new PointerState<PointerButton>();
+            PointerState state = new PointerState();
+            state.SetID = 0; // Mouse only has one set of buttons, at ID 0.
+
             state.Position = new Vector2F()
             {
                 X = lParam & 0xFFFF,
@@ -190,7 +192,7 @@ namespace Molten.Input
                 {
                     if (b != btn && (btns & b) == b)
                     {
-                        state.ID = TranslateButton(b);
+                        state.Button = TranslateButton(b);
                         state.Action = InputAction.Held;
                         state.ActionType = InputActionType.None;
                         QueueState(state);
@@ -202,7 +204,7 @@ namespace Molten.Input
             state.ActionType = aType;
             state.Action = action;
             state.PressTimestamp = DateTime.UtcNow;
-            state.ID = TranslateButton(btn);
+            state.Button = TranslateButton(btn);
 
             switch (action)
             {

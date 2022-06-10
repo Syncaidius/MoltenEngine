@@ -85,11 +85,7 @@ namespace Molten.Input
 
         public override TouchDevice GetTouch()
         {
-            MouseDevice md = GetMouse();
-            // TODO check if the system actually has a touch device.
-            MouseTouchEmulatorDevice mted = GetCustomDevice<MouseTouchEmulatorDevice>();
-            mted.Mouse = md;
-            return mted;
+            return null; // TODO support touch on windows.
         }
 
         protected override GamepadDevice OnGetGamepad(int index, GamepadSubType subtype)

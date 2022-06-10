@@ -392,7 +392,7 @@ namespace Molten.Input
 
                 S prev = _states[state.SetID][stateID];
 
-                // Replace state with new state, if accepted.
+                // Replace prev state with new state, if accepted.
                 if (ProcessState(ref state, ref prev))
                     _states[state.SetID][stateID] = state;
 

@@ -41,18 +41,6 @@ namespace Molten.Input
             return result;
         }
 
-        protected override bool GetIsDown(ref PointerState state)
-        {
-            if (state.Button != PointerButton.None)
-            {
-                return state.Action == InputAction.Pressed ||
-                    state.Action == InputAction.Held ||
-                    state.Action == InputAction.Moved;
-            }
-
-            return false;
-        }
-
         protected override void OnUpdate(Timing time) { }
 
         /// <summary>
