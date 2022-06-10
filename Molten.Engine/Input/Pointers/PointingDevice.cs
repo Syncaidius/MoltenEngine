@@ -37,6 +37,19 @@ namespace Molten.Input
 
         INativeSurface _surface;
         bool _wasInsideControl;
+        SettingValue<float> _sensitivitySetting;
+
+        protected override List<InputDeviceFeature> OnInitialize(InputService service)
+        {
+            _sensitivitySetting = service.Settings.Input.PointerSensitivity;
+            _sensitivitySetting.OnChanged += PointerSensitivity_OnChanged;
+            return base.OnInitialize(service);
+        }
+
+        private void PointerSensitivity_OnChanged(float oldValue, float newValue)
+        {
+            Sensitivity = _sensitivitySetting;
+        }
 
         protected override sealed SettingValue<int> GetBufferSizeSetting(InputSettings settings)
         {
@@ -119,7 +132,7 @@ namespace Molten.Input
             if (newState.Action != InputAction.None &&
                 prevState.Action != InputAction.None && prevState.Action != InputAction.Released)
             {
-                newState.Delta = newState.Position - prevState.Position;
+                newState.Delta = (newState.Position - prevState.Position) * Sensitivity;
                 newState.PressTimestamp = prevState.PressTimestamp;
                 Delta = newState.Delta;
             }
@@ -198,6 +211,11 @@ namespace Molten.Input
             return false;
         }
 
+        protected override void OnDispose()
+        {
+            _sensitivitySetting.OnChanged -= PointerSensitivity_OnChanged;
+        }
+
         protected abstract void OnSetPointerPosition(Vector2F position);
 
         /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
@@ -215,6 +233,11 @@ namespace Molten.Input
         /// Gets whether or not the cursor inside the bounds of the bound <see cref="INativeSurface"/>.
         /// </summary>
         public bool IsInSurface { get; private set; }
+
+        /// <summary>
+        /// Gets the current level of sensitivity affecting the current <see cref="PointingDevice"/>.
+        /// </summary>
+        public float Sensitivity { get; private set; } = 1.0f;
 
         /// <summary>
         /// Gets the type of the current <see cref="PointingDevice"/>.
