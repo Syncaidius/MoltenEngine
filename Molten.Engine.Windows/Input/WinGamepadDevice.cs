@@ -1,34 +1,42 @@
 ﻿using Molten.Graphics;
 using Molten.Windows32;
-using SharpDX.XInput;
-using State = SharpDX.XInput.State;
+using Silk.NET.XInput;
 
 namespace Molten.Input
 {
     public class WinGamepadDevice : GamepadDevice
     {
-        static GamepadButtonFlags[] _buttons;
+        const uint ERROR_SUCCESS = 0;
+        const uint ERROR_DEVICE_NOT_CONNECTED = 0x48F;
+        const uint XINPUT_FLAG_GAMEPAD = 1;
+        const byte BATTERY_DEVTYPE_GAMEPAD = 0;
+        const byte BATTERY_DEVTYPE_HEADSET = 1;
 
-        Controller _pad;
+        static GamepadButtons[] _buttons;
+        static XInput _api;
+
         Capabilities _capabilities;
-        GamepadButtonFlags _prevButtons;
+        GamepadButtons _prevButtons;
+        GamepadSubType _subType;
 
         string _deviceName;
-        int _lastPacketNumber;
+        uint _lastPacketNumber;
 
         static WinGamepadDevice()
         {
-            _buttons = ReflectionHelper.GetEnumValues<GamepadButtonFlags>();
+            _api = XInput.GetApi();
+            _buttons = ReflectionHelper.GetEnumValues<GamepadButtons>();
         }
 
-        protected override List<InputDeviceFeature> OnInitialize(InputService service)
+        protected unsafe override List<InputDeviceFeature> OnInitialize(InputService service)
         {
             List<InputDeviceFeature> baseFeatures = base.OnInitialize(service);
 
             // Initialize hold timer dictionaries.
             _deviceName = "Gamepad " + Index;
-            _pad = new Controller((UserIndex)Index);
-            IsConnected = _pad.IsConnected;
+
+            State initState;
+            IsConnected = _api.GetState((uint)Index, &initState) == ERROR_SUCCESS;
 
             LeftStick = new InputAnalogStick("Left", 32767);
             RightStick = new InputAnalogStick("Right", 32767);
@@ -72,18 +80,25 @@ namespace Molten.Input
 
         private void RetrieveDeviceInformation()
         {
-            _capabilities = _pad.GetCapabilities(DeviceQueryType.Gamepad);
+            IsConnected = _api.GetCapabilities((uint)Index, XINPUT_FLAG_GAMEPAD, ref _capabilities) == ERROR_SUCCESS;
 
             // Add the sub-type into the name if device is not a normal gamepad.
-            if (_capabilities.SubType != DeviceSubType.Gamepad)
-                _deviceName += " ( " + _capabilities.SubType + ")";
+            _subType = (GamepadSubType)_capabilities.SubType;
+
+            if (_subType != GamepadSubType.Gamepad)
+                _deviceName += $" ({_subType})";
         }
 
         /// <summary>Returns details about the status of a battery.</summary>
         /// <returns></returns>
-        public BatteryInformation GetBatteryDetails(BatteryDeviceType type)
+        internal unsafe BatteryInformation GetBatteryDetails()
         {
-            return _pad.GetBatteryInformation(type);
+            // TODO abstract this with https://github.com/Syncaidius/MoltenEngine/issues/41
+            // TODO add support for retrieving headset (BATTERY_DEVTYPE_HEADSET) battery status
+
+            BatteryInformation info;
+            _api.GetBatteryInformation((uint)Index, BATTERY_DEVTYPE_GAMEPAD, &info);
+            return info;
         }
 
         public override void OpenControlPanel() { }
@@ -91,9 +106,11 @@ namespace Molten.Input
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of time.</param>
         /// <param name="releaseInput">If set to true, will reset all held timers and stop retrieving the latest state.</param>
-        protected override void OnUpdate(Timing time)
+        protected unsafe override void OnUpdate(Timing time)
         {
-            IsConnected = _pad.IsConnected;
+            State state;
+
+            IsConnected = _api.GetState((uint)Index, &state) == ERROR_SUCCESS;
 
             if (!IsEnabled)
                 return;
@@ -107,16 +124,15 @@ namespace Molten.Input
             if (releaseInput == false && IsConnected)
             {
                 // Update states
-                State state = _pad.GetState();
-                if (state.PacketNumber != _lastPacketNumber)
+                if (state.DwPacketNumber != _lastPacketNumber)
                 {
                     Gamepad gp = state.Gamepad;
-                    GamepadButtonFlags buttons = gp.Buttons;
+                    GamepadButtons buttons = (GamepadButtons)gp.WButtons;
 
                     // Check each available button.
-                    foreach (GamepadButtonFlags b in _buttons)
+                    foreach (GamepadButtons b in _buttons)
                     {
-                        if (b == GamepadButtonFlags.None)
+                        if (b == GamepadButtons.None)
                             continue;
 
                         GamepadButtonState gps = new GamepadButtonState()
@@ -126,7 +142,7 @@ namespace Molten.Input
                             SetID = 0, // A standard gamepad only has one set of buttons.
                         };
 
-                        bool pressed = gp.Buttons.HasFlag(b);
+                        bool pressed = buttons.HasFlag(b);
                         bool wasPressed = _prevButtons.HasFlag(b);
 
                         if (pressed && !wasPressed)
@@ -148,13 +164,13 @@ namespace Molten.Input
                     }
 
                     _prevButtons = buttons;
-                    _lastPacketNumber = state.PacketNumber;
+                    _lastPacketNumber = state.DwPacketNumber;
 
                     // Update thumbsticks, triggers and vibration
-                    LeftStick.SetValues(gp.LeftThumbX, gp.LeftThumbY);
-                    RightStick.SetValues(gp.RightThumbX, gp.RightThumbY);
-                    LeftTrigger.SetValue(gp.LeftTrigger);
-                    RightTrigger.SetValue(gp.RightTrigger);
+                    LeftStick.SetValues(gp.SThumbLX, gp.SThumbLY);
+                    RightStick.SetValues(gp.SThumbRX, gp.SThumbRY);
+                    LeftTrigger.SetValue(gp.BLeftTrigger);
+                    RightTrigger.SetValue(gp.BRightTrigger);
                     SetVibration(VibrationLeft.Value, VibrationRight.Value);
                 }
             }
@@ -164,41 +180,23 @@ namespace Molten.Input
             }
         }
 
-        private GamepadButton TranslateButton(GamepadButtonFlags b)
+        private GamepadButtons TranslateButton(GamepadButtons b)
         {
-            switch (b)
-            {
-                default:
-                case GamepadButtonFlags.None: return GamepadButton.None;
-                case GamepadButtonFlags.A: return GamepadButton.A;
-                case GamepadButtonFlags.B: return GamepadButton.B;
-                case GamepadButtonFlags.Back: return GamepadButton.Back;
-                case GamepadButtonFlags.DPadDown: return GamepadButton.DPadDown;
-                case GamepadButtonFlags.DPadLeft: return GamepadButton.DPadLeft;
-                case GamepadButtonFlags.DPadRight: return GamepadButton.DPadRight;
-                case GamepadButtonFlags.DPadUp: return GamepadButton.DPadUp;
-                case GamepadButtonFlags.LeftShoulder: return GamepadButton.LeftShoulder;
-                case GamepadButtonFlags.LeftThumb: return GamepadButton.LeftThumb;
-                case GamepadButtonFlags.RightShoulder: return GamepadButton.RightShoulder;
-                case GamepadButtonFlags.RightThumb: return GamepadButton.RightThumb;
-                case GamepadButtonFlags.Start: return GamepadButton.Start;
-                case GamepadButtonFlags.X: return GamepadButton.X;
-                case GamepadButtonFlags.Y: return GamepadButton.Y;
-            }
+            return b; // No translation needed. GamepadButtons matches XInput mapping.
         }
 
-        private void SetVibration(float leftMotor, float rightMotor)
+        private unsafe void SetVibration(float leftMotor, float rightMotor)
         {
             if (IsConnected == false)
                 return;
 
             Vibration vib = new Vibration()
             {
-                LeftMotorSpeed = (ushort)(65535f * leftMotor),
-                RightMotorSpeed = (ushort)(65535f * rightMotor),
+                WLeftMotorSpeed = (ushort)(65535f * leftMotor),
+                WRightMotorSpeed = (ushort)(65535f * rightMotor),
             };
 
-            _pad.SetVibration(vib);
+            IsConnected = _api.SetState((uint)Index, &vib) == ERROR_SUCCESS;
         }
 
         /// <summary>Gets extra capability information about the gamepad.</summary>
@@ -233,7 +231,7 @@ namespace Molten.Input
         /// <summary>
         /// Gets the gamepad/controller sub-type. For example, a joystick or steering wheel.
         /// </summary>
-        public override GamepadSubType SubType => _capabilities.SubType.FromApi();
+        public override GamepadSubType SubType => _subType;
 
         /// <summary>Gets the name of the gamepad.</summary>
         public override string DeviceName => _deviceName;

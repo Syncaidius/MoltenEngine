@@ -5,7 +5,7 @@
         /// <summary>
         /// Gets the game pad button associated with the current <see cref="GamepadButtonState"/>.
         /// </summary>
-        public GamepadButton Button;
+        public GamepadButtons Button;
 
         public int SetID { get; set; }
 
@@ -26,7 +26,7 @@
         public DateTime PressTimestamp { get; set; }
 
         /// <summary>
-        /// Gets the amount of time that the <see cref="GamepadButton"/> has been held.
+        /// Gets the amount of time that the <see cref="GamepadButtons"/> has been held.
         /// </summary>
         public TimeSpan HeldTime;
 

@@ -1,13 +1,13 @@
 ﻿namespace Molten.Input
 {
-    public abstract class GamepadDevice : InputDevice<GamepadButtonState, GamepadButton>
+    public abstract class GamepadDevice : InputDevice<GamepadButtonState, GamepadButtons>
     {
         protected override StateParameters GetStateParameters()
         {
             return new StateParameters()
             {
                 SetCount = 1,
-                StatesPerSet = (int)GamepadButton.Y + 1
+                StatesPerSet = (int)GamepadButtons.Y + 1
             };
         }
 
@@ -26,7 +26,7 @@
             return true;
         }
 
-        protected override int TranslateStateID(GamepadButton idValue)
+        protected override int TranslateStateID(GamepadButtons idValue)
         {
             return (int)idValue;
         }

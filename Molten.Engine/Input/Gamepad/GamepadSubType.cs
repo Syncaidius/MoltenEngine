@@ -7,25 +7,25 @@
         /// <summary>
         /// A gamepad with the same or similar configuration as an Xbox 360 controller.
         /// </summary>
-        Gamepad = 1,
+        Gamepad = 0x01,
 
-        Wheel = 2,
+        Wheel = 0x02,
 
-        ArcadeStick = 3,
+        ArcadeStick = 0x03,
 
-        FlightStick = 4,
+        FlightStick = 0x04,
 
-        DancePad = 5,
+        DancePad = 0x05,
 
-        Guitar = 6,
+        Guitar = 0x06,
 
-        GuitarAlternate = 7,
+        GuitarAlternate = 0x07,
 
-        DrumKit = 8,
+        DrumKit = 0x08,
 
-        GuitarBass = 11,
+        GuitarBass = 0x0B,
 
-        ArcadePad = 19,
+        ArcadePad = 0x13,
 
         /// <summary>
         /// A controller with the same or similar configuration as an Xbox One controller. Xbox One controllers have additional

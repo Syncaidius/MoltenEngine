@@ -244,21 +244,21 @@ namespace Molten.Samples
         protected override void OnGamepadInput(Timing time)
         {
             // React to gamepad ABXY buttons
-            if (Gamepad.IsTapped(GamepadButton.A))
+            if (Gamepad.IsTapped(GamepadButtons.A))
                 GenerateChar('A');
 
-            if (Gamepad.IsTapped(GamepadButton.B))
+            if (Gamepad.IsTapped(GamepadButtons.B))
                 GenerateChar('B');
 
-            if (Gamepad.IsTapped(GamepadButton.X))
+            if (Gamepad.IsTapped(GamepadButtons.X))
                 GenerateChar('X');
 
-            if (Gamepad.IsTapped(GamepadButton.Y))
+            if (Gamepad.IsTapped(GamepadButtons.Y))
                 GenerateChar('Y');
 
             // React to left and right shoulder buttons (or equivilents)
-            if (Gamepad.IsTapped(GamepadButton.LeftShoulder) ||
-                Gamepad.IsTapped(GamepadButton.RightShoulder))
+            if (Gamepad.IsTapped(GamepadButtons.LeftShoulder) ||
+                Gamepad.IsTapped(GamepadButtons.RightShoulder))
                 GenerateChar('S');
         }
     }
