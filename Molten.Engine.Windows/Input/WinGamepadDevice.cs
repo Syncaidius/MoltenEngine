@@ -1,5 +1,6 @@
 ﻿using Molten.Graphics;
 using Molten.Windows32;
+using Silk.NET.Core.Contexts;
 using Silk.NET.XInput;
 
 namespace Molten.Input
@@ -24,7 +25,8 @@ namespace Molten.Input
 
         static WinGamepadDevice()
         {
-            _api = XInput.GetApi();
+            DefaultNativeContext dnc = new DefaultNativeContext("xinput1_4.dll");
+            _api = new XInput(dnc);
             _buttons = ReflectionHelper.GetEnumValues<GamepadButtons>();
         }
 
