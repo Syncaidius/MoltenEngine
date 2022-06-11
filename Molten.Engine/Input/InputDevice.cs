@@ -15,12 +15,12 @@ namespace Molten.Input
             /// The number of separate state sets to keep track of. Each state set will track 1 or more states (e.g. buttons). 
             /// This is useful when a device has multiple pointers, each with 1 or more button states to track e.g. fingers or dual-hand pointing device.
             /// </summary>
-            public int SetCount { get; init; }
+            public int SetCount { get; set; }
 
             /// <summary>
             /// The number of states to track per state set.
             /// </summary>
-            public int StatesPerSet { get; init; }
+            public int StatesPerSet { get; set; }
 
             public StateParameters() { }
         }
@@ -108,7 +108,18 @@ namespace Molten.Input
         /// <summary>
         /// Gets the number of state sets in the current <see cref="InputDevice"/>. E.g. fingers, mouse pointers or multi-part device count.
         /// </summary>
-        public int StateSetCount => _stateParams.SetCount;
+        public int StateSetCount
+        {
+            get => _stateParams.SetCount;
+            set
+            {
+                if(_stateParams.SetCount != value)
+                {
+                    _stateParams.SetCount = value;
+                    InitializeBuffer(_stateParams, BufferSize);
+                }
+            }
+        }
 
         bool _connected;
         bool _enabled;

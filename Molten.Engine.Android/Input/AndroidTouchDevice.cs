@@ -13,24 +13,26 @@ namespace Molten.Input
         AndroidViewSurface _boundSurface;
         View _boundView;
 
-        protected override int GetMaxSimultaneousStates()
+        protected override StateParameters GetStateParameters()
         {
-            return 5;
+            return new StateParameters()
+            {
+                StatesPerSet = 1,
+                SetCount = 1,
+            };
+        }
+
+        protected override void OnSetPointerPosition(Vector2F position)
+        {
+            // TODO implement.
         }
 
         protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
             List<InputDeviceFeature> baseFeatures = base.OnInitialize(service);
-
             IsConnected = false;
-            Service.Settings.Input.TouchBufferSize.OnChanged += TouchSampleBufferSize_OnChanged;
 
             return baseFeatures;
-        }
-
-        private void TouchSampleBufferSize_OnChanged(int oldValue, int newValue)
-        {
-            BufferSize = newValue;
         }
 
         protected override void OnBind(INativeSurface surface)
@@ -52,11 +54,11 @@ namespace Molten.Input
                         ClearState();
 
                     if (pm.HasSystemFeature(PackageManager.FeatureTouchscreenMultitouchJazzhand))
-                        MaxSimultaneousStates = 5;
+                        StateSetCount = 5;
                     else if (pm.HasSystemFeature(PackageManager.FeatureTouchscreenMultitouchDistinct))
-                        MaxSimultaneousStates = 2;
+                        StateSetCount = 2;
                     else
-                        MaxSimultaneousStates = 1;
+                        StateSetCount = 1;
                 }
             }
 
@@ -104,43 +106,45 @@ namespace Molten.Input
             // TODO figure out gestures based on number of pressed touch points.
             // TODO individually track each active touch-point so we can form gestures easily.
 
-            TouchPointState tps = new TouchPointState();
-            tps.ID = e.Event.ActionIndex;
+            PointerState ps = new PointerState();
+            ps.SetID = e.Event.ActionIndex;
 
             switch (e.Event.ActionMasked)
             {
                 case MotionEventActions.PointerDown:
-                case MotionEventActions.Down: 
-                    tps.Action = InputAction.Pressed; break;
+                case MotionEventActions.Down:
+                    ps.Button = PointerButton.Left;
+                    ps.Action = InputAction.Pressed; break;
 
                 case MotionEventActions.PointerUp:
                 case MotionEventActions.Up:
-                    tps.Action = InputAction.Released;
+                    ps.Button = PointerButton.Left;
+                    ps.Action = InputAction.Released;
                     break;
 
                 case MotionEventActions.Move:
-                    tps.Action = InputAction.Moved;
+                    ps.Action = InputAction.Moved;
                     break;
 
                 // NOTE: A movement has happened outside of the normal bounds of the UI element.
                 case MotionEventActions.Outside:
-                    tps.Action = InputAction.Moved;
+                    ps.Action = InputAction.Moved;
                     break;
 
                 case MotionEventActions.Scroll:
-                    tps.Action = InputAction.Moved; 
+                    ps.Action = InputAction.Moved; 
                     break;
             }
 
             float pX = e.Event.GetX();
             float pY = e.Event.GetY();
-            tps.Position = new Vector2F(pX, pY);
-            tps.Pressure = e.Event.GetPressure(tps.ID);
-            tps.Orientation = e.Event.GetOrientation(tps.ID);
-            tps.Size = e.Event.GetSize(tps.ID);
+            ps.Position = new Vector2F(pX, pY);
+            ps.Pressure = e.Event.GetPressure(ps.SetID);
+            ps.Orientation = e.Event.GetOrientation(ps.SetID);
+            ps.Size = e.Event.GetSize(ps.SetID);
 
             // We've handled the touch event
-            QueueState(tps);
+            QueueState(ps);
             e.Handled = true;
         }
 
