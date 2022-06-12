@@ -14,15 +14,24 @@ namespace Molten.UI
 
         UIManagerComponent _owner;
         UIElement _parent;
+        UITheme _theme;
 
         public UIElement()
         {
             Children = new UIChildCollection(this);
             CompoundElements = new UIChildCollection(this);
             Engine = Engine.Current;
-            Theme = Engine.Settings.UI.Theme;
+
+            SettingValue<UITheme> themeSetting = Engine.Settings.UI.Theme;
+            Theme = themeSetting;
+            themeSetting.OnChanged += ThemeSetting_OnChanged;
             BaseData = new UIRenderData();
             OnInitialize(Engine, Engine.Settings.UI, Theme);
+        }
+
+        private void ThemeSetting_OnChanged(UITheme oldValue, UITheme newValue)
+        {
+            Theme = newValue;
         }
 
         protected virtual void OnInitialize(Engine engine, UISettings settings, UITheme theme)
@@ -258,7 +267,20 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets the <see cref="UITheme"/> that should be applied to the current <see cref="UIElement"/>. Themes provide a set of default appearance values and configuration.
         /// </summary>
-        public UITheme Theme { get; set; }
+        public UITheme Theme
+        {
+            get => _theme;
+            set
+            {
+                if(_theme != value)
+                {
+                    _theme = value ?? Engine.Settings.UI.Theme;
+                        ElementTheme = _theme.GetTheme(GetType());
+                }
+            }
+        }
+
+        protected UIElementTheme ElementTheme { get; private set; }
     }
 
     /// <summary>

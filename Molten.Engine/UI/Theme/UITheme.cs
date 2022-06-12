@@ -20,8 +20,12 @@ namespace Molten.UI
         public UIElementTheme GetTheme<T>()
             where T : UIElement
         {
-            string tName = typeof(T).FullName;
-            if (_themes.TryGetValue(tName, out UIElementTheme theme))
+            return GetTheme(typeof(T));
+        }
+
+        public UIElementTheme GetTheme(Type elementType)
+        {
+            if (_themes.TryGetValue(elementType.FullName, out UIElementTheme theme))
                 return theme;
             else
                 return DefaultElementTheme;
