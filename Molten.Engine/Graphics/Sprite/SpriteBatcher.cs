@@ -116,10 +116,10 @@ namespace Molten.Graphics
         /// <param name="material">The material to use when rendering the string of text.</param>
         public void DrawString(TextFont font, string text, Vector2F position, Color color, Vector2F scale, IMaterial material = null)
         {
-            int strLength = text.Length;
-
-            if (text.Length == 0)
+            if (string.IsNullOrEmpty(text))
                 return;
+
+            int strLength = text.Length;
 
             // Cycle through all characters in the string and process them
             Vector2F charPos = position;

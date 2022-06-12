@@ -10,35 +10,17 @@ namespace Molten.UI
 {
     public class UIElementTheme
     {
-        /// <summary>
-        /// Gets or sets the default colors used when representing a a normal, unmodified state of functionality
-        /// </summary>
-        [DataMember]
-        public UIStateTheme Default { get; set; } = new UIStateTheme();
+        public event ObjectHandler<UIElementTheme> OnContentLoaded;
 
-        /// <summary>
-        /// Gets or sets the colors used when represending a hover action. e.g. mouse or touch-hold gesture.
-        /// </summary>
         [DataMember]
-        public UIStateTheme Hover { get; set; } = new UIStateTheme();
-
-        /// <summary>
-        /// Gets or sets the colors used when representing a click, press or touch interaction.
-        /// </summary>
-        [DataMember]
-        public UIStateTheme Pressed { get; set; } = new UIStateTheme();
-
-        /// <summary>
-        /// Gets or sets the colors used by elements to represent a disabled state of functionality.
-        /// </summary>
-        [DataMember]
-        public UIStateTheme Disabled { get; set; } = new UIStateTheme();
-
-        /// <summary>
-        /// Gets or sets the colors used when representing active or selected functionality.
-        /// </summary>
-        [DataMember]
-        public UIStateTheme Active { get; set; } = new UIStateTheme();
+        Dictionary<UIElementState, UIStateTheme> _states = new Dictionary<UIElementState, UIStateTheme>()
+        {
+            [UIElementState.Default] = new UIStateTheme(),
+            [UIElementState.Pressed] = new UIStateTheme(),
+            [UIElementState.Active] = new UIStateTheme(),
+            [UIElementState.Hovered] = new UIStateTheme(),
+            [UIElementState.Disabled] = new UIStateTheme()
+        };
 
         /// <summary>
         /// Gets or sets the default font path, or name of a system font.
@@ -46,12 +28,34 @@ namespace Molten.UI
         [DataMember]
         public string FontName { get; set; } = "Arial";
 
-        public void RequestFont(Engine engine, ContentRequestHandler loadCallback)
+        [IgnoreDataMember]
+        public TextFont Font { get; private set; }
+
+        internal void LoadContent(Engine engine, string rootDirectory = null)
         {
-            ContentRequest cr = engine.Content.BeginRequest("");
+            if (Font != null && Font.Source.Name == FontName)
+                return;
+
+            ContentRequest cr = engine.Content.BeginRequest(rootDirectory);
             cr.Load<TextFont>(FontName);
-            cr.OnCompleted += loadCallback;
+            cr.OnCompleted += LoadContent_Request;
             cr.Commit();
+        }
+
+        private void LoadContent_Request(ContentRequest cr)
+        {
+            Font = cr.Get<TextFont>(0);
+            OnContentLoaded?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="UIStateTheme"/> for a particular <see cref="UIElementState"/>.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public UIStateTheme this[UIElementState state]
+        {
+            get => _states[state];
         }
     }
 }

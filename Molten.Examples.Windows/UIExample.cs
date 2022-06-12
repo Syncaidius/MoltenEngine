@@ -42,12 +42,13 @@ namespace Molten.Samples
             TestMesh.Material = mat;
 
             _ui = SpriteLayer.AddObjectWithComponent<UIManagerComponent>();
-            Settings.UI.Theme.Value.PressColors = new UITheme.StateTheme()
-            {
-                Text = Color.White,
-                Background = Color.SkyBlue * 0.5f,
-                Border = Color.SkyBlue,
-            };
+
+            UIStateTheme pressTheme = Settings.UI.Theme.Value.DefaultElementTheme[UIElementState.Pressed];
+            pressTheme.TextColor = Color.White;
+            pressTheme.BackgroundColor = Color.SkyBlue * 0.5f;
+            pressTheme.BorderColor = Color.SkyBlue;
+            pressTheme.TextColor = Color.Yellow;
+
             _ui.Root = new UIPanel()
             {
                 LocalBounds = new Rectangle(100, 150, 600, 450),
@@ -56,8 +57,8 @@ namespace Molten.Samples
             UIPanel childPanel = new UIPanel()
             {
                 LocalBounds = new Rectangle(100, 10, 220, 200),
-                BackgroundColor = new Color(0, 128, 0, 200),
-                BorderColor = Color.LimeGreen
+                //BackgroundColor = new Color(0, 128, 0, 200),
+                //BorderColor = Color.LimeGreen
             };
 
             UIText label = new UIText()

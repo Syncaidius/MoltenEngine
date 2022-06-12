@@ -14,22 +14,24 @@ namespace Molten.UI
         protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
         {
             base.OnInitialize(engine, settings, theme);
-
-            Properties.Color = theme.DefaultColors.Text;
             Properties.Text = Name;
-            theme.RequestFont(engine, LoadFont_Request);
         }
 
-        private void LoadFont_Request(ContentRequest cr)
+        public override void ApplyStateTheme(UIElementState state)
         {
-            Font = cr.Get<TextFont>(0);
+            TextFont curFont = Properties.Font;
+
+            base.ApplyStateTheme(state);
+
+            if (ElementTheme.Font != curFont)
+                OnUpdateBounds();
         }
 
         protected override void OnUpdateBounds()
         {
             base.OnUpdateBounds();
 
-            if (Properties.Font == null)
+            if (Properties.Font == null || string.IsNullOrEmpty(Properties.Text))
                 return;
 
             Rectangle gBounds = GlobalBounds;

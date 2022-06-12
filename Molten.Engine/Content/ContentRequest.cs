@@ -165,19 +165,6 @@ namespace Molten
             RequestElements.Add(c);
         }
 
-        private Dictionary<string, object> ConvertTupleParameters((string, object)[] parameters)
-        {
-            Dictionary<string, object> dParameters = new Dictionary<string, object>();
-
-            if (parameters != null)
-            {
-                foreach ((string argName, object argValue) in parameters)
-                    dParameters.Add(argName, argValue);
-            }
-
-            return dParameters;
-        }
-
         public void ClearForPool()
         {
             State = ContentRequestState.NotCommited;

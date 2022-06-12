@@ -11,16 +11,31 @@ namespace Molten.UI
         [DataMember]
         public UIElementTheme DefaultElementTheme { get; } = new UIElementTheme();
 
-        /// <summary>
-        /// Gets or sets the default font texture sheet size.
-        /// </summary>
-        [DataMember]
-        public int FontTextureSize { get; set; } = 512;
+        [IgnoreDataMember]
+        public Engine Engine { get; private set; }
+
+        string _contentRoot;
+
 
         public UIElementTheme GetTheme<T>()
             where T : UIElement
         {
             return GetTheme(typeof(T));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="engine"></param>
+        /// <param name="themeRootDirectory">The content root directory for the current theme, or null if default.</param>
+        internal void Initialize(Engine engine, string themeRootDirectory = null)
+        {
+            Engine = engine;
+            _contentRoot = themeRootDirectory;
+
+            DefaultElementTheme.LoadContent(engine);
+            foreach (UIElementTheme eTheme in _themes.Values)
+                eTheme.LoadContent(Engine, themeRootDirectory);
         }
 
         public UIElementTheme GetTheme(Type elementType)
@@ -36,9 +51,14 @@ namespace Molten.UI
         {
             string tName = typeof(T).FullName;
             if (_themes.TryGetValue(tName, out theme))
+            {
                 throw new Exception($"A theme is already set for {tName}");
+            }
             else
+            {
+                theme.LoadContent(Engine, _contentRoot);
                 _themes[tName] = theme;
+            }
         }        
     }
 }

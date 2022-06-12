@@ -19,6 +19,12 @@ namespace Molten.UI
             _label.VerticalAlign = UIVerticalAlignment.Center;
         }
 
+        public override void ApplyStateTheme(UIElementState state)
+        {
+            _panel.ApplyStateTheme(state);
+            _label.ApplyStateTheme(state);
+        }
+
         protected override void OnUpdateBounds()
         {
             base.OnUpdateBounds();
@@ -31,16 +37,16 @@ namespace Molten.UI
         {
             base.OnPressed(tracker);
 
-            _panel.BackgroundColor = Theme.PressColors.Background;
-            _panel.BorderColor = Theme.PressColors.Border;
+            _panel.ApplyStateTheme(UIElementState.Pressed);
+            _label.ApplyStateTheme(UIElementState.Pressed);
         }
 
         public override void OnReleased(ScenePointerTracker tracker, bool releasedOutside)
         {
             base.OnReleased(tracker, releasedOutside);
 
-            _panel.BackgroundColor = Theme.DefaultColors.Background;
-            _panel.BorderColor = Theme.DefaultColors.Border;
+            _panel.ApplyStateTheme(UIElementState.Default);
+            _panel.ApplyStateTheme(UIElementState.Default);
         }
 
         public string Text

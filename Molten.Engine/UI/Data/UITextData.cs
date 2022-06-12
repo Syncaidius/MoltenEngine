@@ -21,6 +21,7 @@ namespace Molten.UI
         [DataMember]
         public Vector2F Position;
 
+        [IgnoreDataMember]
         public IMaterial Material;
 
         public void Render(SpriteBatcher sb, UIRenderData data)
@@ -32,6 +33,7 @@ namespace Molten.UI
         public void ApplyTheme(UITheme theme, UIElementTheme eTheme, UIStateTheme stateTheme)
         {
             Color = stateTheme.TextColor;
+            Font = eTheme.Font;
         }
     }
 }

@@ -57,12 +57,20 @@ namespace Molten
 
             foreach (EngineService service in _services)
                 service.Initialize(Settings, Log);
+
+            Settings.UI.Theme.Value.Initialize(this);
+            Settings.UI.Theme.OnChanged += Theme_OnChanged;
+        }
+
+        private void Theme_OnChanged(UITheme oldValue, UITheme newValue)
+        {
+            newValue.Initialize(this);
         }
 
         private void Renderer_OnStarted(EngineService o)
         {
             UITheme theme = Settings.UI.Theme.Value;
-            DefaultFont = Fonts.GetFont(Log, theme.FontName);
+            DefaultFont = Fonts.GetFont(Log, theme.DefaultElementTheme.FontName);
             Log.Error("Failed to load default font.");
         }
 

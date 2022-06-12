@@ -26,7 +26,9 @@ namespace Molten.UI
             Theme = themeSetting;
             themeSetting.OnChanged += ThemeSetting_OnChanged;
             BaseData = new UIRenderData();
+            State = UIElementState.Default;
             OnInitialize(Engine, Engine.Settings.UI, Theme);
+            ApplyStateTheme(State);
         }
 
         private void ThemeSetting_OnChanged(UITheme oldValue, UITheme newValue)
@@ -38,6 +40,11 @@ namespace Molten.UI
         {
             BaseData.Margin.OnChanged += MarginPadding_OnChanged;
             BaseData.Padding.OnChanged += MarginPadding_OnChanged;
+        }
+
+        private void ElementTheme_OnContentLoaded(UIElementTheme theme)
+        {
+            ApplyStateTheme(State);
         }
 
         private void MarginPadding_OnChanged()
@@ -78,6 +85,8 @@ namespace Molten.UI
 
             OnUpdateBounds();
         }
+
+        public abstract void ApplyStateTheme(UIElementState state);
 
         protected virtual void ApplyOwner(UIManagerComponent owner)
         {
@@ -130,14 +139,20 @@ namespace Molten.UI
             return result;
         }
 
-        public virtual void OnPressed(ScenePointerTracker tracker) { }
+        public virtual void OnPressed(ScenePointerTracker tracker)
+        {
+            State = UIElementState.Pressed;
+        }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="tracker"></param>
         /// <param name="releasedOutside">The current <see cref="UIElement"/> was released outside of it's bounds.</param>
-        public virtual void OnReleased(ScenePointerTracker tracker, bool releasedOutside) { }
+        public virtual void OnReleased(ScenePointerTracker tracker, bool releasedOutside)
+        {
+            State = UIElementState.Default;
+        }
 
         protected override void OnDispose() { }
 
@@ -235,7 +250,7 @@ namespace Molten.UI
             get => _parent;
             internal set
             {
-                if(_parent != value)
+                if (_parent != value)
                 {
                     _parent = value;
                     UpdateBounds();
@@ -272,15 +287,30 @@ namespace Molten.UI
             get => _theme;
             set
             {
-                if(_theme != value)
+                if (_theme != value)
                 {
                     _theme = value ?? Engine.Settings.UI.Theme;
-                        ElementTheme = _theme.GetTheme(GetType());
+
+                    UIElementTheme newElementTheme = _theme.GetTheme(GetType());
+                    if(newElementTheme != ElementTheme)
+                    {
+                        if (ElementTheme != null)
+                            ElementTheme.OnContentLoaded -= ElementTheme_OnContentLoaded;
+
+                        ElementTheme = newElementTheme;
+                        ElementTheme.OnContentLoaded += ElementTheme_OnContentLoaded;
+                    }
                 }
             }
         }
 
         protected UIElementTheme ElementTheme { get; private set; }
+
+
+        /// <summary>
+        /// Gets the <see cref="UIElementState"/> of the current <see cref="UIElement"/>.
+        /// </summary>
+        public UIElementState State { get; private set; }
     }
 
     /// <summary>
@@ -296,6 +326,11 @@ namespace Molten.UI
         {
             _data.Render(sb, BaseData);
             base.Render(sb);
+        }
+
+        public override void ApplyStateTheme(UIElementState state)
+        {
+            _data.ApplyTheme(Theme, ElementTheme, ElementTheme[state]);
         }
 
         protected ref EP Properties => ref _data;

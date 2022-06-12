@@ -18,11 +18,6 @@ namespace Molten.UI
         [DataMember]
         public Color BorderColor { get; set; } = new Color(80, 80, 190);
 
-        /// <summary>
-        /// Gets or sets the default font size.
-        /// </summary>
-        [DataMember]
-        public int FontSize { get; set; } = 16;
 
         [DataMember]
         public float BorderThickness { get; set; } = 2f;
