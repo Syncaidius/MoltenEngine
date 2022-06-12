@@ -6,6 +6,8 @@ namespace Molten.Windows32
     /// <summary>A Win32 helper library.</summary>
     public static partial class Win32
     {
+        public const int SM_MOUSEPRESENT = 19;
+
         public static Win32CPU CPU { get; } = new Win32CPU();
 
         public static Win32OS OS { get; } = new Win32OS();
@@ -15,6 +17,9 @@ namespace Molten.Windows32
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GlobalMemoryStatusEx([In, Out] MemoryStatusEx result);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern int GetSystemMetrics(int nIndex);
 
         static ManagementObjectSearcher _searcher;
         static string _strQuery = "SELECT {0} FROM {1}";

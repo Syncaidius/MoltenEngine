@@ -135,11 +135,6 @@
         bool IsMultisampled { get; }
 
         /// <summary>
-        /// Gets or sets the tag object.
-        /// </summary>
-        object Tag { get; set; }
-
-        /// <summary>
         /// Gets the renderer that the texture is bound to.
         /// </summary>
         RenderService Renderer { get; }

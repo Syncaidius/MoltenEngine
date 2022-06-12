@@ -153,10 +153,10 @@ namespace Molten
                     {
                         if (Hovered != newHover)
                         {
-                            //trigger leave on old hover component.
+                            // Trigger leave on old hover component.
                             Hovered?.PointerLeave(cursorPos);
 
-                            //set new hover component and trigger it's enter event
+                            // Set new hover component and trigger it's enter event
                             Hovered = newHover;
                             Hovered.PointerEnter(cursorPos);
                         }
@@ -196,9 +196,9 @@ namespace Molten
         }
 
         /// <summary>Gets the component which is currently focused.</summary>
-        public IPointerReceiver Focused { get; private set; }
+        public IPointerReceiver Focused { get; internal set; }
 
         /// <summary>Gets the component that the pointer is currently hovering over.</summary>
-        public IPointerReceiver Hovered { get; private set; } = null;
+        public IPointerReceiver Hovered { get; internal set; } = null;
     }
 }

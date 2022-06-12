@@ -49,11 +49,6 @@ namespace Molten
         public bool IsDisposed { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the tag object.
-        /// </summary>
-        public object Tag { get; set; }
-
-        /// <summary>
         /// Gets the unique <see cref="EngineObject"/> ID (EOID) of the current <see cref="EngineObject"/>.
         /// </summary>
         public ulong EOID { get; }

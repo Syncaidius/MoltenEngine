@@ -94,6 +94,7 @@ namespace Molten.Input
             get => _enabled;
             set
             {
+                // Don't allow device to be enabled if it was disposed.
                 if (IsDisposed)
                     value = false;
 

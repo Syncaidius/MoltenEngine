@@ -120,6 +120,15 @@ namespace Molten.UI
             return result;
         }
 
+        public virtual void OnPressed(ScenePointerTracker tracker) { }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tracker"></param>
+        /// <param name="releasedOutside">The current <see cref="UIElement"/> was released outside of it's bounds.</param>
+        public virtual void OnReleased(ScenePointerTracker tracker, bool releasedOutside) { }
+
         protected override void OnDispose() { }
 
         protected virtual void OnUpdateBounds() { }

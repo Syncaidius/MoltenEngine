@@ -9,11 +9,35 @@ namespace Molten.UI
     /// </summary>
     public sealed class UIManagerComponent : SpriteRenderComponent, IPointerReceiver
     {
+        class UITracker
+        {
+            public UIElement Pressed;
+        }
+
         UIElement _root;
+        Dictionary<ScenePointerTracker, UITracker> _trackers;
+        List<ScenePointerTracker> _trackersToRemove;
+
+        public UIManagerComponent()
+        {
+            _trackers = new Dictionary<ScenePointerTracker, UITracker>();
+            _trackersToRemove = new List<ScenePointerTracker>();
+        }
+
+        private void UpdateTracker(ScenePointerTracker pTracker, Action<UITracker> callback)
+        {
+            if (!_trackers.TryGetValue(pTracker, out UITracker uiTracker))
+            {
+                uiTracker = new UITracker();
+                _trackers.Add(pTracker, uiTracker);
+            }
+
+            callback.Invoke(uiTracker);
+        }
 
         protected override void OnDispose()
         {
-            
+
         }
 
         public void HandleInput(Vector2F inputPos)
@@ -47,44 +71,79 @@ namespace Molten.UI
                 return false;
         }
 
-        public void PointerDrag(ScenePointerTracker button, Vector2F pos, Vector2F delta)
+        public void PointerDrag(ScenePointerTracker tracker, Vector2F pos, Vector2F delta)
         {
+            UpdateTracker(tracker, (uiTracker) =>
+            {
 
+            });
         }
 
-        public void PointerHeld(ScenePointerTracker button, Vector2F pos, Vector2F delta)
+        public void PointerHeld(ScenePointerTracker tracker, Vector2F pos, Vector2F delta)
         {
-            
+            UpdateTracker(tracker, (uiTracker) =>
+            {
+
+            });
         }
 
-        public void PointerPressed(ScenePointerTracker button, Vector2F pos)
+        public void PointerPressed(ScenePointerTracker tracker, Vector2F pos)
         {
-            
+            UpdateTracker(tracker, (uiTracker) =>
+            {
+                if (tracker.Button == PointerButton.Left)
+                {
+                    if (uiTracker.Pressed == null)
+                    {
+                        uiTracker.Pressed = Root.Pick(pos);
+                        if (uiTracker.Pressed != null)
+                            uiTracker.Pressed.OnPressed(tracker);
+                    }
+                }
+            });
         }
 
-        public void PointerReleasedOutside(ScenePointerTracker button, Vector2F pos)
+        public void PointerReleasedOutside(ScenePointerTracker tracker, Vector2F pos)
         {
-            
+            UpdateTracker(tracker, (uiTracker) =>
+            {
+                if (tracker.Button == PointerButton.Left)
+                {
+                    uiTracker.Pressed?.OnReleased(tracker, true);
+                    uiTracker.Pressed = null;
+                }
+            });
         }
 
-        public void PointerReleased(ScenePointerTracker button, Vector2F pos, bool wasDragged)
+        public void PointerReleased(ScenePointerTracker tracker, Vector2F pos, bool wasDragged)
         {
-            
+            UpdateTracker(tracker, (uiTracker) =>
+            {
+                if (tracker.Button == PointerButton.Left)
+                {
+                    if (uiTracker.Pressed != null)
+                    {
+                        bool inside = uiTracker.Pressed.Contains(pos);
+                        uiTracker.Pressed.OnReleased(tracker, !inside);
+                        uiTracker.Pressed = null;
+                    }
+                }
+            });
         }
 
         public void PointerScroll(InputScrollWheel wheel)
         {
-            
+
         }
 
         public void PointerEnter(Vector2F pos)
         {
-            
+
         }
 
         public void PointerLeave(Vector2F pos)
         {
-           
+
         }
 
         public void PointerHover(Vector2F pos)
@@ -97,12 +156,12 @@ namespace Molten.UI
 
         public void PointerFocus()
         {
-            
+
         }
 
         public void PointerUnfocus()
         {
-           
+
         }
 
         /// <summary>
@@ -133,8 +192,8 @@ namespace Molten.UI
             }
         }
 
-        public UIElement HoverElement { get; private set; }
-
         public string Tooltip => Name;
+
+        public UIElement HoverElement { get; private set; }
     }
 }

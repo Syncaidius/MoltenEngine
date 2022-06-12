@@ -34,6 +34,12 @@ namespace Molten.Input
             };
         }
 
+        private void CheckConnectivity()
+        {
+            int result = Win32.GetSystemMetrics(Win32.SM_MOUSEPRESENT);
+            IsConnected = result > 0;
+        }
+
         protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
             // TODO Check if mouse is connected: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-mouse-input#mouse-configuration
@@ -274,6 +280,8 @@ namespace Molten.Input
         /// <param name="time">The snapshot of game time to use.</param>
         protected override void OnUpdate(Timing time)
         {
+            CheckConnectivity();
+
             if (IsEnabled)
             {
                 if (_cursorVisibility != _requestedVisibility)
