@@ -20,8 +20,9 @@ namespace Molten.UI
             Children = new UIChildCollection(this);
             CompoundElements = new UIChildCollection(this);
             Engine = Engine.Current;
+            Theme = Engine.Settings.UI.Theme;
             BaseData = new UIRenderData();
-            OnInitialize(Engine, Engine.Settings.UI, Engine.Settings.UI.Theme.Value);
+            OnInitialize(Engine, Engine.Settings.UI, Theme);
         }
 
         protected virtual void OnInitialize(Engine engine, UISettings settings, UITheme theme)

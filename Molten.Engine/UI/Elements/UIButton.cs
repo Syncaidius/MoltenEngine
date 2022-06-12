@@ -27,28 +27,26 @@ namespace Molten.UI
             _label.LocalBounds = _panel.LocalBounds;
         }
 
+        public override void OnPressed(ScenePointerTracker tracker)
+        {
+            base.OnPressed(tracker);
+
+            _panel.BackgroundColor = Theme.PressColors.Background;
+            _panel.BorderColor = Theme.PressColors.Border;
+        }
+
+        public override void OnReleased(ScenePointerTracker tracker, bool releasedOutside)
+        {
+            base.OnReleased(tracker, releasedOutside);
+
+            _panel.BackgroundColor = Theme.DefaultColors.Background;
+            _panel.BorderColor = Theme.DefaultColors.Border;
+        }
+
         public string Text
         {
             get => _label.Text;
             set => _label.Text = value;
-        }
-
-        public Color TextColor
-        {
-            get => _label.Color;
-            set => _label.Color = value;
-        }
-
-        public Color BorderColor
-        {
-            get => _panel.BorderColor;
-            set => _panel.BorderColor = value;
-        }
-
-        public Color BackgroundColor
-        {
-            get => _panel.BackgroundColor;
-            set => _panel.BackgroundColor = value;
         }
 
         public UIVerticalAlignment VerticalAlign

@@ -42,6 +42,12 @@ namespace Molten.Samples
             TestMesh.Material = mat;
 
             _ui = SpriteLayer.AddObjectWithComponent<UIManagerComponent>();
+            Settings.UI.Theme.Value.PressColors = new UITheme.StateTheme()
+            {
+                Text = Color.White,
+                Background = Color.SkyBlue * 0.5f,
+                Border = Color.SkyBlue,
+            };
             _ui.Root = new UIPanel()
             {
                 LocalBounds = new Rectangle(100, 150, 600, 450),

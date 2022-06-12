@@ -19,6 +19,13 @@ namespace Molten.UI
 
         public Color BackgroundColor;
 
+        public void ApplyTheme(UITheme theme, UIElementTheme eTheme, UIStateTheme stateTheme)
+        {
+            BorderColor = stateTheme.BorderColor;
+            BorderThickness = stateTheme.BorderThickness;
+            BackgroundColor = stateTheme.BackgroundColor;
+        }
+
         public void Render(SpriteBatcher sb, UIRenderData data)
         {
             if (BackgroundColor.A > 0)

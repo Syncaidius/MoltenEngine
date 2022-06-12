@@ -28,5 +28,10 @@ namespace Molten.UI
             if (Font != null && Color.A > 0)
                 sb.DrawString(Font, Text, Position, Color, Material);
         }
+
+        public void ApplyTheme(UITheme theme, UIElementTheme eTheme, UIStateTheme stateTheme)
+        {
+            Color = stateTheme.TextColor;
+        }
     }
 }
