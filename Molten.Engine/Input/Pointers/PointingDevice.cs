@@ -213,6 +213,7 @@ namespace Molten.Input
 
         protected override void OnDispose()
         {
+            base.OnDispose();
             _sensitivitySetting.OnChanged -= PointerSensitivity_OnChanged;
         }
 

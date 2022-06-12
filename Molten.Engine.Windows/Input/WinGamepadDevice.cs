@@ -79,8 +79,6 @@ namespace Molten.Input
             SetVibration(0, 0);
         }
 
-        protected override void OnDispose() { }
-
         private void RetrieveDeviceInformation()
         {
             IsConnected = _api.GetCapabilities((uint)Index, XINPUT_FLAG_GAMEPAD, ref _capabilities) == ERROR_SUCCESS;

@@ -79,6 +79,7 @@ namespace Molten.Input
 
         protected override void OnDispose()
         {
+            base.OnDispose();
             OnUnbind(_boundSurface);
         }
 

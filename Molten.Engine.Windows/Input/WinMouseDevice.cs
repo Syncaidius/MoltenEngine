@@ -321,6 +321,8 @@ namespace Molten.Input
 
         protected override void OnDispose()
         {
+            base.OnDispose();
+
             if (!IsCursorVisible)
                 Cursor.Show();
         }

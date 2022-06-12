@@ -145,11 +145,6 @@ namespace Molten.Input
 
         }
 
-        protected override void OnDispose()
-        {
-           
-        }
-
         protected override void OnUpdate(Timing time) { }
     }
 }

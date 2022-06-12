@@ -105,6 +105,11 @@ namespace Molten.Input
             }
         }
 
+        protected override void OnDispose()
+        {
+            IsEnabled = false;
+        }
+
         /// <summary>
         /// Gets the number of state sets in the current <see cref="InputDevice"/>. E.g. fingers, mouse pointers or multi-part device count.
         /// </summary>
