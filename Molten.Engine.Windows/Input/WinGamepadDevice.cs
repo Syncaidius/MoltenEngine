@@ -12,6 +12,7 @@ namespace Molten.Input
         const uint XINPUT_FLAG_GAMEPAD = 1;
         const byte BATTERY_DEVTYPE_GAMEPAD = 0;
         const byte BATTERY_DEVTYPE_HEADSET = 1;
+        const string XINPUT_LIBRARY_WIN10 = "xinput1_4.dll";
 
         static GamepadButtons[] _buttons;
         static XInput _api;
@@ -25,7 +26,7 @@ namespace Molten.Input
 
         static WinGamepadDevice()
         {
-            DefaultNativeContext dnc = new DefaultNativeContext("xinput1_4.dll");
+            DefaultNativeContext dnc = new DefaultNativeContext(XINPUT_LIBRARY_WIN10);
             _api = new XInput(dnc);
             _buttons = ReflectionHelper.GetEnumValues<GamepadButtons>();
         }

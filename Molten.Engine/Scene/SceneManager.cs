@@ -9,22 +9,46 @@ namespace Molten
         public event SceneInputEventHandler<PointerButton> OnObjectUnfocused;
 
         List<Scene> _scenes;
-        List<SceneClickTracker> _trackers;
         ThreadedQueue<SceneChange> _pendingChanges;
+        Dictionary<ulong, List<ScenePointerTracker>> _pointerTrackers;
+        PointerButton[] _pButtons;
 
         internal SceneManager()
         {
-            _trackers = new List<SceneClickTracker>();
+            _pButtons = ReflectionHelper.GetEnumValues<PointerButton>();
+
             _scenes = new List<Scene>();
             _pendingChanges = new ThreadedQueue<SceneChange>();
+            _pointerTrackers = new Dictionary<ulong, List<ScenePointerTracker>>();
+        }
 
-            PointerButton[] buttons = ReflectionHelper.GetEnumValues<PointerButton>();
-            foreach(PointerButton b in buttons)
+        private void TrackPointingDevice(PointingDevice device)
+        {
+            if (_pointerTrackers.ContainsKey(device.EOID))
+                return;
+
+            List<ScenePointerTracker> trackers = new List<ScenePointerTracker>();
+            _pointerTrackers.Add(device.EOID, trackers);
+            for (int setID = 0; setID < device.StateSetCount; setID++)
             {
-                if (b == PointerButton.None)
-                    continue;
+                foreach (PointerButton button in _pButtons)
+                {
+                    if (button == PointerButton.None)
+                        continue;
 
-                _trackers.Add(new SceneClickTracker(b));
+                    trackers.Add(new ScenePointerTracker(device, setID, button));
+                }
+            }
+        }
+
+        private void UntrackPointingDevice(PointingDevice device)
+        {
+            if (_pointerTrackers.TryGetValue(device.EOID, out List<ScenePointerTracker> trackers))
+            {
+                foreach (ScenePointerTracker tracker in trackers)
+                    tracker.Clear();
+
+                _pointerTrackers.Remove(device.EOID);
             }
         }
 
@@ -86,11 +110,8 @@ namespace Molten
 
         internal void HandleInput(MouseDevice mouse, TouchDevice touch, KeyboardDevice kb, GamepadDevice gamepad, Timing timing)
         {
-            if (mouse != null)
-                HandlePointerInput(mouse, timing);
-
-            if (touch != null)
-                HandlePointerInput(touch, timing);
+            HandlePointerInput(mouse, timing);
+            HandlePointerInput(touch, timing);
 
             for (int i = _scenes.Count - 1; i >= 0; i--)
             {
@@ -106,6 +127,14 @@ namespace Molten
 
         private void HandlePointerInput(PointingDevice pDevice, Timing time)
         {
+            if (pDevice == null)
+                return;
+
+            if (pDevice.IsConnected && pDevice.IsEnabled)
+                TrackPointingDevice(pDevice);
+            else
+                UntrackPointingDevice(pDevice);
+
             Vector2F cursorPos = pDevice.Position;
 
             if (pDevice is MouseDevice mouse)
@@ -145,14 +174,16 @@ namespace Molten
                 }
             }
 
-            // Update all button trackers
-            for (int j = 0; j < _trackers.Count; j++)
-                _trackers[j].Update(this, pDevice, time);
+            // Update all pointer trackers
+            foreach (KeyValuePair<ulong, List<ScenePointerTracker>> kv in _pointerTrackers)
+            {
+                for (int j = 0; j < kv.Value.Count; j++)
+                    kv.Value[j].Update(this, time);
+            }
         }
 
         internal void Update(Timing time)
         {
-            // TODO implement scene-management-wide queue
             while (_pendingChanges.TryDequeue(out SceneChange change))
                 change.Process();
 

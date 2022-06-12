@@ -47,17 +47,27 @@ namespace Molten.UI
                 return false;
         }
 
-        public void PointerPressed(Vector2F pos, PointerButton button)
+        public void PointerDrag(ScenePointerTracker button, Vector2F pos, Vector2F delta)
+        {
+
+        }
+
+        public void PointerHeld(ScenePointerTracker button, Vector2F pos, Vector2F delta)
         {
             
         }
 
-        public void PointerReleasedOutside(Vector2F pos, PointerButton button)
+        public void PointerPressed(ScenePointerTracker button, Vector2F pos)
         {
             
         }
 
-        public void PointerReleased(Vector2F pos, bool wasDragged, PointerButton button)
+        public void PointerReleasedOutside(ScenePointerTracker button, Vector2F pos)
+        {
+            
+        }
+
+        public void PointerReleased(ScenePointerTracker button, Vector2F pos, bool wasDragged)
         {
             
         }
@@ -90,19 +100,9 @@ namespace Molten.UI
             
         }
 
-        public void PointerDrag(Vector2F pos, Vector2F delta, PointerButton button)
-        {
-            
-        }
-
         public void PointerUnfocus()
         {
            
-        }
-
-        public void PointerHeld(Vector2F pos, Vector2F delta, PointerButton button)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
