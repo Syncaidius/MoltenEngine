@@ -94,7 +94,10 @@ namespace Molten.Input
             get => _enabled;
             set
             {
-                if(value != _enabled)
+                if (IsDisposed)
+                    value = false;
+
+                if (value != _enabled)
                 {
                     _enabled = value;
                     if (_enabled)
