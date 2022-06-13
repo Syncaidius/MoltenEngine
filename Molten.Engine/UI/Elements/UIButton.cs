@@ -14,6 +14,7 @@ namespace Molten.UI
 
             _panel = CompoundElements.Add<UIPanel>();
             _label = CompoundElements.Add<UIText>();
+
             _label.Text = Name;
             _label.HorizontalAlign = UIHorizonalAlignment.Center;
             _label.VerticalAlign = UIVerticalAlignment.Center;

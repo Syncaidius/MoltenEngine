@@ -6,8 +6,37 @@ namespace Molten.UI
     /// <summary>
     /// A UI component dedicated to presenting text.
     /// </summary>
-    public class UIText : UIElement<UITextData>
+    public class UIText : UIElement<UIText.Data>
     {
+        public struct Data : IUIRenderData
+        {
+            [DataMember]
+            public Color Color;
+
+            [DataMember]
+            public string Text;
+
+            internal TextFont Font;
+
+            [DataMember]
+            public Vector2F Position;
+
+            [IgnoreDataMember]
+            public IMaterial Material;
+
+            public void Render(SpriteBatcher sb, UIRenderData data)
+            {
+                if (Font != null && Color.A > 0)
+                    sb.DrawString(Font, Text, Position, Color, Material);
+            }
+
+            public void ApplyTheme(UITheme theme, UIElementTheme eTheme, UIStateTheme stateTheme)
+            {
+                Color = stateTheme.TextColor;
+                Font = eTheme.Font;
+            }
+        }
+
         UIHorizonalAlignment _hAlign;
         UIVerticalAlignment _vAlign;
 

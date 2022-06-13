@@ -59,6 +59,11 @@ namespace Molten
         public const float ZeroTolerance = 1e-6f; // Value a 8x higher than 1.19209290E-07F
 
         /// <summary>
+        /// A value specifying the approximation of half-π which is 90 degrees.
+        /// </summary>
+        public const float PiHalf = (float)(Math.PI / 2.0);
+
+        /// <summary>
         /// A value specifying the approximation of π which is 180 degrees.
         /// </summary>
         public const float Pi = (float)Math.PI;

@@ -16,7 +16,7 @@
         Range[] _ranges;
         uint _curRange;
         uint _spriteCapacity;
-        Action<DeviceContext, RenderCamera, Range, ObjectRenderData>[] _flushFuncs;
+        Func<DeviceContext, Range, ObjectRenderData, Material>[] _checkers;
         SpriteVertex[] _vertices;
         Material _defaultMaterial; 
         Material _defaultMaterialMS;
@@ -50,12 +50,12 @@
             ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_sdf.mfx");
             _defaultMsdfMaterial = resultSdf[ShaderClassType.Material, "sprite-msdf"] as Material;
 
-            _flushFuncs = new Action<DeviceContext, RenderCamera, Range, ObjectRenderData>[5];
-            _flushFuncs[(int)SpriteFormat.Sprite] = FlushSpriteRange;
-            _flushFuncs[(int)SpriteFormat.MSDF] = FlushMsdfRange;
-            _flushFuncs[(int)SpriteFormat.Line] = FlushLineRange;
-            _flushFuncs[(int)SpriteFormat.Triangle] = FlushTriangleRange;
-            _flushFuncs[(int)SpriteFormat.Circle] = FlushCircleRange;
+            _checkers = new Func<DeviceContext, Range, ObjectRenderData, Material>[5];
+            _checkers[(int)SpriteFormat.Sprite] = CheckSpriteRange;
+            _checkers[(int)SpriteFormat.MSDF] = CheckMsdfRange;
+            _checkers[(int)SpriteFormat.Line] = CheckLineRange;
+            _checkers[(int)SpriteFormat.Triangle] = CheckTriangleRange;
+            _checkers[(int)SpriteFormat.Circle] = CheckCircleRange;
         }
 
         internal unsafe void Flush(DeviceContext context, RenderCamera camera, ObjectRenderData data)
@@ -136,11 +136,16 @@
                 range.BufferOffset = bufferOffset;
                 bufferOffset += range.VertexCount;
 
-                _flushFuncs[(int)range.Format](context, camera, range, data);
+                Material mat = _checkers[(int)range.Format](context, range, data);
+
+                context.State.SetScissorRectangles(Clips[range.ClipID]);
+
+                mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
+                context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
             }
         }
 
-        private void FlushSpriteRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
+        private Material CheckSpriteRange(DeviceContext context, Range range, ObjectRenderData data)
         {
             Material mat = range.Material as Material;
 
@@ -166,13 +171,10 @@
                 mat = mat ?? _defaultNoTextureMaterial;
             }
 
-            context.State.SetScissorRectangles(Clips[range.ClipID]);
-
-            mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
+            return mat;
         }
 
-        private void FlushMsdfRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
+        private Material CheckMsdfRange(DeviceContext context, Range range, ObjectRenderData data)
         {
             Material mat = range.Material as Material;
 
@@ -198,28 +200,22 @@
                 mat = mat ?? _defaultNoTextureMaterial;
             }
 
-            context.State.SetScissorRectangles(Clips[range.ClipID]);
-
-            mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
+            return mat;
         }
 
-        private void FlushLineRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
+        private Material CheckLineRange(DeviceContext context, Range range, ObjectRenderData data)
         {
-            _defaultLineMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            context.Draw(_defaultLineMaterial, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
+            return _defaultLineMaterial;
         }
 
-        private void FlushTriangleRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
+        private Material CheckTriangleRange(DeviceContext context, Range range, ObjectRenderData data)
         {
-            _defaultTriMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            context.Draw(_defaultTriMaterial, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
+            return _defaultTriMaterial;
         }
 
-        private void FlushCircleRange(DeviceContext context, RenderCamera camera, Range range, ObjectRenderData data)
+        private Material CheckCircleRange(DeviceContext context, Range range, ObjectRenderData data)
         {
-            _defaultCircleMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-            context.Draw(_defaultCircleMaterial, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
+            return _defaultCircleMaterial;
         }
 
         public override void Dispose()
