@@ -42,13 +42,14 @@ namespace Molten.Input
         protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
             _sensitivitySetting = service.Settings.Input.PointerSensitivity;
+            Sensitivity = _sensitivitySetting;
             _sensitivitySetting.OnChanged += PointerSensitivity_OnChanged;
             return base.OnInitialize(service);
         }
 
         private void PointerSensitivity_OnChanged(float oldValue, float newValue)
         {
-            Sensitivity = _sensitivitySetting;
+            Sensitivity = newValue;
         }
 
         protected override sealed SettingValue<int> GetBufferSizeSetting(InputSettings settings)

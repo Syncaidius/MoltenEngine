@@ -94,7 +94,7 @@ namespace Molten.Samples
             };
 
             //sb.DrawString(SampleFont, text, pos, Color.White);
-            sb.DrawString(SampleFont, $"Mouse delta: {Mouse.Delta}", pos, Color.White);
+            sb.DrawString(SampleFont, $"Mouse Sensitivity: {Mouse.Sensitivity}", pos, Color.White);
         }
     }
 }

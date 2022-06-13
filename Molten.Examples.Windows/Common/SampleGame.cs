@@ -43,7 +43,8 @@ namespace Molten.Samples
             _cam2D.OutputSurface = Window;
             _cam2D.LayerMask = SceneLayerMask.Layer0;
 
-            Settings.Input.PointerSensitivity.Value = 0.5f;
+            Settings.Input.PointerSensitivity.Value = 0.75f;
+            Settings.Input.PointerSensitivity.Apply();
 
             if (engine.Input != null && engine.Input.State == EngineServiceState.Ready)
                 Engine.Input.Camera = _cam2D;
