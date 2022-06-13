@@ -401,22 +401,29 @@ namespace Molten.Input
             if (!IsEnabled)
                 return;
 
-            while (_bStart != _bEnd)
+            if (_bStart != _bEnd)
             {
-                if (_bStart == _buffer.Length)
-                    _bStart = 0;
+                while (_bStart != _bEnd)
+                {
+                    if (_bStart == _buffer.Length)
+                        _bStart = 0;
 
-                S state = _buffer[_bStart];
-                state.UpdateID = Service.UpdateID;
-                int stateID = GetStateID(ref state);
+                    S state = _buffer[_bStart];
+                    state.UpdateID = Service.UpdateID;
+                    int stateID = GetStateID(ref state);
 
-                S prev = _states[state.SetID][stateID];
+                    S prev = _states[state.SetID][stateID];
 
-                // Replace prev state with new state, if accepted.
-                if (ProcessState(ref state, ref prev))
-                    _states[state.SetID][stateID] = state;
+                    // Replace prev state with new state, if accepted.
+                    if (ProcessState(ref state, ref prev))
+                        _states[state.SetID][stateID] = state;
 
-                _bStart++;
+                    _bStart++;
+                }
+            }
+            else
+            {
+                ProcessIdleState();
             }
 
             foreach (InputDeviceFeature f in Features)
@@ -440,6 +447,11 @@ namespace Molten.Input
             int id = TranslateStateID(stateID);
             return GetIsTapped(ref _states[setID][id]);
         }
+
+        /// <summary>
+        /// Invoked when the device has no new state updates to process.
+        /// </summary>
+        protected virtual void ProcessIdleState() { }
 
         /// <summary>
         /// Invoked when the current <see cref="InputDevice"/> needs to process a state from it's buffer.

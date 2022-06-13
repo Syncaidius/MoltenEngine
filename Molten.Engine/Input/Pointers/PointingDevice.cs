@@ -89,6 +89,13 @@ namespace Molten.Input
             return (int)idValue;
         }
 
+        protected override void ProcessIdleState()
+        {
+            base.ProcessIdleState();
+
+            Delta = Vector2F.Zero;
+        }
+
         protected override bool ProcessState(ref PointerState newState, ref PointerState prevState)
         {
             if (_surface == null)
