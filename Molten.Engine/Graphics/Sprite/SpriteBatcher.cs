@@ -555,6 +555,42 @@ namespace Molten.Graphics
             //item.Vertex.UV = new Vector4F(); // Unused
         }
 
+        public void DrawRoundedRect(RectangleF dest, Color color, float radius, IMaterial material = null)
+        {
+            DrawRoundedRect(dest, color, 0, Vector2F.Zero, radius, material);
+        }
+
+        public void DrawRoundedRect(RectangleF dest, Color color, float rotation, Vector2F origin, float radius, IMaterial material = null)
+        {
+            if(radius <= 0)
+            {
+                DrawRect(dest, color, rotation, origin, material);
+                return;
+            }
+
+            // TODO add support for rotation and origin
+
+            Vector2F tl = dest.TopLeft + radius;
+            Vector2F tr = dest.TopRight + new Vector2F(-radius, radius);
+            Vector2F br = dest.BottomRight - radius;
+            Vector2F bl = dest.BottomLeft + new Vector2F(radius, -radius);
+
+            float innerWidth = dest.Width - (radius * 2);
+            float innerHeight = dest.Height - (radius * 2);
+            RectangleF t = new RectangleF(tl.X, dest.Top, innerWidth, radius);
+            RectangleF b = new RectangleF(tl.X, dest.Bottom - radius, innerWidth, radius);
+            RectangleF c = new RectangleF(dest.X, tl.Y, dest.Width, innerHeight);
+
+            DrawCircle(tl, radius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
+            DrawCircle(tr, radius, 0, MathHelper.PiHalf, color);
+            DrawCircle(br, radius, MathHelper.PiHalf, MathHelper.Pi, color);
+            DrawCircle(bl, radius, MathHelper.Pi,MathHelper.PiHalf * 3, color);
+
+            DrawRect(t, color, material);
+            DrawRect(b, color, material);
+            DrawRect(c, color, material);
+        }
+
         /// <summary>Adds a sprite to the batch.</summary>
         /// <param name="texture"></param>
         /// <param name="source"></param>

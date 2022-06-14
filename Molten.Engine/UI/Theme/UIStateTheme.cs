@@ -13,14 +13,17 @@ namespace Molten.UI
         public Color TextColor { get; set; } = Color.White;
 
         [DataMember]
-        public Color BackgroundColor { get; set; } = new Color(40, 40, 150, 200);
+        public Color BackgroundColor { get; set; } = new Color(40, 170, 40, 200);
 
         [DataMember]
-        public Color BorderColor { get; set; } = new Color(80, 80, 190);
+        public Color BorderColor { get; set; } = new Color(80, 220, 80);
 
 
         [DataMember]
         public float BorderThickness { get; set; } = 2f;
+
+        [DataMember]
+        public float CornerRadius { get; set; } = 0f;
 
         /// <summary>
         /// Gets or sets the default size (in spaces) of the a tab character.

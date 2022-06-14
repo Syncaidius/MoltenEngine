@@ -16,29 +16,23 @@ namespace Molten.UI
 
             public Color BackgroundColor;
 
-            public float BorderRadius;
+            public float CornerRadius;
 
             public void ApplyTheme(UITheme theme, UIElementTheme eTheme, UIStateTheme stateTheme)
             {
                 BorderColor = stateTheme.BorderColor;
                 BorderThickness = stateTheme.BorderThickness;
                 BackgroundColor = stateTheme.BackgroundColor;
+                CornerRadius = stateTheme.CornerRadius;
             }
 
             public void Render(SpriteBatcher sb, UIRenderData data)
             {
-                if (BorderRadius <= 0)
-                {
-                    if (BackgroundColor.A > 0)
-                        sb.DrawRect(data.RenderBounds, BackgroundColor);
+                if (BackgroundColor.A > 0)
+                    sb.DrawRoundedRect(data.RenderBounds, BackgroundColor, CornerRadius);
 
-                    if (BorderColor.A > 0 && BorderThickness > 0)
-                        sb.DrawRectOutline(data.BorderBounds, BorderColor, BorderThickness);
-                }
-                else
-                {
-                    // TODO call sb.DrawRoundedRect once implemented.
-                }
+                if (BorderColor.A > 0 && BorderThickness > 0)
+                    sb.DrawRectOutline(data.BorderBounds, BorderColor, BorderThickness);
             }
         }
     }
