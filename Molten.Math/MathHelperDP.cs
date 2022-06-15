@@ -16,9 +16,14 @@
         public const double Pi = Math.PI;
 
         /// <summary>
-        /// A value specifying the approximation of 2π which is 360 degrees.
+        /// Equvilent to <see cref="Tau"/>. A value specifying the approximation of 2π which is 360 degrees.
         /// </summary>
-        public const double TwoPi = (2D * Math.PI);
+        public const double TwoPi = Math.Tau;
+
+        /// <summary>
+        /// Equivilent to <see cref="TwoPi"/>. Represents the number of radians in one turn, specified by the constant, τ
+        /// </summary>
+        public const double Tau = Math.Tau;
 
         /// <summary>
         /// A value specifying the approximation of π/2 which is 90 degrees.

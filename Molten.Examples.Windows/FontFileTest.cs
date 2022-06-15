@@ -201,7 +201,7 @@ namespace Molten.Samples
             _glyphTriPoints = new List<Vector2F>();
             _c = glyphChar;
 
-            _shape.Triangulate(_glyphTriPoints, Vector2F.Zero, 1, CHAR_CURVE_RESOLUTION);
+            _shape.Triangulate(_glyphTriPoints, CHAR_CURVE_RESOLUTION);
         }
 
         private void Cr_OnCompleted(ContentRequest cr)

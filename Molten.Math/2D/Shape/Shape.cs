@@ -38,13 +38,12 @@ namespace Molten
         /// 
         /// </summary>
         /// <param name="output"></param>
-        /// <param name="offset"></param>
         /// <param name="scale"></param>
         /// <param name="edgeResolution">The maximum number of points that are allowed to represent an edge. For bezier curves, this will affect the curve smoothness.</param>
-        public void Triangulate(List<Vector2F> output, Vector2F offset, float scale = 1f, int edgeResolution = 3)
+        public void Triangulate(List<Vector2F> output, int edgeResolution = 3)
         {
             List<Triangle> triangles = new List<Triangle>();
-            Triangulate(triangles, offset, scale, edgeResolution);
+            Triangulate(triangles, edgeResolution);
 
             foreach (Triangle tri in triangles)
             {
@@ -59,7 +58,7 @@ namespace Molten
         /// </summary>
         /// <param name="output"></param>
         /// <param name="edgeResolution">The maximum number of points that are allowed to represent an edge. For bezier curves, this will affect the curve smoothness.</param>
-        public void Triangulate(List<Triangle> output, Vector2F offset, float scale = 1f, int edgeResolution = 3)
+        public void Triangulate(List<Triangle> output, int edgeResolution = 3)
         {
             // Group contours
             List<(Contour c, List<TriPoint> edgeList)> holes =  new List<(Contour c, List<TriPoint> edgeList)> ();
@@ -119,16 +118,7 @@ namespace Molten
                 List<Triangle> r = tcx.GetTriangles();
 
                 // Scale and offset triangles
-                foreach (Triangle tri in r)
-                {
-                    for (int i = 0; i < 3; i++)
-                    {
-                        tri.Points[i].X = (tri.Points[i].X * scale) + offset.X;
-                        tri.Points[i].Y = (tri.Points[i].Y * scale) + offset.Y;
-                    }
-
-                    output.Add(tri);
-                }
+                output.AddRange(r);
             }            
         }
 

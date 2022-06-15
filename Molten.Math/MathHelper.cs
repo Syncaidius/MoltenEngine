@@ -69,9 +69,14 @@ namespace Molten
         public const float Pi = (float)Math.PI;
 
         /// <summary>
-        /// A value specifying the approximation of 2π which is 360 degrees.
+        /// Equvilent to <see cref="Tau"/>. A value specifying the approximation of 2π which is 360 degrees.
         /// </summary>
-        public const float TwoPi = (float)(2 * Math.PI);
+        public const float TwoPi = (float)Math.Tau;
+
+        /// <summary>
+        /// Equivilent to <see cref="TwoPi"/>. Represents the number of radians in one turn, specified by the constant, τ
+        /// </summary>
+        public const float Tau = (float)Math.Tau;
 
         /// <summary>
         /// A value specifying the approximation of π/2 which is 90 degrees.

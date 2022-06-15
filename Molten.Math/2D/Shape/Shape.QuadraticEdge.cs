@@ -24,11 +24,16 @@ namespace Molten
 
             public ref Vector2D ControlPoint => ref p[1];
 
-            public override Vector2D Point(double param)
+            /// <summary>
+            /// Gets a point along the quadratic edge
+            /// </summary>
+            /// <param name="percent"></param>
+            /// <returns></returns>
+            public override Vector2D Point(double percent)
             {
-                Vector2D start = Vector2D.Lerp(ref p[0], ref p[1], param);
-                Vector2D end = Vector2D.Lerp(ref p[1], ref p[2], param);
-                return Vector2D.Lerp(ref start, ref end, param);
+                Vector2D start = Vector2D.Lerp(ref p[0], ref p[1], percent);
+                Vector2D end = Vector2D.Lerp(ref p[1], ref p[2], percent);
+                return Vector2D.Lerp(ref start, ref end, percent);
             }
 
             public override Vector2D PointAlongEdge(double percentage)

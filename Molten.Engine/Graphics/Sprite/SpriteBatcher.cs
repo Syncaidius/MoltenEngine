@@ -5,7 +5,7 @@ namespace Molten.Graphics
     /// <summary>
     /// A base class for sprite batcher implementations.
     /// </summary>
-    public abstract class SpriteBatcher : IDisposable
+    public abstract partial class SpriteBatcher : IDisposable
     {
         // This is must match [maxvertexcount()] - 2 in the geometry shader.
         const int CIRCLE_GEOMETRY_MAX_SIDES = 32;
@@ -145,106 +145,6 @@ namespace Molten.Graphics
             }
         }
 
-        /// <summary>
-        /// Draws a circle with the specified radius.
-        /// </summary>
-        /// <param name="center">The position of the circle center.</param>
-        /// <param name="radius">The radius, in radians.</param>
-        /// <param name="startAngle">The start angle of the circle, in radians. This is useful when drawing a partial-circle.</param>
-        /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-circle</param>
-        /// <param name="col">The color of the circle.</param>
-        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawCircle(Vector2F center, float radius, float startAngle, float endAngle, Color col, int sides = 16)
-        {
-            DrawEllipse(center, radius, radius, startAngle, endAngle, col, sides);
-        }
-
-        /// <summary>
-        /// Draws a circle with the specified radius.
-        /// </summary>
-        /// <param name="center">The position of the circle center.</param>
-        /// <param name="radius">The radius, in radians.</param>
-        /// <param name="col">The color of the circle.</param>
-        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawCircle(Vector2F center, float radius, Color col, int sides = 16)
-        {
-            DrawEllipse(center, radius, radius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides);
-        }
-
-        /// <summary>
-        /// Draws an ellipse with the specified radius values.
-        /// </summary>
-        /// <param name="center">The position of the ellipse center.</param>
-        /// <param name="xRadius">The X radius, in radians.</param>
-        /// <param name="yRadius">The Y radius, in radians.</param>
-        /// <param name="col">The color of the ellipse.</param>
-        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, Color col, int sides = 16)
-        {
-            DrawEllipse(center, xRadius, yRadius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides);
-        }
-
-        /// <summary>
-        /// Draws an ellipse with the specified radius values.
-        /// </summary>
-        /// <param name="center">The position of the ellipse center.</param>
-        /// <param name="xRadius">The X radius, in radians.</param>
-        /// <param name="yRadius">The Y radius, in radians.</param>
-        /// <param name="startAngle">The start angle of the circle, in radians. This is useful when drawing a partial-ellipse.</param>
-        /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-ellipse</param>
-        /// <param name="color">The color of the ellipse.</param>
-        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, float startAngle, float endAngle, Color color, int sides = 16)
-        {
-            if (sides < CIRCLE_MIN_SIDES)
-                throw new SpriteBatcherException(this, $"The minimum number of sides is {CIRCLE_MIN_SIDES}.");
-
-            // Split the circle up into smaller pieces if we're going to hit the geometry shader output limit.
-            if (sides > CIRCLE_GEOMETRY_MAX_SIDES)
-            {
-                int pieces = sides / CIRCLE_GEOMETRY_MAX_SIDES;
-                pieces += sides % CIRCLE_GEOMETRY_MAX_SIDES > 0 ? 1 : 0;
-                float angleRange = endAngle - startAngle;
-                float rangePerPiece = angleRange / pieces;
-                float pieceStartAngle = startAngle;
-                float pieceEndAngle = pieceStartAngle + rangePerPiece;
-
-                for (int i = 0; i < pieces; i++)
-                {
-                    ref SpriteItem item = ref GetItem();
-                    item.Texture = null;
-                    item.Material = null;
-                    item.Format = SpriteFormat.Circle;
-
-                    item.Vertex.Position = center;
-                    item.Vertex.Rotation = sides;
-                    item.Vertex.ArraySlice = 0;
-                    item.Vertex.Size = new Vector2F(xRadius, yRadius);
-                    item.Vertex.UV = Vector4F.Zero; // Unused
-                    item.Vertex.Color = color;
-                    item.Vertex.Origin = new Vector2F(pieceStartAngle, pieceEndAngle);
-
-                    pieceStartAngle += rangePerPiece;
-                    pieceEndAngle += rangePerPiece;
-                }
-            }
-            else
-            {
-                ref SpriteItem item = ref GetItem();
-                item.Texture = null;
-                item.Material = null;
-                item.Format = SpriteFormat.Circle;
-
-                item.Vertex.Position = center;
-                item.Vertex.Rotation = sides;
-                item.Vertex.ArraySlice = 0;
-                item.Vertex.Size = new Vector2F(xRadius, yRadius);
-                item.Vertex.UV = Vector4F.Zero; // Unused
-                item.Vertex.Color = color;
-                item.Vertex.Origin = new Vector2F(startAngle, endAngle);
-            }
-        }
-
         /// <summary>Draws a triangle using 3 provided points.</summary>
         /// <param name="p1">The first point.</param>
         /// <param name="p2">The second point.</param>
@@ -310,22 +210,6 @@ namespace Molten.Graphics
         {
             _singleColorList[0] = color;
             DrawTriangleList(points, _singleColorList);
-        }
-
-        /// <summary>
-        /// Draws a rectangular outline composed of 4 lines.
-        /// </summary>
-        /// <param name="rect">The rectangle.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="thickness">The thickness.</param>
-        public void DrawRectOutline(RectangleF rect, Color color, float thickness)
-        {
-            float halfThick = thickness / 2f;
-
-            DrawLine(new Vector2F(rect.Left - halfThick, rect.Top), new Vector2F(rect.Right + halfThick, rect.Top), color, thickness); // Top
-            DrawLine(new Vector2F(rect.Left - halfThick, rect.Bottom), new Vector2F(rect.Right + halfThick, rect.Bottom), color, thickness); // Bottom
-            DrawLine(new Vector2F(rect.Right, rect.Top + halfThick), new Vector2F(rect.Right, rect.Bottom - halfThick), color, thickness); // Right
-            DrawLine(new Vector2F(rect.Left, rect.Top + halfThick), new Vector2F(rect.Left, rect.Bottom - halfThick), color, thickness); // Left
         }
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
@@ -520,75 +404,6 @@ namespace Molten.Graphics
             // Normal of next line. This is used for creating sharp edges when drawing multiple lines. 
             // In this case, we set it to the direction of the current line, because we're just drawing one.
             item.Vertex.Origin = p2 - p1;
-        }
-
-        /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
-        /// <param name="destination">The rectangle defining the draw destination.</param>
-        /// <param name="color">The color overlay/tiny of the sprite.</param>
-        /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
-        public void DrawRect(RectangleF destination, Color color, IMaterial material = null)
-        {
-            DrawRect(destination, color, 0, Vector2F.Zero, material);
-        }
-
-        /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
-        /// <param name="destination">The rectangle defining the draw destination.</param>
-        /// <param name="color">The color overlay/tiny of the sprite.</param>
-        /// <param name="rotation">Rotation in radians.</param>
-        /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
-        /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
-        /// <param name="material">The material to use when rendering the sprite.</param>
-        /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        public void DrawRect(RectangleF destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
-        {
-            ref SpriteItem item = ref GetItem();
-            item.Texture = null;
-            item.Material = material;
-            item.Format = SpriteFormat.Sprite;
-
-            item.Vertex.Position = destination.TopLeft;
-            item.Vertex.Rotation = rotation;
-            item.Vertex.ArraySlice = 0;
-            item.Vertex.Size = destination.Size;
-            item.Vertex.Color = color;
-            item.Vertex.Origin = origin;
-            //item.Vertex.UV = new Vector4F(); // Unused
-        }
-
-        public void DrawRoundedRect(RectangleF dest, Color color, float radius, IMaterial material = null)
-        {
-            DrawRoundedRect(dest, color, 0, Vector2F.Zero, radius, material);
-        }
-
-        public void DrawRoundedRect(RectangleF dest, Color color, float rotation, Vector2F origin, float radius, IMaterial material = null)
-        {
-            if(radius <= 0)
-            {
-                DrawRect(dest, color, rotation, origin, material);
-                return;
-            }
-
-            // TODO add support for rotation and origin
-
-            Vector2F tl = dest.TopLeft + radius;
-            Vector2F tr = dest.TopRight + new Vector2F(-radius, radius);
-            Vector2F br = dest.BottomRight - radius;
-            Vector2F bl = dest.BottomLeft + new Vector2F(radius, -radius);
-
-            float innerWidth = dest.Width - (radius * 2);
-            float innerHeight = dest.Height - (radius * 2);
-            RectangleF t = new RectangleF(tl.X, dest.Top, innerWidth, radius);
-            RectangleF b = new RectangleF(tl.X, dest.Bottom - radius, innerWidth, radius);
-            RectangleF c = new RectangleF(dest.X, tl.Y, dest.Width, innerHeight);
-
-            DrawCircle(tl, radius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
-            DrawCircle(tr, radius, 0, MathHelper.PiHalf, color);
-            DrawCircle(br, radius, MathHelper.PiHalf, MathHelper.Pi, color);
-            DrawCircle(bl, radius, MathHelper.Pi,MathHelper.PiHalf * 3, color);
-
-            DrawRect(t, color, material);
-            DrawRect(b, color, material);
-            DrawRect(c, color, material);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
