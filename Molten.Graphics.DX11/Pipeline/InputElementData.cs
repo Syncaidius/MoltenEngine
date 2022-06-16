@@ -44,7 +44,7 @@ namespace Molten.Graphics
                     // If the remaining elements are system values (SV_ prefix), allow them.
                     for(int i = Elements.Length; i < endIndex; i++)
                     {
-                        if (other.Metadata[i].SystemValueType == D3DName.D3D10NameUndefined)
+                        if (other.Metadata[i].SystemValueType == D3DName.D3DNameUndefined)
                             return false;
                     }
                 }

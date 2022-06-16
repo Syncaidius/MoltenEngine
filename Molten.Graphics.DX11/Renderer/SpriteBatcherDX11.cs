@@ -154,7 +154,7 @@ namespace Molten.Graphics
 
                 Material mat = _checkers[(int)range.Format](context, range, data);
 
-                mat["spriteData"].Value = _buffer;
+                mat["spriteData"].Value = _buffer.FirstSegment;
                 context.State.SetScissorRectangles(Clips[range.ClipID]);
 
                 mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
