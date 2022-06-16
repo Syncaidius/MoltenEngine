@@ -1,0 +1,48 @@
+<material>
+    <name value="sprite-texturev2" />
+    <author value="James Yarwood"/>
+    <description>The default material for rendering sprites in a SpriteBatch with a texture</description>
+    <pass>
+        <name value="main"/>
+        <iterations value="1"/>
+        <vertex value="VS"/>
+        <geometry value="GS"/>
+        <fragment value="PS" />
+        <!--<fragment value="PS_MS">
+            <condition value="Multisampling"/>
+        </fragment>-->
+        <blend preset="PreMultipliedAlpha" />
+        <rasterizer preset="ScissorTest" />
+        <rasterizer preset="DefaultMultisample">
+            <condition value="Multisampling"/>
+        </rasterizer>
+        <rasterizer preset="ScissorTestMultiSample">
+            <condition value="Multisampling"/>
+            <condition value="ScissorTest"/>
+        </rasterizer>
+    </pass>
+</material>
+
+<material>
+    <name value="sprite-no-texturev2" />
+    <author value="James Yarwood"/>
+    <description>The default material for rendering sprites in a SpriteBatch with no texture.</description>
+    <pass>
+        <name value="main"/>
+        <iterations value="1"/>
+        <vertex value="VS"/>
+        <geometry value="GS"/>
+        <fragment value="PS_NoTexture"/>
+        <blend preset="PreMultipliedAlpha" />
+        <rasterizer preset="ScissorTest" />
+        <rasterizer preset="DefaultMultisample">
+            <condition value="Multisampling"/>
+        </rasterizer>
+        <rasterizer preset="ScissorTestMultiSample">
+            <condition value="Multisampling"/>
+            <condition value="ScissorTest"/>
+        </rasterizer>
+    </pass>
+</material>
+
+#include "sprite_common_v2.mfx";

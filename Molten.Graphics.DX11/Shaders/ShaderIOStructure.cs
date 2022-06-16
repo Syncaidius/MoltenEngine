@@ -106,7 +106,11 @@ namespace Molten.Graphics
 
                 // Store the element
                 Data.Elements[i] = el;
-                Data.Names[i] = SilkMarshal.PtrToString((nint)pDesc.SemanticName);
+                Data.Metadata[i] = new InputElementData.InputElementMetadata()
+                {
+                    Name = SilkMarshal.PtrToString((nint)pDesc.SemanticName),
+                    SystemValueType = pDesc.SystemValueType
+                };
             }
         }
 

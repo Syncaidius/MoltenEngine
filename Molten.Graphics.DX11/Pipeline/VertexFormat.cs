@@ -72,10 +72,10 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    vf.Data.Names[eCount] = GetSemanticName(att.Usage);
+                    vf.Data.Metadata[eCount].Name = GetSemanticName(att.Usage);
                     vf.Data.Elements[eCount] = new InputElementDesc()
                     {
-                        SemanticName = (byte*)SilkMarshal.StringToPtr(vf.Data.Names[eCount]),
+                        SemanticName = (byte*)SilkMarshal.StringToPtr(vf.Data.Metadata[eCount].Name),
                         SemanticIndex = att.SemanticIndex,
                         AlignedByteOffset = vf.SizeOf,
                         InputSlotClass = att.Classification.ToApi(),

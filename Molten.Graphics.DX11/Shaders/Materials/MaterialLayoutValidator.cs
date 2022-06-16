@@ -34,27 +34,27 @@ namespace Molten.Graphics
                 // If the input expects anything, check compatibility. Skip compat check if input does not expect anything (length 0).
                 if (input.Data.Elements.Length > 0 && !output.IsCompatible(input))
                 {
-                    Type currentCompositionType = stages[i].GetType().GenericTypeArguments[0];
-                    Type previousCompositionType = previous.GetType().GenericTypeArguments[0];
+                    ShaderType currentCompositionType =  stages[i].Type;
+                    ShaderType previousCompositionType = previous.Type;
 
                     context.AddError("Incompatible material I/O structure.");
                     context.AddError("====================================");
                     context.AddError($"\tFilename: {pass.Material.Filename ?? "N/A"}");
-                    context.AddError($"\tOutput -- {previousCompositionType.Name}:");
+                    context.AddError($"\tOutput -- {previousCompositionType}:");
 
                     if (output.Data.Elements.Length > 0)
                     {
                         for (int o = 0; o < output.Data.Elements.Length; o++)
-                            context.AddError($"\t\t[{o}] {output.Data.Names[o]} -- index: {output.Data.Elements[o].SemanticIndex}");
+                            context.AddError($"\t\t[{o}] {output.Data.Metadata[o]} -- index: {output.Data.Elements[o].SemanticIndex}");
                     }
                     else
                     {
                         context.AddError("No output elements expected.");
                     }
 
-                    context.AddError($"\tInput: {currentCompositionType.Name}:");
+                    context.AddError($"\tInput: {currentCompositionType}:");
                     for (int o = 0; o < input.Data.Elements.Length; o++)
-                        context.AddError($"\t\t[{o}] {input.Data.Names[o]} -- index: {input.Data.Elements[o].SemanticIndex}");
+                        context.AddError($"\t\t[{o}] {input.Data.Metadata[o]} -- index: {input.Data.Elements[o].SemanticIndex}");
 
                     valid = false;
                 }

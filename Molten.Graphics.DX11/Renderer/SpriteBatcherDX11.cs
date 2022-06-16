@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics
+﻿using Silk.NET.Direct3D11;
+
+namespace Molten.Graphics
 {
     public class SpriteBatcherDX11 : SpriteBatcher
     {
@@ -12,6 +14,7 @@
             public int ClipID;
         }
 
+        GraphicsBuffer _buffer;
         BufferSegment _segment;
         Range[] _ranges;
         uint _curRange;
@@ -24,10 +27,9 @@
         Material _defaultLineMaterial;
         Material _defaultCircleMaterial;
         Material _defaultTriMaterial;
-
         Material _defaultMsdfMaterial;
 
-        internal SpriteBatcherDX11(RendererDX11 renderer, uint capacity = 3000) : base(capacity)
+        internal unsafe SpriteBatcherDX11(RendererDX11 renderer, uint capacity = 3000) : base(capacity)
         {
             // In the worst-case scenario, we can expect the number of ranges to equal the capacity. Create as many ranges.
             _ranges = new Range[capacity];
@@ -36,13 +38,22 @@
 
             _vertices = new SpriteVertex[capacity];
             _spriteCapacity = capacity;
+            _buffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicDiscard, 
+                BindFlag.BindShaderResource, 
+                (uint)sizeof(SpriteVertex) * capacity,
+                ResourceMiscFlag.ResourceMiscBufferStructured,
+                StagingBufferFlags.None,
+                (uint)sizeof(SpriteVertex));
+
             _segment = renderer.DynamicVertexBuffer.Allocate<SpriteVertex>(_spriteCapacity);
             _segment.SetVertexFormat(typeof(SpriteVertex));
 
+            ShaderCompileResult resultV2 = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_v2.mfx");
+            _defaultNoTextureMaterial = resultV2[ShaderClassType.Material, "sprite-no-texturev2"] as Material;
+            _defaultMaterial = resultV2[ShaderClassType.Material, "sprite-texturev2"] as Material;
+
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite.mfx");
-            _defaultMaterial = result[ShaderClassType.Material, "sprite-texture"] as Material;
             _defaultMaterialMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
-            _defaultNoTextureMaterial = result[ShaderClassType.Material, "sprite-no-texture"] as Material;
             _defaultLineMaterial = result[ShaderClassType.Material, "line"] as Material;
             _defaultCircleMaterial = result[ShaderClassType.Material, "circle"] as Material;
             _defaultTriMaterial = result[ShaderClassType.Material, "triangle"] as Material;
@@ -66,7 +77,7 @@
             Range range;
 
             Clips[0] = (Rectangle)camera.OutputSurface.Viewport.Bounds;
-            context.State.VertexBuffers[0].Value = _segment;
+            context.State.VertexBuffers[0].Value = null;
 
             // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.            
             uint i = 0;
@@ -126,7 +137,8 @@
         private void FlushBuffer(DeviceContext context, RenderCamera camera, ObjectRenderData data, uint vertexCount)
         {
             Range range;
-            _segment.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
+            //_segment.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
+            _buffer.FirstSegment.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
 
             // Draw calls
             uint bufferOffset = 0;
@@ -136,8 +148,13 @@
                 range.BufferOffset = bufferOffset;
                 bufferOffset += range.VertexCount;
 
+                // TODO TESTING - REMOVE LATER
+                if (range.Format != SpriteFormat.Sprite)
+                    return;
+
                 Material mat = _checkers[(int)range.Format](context, range, data);
 
+                mat["spriteData"].Value = _buffer;
                 context.State.SetScissorRectangles(Clips[range.ClipID]);
 
                 mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
@@ -227,6 +244,7 @@
             _defaultCircleMaterial.Dispose();
             _defaultTriMaterial.Dispose();
             _segment.Dispose();
+            _buffer.Dispose();
         }
     }
 }

@@ -81,13 +81,13 @@ namespace Molten.Graphics
 
                     device.Log.Warning("Format - Buffer slot " + i + ": ");
                     for (int f = 0; f < format.Data.Elements.Length; f++)
-                        device.Log.Warning($"\t[{f}]{format.Data.Names[f]} -- index: {format.Data.Elements[f].SemanticIndex} -- slot: {i}");
+                        device.Log.Warning($"\t[{f}]{format.Data.Metadata[f]} -- index: {format.Data.Elements[f].SemanticIndex} -- slot: {i}");
                 }
 
                 // List final input structure.
                 device.Log.Warning("Shader Input Structure: ");
                 for (int i = 0; i < finalElements.Length; i++)
-                    device.Log.Warning($"\t[{i}]{format.Data.Names[i]} -- index: {finalElements[i].SemanticIndex} -- slot: {finalElements[i].InputSlot}");
+                    device.Log.Warning($"\t[{i}]{format.Data.Metadata[i]} -- index: {finalElements[i].SemanticIndex} -- slot: {finalElements[i].InputSlot}");
             }
         }
 

@@ -196,7 +196,7 @@ namespace Molten.Samples
                 sb.DrawTriangleList(shapeTriList, colors);
 
                 // Draw circles with a decreasing number of sides.
-                origin.X = 500;
+                origin.X = 705;
                 origin.Y = 500;
                 int circleSides = 80;
                 int circleRadius = 50;
@@ -208,7 +208,7 @@ namespace Molten.Samples
                 }
 
                 // Draw ellipse outlines with a decreasing number of sides.
-                origin.X = 500;
+                origin.X = 705;
                 origin.Y = 700;
                 int ellipseSides = 90;
                 for (int i = 0; i < colors.Count; i++)

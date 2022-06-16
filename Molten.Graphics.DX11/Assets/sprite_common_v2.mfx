@@ -1,0 +1,111 @@
+struct SpriteVertex
+{
+	float2 pos;
+	float2 size;
+	float2 origin;
+	float4 uv;
+	float rotation;
+	float arraySlice;
+	float4 col;
+};
+
+struct VS_GS
+{
+    float2 pos : POSITION0;
+	float2 origin : POSITION2;
+	float4 uv : POSITION3;
+    uint vID : VERTEXID;
+};
+
+struct PS_IN
+{
+	float4 pos : SV_POSITION;
+	float4 col : COLOR;
+	float3 uv : TEXCOORD;
+};
+
+StructuredBuffer<SpriteVertex> spriteData : register(t0);
+
+Texture2DArray mapDiffuse : register(t1);
+Texture2DMSArray<float4> mapDiffuseMS : register(t2);
+SamplerState diffuseSampler;
+
+float4x4 wvp;
+float2 textureSize;
+uint sampleCount = 8;
+
+static float degToRad360 = 6.28319;
+
+VS_GS VS(uint vID : SV_VertexID)
+{
+    VS_GS output;
+
+    output.vID = vID;
+	return output;
+}
+
+const static float2 spriteCorners[4] = {
+	float2(0,-1),
+	float2(0, 0),
+	float2(1,-1),
+	float2(1,0),
+};
+
+// 0 = left, 1 = top, 2 = right, 3 = bottom
+const static int2 uvTable[4] = {
+	int2(0,3), // Bottom left
+	int2(0,1), // Top left
+	int2(2,3), // Bottom right
+	int2(2,1), // Top right
+};
+
+float2x2 GetRotation(float angle)
+{
+	// Compute a 2x2 rotation matrix.
+	float c = cos(angle);
+	float s = sin(angle);
+
+	return float2x2(c, -s, s, c);
+}
+
+[maxvertexcount(4)]
+void GS(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
+{
+	PS_IN v;
+    SpriteVertex sv = spriteData[input[0].vID];
+    float4 uv = sv.uv;
+
+	v.col = sv.col;
+    uv.xz = uv.xz / textureSize.x;
+	uv.yw = uv.yw / textureSize.y;
+
+	float2x2 rot = GetRotation(sv.rotation);
+	float2 origin = float2(sv.origin.x, -sv.origin.y);  // Invert y origin
+	float2 pos = float2(sv.pos.x, -sv.pos.y);           // Invert y axis
+	float2 size = sv.size.xy;
+	float2 p;
+
+	[unroll]
+	for (int i = 0; i < 4; i++)
+	{
+		p = mul(size * (spriteCorners[i] - origin), rot);
+		p += pos;
+		v.pos = float4(p, 0, 1);
+		v.pos = mul(v.pos, wvp);
+		v.uv.x = uv[uvTable[i].x];
+		v.uv.y = uv[uvTable[i].y];
+		v.uv.z = sv.arraySlice;
+		spriteStream.Append(v);
+	}
+}
+
+float4 PS( PS_IN input, uint pID : SV_PrimitiveID ) : SV_Target
+{
+	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
+	return col * input.col;
+}
+
+float4 PS_NoTexture(PS_IN input) : SV_Target
+{
+	return input.col;
+}
