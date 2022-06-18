@@ -12,6 +12,11 @@ namespace Molten.Graphics
             public IMaterial Material;
             public SpriteFormat Format;
             public int ClipID;
+
+            public override string ToString()
+            {
+                return $"Range -- Vertices: {VertexCount} -- Format: {Format}";
+            }
         }
 
         GraphicsBuffer _buffer;
@@ -152,16 +157,17 @@ namespace Molten.Graphics
                 bufferOffset += range.VertexCount;
 
                 // TODO TESTING - REMOVE LATER
-                if (range.Format != SpriteFormat.Sprite)
+                if (range.Format != SpriteFormat.Sprite && range.Format != SpriteFormat.MSDF)
                     return;
 
                 Material mat = _checkers[(int)range.Format](context, range, data);
 
                 mat["spriteData"].Value = _bufferData;
+                mat["vertexOffset"].Value = range.BufferOffset;
                 context.State.SetScissorRectangles(Clips[range.ClipID]);
 
                 mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-                context.Draw(mat, range.VertexCount, VertexTopology.PointList, range.BufferOffset);
+                context.Draw(mat, range.VertexCount, VertexTopology.PointList);
             }
         }
 

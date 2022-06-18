@@ -119,11 +119,9 @@ namespace Molten.Graphics
             if (string.IsNullOrEmpty(text))
                 return;
 
-            int strLength = text.Length;
-
             // Cycle through all characters in the string and process them
             Vector2F charPos = position;
-            for (int i = 0; i < strLength; i++)
+            for (int i = 0; i < text.Length; i++)
             {
                 TextFontSource.CachedGlyph cache = font.Source.GetCharGlyph(text[i]);
 

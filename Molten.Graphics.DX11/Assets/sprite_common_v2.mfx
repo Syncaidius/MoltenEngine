@@ -11,9 +11,6 @@ struct SpriteVertex
 
 struct VS_GS
 {
-    float2 pos : POSITION0;
-	float2 origin : POSITION2;
-	float4 uv : POSITION3;
     uint vID : VERTEXID;
 };
 
@@ -34,6 +31,7 @@ SamplerState diffuseSampler;
 float4x4 wvp;
 float2 textureSize;
 uint sampleCount = 8;
+uint vertexOffset = 0;
 
 static float degToRad360 = 6.28319;
 
@@ -73,12 +71,12 @@ float2x2 GetRotation(float angle)
 void GS(point VS_GS input[1], uint pID : SV_PrimitiveID, inout TriangleStream<PS_IN> spriteStream)
 {
 	PS_IN v;
-    SpriteVertex sv = spriteData[input[0].vID];
+    SpriteVertex sv = spriteData[vertexOffset + input[0].vID];
     float4 uv = sv.uv;
 
 	v.col = sv.col;
-    uv.xz = uv.xz / textureSize.x;
-	uv.yw = uv.yw / textureSize.y;
+    uv.xz /= textureSize.x; // scale left (x) and right(z) to 0 - 1.0 range.
+	uv.yw /= textureSize.y; // Scale top (y) and bottom(w) to 0 - 1.0 range.
 
 	float2x2 rot = GetRotation(sv.rotation);
 	float2 origin = float2(sv.origin.x, -sv.origin.y);  // Invert y origin
