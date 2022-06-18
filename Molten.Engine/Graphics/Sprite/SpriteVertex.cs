@@ -30,6 +30,6 @@ namespace Molten.Graphics
         public float ArraySlice;
 
         [VertexElement(VertexElementType.Color, VertexElementUsage.Color, 0)]
-        public Color Color;
+        public Color4 Color;
     }
 }

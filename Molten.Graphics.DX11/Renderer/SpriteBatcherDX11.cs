@@ -247,6 +247,7 @@ namespace Molten.Graphics
             _defaultCircleMaterial.Dispose();
             _defaultTriMaterial.Dispose();
             _segment.Dispose();
+            _bufferData.Dispose();
             _buffer.Dispose();
         }
     }
