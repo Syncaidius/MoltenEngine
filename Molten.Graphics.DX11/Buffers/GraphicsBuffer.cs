@@ -603,9 +603,6 @@ namespace Molten.Graphics
 
         protected virtual void OnSegmentResized(BufferSegment segment, uint oldByteCount, uint newByteCount, uint oldElementCount, uint newElementCount) { }
 
-        /// <summary>Gets the buffer's first segment. This always exists.</summary>
-        internal BufferSegment FirstSegment => _firstSegment;
-
         /// <summary>Gets the structured stride which <see cref="BufferSegment"/> instances must adhere to if they belong to the current <see cref="GraphicsBuffer"/>. 
         /// This is ignored and unused if the <see cref="GraphicsBuffer"/> does not carry the <see cref="ResourceOptionFlags.BufferStructured"/> flag.</summary>
         public uint StructuredStride => Description.StructureByteStride;

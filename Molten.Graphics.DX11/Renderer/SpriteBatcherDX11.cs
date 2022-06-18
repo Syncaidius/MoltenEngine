@@ -15,6 +15,8 @@ namespace Molten.Graphics
         }
 
         GraphicsBuffer _buffer;
+        BufferSegment _bufferData;
+
         BufferSegment _segment;
         Range[] _ranges;
         uint _curRange;
@@ -44,6 +46,7 @@ namespace Molten.Graphics
                 ResourceMiscFlag.ResourceMiscBufferStructured,
                 StagingBufferFlags.None,
                 (uint)sizeof(SpriteVertex));
+            _bufferData = _buffer.Allocate<SpriteVertex>(_spriteCapacity);
 
             _segment = renderer.DynamicVertexBuffer.Allocate<SpriteVertex>(_spriteCapacity);
             _segment.SetVertexFormat(typeof(SpriteVertex));
@@ -138,7 +141,7 @@ namespace Molten.Graphics
         {
             Range range;
             //_segment.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
-            _buffer.FirstSegment.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
+            _bufferData.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
 
             // Draw calls
             uint bufferOffset = 0;
@@ -154,7 +157,7 @@ namespace Molten.Graphics
 
                 Material mat = _checkers[(int)range.Format](context, range, data);
 
-                mat["spriteData"].Value = _buffer.FirstSegment;
+                mat["spriteData"].Value = _bufferData;
                 context.State.SetScissorRectangles(Clips[range.ClipID]);
 
                 mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;

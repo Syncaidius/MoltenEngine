@@ -3,7 +3,7 @@
     "Molten.Examples.Windows": {
       "commandName": "Project",
       "sqlDebugging": false,
-      "nativeDebugging": true
+      "nativeDebugging": false
     }
   }
 }
