@@ -18,11 +18,11 @@ namespace Molten.Graphics
             {
                 seg = grp[i].BoundValue;
 
-                if (((BindFlag)seg.Buffer.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
-                    throw new InvalidOperationException($"The buffer segment in vertex buffer slot {i} is not part of a vertex buffer.");
-
                 if (seg != null)
                 {
+                    if (((BindFlag)seg.Buffer.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
+                        throw new InvalidOperationException($"The buffer segment in vertex buffer slot {i} is not part of a vertex buffer.");
+
                     pBuffers[p] = seg.Buffer.ResourcePtr;
                     pStrides[p] = seg.Stride;
                     pOffsets[p] = seg.ByteOffset;

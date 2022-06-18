@@ -139,9 +139,9 @@
                         _binder.Bind(this, _boundValue);
                         Context.Profiler.Current.GpuBindings++;
                     }
-
-                    return true;
                 }
+
+                return true;
             }
             else
             {
