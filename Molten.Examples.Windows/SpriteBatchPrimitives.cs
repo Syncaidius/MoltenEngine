@@ -219,9 +219,6 @@ namespace Molten.Samples
                     ellipseSides /= 2;
                     origin.X += (circleRadius * 2) + 5;
                 }
-
-                if (SampleFont != null)
-                    sb.Draw(SampleFont.Source.UnderlyingTexture, new RectangleF(200, 200, 256, 256), Color.White);
             };
         }
     }

@@ -121,7 +121,8 @@ namespace Molten.Graphics
                 Height = xRadius * 2,
             };
 
-            DrawEllipse(texture, bounds, startAngle, endAngle, color);
+            RectangleF src = new RectangleF(0, 0, texture.Width, texture.Height);
+            DrawInternal(texture, src, bounds.TopLeft, bounds.Size, color, 0, Vector2F.Zero, null, SpriteFormat.Circle, 0);
         }
 
         /// <summary>
@@ -134,18 +135,8 @@ namespace Molten.Graphics
         /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
         public void DrawEllipse(ITexture2D texture, RectangleF bounds, float startAngle, float endAngle, Color color)
         {
-            ref SpriteItem item = ref GetItem();
-            item.Texture = texture;
-            item.Material = null;
-            item.Format = SpriteFormat.Circle;
-
-            item.Vertex.Position = bounds.TopLeft;
-            item.Vertex.Rotation = 0;   // TODO
-            item.Vertex.ArraySlice = 0; // TODO
-            item.Vertex.Size = bounds.Size;
-            item.Vertex.Color = color;
-            item.Vertex.Origin = new Vector2F(); // TODO - Would allow off-center cirlcles
-            item.Vertex.UV = new Vector4F(0,0, texture.Width, texture.Height);
+            RectangleF src = new RectangleF(0, 0, texture.Width, texture.Height);
+            DrawInternal(texture, src, bounds.TopLeft, bounds.Size, color, 0, Vector2F.Zero, null, SpriteFormat.Circle, 0);
         }
 
         /// <summary>
