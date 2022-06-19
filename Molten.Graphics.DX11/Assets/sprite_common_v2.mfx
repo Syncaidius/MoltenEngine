@@ -29,6 +29,7 @@ Texture2DMSArray<float4> mapDiffuseMS : register(t2);
 SamplerState diffuseSampler;
 
 float4x4 wvp;
+float2 vpSize;
 float2 textureSize;
 uint sampleCount = 8;
 uint vertexOffset = 0;
@@ -108,4 +109,15 @@ float4 PS( PS_IN input ) : SV_Target
 float4 PS_NoTexture(PS_IN input) : SV_Target
 {
 	return input.col;
+}
+
+float4 PS_Circle(PS_IN input) : SV_Target
+{   
+    float3 v = input.uv - 0.5;
+    float3 dist = float3(abs(v.x), abs(v.y), 0);
+
+    if(length(dist) > 0.5)
+    discard;
+   	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
+	return col * input.col;
 }

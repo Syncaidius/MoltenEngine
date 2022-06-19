@@ -8,6 +8,7 @@ namespace Molten.Samples
 
         Rectangle[] _rectangles;
         Color[] _rectangleColors;
+        ITexture2D _meshTex;
 
         public SpriteBatchPrimitives() : base("Sprite Batch Primitives") { }
 
@@ -37,8 +38,8 @@ namespace Molten.Samples
                 return;
             }
 
-            ITexture2D tex = cr.Get<ITexture2D>(1);
-            mat.SetDefaultResource(tex, 0);
+            _meshTex = cr.Get<ITexture2D>(1);
+            mat.SetDefaultResource(_meshTex, 0);
             TestMesh.Material = mat;
 
             // Create points for zig-zagging lines.
@@ -199,10 +200,11 @@ namespace Molten.Samples
                 origin.X = 705;
                 origin.Y = 500;
                 int circleSides = 80;
-                int circleRadius = 50;
+                int circleRadius = 100;
                 for (int i = 0; i < colors.Count; i++)
                 {
-                    sb.DrawCircle(origin, circleRadius, colors[i], circleSides);
+                    //sb.DrawCircle(origin, circleRadius, colors[i], circleSides);
+                    sb.DrawEllipse(_meshTex, origin, circleRadius, circleRadius, 0, 0, colors[i]);
                     circleSides /= 2;
                     origin.X += (circleRadius * 2) + 5;
                 }

@@ -59,11 +59,11 @@ namespace Molten.Graphics
             ShaderCompileResult resultV2 = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_v2.mfx");
             _defaultNoTextureMaterial = resultV2[ShaderClassType.Material, "sprite-no-texturev2"] as Material;
             _defaultMaterial = resultV2[ShaderClassType.Material, "sprite-texturev2"] as Material;
+            _defaultCircleMaterial = resultV2[ShaderClassType.Material, "circle"] as Material;
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite.mfx");
             _defaultMaterialMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
             _defaultLineMaterial = result[ShaderClassType.Material, "line"] as Material;
-            _defaultCircleMaterial = result[ShaderClassType.Material, "circle"] as Material;
             _defaultTriMaterial = result[ShaderClassType.Material, "triangle"] as Material;
 
             ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_sdf.mfx");
@@ -148,6 +148,8 @@ namespace Molten.Graphics
             //_segment.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
             _bufferData.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
 
+            Vector2F vpSize = new Vector2F(camera.OutputSurface.Width, camera.OutputSurface.Height);
+
             // Draw calls
             uint bufferOffset = 0;
             for (uint i = 0; i < _curRange; i++)
@@ -157,13 +159,33 @@ namespace Molten.Graphics
                 bufferOffset += range.VertexCount;
 
                 // TODO TESTING - REMOVE LATER
-                if (range.Format != SpriteFormat.Sprite && range.Format != SpriteFormat.MSDF)
-                    return;
+                if (range.Format != SpriteFormat.Sprite && 
+                    range.Format != SpriteFormat.MSDF && 
+                    range.Format != SpriteFormat.Circle)
+                    continue;
 
-                Material mat = _checkers[(int)range.Format](context, range, data);
+                Material mat = (range.Material as Material) ?? _checkers[(int)range.Format](context, range, data);
 
                 mat["spriteData"].Value = _bufferData;
                 mat["vertexOffset"].Value = range.BufferOffset;
+                mat["vpSize"].Value = vpSize;
+
+                if (range.Texture != null)
+                {
+                    if (range.Texture.IsMultisampled)
+                    {
+                        mat.Textures.DiffuseTextureMS.Value = range.Texture;
+                        mat.Textures.SampleCount.Value = (uint)range.Texture.MultiSampleLevel;
+                    }
+                    else
+                    {
+                        mat.Textures.DiffuseTexture.Value = range.Texture;
+                    }
+
+                    Vector2F texSize = new Vector2F(range.Texture.Width, range.Texture.Height);
+                    mat.SpriteBatch.TextureSize.Value = texSize;
+                }
+
                 context.State.SetScissorRectangles(Clips[range.ClipID]);
 
                 mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
@@ -173,60 +195,25 @@ namespace Molten.Graphics
 
         private Material CheckSpriteRange(DeviceContext context, Range range, ObjectRenderData data)
         {
-            Material mat = range.Material as Material;
-
             if (range.Texture != null)
-            {
-                if (range.Texture.IsMultisampled)
-                {
-                    mat = mat ?? _defaultMaterialMS;
-                    mat.Textures.DiffuseTextureMS.Value = range.Texture;
-                    mat.Textures.SampleCount.Value = (uint)range.Texture.MultiSampleLevel;
-                }
-                else
-                {
-                    mat = mat ?? _defaultMaterial;
-                    mat.Textures.DiffuseTexture.Value = range.Texture; 
-                }
-
-                Vector2F texSize = new Vector2F(range.Texture.Width, range.Texture.Height);
-                mat.SpriteBatch.TextureSize.Value = texSize;
-            }
+                return range.Texture.IsMultisampled ? _defaultMaterialMS : _defaultMaterial;
             else
-            {
-                mat = mat ?? _defaultNoTextureMaterial;
-            }
-
-            return mat;
+                return _defaultNoTextureMaterial;
         }
 
         private Material CheckMsdfRange(DeviceContext context, Range range, ObjectRenderData data)
         {
-            Material mat = range.Material as Material;
-
             if (range.Texture != null)
             {
                 if (range.Texture.IsMultisampled)
-                {
-                    //mat = mat ?? _defaultMaterialMS;
-                    //mat.Textures.DiffuseTextureMS.Value = range.Texture;
-                   // mat.Textures.SampleCount.Value = (uint)range.Texture.MultiSampleLevel;
-                }
+                    return _defaultMaterialMS; // TODO Implement MSDF Multi-sampling
                 else
-                {
-                    mat = mat ?? _defaultMsdfMaterial;
-                    mat.Textures.DiffuseTexture.Value = range.Texture;
-                }
-
-                Vector2F texSize = new Vector2F(range.Texture.Width, range.Texture.Height);
-                mat.SpriteBatch.TextureSize.Value = texSize;
+                    return _defaultMsdfMaterial;
             }
             else
             {
-                mat = mat ?? _defaultNoTextureMaterial;
+                return _defaultNoTextureMaterial;
             }
-
-            return mat;
         }
 
         private Material CheckLineRange(DeviceContext context, Range range, ObjectRenderData data)
