@@ -48,7 +48,7 @@ namespace Molten.Graphics
                 Height = c.Radius * 2,
             };
 
-            DrawInternal(texture, source, bounds.TopLeft, bounds.Size, color, rotation, origin, null, SpriteFormat.Ellipse, arraySlice);
+            DrawInternal(texture, source, bounds.TopLeft, bounds.Size, color, rotation, origin, null, SpriteFormat.Ellipse, arraySlice, false);
         }
     }
 }

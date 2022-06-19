@@ -12,29 +12,31 @@ namespace Molten.Graphics
             public IMaterial Material;
             public SpriteFormat Format;
             public int ClipID;
+            public bool IsOutline;
 
             public override string ToString()
             {
-                return $"Range -- Vertices: {VertexCount} -- Format: {Format}";
+                return $"Range -- Vertices: {VertexCount} -- Format: {Format} -- Outline: {IsOutline}";
             }
         }
 
         GraphicsBuffer _buffer;
         BufferSegment _bufferData;
 
-        BufferSegment _segment;
         Range[] _ranges;
         uint _curRange;
         uint _spriteCapacity;
         Func<DeviceContext, Range, ObjectRenderData, Material>[] _checkers;
-        SpriteVertex[] _vertices;
-        Material _defaultMaterial; 
-        Material _defaultMaterialMS;
-        Material _defaultNoTextureMaterial;
-        Material _defaultLineMaterial;
-        Material _defaultCircleMaterial;
-        Material _defaultTriMaterial;
-        Material _defaultMsdfMaterial;
+        SpriteGpuData[] _vertices;
+        Material _matDefault; 
+        Material _matDefaultMS;
+        Material _matDefaultNoTexture;
+        Material _matLine;
+        Material _matCircle;
+        Material _matCircleOutline;
+        Material _matCircleOutlineNoTex;
+        Material _matTriangle;
+        Material _matMsdf;
 
         internal unsafe SpriteBatcherDX11(RendererDX11 renderer, uint capacity = 3000) : base(capacity)
         {
@@ -43,38 +45,38 @@ namespace Molten.Graphics
             for (uint i = 0; i < _ranges.Length; i++)
                 _ranges[i] = new Range();
 
-            _vertices = new SpriteVertex[capacity];
+            _vertices = new SpriteGpuData[capacity];
             _spriteCapacity = capacity;
             _buffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicDiscard, 
                 BindFlag.BindShaderResource, 
-                (uint)sizeof(SpriteVertex) * capacity,
+                (uint)sizeof(SpriteGpuData) * capacity,
                 ResourceMiscFlag.ResourceMiscBufferStructured,
                 StagingBufferFlags.None,
-                (uint)sizeof(SpriteVertex));
-            _bufferData = _buffer.Allocate<SpriteVertex>(_spriteCapacity);
-
-            _segment = renderer.DynamicVertexBuffer.Allocate<SpriteVertex>(_spriteCapacity);
-            _segment.SetVertexFormat(typeof(SpriteVertex));
+                (uint)sizeof(SpriteGpuData));
+            _bufferData = _buffer.Allocate<SpriteGpuData>(_spriteCapacity);
 
             ShaderCompileResult resultV2 = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_v2.mfx");
-            _defaultNoTextureMaterial = resultV2[ShaderClassType.Material, "sprite-no-texturev2"] as Material;
-            _defaultMaterial = resultV2[ShaderClassType.Material, "sprite-texturev2"] as Material;
-            _defaultCircleMaterial = resultV2[ShaderClassType.Material, "circle"] as Material;
+            _matDefaultNoTexture = resultV2[ShaderClassType.Material, "sprite-no-texture"] as Material;
+            _matDefault = resultV2[ShaderClassType.Material, "sprite-texture"] as Material;
+            _matCircle = resultV2[ShaderClassType.Material, "circle"] as Material;
+            _matCircleOutline = resultV2[ShaderClassType.Material, "circle-outline"] as Material;
+            _matCircleOutlineNoTex = resultV2[ShaderClassType.Material, "circle-outline-no-texture"] as Material;
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite.mfx");
-            _defaultMaterialMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
-            _defaultLineMaterial = result[ShaderClassType.Material, "line"] as Material;
-            _defaultTriMaterial = result[ShaderClassType.Material, "triangle"] as Material;
+            _matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
+            _matLine = result[ShaderClassType.Material, "line"] as Material;
+            _matTriangle = result[ShaderClassType.Material, "triangle"] as Material;
 
             ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_sdf.mfx");
-            _defaultMsdfMaterial = resultSdf[ShaderClassType.Material, "sprite-msdf"] as Material;
+            _matMsdf = resultSdf[ShaderClassType.Material, "sprite-msdf"] as Material;
 
             _checkers = new Func<DeviceContext, Range, ObjectRenderData, Material>[5];
             _checkers[(int)SpriteFormat.Sprite] = CheckSpriteRange;
             _checkers[(int)SpriteFormat.MSDF] = CheckMsdfRange;
             _checkers[(int)SpriteFormat.Line] = CheckLineRange;
             _checkers[(int)SpriteFormat.Triangle] = CheckTriangleRange;
-            _checkers[(int)SpriteFormat.Ellipse] = CheckCircleRange;
+            _checkers[(int)SpriteFormat.Ellipse] = CheckEllipseRange;
+            _checkers[(int)SpriteFormat.Ellipse] = CheckEllipseRange;
         }
 
         internal unsafe void Flush(DeviceContext context, RenderCamera camera, ObjectRenderData data)
@@ -115,7 +117,8 @@ namespace Molten.Graphics
                     if (item.Texture != range.Texture ||
                         item.Material != range.Material ||
                         item.Format != range.Format ||
-                        item.ClipID != range.ClipID)
+                        item.ClipID != range.ClipID ||
+                        item.IsOutline != range.IsOutline)
                     {
                         range.VertexCount = i - start;
                         _curRange++;
@@ -126,6 +129,7 @@ namespace Molten.Graphics
                         range.Texture = item.Texture;
                         range.Material = item.Material;
                         range.ClipID = item.ClipID;
+                        range.IsOutline = item.IsOutline;
                     }
                 }
 
@@ -167,6 +171,7 @@ namespace Molten.Graphics
                 mat["spriteData"].Value = _bufferData;
                 mat["vertexOffset"].Value = range.BufferOffset;
 
+                // Set common material properties
                 if (range.Texture != null)
                 {
                     if (range.Texture.IsMultisampled)
@@ -193,9 +198,9 @@ namespace Molten.Graphics
         private Material CheckSpriteRange(DeviceContext context, Range range, ObjectRenderData data)
         {
             if (range.Texture != null)
-                return range.Texture.IsMultisampled ? _defaultMaterialMS : _defaultMaterial;
+                return range.Texture.IsMultisampled ? _matDefaultMS : _matDefault;
             else
-                return _defaultNoTextureMaterial;
+                return _matDefaultNoTexture;
         }
 
         private Material CheckMsdfRange(DeviceContext context, Range range, ObjectRenderData data)
@@ -203,40 +208,43 @@ namespace Molten.Graphics
             if (range.Texture != null)
             {
                 if (range.Texture.IsMultisampled)
-                    return _defaultMaterialMS; // TODO Implement MSDF Multi-sampling
+                    return _matDefaultMS; // TODO Implement MSDF Multi-sampling
                 else
-                    return _defaultMsdfMaterial;
+                    return _matMsdf;
             }
             else
             {
-                return _defaultNoTextureMaterial;
+                return _matDefaultNoTexture;
             }
         }
 
         private Material CheckLineRange(DeviceContext context, Range range, ObjectRenderData data)
         {
-            return _defaultLineMaterial;
+            return _matLine;
         }
 
         private Material CheckTriangleRange(DeviceContext context, Range range, ObjectRenderData data)
         {
-            return _defaultTriMaterial;
+            return _matTriangle;
         }
 
-        private Material CheckCircleRange(DeviceContext context, Range range, ObjectRenderData data)
+        private Material CheckEllipseRange(DeviceContext context, Range range, ObjectRenderData data)
         {
-            return _defaultCircleMaterial;
+            if (range.IsOutline)
+                return range.Texture != null ? _matCircleOutline : _matCircleOutlineNoTex;
+            else
+                return _matCircle;
         }
 
         public override void Dispose()
         {
-            _defaultMaterial.Dispose();
-            _defaultNoTextureMaterial.Dispose();
-            _defaultMsdfMaterial.Dispose();
-            _defaultLineMaterial.Dispose();
-            _defaultCircleMaterial.Dispose();
-            _defaultTriMaterial.Dispose();
-            _segment.Dispose();
+            _matDefault.Dispose();
+            _matDefaultNoTexture.Dispose();
+            _matMsdf.Dispose();
+            _matLine.Dispose();
+            _matCircle.Dispose();
+            _matTriangle.Dispose();
+
             _bufferData.Dispose();
             _buffer.Dispose();
         }

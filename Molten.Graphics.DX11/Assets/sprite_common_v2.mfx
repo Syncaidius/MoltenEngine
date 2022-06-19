@@ -7,6 +7,7 @@ struct SpriteVertex
 	float rotation;
 	float arraySlice;
 	float4 col;
+    float4 data;
 };
 
 struct VS_GS
@@ -119,10 +120,36 @@ float4 PS_NoTexture(PS_IN input) : SV_Target
 float4 PS_Circle(PS_IN input) : SV_Target
 {   
     float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
-
     float step = 1 - smoothstep(0.97, 1, (dist / 0.5));
+   	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
+    float4 finalCol = col * input.col;
+	return float4(finalCol.rgb, finalCol.a * step);
+}
+
+float4 PS_Circle_Outline(PS_IN input) : SV_Target
+{   
+    float4 thickness = spriteData[input.id].data.x; // Data.x (D1) = Thickness
+
+    float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
+
+    float step = 1 - smoothstep(0.97 - thickness, 1 - thickness, (dist / 0.5));
+    float stepBorder = smoothstep(0.97, 1, (dist / 0.5));
    	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
 
     float4 finalCol = col * input.col;
-	return float4(finalCol.rgb, finalCol.a * step);
+    float4 c = float4(finalCol.rgb, finalCol.a * step) + float4(finalCol.rgb, finalCol.a * stepBorder);
+	return float4(c.rgb, 1.0 - c.a);
+}
+
+float4 PS_Circle_Outline_NoTex(PS_IN input) : SV_Target
+{   
+    float4 thickness = spriteData[input.id].data.x; // Data.x (D1) = Thickness
+
+    float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
+
+    float step = 1 - smoothstep(0.97 - thickness, 1 - thickness, (dist / 0.5));
+    float stepBorder = smoothstep(0.97, 1, (dist / 0.5));
+
+    float4 c = float4(input.col.rgb, input.col.a * step) + float4(input.col.rgb, input.col.a * stepBorder);
+	return float4(c.rgb, 1.0 - c.a);
 }

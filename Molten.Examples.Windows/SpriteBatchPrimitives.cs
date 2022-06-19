@@ -62,7 +62,7 @@ namespace Molten.Samples
             List<Vector2F> circleLinePoints = new List<Vector2F>();
             float radius = 50;
 
-            Vector2F origin = new Vector2F(500);
+            Vector2F center = new Vector2F(500);
             int outlineSegments = 32;
             float angleIncrement = 360.0f / outlineSegments;
             float angle = 0;
@@ -74,8 +74,8 @@ namespace Molten.Samples
 
                 circleLinePoints.Add(new Vector2F()
                 {
-                    X = origin.X + (float)Math.Sin(rad) * radius,
-                    Y = origin.Y + (float)Math.Cos(rad) * radius,
+                    X = center.X + (float)Math.Sin(rad) * radius,
+                    Y = center.Y + (float)Math.Cos(rad) * radius,
                 });
             }
 
@@ -203,30 +203,28 @@ namespace Molten.Samples
                 sb.DrawTriangleList(shapeTriList, colors);
 
                 // Draw circles with a decreasing number of sides.
-                origin.X = 705;
-                origin.Y = 500;
-                int circleSides = 80;
+                center.X = 705;
+                center.Y = 500;
                 int circleRadius = 100;
-                Ellipse el = new Ellipse(origin, circleRadius, circleRadius);
+                Ellipse el = new Ellipse(center, circleRadius, circleRadius);
 
                 for (int i = 0; i < colors.Count; i++)
                 {
                     //sb.DrawCircle(origin, circleRadius, colors[i], circleSides);
                     sb.DrawEllipse(ref el, colors[i], _texPrimitives, null, (uint)i % 3);
-                    circleSides /= 2;
-                    origin.X += (circleRadius * 2) + 5;
-                    el.Center = origin;
+                    el.Center.X += (circleRadius * 2) + 5;
                 }
 
                 // Draw ellipse outlines with a decreasing number of sides.
-                origin.X = 705;
-                origin.Y = 700;
-                int ellipseSides = 90;
+                center.X = 705;
+                center.Y = 700;
+                el = new Ellipse(center, circleRadius, circleRadius);
+
                 for (int i = 0; i < colors.Count; i++)
                 {
-                    //sb.DrawEllipseOutline(origin, circleRadius, circleRadius, colors[i], 2, ellipseSides);
-                    ellipseSides /= 2;
-                    origin.X += (circleRadius * 2) + 5;
+                    float thickness = (i + 1) * 3;
+                    sb.DrawEllipseOutline(ref el, colors[i], thickness);
+                    el.Center.X += (circleRadius * 2) + 5;
                 }
             };
         }
