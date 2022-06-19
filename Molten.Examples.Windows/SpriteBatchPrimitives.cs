@@ -8,7 +8,8 @@ namespace Molten.Samples
 
         Rectangle[] _rectangles;
         Color[] _rectangleColors;
-        ITexture2D _meshTex;
+        ITexture2D _texMesh;
+        ITexture2D _texPrimitives;
 
         public SpriteBatchPrimitives() : base("Sprite Batch Primitives") { }
 
@@ -21,6 +22,10 @@ namespace Molten.Samples
             cr.Load<ITexture2D>("dds_test.dds", new TextureParameters()
             {
                 GenerateMipmaps = true,
+            }); 
+            cr.Load<ITexture2D>("128.dds", new TextureParameters()
+            {
+                ArraySize = 3,
             });
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
@@ -38,8 +43,9 @@ namespace Molten.Samples
                 return;
             }
 
-            _meshTex = cr.Get<ITexture2D>(1);
-            mat.SetDefaultResource(_meshTex, 0);
+            _texMesh = cr.Get<ITexture2D>(1);
+            _texPrimitives = cr.Get<ITexture2D>("128.dds");
+            mat.SetDefaultResource(_texMesh, 0);
             TestMesh.Material = mat;
 
             // Create points for zig-zagging lines.
@@ -201,12 +207,15 @@ namespace Molten.Samples
                 origin.Y = 500;
                 int circleSides = 80;
                 int circleRadius = 100;
+                Ellipse el = new Ellipse(origin, circleRadius, circleRadius);
+
                 for (int i = 0; i < colors.Count; i++)
                 {
                     //sb.DrawCircle(origin, circleRadius, colors[i], circleSides);
-                    sb.DrawEllipse(_meshTex, origin, circleRadius, circleRadius, 0, 0, colors[i]);
+                    sb.DrawEllipse(ref el, colors[i], _texPrimitives);
                     circleSides /= 2;
                     origin.X += (circleRadius * 2) + 5;
+                    el.Center = origin;
                 }
 
                 // Draw ellipse outlines with a decreasing number of sides.

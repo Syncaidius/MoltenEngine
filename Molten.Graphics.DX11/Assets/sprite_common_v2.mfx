@@ -11,15 +11,16 @@ struct SpriteVertex
 
 struct VS_GS
 {
-    uint vID : VERTEXID;
+    uint vID        : VERTEXID;
 };
 
 struct PS_IN
 {
-	float4 pos : SV_POSITION;
-	float4 col : COLOR;
-	float3 uv : TEXCOORD;
-    uint id : VERTEXID;
+	float4 pos      : SV_POSITION;
+	float4 col      : COLOR;
+	float3 uv       : TEXCOORD0;
+    float2 uvLocal  : TEXCOORD1;      //UV Relative to top left of sprite (0 - 1 range)
+    uint id         : VERTEXID;
 };
 
 StructuredBuffer<SpriteVertex> spriteData : register(t0);
@@ -59,6 +60,8 @@ const static int2 uvTable[4] = {
 	int2(2,1), // Top right
 };
 
+float4 baseUV = float4(0,0,1,1);
+
 float2x2 GetRotation(float angle)
 {
 	// Compute a 2x2 rotation matrix.
@@ -96,6 +99,8 @@ void GS(point VS_GS input[1], uint pID : SV_PrimitiveID, inout TriangleStream<PS
 		v.uv.x = uv[uvTable[i].x];
 		v.uv.y = uv[uvTable[i].y];
 		v.uv.z = sv.arraySlice;
+        v.uvLocal.x = baseUV[uvTable[i].x];
+        v.uvLocal.y = baseUV[uvTable[i].y];
 		spriteStream.Append(v);
 	}
 }
@@ -113,7 +118,7 @@ float4 PS_NoTexture(PS_IN input) : SV_Target
 
 float4 PS_Circle(PS_IN input) : SV_Target
 {   
-    float2 dist = abs(input.uv.xy - 0.5); // Distance from quad center (0.5, 0.5)
+    float2 dist = abs(input.uvLocal - 0.5); // Distance from quad center (0.5, 0.5)
 
     if(length(dist) > 0.5)
         discard;

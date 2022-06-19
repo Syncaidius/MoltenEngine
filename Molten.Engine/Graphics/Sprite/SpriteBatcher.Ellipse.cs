@@ -19,7 +19,7 @@ namespace Molten.Graphics
         /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
         public void DrawCircle(Vector2F center, float radius, float startAngle, float endAngle, Color col, int sides = 16)
         {
-            DrawEllipse(center, radius, radius, startAngle, endAngle, col, sides);
+            //DrawEllipse(center, radius, radius, startAngle, endAngle, col, sides);
         }
 
         /// <summary>
@@ -28,10 +28,9 @@ namespace Molten.Graphics
         /// <param name="center">The position of the circle center.</param>
         /// <param name="radius">The radius, in radians.</param>
         /// <param name="col">The color of the circle.</param>
-        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawCircle(Vector2F center, float radius, Color col, int sides = 16)
+        public void DrawCircle(Vector2F center, float radius, Color col)
         {
-            DrawEllipse(center, radius, radius, col, sides);
+            //DrawEllipse(center, radius, radius, col, sides);
         }
 
         /// <summary>
@@ -65,76 +64,19 @@ namespace Molten.Graphics
         /// <summary>
         /// Draws an ellipse with the specified radius values.
         /// </summary>
-        /// <param name="center">The position of the ellipse center.</param>
-        /// <param name="xRadius">The X radius, in radians.</param>
-        /// <param name="yRadius">The Y radius, in radians.</param>
-        /// <param name="col">The color of the ellipse.</param>
-        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, Color col, int sides = 16)
-        {
-            DrawEllipse(center, xRadius, yRadius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides);
-        }
-
-        /// <summary>
-        /// Draws an ellipse with the specified radius values.
-        /// </summary>
-        /// <param name="center">The position of the ellipse center.</param>
-        /// <param name="xRadius">The X radius, in radians.</param>
-        /// <param name="yRadius">The Y radius, in radians.</param>
-        /// <param name="startAngle">The start angle of the circle, in radians. This is useful when drawing a partial-ellipse.</param>
-        /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-ellipse</param>
+        /// <param name="e">The <see cref="Ellipse"/> to be drawn</param>
         /// <param name="color">The color of the ellipse.</param>
         /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, float startAngle, float endAngle, Color color, int sides = 16)
-        {
-            if (sides < CIRCLE_MIN_SIDES)
-                throw new SpriteBatcherException(this, $"The minimum number of sides is {CIRCLE_MIN_SIDES}.");
-
-            RectangleF bounds = new RectangleF()
-            {
-                X = center.X - xRadius,
-                Y = center.Y - yRadius,
-                Width = xRadius * 2,
-                Height = xRadius * 2,
-            };
-
-            DrawEllipse(null, bounds, startAngle, endAngle, color);
-        }
-
-        /// <summary>
-        /// Draws an ellipse with the specified radius values.
-        /// </summary>
-        /// <param name="center">The position of the ellipse center.</param>
-        /// <param name="xRadius">The X radius, in radians.</param>
-        /// <param name="yRadius">The Y radius, in radians.</param>
-        /// <param name="startAngle">The start angle of the circle, in radians. This is useful when drawing a partial-ellipse.</param>
-        /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-ellipse</param>
-        /// <param name="color">The color of the ellipse.</param>
-        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawEllipse(ITexture2D texture, Vector2F center, float xRadius, float yRadius, float startAngle, float endAngle, Color color)
+        public void DrawEllipse(ref Ellipse e, Color color, ITexture2D texture)
         {
             RectangleF bounds = new RectangleF()
             {
-                X = center.X - xRadius,
-                Y = center.Y - yRadius,
-                Width = xRadius * 2,
-                Height = xRadius * 2,
+                X = e.Center.X - e.RadiusX,
+                Y = e.Center.Y - e.RadiusY,
+                Width = e.RadiusX * 2,
+                Height = e.RadiusY * 2,
             };
 
-            RectangleF src = new RectangleF(0, 0, texture.Width, texture.Height);
-            DrawInternal(texture, src, bounds.TopLeft, bounds.Size, color, 0, Vector2F.Zero, null, SpriteFormat.Circle, 0);
-        }
-
-        /// <summary>
-        /// Draws an ellipse with the specified radius values.
-        /// </summary>
-        /// <param name="center">The containing bounds of the ellipse</param>
-        /// <param name="startAngle">The start angle of the circle, in radians. This is useful when drawing a partial-ellipse.</param>
-        /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-ellipse</param>
-        /// <param name="color">The color of the ellipse.</param>
-        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawEllipse(ITexture2D texture, RectangleF bounds, float startAngle, float endAngle, Color color)
-        {
             RectangleF src = new RectangleF(0, 0, texture.Width, texture.Height);
             DrawInternal(texture, src, bounds.TopLeft, bounds.Size, color, 0, Vector2F.Zero, null, SpriteFormat.Circle, 0);
         }
