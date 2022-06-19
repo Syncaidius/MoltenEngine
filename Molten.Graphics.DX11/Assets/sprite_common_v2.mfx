@@ -30,7 +30,6 @@ Texture2DMSArray<float4> mapDiffuseMS : register(t2);
 SamplerState diffuseSampler;
 
 float4x4 wvp;
-float2 vpSize;
 float2 textureSize;
 uint sampleCount = 8;
 uint vertexOffset = 0;
@@ -61,6 +60,7 @@ const static int2 uvTable[4] = {
 };
 
 float4 baseUV = float4(0,0,1,1);
+static const float2 QUAD_CENTER_UV = float2(0.5,0.5);
 
 float2x2 GetRotation(float angle)
 {
@@ -118,11 +118,11 @@ float4 PS_NoTexture(PS_IN input) : SV_Target
 
 float4 PS_Circle(PS_IN input) : SV_Target
 {   
-    float2 dist = abs(input.uvLocal - 0.5); // Distance from quad center (0.5, 0.5)
+    float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
 
-    if(length(dist) > 0.5)
-        discard;
-
+    float step = (0.5 - smoothstep(0.48, 0.5, dist)) / 0.5;
    	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
-	return col * input.col;
+
+    float4 finalCol = col * input.col;
+	return float4(finalCol.rgb, finalCol.a * step);
 }

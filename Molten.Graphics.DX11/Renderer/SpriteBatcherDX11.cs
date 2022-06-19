@@ -74,7 +74,7 @@ namespace Molten.Graphics
             _checkers[(int)SpriteFormat.MSDF] = CheckMsdfRange;
             _checkers[(int)SpriteFormat.Line] = CheckLineRange;
             _checkers[(int)SpriteFormat.Triangle] = CheckTriangleRange;
-            _checkers[(int)SpriteFormat.Circle] = CheckCircleRange;
+            _checkers[(int)SpriteFormat.Ellipse] = CheckCircleRange;
         }
 
         internal unsafe void Flush(DeviceContext context, RenderCamera camera, ObjectRenderData data)
@@ -148,8 +148,6 @@ namespace Molten.Graphics
             //_segment.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
             _bufferData.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
 
-            Vector2F vpSize = new Vector2F(camera.OutputSurface.Width, camera.OutputSurface.Height);
-
             // Draw calls
             uint bufferOffset = 0;
             for (uint i = 0; i < _curRange; i++)
@@ -161,14 +159,13 @@ namespace Molten.Graphics
                 // TODO TESTING - REMOVE LATER
                 if (range.Format != SpriteFormat.Sprite && 
                     range.Format != SpriteFormat.MSDF && 
-                    range.Format != SpriteFormat.Circle)
+                    range.Format != SpriteFormat.Ellipse)
                     continue;
 
                 Material mat = (range.Material as Material) ?? _checkers[(int)range.Format](context, range, data);
 
                 mat["spriteData"].Value = _bufferData;
                 mat["vertexOffset"].Value = range.BufferOffset;
-                mat["vpSize"].Value = vpSize;
 
                 if (range.Texture != null)
                 {

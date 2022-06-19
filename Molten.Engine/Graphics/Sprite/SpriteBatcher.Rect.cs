@@ -83,10 +83,10 @@ namespace Molten.Graphics
             RectangleF b = new RectangleF(tl.X, dest.Bottom - radius, innerWidth, radius);
             RectangleF c = new RectangleF(dest.X, tl.Y, dest.Width, innerHeight);
 
-            DrawCircle(tl, radius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
+            /*DrawCircle(tl, radius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
             DrawCircle(tr, radius, 0, MathHelper.PiHalf, color);
             DrawCircle(br, radius, MathHelper.PiHalf, MathHelper.Pi, color);
-            DrawCircle(bl, radius, MathHelper.Pi, MathHelper.PiHalf * 3, color);
+            DrawCircle(bl, radius, MathHelper.Pi, MathHelper.PiHalf * 3, color);*/
 
             DrawRect(t, color, material);
             DrawRect(b, color, material);
@@ -119,10 +119,10 @@ namespace Molten.Graphics
             float leftHeight = dest.Height - corners.TopLeftRadius - corners.BottomLeftRadius;
             float rightHeight = dest.Height - corners.TopRightRadius - corners.BottomRightRadius;
 
-            DrawCircle(tl, corners.TopLeftRadius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
+            /*DrawCircle(tl, corners.TopLeftRadius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
             DrawCircle(tr, corners.TopRightRadius, 0, MathHelper.PiHalf, color);
             DrawCircle(br, corners.BottomRightRadius, MathHelper.PiHalf, MathHelper.Pi, color);
-            DrawCircle(bl, corners.BottomLeftRadius, MathHelper.Pi, MathHelper.PiHalf * 3, color);
+            DrawCircle(bl, corners.BottomLeftRadius, MathHelper.Pi, MathHelper.PiHalf * 3, color);*/
 
             // Draw left edge
             if (corners.LeftOneRadius())

@@ -21,7 +21,7 @@ namespace Molten.Graphics
 
             Triangle = 3, // Untextured triangles
 
-            Circle = 4, // Untextured circles - Uses a geometry shader to handle this
+            Ellipse = 4, // Untextured circles - Uses a geometry shader to handle this
         }
 
         protected struct SpriteItem
