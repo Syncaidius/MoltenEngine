@@ -19,7 +19,7 @@ struct PS_IN
 	float4 pos : SV_POSITION;
 	float4 col : COLOR;
 	float3 uv : TEXCOORD;
-    uint pID : SV_PrimitiveID;
+    uint id : VERTEXID;
 };
 
 StructuredBuffer<SpriteVertex> spriteData : register(t0);
@@ -71,7 +71,8 @@ float2x2 GetRotation(float angle)
 void GS(point VS_GS input[1], uint pID : SV_PrimitiveID, inout TriangleStream<PS_IN> spriteStream)
 {
 	PS_IN v;
-    SpriteVertex sv = spriteData[vertexOffset + input[0].vID];
+    v.id = vertexOffset + input[0].vID;
+    SpriteVertex sv = spriteData[v.id];
     float4 uv = sv.uv;
 
 	v.col = sv.col;
@@ -94,7 +95,6 @@ void GS(point VS_GS input[1], uint pID : SV_PrimitiveID, inout TriangleStream<PS
 		v.uv.x = uv[uvTable[i].x];
 		v.uv.y = uv[uvTable[i].y];
 		v.uv.z = sv.arraySlice;
-        v.pID = pID;
 		spriteStream.Append(v);
 	}
 }
