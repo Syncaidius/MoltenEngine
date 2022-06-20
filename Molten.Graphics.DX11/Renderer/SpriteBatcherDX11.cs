@@ -60,7 +60,6 @@ namespace Molten.Graphics
             _matDefault = resultV2[ShaderClassType.Material, "sprite-texture"] as Material;
             _matCircle = resultV2[ShaderClassType.Material, "circle"] as Material;
             _matCircleOutline = resultV2[ShaderClassType.Material, "circle-outline"] as Material;
-            _matCircleOutlineNoTex = resultV2[ShaderClassType.Material, "circle-outline-no-texture"] as Material;
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite.mfx");
             _matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
@@ -231,7 +230,7 @@ namespace Molten.Graphics
         private Material CheckEllipseRange(DeviceContext context, Range range, ObjectRenderData data)
         {
             if (range.IsOutline)
-                return range.Texture != null ? _matCircleOutline : _matCircleOutlineNoTex;
+                return _matCircleOutline;
             else
                 return _matCircle;
         }

@@ -135,29 +135,6 @@ float4 PS_Circle(PS_IN input) : SV_Target
 }
 
 float4 PS_Circle_Outline(PS_IN input) : SV_Target
-{   
-    // Data.x (D1) = Thickness
-    // Data.y (D2) = Angle range (Radians)
-
-    float2 d = input.uvLocal - 0.5;
-    float rad = -PI + spriteData[input.id].data.y;
-    if(rad < atan2(d.y, d.x))
-        discard;
-
-    float4 thickness = spriteData[input.id].data.x;
-
-    float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
-
-    float step = 1 - smoothstep(0.97 - thickness, 1 - thickness, (dist / 0.5));
-    float stepBorder = smoothstep(0.97, 1, (dist / 0.5));
-   	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
-
-    float4 finalCol = col * input.col;
-    float4 c = float4(finalCol.rgb, finalCol.a * step) + float4(finalCol.rgb, finalCol.a * stepBorder);
-	return float4(c.rgb, 1.0 - c.a);
-}
-
-float4 PS_Circle_Outline_NoTex(PS_IN input) : SV_Target
 {       
     // Data.x (D1) = Thickness
     // Data.y (D2) = Angle range (Radians)
