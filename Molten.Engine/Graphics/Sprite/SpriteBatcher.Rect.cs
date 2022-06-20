@@ -27,18 +27,7 @@ namespace Molten.Graphics
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
         public void DrawRect(RectangleF destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
         {
-            ref SpriteItem item = ref GetItem();
-            item.Texture = null;
-            item.Material = material;
-            item.Format = SpriteFormat.Sprite;
-
-            item.Vertex.Position = destination.TopLeft;
-            item.Vertex.Rotation = rotation;
-            item.Vertex.ArraySlice = 0;
-            item.Vertex.Size = destination.Size;
-            item.Vertex.Color = color;
-            item.Vertex.Origin = origin;
-            //item.Vertex.UV = new Vector4F(); // Unused
+            DrawInternal(null, RectangleF.Empty, destination.TopLeft, destination.Size, color, rotation, origin, material, SpriteFormat.Sprite, 0, false);
         }
 
         /// <summary>
@@ -57,7 +46,7 @@ namespace Molten.Graphics
             DrawLine(new Vector2F(rect.Left, rect.Top + halfThick), new Vector2F(rect.Left, rect.Bottom - halfThick), color, thickness); // Left
         }
 
-        public void DrawRoundedRect(RectangleF dest, Color color, float radius, IMaterial material = null)
+        /*public void DrawRoundedRect(RectangleF dest, Color color, float radius, IMaterial material = null)
         {
             DrawRoundedRect(dest, color, 0, Vector2F.Zero, radius, material);
         }
@@ -83,17 +72,17 @@ namespace Molten.Graphics
             RectangleF b = new RectangleF(tl.X, dest.Bottom - radius, innerWidth, radius);
             RectangleF c = new RectangleF(dest.X, tl.Y, dest.Width, innerHeight);
 
-            /*DrawCircle(tl, radius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
+            DrawCircle(tl, radius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
             DrawCircle(tr, radius, 0, MathHelper.PiHalf, color);
             DrawCircle(br, radius, MathHelper.PiHalf, MathHelper.Pi, color);
-            DrawCircle(bl, radius, MathHelper.Pi, MathHelper.PiHalf * 3, color);*/
+            DrawCircle(bl, radius, MathHelper.Pi, MathHelper.PiHalf * 3, color);
 
             DrawRect(t, color, material);
             DrawRect(b, color, material);
             DrawRect(c, color, material);
-        }
+        }*/
 
-        public void DrawRoundedRect(RectangleF dest, Color color, float rotation, Vector2F origin, RoundedCornerInfo corners, IMaterial material = null)
+        /*public void DrawRoundedRect(RectangleF dest, Color color, float rotation, Vector2F origin, RoundedCornerInfo corners, IMaterial material = null)
         {
             if (!corners.HasRounded())
             {
@@ -119,10 +108,10 @@ namespace Molten.Graphics
             float leftHeight = dest.Height - corners.TopLeftRadius - corners.BottomLeftRadius;
             float rightHeight = dest.Height - corners.TopRightRadius - corners.BottomRightRadius;
 
-            /*DrawCircle(tl, corners.TopLeftRadius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
+            DrawCircle(tl, corners.TopLeftRadius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
             DrawCircle(tr, corners.TopRightRadius, 0, MathHelper.PiHalf, color);
             DrawCircle(br, corners.BottomRightRadius, MathHelper.PiHalf, MathHelper.Pi, color);
-            DrawCircle(bl, corners.BottomLeftRadius, MathHelper.Pi, MathHelper.PiHalf * 3, color);*/
+            DrawCircle(bl, corners.BottomLeftRadius, MathHelper.Pi, MathHelper.PiHalf * 3, color);
 
             // Draw left edge
             if (corners.LeftOneRadius())
@@ -147,6 +136,6 @@ namespace Molten.Graphics
                     DrawRect(new RectangleF(dest.X + corners.BottomLeftRadius, dest.Y + corners.TopLeftRadius, dif, leftHeight2), color, material);
                 }
             }
-        }
+        }*/
     }
 }

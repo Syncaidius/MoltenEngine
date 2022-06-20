@@ -152,7 +152,7 @@ namespace Molten.Samples
                 {
                     Vector2F pos = new Vector2F(800, 65);
                     Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, 512, 512);
-                    sb.Draw(_font2Test.Source.UnderlyingTexture, texBounds, Color.White);
+                    sb.Draw(texBounds, Color.White, _font2Test.Source.UnderlyingTexture);
                     sb.DrawRectOutline(texBounds, Color.Red, 1);
                     pos.Y += 517;
                     sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);

@@ -28,8 +28,8 @@ namespace Molten.UI
 
             public void Render(SpriteBatcher sb, UIRenderData data)
             {
-                if (BackgroundColor.A > 0)
-                    sb.DrawRoundedRect(data.RenderBounds, BackgroundColor, 0, Vector2F.Zero, new RoundedCornerInfo(15,10,20, 5));
+                //if (BackgroundColor.A > 0)
+                //    sb.DrawRoundedRect(data.RenderBounds, BackgroundColor, 0, Vector2F.Zero, new RoundedCornerInfo(15,10,20, 5));
 
                 //if (BorderColor.A > 0 && BorderThickness > 0)
                 //    sb.DrawRectOutline(data.BorderBounds, BorderColor, BorderThickness);

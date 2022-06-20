@@ -10,7 +10,7 @@ namespace Molten.Samples
         Color[] _rectangleColors;
         ITexture2D _texMesh;
         ITexture2D _texPrimitives;
-        float _ellipseAngle;
+        float _rotAngle;
 
         public SpriteBatchPrimitives() : base("Sprite Batch Primitives") { }
 
@@ -205,42 +205,53 @@ namespace Molten.Samples
 
                 // Draw circles with a decreasing number of sides.
                 center.X = 305;
-                center.Y = 300;
-                int circleRadius = 50;
-                Ellipse el = new Ellipse(center, circleRadius, circleRadius * 0.8f);
+                center.Y = 200;
+                int pSize = 50;
+                Ellipse el = new Ellipse(center, pSize, pSize * 0.8f);
 
-                center.Y += (circleRadius * 3);
-                Circle cl = new Circle(center, circleRadius);
+                center.Y += (pSize * 3);
+                Circle cl = new Circle(center, pSize);
 
-                center.Y += (circleRadius * 3);
+                center.Y += (pSize * 3);
                 Ellipse elOutline = el;
                 elOutline.Center.Y = center.Y;
 
-                center.Y += (circleRadius * 3);
+                center.Y += (pSize * 3);
                 Circle clOutline = cl;
                 clOutline.Center.Y = center.Y;
+
+                center.Y += (pSize * 3);
+                RectangleF rect = new RectangleF(center.X - pSize, center.Y - pSize, pSize, pSize);
+                RectangleF rectTextured = rect;
+                rectTextured.Y += (pSize * 3);
 
                 for (int i = 0; i < colors.Count; i++)
                 {
                     float angle = MathHelper.TwoPi * (0.15f * (i + 1));
+                    uint texArrayID = (uint)i % 3;
                     cl.StartAngle = angle;
                     el.EndAngle = angle;
 
-                    sb.DrawCircle(ref cl, colors[i], _ellipseAngle);
-                    sb.DrawEllipse(ref el, colors[i], _ellipseAngle, _texPrimitives, null, (uint)i % 3);
+                    sb.DrawCircle(ref cl, colors[i], _rotAngle);
+                    sb.DrawEllipse(ref el, colors[i], _rotAngle, _texPrimitives, null, texArrayID);
+                    sb.DrawRect(rect, colors[i], _rotAngle, new Vector2F(0.5f));
+                    sb.Draw(rectTextured, colors[i], _rotAngle, new Vector2F(0.5f), _texPrimitives, null, texArrayID);
 
                     // ====== OUTLINES ======
                     float thickness = (i + 1) * 3;
                     elOutline.EndAngle = angle;
                     clOutline.EndAngle = angle;
 
-                    sb.DrawEllipseOutline(ref elOutline, colors[i], thickness, _ellipseAngle);
-                    sb.DrawCircleOutline(ref clOutline, colors[i], thickness, _ellipseAngle);
+                    sb.DrawEllipseOutline(ref elOutline, colors[i], thickness, _rotAngle);
+                    sb.DrawCircleOutline(ref clOutline, colors[i], thickness, _rotAngle);
 
-                    cl.Center.X += (circleRadius * 2) + 5;
+                    cl.Center.X += (pSize * 2) + 5;
                     el.Center.X = cl.Center.X;
                     elOutline.Center.X = cl.Center.X;
                     clOutline.Center.X = cl.Center.X;
+
+                    rect.X = cl.Center.X - pSize;
+                    rectTextured.X = rect.X;
 
                 }
             };
@@ -250,7 +261,7 @@ namespace Molten.Samples
         {
             base.OnUpdate(time);
 
-            _ellipseAngle += 0.03f * time.Delta;
+            _rotAngle += 0.03f * time.Delta;
         }
     }
 }

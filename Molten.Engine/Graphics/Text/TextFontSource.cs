@@ -151,7 +151,7 @@ namespace Molten.Graphics
             while (_pendingGlyphs.TryDequeue(out ushort gIndex))
             {
                 CachedGlyph cache = _glyphCache[gIndex];
-                sb.Draw(cache.GlyphTex,cache.Location, Color.White);
+                sb.Draw(cache.Location, Color.White, cache.GlyphTex);
             }
 
             _renderData.IsVisible = false;
