@@ -210,6 +210,8 @@ namespace Molten.Samples
 
                 for (int i = 0; i < colors.Count; i++)
                 {
+                    el.EndAngle = MathHelper.TwoPi * (0.1f * (i + 1));
+
                     //sb.DrawCircle(origin, circleRadius, colors[i], circleSides);
                     sb.DrawEllipse(ref el, colors[i], _texPrimitives, null, (uint)i % 3);
                     el.Center.X += (circleRadius * 2) + 5;
@@ -223,6 +225,8 @@ namespace Molten.Samples
                 for (int i = 0; i < colors.Count; i++)
                 {
                     float thickness = (i + 1) * 3;
+                    el.EndAngle = MathHelper.TwoPi * (0.1f  * (i + 1));
+
                     sb.DrawEllipseOutline(ref el, colors[i], thickness);
                     el.Center.X += (circleRadius * 2) + 5;
                 }

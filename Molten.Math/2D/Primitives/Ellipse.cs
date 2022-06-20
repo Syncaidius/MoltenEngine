@@ -49,5 +49,10 @@ namespace Molten
             StartAngle = 0;
             EndAngle = MathHelper.TwoPi;
         }
+
+        public float GetAngleRange()
+        {
+            return EndAngle - StartAngle;
+        }
     }
 }

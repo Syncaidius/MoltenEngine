@@ -25,7 +25,8 @@ namespace Molten.Graphics
             };
 
             RectangleF src = new RectangleF(0, 0, texture.Width, texture.Height);
-            DrawInternal(texture, src, bounds.TopLeft, bounds.Size, color, 0, Vector2F.Zero, material, SpriteFormat.Ellipse, arraySlice, false);
+            ref SpriteItem item = ref DrawInternal(texture, src, bounds.TopLeft, bounds.Size, color, 0, Vector2F.Zero, material, SpriteFormat.Ellipse, arraySlice, false);
+            item.Vertex.Data.D2 = e.GetAngleRange();
         }
 
         /// <summary>
@@ -54,6 +55,7 @@ namespace Molten.Graphics
 
             ref SpriteItem item = ref DrawInternal(null, src, bounds.TopLeft, bounds.Size, color, 0, Vector2F.Zero, material, SpriteFormat.Ellipse, 0, true);
             item.Vertex.Data.D1 = thickness / item.Vertex.Size.X; // Convert to UV coordinate system (0 - 1) range
+            item.Vertex.Data.D2 = e.GetAngleRange();
         }
     }
 }
