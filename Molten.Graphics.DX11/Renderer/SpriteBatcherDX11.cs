@@ -33,8 +33,8 @@ namespace Molten.Graphics
         Material _matDefaultNoTexture;
         Material _matLine;
         Material _matCircle;
+        Material _matCircleNoTexture;
         Material _matCircleOutline;
-        Material _matCircleOutlineNoTex;
         Material _matTriangle;
         Material _matMsdf;
 
@@ -59,6 +59,7 @@ namespace Molten.Graphics
             _matDefaultNoTexture = resultV2[ShaderClassType.Material, "sprite-no-texture"] as Material;
             _matDefault = resultV2[ShaderClassType.Material, "sprite-texture"] as Material;
             _matCircle = resultV2[ShaderClassType.Material, "circle"] as Material;
+            _matCircleNoTexture = resultV2[ShaderClassType.Material, "circle-no-texture"] as Material;
             _matCircleOutline = resultV2[ShaderClassType.Material, "circle-outline"] as Material;
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite.mfx");
@@ -232,7 +233,7 @@ namespace Molten.Graphics
             if (range.IsOutline)
                 return _matCircleOutline;
             else
-                return _matCircle;
+                return range.Texture != null ? _matCircle : _matCircleNoTexture;
         }
 
         public override void Dispose()
@@ -242,6 +243,8 @@ namespace Molten.Graphics
             _matMsdf.Dispose();
             _matLine.Dispose();
             _matCircle.Dispose();
+            _matCircleNoTexture.Dispose();
+            _matCircleOutline.Dispose();
             _matTriangle.Dispose();
 
             _bufferData.Dispose();

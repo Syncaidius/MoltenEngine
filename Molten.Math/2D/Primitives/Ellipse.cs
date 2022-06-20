@@ -50,9 +50,22 @@ namespace Molten
             EndAngle = MathHelper.TwoPi;
         }
 
+        /// <summary>
+        /// Gets the angle represented between <see cref="EndAngle"/> and <see cref="StartAngle"/>.
+        /// </summary>
+        /// <returns>A float representing an angle.</returns>
         public float GetAngleRange()
         {
             return EndAngle - StartAngle;
+        }
+
+        /// <summary>
+        /// Gets the area of the current<see cref="Ellipse"/>.
+        /// </summary>
+        /// <returns></returns>
+        public float GetArea()
+        {
+            return MathHelper.Pi * (RadiusX * RadiusY);
         }
     }
 }

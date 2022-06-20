@@ -90,7 +90,7 @@
 </material>
 
 <material>
-    <name value="circle-outline-no-texture" />
+    <name value="circle-no-texture" />
     <author value="James Yarwood"/>
     <description value="The default material for rendering an un-textured circle from a single point" />
     <pass>
@@ -98,7 +98,7 @@
         <iterations value="1"/>
         <vertex value="VS"/>
         <geometry value="GS"/>
-        <fragment value="PS_Circle_Outline_NoTex"/>
+        <fragment value="PS_Circle_NoTex"/>
         <blend preset="PreMultipliedAlpha" />
         <rasterizer preset="ScissorTest" />
         <rasterizer preset="DefaultMultisample">

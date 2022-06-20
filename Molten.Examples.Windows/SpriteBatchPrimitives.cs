@@ -10,6 +10,7 @@ namespace Molten.Samples
         Color[] _rectangleColors;
         ITexture2D _texMesh;
         ITexture2D _texPrimitives;
+        float _ellipseAngle;
 
         public SpriteBatchPrimitives() : base("Sprite Batch Primitives") { }
 
@@ -203,34 +204,53 @@ namespace Molten.Samples
                 sb.DrawTriangleList(shapeTriList, colors);
 
                 // Draw circles with a decreasing number of sides.
-                center.X = 705;
-                center.Y = 500;
-                int circleRadius = 100;
-                Ellipse el = new Ellipse(center, circleRadius, circleRadius);
+                center.X = 305;
+                center.Y = 300;
+                int circleRadius = 50;
+                Ellipse el = new Ellipse(center, circleRadius, circleRadius * 0.8f);
+
+                center.Y += (circleRadius * 3);
+                Circle cl = new Circle(center, circleRadius);
+
+                center.Y += (circleRadius * 3);
+                Ellipse elOutline = el;
+                elOutline.Center.Y = center.Y;
+
+                center.Y += (circleRadius * 3);
+                Circle clOutline = cl;
+                clOutline.Center.Y = center.Y;
 
                 for (int i = 0; i < colors.Count; i++)
                 {
-                    el.EndAngle = MathHelper.TwoPi * (0.1f * (i + 1));
+                    float angle = MathHelper.TwoPi * (0.15f * (i + 1));
+                    cl.StartAngle = angle;
+                    el.EndAngle = angle;
 
-                    //sb.DrawCircle(origin, circleRadius, colors[i], circleSides);
-                    sb.DrawEllipse(ref el, colors[i], _texPrimitives, null, (uint)i % 3);
-                    el.Center.X += (circleRadius * 2) + 5;
-                }
+                    sb.DrawCircle(ref cl, colors[i], _ellipseAngle);
+                    sb.DrawEllipse(ref el, colors[i], _ellipseAngle, _texPrimitives, null, (uint)i % 3);
 
-                // Draw ellipse outlines with a decreasing number of sides.
-                center.X = 705;
-                center.Y = 700;
-                el = new Ellipse(center, circleRadius, circleRadius);
-
-                for (int i = 0; i < colors.Count; i++)
-                {
+                    // ====== OUTLINES ======
                     float thickness = (i + 1) * 3;
-                    el.EndAngle = MathHelper.TwoPi * (0.1f  * (i + 1));
+                    elOutline.EndAngle = angle;
+                    clOutline.EndAngle = angle;
 
-                    sb.DrawEllipseOutline(ref el, colors[i], thickness);
-                    el.Center.X += (circleRadius * 2) + 5;
+                    sb.DrawEllipseOutline(ref elOutline, colors[i], thickness, _ellipseAngle);
+                    sb.DrawCircleOutline(ref clOutline, colors[i], thickness, _ellipseAngle);
+
+                    cl.Center.X += (circleRadius * 2) + 5;
+                    el.Center.X = cl.Center.X;
+                    elOutline.Center.X = cl.Center.X;
+                    clOutline.Center.X = cl.Center.X;
+
                 }
             };
+        }
+
+        protected override void OnUpdate(Timing time)
+        {
+            base.OnUpdate(time);
+
+            _ellipseAngle += 0.03f * time.Delta;
         }
     }
 }

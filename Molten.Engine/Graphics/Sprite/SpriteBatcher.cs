@@ -7,6 +7,8 @@ namespace Molten.Graphics
     /// </summary>
     public abstract partial class SpriteBatcher : IDisposable
     {
+        static Vector2F DEFAULT_ORIGIN_CENTER = new Vector2F(0.5f);
+
         protected enum SpriteFormat
         {
             Sprite = 0, // Textured or untextured (rectangle) sprites

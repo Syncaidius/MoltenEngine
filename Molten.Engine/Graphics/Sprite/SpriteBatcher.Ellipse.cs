@@ -13,20 +13,13 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="e">The <see cref="Ellipse"/> to be drawn</param>
         /// <param name="color">The color of the ellipse.</param>
-        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawEllipse(ref Ellipse e, Color color, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
+        /// <param name="arraySlice">The texture array slice. This is ignored if <paramref name="texture"/> is null.</param>
+        /// <param name="material">The custom material, or null if none.</param>
+        /// <param name="rotation">The rotation angle, in radians.</param>
+        /// <param name="texture">The texture, or null if none.</param>
+        public void DrawEllipse(ref Ellipse e, Color color, float rotation = 0, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
-            RectangleF bounds = new RectangleF()
-            {
-                X = e.Center.X - e.RadiusX,
-                Y = e.Center.Y - e.RadiusY,
-                Width = e.RadiusX * 2,
-                Height = e.RadiusY * 2,
-            };
-
-            RectangleF src = new RectangleF(0, 0, texture.Width, texture.Height);
-            ref SpriteItem item = ref DrawInternal(texture, src, bounds.TopLeft, bounds.Size, color, 0, Vector2F.Zero, material, SpriteFormat.Ellipse, arraySlice, false);
-            item.Vertex.Data.D2 = e.GetAngleRange();
+            DrawEllipse(ref e, color, DEFAULT_ORIGIN_CENTER, rotation, texture, material, arraySlice);
         }
 
         /// <summary>
@@ -34,8 +27,12 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="e">The <see cref="Ellipse"/> to be drawn</param>
         /// <param name="color">The color of the ellipse.</param>
-        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawEllipseOutline(ref Ellipse e, Color color, float thickness, IMaterial material = null)
+        /// <param name="arraySlice">The texture array slice. This is ignored if <paramref name="texture"/> is null.</param>
+        /// <param name="material">The custom material, or null if none.</param>
+        /// <param name="rotation">The rotation angle, in radians.</param>
+        /// <param name="texture">The texture, or null if none.</param>
+        /// <param name="origin">The origin of the ellipse, between 0f and 1.0f. An origin of 0.5f,0.5f would be the center of the sprite.</param>
+        public void DrawEllipse(ref Ellipse e, Color color, Vector2F origin, float rotation = 0, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF bounds = new RectangleF()
             {
@@ -45,15 +42,55 @@ namespace Molten.Graphics
                 Height = e.RadiusY * 2,
             };
 
-            RectangleF src = new RectangleF()
+            RectangleF source = new RectangleF(0, 0, texture.Width, texture.Height);
+            ref SpriteItem item = ref DrawInternal(
+                texture,
+                source,
+                bounds.TopLeft,
+                bounds.Size,
+                color, 
+                rotation,
+                origin,
+                material,
+                SpriteFormat.Ellipse,
+                arraySlice,
+                false);
+            item.Vertex.Data.D2 = e.GetAngleRange();
+        }
+
+        /// <summary>
+        /// Draws an ellipse with the specified radius values.
+        /// </summary>
+        /// <param name="e">The <see cref="Ellipse"/> to be drawn</param>
+        /// <param name="color">The color of the ellipse.</param>        
+        /// <param name="material">The custom material, or null if none.</param>
+        /// <param name="rotation">The rotation angle, in radians.</param>
+        /// <param name="thickness">The thickness of the outline.</param>
+        public void DrawEllipseOutline(ref Ellipse e, Color color, float thickness, float rotation = 0, IMaterial material = null)
+        {
+            DrawEllipseOutline(ref e, color, DEFAULT_ORIGIN_CENTER, thickness, rotation, material);
+        }
+
+        /// <summary>
+        /// Draws an ellipse with the specified radius values.
+        /// </summary>
+        /// <param name="e">The <see cref="Ellipse"/> to be drawn</param>
+        /// <param name="color">The color of the ellipse.</param>        
+        /// <param name="material">The custom material, or null if none.</param>
+        /// <param name="rotation">The rotation angle, in radians.</param>
+        /// <param name="thickness">The thickness of the outline.</param>
+        /// <param name="origin">The origin of the ellipse, between 0f and 1.0f. An origin of 0.5f,0.5f would be the center of the sprite.</param>
+        public void DrawEllipseOutline(ref Ellipse e, Color color, Vector2F origin, float thickness, float rotation = 0, IMaterial material = null)
+        {
+            RectangleF bounds = new RectangleF()
             {
-                Left = thickness,
-                Top = 0,
-                Right = 0,
-                Bottom = 0,
+                X = e.Center.X - e.RadiusX,
+                Y = e.Center.Y - e.RadiusY,
+                Width = e.RadiusX * 2,
+                Height = e.RadiusY * 2,
             };
 
-            ref SpriteItem item = ref DrawInternal(null, src, bounds.TopLeft, bounds.Size, color, 0, Vector2F.Zero, material, SpriteFormat.Ellipse, 0, true);
+            ref SpriteItem item = ref DrawInternal(null, RectangleF.Empty, bounds.TopLeft, bounds.Size, color, rotation, origin, material, SpriteFormat.Ellipse, 0, true);
             item.Vertex.Data.D1 = thickness / item.Vertex.Size.X; // Convert to UV coordinate system (0 - 1) range
             item.Vertex.Data.D2 = e.GetAngleRange();
         }

@@ -88,13 +88,12 @@ void GS(point VS_GS input[1], uint pID : SV_PrimitiveID, inout TriangleStream<PS
 	float2x2 rot = GetRotation(sv.rotation);
 	float2 origin = float2(sv.origin.x, -sv.origin.y);  // Invert y origin
 	float2 pos = float2(sv.pos.x, -sv.pos.y);           // Invert y axis
-	float2 size = sv.size.xy;
 	float2 p;
 
 	[unroll]
 	for (int i = 0; i < 4; i++)
 	{
-		p = mul(size * (spriteCorners[i] - origin), rot);
+		p = mul(sv.size.xy * (spriteCorners[i] - origin), rot);
 		p += pos;
 		v.pos = float4(p, 0, 1);
 		v.pos = mul(v.pos, wvp);
@@ -132,6 +131,20 @@ float4 PS_Circle(PS_IN input) : SV_Target
    	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
     float4 finalCol = col * input.col;
 	return float4(finalCol.rgb, finalCol.a * step);
+}
+
+float4 PS_Circle_NoTex(PS_IN input) : SV_Target
+{   
+    // Data.y (D2) = Angle range (Radians)
+
+    float2 d = input.uvLocal - 0.5;
+    float rad = -PI + spriteData[input.id].data.y;
+    if(rad < atan2(d.y, d.x))
+        discard;
+
+    float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
+    float step = 1 - smoothstep(0.97, 1, (dist / 0.5));
+	return float4(input.col.rgb, input.col.a * step);
 }
 
 float4 PS_Circle_Outline(PS_IN input) : SV_Target
