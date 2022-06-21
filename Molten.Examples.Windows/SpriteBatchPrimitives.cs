@@ -4,10 +4,14 @@ namespace Molten.Samples
 {
     public class SpriteBatchPrimitives : SampleSceneGame
     {
+        const int BACKGROUND_RECT_COUNT = 275;
+        const float BACKGROUND_OUTLINE_THICKNESS = 2;
+
         public override string Description => "Draws various primitives using sprite batch.";
 
-        Rectangle[] _rectangles;
-        Color[] _rectangleColors;
+        Rectangle[] _rects;
+        Color[] _rectColors;
+        Color[] _rectOutlineColors;
         ITexture2D _texMesh;
         ITexture2D _texPrimitives;
         float _rotAngle;
@@ -166,12 +170,13 @@ namespace Molten.Samples
             List<Vector2F> shapeTriList = new List<Vector2F>();
             testShape.Triangulate(shapeTriList);
 
-            _rectangles = new Rectangle[50];
-            _rectangleColors = new Color[_rectangles.Length];
+            _rects = new Rectangle[BACKGROUND_RECT_COUNT];
+            _rectColors = new Color[_rects.Length];
+            _rectOutlineColors = new Color[_rects.Length];
 
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < _rects.Length; i++)
             {
-                _rectangles[i] = new Rectangle()
+                _rects[i] = new Rectangle()
                 {
                     X = Rng.Next(0, 1920),
                     Y = Rng.Next(0, 1080),
@@ -179,28 +184,39 @@ namespace Molten.Samples
                     Height = Rng.Next(16, 129)
                 };
 
-                _rectangleColors[i] = new Color()
+
+                Color rCol = new Color()
                 {
-                    R = (byte)Rng.Next(0, 255),
-                    G = (byte)Rng.Next(0, 255),
-                    B = (byte)Rng.Next(0, 255),
-                    A = 40,
+                    R = (byte)Rng.Next(10, 255),
+                    G = (byte)Rng.Next(10, 255),
+                    B = (byte)Rng.Next(10, 255),
+                    A = 55,
                 };
+                _rectColors[i] = rCol;
+
+                Color rOutlineCol = rCol * 1.5f;
+                rOutlineCol.A = rCol.A;
+                _rectOutlineColors[i] = rOutlineCol;
             }
 
             SampleSpriteRenderComponent com = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             com.RenderCallback = (sb) =>
             {
-                Vector2F rectOrigin = new Vector2F(0.5f);
-                for (int i = 0; i < _rectangles.Length; i++)
-                    sb.DrawRect(_rectangles[i], _rectangleColors[i], 0, rectOrigin);
+                for (int i = 0; i < _rects.Length; i++)
+                {
+                    sb.DrawRect(_rects[i], _rectColors[i], 0, Vector2F.Zero);
+                    sb.DrawRectOutline(_rects[i], _rectOutlineColors[i], BACKGROUND_OUTLINE_THICKNESS);
+                }
 
                 sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.Red, 5);
                 sb.DrawLine(new Vector2F(400), new Vector2F(650, 250), Color.Red, Color.Yellow, 5);
+
                 sb.DrawLinePath(linePoints, colors, 2);
                 sb.DrawLinePath(circleLinePoints, colors, 4);
+
                 sb.DrawTriangle(new Vector2F(400, 220), new Vector2F(350, 320), new Vector2F(500, 260), Color.SkyBlue);
                 sb.DrawTriangle(new Vector2F(500, 220), new Vector2F(590, 350), new Vector2F(650, 280), Color.Violet);
+
                 sb.DrawTriangleList(triPoints, colors);
                 sb.DrawTriangleList(shapeTriList, colors);
 
