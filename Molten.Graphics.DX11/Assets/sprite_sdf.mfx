@@ -36,11 +36,13 @@ float screenPxRange(float2 uv, float2 texSize) {
 
 float4 PS_MSDF( PS_IN input ) : SV_Target
 {            
+    float4 col = spriteData[input.id].col;
     float2 texSize = spriteData[input.id].size;
     float3 msd = mapDiffuse.Sample(diffuseSampler, input.uv).rgb;
     float sd = median(msd.r, msd.g, msd.b);
     float screenPxDistance = screenPxRange(input.uv, texSize)*(sd - 0.5);
     float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
-    return input.col * opacity;
+    
+    return col * opacity;
     //return lerp(bgColor, input.col, opacity); // For outline (bgColor) mixing with fill color (fgColor).
 }

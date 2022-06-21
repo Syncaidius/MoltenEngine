@@ -18,7 +18,6 @@ struct VS_GS
 struct PS_IN
 {
 	float4 pos      : SV_POSITION;
-	float4 col      : COLOR;
 	float3 uv       : TEXCOORD0;
     float2 uvLocal  : TEXCOORD1;      //UV Relative to top left of sprite (0 - 1 range)
     uint id         : VERTEXID;
@@ -81,7 +80,6 @@ void GS(point VS_GS input[1], uint pID : SV_PrimitiveID, inout TriangleStream<PS
     SpriteVertex sv = spriteData[v.id];
     float4 uv = sv.uv;
 
-	v.col = sv.col;
     uv.xz /= textureSize.x; // scale left (x) and right(z) to 0 - 1.0 range.
 	uv.yw /= textureSize.y; // Scale top (y) and bottom(w) to 0 - 1.0 range.
 
@@ -109,12 +107,12 @@ void GS(point VS_GS input[1], uint pID : SV_PrimitiveID, inout TriangleStream<PS
 float4 PS( PS_IN input ) : SV_Target
 {
 	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
-	return col * input.col;
+	return col * spriteData[input.id].col;
 }
 
 float4 PS_NoTexture(PS_IN input) : SV_Target
 {
-	return input.col;
+	return spriteData[input.id].col;
 }
 
 float4 PS_Circle(PS_IN input) : SV_Target
@@ -128,14 +126,16 @@ float4 PS_Circle(PS_IN input) : SV_Target
 
     float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
     float step = 1 - smoothstep(0.97, 1, (dist / 0.5));
-   	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
-    float4 finalCol = col * input.col;
+   	float4 sampCol = mapDiffuse.Sample(diffuseSampler, input.uv);
+    float4 finalCol = sampCol * spriteData[input.id].col;
 	return float4(finalCol.rgb, finalCol.a * step);
 }
 
 float4 PS_Circle_NoTex(PS_IN input) : SV_Target
 {   
     // Data.y (D2) = Angle range (Radians)
+
+    float4 col = spriteData[input.id].col;
 
     float2 d = input.uvLocal - 0.5;
     float rad = -PI + spriteData[input.id].data.y;
@@ -144,13 +144,15 @@ float4 PS_Circle_NoTex(PS_IN input) : SV_Target
 
     float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
     float step = 1 - smoothstep(0.97, 1, (dist / 0.5));
-	return float4(input.col.rgb, input.col.a * step);
+	return float4(col.rgb, col.a * step);
 }
 
 float4 PS_Circle_Outline(PS_IN input) : SV_Target
 {       
     // Data.x (D1) = Thickness
     // Data.y (D2) = Angle range (Radians)
+
+    float4 col = spriteData[input.id].col;
 
     float2 d = input.uvLocal - 0.5;
     float rad = -PI + spriteData[input.id].data.y;
@@ -164,6 +166,28 @@ float4 PS_Circle_Outline(PS_IN input) : SV_Target
     float step = 1 - smoothstep(0.97 - thickness, 1 - thickness, (dist / 0.5));
     float stepBorder = smoothstep(0.97, 1, (dist / 0.5));
 
-    float4 c = float4(input.col.rgb, input.col.a * step) + float4(input.col.rgb, input.col.a * stepBorder);
+    float4 c = float4(col.rgb, col.a * step) + float4(col.rgb, col.a * stepBorder);
 	return float4(c.rgb, 1.0 - c.a);
+}
+
+
+float distanceToLine(float2 p1, float2 p2, float2 pnt) {
+    float a = p1.y-p2.y;
+    float b = p2.x-p1.x;
+    return abs(a*pnt.x+b*pnt.y+p1.x*p2.y-p2.x*p1.y) / sqrt(a*a+b*b);
+}
+
+float4 PS_Line(PS_IN input) : SV_Target
+{
+    // Data.x (D1) = Thickness
+   
+
+    float dist = distanceToLine(float2(0,0.5), float2(1,0.5), input.uvLocal);
+    float step = 1.0 - smoothstep(0, spriteData[input.id].data.x, dist);
+
+    float4 col1 = spriteData[input.id].col;
+    float4 col2 = spriteData[input.id].uv;
+    float4 col = lerp(col1, col2, input.uvLocal.x);
+
+    return float4(col.rgb, col.a * step);
 }

@@ -61,10 +61,10 @@ namespace Molten.Graphics
             _matCircle = resultV2[ShaderClassType.Material, "circle"] as Material;
             _matCircleNoTexture = resultV2[ShaderClassType.Material, "circle-no-texture"] as Material;
             _matCircleOutline = resultV2[ShaderClassType.Material, "circle-outline"] as Material;
+            _matLine = resultV2[ShaderClassType.Material, "line"] as Material;
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite.mfx");
             _matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
-            _matLine = result[ShaderClassType.Material, "line"] as Material;
             _matTriangle = result[ShaderClassType.Material, "triangle"] as Material;
 
             ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_sdf.mfx");
@@ -163,7 +163,8 @@ namespace Molten.Graphics
                 // TODO TESTING - REMOVE LATER
                 if (range.Format != SpriteFormat.Sprite && 
                     range.Format != SpriteFormat.MSDF && 
-                    range.Format != SpriteFormat.Ellipse)
+                    range.Format != SpriteFormat.Ellipse &&
+                    range.Format != SpriteFormat.Line)
                     continue;
 
                 Material mat = (range.Material as Material) ?? _checkers[(int)range.Format](context, range, data);

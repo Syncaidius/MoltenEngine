@@ -211,65 +211,6 @@ namespace Molten.Graphics
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
         /// <param name="points">The points between which to draw lines.</param>
-        /// <param name="color">The color of all lines in the provided list.</param>
-        /// <param name="thickness">The thickness of the line in pixels.</param>
-        public void DrawLineList(IList<Vector2F> points, Color color, float thickness)
-        {
-            _singleColorList[0] = color;
-            DrawLineList(points, _singleColorList, thickness);
-        }
-
-        /// <summary>Draws connecting lines between each of the provided points.</summary>
-        /// <param name="points">The points between which to draw individual lines.</param>
-        /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
-        /// <param name="thickness">The thickness of the line in pixels.</param>
-        public void DrawLineList(IList<Vector2F> points, IList<Color> pointColors, float thickness)
-        {
-            if (pointColors.Count == 0)
-                throw new SpriteBatcherException(this, "There must be at least one color available in the pointColors list.");
-
-            if (points.Count < 2 && points.Count % 2 > 0)
-                throw new SpriteBatcherException(this, "There must be at least 2 points per line.");
-
-            if (points.Count == 2)
-            {
-                int secondCol = pointColors.Count > 1 ? 1 : 0;
-                DrawLine(points[0], points[1], pointColors[0], pointColors[secondCol], thickness);
-            }
-            else
-            {
-                Vector2F p1, p2;
-                Color lastCol = pointColors[pointColors.Count - 1];
-                Color4 lastCol4 = lastCol.ToColor4();
-                int i2 = 0;
-
-                for (int i = 0; i < points.Count; i += 2)
-                {
-                    i2 = i + 1;
-                    p1 = points[i];
-                    p2 = points[i2];
-
-                    ref SpriteItem item = ref GetItem();
-                    item.Texture = null;
-                    item.Material = null;
-                    item.Format = SpriteFormat.Line;
-
-                    item.Vertex.Position = p1;
-                    item.Vertex.Rotation = thickness;
-                    item.Vertex.ArraySlice = 0;
-                    item.Vertex.Size = p2;
-                    item.Vertex.UV = pointColors[i2 % pointColors.Count].ToVector4();
-                    item.Vertex.Color = pointColors[i % pointColors.Count];
-
-                    // Normal of next line. This is used for creating sharp edges when drawing multiple lines. 
-                    // In this case, we set it to the direction of the current line, because drawing isolated lines in a list.
-                    item.Vertex.Origin = p2 - p1;
-                }
-            }
-        }
-
-        /// <summary>Draws connecting lines between each of the provided points.</summary>
-        /// <param name="points">The points between which to draw lines.</param>
         /// <param name="color">The color of the lines</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
         public void DrawLinePath(IList<Vector2F> points, Color color, float thickness)
@@ -307,7 +248,7 @@ namespace Molten.Graphics
         /// <param name="count">The number of points from the point list to draw.</param>
         public void DrawLinePath(IList<Vector2F> points, int startIndex, int count, IList<Color> pointColors, float thickness)
         {
-            if (pointColors.Count == 0)
+            /*if (pointColors.Count == 0)
                 throw new SpriteBatcherException(this, "There must be at least one color available in the pointColors list.");
 
             if (startIndex + count > points.Count)
@@ -361,7 +302,7 @@ namespace Molten.Graphics
                     next++;
                     prev = i;
                 }
-            }
+            }*/
         }
 
         /// <summary>
@@ -386,21 +327,27 @@ namespace Molten.Graphics
         /// <param name="thickness">The thickness of the line in pixels.</param>
         public void DrawLine(Vector2F p1, Vector2F p2, Color color1, Color color2, float thickness)
         {
+            const float PADDING = 2f; // Extra quad thickness to allow for smooth/faded line edges.
+
             ref SpriteItem item = ref GetItem();
             item.Texture = null;
             item.Material = null;
             item.Format = SpriteFormat.Line;
 
-            item.Vertex.Position = p1;
-            item.Vertex.Rotation = thickness;
-            item.Vertex.ArraySlice = 0;
-            item.Vertex.Size = p2;
-            item.Vertex.UV = color1.ToColor4();
-            item.Vertex.Color = color2;
+            float dist = Vector2F.Distance(ref p1, ref p2);
+            Vector2F dir = Vector2F.Normalize(p2 - p1);
 
-            // Normal of next line. This is used for creating sharp edges when drawing multiple lines. 
-            // In this case, we set it to the direction of the current line, because we're just drawing one.
-            item.Vertex.Origin = p2 - p1;
+            Vector2F size = new Vector2F(dist, thickness + PADDING);
+            Vector2F pos = (p2 + p1) / 2; // The center of the line will be the mean position of both points.
+
+            item.Vertex.Position = pos;
+            item.Vertex.Rotation = (float)Math.Atan2(dir.Y, dir.X);
+            item.Vertex.ArraySlice = 0;
+            item.Vertex.Size = size;
+            item.Vertex.UV = color2.ToColor4();
+            item.Vertex.Color = color1;
+            item.Vertex.Data.D1 = thickness / size.Y; // Convert to UV coordinate system (0 - 1) range
+            item.Vertex.Origin = DEFAULT_ORIGIN_CENTER;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>

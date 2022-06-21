@@ -195,7 +195,8 @@ namespace Molten.Samples
                 for (int i = 0; i < _rectangles.Length; i++)
                     sb.DrawRect(_rectangles[i], _rectangleColors[i], 0, rectOrigin);
 
-                sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.White, 1);
+                sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.Red, 5);
+                sb.DrawLine(new Vector2F(400), new Vector2F(650, 250), Color.Red, Color.Yellow, 5);
                 sb.DrawLinePath(linePoints, colors, 2);
                 sb.DrawLinePath(circleLinePoints, colors, 4);
                 sb.DrawTriangle(new Vector2F(400, 220), new Vector2F(350, 320), new Vector2F(500, 260), Color.SkyBlue);
