@@ -76,7 +76,6 @@ namespace Molten.Graphics
             _checkers[(int)SpriteFormat.Line] = CheckLineRange;
             _checkers[(int)SpriteFormat.Triangle] = CheckTriangleRange;
             _checkers[(int)SpriteFormat.Ellipse] = CheckEllipseRange;
-            _checkers[(int)SpriteFormat.Ellipse] = CheckEllipseRange;
         }
 
         internal unsafe void Flush(DeviceContext context, RenderCamera camera, ObjectRenderData data)

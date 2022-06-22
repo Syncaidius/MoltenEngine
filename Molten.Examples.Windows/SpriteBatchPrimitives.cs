@@ -4,14 +4,13 @@ namespace Molten.Samples
 {
     public class SpriteBatchPrimitives : SampleSceneGame
     {
-        const int BACKGROUND_RECT_COUNT = 275;
+        const int BACKGROUND_RECT_COUNT = 10000;
         const float BACKGROUND_OUTLINE_THICKNESS = 2;
 
         public override string Description => "Draws various primitives using sprite batch.";
 
         Rectangle[] _rects;
-        Color[] _rectColors;
-        Color[] _rectOutlineColors;
+        SpriteStyle[] _rectStyles;
         ITexture2D _texMesh;
         ITexture2D _texPrimitives;
         float _rotAngle;
@@ -85,12 +84,14 @@ namespace Molten.Samples
             }
 
             // Add 5 colors. The last color will be used when we have more points than colors.
-            List<Color> colors = new List<Color>();
-            colors.Add(Color.Orange);
-            colors.Add(Color.Red);
-            colors.Add(Color.Lime);
-            colors.Add(Color.Blue);
-            colors.Add(Color.Yellow);
+            SpriteStyle[] styles = new SpriteStyle[]
+            {
+                new SpriteStyle(Color.Orange, 3),
+                new SpriteStyle(Color.Red, 5),
+                new SpriteStyle(Color.Lime, 7),
+                new SpriteStyle(Color.Blue, 10),
+                new SpriteStyle(Color.Yellow, 15),
+            };
 
             List<Vector2F> triPoints = new List<Vector2F>();
             triPoints.Add(new Vector2F(600, 220)); // First triangle
@@ -170,9 +171,9 @@ namespace Molten.Samples
             List<Vector2F> shapeTriList = new List<Vector2F>();
             testShape.Triangulate(shapeTriList);
 
+            // Setup sprite rectangles and styles.
             _rects = new Rectangle[BACKGROUND_RECT_COUNT];
-            _rectColors = new Color[_rects.Length];
-            _rectOutlineColors = new Color[_rects.Length];
+            _rectStyles = new SpriteStyle[_rects.Length];
 
             for (int i = 0; i < _rects.Length; i++)
             {
@@ -190,35 +191,36 @@ namespace Molten.Samples
                     R = (byte)Rng.Next(10, 255),
                     G = (byte)Rng.Next(10, 255),
                     B = (byte)Rng.Next(10, 255),
-                    A = 55,
+                    A = 65,
                 };
-                _rectColors[i] = rCol;
-
                 Color rOutlineCol = rCol * 1.5f;
                 rOutlineCol.A = rCol.A;
-                _rectOutlineColors[i] = rOutlineCol;
+
+                _rectStyles[i] = new SpriteStyle()
+                {
+                    Color = rCol,
+                    Color2 = rOutlineCol,
+                    Thickness = Rng.Next(0, 6)
+                };
             }
 
             SampleSpriteRenderComponent com = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             com.RenderCallback = (sb) =>
             {
                 for (int i = 0; i < _rects.Length; i++)
-                {
-                    sb.DrawRect(_rects[i], _rectColors[i], 0, Vector2F.Zero);
-                    sb.DrawRectOutline(_rects[i], _rectOutlineColors[i], BACKGROUND_OUTLINE_THICKNESS);
-                }
+                    sb.DrawRect(_rects[i], ref _rectStyles[i], 0, Vector2F.Zero);
 
                 sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.Red, 5);
                 sb.DrawLine(new Vector2F(400), new Vector2F(650, 250), Color.Red, Color.Yellow, 5);
 
-                sb.DrawLinePath(linePoints, colors, 2);
+                /*sb.DrawLinePath(linePoints, colors, 2);
                 sb.DrawLinePath(circleLinePoints, colors, 4);
 
                 sb.DrawTriangle(new Vector2F(400, 220), new Vector2F(350, 320), new Vector2F(500, 260), Color.SkyBlue);
                 sb.DrawTriangle(new Vector2F(500, 220), new Vector2F(590, 350), new Vector2F(650, 280), Color.Violet);
 
                 sb.DrawTriangleList(triPoints, colors);
-                sb.DrawTriangleList(shapeTriList, colors);
+                sb.DrawTriangleList(shapeTriList, colors);*/
 
                 // Draw circles with a decreasing number of sides.
                 center.X = 305;
@@ -242,25 +244,25 @@ namespace Molten.Samples
                 RectangleF rectTextured = rect;
                 rectTextured.Y += (pSize * 3);
 
-                for (int i = 0; i < colors.Count; i++)
+                for (int i = 0; i < styles.Length; i++)
                 {
                     float angle = MathHelper.TwoPi * (0.15f * (i + 1));
                     uint texArrayID = (uint)i % 3;
                     cl.StartAngle = angle;
                     el.EndAngle = angle;
 
-                    sb.DrawCircle(ref cl, colors[i], _rotAngle);
-                    sb.DrawEllipse(ref el, colors[i], _rotAngle, _texPrimitives, null, texArrayID);
-                    sb.DrawRect(rect, colors[i], _rotAngle, new Vector2F(0.5f));
-                    sb.Draw(rectTextured, colors[i], _rotAngle, new Vector2F(0.5f), _texPrimitives, null, texArrayID);
+                    sb.DrawCircle(ref cl, ref styles[i], _rotAngle);
+                    sb.DrawEllipse(ref el, ref styles[i], _rotAngle, _texPrimitives, null, texArrayID);
+                    sb.DrawRect(rect, ref styles[i], _rotAngle, new Vector2F(0.5f));
+                    sb.Draw(rectTextured, ref styles[i], _rotAngle, new Vector2F(0.5f), _texPrimitives, null, texArrayID);
 
                     // ====== OUTLINES ======
                     float thickness = (i + 1) * 3;
                     elOutline.EndAngle = angle;
                     clOutline.EndAngle = angle;
 
-                    sb.DrawEllipseOutline(ref elOutline, colors[i], thickness, _rotAngle);
-                    sb.DrawCircleOutline(ref clOutline, colors[i], thickness, _rotAngle);
+                    sb.DrawEllipseOutline(ref elOutline, ref styles[i], _rotAngle);
+                    sb.DrawCircleOutline(ref clOutline, ref styles[i], _rotAngle);
 
                     cl.Center.X += (pSize * 2) + 5;
                     el.Center.X = cl.Center.X;

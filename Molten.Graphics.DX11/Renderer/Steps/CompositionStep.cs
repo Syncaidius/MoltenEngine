@@ -54,8 +54,10 @@
 
             ITexture2D sourceSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
 
+            SpriteStyle style = SpriteStyle.Default;
+
             renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-            renderer.SpriteBatcher.Draw(sourceSurface, vpBounds, Vector2F.Zero, vpBounds.Size, Color.White, 0, Vector2F.Zero, _matCompose, 0);
+            renderer.SpriteBatcher.Draw(sourceSurface, vpBounds, Vector2F.Zero, vpBounds.Size, ref style, 0, Vector2F.Zero, _matCompose, 0);
             renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
             renderer.Device.EndDraw();
 

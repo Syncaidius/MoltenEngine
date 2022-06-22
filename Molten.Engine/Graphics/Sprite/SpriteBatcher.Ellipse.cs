@@ -17,9 +17,9 @@ namespace Molten.Graphics
         /// <param name="material">The custom material, or null if none.</param>
         /// <param name="rotation">The rotation angle, in radians.</param>
         /// <param name="texture">The texture, or null if none.</param>
-        public void DrawEllipse(ref Ellipse e, Color color, float rotation = 0, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
+        public void DrawEllipse(ref Ellipse e, ref SpriteStyle style, float rotation = 0, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
-            DrawEllipse(ref e, color, DEFAULT_ORIGIN_CENTER, rotation, texture, material, arraySlice);
+            DrawEllipse(ref e, ref style, DEFAULT_ORIGIN_CENTER, rotation, texture, material, arraySlice);
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Molten.Graphics
         /// <param name="rotation">The rotation angle, in radians.</param>
         /// <param name="texture">The texture, or null if none.</param>
         /// <param name="origin">The origin of the ellipse, between 0f and 1.0f. An origin of 0.5f,0.5f would be the center of the sprite.</param>
-        public void DrawEllipse(ref Ellipse e, Color color, Vector2F origin, float rotation = 0, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
+        public void DrawEllipse(ref Ellipse e, ref SpriteStyle style, Vector2F origin, float rotation = 0, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF bounds = new RectangleF()
             {
@@ -48,14 +48,14 @@ namespace Molten.Graphics
                 source,
                 bounds.TopLeft,
                 bounds.Size,
-                color, 
+                ref style, 
                 rotation,
                 origin,
                 material,
                 SpriteFormat.Ellipse,
                 arraySlice,
                 false);
-            item.Vertex.Data.D2 = e.GetAngleRange();
+            item.Vertex.Data.D1 = e.GetAngleRange();
         }
 
         /// <summary>
@@ -66,9 +66,9 @@ namespace Molten.Graphics
         /// <param name="material">The custom material, or null if none.</param>
         /// <param name="rotation">The rotation angle, in radians.</param>
         /// <param name="thickness">The thickness of the outline.</param>
-        public void DrawEllipseOutline(ref Ellipse e, Color color, float thickness, float rotation = 0, IMaterial material = null)
+        public void DrawEllipseOutline(ref Ellipse e, ref SpriteStyle style, float rotation = 0, IMaterial material = null)
         {
-            DrawEllipseOutline(ref e, color, DEFAULT_ORIGIN_CENTER, thickness, rotation, material);
+            DrawEllipseOutline(ref e, ref style, DEFAULT_ORIGIN_CENTER, rotation, material);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Molten.Graphics
         /// <param name="rotation">The rotation angle, in radians.</param>
         /// <param name="thickness">The thickness of the outline.</param>
         /// <param name="origin">The origin of the ellipse, between 0f and 1.0f. An origin of 0.5f,0.5f would be the center of the sprite.</param>
-        public void DrawEllipseOutline(ref Ellipse e, Color color, Vector2F origin, float thickness, float rotation = 0, IMaterial material = null)
+        public void DrawEllipseOutline(ref Ellipse e, ref SpriteStyle style, Vector2F origin, float rotation = 0, IMaterial material = null)
         {
             RectangleF bounds = new RectangleF()
             {
@@ -90,9 +90,8 @@ namespace Molten.Graphics
                 Height = e.RadiusY * 2,
             };
 
-            ref SpriteItem item = ref DrawInternal(null, RectangleF.Empty, bounds.TopLeft, bounds.Size, color, rotation, origin, material, SpriteFormat.Ellipse, 0, true);
-            item.Vertex.Data.D1 = thickness / item.Vertex.Size.X; // Convert to UV coordinate system (0 - 1) range
-            item.Vertex.Data.D2 = e.GetAngleRange();
+            ref SpriteItem item = ref DrawInternal(null, RectangleF.Empty, bounds.TopLeft, bounds.Size, ref style, rotation, origin, material, SpriteFormat.Ellipse, 0, true);
+            item.Vertex.Data.D1 = e.GetAngleRange();
         }
     }
 }

@@ -10,19 +10,27 @@ namespace Molten.Graphics
     {
         public struct ExtraData
         {
+            public Vector2F BorderThickness;
             public float D1;
             public float D2;
-            public float D3;
-            public float D4;
         }
+
+        public Vector4F UV;
+
+        public Color4 Color;
+
+        public Color4 Color2;
+
+        /// <summary>
+        /// A field for storing extra data about the sprite
+        /// </summary>
+        public ExtraData Data;
 
         public Vector2F Position;
 
         public Vector2F Size;
 
         public Vector2F Origin;
-
-        public Vector4F UV;
 
         /// <summary>
         /// The rotation.
@@ -34,11 +42,6 @@ namespace Molten.Graphics
         /// </summary>
         public float ArraySlice;
 
-        public Color4 Color;
 
-        /// <summary>
-        /// A field for storing extra data about the sprite
-        /// </summary>
-        public ExtraData Data;
     }
 }

@@ -38,8 +38,10 @@
             StateConditions conditions = StateConditions.ScissorTest;
             ITexture2D sourceSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
 
+            SpriteStyle style = SpriteStyle.Default;
+
             renderer.Device.BeginDraw(conditions);
-            renderer.SpriteBatcher.Draw(sourceSurface, bounds, Vector2F.Zero, camera.OutputSurface.Viewport.Bounds.Size, Color.White, 0, Vector2F.Zero, null, 0);
+            renderer.SpriteBatcher.Draw(sourceSurface, bounds, Vector2F.Zero, camera.OutputSurface.Viewport.Bounds.Size, ref style, 0, Vector2F.Zero, null, 0);
 
             if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
                 renderer.Overlay.Render(time, renderer.SpriteBatcher, renderer.Profiler, context.Scene.Profiler, camera);

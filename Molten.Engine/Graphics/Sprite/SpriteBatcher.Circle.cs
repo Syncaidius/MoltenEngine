@@ -15,9 +15,9 @@ namespace Molten.Graphics
         /// <param name="rotation">The rotation angle, in radians.</param>
         /// <param name="origin">The origin of the circle, between 0f and 1.0f. An origin of 0.5f,0.5f would be the center of the sprite.</param>
         /// <param name="color">The color of the ellipse.</param>        
-        public void DrawCircle(ref Circle c, Color color, Vector2F origin, float rotation = 0)
+        public void DrawCircle(ref Circle c, ref SpriteStyle style, Vector2F origin, float rotation = 0)
         {
-            DrawCircle(ref c, color, origin, rotation, RectangleF.Empty);
+            DrawCircle(ref c, ref style, origin, rotation, RectangleF.Empty);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Molten.Graphics
         /// <param name="texture"></param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
-        public void DrawCircle(ref Circle c, Color color, float rotation = 0, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
+        public void DrawCircle(ref Circle c, ref SpriteStyle style, float rotation = 0, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
         {
             RectangleF src;
             if (texture != null)
@@ -37,7 +37,7 @@ namespace Molten.Graphics
             else
                 src = RectangleF.Empty;
 
-            DrawCircle(ref c, color, new Vector2F(0.5f), rotation, src, texture, material, arraySlice);
+            DrawCircle(ref c, ref style, new Vector2F(0.5f), rotation, src, texture, material, arraySlice);
         }
 
         /// <summary>
@@ -50,9 +50,9 @@ namespace Molten.Graphics
         /// <param name="texture"></param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
-        public void DrawCircle(ref Circle c, Color color, float rotation, RectangleF source, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
+        public void DrawCircle(ref Circle c, ref SpriteStyle style, float rotation, RectangleF source, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
         {
-            DrawCircle(ref c, color, new Vector2F(0.5f), rotation, source, texture, material, arraySlice);
+            DrawCircle(ref c, ref style, new Vector2F(0.5f), rotation, source, texture, material, arraySlice);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Molten.Graphics
         /// <param name="arraySlice"></param>
         /// <param name="source"></param>
         /// <param name="texture"></param>
-        public void DrawCircle(ref Circle c, Color color, Vector2F origin, float rotation, RectangleF source, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
+        public void DrawCircle(ref Circle c, ref SpriteStyle style, Vector2F origin, float rotation, RectangleF source, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
         {
             RectangleF bounds = new RectangleF()
             {
@@ -76,7 +76,7 @@ namespace Molten.Graphics
                 Height = c.Radius * 2,
             };
 
-            ref SpriteItem item = ref DrawInternal(texture, source, bounds.TopLeft, bounds.Size, color, rotation, origin, null, SpriteFormat.Ellipse, arraySlice, false);
+            ref SpriteItem item = ref DrawInternal(texture, source, bounds.TopLeft, bounds.Size, ref style, rotation, origin, null, SpriteFormat.Ellipse, arraySlice, false);
             item.Vertex.Data.D2 = c.GetAngleRange();
         }
 
@@ -88,9 +88,9 @@ namespace Molten.Graphics
         /// <param name="material">The custom material, or null if none.</param>
         /// <param name="rotation">The rotation angle, in radians.</param>
         /// <param name="thickness">The thickness of the outline.</param>
-        public void DrawCircleOutline(ref Circle c, Color color, float thickness, float rotation = 0, IMaterial material = null)
+        public void DrawCircleOutline(ref Circle c, ref SpriteStyle style, float rotation = 0, IMaterial material = null)
         {
-            DrawCircleOutline(ref c, color, DEFAULT_ORIGIN_CENTER, thickness, rotation, material);
+            DrawCircleOutline(ref c, ref style, DEFAULT_ORIGIN_CENTER, rotation, material);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Molten.Graphics
         /// <param name="material">The custom material, or null if none.</param>
         /// <param name="rotation">The rotation angle, in radians.</param>
         /// <param name="thickness">The thickness of the outline.</param>
-        public void DrawCircleOutline(ref Circle c, Color color, Vector2F origin, float thickness, float rotation = 0, IMaterial material = null)
+        public void DrawCircleOutline(ref Circle c, ref SpriteStyle style, Vector2F origin, float rotation = 0, IMaterial material = null)
         {
             RectangleF bounds = new RectangleF()
             {
@@ -111,9 +111,8 @@ namespace Molten.Graphics
                 Height = c.Radius * 2,
             };
 
-            ref SpriteItem item = ref DrawInternal(null, RectangleF.Empty, bounds.TopLeft, bounds.Size, color, rotation, origin, material, SpriteFormat.Ellipse, 0, true);
-            item.Vertex.Data.D1 = thickness / item.Vertex.Size.X; // Convert to UV coordinate system (0 - 1) range
-            item.Vertex.Data.D2 = c.GetAngleRange();
+            ref SpriteItem item = ref DrawInternal(null, RectangleF.Empty, bounds.TopLeft, bounds.Size, ref style, rotation, origin, material, SpriteFormat.Ellipse, 0, true);
+            item.Vertex.Data.D1 = c.GetAngleRange();
         }
     }
 }

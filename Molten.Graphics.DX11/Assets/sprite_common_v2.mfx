@@ -1,13 +1,17 @@
-struct SpriteVertex
+struct SpriteData
 {
+	float4 uv;
+	float4 col;
+	float4 col2;
+    float2 thickness;
+    float2 data;
+
 	float2 pos;
 	float2 size;
+
 	float2 origin;
-	float4 uv;
 	float rotation;
 	float arraySlice;
-	float4 col;
-    float4 data;
 };
 
 struct VS_GS
@@ -23,7 +27,7 @@ struct PS_IN
     uint id         : VERTEXID;
 };
 
-StructuredBuffer<SpriteVertex> spriteData : register(t0);
+StructuredBuffer<SpriteData> spriteData : register(t0);
 
 Texture2DArray mapDiffuse : register(t1);
 Texture2DMSArray<float4> mapDiffuseMS : register(t2);
@@ -77,7 +81,7 @@ void GS(point VS_GS input[1], uint pID : SV_PrimitiveID, inout TriangleStream<PS
 {
 	PS_IN v;
     v.id = vertexOffset + input[0].vID;
-    SpriteVertex sv = spriteData[v.id];
+    SpriteData sv = spriteData[v.id];
     float4 uv = sv.uv;
 
     uv.xz /= textureSize.x; // scale left (x) and right(z) to 0 - 1.0 range.
@@ -104,23 +108,39 @@ void GS(point VS_GS input[1], uint pID : SV_PrimitiveID, inout TriangleStream<PS
 	}
 }
 
+float isRectBorder(float2 uv, float2 thickness)
+{
+    float left = step(uv.x, thickness.x);
+    float right = step(1 - thickness.x, uv.x);
+    float top = step(uv.y, thickness.y);
+    float bottom = step(1 - thickness.y, uv.y);
+
+    return step(1, left + right + top + bottom);
+}
+
 float4 PS( PS_IN input ) : SV_Target
 {
-	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
-	return col * spriteData[input.id].col;
+    SpriteData sd = spriteData[input.id];
+
+    float isBorder = 0; //isRectBorder(input.uvLocal, sd.thickness);
+
+	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv) * sd.col;
+	return (col * (1 - isBorder)) + (sd.col2 * isBorder);
 }
 
 float4 PS_NoTexture(PS_IN input) : SV_Target
 {
-	return spriteData[input.id].col;
+    SpriteData sd = spriteData[input.id];
+    float isBorder = isRectBorder(input.uvLocal, sd.thickness);
+	return (sd.col * (1 - isBorder)) + (sd.col2 * isBorder);
 }
 
 float4 PS_Circle(PS_IN input) : SV_Target
 {   
-    // Data.y (D2) = Angle range (Radians)
+    // Data.x (D1) = Angle range (Radians)
 
     float2 d = input.uvLocal - 0.5;
-    float rad = -PI + spriteData[input.id].data.y;
+    float rad = -PI + spriteData[input.id].data.x;
     if(rad < atan2(d.y, d.x))
         discard;
 
@@ -133,12 +153,12 @@ float4 PS_Circle(PS_IN input) : SV_Target
 
 float4 PS_Circle_NoTex(PS_IN input) : SV_Target
 {   
-    // Data.y (D2) = Angle range (Radians)
+    // Data.x (D1) = Angle range (Radians)
 
     float4 col = spriteData[input.id].col;
 
     float2 d = input.uvLocal - 0.5;
-    float rad = -PI + spriteData[input.id].data.y;
+    float rad = -PI + spriteData[input.id].data.x;
     if(rad < atan2(d.y, d.x))
         discard;
 
@@ -149,17 +169,16 @@ float4 PS_Circle_NoTex(PS_IN input) : SV_Target
 
 float4 PS_Circle_Outline(PS_IN input) : SV_Target
 {       
-    // Data.x (D1) = Thickness
-    // Data.y (D2) = Angle range (Radians)
+    // Data.x (D1) = Angle range (Radians)
 
     float4 col = spriteData[input.id].col;
 
     float2 d = input.uvLocal - 0.5;
-    float rad = -PI + spriteData[input.id].data.y;
+    float rad = -PI + spriteData[input.id].data.x;
     if(rad < atan2(d.y, d.x))
         discard;
 
-    float4 thickness = spriteData[input.id].data.x;
+    float thickness = spriteData[input.id].thickness.x;
 
     float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
 
@@ -178,15 +197,13 @@ float distanceToLine(float2 p1, float2 p2, float2 pnt) {
 }
 
 float4 PS_Line(PS_IN input) : SV_Target
-{
-    // Data.x (D1) = Thickness
-   
+{  
 
     float dist = distanceToLine(float2(0,0.5), float2(1,0.5), input.uvLocal);
-    float step = 1.0 - smoothstep(0, spriteData[input.id].data.x, dist);
+    float step = 1.0 - smoothstep(0, spriteData[input.id].thickness.y, dist);
 
     float4 col1 = spriteData[input.id].col;
-    float4 col2 = spriteData[input.id].uv;
+    float4 col2 = spriteData[input.id].col2;
     float4 col = lerp(col1, col2, input.uvLocal.x);
 
     return float4(col.rgb, col.a * step);

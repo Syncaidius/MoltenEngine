@@ -102,8 +102,11 @@ namespace Molten.Samples
                 if (SampleFont == null || _glyphTriPoints == null || _colors == null)
                     return;
 
-                sb.DrawRectOutline(_glyphBounds, Color.Grey, 1);
-                sb.DrawRectOutline(_fontBounds, Color.Pink, 1);
+                SpriteStyle style = new SpriteStyle(Color.Transparent, Color.Grey, 1);
+                sb.DrawRect(_glyphBounds, ref style);
+
+                style.Color = Color.Pink;
+                sb.DrawRect(_fontBounds, ref style);
 
                 // Top Difference marker
                 float dif = _glyphBounds.Top - _fontBounds.Top;
@@ -136,11 +139,13 @@ namespace Molten.Samples
                 }
 
                 Rectangle clickRect;
+                style = new SpriteStyle(_clickColor);
+
                 if (_shape != null)
                 {
                     clickRect = new Rectangle((int)_clickPoint.X, (int)_clickPoint.Y, 0, 0);
                     clickRect.Inflate(8);
-                    sb.DrawRect(clickRect, _clickColor);
+                    sb.DrawRect(clickRect, ref style);
                 }
 
                 sb.DrawString(SampleFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
@@ -148,12 +153,18 @@ namespace Molten.Samples
                 sb.DrawString(SampleFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
 
                 // Only draw test font if it's loaded
+                style = SpriteStyle.Default;
+
                 if (_font2Test != null && _font2Test.Source.UnderlyingTexture != null)
                 {
                     Vector2F pos = new Vector2F(800, 65);
                     Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, 512, 512);
-                    sb.Draw(texBounds, Color.White, _font2Test.Source.UnderlyingTexture);
-                    sb.DrawRectOutline(texBounds, Color.Red, 1);
+                    sb.Draw(texBounds, ref style, _font2Test.Source.UnderlyingTexture);
+
+                    style.Color = Color.Red;
+                    style.Thickness = 1;
+
+                    sb.DrawRect(texBounds, ref style);
                     pos.Y += 517;
                     sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
                     pos.Y += _font2Test.LineSpacing;

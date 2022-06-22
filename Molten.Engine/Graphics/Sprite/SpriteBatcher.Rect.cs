@@ -12,9 +12,9 @@ namespace Molten.Graphics
         /// <param name="destination">The rectangle defining the draw destination.</param>
         /// <param name="color">The color overlay/tiny of the sprite.</param>
         /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
-        public void DrawRect(RectangleF destination, Color color, IMaterial material = null)
+        public void DrawRect(RectangleF destination, ref SpriteStyle style, IMaterial material = null)
         {
-            DrawRect(destination, color, 0, Vector2F.Zero, material);
+            DrawRect(destination, ref style, 0, Vector2F.Zero, material);
         }
 
         /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
@@ -25,25 +25,9 @@ namespace Molten.Graphics
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material">The material to use when rendering the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        public void DrawRect(RectangleF destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
+        public void DrawRect(RectangleF destination, ref SpriteStyle style, float rotation, Vector2F origin, IMaterial material = null)
         {
-            DrawInternal(null, RectangleF.Empty, destination.TopLeft, destination.Size, color, rotation, origin, material, SpriteFormat.Sprite, 0, false);
-        }
-
-        /// <summary>
-        /// Draws a rectangular outline composed of 4 lines.
-        /// </summary>
-        /// <param name="rect">The rectangle.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="thickness">The thickness.</param>
-        public void DrawRectOutline(RectangleF rect, Color color, float thickness)
-        {
-            float halfThick = thickness / 2f;
-
-            DrawLine(new Vector2F(rect.Left - halfThick, rect.Top), new Vector2F(rect.Right + halfThick, rect.Top), color, thickness); // Top
-            DrawLine(new Vector2F(rect.Left - halfThick, rect.Bottom), new Vector2F(rect.Right + halfThick, rect.Bottom), color, thickness); // Bottom
-            DrawLine(new Vector2F(rect.Right, rect.Top + halfThick), new Vector2F(rect.Right, rect.Bottom - halfThick), color, thickness); // Right
-            DrawLine(new Vector2F(rect.Left, rect.Top + halfThick), new Vector2F(rect.Left, rect.Bottom - halfThick), color, thickness); // Left
+            DrawInternal(null, RectangleF.Empty, destination.TopLeft, destination.Size, ref style, rotation, origin, material, SpriteFormat.Sprite, 0, false);
         }
 
         /*public void DrawRoundedRect(RectangleF dest, Color color, float radius, IMaterial material = null)

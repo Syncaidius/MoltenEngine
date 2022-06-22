@@ -62,13 +62,13 @@ namespace Molten.Samples
                         Y = Rng.Next(0, 1080),
                     },
 
-                    Color = new Color()
+                    Style = new SpriteStyle(new Color()
                     {
                         R = (byte)Rng.Next(0, 255),
                         G = (byte)Rng.Next(0, 255),
                         B = (byte)Rng.Next(0, 255),
                         A = (byte)Rng.Next(50, 100),
-                    },
+                    }),
                     
                     Data = sData,
                     Scale = new Vector2F(Rng.Next(25, 101), Rng.Next(25, 101)) / 100,

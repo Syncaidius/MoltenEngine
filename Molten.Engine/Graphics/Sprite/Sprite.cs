@@ -2,6 +2,8 @@
 {
     public class Sprite
     {
+        SpriteStyle _style = SpriteStyle.Default;
+
         public SpriteData Data = new SpriteData();
 
         public Vector2F Position { get; set; }
@@ -14,6 +16,6 @@
 
         public IMaterial Material { get; set; }
 
-        public Color Color { get; set; } = Color.White;
+        public ref SpriteStyle Style => ref _style;
     }
 }
