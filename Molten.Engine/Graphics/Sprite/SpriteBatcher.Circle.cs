@@ -139,13 +139,23 @@ namespace Molten.Graphics
         {
             RectangleF bounds = new RectangleF()
             {
-                X = c.Center.X - c.Radius,
-                Y = c.Center.Y - c.Radius,
+                X = c.Center.X,
+                Y = c.Center.Y,
                 Width = c.Radius * 2,
                 Height = c.Radius * 2,
             };
 
-            ref SpriteItem item = ref DrawInternal(null, RectangleF.Empty, bounds.TopLeft, bounds.Size, ref style, rotation, origin, material, SpriteFormat.Ellipse, 0, true);
+            ref SpriteItem item = ref DrawInternal(null, 
+                RectangleF.Empty,
+                bounds.TopLeft, 
+                bounds.Size, 
+                ref style, 
+                c.StartAngle + rotation, 
+                origin, material, 
+                SpriteFormat.Ellipse, 
+                0, 
+                true);
+
             item.Vertex.Data.D1 = c.GetAngleRange();
         }
     }

@@ -13,14 +13,14 @@ namespace Molten.UI
         public Color TextColor { get; set; } = Color.White;
 
         [DataMember]
-        public Color BackgroundColor { get; set; } = new Color(40, 170, 40, 200);
+        public Color BackgroundColor { get; set; } = new Color(0, 109, 155, 200);
 
         [DataMember]
-        public Color BorderColor { get; set; } = new Color(80, 220, 80);
+        public Color BorderColor { get; set; } = new Color(52, 189, 235, 240);
 
 
         [DataMember]
-        public float BorderThickness { get; set; } = 2f;
+        public float BorderThickness { get; set; } = 4f;
 
         [DataMember]
         public float CornerRadius { get; set; } = 10f;

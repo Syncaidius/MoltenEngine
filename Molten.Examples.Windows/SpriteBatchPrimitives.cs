@@ -210,8 +210,8 @@ namespace Molten.Samples
                 for (int i = 0; i < _rects.Length; i++)
                     sb.DrawRect(_rects[i], ref _rectStyles[i], 0, Vector2F.Zero);
 
-                sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.Red, 5);
-                sb.DrawLine(new Vector2F(400), new Vector2F(650, 250), Color.Red, Color.Yellow, 5);
+                sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.Red, 2);
+                sb.DrawLine(new Vector2F(400), new Vector2F(650, 250), Color.Red, Color.Yellow, 2);
 
                 /*sb.DrawLinePath(linePoints, colors, 2);
                 sb.DrawLinePath(circleLinePoints, colors, 4);
@@ -271,7 +271,6 @@ namespace Molten.Samples
 
                     rect.X = cl.Center.X - pSize;
                     rectTextured.X = rect.X;
-
                 }
             };
         }

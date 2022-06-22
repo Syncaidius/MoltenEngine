@@ -327,17 +327,15 @@ namespace Molten.Graphics
         /// <param name="thickness">The thickness of the line in pixels.</param>
         public void DrawLine(Vector2F p1, Vector2F p2, Color color1, Color color2, float thickness)
         {
-            const float PADDING = 2f; // Extra quad thickness to allow for smooth/faded line edges.
-
             ref SpriteItem item = ref GetItem();
             item.Texture = null;
             item.Material = null;
             item.Format = SpriteFormat.Line;
 
-            float dist = Vector2F.Distance(ref p1, ref p2);
+            float dist = Vector2F.Distance(ref p1, ref p2) + 1;
             Vector2F dir = Vector2F.Normalize(p2 - p1);
 
-            Vector2F size = new Vector2F(dist, thickness + PADDING);
+            Vector2F size = new Vector2F(dist, thickness);
             Vector2F pos = (p2 + p1) / 2; // The center of the line will be the mean position of both points.
 
             item.Vertex.Position = pos;
@@ -348,7 +346,7 @@ namespace Molten.Graphics
             item.Vertex.Color2 = color2;
             item.Vertex.Color = color1;
             item.Vertex.Data.BorderThickness = new Vector2F(thickness) / size; // Convert to UV coordinate system (0 - 1) range
-            item.Vertex.Origin = DEFAULT_ORIGIN_CENTER;
+            item.Vertex.Origin = DEFAULT_ORIGIN_CENTER - new Vector2F(0, item.Vertex.Data.BorderThickness.X);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>

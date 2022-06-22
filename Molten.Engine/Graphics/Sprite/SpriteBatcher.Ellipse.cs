@@ -36,8 +36,8 @@ namespace Molten.Graphics
         {
             RectangleF bounds = new RectangleF()
             {
-                X = e.Center.X - e.RadiusX,
-                Y = e.Center.Y - e.RadiusY,
+                X = e.Center.X,
+                Y = e.Center.Y,
                 Width = e.RadiusX * 2,
                 Height = e.RadiusY * 2,
             };
@@ -84,8 +84,8 @@ namespace Molten.Graphics
         {
             RectangleF bounds = new RectangleF()
             {
-                X = e.Center.X - e.RadiusX,
-                Y = e.Center.Y - e.RadiusY,
+                X = e.Center.X,
+                Y = e.Center.Y,
                 Width = e.RadiusX * 2,
                 Height = e.RadiusY * 2,
             };

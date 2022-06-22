@@ -32,13 +32,10 @@ namespace Molten.UI
                 {
                     Color = BackgroundColor,
                     Color2 = BorderColor,
-                    Thickness = 0,
+                    Thickness = BorderThickness,
                 };
 
-                sb.DrawRoundedRect(data.RenderBounds, ref style, CornerRadius);
-
-                //if (BorderColor.A > 0 && BorderThickness > 0)
-                //    sb.DrawRectOutline(data.BorderBounds, BorderColor, BorderThickness);
+                sb.DrawRoundedRect(data.RenderBounds, ref style, 15);
             }
         }
     }

@@ -11,22 +11,22 @@ namespace Molten.Graphics
         /// <summary>
         /// The main color.
         /// </summary>
-        public Color4 Color;
+        public Color Color;
+
+        /// <summary>
+        /// A secondary color. This may be a border or gradient color.
+        /// </summary>
+        public Color Color2;
 
         /// <summary>
         /// A thickness value. This may be for border, outline or line thickness.
         /// </summary>
         public float Thickness;
 
-        /// <summary>
-        /// A secondary color. This may be a border or gradient color.
-        /// </summary>
-        public Color4 Color2;
-
         public static readonly SpriteStyle Default = new SpriteStyle()
         {
-            Color = Color4.White,
-            Color2 = Color4.White,
+            Color = Color.White,
+            Color2 = Color.White,
             Thickness = 0
         };
 

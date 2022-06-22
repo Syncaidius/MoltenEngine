@@ -12,6 +12,16 @@ namespace Molten.Graphics
         /// <param name="destination">The rectangle defining the draw destination.</param>
         /// <param name="color">The color overlay/tiny of the sprite.</param>
         /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
+        public void DrawRect(RectangleF destination, Color color, IMaterial material = null)
+        {
+            SpriteStyle style = new SpriteStyle(color);
+            DrawRect(destination, ref style, 0, Vector2F.Zero, material);
+        }
+
+        /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
+        /// <param name="destination">The rectangle defining the draw destination.</param>
+        /// <param name="style">Defines the style of the sprite.</param>
+        /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
         public void DrawRect(RectangleF destination, ref SpriteStyle style, IMaterial material = null)
         {
             DrawRect(destination, ref style, 0, Vector2F.Zero, material);
@@ -24,10 +34,28 @@ namespace Molten.Graphics
         /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material">The material to use when rendering the sprite.</param>
-        /// <param name="arraySlice">The texture array slice containing the source texture.</param>
+        public void DrawRect(RectangleF destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
+        {
+            SpriteStyle style = new SpriteStyle(color);
+            DrawInternal(null, RectangleF.Empty, destination.TopLeft, destination.Size, ref style, rotation, origin, material, SpriteFormat.Sprite, 0, false);
+        }
+
+        /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
+        /// <param name="destination">The rectangle defining the draw destination.</param>
+        /// <param name="style">Defines the style of the sprite.</param>
+        /// <param name="rotation">Rotation in radians.</param>
+        /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
+        /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
+        /// <param name="material">The material to use when rendering the sprite.</param>
         public void DrawRect(RectangleF destination, ref SpriteStyle style, float rotation, Vector2F origin, IMaterial material = null)
         {
             DrawInternal(null, RectangleF.Empty, destination.TopLeft, destination.Size, ref style, rotation, origin, material, SpriteFormat.Sprite, 0, false);
+        }
+
+        public void DrawRoundedRect(RectangleF dest, Color color, float radius, IMaterial material = null)
+        {
+            SpriteStyle style = new SpriteStyle(color);
+            DrawRoundedRect(dest, ref style, 0, Vector2F.Zero, radius, material);
         }
 
         public void DrawRoundedRect(RectangleF dest, ref SpriteStyle style, float radius, IMaterial material = null)
@@ -68,11 +96,22 @@ namespace Molten.Graphics
             DrawCircle(ref cbr, ref fillStyle);
             DrawCircle(ref cbl, ref fillStyle);
 
-            DrawRect(t, ref style, material);
-            DrawRect(b, ref style, material);
-            DrawRect(c, ref style, material);
+            DrawRect(t, ref fillStyle, material);
+            DrawRect(b, ref fillStyle, material);
+            DrawRect(c, ref fillStyle, material);
 
-            // TODO draw outline using border style
+            if (style.Thickness > 0)
+            {
+                DrawCircleOutline(ref ctl, ref style);
+                DrawCircleOutline(ref ctr, ref style);
+                DrawCircleOutline(ref cbr, ref style);
+                DrawCircleOutline(ref cbl, ref style);
+
+                DrawLine(new Vector2F(dest.Left, dest.Top + radius), new Vector2F(dest.Left, dest.Bottom - radius), style.Color2, style.Thickness);
+                DrawLine(new Vector2F(dest.Right, dest.Top + radius), new Vector2F(dest.Right, dest.Bottom - radius), style.Color2, style.Thickness);
+                DrawLine(new Vector2F(dest.Left + radius, dest.Top), new Vector2F(dest.Right - radius, dest.Top), style.Color2, style.Thickness);
+                DrawLine(new Vector2F(dest.Left + radius, dest.Bottom), new Vector2F(dest.Right - radius, dest.Bottom), style.Color2, style.Thickness);
+            }
         }
 
         /*public void DrawRoundedRect(RectangleF dest, Color color, float rotation, Vector2F origin, RoundedCornerInfo corners, IMaterial material = null)
