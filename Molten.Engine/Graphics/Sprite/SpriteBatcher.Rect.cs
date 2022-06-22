@@ -61,14 +61,18 @@ namespace Molten.Graphics
             Circle cbr = new Circle(tr, radius, MathHelper.PiHalf, MathHelper.Pi);
             Circle cbl = new Circle(br, radius, MathHelper.Pi, MathHelper.PiHalf * 3);
 
-            DrawCircle(ref ctl, ref style);
-            DrawCircle(ref ctr, ref style);
-            DrawCircle(ref cbr, ref style);
-            DrawCircle(ref cbl, ref style);
+            SpriteStyle fillStyle = style;
+            fillStyle.Thickness = 0;
+            DrawCircle(ref ctl, ref fillStyle);
+            DrawCircle(ref ctr, ref fillStyle);
+            DrawCircle(ref cbr, ref fillStyle);
+            DrawCircle(ref cbl, ref fillStyle);
 
             DrawRect(t, ref style, material);
             DrawRect(b, ref style, material);
             DrawRect(c, ref style, material);
+
+            // TODO draw outline using border style
         }
 
         /*public void DrawRoundedRect(RectangleF dest, Color color, float rotation, Vector2F origin, RoundedCornerInfo corners, IMaterial material = null)

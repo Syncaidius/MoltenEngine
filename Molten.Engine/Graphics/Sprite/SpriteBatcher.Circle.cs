@@ -25,6 +25,40 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="c">The <see cref="Circle"/> to be drawn</param>
         /// <param name="rotation">The rotation angle, in radians.</param>
+        /// <param name="origin">The origin of the circle, between 0f and 1.0f. An origin of 0.5f,0.5f would be the center of the sprite.</param>
+        /// <param name="color">The color of the ellipse.</param>        
+        public void DrawCircle(ref Circle c, Color color, Vector2F origin, float rotation = 0)
+        {
+            SpriteStyle style = new SpriteStyle(color, 0);
+            DrawCircle(ref c, ref style, origin, rotation, RectangleF.Empty);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c">The <see cref="Circle"/> to be drawn</param>
+        /// <param name="rotation">The rotation angle, in radians.</param>
+        /// <param name="color">The color of the ellipse.</param>        
+        /// <param name="texture"></param>
+        /// <param name="material"></param>
+        /// <param name="arraySlice"></param>
+        public void DrawCircle(ref Circle c, Color color, float rotation = 0, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
+        {
+            RectangleF src;
+            if (texture != null)
+                src = new RectangleF(0, 0, texture.Width, texture.Height);
+            else
+                src = RectangleF.Empty;
+
+            SpriteStyle style = new SpriteStyle(color);
+            DrawCircle(ref c, ref style, DEFAULT_ORIGIN_CENTER, rotation, src, texture, material, arraySlice);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c">The <see cref="Circle"/> to be drawn</param>
+        /// <param name="rotation">The rotation angle, in radians.</param>
         /// <param name="color">The color of the ellipse.</param>        
         /// <param name="texture"></param>
         /// <param name="material"></param>
@@ -39,7 +73,6 @@ namespace Molten.Graphics
 
             DrawCircle(ref c, ref style, DEFAULT_ORIGIN_CENTER, rotation, src, texture, material, arraySlice);
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -50,8 +83,9 @@ namespace Molten.Graphics
         /// <param name="texture"></param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
-        public void DrawCircle(ref Circle c, ref SpriteStyle style, float rotation, RectangleF source, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
+        public void DrawCircle(ref Circle c, Color color, float rotation, RectangleF source, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
         {
+            SpriteStyle style = new SpriteStyle(color);
             DrawCircle(ref c, ref style, DEFAULT_ORIGIN_CENTER, rotation, source, texture, material, arraySlice);
         }
 

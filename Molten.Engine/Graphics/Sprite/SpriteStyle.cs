@@ -30,7 +30,7 @@ namespace Molten.Graphics
             Thickness = 0
         };
 
-        public SpriteStyle(Color color, float thickness = 2)
+        public SpriteStyle(Color color, float thickness = 0)
         {
             Color = color;
             Thickness = thickness;

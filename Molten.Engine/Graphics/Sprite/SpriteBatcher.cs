@@ -475,7 +475,7 @@ namespace Molten.Graphics
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material">The material to use when rendering the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        protected ref SpriteItem DrawInternal(ITexture2D texture,
+        protected unsafe ref SpriteItem DrawInternal(ITexture2D texture,
             RectangleF source,
             Vector2F position,
             Vector2F size,
@@ -500,7 +500,7 @@ namespace Molten.Graphics
             item.Vertex.Color = style.Color;
             item.Vertex.Color2 = style.Color2;
             item.Vertex.Origin = origin;
-            item.Vertex.UV = new Vector4F(source.Left, source.Top, source.Right, source.Bottom);
+            item.Vertex.UV = *(Vector4F*)&source; // Source rectangle values are stored in the same layout as we need for UV: left, top, right, bottom.
             item.Vertex.Data.BorderThickness = new Vector2F(style.Thickness) / size; // Convert to UV coordinate system (0 - 1) range
 
             return ref item;

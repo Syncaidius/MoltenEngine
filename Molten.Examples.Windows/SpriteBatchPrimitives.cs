@@ -4,7 +4,7 @@ namespace Molten.Samples
 {
     public class SpriteBatchPrimitives : SampleSceneGame
     {
-        const int BACKGROUND_RECT_COUNT = 10000;
+        const int BACKGROUND_RECT_COUNT = 1000;
         const float BACKGROUND_OUTLINE_THICKNESS = 2;
 
         public override string Description => "Draws various primitives using sprite batch.";
