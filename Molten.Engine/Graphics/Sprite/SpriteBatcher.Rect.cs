@@ -30,16 +30,16 @@ namespace Molten.Graphics
             DrawInternal(null, RectangleF.Empty, destination.TopLeft, destination.Size, ref style, rotation, origin, material, SpriteFormat.Sprite, 0, false);
         }
 
-        /*public void DrawRoundedRect(RectangleF dest, Color color, float radius, IMaterial material = null)
+        public void DrawRoundedRect(RectangleF dest, ref SpriteStyle style, float radius, IMaterial material = null)
         {
-            DrawRoundedRect(dest, color, 0, Vector2F.Zero, radius, material);
+            DrawRoundedRect(dest, ref style, 0, Vector2F.Zero, radius, material);
         }
 
-        public void DrawRoundedRect(RectangleF dest, Color color, float rotation, Vector2F origin, float radius, IMaterial material = null)
+        public void DrawRoundedRect(RectangleF dest, ref SpriteStyle style, float rotation, Vector2F origin, float radius, IMaterial material = null)
         {
             if (radius <= 0)
             {
-                DrawRect(dest, color, rotation, origin, material);
+                DrawRect(dest, ref style, rotation, origin, material);
                 return;
             }
 
@@ -56,15 +56,20 @@ namespace Molten.Graphics
             RectangleF b = new RectangleF(tl.X, dest.Bottom - radius, innerWidth, radius);
             RectangleF c = new RectangleF(dest.X, tl.Y, dest.Width, innerHeight);
 
-            DrawCircle(tl, radius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
-            DrawCircle(tr, radius, 0, MathHelper.PiHalf, color);
-            DrawCircle(br, radius, MathHelper.PiHalf, MathHelper.Pi, color);
-            DrawCircle(bl, radius, MathHelper.Pi, MathHelper.PiHalf * 3, color);
+            Circle ctl = new Circle(bl, radius, MathHelper.PiHalf * 3, MathHelper.TwoPi);
+            Circle ctr = new Circle(tl, radius, 0, MathHelper.PiHalf);
+            Circle cbr = new Circle(tr, radius, MathHelper.PiHalf, MathHelper.Pi);
+            Circle cbl = new Circle(br, radius, MathHelper.Pi, MathHelper.PiHalf * 3);
 
-            DrawRect(t, color, material);
-            DrawRect(b, color, material);
-            DrawRect(c, color, material);
-        }*/
+            DrawCircle(ref ctl, ref style);
+            DrawCircle(ref ctr, ref style);
+            DrawCircle(ref cbr, ref style);
+            DrawCircle(ref cbl, ref style);
+
+            DrawRect(t, ref style, material);
+            DrawRect(b, ref style, material);
+            DrawRect(c, ref style, material);
+        }
 
         /*public void DrawRoundedRect(RectangleF dest, Color color, float rotation, Vector2F origin, RoundedCornerInfo corners, IMaterial material = null)
         {

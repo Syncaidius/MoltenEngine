@@ -37,7 +37,7 @@ namespace Molten.Graphics
             else
                 src = RectangleF.Empty;
 
-            DrawCircle(ref c, ref style, new Vector2F(0.5f), rotation, src, texture, material, arraySlice);
+            DrawCircle(ref c, ref style, DEFAULT_ORIGIN_CENTER, rotation, src, texture, material, arraySlice);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Molten.Graphics
         /// <param name="arraySlice"></param>
         public void DrawCircle(ref Circle c, ref SpriteStyle style, float rotation, RectangleF source, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
         {
-            DrawCircle(ref c, ref style, new Vector2F(0.5f), rotation, source, texture, material, arraySlice);
+            DrawCircle(ref c, ref style, DEFAULT_ORIGIN_CENTER, rotation, source, texture, material, arraySlice);
         }
 
         /// <summary>
@@ -70,14 +70,14 @@ namespace Molten.Graphics
         {
             RectangleF bounds = new RectangleF()
             {
-                X = c.Center.X - c.Radius,
-                Y = c.Center.Y - c.Radius,
+                X = c.Center.X,
+                Y = c.Center.Y,
                 Width = c.Radius * 2,
                 Height = c.Radius * 2,
             };
 
-            ref SpriteItem item = ref DrawInternal(texture, source, bounds.TopLeft, bounds.Size, ref style, rotation, origin, null, SpriteFormat.Ellipse, arraySlice, false);
-            item.Vertex.Data.D2 = c.GetAngleRange();
+            ref SpriteItem item = ref DrawInternal(texture, source, bounds.TopLeft, bounds.Size, ref style, c.StartAngle + rotation, origin, null, SpriteFormat.Ellipse, arraySlice, false);
+            item.Vertex.Data.D1 = c.GetAngleRange();
         }
 
         /// <summary>

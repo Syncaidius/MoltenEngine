@@ -148,7 +148,6 @@ namespace Molten.Graphics
         private void FlushBuffer(DeviceContext context, RenderCamera camera, ObjectRenderData data, uint vertexCount)
         {
             Range range;
-            //_segment.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
             _bufferData.Map(context, (buffer, stream) => stream.WriteRange(_vertices, 0, vertexCount));
 
             // Draw calls
