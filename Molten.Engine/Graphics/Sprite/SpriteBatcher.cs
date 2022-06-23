@@ -350,7 +350,7 @@ namespace Molten.Graphics
             item.Vertex.Origin = DEFAULT_ORIGIN_CENTER;
         }
 
-        public void DrawGrid(RectangleF bounds, SpriteStyle style, Vector2F cellSize, float rotation, Vector2F origin, ITexture2D cellTexture = null, IMaterial material = null, uint arraySlice = 0)
+        public void DrawGrid(RectangleF bounds, ref SpriteStyle style, Vector2F cellSize, float rotation, Vector2F origin, ITexture2D cellTexture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF source = cellTexture != null ? new RectangleF(0, 0, cellTexture.Width, cellTexture.Height) : RectangleF.Empty;
             ref SpriteItem item = ref DrawInternal(cellTexture,

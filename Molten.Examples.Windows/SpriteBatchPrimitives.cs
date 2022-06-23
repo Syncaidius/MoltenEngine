@@ -220,7 +220,7 @@ namespace Molten.Samples
                     Thickness = 3,
                 };
 
-                sb.DrawGrid(new Rectangle(1450, 400, 400, 400), gridStyle, new Vector2F(20, 20), _rotAngle, new Vector2F(0.5f));
+                sb.DrawGrid(new Rectangle(1450, 400, 400, 400), ref gridStyle, new Vector2F(20, 20), _rotAngle, new Vector2F(0.5f));
 
                 /*sb.DrawLinePath(linePoints, colors, 2);
                 sb.DrawLinePath(circleLinePoints, colors, 4);
