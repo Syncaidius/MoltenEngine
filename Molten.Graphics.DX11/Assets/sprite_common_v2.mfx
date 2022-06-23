@@ -147,8 +147,7 @@ float4 PS_Circle(PS_IN input) : SV_Target
     if(rad < atan2(d.y, d.x))
         discard;
 
-    float thickness = spriteData[input.id].thickness.x;
-    float halfThick = thickness / 2;
+    float halfThick = spriteData[input.id].thickness.x / 2;
     float thickCenter = 0.5 - halfThick;
     float thickStart = thickCenter - halfThick;
     float thickEnd = thickCenter + halfThick;
@@ -180,8 +179,7 @@ float4 PS_Circle_NoTex(PS_IN input) : SV_Target
     if(rad < atan2(d.y, d.x))
         discard;
 
-    float thickness = spriteData[input.id].thickness.x;
-    float halfThick = thickness / 2;
+    float halfThick = spriteData[input.id].thickness / 2;
     float thickCenter = 0.5 - halfThick;
     float thickStart = thickCenter - halfThick;
     float thickEnd = thickCenter + halfThick;
@@ -207,7 +205,6 @@ float distanceToLine(float2 p1, float2 p2, float2 pnt) {
 
 float4 PS_Line(PS_IN input) : SV_Target
 {  
-
     float dist = distanceToLine(float2(0,0.5), float2(1,0.5), input.uvLocal);
     float step = 1.0 - smoothstep(0, spriteData[input.id].thickness.y, dist);
 
@@ -216,4 +213,27 @@ float4 PS_Line(PS_IN input) : SV_Target
     float4 col = lerp(col1, col2, input.uvLocal.x);
 
     return float4(col.rgb, col.a * step);
+}
+
+float4 PS_Grid( PS_IN input ) : SV_Target
+{
+    // Data.x (D1) = Cell increment X
+    // Data.y (D2) = Cell increment Y
+
+    SpriteData sd = spriteData[input.id];
+    float2 cellSize = sd.data.xy;
+    float thickness = sd.thickness;
+    float result;
+
+    for(float ix = 0.0; ix < 1.0; ix += cellSize.x)
+    {
+        result += 1.0 - smoothstep(0.0, thickness, abs(input.uvLocal.x - ix));
+    }
+
+    for(float iy = 0.0; iy < 1.0; iy += cellSize.y)
+    {
+        result += 1.0 - smoothstep(0.0, thickness, abs(input.uvLocal.y - iy));
+    }
+
+	return (sd.col * (1-result)) + (sd.col2 * result);
 }

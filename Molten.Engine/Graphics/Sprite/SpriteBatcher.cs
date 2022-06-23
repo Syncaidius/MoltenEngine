@@ -20,6 +20,8 @@ namespace Molten.Graphics
             Triangle = 3, // Untextured triangles
 
             Ellipse = 4, // Untextured circles - Uses a geometry shader to handle this
+
+            Grid = 5,
         }
 
         protected struct SpriteItem
@@ -346,6 +348,26 @@ namespace Molten.Graphics
             item.Vertex.Color = color1;
             item.Vertex.Data.BorderThickness = new Vector2F(thickness) / size; // Convert to UV coordinate system (0 - 1) range
             item.Vertex.Origin = DEFAULT_ORIGIN_CENTER;
+        }
+
+        public void DrawGrid(RectangleF bounds, SpriteStyle style, Vector2F cellSize, float rotation, Vector2F origin, ITexture2D cellTexture = null, IMaterial material = null, uint arraySlice = 0)
+        {
+            RectangleF source = cellTexture != null ? new RectangleF(0, 0, cellTexture.Width, cellTexture.Height) : RectangleF.Empty;
+            ref SpriteItem item = ref DrawInternal(cellTexture,
+                source,
+                bounds.TopLeft,
+                bounds.Size,
+                ref style,
+                rotation,
+                origin,
+                material,
+                SpriteFormat.Grid,
+                arraySlice);
+
+            float cellIncX = bounds.Size.X / cellSize.X;
+            float cellIncY = bounds.Size.Y / cellSize.Y;
+            item.Vertex.Data.D1 = cellIncX / bounds.Size.X;
+            item.Vertex.Data.D2 = cellIncY / bounds.Size.Y;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>

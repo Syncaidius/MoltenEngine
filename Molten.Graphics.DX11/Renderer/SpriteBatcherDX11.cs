@@ -31,6 +31,7 @@ namespace Molten.Graphics
         Material _matDefaultMS;
         Material _matDefaultNoTexture;
         Material _matLine;
+        Material _matGrid;
         Material _matCircle;
         Material _matCircleNoTexture;
         Material _matTriangle;
@@ -59,6 +60,7 @@ namespace Molten.Graphics
             _matCircle = resultV2[ShaderClassType.Material, "circle"] as Material;
             _matCircleNoTexture = resultV2[ShaderClassType.Material, "circle-no-texture"] as Material;
             _matLine = resultV2[ShaderClassType.Material, "line"] as Material;
+            _matGrid = resultV2[ShaderClassType.Material, "grid"] as Material;
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite.mfx");
             _matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
@@ -67,12 +69,13 @@ namespace Molten.Graphics
             ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_sdf.mfx");
             _matMsdf = resultSdf[ShaderClassType.Material, "sprite-msdf"] as Material;
 
-            _checkers = new Func<DeviceContext, Range, ObjectRenderData, Material>[5];
+            _checkers = new Func<DeviceContext, Range, ObjectRenderData, Material>[6];
             _checkers[(int)SpriteFormat.Sprite] = CheckSpriteRange;
             _checkers[(int)SpriteFormat.MSDF] = CheckMsdfRange;
             _checkers[(int)SpriteFormat.Line] = CheckLineRange;
             _checkers[(int)SpriteFormat.Triangle] = CheckTriangleRange;
             _checkers[(int)SpriteFormat.Ellipse] = CheckEllipseRange;
+            _checkers[(int)SpriteFormat.Grid] = CheckGridRange;
         }
 
         internal unsafe void Flush(DeviceContext context, RenderCamera camera, ObjectRenderData data)
@@ -157,7 +160,8 @@ namespace Molten.Graphics
                 if (range.Format != SpriteFormat.Sprite && 
                     range.Format != SpriteFormat.MSDF && 
                     range.Format != SpriteFormat.Ellipse &&
-                    range.Format != SpriteFormat.Line)
+                    range.Format != SpriteFormat.Line &&
+                    range.Format != SpriteFormat.Grid)
                     continue;
 
                 Material mat = (range.Material as Material) ?? _checkers[(int)range.Format](context, range, data);
@@ -227,11 +231,17 @@ namespace Molten.Graphics
             return range.Texture != null ? _matCircle : _matCircleNoTexture;
         }
 
+        private Material CheckGridRange(DeviceContext context, Range range, ObjectRenderData data)
+        {
+            return _matGrid; // range.Texture != null ? _matCircle : _matCircleNoTexture;
+        }
+
         public override void Dispose()
         {
             _matDefault.Dispose();
             _matDefaultNoTexture.Dispose();
             _matMsdf.Dispose();
+            _matGrid.Dispose();
             _matLine.Dispose();
             _matCircle.Dispose();
             _matCircleNoTexture.Dispose();
