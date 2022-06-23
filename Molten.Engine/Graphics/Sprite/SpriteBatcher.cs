@@ -29,7 +29,6 @@ namespace Molten.Graphics
             public ITexture2D Texture;
             public IMaterial Material;
             public int ClipID;
-            public bool IsOutline;
         }
 
         protected Rectangle[] Clips;
@@ -346,7 +345,7 @@ namespace Molten.Graphics
             item.Vertex.Color2 = color2;
             item.Vertex.Color = color1;
             item.Vertex.Data.BorderThickness = new Vector2F(thickness) / size; // Convert to UV coordinate system (0 - 1) range
-            item.Vertex.Origin = DEFAULT_ORIGIN_CENTER - new Vector2F(0, item.Vertex.Data.BorderThickness.X);
+            item.Vertex.Origin = DEFAULT_ORIGIN_CENTER;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -367,8 +366,7 @@ namespace Molten.Graphics
                 Vector2F.Zero,
                 material,
                 SpriteFormat.Sprite,
-                arraySlice, 
-                false);
+                arraySlice);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -379,7 +377,7 @@ namespace Molten.Graphics
         public void Draw(RectangleF destination, ref SpriteStyle style, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            DrawInternal(texture, src, destination.TopLeft, destination.Size, ref style, 0, Vector2F.Zero, material, SpriteFormat.Sprite, arraySlice, false);
+            DrawInternal(texture, src, destination.TopLeft, destination.Size, ref style, 0, Vector2F.Zero, material, SpriteFormat.Sprite, arraySlice);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -391,7 +389,7 @@ namespace Molten.Graphics
         public void Draw(RectangleF destination, ref SpriteStyle style, float rotation, Vector2F origin, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            DrawInternal(texture, src, destination.TopLeft, destination.Size, ref style, rotation, origin, material, SpriteFormat.Sprite, arraySlice, false);
+            DrawInternal(texture, src, destination.TopLeft, destination.Size, ref style, rotation, origin, material, SpriteFormat.Sprite, arraySlice);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -401,7 +399,7 @@ namespace Molten.Graphics
         public void Draw(Vector2F position, ref SpriteStyle style, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            DrawInternal(texture, src, position, new Vector2F(src.Width, src.Height), ref style, 0, Vector2F.Zero, material, SpriteFormat.Sprite, arraySlice, false);
+            DrawInternal(texture, src, position, new Vector2F(src.Width, src.Height), ref style, 0, Vector2F.Zero, material, SpriteFormat.Sprite, arraySlice);
         }
 
         public void Draw(Sprite sprite)
@@ -415,8 +413,7 @@ namespace Molten.Graphics
                 sprite.Origin,
                 sprite.Material,
                 SpriteFormat.Sprite,
-                sprite.Data.ArraySlice,
-                false);
+                sprite.Data.ArraySlice);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -431,7 +428,7 @@ namespace Molten.Graphics
         public void Draw(Vector2F position, ref SpriteStyle style, float rotation, Vector2F origin, ITexture2D texture, IMaterial material = null, float arraySlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            DrawInternal(texture, src, position, new Vector2F(src.Width, src.Height), ref style, rotation, origin, material, SpriteFormat.Sprite, arraySlice, false);
+            DrawInternal(texture, src, position, new Vector2F(src.Width, src.Height), ref style, rotation, origin, material, SpriteFormat.Sprite, arraySlice);
         }
 
         /// <summary>
@@ -457,7 +454,7 @@ namespace Molten.Graphics
             IMaterial material,
             float arraySlice)
         {
-            DrawInternal(texture, source, position, size, ref style, rotation, origin, material, SpriteFormat.Sprite, arraySlice, false);
+            DrawInternal(texture, source, position, size, ref style, rotation, origin, material, SpriteFormat.Sprite, arraySlice);
         }
 
         /// <summary>
@@ -482,14 +479,12 @@ namespace Molten.Graphics
             Vector2F origin,
             IMaterial material,
             SpriteFormat format,
-            float arraySlice,
-            bool outline)
+            float arraySlice)
         {
             ref SpriteItem item = ref GetItem();
             item.Texture = texture;
             item.Material = material;
             item.Format = format;
-            item.IsOutline = outline;
 
             item.Vertex.Position = position;
             item.Vertex.Rotation = rotation;

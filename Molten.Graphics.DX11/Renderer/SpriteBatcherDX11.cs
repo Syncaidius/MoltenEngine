@@ -12,11 +12,10 @@ namespace Molten.Graphics
             public IMaterial Material;
             public SpriteFormat Format;
             public int ClipID;
-            public bool IsOutline;
 
             public override string ToString()
             {
-                return $"Range -- Vertices: {VertexCount} -- Format: {Format} -- Outline: {IsOutline}";
+                return $"Range -- Vertices: {VertexCount} -- Format: {Format}";
             }
         }
 
@@ -34,7 +33,6 @@ namespace Molten.Graphics
         Material _matLine;
         Material _matCircle;
         Material _matCircleNoTexture;
-        Material _matCircleOutline;
         Material _matTriangle;
         Material _matMsdf;
 
@@ -60,7 +58,6 @@ namespace Molten.Graphics
             _matDefault = resultV2[ShaderClassType.Material, "sprite-texture"] as Material;
             _matCircle = resultV2[ShaderClassType.Material, "circle"] as Material;
             _matCircleNoTexture = resultV2[ShaderClassType.Material, "circle-no-texture"] as Material;
-            _matCircleOutline = resultV2[ShaderClassType.Material, "circle-outline"] as Material;
             _matLine = resultV2[ShaderClassType.Material, "line"] as Material;
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite.mfx");
@@ -116,8 +113,7 @@ namespace Molten.Graphics
                     if (item.Texture != range.Texture ||
                         item.Material != range.Material ||
                         item.Format != range.Format ||
-                        item.ClipID != range.ClipID ||
-                        item.IsOutline != range.IsOutline)
+                        item.ClipID != range.ClipID)
                     {
                         range.VertexCount = i - start;
                         _curRange++;
@@ -128,7 +124,6 @@ namespace Molten.Graphics
                         range.Texture = item.Texture;
                         range.Material = item.Material;
                         range.ClipID = item.ClipID;
-                        range.IsOutline = item.IsOutline;
                     }
                 }
 
@@ -229,10 +224,7 @@ namespace Molten.Graphics
 
         private Material CheckEllipseRange(DeviceContext context, Range range, ObjectRenderData data)
         {
-            if (range.IsOutline)
-                return _matCircleOutline;
-            else
-                return range.Texture != null ? _matCircle : _matCircleNoTexture;
+            return range.Texture != null ? _matCircle : _matCircleNoTexture;
         }
 
         public override void Dispose()
@@ -243,7 +235,6 @@ namespace Molten.Graphics
             _matLine.Dispose();
             _matCircle.Dispose();
             _matCircleNoTexture.Dispose();
-            _matCircleOutline.Dispose();
             _matTriangle.Dispose();
 
             _bufferData.Dispose();

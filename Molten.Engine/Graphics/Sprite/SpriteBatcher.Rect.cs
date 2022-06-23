@@ -37,7 +37,7 @@ namespace Molten.Graphics
         public void DrawRect(RectangleF destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
         {
             SpriteStyle style = new SpriteStyle(color);
-            DrawInternal(null, RectangleF.Empty, destination.TopLeft, destination.Size, ref style, rotation, origin, material, SpriteFormat.Sprite, 0, false);
+            DrawInternal(null, RectangleF.Empty, destination.TopLeft, destination.Size, ref style, rotation, origin, material, SpriteFormat.Sprite, 0);
         }
 
         /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
@@ -49,7 +49,7 @@ namespace Molten.Graphics
         /// <param name="material">The material to use when rendering the sprite.</param>
         public void DrawRect(RectangleF destination, ref SpriteStyle style, float rotation, Vector2F origin, IMaterial material = null)
         {
-            DrawInternal(null, RectangleF.Empty, destination.TopLeft, destination.Size, ref style, rotation, origin, material, SpriteFormat.Sprite, 0, false);
+            DrawInternal(null, RectangleF.Empty, destination.TopLeft, destination.Size, ref style, rotation, origin, null, SpriteFormat.Sprite, 0);
         }
 
         public void DrawRoundedRect(RectangleF dest, Color color, float radius, IMaterial material = null)
@@ -107,6 +107,7 @@ namespace Molten.Graphics
                 DrawCircleOutline(ref cbr, ref style);
                 DrawCircleOutline(ref cbl, ref style);
 
+                style.Thickness /= 2;
                 DrawLine(new Vector2F(dest.Left, dest.Top + radius), new Vector2F(dest.Left, dest.Bottom - radius), style.Color2, style.Thickness);
                 DrawLine(new Vector2F(dest.Right, dest.Top + radius), new Vector2F(dest.Right, dest.Bottom - radius), style.Color2, style.Thickness);
                 DrawLine(new Vector2F(dest.Left + radius, dest.Top), new Vector2F(dest.Right - radius, dest.Top), style.Color2, style.Thickness);

@@ -53,8 +53,7 @@ namespace Molten.Graphics
                 origin,
                 material,
                 SpriteFormat.Ellipse,
-                arraySlice,
-                false);
+                arraySlice);
             item.Vertex.Data.D1 = e.GetAngleRange();
         }
 
@@ -90,7 +89,7 @@ namespace Molten.Graphics
                 Height = e.RadiusY * 2,
             };
 
-            ref SpriteItem item = ref DrawInternal(null, RectangleF.Empty, bounds.TopLeft, bounds.Size, ref style, rotation, origin, material, SpriteFormat.Ellipse, 0, true);
+            ref SpriteItem item = ref DrawInternal(null, RectangleF.Empty, bounds.TopLeft, bounds.Size, ref style, rotation, origin, material, SpriteFormat.Ellipse, 0);
             item.Vertex.Data.D1 = e.GetAngleRange();
         }
     }

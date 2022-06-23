@@ -86,11 +86,11 @@ namespace Molten.Samples
             // Add 5 colors. The last color will be used when we have more points than colors.
             SpriteStyle[] styles = new SpriteStyle[]
             {
-                new SpriteStyle(Color.Orange, 3),
-                new SpriteStyle(Color.Red, 5),
-                new SpriteStyle(Color.Lime, 7),
-                new SpriteStyle(Color.Blue, 10),
-                new SpriteStyle(Color.Yellow, 15),
+                new SpriteStyle(Color.Orange, Color.Lavender, 3),
+                new SpriteStyle(Color.SkyBlue, Color.Red, 5),
+                new SpriteStyle(Color.Lime, Color.Yellow, 7),
+                new SpriteStyle(Color.Blue, Color.Orange, 10),
+                new SpriteStyle(Color.Red, Color.Lime, 15),
             };
 
             List<Vector2F> triPoints = new List<Vector2F>();
@@ -232,14 +232,6 @@ namespace Molten.Samples
                 Circle cl = new Circle(center, pSize);
 
                 center.Y += (pSize * 3);
-                Ellipse elOutline = el;
-                elOutline.Center.Y = center.Y;
-
-                center.Y += (pSize * 3);
-                Circle clOutline = cl;
-                clOutline.Center.Y = center.Y;
-
-                center.Y += (pSize * 3);
                 RectangleF rect = new RectangleF(center.X - pSize, center.Y - pSize, pSize, pSize);
                 RectangleF rectTextured = rect;
                 rectTextured.Y += (pSize * 3);
@@ -256,19 +248,8 @@ namespace Molten.Samples
                     sb.DrawRect(rect, ref styles[i], _rotAngle, new Vector2F(0.5f));
                     sb.Draw(rectTextured, ref styles[i], _rotAngle, new Vector2F(0.5f), _texPrimitives, null, texArrayID);
 
-                    // ====== OUTLINES ======
-                    float thickness = (i + 1) * 3;
-                    elOutline.EndAngle = angle;
-                    clOutline.EndAngle = angle;
-
-                    sb.DrawEllipseOutline(ref elOutline, ref styles[i], _rotAngle);
-                    sb.DrawCircleOutline(ref clOutline, ref styles[i], _rotAngle);
-
                     cl.Center.X += (pSize * 2) + 5;
                     el.Center.X = cl.Center.X;
-                    elOutline.Center.X = cl.Center.X;
-                    clOutline.Center.X = cl.Center.X;
-
                     rect.X = cl.Center.X - pSize;
                     rectTextured.X = rect.X;
                 }

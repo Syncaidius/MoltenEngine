@@ -122,7 +122,7 @@ float4 PS( PS_IN input ) : SV_Target
 {
     SpriteData sd = spriteData[input.id];
 
-    float isBorder = 0; //isRectBorder(input.uvLocal, sd.thickness);
+    float isBorder = isRectBorder(input.uvLocal, sd.thickness);
 
 	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv) * sd.col;
 	return (col * (1 - isBorder)) + (sd.col2 * isBorder);
@@ -139,39 +139,8 @@ float4 PS_Circle(PS_IN input) : SV_Target
 {   
     // Data.x (D1) = Angle range (Radians)
 
-    float2 d = input.uvLocal - 0.5;
-    float rad = -PI + spriteData[input.id].data.x;
-    if(rad < atan2(d.y, d.x))
-        discard;
-
-    float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
-    float step = 1 - smoothstep(0.97, 1, (dist / 0.5));
-   	float4 sampCol = mapDiffuse.Sample(diffuseSampler, input.uv);
-    float4 finalCol = sampCol * spriteData[input.id].col;
-	return float4(finalCol.rgb, finalCol.a * step);
-}
-
-float4 PS_Circle_NoTex(PS_IN input) : SV_Target
-{   
-    // Data.x (D1) = Angle range (Radians)
-
     float4 col = spriteData[input.id].col;
-
-    float2 d = input.uvLocal - 0.5;
-    float rad = -PI + spriteData[input.id].data.x;
-    if(rad < atan2(d.y, d.x))
-        discard;
-
-    float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
-    float step = 1 - smoothstep(0.97, 1, (dist / 0.5));
-	return float4(col.rgb, col.a * step);
-}
-
-float4 PS_Circle_Outline(PS_IN input) : SV_Target
-{       
-    // Data.x (D1) = Angle range (Radians)
-
-    float4 col = spriteData[input.id].col;
+    float4 col2 = spriteData[input.id].col2;
 
     float2 d = input.uvLocal - 0.5;
     float rad = -PI + spriteData[input.id].data.x;
@@ -179,14 +148,54 @@ float4 PS_Circle_Outline(PS_IN input) : SV_Target
         discard;
 
     float thickness = spriteData[input.id].thickness.x;
+    float halfThick = thickness / 2;
+    float thickCenter = 0.5 - halfThick;
+    float thickStart = thickCenter - halfThick;
+    float thickEnd = thickCenter + halfThick;
 
     float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
+    float innerBorder = smoothstep(thickStart, thickCenter, dist);
+    float outerBorder = min(0.5, 0.5 - smoothstep(thickCenter, thickEnd, dist)) / 0.5;
+    float border = step(thickStart, innerBorder) * step(outerBorder, thickEnd);
+    float isBorder = step(thickCenter, dist);
 
-    float step = 1 - smoothstep(0.97 - thickness, 1 - thickness, (dist / 0.5));
-    float stepBorder = smoothstep(0.97, 1, (dist / 0.5));
+    float inner = 1 - smoothstep(0.97, 1, (dist / 0.5));
 
-    float4 c = float4(col.rgb, col.a * step) + float4(col.rgb, col.a * stepBorder);
-	return float4(c.rgb, 1.0 - c.a);
+    float4 sampCol = mapDiffuse.Sample(diffuseSampler, input.uv);
+    float4 finalCol = sampCol * col;
+    float4 borderCol = float4(col2.rgb, col2.a * innerBorder + (border * outerBorder));
+
+    return (float4(finalCol.rgb, finalCol.a * inner ) * (1-isBorder)) + (borderCol * isBorder);  
+}
+
+float4 PS_Circle_NoTex(PS_IN input) : SV_Target
+{       
+    // Data.x (D1) = Angle range (Radians)
+
+    float4 col = spriteData[input.id].col;
+    float4 col2 = spriteData[input.id].col2;
+
+    float2 d = input.uvLocal - 0.5;
+    float rad = -PI + spriteData[input.id].data.x;
+    if(rad < atan2(d.y, d.x))
+        discard;
+
+    float thickness = spriteData[input.id].thickness.x;
+    float halfThick = thickness / 2;
+    float thickCenter = 0.5 - halfThick;
+    float thickStart = thickCenter - halfThick;
+    float thickEnd = thickCenter + halfThick;
+
+    float dist = length(distance(input.uvLocal, QUAD_CENTER_UV)); // Distance from quad center (0.5, 0.5)
+    float innerBorder = smoothstep(thickStart, thickCenter, dist);
+    float outerBorder = min(0.5, 0.5 - smoothstep(thickCenter, thickEnd, dist)) / 0.5;
+    float border = step(thickStart, innerBorder) * step(outerBorder, thickEnd);
+    float isBorder = step(thickCenter, dist);
+
+    float inner = 1 - smoothstep(0.97, 1, (dist / 0.5));
+
+    float4 borderCol = float4(col2.rgb, col2.a * innerBorder + (border * outerBorder));
+    return (float4(col.rgb, col.a * inner ) * (1-isBorder)) + (borderCol * isBorder);    
 }
 
 
