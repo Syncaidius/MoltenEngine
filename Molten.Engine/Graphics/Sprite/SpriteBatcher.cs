@@ -7,6 +7,23 @@ namespace Molten.Graphics
     /// </summary>
     public abstract partial class SpriteBatcher : IDisposable
     {
+        protected delegate void FlushRangeCallback(uint rangeCount, uint numVerticesInBuffer);
+
+        protected class SpriteRange
+        {
+            public uint BufferOffset;
+            public uint VertexCount;
+            public ITexture2D Texture;
+            public IMaterial Material;
+            public SpriteFormat Format;
+            public int ClipID;
+
+            public override string ToString()
+            {
+                return $"Range -- Vertices: {VertexCount} -- Format: {Format}";
+            }
+        }
+
         static Vector2F DEFAULT_ORIGIN_CENTER = new Vector2F(0.5f);
 
         protected enum SpriteFormat
@@ -35,15 +52,25 @@ namespace Molten.Graphics
 
         protected Rectangle[] Clips;
         protected SpriteItem[] Sprites;
+        protected SpriteRange[] Ranges;
+        protected SpriteGpuData[] Vertices;
         protected uint NextID;
 
         Color[] _singleColorList;
         int _curClipID;
         SpriteStyle _style;
+        uint _curRange;
 
-        public SpriteBatcher(uint initialCapacity)
+        public SpriteBatcher(uint capacity)
         {
-            Sprites = new SpriteItem[initialCapacity];
+            Capacity = capacity;
+            Vertices = new SpriteGpuData[capacity];
+            Sprites = new SpriteItem[capacity];
+            Ranges = new SpriteRange[capacity]; // Worst-case, we can expect the number of ranges to equal the capacity.
+
+            for (uint i = 0; i < Ranges.Length; i++)
+                Ranges[i] = new SpriteRange();
+
             Clips = new Rectangle[256];
             _singleColorList = new Color[1];
             _style = new SpriteStyle()
@@ -319,6 +346,67 @@ namespace Molten.Graphics
             return ref item;
         }
 
+        protected void ProcessBatches(FlushRangeCallback flushCallback)
+        {
+            SpriteRange range;
+
+            // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.            
+            uint i = 0;
+            while (i < NextID)
+            {
+                // Reset vertex array pointer and ranges, so we can prepare the next batch of vertices.
+                uint remaining = NextID - i;
+                uint end = i + Math.Min(remaining, Capacity);
+                uint start = i;
+
+                _curRange = 0;
+                range = Ranges[_curRange];
+
+                ref SpriteItem item = ref Sprites[i];
+                range.Format = item.Format;
+                range.Texture = item.Texture;
+                range.Material = item.Material;
+                range.ClipID = item.ClipID;
+
+                uint v = 0;
+                for (; i < end; i++)
+                {
+                    item = ref Sprites[i];
+                    Vertices[v++] = item.Vertex;
+
+                    // If the current item does not match that of the current range, start a new range.
+                    if (item.Texture != range.Texture ||
+                        item.Material != range.Material ||
+                        item.Format != range.Format ||
+                        item.ClipID != range.ClipID)
+                    {
+                        range.VertexCount = i - start;
+                        _curRange++;
+
+                        range = Ranges[_curRange];
+                        start = i;
+                        range.Format = item.Format;
+                        range.Texture = item.Texture;
+                        range.Material = item.Material;
+                        range.ClipID = item.ClipID;
+                    }
+                }
+
+                // Include the last range, if it has any vertices.
+                range.VertexCount = i - start;
+                if (range.VertexCount > 0)
+                    _curRange++;
+
+                if (_curRange > 0)
+                    flushCallback(_curRange, v);
+            }
+
+            // Reset
+            NextID = 0;
+        }
+
         public abstract void Dispose();
+
+        public uint Capacity { get; }
     }
 }
