@@ -8,12 +8,15 @@ namespace Molten.Graphics
 {
     public abstract partial class SpriteBatcher
     {
+        Color[] _singleColorList = new Color[] { Color.White };
+
         /// <summary>Draws connecting lines between each of the provided points.</summary>
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="color">The color of the lines</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        /*public void DrawLinePath(IList<Vector2F> points, float thickness)
+        public void DrawLinePath(IList<Vector2F> points, Color color, float thickness)
         {
+            _singleColorList[0] = color;
             DrawLinePath(points, 0, points.Count, _singleColorList, thickness);
         }
 
@@ -36,7 +39,7 @@ namespace Molten.Graphics
         {
             _singleColorList[0] = color;
             DrawLinePath(points, startIndex, count, _singleColorList, thickness);
-        }*/
+        }
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
         /// <param name="points">The points between which to draw lines.</param>
@@ -46,7 +49,7 @@ namespace Molten.Graphics
         /// <param name="count">The number of points from the point list to draw.</param>
         public void DrawLinePath(IList<Vector2F> points, int startIndex, int count, IList<Color> pointColors, float thickness)
         {
-            /*if (pointColors.Count == 0)
+            if (pointColors.Count == 0)
                 throw new SpriteBatcherException(this, "There must be at least one color available in the pointColors list.");
 
             if (startIndex + count > points.Count)
@@ -68,9 +71,8 @@ namespace Molten.Graphics
                 int last = startIndex + count - 1;
                 int prev = 0;
                 int next = 1;
-                Color lastCol = pointColors[pointColors.Count - 1];
-                Color4 lastCol4 = lastCol.ToColor4();
-                uint spriteID = NextID;
+
+                Vector2F vThickness = new Vector2F(thickness);
 
                 for (int i = startIndex; i < last; i++)
                 {
@@ -82,25 +84,25 @@ namespace Molten.Graphics
                     item.Material = null;
                     item.Format = SpriteFormat.Line;
 
-                    item.Vertex.Position = p1;
-                    item.Vertex.Rotation = thickness;
+                    float dist = Vector2F.Distance(ref p1, ref p2) + 0.5f;
+                    Vector2F dir = Vector2F.Normalize(p2 - p1);
+
+                    Vector2F size = new Vector2F(dist, thickness);
+                    Vector2F pos = (p2 + p1) / 2; // The center of the line will be the mean position of both points.
+
+                    item.Vertex.Position = pos;
+                    item.Vertex.Rotation = (float)Math.Atan2(dir.Y, dir.X);
                     item.Vertex.ArraySlice = 0;
-                    item.Vertex.Size = p2;
-                    item.Vertex.UV = pointColors[next % pointColors.Count].ToVector4();
+                    item.Vertex.Size = size;
+                    item.Vertex.UV = Vector4F.Zero;
                     item.Vertex.Color = pointColors[i % pointColors.Count];
-
-                    // Provide the previous line with the direction of the current line.
-                    if (prev < i)
-                        Sprites[spriteID - 1].Vertex.Origin = p2 - p1;
-
-                    if (next + 1 == last) // If there is no line after the current, use the current line's direction to fill the tangent calculation.
-                        item.Vertex.Origin = p2 - p1;
-
-                    spriteID++;
+                    item.Vertex.Color2 = pointColors[(i + 1) % pointColors.Count];
+                    item.Vertex.Data.Thickness = new Vector2F(thickness) / size; // Convert to UV coordinate system (0 - 1) range
+                    item.Vertex.Origin = DEFAULT_ORIGIN_CENTER;
                     next++;
                     prev = i;
                 }
-            }*/
+            }
         }
 
         /// <summary>
@@ -129,7 +131,7 @@ namespace Molten.Graphics
             item.Material = null;
             item.Format = SpriteFormat.Line;
 
-            float dist = Vector2F.Distance(ref p1, ref p2) + 1;
+            float dist = Vector2F.Distance(ref p1, ref p2) + 0.5f;
             Vector2F dir = Vector2F.Normalize(p2 - p1);
 
             Vector2F size = new Vector2F(dist, _style.Thickness);
@@ -142,7 +144,7 @@ namespace Molten.Graphics
             item.Vertex.UV = Vector4F.Zero;
             item.Vertex.Color = color1;
             item.Vertex.Color2 = color2;
-            item.Vertex.Data.BorderThickness = new Vector2F(thickness) / size; // Convert to UV coordinate system (0 - 1) range
+            item.Vertex.Data.Thickness = new Vector2F(thickness) / size; // Convert to UV coordinate system (0 - 1) range
             item.Vertex.Origin = DEFAULT_ORIGIN_CENTER;
         }
 
@@ -172,7 +174,7 @@ namespace Molten.Graphics
             item.Vertex.UV = Vector4F.Zero;
             item.Vertex.Color2 = _style.SecondaryColor;
             item.Vertex.Color = _style.PrimaryColor;
-            item.Vertex.Data.BorderThickness = new Vector2F(_style.Thickness) / size; // Convert to UV coordinate system (0 - 1) range
+            item.Vertex.Data.Thickness = new Vector2F(_style.Thickness) / size; // Convert to UV coordinate system (0 - 1) range
             item.Vertex.Origin = DEFAULT_ORIGIN_CENTER;
         }
     }

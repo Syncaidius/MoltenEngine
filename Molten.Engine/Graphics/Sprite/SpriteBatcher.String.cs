@@ -62,7 +62,7 @@ namespace Molten.Graphics
                 item.Vertex.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
                 item.Vertex.Color = _style.PrimaryColor;
                 item.Vertex.Color2 = _style.SecondaryColor;
-                item.Vertex.Data.BorderThickness = new Vector2F(_style.Thickness);
+                item.Vertex.Data.Thickness = new Vector2F(_style.Thickness);
                 item.Vertex.Origin = Vector2F.Zero;
 
                 // Increase pos by size of char (along X)

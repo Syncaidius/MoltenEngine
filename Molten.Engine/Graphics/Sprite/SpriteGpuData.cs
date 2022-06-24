@@ -10,7 +10,7 @@ namespace Molten.Graphics
     {
         public struct ExtraData
         {
-            public Vector2F BorderThickness;
+            public Vector2F Thickness;
             public float D1;
             public float D2;
         }

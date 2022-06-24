@@ -9,7 +9,7 @@ namespace Molten.Graphics
     {
         protected delegate void FlushRangeCallback(uint rangeCount, uint numVerticesInBuffer);
 
-        protected class SpriteRange
+        protected struct SpriteRange
         {
             public uint BufferOffset;
             public uint VertexCount;
@@ -56,7 +56,7 @@ namespace Molten.Graphics
         protected SpriteGpuData[] Vertices;
         protected uint NextID;
 
-        Color[] _singleColorList;
+
         int _curClipID;
         SpriteStyle _style;
         uint _curRange;
@@ -68,11 +68,7 @@ namespace Molten.Graphics
             Sprites = new SpriteItem[capacity];
             Ranges = new SpriteRange[capacity]; // Worst-case, we can expect the number of ranges to equal the capacity.
 
-            for (uint i = 0; i < Ranges.Length; i++)
-                Ranges[i] = new SpriteRange();
-
             Clips = new Rectangle[256];
-            _singleColorList = new Color[1];
             _style = new SpriteStyle()
             {
                 PrimaryColor = Color.White,
@@ -262,7 +258,7 @@ namespace Molten.Graphics
 
             item.Vertex.Color = sprite.Style.PrimaryColor;
             item.Vertex.Color2 = sprite.Style.SecondaryColor;
-            item.Vertex.Data.BorderThickness = new Vector2F(sprite.Style.Thickness);
+            item.Vertex.Data.Thickness = new Vector2F(sprite.Style.Thickness);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -341,14 +337,15 @@ namespace Molten.Graphics
             item.Vertex.Color2 = _style.SecondaryColor;
             item.Vertex.Origin = origin;
             item.Vertex.UV = *(Vector4F*)&source; // Source rectangle values are stored in the same layout as we need for UV: left, top, right, bottom.
-            item.Vertex.Data.BorderThickness = new Vector2F(_style.Thickness) / size; // Convert to UV coordinate system (0 - 1) range
+            item.Vertex.Data.Thickness = new Vector2F(_style.Thickness) / size; // Convert to UV coordinate system (0 - 1) range
 
             return ref item;
         }
 
         protected void ProcessBatches(FlushRangeCallback flushCallback)
         {
-            SpriteRange range;
+            SpriteRange t = new SpriteRange();
+            ref SpriteRange range = ref t;
 
             // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.            
             uint i = 0;
@@ -360,7 +357,7 @@ namespace Molten.Graphics
                 uint start = i;
 
                 _curRange = 0;
-                range = Ranges[_curRange];
+                range = ref Ranges[_curRange];
 
                 ref SpriteItem item = ref Sprites[i];
                 range.Format = item.Format;
@@ -383,7 +380,7 @@ namespace Molten.Graphics
                         range.VertexCount = i - start;
                         _curRange++;
 
-                        range = Ranges[_curRange];
+                        range = ref Ranges[_curRange];
                         start = i;
                         range.Format = item.Format;
                         range.Texture = item.Texture;
@@ -407,6 +404,9 @@ namespace Molten.Graphics
 
         public abstract void Dispose();
 
+        /// <summary>
+        /// Gets the capacity of the Spritebatcher.
+        /// </summary>
         public uint Capacity { get; }
     }
 }
