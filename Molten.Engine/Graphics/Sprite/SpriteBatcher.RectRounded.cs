@@ -13,11 +13,6 @@ namespace Molten.Graphics
             DrawRoundedRect(dest, 0, Vector2F.Zero, radius, material);
         }
 
-        public void DrawRoundedRect(RectangleF dest, float radius, IMaterial material = null)
-        {
-            DrawRoundedRect(dest, 0, Vector2F.Zero, radius, material);
-        }
-
         public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, float radius, IMaterial material = null)
         {
             if (radius <= 0)
@@ -46,8 +41,8 @@ namespace Molten.Graphics
             Circle cbr = new Circle(tr, radius, MathHelper.PiHalf, MathHelper.Pi);
             Circle cbl = new Circle(br, radius, MathHelper.Pi, MathHelper.PiHalf * 3);
 
-            SpriteStyle style = _style;
-            SpriteStyle fillStyle = style;
+
+            SpriteStyle fillStyle = userStyle;
             fillStyle.Thickness = 0;
 
             SetStyle(ref fillStyle);
@@ -60,20 +55,26 @@ namespace Molten.Graphics
             DrawRect(b, 0, material);
             DrawRect(c, 0, material);
 
-            if (style.Thickness > 0)
+            if (userStyle.Thickness > 0)
             {
+                SpriteStyle style = userStyle;
+                style.PrimaryColor = Color.Transparent;
+
                 SetStyle(ref style);
                 DrawCircle(ref ctl);
                 DrawCircle(ref ctr);
                 DrawCircle(ref cbr);
                 DrawCircle(ref cbl);
 
-                style.Thickness /= 2; 
+                style.PrimaryColor = style.SecondaryColor;
+                style.Thickness /= 2;
+                float lo = 0.5f * style.Thickness; // Line offset
+
                 SetStyle(ref style);
-                DrawLine(new Vector2F(dest.Left, dest.Top + radius), new Vector2F(dest.Left, dest.Bottom - radius));
-                DrawLine(new Vector2F(dest.Right, dest.Top + radius), new Vector2F(dest.Right, dest.Bottom - radius));
-                DrawLine(new Vector2F(dest.Left + radius, dest.Top), new Vector2F(dest.Right - radius, dest.Top));
-                DrawLine(new Vector2F(dest.Left + radius, dest.Bottom), new Vector2F(dest.Right - radius, dest.Bottom));
+                DrawLine(new Vector2F(dest.Left + lo, dest.Top + radius), new Vector2F(dest.Left + lo, dest.Bottom - radius));
+                DrawLine(new Vector2F(dest.Right - lo, dest.Top + radius), new Vector2F(dest.Right - lo, dest.Bottom - radius));
+                DrawLine(new Vector2F(dest.Left + radius, dest.Top + lo), new Vector2F(dest.Right - radius, dest.Top + lo));
+                DrawLine(new Vector2F(dest.Left + radius, dest.Bottom - lo), new Vector2F(dest.Right - radius, dest.Bottom - lo));
             }
 
             SetStyle(ref userStyle);

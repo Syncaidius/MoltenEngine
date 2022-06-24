@@ -36,8 +36,10 @@ namespace Molten.UI
                     Thickness = BorderThickness,
                 };
 
+                float radiusLimit = Math.Min(data.GlobalBounds.Width, data.GlobalBounds.Height) / 2;
+                float radius = Math.Min(25, radiusLimit);
                 sb.SetStyle(ref style);
-                sb.DrawRoundedRect(data.RenderBounds, 15);
+                sb.DrawRoundedRect(data.RenderBounds, 0, Vector2F.Zero, radius);
             }
         }
     }
