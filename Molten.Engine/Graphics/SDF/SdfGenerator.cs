@@ -106,10 +106,10 @@ namespace Molten.Graphics.SDF
             switch (param)
             {
                 case 0:
-                    edge.p[1] += amount * (dir + Math.Sign(h) * Math.Sqrt(Math.Abs(h)) * normal);
+                    edge.P[1] += amount * (dir + Math.Sign(h) * Math.Sqrt(Math.Abs(h)) * normal);
                     break;
                 case 1:
-                    edge.p[2] -= amount * (dir - Math.Sign(h) * Math.Sqrt(Math.Abs(h)) * normal);
+                    edge.P[2] -= amount * (dir - Math.Sign(h) * Math.Sqrt(Math.Abs(h)) * normal);
                     break;
             }
         }

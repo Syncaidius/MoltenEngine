@@ -16,7 +16,7 @@ namespace Molten
             /// <para>Index 2 is edge control point 1 (quadratic edge).</para>
             /// <para>Index 3 is edge control point 2 (cubic edge).</para>
             /// </summary>
-            public Vector2D[] p { get; protected init; }
+            public Vector2D[] P { get; protected init; }
 
             public EdgeColor Color;
 

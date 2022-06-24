@@ -84,7 +84,7 @@ namespace Molten.Graphics
                     item.Material = null;
                     item.Format = SpriteFormat.Line;
 
-                    float dist = Vector2F.Distance(ref p1, ref p2) + 0.5f;
+                    float dist = Vector2F.Distance(ref p1, ref p2);
                     Vector2F dir = Vector2F.Normalize(p2 - p1);
 
                     Vector2F size = new Vector2F(dist, thickness);
@@ -97,7 +97,7 @@ namespace Molten.Graphics
                     item.Vertex.UV = Vector4F.Zero;
                     item.Vertex.Color = pointColors[i % pointColors.Count];
                     item.Vertex.Color2 = pointColors[(i + 1) % pointColors.Count];
-                    item.Vertex.Data.Thickness = new Vector2F(thickness) / size; // Convert to UV coordinate system (0 - 1) range
+                    item.Vertex.Data.Thickness = vThickness / size; // Convert to UV coordinate system (0 - 1) range
                     item.Vertex.Origin = DEFAULT_ORIGIN_CENTER;
                     next++;
                     prev = i;
@@ -131,10 +131,10 @@ namespace Molten.Graphics
             item.Material = null;
             item.Format = SpriteFormat.Line;
 
-            float dist = Vector2F.Distance(ref p1, ref p2) + 0.5f;
+            float dist = Vector2F.Distance(ref p1, ref p2);
             Vector2F dir = Vector2F.Normalize(p2 - p1);
 
-            Vector2F size = new Vector2F(dist, _style.Thickness);
+            Vector2F size = new Vector2F(dist, thickness);
             Vector2F pos = (p2 + p1) / 2; // The center of the line will be the mean position of both points.
 
             item.Vertex.Position = pos;

@@ -104,7 +104,7 @@ namespace Molten
 
                     if (i == 0)
                     {
-                        bool r = Contains(e.p[0], edgeResolution);
+                        bool r = Contains(e.P[0], edgeResolution);
                         contains = r && contains;
                         intersects = r || intersects;
                     }
@@ -124,7 +124,7 @@ namespace Molten
 
                     if (i != Edges.Count - 1)
                     {
-                        bool rl = Contains(e.p[0], edgeResolution);
+                        bool rl = Contains(e.P[0], edgeResolution);
                         contains = rl && contains;
                         intersects = rl || intersects;
                     }

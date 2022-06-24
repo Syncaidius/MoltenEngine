@@ -14,7 +14,6 @@ namespace Molten.Samples
 
         FontFile _fontFile;
         TextFont _font2Test;
-        char _c;
 
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
@@ -23,8 +22,6 @@ namespace Molten.Samples
         RectangleF _fontBounds;
         float _scale = 0.3f;
         List<Vector2F> _glyphTriPoints;
-        List<List<Vector2F>> _linePoints;
-        List<List<Vector2F>> _holePoints;
         List<Color> _colors;
         Vector2F _charOffset = new Vector2F(300, 300);
 
@@ -106,7 +103,8 @@ namespace Molten.Samples
                 sb.SetStyle(ref style);
                 sb.DrawRect(_glyphBounds);
 
-                style.PrimaryColor = Color.Pink;
+                style.PrimaryColor = Color.Transparent;
+                style.SecondaryColor = Color.Pink;
                 sb.SetStyle(ref style);
                 sb.DrawRect(_fontBounds);
 
@@ -127,18 +125,7 @@ namespace Molten.Samples
                 }
 
                 sb.DrawTriangleList(_glyphTriPoints, _colors);
-
-                /*if (_linePoints != null)
-                {
-                    for (int i = 0; i < _linePoints.Count; i++)
-                        sb.DrawLinePath(_linePoints[i], Color.Red, 2);
-                }
-
-                if (_holePoints != null)
-                {
-                    for (int i = 0; i < _holePoints.Count; i++)
-                        sb.DrawLinePath(_holePoints[i], Color.SkyBlue, 2);
-                }*/
+                sb.DrawShapeOutline(_shape, Color.Red, Color.SkyBlue, 2);
 
                 Rectangle clickRect;
                 style = new SpriteStyle(_clickColor);
@@ -159,17 +146,19 @@ namespace Molten.Samples
 
                 if (_font2Test != null && _font2Test.Source.UnderlyingTexture != null)
                 {
-                    style = SpriteStyle.Default;
-                    sb.SetStyle(ref style);
+                    SpriteStyle boundsStyle = new SpriteStyle(Color.Transparent, Color.Grey, 2);
+                    sb.SetStyle(ref boundsStyle);
 
                     Vector2F pos = new Vector2F(800, 65);
                     Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, 512, 512);
-                    sb.Draw(texBounds, _font2Test.Source.UnderlyingTexture);
+                    sb.Draw(texBounds, Color.White, _font2Test.Source.UnderlyingTexture);
 
                     style.PrimaryColor = Color.Red;
                     style.Thickness = 1;
 
+                    sb.SetStyle(ref boundsStyle);
                     sb.DrawRect(texBounds);
+
                     pos.Y += 517;
                     sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
                     pos.Y += _font2Test.LineSpacing;
@@ -188,25 +177,6 @@ namespace Molten.Samples
              _shape = glyph.CreateShape();
             _shape.ScaleAndOffset(_charOffset, _scale);
 
-            // Add 5 colors. The last color will be used when we have more points than colors.
-            _linePoints = new List<List<Vector2F>>();
-            _holePoints = new List<List<Vector2F>>();
-
-            // Draw outline
-            foreach(Shape.Contour c in _shape.Contours)
-            {
-                List<TriPoint> edgePoints = c.GetEdgePoints(curveResolution);
-                List<Vector2F> points = new List<Vector2F>();
-
-                for (int j = 0; j < edgePoints.Count; j++)
-                    points.Add((Vector2F)edgePoints[j]);
-
-                if (c.GetWinding() < 1)
-                    _holePoints.Add(points);
-                else
-                    _linePoints.Add(points);
-            }
-
             _glyphBounds = glyph.Bounds;
             _glyphBounds.X *= _scale;
             _glyphBounds.Y *= _scale;
@@ -215,7 +185,6 @@ namespace Molten.Samples
             _glyphBounds.X += _charOffset.X;
             _glyphBounds.Y += _charOffset.Y;
             _glyphTriPoints = new List<Vector2F>();
-            _c = glyphChar;
 
             _shape.Triangulate(_glyphTriPoints, CHAR_CURVE_RESOLUTION);
         }

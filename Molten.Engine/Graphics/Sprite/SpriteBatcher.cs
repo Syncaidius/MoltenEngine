@@ -195,6 +195,50 @@ namespace Molten.Graphics
         /// <param name="texture"></param>
         /// <param name="source"></param>
         /// <param name="destination"></param>
+        /// <param name="color">Sets the color of the sprite. This overrides <see cref="SpriteStyle.PrimaryColor"/> of the active <see cref="SpriteStyle"/>.</param>
+        /// <param name="material"></param>
+        /// <param name="arraySlice"></param>
+        public void Draw(RectangleF destination, Color color, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
+        {
+            ref SpriteItem item = ref DrawInternal(texture,
+                texture != null ? new RectangleF(0,0,texture.Width, texture.Height) : RectangleF.Empty,
+                destination.TopLeft,
+                destination.Size,
+                0,
+                Vector2F.Zero,
+                material,
+                SpriteFormat.Sprite,
+                arraySlice);
+
+            item.Vertex.Color = color;
+        }
+
+        /// <summary>Adds a sprite to the batch.</summary>
+        /// <param name="texture"></param>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        /// <param name="color">Sets the color of the sprite. This overrides <see cref="SpriteStyle.PrimaryColor"/> of the active <see cref="SpriteStyle"/>.</param>
+        /// <param name="material"></param>
+        /// <param name="arraySlice"></param>
+        public void Draw(RectangleF source, RectangleF destination, Color color, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
+        {
+            ref SpriteItem item = ref DrawInternal(texture,
+                source,
+                destination.TopLeft,
+                destination.Size,
+                0,
+                Vector2F.Zero,
+                material,
+                SpriteFormat.Sprite,
+                arraySlice);
+
+            item.Vertex.Color = color;
+        }
+
+        /// <summary>Adds a sprite to the batch.</summary>
+        /// <param name="texture"></param>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
         /// <param name="color"></param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
