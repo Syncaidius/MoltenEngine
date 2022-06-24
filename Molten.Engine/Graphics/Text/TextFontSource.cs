@@ -149,11 +149,12 @@ namespace Molten.Graphics
         private void OnDraw(SpriteBatcher sb)
         {
             SpriteStyle style = SpriteStyle.Default;
+            sb.SetStyle(ref style);
 
             while (_pendingGlyphs.TryDequeue(out ushort gIndex))
             {
                 CachedGlyph cache = _glyphCache[gIndex];
-                sb.Draw(cache.Location, ref style, cache.GlyphTex);
+                sb.Draw(cache.Location, cache.GlyphTex);
             }
 
             _renderData.IsVisible = false;

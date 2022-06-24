@@ -28,14 +28,16 @@ namespace Molten.UI
 
             public void Render(SpriteBatcher sb, UIRenderData data)
             {
+                // TODO replace properties with this
                 SpriteStyle style = new SpriteStyle()
                 {
-                    Color = BackgroundColor,
-                    Color2 = BorderColor,
+                    PrimaryColor = BackgroundColor,
+                    SecondaryColor = BorderColor,
                     Thickness = BorderThickness,
                 };
 
-                sb.DrawRoundedRect(data.RenderBounds, ref style, 15);
+                sb.SetStyle(ref style);
+                sb.DrawRoundedRect(data.RenderBounds, 15);
             }
         }
     }

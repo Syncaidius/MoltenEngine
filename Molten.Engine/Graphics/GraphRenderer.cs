@@ -68,7 +68,8 @@
             };
 
             SpriteStyle style = SpriteStyle.Default;
-            style.Color = BackgroundColor;
+            style.PrimaryColor = BackgroundColor;
+            sb.SetStyle(ref style);
 
             _interlocker.Lock(() =>
             {
@@ -82,12 +83,12 @@
                     };
                 }
 
-                sb.DrawRect(_bounds, ref style);
+                sb.DrawRect(_bounds);
 
                 float averageLineY = plotArea.Bottom - (float)(pixelScale.Y * average);
                 sb.DrawLine(new Vector2F(plotArea.Left, averageLineY), new Vector2F(plotArea.Right, averageLineY), AverageLineColor, 1);
-                if (_populated > 1)
-                    sb.DrawLinePath(_points, 0, _populated, LineColor, 1);
+                //if (_populated > 1)
+                //    sb.DrawLinePath(_points, 0, _populated, LineColor, 1);
 
             });
         }

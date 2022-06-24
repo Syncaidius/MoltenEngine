@@ -198,8 +198,8 @@ namespace Molten.Samples
 
                 _rectStyles[i] = new SpriteStyle()
                 {
-                    Color = rCol,
-                    Color2 = rOutlineCol,
+                    PrimaryColor = rCol,
+                    SecondaryColor = rOutlineCol,
                     Thickness = Rng.Next(0, 6)
                 };
             }
@@ -208,19 +208,23 @@ namespace Molten.Samples
             com.RenderCallback = (sb) =>
             {
                 for (int i = 0; i < _rects.Length; i++)
-                    sb.DrawRect(_rects[i], ref _rectStyles[i], 0, Vector2F.Zero);
+                {
+                    sb.SetStyle(ref _rectStyles[i]);
+                    sb.DrawRect(_rects[i], 0, Vector2F.Zero);
+                }
 
                 sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.Red, 2);
-                sb.DrawLine(new Vector2F(400), new Vector2F(650, 250), Color.Red, Color.Yellow, 2);
+                sb.DrawLine(new Vector2F(400), new Vector2F(650, 250), Color.Yellow, 2);
 
                 SpriteStyle gridStyle = new SpriteStyle()
                 {
-                    Color = new Color(200,100,0,150),
-                    Color2 = Color.Yellow,
+                    PrimaryColor = new Color(200,100,0,150),
+                    SecondaryColor = Color.Yellow,
                     Thickness = 3,
                 };
 
-                sb.DrawGrid(new Rectangle(1450, 400, 400, 400), ref gridStyle, new Vector2F(20, 20), _rotAngle, new Vector2F(0.5f));
+                sb.SetStyle(ref gridStyle);
+                sb.DrawGrid(new Rectangle(1450, 400, 400, 400), new Vector2F(20, 20), _rotAngle, new Vector2F(0.5f));
 
                 /*sb.DrawLinePath(linePoints, colors, 2);
                 sb.DrawLinePath(circleLinePoints, colors, 4);
@@ -252,10 +256,11 @@ namespace Molten.Samples
                     cl.StartAngle = angle;
                     el.EndAngle = angle;
 
-                    sb.DrawCircle(ref cl, ref styles[i], _rotAngle);
-                    sb.DrawEllipse(ref el, ref styles[i], _rotAngle, _texPrimitives, null, texArrayID);
-                    sb.DrawRect(rect, ref styles[i], _rotAngle, new Vector2F(0.5f));
-                    sb.Draw(rectTextured, ref styles[i], _rotAngle, new Vector2F(0.5f), _texPrimitives, null, texArrayID);
+                    sb.SetStyle(ref styles[i]);
+                    sb.DrawCircle(ref cl, _rotAngle);
+                    sb.DrawEllipse(ref el, _rotAngle, _texPrimitives, null, texArrayID);
+                    sb.DrawRect(rect, _rotAngle, new Vector2F(0.5f));
+                    sb.Draw(rectTextured, _rotAngle, new Vector2F(0.5f), _texPrimitives, null, texArrayID);
 
                     cl.Center.X += (pSize * 2) + 5;
                     el.Center.X = cl.Center.X;
