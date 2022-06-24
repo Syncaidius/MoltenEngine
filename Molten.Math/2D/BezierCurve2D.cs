@@ -52,7 +52,7 @@ namespace Molten
         /// <param name="cp2">Second control point.</param>
         /// <param name="end">End point.</param>
         /// <returns></returns>
-        public static Vector2F CalculateCubic(float t,
+        public static Vector2F GetCubicPoint(float t,
             Vector2F start, Vector2F end, Vector2F cp1, Vector2F cp2)
         {
             float u = 1 - t;
@@ -76,7 +76,7 @@ namespace Molten
         /// <param name="cp2">Second control point.</param>
         /// <param name="end">End point.</param>
         /// <returns></returns>
-        public static Vector2D CalculateCubic(double t,
+        public static Vector2D GetCubicPoint(double t,
             Vector2D start, Vector2D end, Vector2D cp1, Vector2D cp2)
         {
             double u = 1 - t;
@@ -100,7 +100,7 @@ namespace Molten
         /// <param name="cp2">Second control point.</param>
         /// <param name="end">End point.</param>
         /// <returns></returns>
-        public static Vector2F CalculateCubic(float t,
+        public static Vector2F GetCubicPoint(float t,
             BezierCurve2D curve)
         {
             float u = 1 - t;
@@ -123,7 +123,7 @@ namespace Molten
         /// <param name="cp">The control point.</param>
         /// <param name="end">End point.</param>
         /// <returns></returns>
-        public static Vector2F CalculateQuadratic(float t, Vector2F start, Vector2F end, Vector2F cp)
+        public static Vector2F GetQuadraticPoint(float t, Vector2F start, Vector2F end, Vector2F cp)
         {
             Vector2F cp1 = new Vector2F()
             {
@@ -137,7 +137,7 @@ namespace Molten
                 Y = end.Y + ((2f / 3f) * (cp.Y - end.Y)),
             };
 
-            return CalculateCubic(t, start, end, cp1, cp2);
+            return GetCubicPoint(t, start, end, cp1, cp2);
         }
 
         /// <summary>Calculates a point along a 2D quadratic bezier curve.</summary>
@@ -146,7 +146,7 @@ namespace Molten
         /// <param name="cp">The control point.</param>
         /// <param name="end">End point.</param>
         /// <returns></returns>
-        public static Vector2D CalculateQuadratic(double t, Vector2D start, Vector2D end, Vector2D cp)
+        public static Vector2D GetQuadraticPoint(double t, Vector2D start, Vector2D end, Vector2D cp)
         {
             Vector2D cp1 = new Vector2D()
             {
@@ -160,7 +160,7 @@ namespace Molten
                 Y = end.Y + ((2.0 / 3.0) * (cp.Y - end.Y)),
             };
 
-            return CalculateCubic(t, start, end, cp1, cp2);
+            return GetCubicPoint(t, start, end, cp1, cp2);
         }
 
         /// <summary>Calculates a point along a bezier curve.</summary>
@@ -170,7 +170,7 @@ namespace Molten
         /// <param name="endCP">End control point.</param>
         /// <param name="endPoint">End point.</param>
         /// <returns></returns>
-        public static Vector2F CalculateQuadratic(float t,
+        public static Vector2F GetQuadraticPoint(float t,
             BezierCurve2D curve)
         {
             Vector2F cp1 = new Vector2F()
@@ -185,7 +185,7 @@ namespace Molten
                 Y = curve.End.Y + ((2f / 3f) * (curve.ControlPoint1.Y - curve.End.Y)),
             };
 
-            return CalculateCubic(t, curve.Start, cp1, cp2, curve.End);
+            return GetCubicPoint(t, curve.Start, cp1, cp2, curve.End);
         }
     }
 }

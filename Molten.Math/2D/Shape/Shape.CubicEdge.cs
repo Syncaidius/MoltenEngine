@@ -40,7 +40,7 @@ namespace Molten
 
             public override Vector2D PointAlongEdge(double percentage)
             {
-                return BezierCurve2D.CalculateCubic(percentage, Start, End, ControlPoint1, ControlPoint2);
+                return BezierCurve2D.GetCubicPoint(percentage, Start, End, ControlPoint1, ControlPoint2);
             }
 
             public override Vector2D GetDirection(double param)
