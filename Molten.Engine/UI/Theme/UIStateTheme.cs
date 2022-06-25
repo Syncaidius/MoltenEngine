@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.Graphics;
 
 namespace Molten.UI
 {
@@ -23,7 +24,7 @@ namespace Molten.UI
         public float BorderThickness { get; set; } = 4f;
 
         [DataMember]
-        public float CornerRadius { get; set; } = 10f;
+        public RoundedCornerInfo CornerRadius { get; set; } = new RoundedCornerInfo(10f);
 
         /// <summary>
         /// Gets or sets the default size (in spaces) of the a tab character.

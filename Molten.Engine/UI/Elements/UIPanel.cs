@@ -16,7 +16,7 @@ namespace Molten.UI
 
             public Color BackgroundColor;
 
-            public float CornerRadius;
+            public RoundedCornerInfo CornerRadius;
 
             public void ApplyTheme(UITheme theme, UIElementTheme eTheme, UIStateTheme stateTheme)
             {
@@ -37,9 +37,9 @@ namespace Molten.UI
                 };
 
                 float radiusLimit = Math.Min(data.GlobalBounds.Width, data.GlobalBounds.Height) / 2;
-                float radius = Math.Min(25, radiusLimit);
+                RoundedCornerInfo limitedCorners = CornerRadius.Restrict(radiusLimit);
                 sb.SetStyle(ref style);
-                sb.DrawRoundedRect(data.RenderBounds, 0, Vector2F.Zero, radius);
+                sb.DrawRoundedRect(data.RenderBounds, 0, Vector2F.Zero, limitedCorners);
             }
         }
     }

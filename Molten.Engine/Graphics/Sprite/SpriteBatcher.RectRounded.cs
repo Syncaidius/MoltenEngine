@@ -8,11 +8,6 @@ namespace Molten.Graphics
 {
     public abstract partial class SpriteBatcher
     {
-        public void DrawRoundedRect(RectangleF dest, Color color, float radius, IMaterial material = null)
-        {
-            DrawRoundedRect(dest, 0, Vector2F.Zero, radius, material);
-        }
-
         public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, float radius, IMaterial material = null)
         {
             if (radius <= 0)
@@ -43,14 +38,16 @@ namespace Molten.Graphics
 
 
             SpriteStyle fillStyle = userStyle;
+            SpriteStyle circleStyle = userStyle;
             fillStyle.Thickness = 0;
 
-            SetStyle(ref fillStyle);
+            SetStyle(ref circleStyle);
             DrawCircle(ref ctl);
             DrawCircle(ref ctr);
             DrawCircle(ref cbr);
             DrawCircle(ref cbl);
 
+            SetStyle(ref fillStyle);
             DrawRect(t, 0, material);
             DrawRect(b, 0, material);
             DrawRect(c, 0, material);
@@ -61,10 +58,6 @@ namespace Molten.Graphics
                 style.PrimaryColor = Color.Transparent;
 
                 SetStyle(ref style);
-                DrawCircle(ref ctl);
-                DrawCircle(ref ctr);
-                DrawCircle(ref cbr);
-                DrawCircle(ref cbl);
 
                 style.PrimaryColor = style.SecondaryColor;
                 style.Thickness /= 2;
@@ -80,60 +73,140 @@ namespace Molten.Graphics
             SetStyle(ref userStyle);
         }
 
-        /*public void DrawRoundedRect(RectangleF dest, Color color, float rotation, Vector2F origin, RoundedCornerInfo corners, IMaterial material = null)
+        public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, RoundedCornerInfo corners, IMaterial material = null)
         {
             if (!corners.HasRounded())
             {
-                DrawRect(dest, color, rotation, origin, material);
+                DrawRect(dest, rotation, origin, material);
                 return;
             }
 
             if (corners.OneRadius())
             {
-                DrawRoundedRect(dest, color, rotation, origin, corners.TopLeftRadius, material);
+                DrawRoundedRect(dest, rotation, origin, corners.TopLeft, material);
                 return;
             }
 
+            SpriteStyle userStyle = _style;
+
             // TODO add support for rotation and origin
 
-            Vector2F tl = dest.TopLeft + corners.TopLeftRadius;
-            Vector2F tr = dest.TopRight + new Vector2F(-corners.TopRightRadius, corners.TopRightRadius);
-            Vector2F br = dest.BottomRight - corners.BottomRightRadius;
-            Vector2F bl = dest.BottomLeft + new Vector2F(corners.BottomLeftRadius, -corners.BottomLeftRadius);
+            Vector2F tl = dest.TopLeft + corners.TopLeft;
+            Vector2F tr = dest.TopRight + new Vector2F(-corners.TopRight, corners.TopRight);
+            Vector2F br = dest.BottomRight - corners.BottomRight;
+            Vector2F bl = dest.BottomLeft + new Vector2F(corners.BottomLeft, -corners.BottomLeft);
 
-            float topWidth = dest.Width - corners.TopLeftRadius - corners.TopRightRadius;
-            float bottomWidth = dest.Width - corners.BottomLeftRadius - corners.BottomRightRadius;
-            float leftHeight = dest.Height - corners.TopLeftRadius - corners.BottomLeftRadius;
-            float rightHeight = dest.Height - corners.TopRightRadius - corners.BottomRightRadius;
+            float leftHeight = dest.Height - corners.TopLeft - corners.BottomLeft;
+            float rightHeight = dest.Height - corners.TopRight - corners.BottomRight;
 
-            DrawCircle(tl, corners.TopLeftRadius, MathHelper.PiHalf * 3, MathHelper.TwoPi, color);
-            DrawCircle(tr, corners.TopRightRadius, 0, MathHelper.PiHalf, color);
-            DrawCircle(br, corners.BottomRightRadius, MathHelper.PiHalf, MathHelper.Pi, color);
-            DrawCircle(bl, corners.BottomLeftRadius, MathHelper.Pi, MathHelper.PiHalf * 3, color);
+            Circle ctl = new Circle(tl, corners.TopLeft, 0, MathHelper.PiHalf);
+            Circle ctr = new Circle(tr, corners.TopRight, MathHelper.PiHalf, MathHelper.Pi);
+            Circle cbr = new Circle(br, corners.BottomRight, MathHelper.Pi, MathHelper.PiHalf * 3);
+            Circle cbl = new Circle(bl, corners.BottomLeft, MathHelper.PiHalf * 3, MathHelper.TwoPi);
 
-            // Draw left edge
-            if (corners.LeftOneRadius())
+
+            SpriteStyle fillStyle = userStyle;
+            SpriteStyle circleStyle = userStyle;
+            fillStyle.Thickness = 0;
+
+            SetStyle(ref circleStyle);
+            if (corners.TopLeft > 0)
+                DrawCircle(ref ctl);
+
+            if (corners.TopRight > 0)
+                DrawCircle(ref ctr);
+
+            if (corners.BottomRight > 0)
+                DrawCircle(ref cbr);
+
+            if (corners.BottomLeft > 0)
+                DrawCircle(ref cbl);
+
+            SetStyle(ref fillStyle);
+            float leftEdgeWidth = 0;
+            float rightEdgeWidth = 0;
+
+            if (corners.LeftHasRadius())
             {
-                float leftWidth = corners.TopLeftRadius;
-                DrawRect(new RectangleF(dest.X, tl.Y, leftWidth, leftHeight), color, material);
-            }
-            else
-            {
-                if (corners.TopLeftRadius < corners.BottomLeftRadius)
+                if (corners.LeftSameRadius())
                 {
-                    float dif = corners.BottomLeftRadius - corners.TopLeftRadius;
-                    float leftHeight2 = leftHeight + corners.TopLeftRadius;
-                    DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeftRadius, leftHeight), color, material);
-                    DrawRect(new RectangleF(dest.X + corners.TopLeftRadius, dest.Y, dif, leftHeight2), color, material);
+                    DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, dest.Height - (corners.TopLeft * 2)));
+                    leftEdgeWidth = corners.TopLeft;
                 }
                 else
                 {
-                    float dif = corners.TopLeftRadius - corners.BottomLeftRadius;
-                    float leftHeight2 = leftHeight + corners.BottomLeftRadius;
-                    DrawRect(new RectangleF(dest.X, tl.Y, corners.BottomLeftRadius, leftHeight), color, material);
-                    DrawRect(new RectangleF(dest.X + corners.BottomLeftRadius, dest.Y + corners.TopLeftRadius, dif, leftHeight2), color, material);
+
+                    if (corners.TopLeft < corners.BottomLeft)
+                    {
+                        leftEdgeWidth = corners.BottomLeft;
+                        float dif = corners.BottomLeft - corners.TopLeft;
+                        float leftHeight2 = leftHeight + corners.TopLeft;
+                        DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, leftHeight), 0, material);
+                        DrawRect(new RectangleF(dest.X + corners.TopLeft, dest.Y, dif, leftHeight2), 0, material);
+                    }
+                    else
+                    {
+                        leftEdgeWidth = corners.TopLeft;
+                        float dif = corners.TopLeft - corners.BottomLeft;
+                        float leftHeight2 = leftHeight + corners.BottomLeft;
+                        DrawRect(new RectangleF(dest.X, tl.Y, corners.BottomLeft, leftHeight), 0, material);
+                        DrawRect(new RectangleF(dest.X + corners.BottomLeft, dest.Y + corners.TopLeft, dif, leftHeight2), 0, material);
+                    }
                 }
             }
-        }*/
+
+            if (corners.RightHasRadius())
+            {
+                if (corners.RightSameRadius())
+                {
+                    DrawRect(new RectangleF(dest.Right, tl.Y, corners.TopRight, dest.Height - (corners.TopRight * 2)));
+                    rightEdgeWidth = corners.TopRight;
+                }
+                else
+                {
+
+                    if (corners.TopRight < corners.BottomRight)
+                    {
+                        rightEdgeWidth = corners.BottomRight;
+                        float dif = corners.BottomRight - corners.TopRight;
+                        float rightHeight2 = rightHeight + corners.TopRight;
+                        DrawRect(new RectangleF(dest.Right, tl.Y, corners.TopRight, rightHeight), 0, material);
+                        DrawRect(new RectangleF(dest.Right - corners.BottomRight, dest.Y, dif, rightHeight2), 0, material);
+                    }
+                    else
+                    {
+                        rightEdgeWidth = corners.TopRight;
+                        float dif = corners.TopRight - corners.BottomRight;
+                        float rightHeight2 = rightHeight + corners.BottomRight;
+                        DrawRect(new RectangleF(dest.Right - corners.BottomRight, tr.Y, corners.BottomRight, rightHeight), 0, material);
+                        DrawRect(new RectangleF(dest.Right - corners.TopRight, dest.Y + corners.TopRight, dif, rightHeight2), 0, material);
+                    }
+                }
+            }
+
+            // Draw center
+            RectangleF c = new RectangleF(dest.X + leftEdgeWidth, dest.Y, dest.Width - leftEdgeWidth - rightEdgeWidth, dest.Height);
+            DrawRect(c, 0, material);
+
+            if (userStyle.Thickness > 0)
+            {
+                SpriteStyle style = userStyle;
+                style.PrimaryColor = Color.Transparent;
+
+                SetStyle(ref style);
+
+                style.PrimaryColor = style.SecondaryColor;
+                style.Thickness /= 2;
+                float lo = 0.5f * style.Thickness; // Line offset
+
+                SetStyle(ref style);
+                DrawLine(new Vector2F(dest.Left + lo, dest.Top + corners.TopLeft), new Vector2F(dest.Left + lo, dest.Bottom - corners.BottomLeft)); // Left
+                DrawLine(new Vector2F(dest.Right - lo, dest.Top + corners.TopRight), new Vector2F(dest.Right - lo, dest.Bottom - corners.BottomRight)); // Right
+                DrawLine(new Vector2F(dest.Left + corners.TopLeft, dest.Top + lo), new Vector2F(dest.Right - corners.TopRight, dest.Top + lo)); // Top
+                DrawLine(new Vector2F(dest.Left + corners.BottomLeft, dest.Bottom - lo), new Vector2F(dest.Right - corners.BottomRight, dest.Bottom - lo)); // Bottom
+            }
+
+            SetStyle(ref userStyle);
+        }
     }
 }

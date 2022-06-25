@@ -14,8 +14,20 @@ namespace Molten.Graphics
         /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
         public void DrawRect(RectangleF destination, Color color, float rotation = 0, IMaterial material = null)
         {
-            ref SpriteItem item = ref DrawInternal(null, RectangleF.Empty, destination.TopLeft, 
+            ref SpriteItem item = ref DrawInternal(null, RectangleF.Empty, destination.TopLeft,
                 destination.Size, rotation, Vector2F.Zero, material, SpriteFormat.Sprite, 0);
+
+            item.Vertex.Color = color;
+        }
+
+        /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
+        /// <param name="destination">The rectangle defining the draw destination.</param>
+        /// <param name="color">The color of the rectangle. Overrides the <see cref="SpriteStyle.PrimaryColor"/> of the current <see cref="SpriteStyle"/>.</param>
+        /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
+        public void DrawRect(RectangleF destination, Color color, Vector2F origin, float rotation = 0, IMaterial material = null)
+        {
+            ref SpriteItem item = ref DrawInternal(null, RectangleF.Empty, destination.TopLeft, 
+                destination.Size, rotation, origin, material, SpriteFormat.Sprite, 0);
 
             item.Vertex.Color = color;
         }
