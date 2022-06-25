@@ -10,67 +10,7 @@ namespace Molten.Graphics
     {
         public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, float radius, IMaterial material = null)
         {
-            if (radius <= 0)
-            {
-                DrawRect(dest, rotation, origin, material);
-                return;
-            }
-
-            SpriteStyle userStyle = _style;
-
-            // TODO add support for rotation and origin
-
-            Vector2F tl = dest.TopLeft + radius;
-            Vector2F tr = dest.TopRight + new Vector2F(-radius, radius);
-            Vector2F br = dest.BottomRight - radius;
-            Vector2F bl = dest.BottomLeft + new Vector2F(radius, -radius);
-
-            float innerWidth = dest.Width - (radius * 2);
-            float innerHeight = dest.Height - (radius * 2);
-            RectangleF t = new RectangleF(tl.X, dest.Top, innerWidth, radius);
-            RectangleF b = new RectangleF(tl.X, dest.Bottom - radius, innerWidth, radius);
-            RectangleF c = new RectangleF(dest.X, tl.Y, dest.Width, innerHeight);
-
-            Circle ctl = new Circle(bl, radius, MathHelper.PiHalf * 3, MathHelper.TwoPi);
-            Circle ctr = new Circle(tl, radius, 0, MathHelper.PiHalf);
-            Circle cbr = new Circle(tr, radius, MathHelper.PiHalf, MathHelper.Pi);
-            Circle cbl = new Circle(br, radius, MathHelper.Pi, MathHelper.PiHalf * 3);
-
-
-            SpriteStyle fillStyle = userStyle;
-            SpriteStyle circleStyle = userStyle;
-            fillStyle.Thickness = 0;
-
-            SetStyle(ref circleStyle);
-            DrawCircle(ref ctl);
-            DrawCircle(ref ctr);
-            DrawCircle(ref cbr);
-            DrawCircle(ref cbl);
-
-            SetStyle(ref fillStyle);
-            DrawRect(t, 0, material);
-            DrawRect(b, 0, material);
-            DrawRect(c, 0, material);
-
-            if (userStyle.Thickness > 0)
-            {
-                SpriteStyle style = userStyle;
-                style.PrimaryColor = Color.Transparent;
-
-                SetStyle(ref style);
-
-                style.PrimaryColor = style.SecondaryColor;
-                style.Thickness /= 2;
-                float lo = 0.5f * style.Thickness; // Line offset
-
-                SetStyle(ref style);
-                DrawLine(new Vector2F(dest.Left + lo, dest.Top + radius), new Vector2F(dest.Left + lo, dest.Bottom - radius));
-                DrawLine(new Vector2F(dest.Right - lo, dest.Top + radius), new Vector2F(dest.Right - lo, dest.Bottom - radius));
-                DrawLine(new Vector2F(dest.Left + radius, dest.Top + lo), new Vector2F(dest.Right - radius, dest.Top + lo));
-                DrawLine(new Vector2F(dest.Left + radius, dest.Bottom - lo), new Vector2F(dest.Right - radius, dest.Bottom - lo));
-            }
-
-            SetStyle(ref userStyle);
+            DrawRoundedRect(dest, rotation, origin, new RoundedCornerInfo(radius), material);
         }
 
         public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, RoundedCornerInfo corners, IMaterial material = null)
@@ -81,13 +21,10 @@ namespace Molten.Graphics
                 return;
             }
 
-            if (corners.OneRadius())
-            {
-                DrawRoundedRect(dest, rotation, origin, corners.TopLeft, material);
-                return;
-            }
-
             SpriteStyle userStyle = _style;
+            SpriteStyle fillStyle = userStyle;
+            SpriteStyle circleStyle = userStyle;
+            fillStyle.Thickness = 0;
 
             // TODO add support for rotation and origin
 
@@ -96,6 +33,8 @@ namespace Molten.Graphics
             Vector2F br = dest.BottomRight - corners.BottomRight;
             Vector2F bl = dest.BottomLeft + new Vector2F(corners.BottomLeft, -corners.BottomLeft);
 
+            float topWidth = dest.Width - corners.TopLeft - corners.TopRight;
+            float bottomWidth = dest.Width - corners.BottomLeft - corners.BottomRight;
             float leftHeight = dest.Height - corners.TopLeft - corners.BottomLeft;
             float rightHeight = dest.Height - corners.TopRight - corners.BottomRight;
 
@@ -103,11 +42,6 @@ namespace Molten.Graphics
             Circle ctr = new Circle(tr, corners.TopRight, MathHelper.PiHalf, MathHelper.Pi);
             Circle cbr = new Circle(br, corners.BottomRight, MathHelper.Pi, MathHelper.PiHalf * 3);
             Circle cbl = new Circle(bl, corners.BottomLeft, MathHelper.PiHalf * 3, MathHelper.TwoPi);
-
-
-            SpriteStyle fillStyle = userStyle;
-            SpriteStyle circleStyle = userStyle;
-            fillStyle.Thickness = 0;
 
             SetStyle(ref circleStyle);
             if (corners.TopLeft > 0)
@@ -126,6 +60,7 @@ namespace Molten.Graphics
             float leftEdgeWidth = 0;
             float rightEdgeWidth = 0;
 
+            // Draw left edge
             if (corners.LeftHasRadius())
             {
                 if (corners.LeftSameRadius())
@@ -135,7 +70,6 @@ namespace Molten.Graphics
                 }
                 else
                 {
-
                     if (corners.TopLeft < corners.BottomLeft)
                     {
                         leftEdgeWidth = corners.BottomLeft;
@@ -155,11 +89,12 @@ namespace Molten.Graphics
                 }
             }
 
+            // Draw right edge
             if (corners.RightHasRadius())
             {
                 if (corners.RightSameRadius())
                 {
-                    DrawRect(new RectangleF(dest.Right, tl.Y, corners.TopRight, dest.Height - (corners.TopRight * 2)));
+                    DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, dest.Height - (corners.TopRight * 2)));
                     rightEdgeWidth = corners.TopRight;
                 }
                 else
@@ -170,7 +105,7 @@ namespace Molten.Graphics
                         rightEdgeWidth = corners.BottomRight;
                         float dif = corners.BottomRight - corners.TopRight;
                         float rightHeight2 = rightHeight + corners.TopRight;
-                        DrawRect(new RectangleF(dest.Right, tl.Y, corners.TopRight, rightHeight), 0, material);
+                        DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, rightHeight), 0, material);
                         DrawRect(new RectangleF(dest.Right - corners.BottomRight, dest.Y, dif, rightHeight2), 0, material);
                     }
                     else
@@ -199,11 +134,16 @@ namespace Molten.Graphics
                 style.Thickness /= 2;
                 float lo = 0.5f * style.Thickness; // Line offset
 
+                Vector2F l = new Vector2F(dest.Left + lo, dest.Top + corners.TopLeft);
+                Vector2F r = new Vector2F(dest.Right - lo, dest.Top + corners.TopRight);
+                Vector2F t = new Vector2F(dest.Left + corners.TopLeft, dest.Top + lo);
+                Vector2F b = new Vector2F(dest.Left + corners.BottomLeft, dest.Bottom);
+
                 SetStyle(ref style);
-                DrawLine(new Vector2F(dest.Left + lo, dest.Top + corners.TopLeft), new Vector2F(dest.Left + lo, dest.Bottom - corners.BottomLeft)); // Left
-                DrawLine(new Vector2F(dest.Right - lo, dest.Top + corners.TopRight), new Vector2F(dest.Right - lo, dest.Bottom - corners.BottomRight)); // Right
-                DrawLine(new Vector2F(dest.Left + corners.TopLeft, dest.Top + lo), new Vector2F(dest.Right - corners.TopRight, dest.Top + lo)); // Top
-                DrawLine(new Vector2F(dest.Left + corners.BottomLeft, dest.Bottom - lo), new Vector2F(dest.Right - corners.BottomRight, dest.Bottom - lo)); // Bottom
+                DrawLine(l, l + new Vector2F(0, leftHeight)); // Left
+                DrawLine(r, r + new Vector2F(0, rightHeight)); // Right
+                DrawLine(t, t + new Vector2F(topWidth, 0)); // Top
+                DrawLine(b, b + new Vector2F(bottomWidth, 0)); // Bottom
             }
 
             SetStyle(ref userStyle);
