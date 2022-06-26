@@ -274,7 +274,7 @@ namespace Molten.Samples
         {
             base.OnUpdate(time);
 
-            _rotAngle += 0.03f * time.Delta;
+            //_rotAngle += 0.03f * time.Delta;
         }
     }
 }

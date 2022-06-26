@@ -131,13 +131,12 @@ namespace Molten.Graphics
                 SetStyle(ref style);
 
                 style.PrimaryColor = style.SecondaryColor;
-                style.Thickness /= 2;
                 float lo = 0.5f * style.Thickness; // Line offset
 
                 Vector2F l = new Vector2F(dest.Left + lo, dest.Top + corners.TopLeft);
                 Vector2F r = new Vector2F(dest.Right - lo, dest.Top + corners.TopRight);
                 Vector2F t = new Vector2F(dest.Left + corners.TopLeft, dest.Top + lo);
-                Vector2F b = new Vector2F(dest.Left + corners.BottomLeft, dest.Bottom);
+                Vector2F b = new Vector2F(dest.Left + corners.BottomLeft, dest.Bottom - lo);
 
                 SetStyle(ref style);
                 DrawLine(l, l + new Vector2F(0, leftHeight)); // Left

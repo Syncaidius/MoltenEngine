@@ -37,7 +37,7 @@ namespace Molten.UI
                 };
 
                 float radiusLimit = Math.Min(data.GlobalBounds.Width, data.GlobalBounds.Height) / 2;
-                RoundedCornerInfo limitedCorners = new RoundedCornerInfo(10,50,0,0).Restrict(radiusLimit);
+                RoundedCornerInfo limitedCorners = new RoundedCornerInfo(10,50,20,5).Restrict(radiusLimit);
                 sb.SetStyle(ref style);
                 sb.DrawRoundedRect(data.RenderBounds, 0, Vector2F.Zero, limitedCorners);
             }
