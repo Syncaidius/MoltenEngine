@@ -192,8 +192,10 @@ float4 PS_Circle_NoTex(PS_IN input) : SV_Target
 
     float inner = 1 - smoothstep(0.97, 1, (dist / 0.5));
 
-    float4 borderCol = float4(col2.rgb, col2.a * innerBorder + (border * outerBorder));
-    return (float4(col.rgb, col.a * inner ) * (1-isBorder)) + (borderCol * isBorder);    
+    float4 borderCol = float4(col2.rgb, col2.a * outerBorder);
+    float4 innerCol = float4(col.rgb, col.a * inner );
+
+    return lerp(innerCol, borderCol, isBorder);
 }
 
 float4 PS_Line(PS_IN input) : SV_Target
