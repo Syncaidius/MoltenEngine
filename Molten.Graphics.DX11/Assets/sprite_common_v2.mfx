@@ -196,17 +196,10 @@ float4 PS_Circle_NoTex(PS_IN input) : SV_Target
     return (float4(col.rgb, col.a * inner ) * (1-isBorder)) + (borderCol * isBorder);    
 }
 
-
-float distanceToLine(float2 p1, float2 p2, float2 pnt) {
-    float a = p1.y-p2.y;
-    float b = p2.x-p1.x;
-    return abs(a*pnt.x+b*pnt.y+p1.x*p2.y-p2.x*p1.y) / sqrt(a*a+b*b);
-}
-
 float4 PS_Line(PS_IN input) : SV_Target
 {  
-    float dist = distanceToLine(float2(0,0.5), float2(1,0.5), input.uvLocal);
-    float step = 1.0 - smoothstep(0, spriteData[input.id].thickness.y, dist);
+    float dist = abs(input.uvLocal.y - 0.5);
+    float step = 1.0 - smoothstep(0.1, spriteData[input.id].thickness.y, dist);
 
     float4 col1 = spriteData[input.id].col;
     float4 col2 = spriteData[input.id].col2;

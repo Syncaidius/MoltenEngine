@@ -17,7 +17,7 @@ namespace Molten.UI
         public Color BackgroundColor { get; set; } = new Color(0, 109, 155, 200);
 
         [DataMember]
-        public Color BorderColor { get; set; } = new Color(52, 189, 235, 240);
+        public Color BorderColor { get; set; } = new Color(52, 189, 235, 255);
 
 
         [DataMember]

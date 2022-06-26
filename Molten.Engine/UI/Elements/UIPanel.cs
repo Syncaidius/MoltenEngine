@@ -33,7 +33,7 @@ namespace Molten.UI
                 {
                     PrimaryColor = BackgroundColor,
                     SecondaryColor = BorderColor,
-                    Thickness = BorderThickness,
+                    Thickness = 10,
                 };
 
                 float radiusLimit = Math.Min(data.GlobalBounds.Width, data.GlobalBounds.Height) / 2;
