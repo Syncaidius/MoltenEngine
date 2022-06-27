@@ -61,7 +61,7 @@ namespace Molten.Graphics
             float rightEdgeWidth = 0;
 
             // Draw left edge
-            if (corners.LeftHasRadius())
+            /*if (corners.LeftHasRadius())
             {
                 if (corners.LeftSameRadius())
                 {
@@ -121,7 +121,7 @@ namespace Molten.Graphics
 
             // Draw center
             RectangleF c = new RectangleF(dest.X + leftEdgeWidth, dest.Y, dest.Width - leftEdgeWidth - rightEdgeWidth, dest.Height);
-            DrawRect(c, 0, material);
+            DrawRect(c, 0, material);*/
 
             if (userStyle.Thickness > 0)
             {

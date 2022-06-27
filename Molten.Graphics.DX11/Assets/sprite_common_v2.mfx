@@ -153,7 +153,7 @@ float4 PS_Circle(PS_IN input) : SV_Target
     float dist = length(distance(input.uvLocal, QUAD_CENTER_UV));
     float fillStep = 1.0 - smoothstep(0.97, 1.0, (dist / 0.5));
     float4 finalCol = float4(col.rgb, col.a * fillStep);
-    float4 borderCol = float4(col2.rgb, col.a * fillStep);
+    float4 borderCol = float4(col2.rgb, col2.a * fillStep);
 
     float border = step(0.5 - thickness, dist);
 
@@ -177,7 +177,7 @@ float4 PS_Circle_NoTex(PS_IN input) : SV_Target
     float dist = length(distance(input.uvLocal, QUAD_CENTER_UV));
     float fillStep = 1.0 - smoothstep(0.97, 1.0, (dist / 0.5));
     float4 finalCol = float4(col.rgb, col.a * fillStep);
-    float4 borderCol = float4(col2.rgb, col.a * fillStep);
+    float4 borderCol = float4(col2.rgb, col2.a * fillStep);
 
     float border = step(0.5 - thickness, dist);
 
@@ -187,7 +187,7 @@ float4 PS_Circle_NoTex(PS_IN input) : SV_Target
 float4 PS_Line(PS_IN input) : SV_Target
 {  
     float dist = abs(input.uvLocal.y - 0.5);
-    float step = 1.0 - smoothstep(0.1, spriteData[input.id].thickness.y, dist);
+    float step = 1.0 - smoothstep(1, spriteData[input.id].thickness.y, dist);
 
     float4 col1 = spriteData[input.id].col;
     float4 col2 = spriteData[input.id].col2;
