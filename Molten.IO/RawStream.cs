@@ -69,8 +69,7 @@ namespace Molten.IO
         {
             fixed (T* ptrValues = values)
             {
-                T* p = ptrValues;
-                p += offset;
+                T* p = ptrValues + offset;
                 Write(p, numElements);
             }
         }
@@ -79,8 +78,7 @@ namespace Molten.IO
         {
             fixed (byte* ptr = buffer)
             {
-                byte* p = ptr;
-                p += offset;
+                byte* p = ptr + offset;
                 Write(p, (uint)count);
             }
         }
@@ -113,12 +111,8 @@ namespace Molten.IO
         {
             long numBytes = sizeof(T) * count;
 
-            fixed(T* ptr = values)
-            {
-                T* p = ptr;
-                p += startIndex;
-                WriteRange(p, numBytes);
-            }
+            fixed (T* ptr = &values[startIndex])
+                WriteRange(ptr, numBytes);
         }
 
         public void WriteRange(void* ptrData, long numBytes)
@@ -145,12 +139,8 @@ namespace Molten.IO
                 throw new RawStreamException(this, $"Map mode does not allow reading.");
 
             long numBytes = sizeof(T) * count;
-            fixed(T* ptr = destination)
-            {
-                T* p = ptr;
-                p += startIndex;
-                Buffer.MemoryCopy(_ptrData, p, numBytes, numBytes);
-            }
+            fixed(T* ptr = &destination[startIndex])
+                Buffer.MemoryCopy(_ptrData, ptr, numBytes, numBytes);
 
             Position += numBytes;
         }
@@ -183,8 +173,7 @@ namespace Molten.IO
             long numBytes = sizeof(T) * numElements;
             fixed (T* ptrDest = destination)
             {
-                T* p = ptrDest;
-                p += offset;
+                T* p = ptrDest + offset;
                 Buffer.MemoryCopy(_ptrData, p, numBytes, numBytes);
             }
 
@@ -195,8 +184,7 @@ namespace Molten.IO
         {
             fixed(byte* ptrBuffer = buffer)
             {
-                byte* pBuffer = ptrBuffer;
-                pBuffer += offset;
+                byte* pBuffer = ptrBuffer + offset;
                 Buffer.MemoryCopy(_ptrData, pBuffer, count, count);
             }
 
