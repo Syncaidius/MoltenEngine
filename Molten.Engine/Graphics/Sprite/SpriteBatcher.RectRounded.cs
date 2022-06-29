@@ -10,10 +10,10 @@ namespace Molten.Graphics
     {
         public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, float radius, IMaterial material = null)
         {
-            DrawRoundedRect(dest, rotation, origin, new RoundedCornerInfo(radius), material);
+            DrawRoundedRect(dest, rotation, origin, new CornerInfo(radius), material);
         }
 
-        public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, RoundedCornerInfo corners, IMaterial material = null)
+        public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, CornerInfo corners, IMaterial material = null)
         {
             if (!corners.HasRounded())
             {

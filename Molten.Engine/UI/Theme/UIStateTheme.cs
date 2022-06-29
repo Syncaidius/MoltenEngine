@@ -24,7 +24,7 @@ namespace Molten.UI
         public float BorderThickness { get; set; } = 4f;
 
         [DataMember]
-        public RoundedCornerInfo CornerRadius { get; set; } = new RoundedCornerInfo(10f);
+        public CornerInfo CornerRadius { get; set; } = new CornerInfo(10f);
 
         /// <summary>
         /// Gets or sets the default size (in spaces) of the a tab character.

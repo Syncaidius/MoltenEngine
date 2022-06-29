@@ -29,20 +29,19 @@ float median(float r, float g, float b) {
 }
 
 float screenPxRange(float2 uv, float2 texSize) {
-    float2 unitRange = float2(pxRange,pxRange) / textureSize;
+    float2 unitRange = float2(pxRange,pxRange) / texSize;
     float2 screenTexSize = float2(1.0, 1.0) / fwidth(uv);
     return max(0.5*dot(unitRange, screenTexSize), 1.0);
 }
 
-float4 PS_MSDF( PS_IN input ) : SV_Target
+float4 PS_MSDF( PS_IN input) : SV_Target
 {            
-    float4 col = spriteData[input.id].col;
-    float2 texSize = spriteData[input.id].size;
+    SpriteData sd = spriteData[input.id];
+    
     float3 msd = mapDiffuse.Sample(diffuseSampler, input.uv).rgb;
-    float sd = median(msd.r, msd.g, msd.b);
-    float screenPxDistance = screenPxRange(input.uv, texSize)*(sd - 0.5);
+    float s = median(msd.r, msd.g, msd.b);
+    float screenPxDistance = screenPxRange(input.uvLocal, sd.size)*(s - 0.5);
     float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
     
-    return col * opacity;
-    //return lerp(bgColor, input.col, opacity); // For outline (bgColor) mixing with fill color (fgColor).
+    return sd.col * opacity;
 }

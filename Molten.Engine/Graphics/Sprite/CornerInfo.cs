@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public struct RoundedCornerInfo
+    public struct CornerInfo
     {
         public float TopLeft;
 
@@ -16,7 +16,7 @@ namespace Molten.Graphics
 
         public float BottomLeft;
 
-        public RoundedCornerInfo(float tl, float tr, float br, float bl)
+        public CornerInfo(float tl, float tr, float br, float bl)
         {
             TopLeft = tl;
             TopRight = tr;
@@ -24,7 +24,7 @@ namespace Molten.Graphics
             BottomLeft = bl;
         }
 
-        public RoundedCornerInfo(float radius)
+        public CornerInfo(float radius)
         {
             TopLeft = radius;
             TopRight = radius;
@@ -32,9 +32,9 @@ namespace Molten.Graphics
             BottomRight = radius;
         }
 
-        public RoundedCornerInfo Restrict(float max)
+        public CornerInfo Restrict(float max)
         {
-            return new RoundedCornerInfo()
+            return new CornerInfo()
             {
                 TopLeft = TopLeft > max ? max : TopLeft,
                 TopRight = TopRight > max ? max : TopRight,
