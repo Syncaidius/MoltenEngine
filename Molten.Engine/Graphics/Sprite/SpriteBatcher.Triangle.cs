@@ -21,7 +21,7 @@ namespace Molten.Graphics
             item.Material = null;
             item.Format = SpriteFormat.Triangle;
 
-            ref SpriteGpuData data = ref Data[id];
+            ref GpuData data = ref Data[id];
             data.Position = p1;
             data.Rotation = 0; // TODO triangle rotation.
             data.ArraySlice = 0;
@@ -56,7 +56,7 @@ namespace Molten.Graphics
                 item.Material = null;
                 item.Format = SpriteFormat.Triangle;
 
-                ref SpriteGpuData data = ref Data[id];
+                ref GpuData data = ref Data[id];
                 data.Position = points[i];
                 data.Rotation = 0;
                 data.ArraySlice = 0;

@@ -23,11 +23,11 @@ namespace Molten.Graphics
         {
             _buffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicDiscard, 
                 BindFlag.BindShaderResource, 
-                (uint)sizeof(SpriteGpuData) * capacity,
+                (uint)sizeof(GpuData) * capacity,
                 ResourceMiscFlag.ResourceMiscBufferStructured,
                 StagingBufferFlags.None,
-                (uint)sizeof(SpriteGpuData));
-            _bufferData = _buffer.Allocate<SpriteGpuData>(capacity);
+                (uint)sizeof(GpuData));
+            _bufferData = _buffer.Allocate<GpuData>(capacity);
 
             ShaderCompileResult resultV2 = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_v2.mfx");
             _matDefaultNoTexture = resultV2[ShaderClassType.Material, "sprite-no-texture"] as Material;

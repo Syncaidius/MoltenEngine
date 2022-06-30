@@ -20,7 +20,7 @@ namespace Molten.Graphics
         public void DrawEllipse(ref Ellipse e, Color color, float rotation = 0, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF source = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            ref SpriteGpuData item = ref DrawInternal(
+            ref GpuData item = ref DrawInternal(
                 texture,
                 source,
                 e.Center,
@@ -31,7 +31,7 @@ namespace Molten.Graphics
                 SpriteFormat.Ellipse,
                 arraySlice);
 
-            item.Data.D1 = e.GetAngleRange();
+            item.Extra.D3 = e.GetAngleRange();
             item.Color = color;
         }
 
@@ -61,7 +61,7 @@ namespace Molten.Graphics
         public void DrawEllipse(ref Ellipse e, Vector2F origin, float rotation = 0, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF source = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            ref SpriteGpuData item = ref DrawInternal(
+            ref GpuData item = ref DrawInternal(
                 texture,
                 source,
                 e.Center,
@@ -71,7 +71,7 @@ namespace Molten.Graphics
                 material,
                 SpriteFormat.Ellipse,
                 arraySlice);
-            item.Data.D1 = e.GetAngleRange();
+            item.Extra.D3 = e.GetAngleRange();
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Molten.Graphics
         /// <param name="rotation">The rotation angle, in radians.</param>  
         public void DrawCircle(ref Circle c, Color color, float rotation = 0)
         {
-            ref SpriteGpuData data = ref DrawInternal(null, 
+            ref GpuData data = ref DrawInternal(null, 
                 RectangleF.Empty, c.Center, 
                 new Vector2F(c.Radius * 2), 
                 c.StartAngle + rotation, 
@@ -25,7 +25,7 @@ namespace Molten.Graphics
                 SpriteFormat.Ellipse, 
                 0);
 
-            data.Data.D1 = c.GetAngleRange();
+            data.Extra.D3 = c.GetAngleRange();
             data.Color = color;
         }
 
@@ -82,8 +82,8 @@ namespace Molten.Graphics
         /// <param name="texture"></param>
         public void DrawCircle(ref Circle c, Color color, Vector2F origin, float rotation, RectangleF source, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
         {
-            ref SpriteGpuData data = ref DrawInternal(texture, source, c.Center, new Vector2F(c.Radius * 2), c.StartAngle + rotation, origin, null, SpriteFormat.Ellipse, arraySlice);
-            data.Data.D1 = c.GetAngleRange();
+            ref GpuData data = ref DrawInternal(texture, source, c.Center, new Vector2F(c.Radius * 2), c.StartAngle + rotation, origin, null, SpriteFormat.Ellipse, arraySlice);
+            data.Extra.D3 = c.GetAngleRange();
             data.Color = color;
         }
 
@@ -99,8 +99,8 @@ namespace Molten.Graphics
         /// <param name="texture"></param>
         public void DrawCircle(ref Circle c, Vector2F origin, float rotation, RectangleF source, ITexture2D texture = null, IMaterial material = null, float arraySlice = 0)
         {
-            ref SpriteGpuData data = ref DrawInternal(texture, source, c.Center, new Vector2F(c.Radius * 2), c.StartAngle + rotation, origin, null, SpriteFormat.Ellipse, arraySlice);
-            data.Data.D1 = c.GetAngleRange();
+            ref GpuData data = ref DrawInternal(texture, source, c.Center, new Vector2F(c.Radius * 2), c.StartAngle + rotation, origin, null, SpriteFormat.Ellipse, arraySlice);
+            data.Extra.D3 = c.GetAngleRange();
         }
     }
 }

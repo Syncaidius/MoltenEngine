@@ -3,8 +3,7 @@ struct SpriteData
 	float4 uv;
 	float4 col;
 	float4 col2;
-    float2 thickness;
-    float2 data;
+    float4 data;
 
 	float2 pos;
 	float2 size;
@@ -120,9 +119,10 @@ float isRectBorder(float2 uv, float2 thickness)
 
 float4 PS( PS_IN input ) : SV_Target
 {
+    // data.xy (D1 and D2) = Border thickness X and Y
     SpriteData sd = spriteData[input.id];
 
-    float isBorder = isRectBorder(input.uvLocal, sd.thickness);
+    float isBorder = isRectBorder(input.uvLocal, sd.data.xy);
 
 	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv) * sd.col;
 	return (col * (1 - isBorder)) + (sd.col2 * isBorder);
@@ -130,24 +130,27 @@ float4 PS( PS_IN input ) : SV_Target
 
 float4 PS_NoTexture(PS_IN input) : SV_Target
 {
+    // data.xy (D1 and D2) = Border thickness X and Y
+
     SpriteData sd = spriteData[input.id];
-    float isBorder = isRectBorder(input.uvLocal, sd.thickness);
+    float isBorder = isRectBorder(input.uvLocal, sd.data.xy);
 	return (sd.col * (1 - isBorder)) + (sd.col2 * isBorder);
 }
 
 float4 PS_Circle(PS_IN input) : SV_Target
 {   
-    // Data.x (D1) = Angle range (Radians)
+    // Data.xy (D1 and D2) = Border thickness X and Y
+    // Data.x (D3) = Angle range (Radians)
 
     float4 col = spriteData[input.id].col;
     float4 col2 = spriteData[input.id].col2;
 
     float2 d = input.uvLocal - 0.5;
-    float rad = -PI + spriteData[input.id].data.x;
+    float rad = -PI + spriteData[input.id].data.z;
     if(rad < atan2(d.y, d.x))
         discard;
 
-    float thickness = spriteData[input.id].thickness.x;
+    float thickness = spriteData[input.id].data.x;
     col *= mapDiffuse.Sample(diffuseSampler, input.uv);
 
     float dist = length(distance(input.uvLocal, QUAD_CENTER_UV));
@@ -162,17 +165,18 @@ float4 PS_Circle(PS_IN input) : SV_Target
 
 float4 PS_Circle_NoTex(PS_IN input) : SV_Target
 {       
-    // Data.x (D1) = Angle range (Radians)
+    // Data.xy (D1 and D2) = Border thickness X and Y
+    // Data.z (D3) = Angle range (Radians)
 
     float4 col = spriteData[input.id].col;
     float4 col2 = spriteData[input.id].col2;
 
     float2 d = input.uvLocal - 0.5;
-    float rad = -PI + spriteData[input.id].data.x;
+    float rad = -PI + spriteData[input.id].data.z;
     if(rad < atan2(d.y, d.x))
         discard;
 
-    float thickness = spriteData[input.id].thickness.x;
+    float thickness = spriteData[input.id].data.x;
 
     float dist = length(distance(input.uvLocal, QUAD_CENTER_UV));
     float fillStep = 1.0 - smoothstep(0.97, 1.0, (dist / 0.5));
@@ -186,8 +190,10 @@ float4 PS_Circle_NoTex(PS_IN input) : SV_Target
 
 float4 PS_Line(PS_IN input) : SV_Target
 {  
+    // Data.x (D1) = Thickness
+
     float dist = abs(input.uvLocal.y - 0.5);
-    float step = 1.0 - smoothstep(1, spriteData[input.id].thickness.y, dist);
+    float step = 1.0 - smoothstep(1, spriteData[input.id].data.x, dist);
 
     float4 col1 = spriteData[input.id].col;
     float4 col2 = spriteData[input.id].col2;
@@ -202,8 +208,8 @@ float4 PS_Grid( PS_IN input ) : SV_Target
     // Data.y (D2) = Cell increment Y
 
     SpriteData sd = spriteData[input.id];
-    float2 cellSize = sd.data.xy;
-    float thickness = sd.thickness;
+    float2 cellSize = sd.data.zw;
+    float thickness = sd.data.xy;
     float result;
 
     for(float ix = 0.0; ix < 1.0; ix += cellSize.x)

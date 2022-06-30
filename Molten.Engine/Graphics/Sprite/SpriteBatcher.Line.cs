@@ -72,8 +72,6 @@ namespace Molten.Graphics
                 int prev = 0;
                 int next = 1;
 
-                Vector2F vThickness = new Vector2F(thickness);
-
                 for (int i = startIndex; i < last; i++)
                 {
                     p1 = points[i];
@@ -81,7 +79,7 @@ namespace Molten.Graphics
 
                     uint id = GetItemID();
                     ref SpriteItem item = ref Sprites[id];
-                    ref SpriteGpuData data = ref Data[id];
+                    ref GpuData data = ref Data[id];
                     item.Texture = null;
                     item.Material = null;
                     item.Format = SpriteFormat.Line;
@@ -99,7 +97,7 @@ namespace Molten.Graphics
                     data.UV = Vector4F.Zero;
                     data.Color = pointColors[i % pointColors.Count];
                     data.Color2 = pointColors[(i + 1) % pointColors.Count];
-                    data.Data.Thickness = vThickness / size; // Convert to UV coordinate system (0 - 1) range
+                    data.Extra.D1 = thickness / size.Y; // Convert to UV coordinate system (0 - 1) range
                     data.Origin = DEFAULT_ORIGIN_CENTER;
                     next++;
                     prev = i;
@@ -130,7 +128,7 @@ namespace Molten.Graphics
         {
             uint id = GetItemID();
             ref SpriteItem item = ref Sprites[id];
-            ref SpriteGpuData data = ref Data[id];
+            ref GpuData data = ref Data[id];
 
             item.Texture = null;
             item.Material = null;
@@ -149,7 +147,7 @@ namespace Molten.Graphics
             data.UV = Vector4F.Zero;
             data.Color = color1;
             data.Color2 = color2;
-            data.Data.Thickness = new Vector2F(thickness) / size; // Convert to UV coordinate system (0 - 1) range
+            data.Extra.D1 = thickness / size.Y; // Convert to UV coordinate system (0 - 1) range
             data.Origin = DEFAULT_ORIGIN_CENTER;
         }
 
@@ -163,7 +161,7 @@ namespace Molten.Graphics
         {
             uint id = GetItemID();
             ref SpriteItem item = ref Sprites[id];
-            ref SpriteGpuData data = ref Data[id];
+            ref GpuData data = ref Data[id];
 
             item.Texture = null;
             item.Material = null;
@@ -182,7 +180,7 @@ namespace Molten.Graphics
             data.UV = Vector4F.Zero;
             data.Color2 = _style.SecondaryColor;
             data.Color = _style.PrimaryColor;
-            data.Data.Thickness = new Vector2F(_style.Thickness) / size; // Convert to UV coordinate system (0 - 1) range
+            data.Extra.D1 = _style.Thickness / size.Y; // Convert to UV coordinate system (0 - 1) range
             data.Origin = DEFAULT_ORIGIN_CENTER;
         }
     }

@@ -56,7 +56,7 @@ namespace Molten.Graphics
                 item.Material = material;
                 item.Format = SpriteFormat.MSDF;
 
-                ref SpriteGpuData data = ref Data[id];
+                ref GpuData data = ref Data[id];
                 data.Position = new Vector2F(charPos.X, charPos.Y + ((cache.YOffset * font.Scale) * scale.Y));
                 data.Rotation = 0; // TODO 2D text rotation.
                 data.ArraySlice = 0; // TODO SpriteFont array slice support.
@@ -64,8 +64,10 @@ namespace Molten.Graphics
                 data.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
                 data.Color = _style.PrimaryColor;
                 data.Color2 = _style.SecondaryColor;
-                data.Data.Thickness = new Vector2F(_style.Thickness);
                 data.Origin = Vector2F.Zero;
+
+                data.Extra.D1 = _style.Thickness;
+                data.Extra.D2 = _style.Thickness;
 
                 // Increase pos by size of char (along X)
                 charPos.X += (cache.AdvanceWidth * font.Scale) * scale.X;
@@ -96,7 +98,7 @@ namespace Molten.Graphics
                 item.Material = material;
                 item.Format = SpriteFormat.MSDF;
 
-                ref SpriteGpuData data = ref Data[id];
+                ref GpuData data = ref Data[id];
                 data.Position = new Vector2F(charPos.X, charPos.Y + ((cache.YOffset * font.Scale) * scale.Y));
                 data.Rotation = 0; // TODO 2D text rotation.
                 data.ArraySlice = 0; // TODO SpriteFont array slice support.
@@ -104,6 +106,9 @@ namespace Molten.Graphics
                 data.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
                 data.Color = color;
                 data.Origin = Vector2F.Zero;
+
+                data.Extra.D1 = _style.Thickness;
+                data.Extra.D2 = _style.Thickness;
 
                 // Increase pos by size of char (along X)
                 charPos.X += (cache.AdvanceWidth * font.Scale) * scale.X;

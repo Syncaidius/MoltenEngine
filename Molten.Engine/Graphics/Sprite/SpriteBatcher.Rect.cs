@@ -14,7 +14,7 @@ namespace Molten.Graphics
         /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
         public void DrawRect(RectangleF destination, Color color, float rotation = 0, IMaterial material = null)
         {
-            ref SpriteGpuData data = ref DrawInternal(null, RectangleF.Empty, destination.TopLeft,
+            ref GpuData data = ref DrawInternal(null, RectangleF.Empty, destination.TopLeft,
                 destination.Size, rotation, Vector2F.Zero, material, SpriteFormat.Sprite, 0);
 
             data.Color = color;
@@ -26,7 +26,7 @@ namespace Molten.Graphics
         /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
         public void DrawRect(RectangleF destination, Color color, Vector2F origin, float rotation = 0, IMaterial material = null)
         {
-            ref SpriteGpuData data = ref DrawInternal(null, RectangleF.Empty, destination.TopLeft, 
+            ref GpuData data = ref DrawInternal(null, RectangleF.Empty, destination.TopLeft, 
                 destination.Size, rotation, origin, material, SpriteFormat.Sprite, 0);
 
             data.Color = color;
