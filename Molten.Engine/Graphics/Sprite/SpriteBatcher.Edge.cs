@@ -37,12 +37,12 @@ namespace Molten.Graphics
 
         /// <summary>Draws .</summary>
         /// <param name="edge">The edge to draw.</param>
-        public void DrawEdge(Shape.Edge edge, float resolution = 16)
+        public void DrawEdge(Shape.Edge edge, ref SpriteLineStyle style, float resolution = 16)
         {
             // Early exit for linear edges. Always straight.
             if (edge is Shape.LinearEdge)
             {
-                DrawLine((Vector2F)edge.P[0], (Vector2F)edge.P[1]);
+                DrawLine((Vector2F)edge.P[0], (Vector2F)edge.P[1], ref style);
                 return;
             }
 
@@ -55,11 +55,11 @@ namespace Molten.Graphics
                 p1 = p2;
                 p2 = (Vector2F)edge.Point(increment * i);
 
-                DrawLine(p1, p2);                
+                DrawLine(p1, p2, ref style);                
             }
 
             // Draw final line to reach edge.End;
-            DrawLine(p2, (Vector2F)edge.End);
+            DrawLine(p2, (Vector2F)edge.End, ref style);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Molten.Graphics
         /// <param name="curve"></param>
         /// <param name="isCubic">If true, the curve will be drawn as a cubic curve. If false, a quadratic curve will be drawn.</param>
         /// <param name="resolution">The number of points that make up the curve.</param>
-        public void DrawEdge(BezierCurve2D curve, bool isCubic, float resolution = 16)
+        public void DrawEdge(BezierCurve2D curve, ref SpriteLineStyle style, bool isCubic, float resolution = 16)
         {
             float increment = 1f / resolution;
             Vector2F p1;
@@ -81,11 +81,11 @@ namespace Molten.Graphics
                     BezierCurve2D.GetCubicPoint((increment * i), curve) :
                     BezierCurve2D.GetQuadraticPoint((increment * i), curve);
 
-                DrawLine(p1, p2);
+                DrawLine(p1, p2, ref style);
             }
 
             // Draw final line to reach edge.End;
-            DrawLine(p2, curve.End);
+            DrawLine(p2, curve.End, ref style);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Molten.Graphics
                 arraySlice);
 
             item.Extra.D3 = e.GetAngleRange();
-            item.Color = color;
+            item.Color1 = color;
         }
 
         /// <summary>

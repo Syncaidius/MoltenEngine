@@ -26,7 +26,7 @@ namespace Molten.Graphics
                 0);
 
             data.Extra.D3 = c.GetAngleRange();
-            data.Color = color;
+            data.Color1 = color;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Molten.Graphics
         {
             ref GpuData data = ref DrawInternal(texture, source, c.Center, new Vector2F(c.Radius * 2), c.StartAngle + rotation, origin, null, SpriteFormat.Ellipse, arraySlice);
             data.Extra.D3 = c.GetAngleRange();
-            data.Color = color;
+            data.Color1 = color;
         }
 
         /// <summary>

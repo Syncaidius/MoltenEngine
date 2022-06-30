@@ -27,7 +27,7 @@ namespace Molten.Graphics
             data.ArraySlice = 0;
             data.Size = p2;
             data.UV = Vector4F.Zero; // Unused
-            data.Color = color;
+            data.Color1 = color;
             data.Origin = p3;
         }
 
@@ -62,7 +62,7 @@ namespace Molten.Graphics
                 data.ArraySlice = 0;
                 data.Size = points[i + 1];
                 data.UV = Vector4F.Zero; // Unused
-                data.Color = triColors[colID % triColors.Count];
+                data.Color1 = triColors[colID % triColors.Count];
                 data.Origin = points[i + 2];
             }
         }

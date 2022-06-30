@@ -226,7 +226,7 @@ namespace Molten.Graphics
                 SpriteFormat.Sprite,
                 arraySlice);
 
-            item.Color = color;
+            item.Color1 = color;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -248,7 +248,7 @@ namespace Molten.Graphics
                 SpriteFormat.Sprite,
                 arraySlice);
 
-            item.Color = color;
+            item.Color1 = color;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -316,7 +316,7 @@ namespace Molten.Graphics
                 SpriteFormat.Sprite,
                 sprite.Data.ArraySlice);
 
-            item.Color = sprite.Style.PrimaryColor;
+            item.Color1 = sprite.Style.PrimaryColor;
             item.Color2 = sprite.Style.SecondaryColor;
         }
 
@@ -394,7 +394,7 @@ namespace Molten.Graphics
             vertex.Rotation = rotation;
             vertex.ArraySlice = arraySlice;
             vertex.Size = size;
-            vertex.Color = _style.PrimaryColor;
+            vertex.Color1 = _style.PrimaryColor;
             vertex.Color2 = _style.SecondaryColor;
             vertex.Origin = origin;
             vertex.UV = *(Vector4F*)&source; // Source rectangle values are stored in the same layout as we need for UV: left, top, right, bottom.

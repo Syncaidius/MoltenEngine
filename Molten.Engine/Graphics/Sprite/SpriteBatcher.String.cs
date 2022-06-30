@@ -62,7 +62,7 @@ namespace Molten.Graphics
                 data.ArraySlice = 0; // TODO SpriteFont array slice support.
                 data.Size = (new Vector2F(cache.Location.Width, cache.Location.Height) * font.Scale) * scale;
                 data.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
-                data.Color = _style.PrimaryColor;
+                data.Color1 = _style.PrimaryColor;
                 data.Color2 = _style.SecondaryColor;
                 data.Origin = Vector2F.Zero;
 
@@ -104,7 +104,7 @@ namespace Molten.Graphics
                 data.ArraySlice = 0; // TODO SpriteFont array slice support.
                 data.Size = (new Vector2F(cache.Location.Width, cache.Location.Height) * font.Scale) * scale;
                 data.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
-                data.Color = color;
+                data.Color1 = color;
                 data.Origin = Vector2F.Zero;
 
                 data.Extra.D1 = _style.Thickness;

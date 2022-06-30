@@ -17,7 +17,7 @@ namespace Molten.Graphics
             ref GpuData data = ref DrawInternal(null, RectangleF.Empty, destination.TopLeft,
                 destination.Size, rotation, Vector2F.Zero, material, SpriteFormat.Sprite, 0);
 
-            data.Color = color;
+            data.Color1 = color;
         }
 
         /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
@@ -29,7 +29,7 @@ namespace Molten.Graphics
             ref GpuData data = ref DrawInternal(null, RectangleF.Empty, destination.TopLeft, 
                 destination.Size, rotation, origin, material, SpriteFormat.Sprite, 0);
 
-            data.Color = color;
+            data.Color1 = color;
         }
 
         /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>

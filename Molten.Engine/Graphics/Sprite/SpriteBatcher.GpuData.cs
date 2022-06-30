@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
             public Vector4F UV;
 
-            public Color4 Color;
+            public Color4 Color1;
 
             public Color4 Color2;
 

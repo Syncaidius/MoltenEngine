@@ -139,10 +139,16 @@ namespace Molten.Graphics
                 Vector2F b = new Vector2F(dest.Left + corners.BottomLeft, dest.Bottom - lo);
 
                 SetStyle(ref style);
-                DrawLine(l, l + new Vector2F(0, leftHeight)); // Left
-                DrawLine(r, r + new Vector2F(0, rightHeight)); // Right
-                DrawLine(t, t + new Vector2F(topWidth, 0)); // Top
-                DrawLine(b, b + new Vector2F(bottomWidth, 0)); // Bottom
+                SpriteLineStyle lineStyle = new SpriteLineStyle()
+                {
+                    Color1 = style.PrimaryColor,
+                    Color2 = style.SecondaryColor,
+                    Thickness = style.Thickness
+                };
+                DrawLine(l, l + new Vector2F(0, leftHeight), ref lineStyle); // Left
+                DrawLine(r, r + new Vector2F(0, rightHeight), ref lineStyle); // Right
+                DrawLine(t, t + new Vector2F(topWidth, 0), ref lineStyle); // Top
+                DrawLine(b, b + new Vector2F(bottomWidth, 0), ref lineStyle); // Bottom
             }
 
             SetStyle(ref userStyle);
