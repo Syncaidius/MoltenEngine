@@ -15,18 +15,20 @@ namespace Molten.Graphics
         /// <param name="color">The color of the triangle.</param>
         public void DrawTriangle(Vector2F p1, Vector2F p2, Vector2F p3, Color color)
         {
-            ref SpriteItem item = ref GetItem();
+            uint id = GetItemID();
+            ref SpriteItem item = ref Sprites[id];
             item.Texture = null;
             item.Material = null;
             item.Format = SpriteFormat.Triangle;
 
-            item.Vertex.Position = p1;
-            item.Vertex.Rotation = 0; // TODO triangle rotation.
-            item.Vertex.ArraySlice = 0;
-            item.Vertex.Size = p2;
-            item.Vertex.UV = Vector4F.Zero; // Unused
-            item.Vertex.Color = color;
-            item.Vertex.Origin = p3;
+            ref SpriteGpuData data = ref Data[id];
+            data.Position = p1;
+            data.Rotation = 0; // TODO triangle rotation.
+            data.ArraySlice = 0;
+            data.Size = p2;
+            data.UV = Vector4F.Zero; // Unused
+            data.Color = color;
+            data.Origin = p3;
         }
 
         /// <summary>
@@ -48,18 +50,20 @@ namespace Molten.Graphics
             {
                 int colID = i / 3;
 
-                ref SpriteItem item = ref GetItem();
+                uint id = GetItemID();
+                ref SpriteItem item = ref Sprites[id];
                 item.Texture = null;
                 item.Material = null;
                 item.Format = SpriteFormat.Triangle;
 
-                item.Vertex.Position = points[i];
-                item.Vertex.Rotation = 0;
-                item.Vertex.ArraySlice = 0;
-                item.Vertex.Size = points[i + 1];
-                item.Vertex.UV = Vector4F.Zero; // Unused
-                item.Vertex.Color = triColors[colID % triColors.Count];
-                item.Vertex.Origin = points[i + 2];
+                ref SpriteGpuData data = ref Data[id];
+                data.Position = points[i];
+                data.Rotation = 0;
+                data.ArraySlice = 0;
+                data.Size = points[i + 1];
+                data.UV = Vector4F.Zero; // Unused
+                data.Color = triColors[colID % triColors.Count];
+                data.Origin = points[i + 2];
             }
         }
 

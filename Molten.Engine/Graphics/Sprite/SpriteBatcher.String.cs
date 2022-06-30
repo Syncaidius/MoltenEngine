@@ -50,20 +50,22 @@ namespace Molten.Graphics
             {
                 TextFontSource.CachedGlyph cache = font.Source.GetCharGlyph(text[i]);
 
-                ref SpriteItem item = ref GetItem();
+                uint id = GetItemID();
+                ref SpriteItem item = ref Sprites[id];
                 item.Texture = font.Source.UnderlyingTexture;
                 item.Material = material;
                 item.Format = SpriteFormat.MSDF;
 
-                item.Vertex.Position = new Vector2F(charPos.X, charPos.Y + ((cache.YOffset * font.Scale) * scale.Y));
-                item.Vertex.Rotation = 0; // TODO 2D text rotation.
-                item.Vertex.ArraySlice = 0; // TODO SpriteFont array slice support.
-                item.Vertex.Size = (new Vector2F(cache.Location.Width, cache.Location.Height) * font.Scale) * scale;
-                item.Vertex.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
-                item.Vertex.Color = _style.PrimaryColor;
-                item.Vertex.Color2 = _style.SecondaryColor;
-                item.Vertex.Data.Thickness = new Vector2F(_style.Thickness);
-                item.Vertex.Origin = Vector2F.Zero;
+                ref SpriteGpuData data = ref Data[id];
+                data.Position = new Vector2F(charPos.X, charPos.Y + ((cache.YOffset * font.Scale) * scale.Y));
+                data.Rotation = 0; // TODO 2D text rotation.
+                data.ArraySlice = 0; // TODO SpriteFont array slice support.
+                data.Size = (new Vector2F(cache.Location.Width, cache.Location.Height) * font.Scale) * scale;
+                data.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
+                data.Color = _style.PrimaryColor;
+                data.Color2 = _style.SecondaryColor;
+                data.Data.Thickness = new Vector2F(_style.Thickness);
+                data.Origin = Vector2F.Zero;
 
                 // Increase pos by size of char (along X)
                 charPos.X += (cache.AdvanceWidth * font.Scale) * scale.X;
@@ -88,18 +90,20 @@ namespace Molten.Graphics
             {
                 TextFontSource.CachedGlyph cache = font.Source.GetCharGlyph(text[i]);
 
-                ref SpriteItem item = ref GetItem();
+                uint id = GetItemID();
+                ref SpriteItem item = ref Sprites[id];
                 item.Texture = font.Source.UnderlyingTexture;
                 item.Material = material;
                 item.Format = SpriteFormat.MSDF;
 
-                item.Vertex.Position = new Vector2F(charPos.X, charPos.Y + ((cache.YOffset * font.Scale) * scale.Y));
-                item.Vertex.Rotation = 0; // TODO 2D text rotation.
-                item.Vertex.ArraySlice = 0; // TODO SpriteFont array slice support.
-                item.Vertex.Size = (new Vector2F(cache.Location.Width, cache.Location.Height) * font.Scale) * scale;
-                item.Vertex.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
-                item.Vertex.Color = color;
-                item.Vertex.Origin = Vector2F.Zero;
+                ref SpriteGpuData data = ref Data[id];
+                data.Position = new Vector2F(charPos.X, charPos.Y + ((cache.YOffset * font.Scale) * scale.Y));
+                data.Rotation = 0; // TODO 2D text rotation.
+                data.ArraySlice = 0; // TODO SpriteFont array slice support.
+                data.Size = (new Vector2F(cache.Location.Width, cache.Location.Height) * font.Scale) * scale;
+                data.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
+                data.Color = color;
+                data.Origin = Vector2F.Zero;
 
                 // Increase pos by size of char (along X)
                 charPos.X += (cache.AdvanceWidth * font.Scale) * scale.X;

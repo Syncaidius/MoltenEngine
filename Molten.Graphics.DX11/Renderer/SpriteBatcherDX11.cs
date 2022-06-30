@@ -61,14 +61,14 @@ namespace Molten.Graphics
             Clips[0] = (Rectangle)camera.OutputSurface.Viewport.Bounds;
             context.State.VertexBuffers[0].Value = null;
 
-            ProcessBatches((rangeCount, numVerticesInBuffer) => 
-                FlushBuffer(context, camera, data, rangeCount, numVerticesInBuffer));
+            ProcessBatches((rangeCount, vertexStartIndex, numVerticesInBuffer) => 
+                FlushBuffer(context, camera, data, rangeCount, vertexStartIndex, numVerticesInBuffer));
         }
 
-        private void FlushBuffer(DeviceContext context, RenderCamera camera, ObjectRenderData data, uint rangeCount, uint vertexCount)
+        private void FlushBuffer(DeviceContext context, RenderCamera camera, ObjectRenderData data, uint rangeCount, uint vertexStartIndex, uint vertexCount)
         {
             SpriteRange range;
-            _bufferData.Map(context, (buffer, stream) => stream.WriteRange(Vertices, 0, vertexCount));
+            _bufferData.Map(context, (buffer, stream) => stream.WriteRange(Data, vertexStartIndex, vertexCount));
 
             // Draw calls
             uint bufferOffset = 0;

@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
@@ -7,16 +8,21 @@ namespace Molten.Graphics
     /// </summary>
     public abstract partial class SpriteBatcher : IDisposable
     {
-        protected delegate void FlushRangeCallback(uint rangeCount, uint numVerticesInBuffer);
+        protected delegate void FlushRangeCallback(uint rangeCount, uint vertexStartIndex, uint numVerticesInBuffer);
 
+        [StructLayout(LayoutKind.Explicit)]
         protected struct SpriteRange
         {
-            public uint BufferOffset;
-            public uint VertexCount;
-            public ITexture2D Texture;
-            public IMaterial Material;
-            public SpriteFormat Format;
-            public int ClipID;
+            [FieldOffset(0)] public uint BufferOffset;      // 4-bytes
+            [FieldOffset(4)] public uint VertexCount;       // 4-bytes
+            [FieldOffset(8)] public ITexture2D Texture;     // 8-bytes (64-bit reference)
+            [FieldOffset(16)] public IMaterial Material;    // 8-bytes (64-bit reference)
+
+            [FieldOffset(24)] public SpriteFormat Format;   // 1-byte
+            [FieldOffset(25)] public ushort ClipID;         // 2-bytes
+            [FieldOffset(27)] public byte Reserved1;        // 1-byte unused.
+
+            [FieldOffset(24)] public int Hash;              // 4-bytes overlapping Format, ClipID and Padding to give us a comparison hash.
 
             public override string ToString()
             {
@@ -24,9 +30,20 @@ namespace Molten.Graphics
             }
         }
 
-        static Vector2F DEFAULT_ORIGIN_CENTER = new Vector2F(0.5f);
+        [StructLayout(LayoutKind.Explicit)]
+        protected struct SpriteItem
+        {
+            [FieldOffset(0)] public ITexture2D Texture;
+            [FieldOffset(8)] public IMaterial Material;
 
-        protected enum SpriteFormat
+            [FieldOffset(16)] public SpriteFormat Format;   // 1-byte
+            [FieldOffset(17)] public ushort ClipID;         // 2-bytes
+            [FieldOffset(19)] public byte Reserved1;        // 1-byte unused.
+
+            [FieldOffset(16)] public int Hash;              // 4-bytes overlapping Format, ClipID and Padding to give us a comparison hash.
+        }
+
+        protected enum SpriteFormat : byte
         {
             Sprite = 0, // Textured or untextured (rectangle) sprites
 
@@ -41,30 +58,24 @@ namespace Molten.Graphics
             Grid = 5,
         }
 
-        protected struct SpriteItem
-        {
-            public SpriteGpuData Vertex;
-            public SpriteFormat Format;
-            public ITexture2D Texture;
-            public IMaterial Material;
-            public int ClipID;
-        }
+
+        static Vector2F DEFAULT_ORIGIN_CENTER = new Vector2F(0.5f);
 
         protected Rectangle[] Clips;
         protected SpriteItem[] Sprites;
         protected SpriteRange[] Ranges;
-        protected SpriteGpuData[] Vertices;
+        protected SpriteGpuData[] Data;
         protected uint NextID;
 
 
-        int _curClipID;
         SpriteStyle _style;
+        ushort _curClipID;
         uint _curRange;
 
         public SpriteBatcher(uint capacity)
         {
             Capacity = capacity;
-            Vertices = new SpriteGpuData[capacity];
+            Data = new SpriteGpuData[capacity];
             Sprites = new SpriteItem[capacity];
             Ranges = new SpriteRange[capacity]; // Worst-case, we can expect the number of ranges to equal the capacity.
 
@@ -77,13 +88,17 @@ namespace Molten.Graphics
             };
         }
 
-        protected ref SpriteItem GetItem()
+        protected uint GetItemID()
         {
-            if (NextID == Sprites.Length) // Increase length by 50%
-                Array.Resize(ref Sprites, Sprites.Length + (Sprites.Length / 2));
+            if (NextID == Sprites.Length)
+            {  // Increase length by 50%
+                int len = Sprites.Length + (Sprites.Length / 2);
+                Array.Resize(ref Sprites, len);
+                Array.Resize(ref Data, len);
+            }
 
             Sprites[NextID].ClipID = _curClipID;
-            return ref Sprites[NextID++];
+            return NextID++;
         }
 
         /// <summary>
@@ -175,7 +190,7 @@ namespace Molten.Graphics
         public void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, ITexture2D cellTexture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF source = cellTexture != null ? new RectangleF(0, 0, cellTexture.Width, cellTexture.Height) : RectangleF.Empty;
-            ref SpriteItem item = ref DrawInternal(cellTexture,
+            ref SpriteGpuData item = ref DrawInternal(cellTexture,
                 source,
                 bounds.TopLeft,
                 bounds.Size,
@@ -187,8 +202,8 @@ namespace Molten.Graphics
 
             float cellIncX = bounds.Size.X / cellSize.X;
             float cellIncY = bounds.Size.Y / cellSize.Y;
-            item.Vertex.Data.D1 = cellIncX / bounds.Size.X;
-            item.Vertex.Data.D2 = cellIncY / bounds.Size.Y;
+            item.Data.D1 = cellIncX / bounds.Size.X;
+            item.Data.D2 = cellIncY / bounds.Size.Y;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -200,7 +215,7 @@ namespace Molten.Graphics
         /// <param name="arraySlice"></param>
         public void Draw(RectangleF destination, Color color, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
-            ref SpriteItem item = ref DrawInternal(texture,
+            ref SpriteGpuData item = ref DrawInternal(texture,
                 texture != null ? new RectangleF(0,0,texture.Width, texture.Height) : RectangleF.Empty,
                 destination.TopLeft,
                 destination.Size,
@@ -210,7 +225,7 @@ namespace Molten.Graphics
                 SpriteFormat.Sprite,
                 arraySlice);
 
-            item.Vertex.Color = color;
+            item.Color = color;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -222,7 +237,7 @@ namespace Molten.Graphics
         /// <param name="arraySlice"></param>
         public void Draw(RectangleF source, RectangleF destination, Color color, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
-            ref SpriteItem item = ref DrawInternal(texture,
+            ref SpriteGpuData item = ref DrawInternal(texture,
                 source,
                 destination.TopLeft,
                 destination.Size,
@@ -232,7 +247,7 @@ namespace Molten.Graphics
                 SpriteFormat.Sprite,
                 arraySlice);
 
-            item.Vertex.Color = color;
+            item.Color = color;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -290,7 +305,7 @@ namespace Molten.Graphics
 
         public void Draw(Sprite sprite)
         {
-            ref SpriteItem item = ref DrawInternal(sprite.Data.Texture,
+            ref SpriteGpuData item = ref DrawInternal(sprite.Data.Texture,
                 sprite.Data.Source,
                 sprite.Position,
                 sprite.Data.Source.Size * sprite.Scale,
@@ -300,9 +315,9 @@ namespace Molten.Graphics
                 SpriteFormat.Sprite,
                 sprite.Data.ArraySlice);
 
-            item.Vertex.Color = sprite.Style.PrimaryColor;
-            item.Vertex.Color2 = sprite.Style.SecondaryColor;
-            item.Vertex.Data.Thickness = new Vector2F(sprite.Style.Thickness);
+            item.Color = sprite.Style.PrimaryColor;
+            item.Color2 = sprite.Style.SecondaryColor;
+            item.Data.Thickness = new Vector2F(sprite.Style.Thickness);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -358,7 +373,7 @@ namespace Molten.Graphics
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material">The material to use when rendering the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        protected unsafe ref SpriteItem DrawInternal(ITexture2D texture,
+        protected unsafe ref SpriteGpuData DrawInternal(ITexture2D texture,
             RectangleF source,
             Vector2F position,
             Vector2F size,
@@ -368,22 +383,24 @@ namespace Molten.Graphics
             SpriteFormat format,
             float arraySlice)
         {
-            ref SpriteItem item = ref GetItem();
+            uint id = GetItemID();
+            ref SpriteItem item = ref Sprites[id];
             item.Texture = texture;
             item.Material = material;
             item.Format = format;
 
-            item.Vertex.Position = position;
-            item.Vertex.Rotation = rotation;
-            item.Vertex.ArraySlice = arraySlice;
-            item.Vertex.Size = size;
-            item.Vertex.Color = _style.PrimaryColor;
-            item.Vertex.Color2 = _style.SecondaryColor;
-            item.Vertex.Origin = origin;
-            item.Vertex.UV = *(Vector4F*)&source; // Source rectangle values are stored in the same layout as we need for UV: left, top, right, bottom.
-            item.Vertex.Data.Thickness = new Vector2F(_style.Thickness) / size; // Convert to UV coordinate system (0 - 1) range
+            ref SpriteGpuData vertex = ref Data[id];
+            vertex.Position = position;
+            vertex.Rotation = rotation;
+            vertex.ArraySlice = arraySlice;
+            vertex.Size = size;
+            vertex.Color = _style.PrimaryColor;
+            vertex.Color2 = _style.SecondaryColor;
+            vertex.Origin = origin;
+            vertex.UV = *(Vector4F*)&source; // Source rectangle values are stored in the same layout as we need for UV: left, top, right, bottom.
+            vertex.Data.Thickness = new Vector2F(_style.Thickness) / size; // Convert to UV coordinate system (0 - 1) range
 
-            return ref item;
+            return ref vertex;
         }
 
         protected void ProcessBatches(FlushRangeCallback flushCallback)
@@ -398,6 +415,7 @@ namespace Molten.Graphics
                 // Reset vertex array pointer and ranges, so we can prepare the next batch of vertices.
                 uint remaining = NextID - i;
                 uint end = i + Math.Min(remaining, Capacity);
+                uint firstVertexID = i;
                 uint start = i;
 
                 _curRange = 0;
@@ -413,23 +431,21 @@ namespace Molten.Graphics
                 for (; i < end; i++)
                 {
                     item = ref Sprites[i];
-                    Vertices[v++] = item.Vertex;
+                    v++;
 
                     // If the current item does not match that of the current range, start a new range.
                     if (item.Texture != range.Texture ||
                         item.Material != range.Material ||
-                        item.Format != range.Format ||
-                        item.ClipID != range.ClipID)
+                        item.Hash != range.Hash)
                     {
                         range.VertexCount = i - start;
                         _curRange++;
 
                         range = ref Ranges[_curRange];
                         start = i;
-                        range.Format = item.Format;
                         range.Texture = item.Texture;
                         range.Material = item.Material;
-                        range.ClipID = item.ClipID;
+                        range.Hash = item.Hash;
                     }
                 }
 
@@ -439,7 +455,7 @@ namespace Molten.Graphics
                     _curRange++;
 
                 if (_curRange > 0)
-                    flushCallback(_curRange, v);
+                    flushCallback(_curRange, firstVertexID, v);
             }
 
             // Reset
