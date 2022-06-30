@@ -43,5 +43,5 @@ float4 PS_MSDF( PS_IN input) : SV_Target
     float screenPxDistance = screenPxRange(input.uvLocal, sd.size)*(s - 0.5);
     float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
     
-    return sd.col * opacity;
+    return float4(sd.col.rgb, sd.col.a * opacity);
 }
