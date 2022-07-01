@@ -23,6 +23,15 @@ namespace Molten
             EndAngle = MathHelper.TwoPi;
         }
 
+        public Ellipse(Vector2F center, float radius, float startAngle, float endAngle)
+        {
+            Center = center;
+            RadiusX = radius;
+            RadiusY = radius;
+            StartAngle = startAngle;
+            EndAngle = endAngle;
+        }
+
         public Ellipse(Vector2F center, float radX, float radY, float startAngle, float endAngle)
         {
             Center = center;

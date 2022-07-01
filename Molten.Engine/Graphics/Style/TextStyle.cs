@@ -10,7 +10,7 @@ namespace Molten.Graphics
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct TextStyle
     {
-        public static readonly EllipseStyle Default = new EllipseStyle(Color.White);
+        public static readonly TextStyle Default = new TextStyle(Color.White);
 
         public Color FillColor;
 

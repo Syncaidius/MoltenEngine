@@ -8,6 +8,10 @@ namespace Molten.Graphics
 {
     public struct RectBorderThickness
     {
+        public static readonly RectBorderThickness One = new RectBorderThickness(1f);
+
+        public static readonly RectBorderThickness None = new RectBorderThickness(0f);
+
         public float Left;
 
         public float Top;

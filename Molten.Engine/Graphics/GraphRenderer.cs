@@ -67,10 +67,6 @@
                 Y = _bounds.Height / range,
             };
 
-            SpriteStyle style = SpriteStyle.Default;
-            style.PrimaryColor = BackgroundColor;
-            sb.SetStyle(ref style);
-
             _interlocker.Lock(() =>
             {
                 for (int i = 0; i < _populated; i++)
@@ -83,7 +79,7 @@
                     };
                 }
 
-                sb.DrawRect(_bounds);
+                sb.DrawRect(_bounds, BackgroundColor);
 
                 float averageLineY = plotArea.Bottom - (float)(pixelScale.Y * average);
                 sb.DrawLine(new Vector2F(plotArea.Left, averageLineY), new Vector2F(plotArea.Right, averageLineY), AverageLineColor, 1);

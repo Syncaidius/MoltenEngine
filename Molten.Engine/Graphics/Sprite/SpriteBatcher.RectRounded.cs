@@ -3,29 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Molten.Graphics.Style;
 
 namespace Molten.Graphics
 {
     public abstract partial class SpriteBatcher
     {
-        public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, float radius, IMaterial material = null)
+        public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, float radius, ref RoundedRectStyle style, IMaterial material = null)
         {
-            DrawRoundedRect(dest, rotation, origin, new CornerInfo(radius), material);
+            DrawRoundedRect(dest, rotation, origin, new CornerInfo(radius), ref style, material);
         }
 
-        public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, CornerInfo corners, IMaterial material = null)
+        public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, CornerInfo corners, ref RoundedRectStyle style, IMaterial material = null)
         {
             if (!corners.HasRounded())
             {
-                DrawRect(dest, rotation, origin, material);
+                RectStyle rectStyle = style.ToRectStyle();
+                DrawRect(dest, rotation, origin, ref rectStyle, material);
                 return;
             }
-
-            SpriteStyle userStyle = _style;
-            SpriteStyle fillStyle = userStyle;
-            SpriteStyle circleStyle = userStyle;
-            fillStyle.Thickness = 0;
 
             // TODO add support for rotation and origin
 
@@ -39,25 +34,27 @@ namespace Molten.Graphics
             float leftHeight = dest.Height - corners.TopLeft - corners.BottomLeft;
             float rightHeight = dest.Height - corners.TopRight - corners.BottomRight;
 
-            Circle ctl = new Circle(tl, corners.TopLeft, 0, MathHelper.PiHalf);
-            Circle ctr = new Circle(tr, corners.TopRight, MathHelper.PiHalf, MathHelper.Pi);
-            Circle cbr = new Circle(br, corners.BottomRight, MathHelper.Pi, MathHelper.PiHalf * 3);
-            Circle cbl = new Circle(bl, corners.BottomLeft, MathHelper.PiHalf * 3, MathHelper.TwoPi);
+            Ellipse ctl = new Ellipse(tl, corners.TopLeft, 0, MathHelper.PiHalf);
+            Ellipse ctr = new Ellipse(tr, corners.TopRight, MathHelper.PiHalf, MathHelper.Pi);
+            Ellipse cbr = new Ellipse(br, corners.BottomRight, MathHelper.Pi, MathHelper.PiHalf * 3);
+            Ellipse cbl = new Ellipse(bl, corners.BottomLeft, MathHelper.PiHalf * 3, MathHelper.TwoPi);
 
-            SetStyle(ref circleStyle);
+            EllipseStyle cornerStyle = new EllipseStyle(style.FillColor, style.BorderColor, style.BorderThickness);
             if (corners.TopLeft > 0)
-                DrawCircle(ref ctl);
+                DrawEllipse(ref ctl, ref cornerStyle);
 
             if (corners.TopRight > 0)
-                DrawCircle(ref ctr);
+                DrawEllipse(ref ctr, ref cornerStyle);
 
             if (corners.BottomRight > 0)
-                DrawCircle(ref cbr);
+                DrawEllipse(ref cbr, ref cornerStyle);
 
             if (corners.BottomLeft > 0)
-                DrawCircle(ref cbl);
+                DrawEllipse(ref cbl, ref cornerStyle);
 
-            SetStyle(ref fillStyle);
+            RectStyle innerStyle = style.ToRectStyle();
+            innerStyle.BorderThickness.Zero();
+
             float leftEdgeWidth = 0;
             float rightEdgeWidth = 0;
 
@@ -66,7 +63,7 @@ namespace Molten.Graphics
             {
                 if (corners.LeftSameRadius())
                 {
-                    DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, dest.Height - (corners.TopLeft * 2)));
+                    DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, dest.Height - (corners.TopLeft * 2)), ref innerStyle);
                     leftEdgeWidth = corners.TopLeft;
                 }
                 else
@@ -95,7 +92,7 @@ namespace Molten.Graphics
             {
                 if (corners.RightSameRadius())
                 {
-                    DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, dest.Height - (corners.TopRight * 2)));
+                    DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, dest.Height - (corners.TopRight * 2)), ref innerStyle);
                     rightEdgeWidth = corners.TopRight;
                 }
                 else
@@ -122,7 +119,7 @@ namespace Molten.Graphics
 
             // Draw center
             RectangleF c = new RectangleF(dest.X + leftEdgeWidth, dest.Y, dest.Width - leftEdgeWidth - rightEdgeWidth, dest.Height);
-            DrawRect(c, 0, material);
+            DrawRect(c, ref innerStyle, 0, material);
 
             if (userStyle.Thickness > 0)
             {
