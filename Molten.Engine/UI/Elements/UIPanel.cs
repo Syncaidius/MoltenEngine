@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using Molten.Graphics.Style;
 using System.Runtime.Serialization;
 
 namespace Molten.UI

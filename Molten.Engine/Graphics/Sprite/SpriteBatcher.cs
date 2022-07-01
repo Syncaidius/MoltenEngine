@@ -67,25 +67,24 @@ namespace Molten.Graphics
         protected GpuData[] Data;
         protected uint NextID;
 
-
-        SpriteStyle _style;
         ushort _curClipID;
         uint _curRange;
 
+        /// <summary>
+        /// Placeholder for internal rectangle/sprite styling.
+        /// </summary>
+        RectStyle _rectStyle;
+
         public SpriteBatcher(uint capacity)
         {
+            _rectStyle = RectStyle.Default;
+
             Capacity = capacity;
             Data = new GpuData[capacity];
             Sprites = new SpriteItem[capacity];
             Ranges = new SpriteRange[capacity]; // Worst-case, we can expect the number of ranges to equal the capacity.
 
             Clips = new Rectangle[256];
-            _style = new SpriteStyle()
-            {
-                PrimaryColor = Color.White,
-                SecondaryColor = Color.White,
-                Thickness = 0
-            };
         }
 
         protected uint GetItemID()
@@ -140,71 +139,57 @@ namespace Molten.Graphics
             _curClipID--;
         }
 
-        /// <summary>
-        /// Sets the current <see cref="SpriteStyle"/> to use when drawing sprites.
-        /// </summary>
-        /// <param name="style"></param>
-        public void SetStyle(ref SpriteStyle style)
+        public void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, Color cellColor, Color lineColor, float lineThickness, ITexture2D cellTexture = null, IMaterial material = null, uint arraySlice = 0)
         {
-            _style = style;
+            GridStyle style = new GridStyle()
+            {
+                CellColor = cellColor,
+                LineColor = lineColor,
+                LineThickness = new Vector2F(lineThickness),
+            };
+
+            DrawGrid(bounds, cellSize, rotation, origin, ref style, cellTexture, material, arraySlice);
         }
 
-        public SpriteStyle GetStyle()
+        public void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, Color cellColor, Color lineColor, Vector2F lineThickness, ITexture2D cellTexture = null, IMaterial material = null, uint arraySlice = 0)
         {
-            return _style;
+            GridStyle style = new GridStyle()
+            {
+                CellColor = cellColor,
+                LineColor = lineColor,
+                LineThickness = lineThickness,
+            };
+
+            DrawGrid(bounds, cellSize, rotation, origin, ref style, cellTexture, material, arraySlice);
         }
 
-        /// <summary>
-        /// Clears the current style back to <see cref="SpriteStyle.Default"/>.
-        /// </summary>
-        public void ClearStyle()
-        {
-            _style = SpriteStyle.Default;
-        }
-
-        /// <summary>
-        /// Sets the current <see cref="SpriteStyle"/> to the specified color and thickness. Both the primary and secondary colors will be set to the same value.
-        /// </summary>
-        /// <param name="primaryColor"></param>
-        /// <param name="thickness"></param>
-        public void SetStyle(Color primaryColor, float thickness = 0)
-        {
-            _style.PrimaryColor = primaryColor;
-            _style.SecondaryColor = primaryColor;
-            _style.Thickness = thickness;
-        }
-
-        /// <summary>
-        /// Sets the current <see cref="SpriteStyle"/> to use when drawing sprites.
-        /// </summary>
-        /// <param name="primaryColor"></param>
-        /// <param name="secondaryColor"></param>
-        /// <param name="thickness"></param>
-        public void SetStyle(Color primaryColor, Color secondaryColor, float thickness)
-        {
-            _style.PrimaryColor = primaryColor;
-            _style.SecondaryColor = secondaryColor;
-            _style.Thickness = thickness;
-        }
-
-        public void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, ITexture2D cellTexture = null, IMaterial material = null, uint arraySlice = 0)
+        public unsafe void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, ref GridStyle style, ITexture2D cellTexture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF source = cellTexture != null ? new RectangleF(0, 0, cellTexture.Width, cellTexture.Height) : RectangleF.Empty;
-            ref GpuData item = ref DrawInternal(cellTexture,
-                source,
-                bounds.TopLeft,
-                bounds.Size,
-                rotation,
-                origin,
-                material,
-                SpriteFormat.Grid,
-                arraySlice);
-
             float cellIncX = bounds.Size.X / cellSize.X;
             float cellIncY = bounds.Size.Y / cellSize.Y;
 
-            item.Extra.D3 = cellIncX / bounds.Size.X;
-            item.Extra.D4 = cellIncY / bounds.Size.Y;
+
+            uint id = GetItemID();
+            ref SpriteItem item = ref Sprites[id];
+            item.Texture = cellTexture;
+            item.Material = material;
+            item.Format = SpriteFormat.Grid;
+
+            ref GpuData data = ref Data[id];
+            data.Position = bounds.TopLeft;
+            data.Rotation = rotation;
+            data.Size = bounds.Size;
+            data.Color1 = style.CellColor;
+            data.Color2 = style.LineColor;
+            data.Origin = origin;
+            data.UV = *(Vector4F*)&source; // Source rectangle values are stored in the same layout as we need for UV: left, top, right, bottom.
+            data.ArraySlice = arraySlice;
+
+            data.Extra.D1 = style.LineThickness.X / data.Size.X; // Convert to UV coordinate system (0 - 1) range
+            data.Extra.D2 = style.LineThickness.Y / data.Size.Y; // Convert to UV coordinate system (0 - 1) range
+            data.Extra.D3 = cellIncX / bounds.Size.X;
+            data.Extra.D4 = cellIncY / bounds.Size.Y;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -216,17 +201,18 @@ namespace Molten.Graphics
         /// <param name="arraySlice"></param>
         public void Draw(RectangleF destination, Color color, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
-            ref GpuData item = ref DrawInternal(texture,
+            _rectStyle.FillColor = color;
+            _rectStyle.BorderThickness.Zero();
+
+            Draw(texture,
                 texture != null ? new RectangleF(0,0,texture.Width, texture.Height) : RectangleF.Empty,
                 destination.TopLeft,
                 destination.Size,
                 0,
                 Vector2F.Zero,
+                ref _rectStyle,
                 material,
-                SpriteFormat.Sprite,
                 arraySlice);
-
-            item.Color1 = color;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -238,17 +224,18 @@ namespace Molten.Graphics
         /// <param name="arraySlice"></param>
         public void Draw(RectangleF source, RectangleF destination, Color color, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
-            ref GpuData item = ref DrawInternal(texture,
+            _rectStyle.FillColor = color;
+            _rectStyle.BorderThickness.Zero();
+
+            Draw(texture,
                 source,
                 destination.TopLeft,
                 destination.Size,
                 0,
                 Vector2F.Zero,
+                ref _rectStyle,
                 material,
-                SpriteFormat.Sprite,
                 arraySlice);
-
-            item.Color1 = color;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -258,16 +245,16 @@ namespace Molten.Graphics
         /// <param name="color"></param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
-        public void Draw(RectangleF source, RectangleF destination, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
+        public void Draw(RectangleF source, RectangleF destination, ref RectStyle style, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
-            DrawInternal(texture,
+            Draw(texture,
                 source,
                 destination.TopLeft,
                 destination.Size,
                 0,
                 Vector2F.Zero,
+                ref style,
                 material,
-                SpriteFormat.Sprite,
                 arraySlice);
         }
 
@@ -276,10 +263,10 @@ namespace Molten.Graphics
         /// <param name="destination"></param>
         /// <param name="color"></param>
         /// <param name="material"></param>
-        public void Draw(RectangleF destination, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
+        public void Draw(RectangleF destination, ref RectStyle style, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            DrawInternal(texture, src, destination.TopLeft, destination.Size, 0, Vector2F.Zero, material, SpriteFormat.Sprite, arraySlice);
+            Draw(texture, src, destination.TopLeft, destination.Size, 0, Vector2F.Zero, ref style, material, arraySlice);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -288,36 +275,33 @@ namespace Molten.Graphics
         /// <param name="color"></param>
         /// <param name="rotation"></param>
         /// <param name="origin"></param>
-        public void Draw(RectangleF destination, float rotation, Vector2F origin, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
+        public void Draw(RectangleF destination, float rotation, Vector2F origin, ref RectStyle style, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            DrawInternal(texture, src, destination.TopLeft, destination.Size, rotation, origin, material, SpriteFormat.Sprite, arraySlice);
+            Draw(texture, src, destination.TopLeft, destination.Size, rotation, origin, ref style, material, arraySlice);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
         /// <param name="texture"></param>
         /// <param name="position"></param>
         /// <param name="color"></param>
-        public void Draw(Vector2F position, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
+        public void Draw(Vector2F position, ref RectStyle style, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            DrawInternal(texture, src, position, new Vector2F(src.Width, src.Height), 0, Vector2F.Zero, material, SpriteFormat.Sprite, arraySlice);
+            Draw(texture, src, position, new Vector2F(src.Width, src.Height), 0, Vector2F.Zero, ref style, material, arraySlice);
         }
 
         public void Draw(Sprite sprite)
         {
-            ref GpuData item = ref DrawInternal(sprite.Data.Texture,
+            Draw(sprite.Data.Texture,
                 sprite.Data.Source,
                 sprite.Position,
                 sprite.Data.Source.Size * sprite.Scale,
                 sprite.Rotation,
                 sprite.Origin,
+                ref sprite.Data.Style,
                 sprite.Material,
-                SpriteFormat.Sprite,
                 sprite.Data.ArraySlice);
-
-            item.Color1 = sprite.Style.PrimaryColor;
-            item.Color2 = sprite.Style.SecondaryColor;
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -329,10 +313,10 @@ namespace Molten.Graphics
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material">The material to use when rendering the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        public void Draw(Vector2F position, float rotation, Vector2F origin, ITexture2D texture, IMaterial material = null, float arraySlice = 0)
+        public void Draw(Vector2F position, float rotation, Vector2F origin, ITexture2D texture, ref RectStyle style, IMaterial material = null, float arraySlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            DrawInternal(texture, src, position, new Vector2F(src.Width, src.Height), rotation, origin, material, SpriteFormat.Sprite, arraySlice);
+            Draw(texture, src, position, new Vector2F(src.Width, src.Height), rotation, origin, ref style, material, arraySlice);
         }
 
         /// <summary>
@@ -348,61 +332,36 @@ namespace Molten.Graphics
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material">The material to use when rendering the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        public void Draw(ITexture2D texture,
+        public unsafe void Draw(ITexture2D texture,
             RectangleF source,
             Vector2F position,
             Vector2F size,
             float rotation,
             Vector2F origin,
+            ref RectStyle style,
             IMaterial material,
-            float arraySlice)
-        {
-            DrawInternal(texture, source, position, size, rotation, origin, material, SpriteFormat.Sprite, arraySlice);
-        }
-
-        /// <summary>
-        /// Adds a sprite to the batch using 2D coordinates.
-        /// </summary>>
-        /// <param name="texture"></param>
-        /// <param name="source"></param>
-        /// <param name="position"></param>
-        /// <param name="size">The width and height of the sprite..</param>
-        /// <param name="color"></param>
-        /// <param name="rotation">Rotation in radians.</param>
-        /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
-        /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
-        /// <param name="material">The material to use when rendering the sprite.</param>
-        /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        protected unsafe ref GpuData DrawInternal(ITexture2D texture,
-            RectangleF source,
-            Vector2F position,
-            Vector2F size,
-            float rotation,
-            Vector2F origin,
-            IMaterial material,
-            SpriteFormat format,
             float arraySlice)
         {
             uint id = GetItemID();
             ref SpriteItem item = ref Sprites[id];
             item.Texture = texture;
             item.Material = material;
-            item.Format = format;
+            item.Format = SpriteFormat.Sprite;
 
             ref GpuData vertex = ref Data[id];
             vertex.Position = position;
             vertex.Rotation = rotation;
             vertex.ArraySlice = arraySlice;
             vertex.Size = size;
-            vertex.Color1 = _style.PrimaryColor;
-            vertex.Color2 = _style.SecondaryColor;
+            vertex.Color1 = style.FillColor;
+            vertex.Color2 = style.BorderColor;
             vertex.Origin = origin;
             vertex.UV = *(Vector4F*)&source; // Source rectangle values are stored in the same layout as we need for UV: left, top, right, bottom.
 
-            vertex.Extra.D1 = _style.Thickness / size.X; // Convert to UV coordinate system (0 - 1) range
-            vertex.Extra.D2 = _style.Thickness / size.Y; // Convert to UV coordinate system (0 - 1) range
-
-            return ref vertex;
+            vertex.Extra.D1 = style.BorderThickness.Left / size.X; // Convert to UV coordinate system (0 - 1) range
+            vertex.Extra.D2 = style.BorderThickness.Top / size.Y; // Convert to UV coordinate system (0 - 1) range
+            vertex.Extra.D3 = style.BorderThickness.Right / size.X; // Convert to UV coordinate system (0 - 1) range
+            vertex.Extra.D4 = style.BorderThickness.Bottom / size.Y; // Convert to UV coordinate system (0 - 1) range
         }
 
         protected void ProcessBatches(FlushRangeCallback flushCallback)

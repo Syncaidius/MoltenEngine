@@ -41,6 +41,11 @@ namespace Molten
             EndAngle = MathHelper.TwoPi;
         }
 
+        /// <summary>
+        /// Instantiates a circular ellipse using the same radius for X and Y axis.
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="radius"></param>
         public Ellipse(Vector2F center, float radius)
         {
             Center = center;
@@ -66,6 +71,15 @@ namespace Molten
         public float GetArea()
         {
             return MathHelper.Pi * (RadiusX * RadiusY);
+        }
+
+        /// <summary>
+        /// Returns true if <see cref="RadiusX"/> is equal to <see cref="RadiusY"/>, forming a circular ellipse.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsCircle()
+        {
+            return RadiusX == RadiusY;
         }
     }
 }

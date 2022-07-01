@@ -10,7 +10,7 @@ namespace Molten.Samples
         public override string Description => "Draws various primitives using sprite batch.";
 
         Rectangle[] _rects;
-        SpriteStyle[] _rectStyles;
+        RectStyle[] _rectStyles;
         ITexture2D _texMesh;
         ITexture2D _texPrimitives;
         float _rotAngle;
@@ -84,13 +84,13 @@ namespace Molten.Samples
             }
 
             // Add 5 colors. The last color will be used when we have more points than colors.
-            SpriteStyle[] styles = new SpriteStyle[]
+            EllipseStyle[] styles = new EllipseStyle[]
             {
-                new SpriteStyle(Color.Orange, Color.Lavender, 3),
-                new SpriteStyle(Color.SkyBlue, Color.Red, 5),
-                new SpriteStyle(Color.Lime, Color.Yellow, 7),
-                new SpriteStyle(Color.Blue, Color.Orange, 10),
-                new SpriteStyle(Color.Red, Color.Lime, 15),
+                new EllipseStyle(Color.Orange, Color.Lavender, 3),
+                new EllipseStyle(Color.SkyBlue, Color.Red, 5),
+                new EllipseStyle(Color.Lime, Color.Yellow, 7),
+                new EllipseStyle(Color.Blue, Color.Orange, 10),
+                new EllipseStyle(Color.Red, Color.Lime, 15),
             };
 
             List<Vector2F> triPoints = new List<Vector2F>();
@@ -173,7 +173,7 @@ namespace Molten.Samples
 
             // Setup sprite rectangles and styles.
             _rects = new Rectangle[BACKGROUND_RECT_COUNT];
-            _rectStyles = new SpriteStyle[_rects.Length];
+            _rectStyles = new RectStyle[_rects.Length];
 
             for (int i = 0; i < _rects.Length; i++)
             {
@@ -196,11 +196,11 @@ namespace Molten.Samples
                 Color rOutlineCol = rCol * 1.5f;
                 rOutlineCol.A = rCol.A;
 
-                _rectStyles[i] = new SpriteStyle()
+                _rectStyles[i] = new RectStyle()
                 {
-                    PrimaryColor = rCol,
-                    SecondaryColor = rOutlineCol,
-                    Thickness = Rng.Next(0, 6)
+                    FillColor = rCol,
+                    BorderColor = rOutlineCol,
+                    BorderThickness = new RectBorderThickness(Rng.Next(1, 7))
                 };
             }
 
@@ -208,23 +208,19 @@ namespace Molten.Samples
             com.RenderCallback = (sb) =>
             {
                 for (int i = 0; i < _rects.Length; i++)
-                {
-                    sb.SetStyle(ref _rectStyles[i]);
-                    sb.DrawRect(_rects[i], 0, Vector2F.Zero);
-                }
+                    sb.DrawRect(_rects[i], 0, Vector2F.Zero, ref _rectStyles[i]);
 
                 sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.Lime, 2, 1);
                 sb.DrawLine(new Vector2F(400), new Vector2F(650, 250), Color.SkyBlue, 75, 1f);
 
-                SpriteStyle gridStyle = new SpriteStyle()
+                GridStyle gridStyle = new GridStyle()
                 {
-                    PrimaryColor = new Color(200,100,0,150),
-                    SecondaryColor = Color.Yellow,
-                    Thickness = 3,
+                    CellColor = new Color(200,100,0,150),
+                    LineColor = Color.Yellow,
+                    LineThickness = new Vector2F(3),
                 };
 
-                sb.SetStyle(ref gridStyle);
-                sb.DrawGrid(new Rectangle(1450, 400, 400, 400), new Vector2F(20, 20), _rotAngle, new Vector2F(0.5f));
+                sb.DrawGrid(new Rectangle(1450, 400, 400, 400), new Vector2F(20, 20), _rotAngle, new Vector2F(0.5f), ref gridStyle);
 
                 LineStyle linePathStyle = new LineStyle()
                 {
@@ -249,12 +245,13 @@ namespace Molten.Samples
                 Ellipse el = new Ellipse(center, pSize, pSize * 0.8f);
 
                 center.Y += (pSize * 3);
-                Circle cl = new Circle(center, pSize);
+                Ellipse cl = new Ellipse(center, pSize);
 
                 center.Y += (pSize * 3);
                 RectangleF rect = new RectangleF(center.X - pSize, center.Y - pSize, pSize, pSize);
                 RectangleF rectTextured = rect;
                 rectTextured.Y += (pSize * 3);
+                Vector2F rectOrigin = new Vector2F(0.5f);
 
                 for (int i = 0; i < styles.Length; i++)
                 {
@@ -263,11 +260,10 @@ namespace Molten.Samples
                     cl.StartAngle = angle;
                     el.EndAngle = angle;
 
-                    sb.SetStyle(ref styles[i]);
-                    sb.DrawCircle(ref cl, _rotAngle);
-                    sb.DrawEllipse(ref el, _rotAngle, _texPrimitives, null, texArrayID);
-                    sb.DrawRect(rect, _rotAngle, new Vector2F(0.5f));
-                    sb.Draw(rectTextured, _rotAngle, new Vector2F(0.5f), _texPrimitives, null, texArrayID);
+                    sb.DrawEllipse(ref cl, ref styles[i], _rotAngle);
+                    sb.DrawEllipse(ref el, ref styles[i], _rotAngle, _texPrimitives, null, texArrayID);
+                    sb.DrawRect(rect, _rotAngle, rectOrigin, ref _rectStyles[i]);
+                    sb.Draw(rectTextured, _rotAngle, new Vector2F(0.5f), ref _rectStyles[i], _texPrimitives, null, texArrayID);
 
                     cl.Center.X += (pSize * 2) + 5;
                     el.Center.X = cl.Center.X;

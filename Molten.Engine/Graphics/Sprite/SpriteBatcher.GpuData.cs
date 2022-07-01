@@ -8,7 +8,7 @@ namespace Molten.Graphics
         /// A struct which represents sprite data to be sent to the GPU via a structured buffer.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        protected struct GpuData
+        protected internal struct GpuData
         {
             public struct ExtraData
             {

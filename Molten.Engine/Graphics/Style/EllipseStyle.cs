@@ -10,6 +10,8 @@ namespace Molten.Graphics
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct EllipseStyle
     {
+        public static readonly EllipseStyle Default = new EllipseStyle(Color.White);
+
         public Color FillColor;
 
         public Color BorderColor;
@@ -20,7 +22,21 @@ namespace Molten.Graphics
         {
             FillColor = Color.White;
             BorderColor = Color.White;
-            BorderThickness = 1.0f;
+            BorderThickness = 0f;
+        }
+
+        public EllipseStyle(Color fillColor)
+        {
+            FillColor = fillColor;
+            BorderColor = fillColor;
+            BorderThickness = 0;
+        }
+
+        public EllipseStyle(Color fillColor, Color borderColor, float borderThickness)
+        {
+            FillColor = fillColor;
+            BorderColor = borderColor;
+            BorderThickness = borderThickness;
         }
 
         public static implicit operator EllipseStyle(Color color)
@@ -29,7 +45,7 @@ namespace Molten.Graphics
             {
                 FillColor = color,
                 BorderColor = color,
-                BorderThickness = 2f
+                BorderThickness = 0f
             };
         }
 

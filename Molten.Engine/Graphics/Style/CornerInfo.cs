@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Style
 {
     public struct CornerInfo
     {
