@@ -4,7 +4,7 @@ namespace Molten.Samples
 {
     public class SpriteBatchPrimitives : SampleSceneGame
     {
-        const int BACKGROUND_RECT_COUNT = 200000;
+        const int BACKGROUND_RECT_COUNT = 1000;
         const float BACKGROUND_OUTLINE_THICKNESS = 2;
 
         public override string Description => "Draws various primitives using sprite batch.";
@@ -55,7 +55,7 @@ namespace Molten.Samples
             // Create points for zig-zagging lines.
             List<Vector2F> linePoints = new List<Vector2F>();
             float y = 100;
-            Vector2F lineOffset = new Vector2F(300, 100);
+            Vector2F lineOffset = new Vector2F(400, 700);
             for (int i = 0; i < 20; i++)
             {
                 linePoints.Add(lineOffset + new Vector2F(i * 50, y));
@@ -66,7 +66,7 @@ namespace Molten.Samples
             List<Vector2F> circleLinePoints = new List<Vector2F>();
             float radius = 50;
 
-            Vector2F center = new Vector2F(500);
+            Vector2F center = new Vector2F(500, 900);
             int outlineSegments = 32;
             float angleIncrement = 360.0f / outlineSegments;
             float angle = 0;
@@ -213,8 +213,8 @@ namespace Molten.Samples
                     sb.DrawRect(_rects[i], 0, Vector2F.Zero);
                 }
 
-                sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.Red, 2);
-                sb.DrawLine(new Vector2F(400), new Vector2F(650, 250), Color.Yellow, 2);
+                sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.Lime, 2, 1);
+                sb.DrawLine(new Vector2F(400), new Vector2F(650, 250), Color.SkyBlue, 75, 1f);
 
                 SpriteStyle gridStyle = new SpriteStyle()
                 {
@@ -226,10 +226,17 @@ namespace Molten.Samples
                 sb.SetStyle(ref gridStyle);
                 sb.DrawGrid(new Rectangle(1450, 400, 400, 400), new Vector2F(20, 20), _rotAngle, new Vector2F(0.5f));
 
-                /*sb.DrawLinePath(linePoints, colors, 2);
-                sb.DrawLinePath(circleLinePoints, colors, 4);
+                LineStyle linePathStyle = new LineStyle()
+                {
+                    Color1 = Color.Red,
+                    Color2 = Color.Yellow,
+                    Thickness = 3
+                };
 
-                sb.DrawTriangle(new Vector2F(400, 220), new Vector2F(350, 320), new Vector2F(500, 260), Color.SkyBlue);
+                sb.DrawLinePath(linePoints, ref linePathStyle);
+                sb.DrawLinePath(circleLinePoints, ref linePathStyle);
+
+                /*sb.DrawTriangle(new Vector2F(400, 220), new Vector2F(350, 320), new Vector2F(500, 260), Color.SkyBlue);
                 sb.DrawTriangle(new Vector2F(500, 220), new Vector2F(590, 350), new Vector2F(650, 280), Color.Violet);
 
                 sb.DrawTriangleList(triPoints, colors);

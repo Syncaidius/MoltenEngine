@@ -191,9 +191,10 @@ float4 PS_Circle_NoTex(PS_IN input) : SV_Target
 float4 PS_Line(PS_IN input) : SV_Target
 {  
     // Data.x (D1) = Thickness
+    // Data.y (D2) = Edge-sharpness
 
     float dist = abs(input.uvLocal.y - 0.5);
-    float step = 1.0 - smoothstep(1, spriteData[input.id].data.x, dist);
+    float step = 1.0 - smoothstep(spriteData[input.id].data.y, 1, dist / 0.5);
 
     float4 col1 = spriteData[input.id].col;
     float4 col2 = spriteData[input.id].col2;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct SpriteLineStyle
+    public struct LineStyle
     {
         public Color Color1;
 
@@ -18,7 +18,7 @@ namespace Molten.Graphics
 
         public float Sharpness;
 
-        public SpriteLineStyle()
+        public LineStyle()
         {
             Color1 = Color.White;
             Color2 = Color.White;
@@ -26,9 +26,9 @@ namespace Molten.Graphics
             Sharpness = 1.0f;
         }
 
-        public static implicit operator SpriteLineStyle(Color color)
+        public static implicit operator LineStyle(Color color)
         {
-            return new SpriteLineStyle()
+            return new LineStyle()
             {
                 Color1 = color,
                 Color2 = color,
@@ -37,7 +37,7 @@ namespace Molten.Graphics
             };
         }
 
-        public static implicit operator Color(SpriteLineStyle style)
+        public static implicit operator Color(LineStyle style)
         {
             return style.Color1;
         }

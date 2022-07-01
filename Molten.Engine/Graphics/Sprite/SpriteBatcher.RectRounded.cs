@@ -139,7 +139,7 @@ namespace Molten.Graphics
                 Vector2F b = new Vector2F(dest.Left + corners.BottomLeft, dest.Bottom - lo);
 
                 SetStyle(ref style);
-                SpriteLineStyle lineStyle = new SpriteLineStyle()
+                LineStyle lineStyle = new LineStyle()
                 {
                     Color1 = style.PrimaryColor,
                     Color2 = style.SecondaryColor,

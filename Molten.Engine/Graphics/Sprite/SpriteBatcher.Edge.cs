@@ -37,7 +37,7 @@ namespace Molten.Graphics
 
         /// <summary>Draws .</summary>
         /// <param name="edge">The edge to draw.</param>
-        public void DrawEdge(Shape.Edge edge, ref SpriteLineStyle style, float resolution = 16)
+        public void DrawEdge(Shape.Edge edge, ref LineStyle style, float resolution = 16)
         {
             // Early exit for linear edges. Always straight.
             if (edge is Shape.LinearEdge)
@@ -68,7 +68,7 @@ namespace Molten.Graphics
         /// <param name="curve"></param>
         /// <param name="isCubic">If true, the curve will be drawn as a cubic curve. If false, a quadratic curve will be drawn.</param>
         /// <param name="resolution">The number of points that make up the curve.</param>
-        public void DrawEdge(BezierCurve2D curve, ref SpriteLineStyle style, bool isCubic, float resolution = 16)
+        public void DrawEdge(BezierCurve2D curve, ref LineStyle style, bool isCubic, float resolution = 16)
         {
             float increment = 1f / resolution;
             Vector2F p1;
