@@ -60,11 +60,11 @@ namespace Molten.Graphics
             ref SpriteItem item = ref Sprites[id];
             item.Texture = texture;
             item.Material = material;
-            item.Format = SpriteFormat.Sprite;
+            item.Format = SpriteFormat.Ellipse;
 
             ref GpuData data = ref Data[id];
             data.Position = e.Center;
-            data.Rotation = rotation;
+            data.Rotation = rotation + e.StartAngle;
             data.ArraySlice = arraySlice;
             data.Size = new Vector2F(e.RadiusX * 2, e.RadiusY * 2);
             data.Color1 = style.FillColor;
