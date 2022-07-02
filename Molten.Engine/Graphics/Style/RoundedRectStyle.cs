@@ -24,7 +24,7 @@ namespace Molten.Graphics
         {
             FillColor = Color.White;
             BorderColor = Color.White;
-            BorderThickness = 1f;
+            BorderThickness = 0;
             CornerRadius = new CornerInfo(10);
         }
 

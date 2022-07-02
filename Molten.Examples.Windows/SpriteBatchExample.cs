@@ -1,21 +1,22 @@
 ﻿using Molten.Graphics;
+using Molten.Input;
 
 namespace Molten.Samples
 {
-    public class SpriteBatchPrimitives : SampleSceneGame
+    public class SpriteBatchExample : SampleSceneGame
     {
-        const int BACKGROUND_RECT_COUNT = 1000;
-        const float BACKGROUND_OUTLINE_THICKNESS = 2;
+        const int SPRITE_RECT_INCREMENT = 100;
 
-        public override string Description => "Draws various primitives using sprite batch.";
+        public override string Description => "Demonstrates the cabilities of SpriteBatcher by drawing various primitives.";
 
         Rectangle[] _rects;
         RectStyle[] _rectStyles;
         ITexture2D _texMesh;
         ITexture2D _texPrimitives;
         float _rotAngle;
+        int _numRects = 100;
 
-        public SpriteBatchPrimitives() : base("Sprite Batch Primitives") { }
+        public SpriteBatchExample() : base("SpriteBatch Example") { }
 
         protected override void OnInitialize(Engine engine)
         {
@@ -31,8 +32,59 @@ namespace Molten.Samples
             {
                 ArraySize = 3,
             });
+
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
+        }
+
+        private void RefreshRects()
+        {
+            int curCount = _rects != null ? _rects.Length : 0;
+
+            // Setup sprite rectangles and styles.
+            if (_rects == null)
+            {
+                _rects = new Rectangle[_numRects];
+                _rectStyles = new RectStyle[_rects.Length];
+            }
+            else if (curCount < _numRects) // We need to expand arrays
+            {
+                Array.Resize(ref _rects, Math.Max(_rects.Length * 2, _numRects));
+                Array.Resize(ref _rectStyles, _rects.Length);
+            }
+            else // We have more than required.
+            {
+                return;
+            }               
+
+            for (int i = curCount; i < _rects.Length; i++)
+            {
+                _rects[i] = new Rectangle()
+                {
+                    X = Rng.Next(0, 1920),
+                    Y = Rng.Next(0, 1080),
+                    Width = Rng.Next(16, 129),
+                    Height = Rng.Next(16, 129)
+                };
+
+                Color rCol = new Color()
+                {
+                    R = (byte)Rng.Next(10, 255),
+                    G = (byte)Rng.Next(10, 255),
+                    B = (byte)Rng.Next(10, 255),
+                    A = 65,
+                };
+
+                Color rOutlineCol = rCol * 1.5f;
+                rOutlineCol.A = rCol.A;
+
+                _rectStyles[i] = new RectStyle()
+                {
+                    FillColor = rCol,
+                    BorderColor = rOutlineCol,
+                    BorderThickness = new RectBorderThickness(Rng.Next(1, 7))
+                };
+            }
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -171,43 +223,12 @@ namespace Molten.Samples
             List<Vector2F> shapeTriList = new List<Vector2F>();
             testShape.Triangulate(shapeTriList);
 
-            // Setup sprite rectangles and styles.
-            _rects = new Rectangle[BACKGROUND_RECT_COUNT];
-            _rectStyles = new RectStyle[_rects.Length];
-
-            for (int i = 0; i < _rects.Length; i++)
-            {
-                _rects[i] = new Rectangle()
-                {
-                    X = Rng.Next(0, 1920),
-                    Y = Rng.Next(0, 1080),
-                    Width = Rng.Next(16, 129),
-                    Height = Rng.Next(16, 129)
-                };
-
-
-                Color rCol = new Color()
-                {
-                    R = (byte)Rng.Next(10, 255),
-                    G = (byte)Rng.Next(10, 255),
-                    B = (byte)Rng.Next(10, 255),
-                    A = 65,
-                };
-                Color rOutlineCol = rCol * 1.5f;
-                rOutlineCol.A = rCol.A;
-
-                _rectStyles[i] = new RectStyle()
-                {
-                    FillColor = rCol,
-                    BorderColor = rOutlineCol,
-                    BorderThickness = new RectBorderThickness(Rng.Next(1, 7))
-                };
-            }
+            RefreshRects();
 
             SampleSpriteRenderComponent com = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             com.RenderCallback = (sb) =>
             {
-                for (int i = 0; i < _rects.Length; i++)
+                for (int i = 0; i < _numRects; i++)
                     sb.DrawRect(_rects[i], 0, Vector2F.Zero, ref _rectStyles[i]);
 
                 sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.Lime, 2, 1);
@@ -270,6 +291,21 @@ namespace Molten.Samples
                     rect.X = cl.Center.X - pSize;
                     rectTextured.X = rect.X;
                 }
+
+                string strCounter = $"Rectangle Count: {_numRects}";
+                string strInstructions = "[UP KEY] Increase -- [DOWN KEY] Decrease";
+
+                Vector2F counterSize = SampleFont.MeasureString(strCounter);
+                Vector2F counterPos = new Vector2F()
+                {
+                    X = (SceneCamera.OutputSurface.Width / 2) - (counterSize.X /2),
+                    Y = SceneCamera.OutputSurface.Height - 120,
+                };
+
+                sb.DrawString(SampleFont, strCounter, counterPos, Color.White);
+                counterPos.Y += counterSize.Y + 5;
+                counterPos.X = (SceneCamera.OutputSurface.Width / 2) - (SampleFont.MeasureString(strInstructions).X / 2);
+                sb.DrawString(SampleFont, strInstructions, counterPos, Color.White);
             };
         }
 
@@ -278,6 +314,17 @@ namespace Molten.Samples
             base.OnUpdate(time);
 
             _rotAngle += 0.01f * time.Delta;
+
+            if (Keyboard.IsDown(KeyCode.Up))
+            {
+                _numRects += SPRITE_RECT_INCREMENT;
+                RefreshRects();
+            }
+            else if (Keyboard.IsDown(KeyCode.Down))
+            {
+                _numRects = Math.Max(0, _numRects - SPRITE_RECT_INCREMENT);
+                RefreshRects();
+            }
         }
     }
 }

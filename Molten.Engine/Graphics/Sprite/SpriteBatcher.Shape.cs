@@ -24,14 +24,16 @@ namespace Molten.Graphics
             }
         }
 
-        public void DrawShapeOutline(Shape shape, Vector2F position)
+        public void DrawShapeOutline(Shape shape, Vector2F position, ref LineStyle style)
         {
+            LineStyle edgeStyle = style;
+
             foreach (Shape.Contour c in shape.Contours)
             {
-                Color col = c.GetWinding() < 1 ? _style.PrimaryColor : _style.SecondaryColor;
+                edgeStyle.Color1 = edgeStyle.Color2 = c.GetWinding() < 1 ? style.Color1 : style.Color2;
 
                 foreach (Shape.Edge e in c.Edges)
-                    DrawEdge(e, col, _style.Thickness);
+                    DrawEdge(e, ref style);
             }
         }
     }

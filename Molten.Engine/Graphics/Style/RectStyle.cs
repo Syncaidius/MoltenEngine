@@ -22,7 +22,7 @@ namespace Molten.Graphics
         {
             FillColor = Color.White;
             BorderColor = Color.White;
-            BorderThickness = new RectBorderThickness(1f);
+            BorderThickness = new RectBorderThickness(0);
         }
 
         public RectStyle(Color color)

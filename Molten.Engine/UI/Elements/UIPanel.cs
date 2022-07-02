@@ -1,5 +1,4 @@
 ﻿using Molten.Graphics;
-using Molten.Graphics.Style;
 using System.Runtime.Serialization;
 
 namespace Molten.UI
@@ -30,17 +29,18 @@ namespace Molten.UI
             public void Render(SpriteBatcher sb, UIRenderData data)
             {
                 // TODO replace properties with this
-                SpriteStyle style = new SpriteStyle()
-                {
-                    PrimaryColor = BackgroundColor,
-                    SecondaryColor = BorderColor,
-                    Thickness = 10,
-                };
 
                 float radiusLimit = Math.Min(data.GlobalBounds.Width, data.GlobalBounds.Height) / 2;
-                CornerInfo limitedCorners = new CornerInfo(10,50,20,5).Restrict(radiusLimit);
-                sb.SetStyle(ref style);
-                sb.DrawRoundedRect(data.RenderBounds, 0, Vector2F.Zero, limitedCorners);
+                RoundedRectStyle style = new RoundedRectStyle()
+                {
+                    FillColor = BackgroundColor,
+                    BorderColor = BorderColor,
+                    BorderThickness = 10,
+                    CornerRadius = new CornerInfo(10, 50, 20, 5).Restrict(radiusLimit)
+                };
+
+
+                sb.DrawRoundedRect(data.RenderBounds, 0, Vector2F.Zero, ref style);
             }
         }
     }

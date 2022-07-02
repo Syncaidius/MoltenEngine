@@ -107,10 +107,10 @@ namespace Molten.Samples
                 return;
 
             string text = "[W][A][S][D] to move -- [ESC] close -- [LMB] and [MOUSE] to rotate";
-            Vector2F tSize = SampleFont.MeasureString(text, 16);
+            Vector2F tSize = SampleFont.MeasureString(text);
             Vector2F pos = new Vector2F()
             {
-                X = Window.Width / 2 + (-tSize.X / 2),
+                X = (Window.Width / 2) - (tSize.X / 2),
                 Y = Window.Height - tSize.Y - 20,
             };
 
@@ -118,16 +118,16 @@ namespace Molten.Samples
 
             // Gamepad instructions
             text = "OR";
-            tSize = SampleFont.MeasureString(text, 16);
-            pos.X = Window.Width / 2 + (-tSize.X / 2);
+            tSize = SampleFont.MeasureString(text);
+            pos.X = (Window.Width / 2) - (tSize.X / 2);
             pos.Y -= tSize.Y + 5;
             sb.DrawString(SampleFont, text, pos, Color.White);
 
             if (Gamepad.IsConnected)
             {
                 text = "Gamepad [LEFT STICK] or [D-PAD] to move -- [RIGHT STICK] to aim";
-                tSize = SampleFont.MeasureString(text, 16);
-                pos.X = Window.Width / 2 + (-tSize.X / 2);
+                tSize = SampleFont.MeasureString(text);
+                pos.X = (Window.Width / 2) - (tSize.X / 2);
                 pos.Y -= tSize.Y + 5;
                 sb.DrawString(SampleFont, text, pos, Color.White);
 
@@ -141,8 +141,8 @@ namespace Molten.Samples
             else
             {
                 text = "Connect a gamepad / controller";
-                tSize = SampleFont.MeasureString(text, 16);
-                pos.X = Window.Width / 2 + (-tSize.X / 2);
+                tSize = SampleFont.MeasureString(text);
+                pos.X = (Window.Width / 2) - (tSize.X / 2);
                 pos.Y -= tSize.Y + 5;
                 sb.DrawString(SampleFont, text, pos, Color.White);
             }

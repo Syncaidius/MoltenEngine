@@ -11,7 +11,6 @@
 
         private protected override void OnRender(DeviceContext pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
-            SpriteStyle curStyle = renderer.SpriteBatcher.GetStyle();
             Callback?.Invoke(renderer.SpriteBatcher);
             renderer.SpriteBatcher.Flush(pipe, camera, data);
         }

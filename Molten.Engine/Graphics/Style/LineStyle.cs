@@ -28,13 +28,8 @@ namespace Molten.Graphics
             Sharpness = 1.0f;
         }
 
-        public LineStyle(Color color)
-        {
-            Color1 = color;
-            Color2 = color;
-            Thickness = 1.0f;
-            Sharpness = 1.0f;
-        }
+        public LineStyle(Color color, float thickness = 1.0f, float sharpness = 1.0f) : 
+            this(color, color, thickness, sharpness) { }
 
         public LineStyle(Color color1, Color color2, float thickness = 1.0f, float sharpness = 1.0f)
         {

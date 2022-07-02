@@ -51,7 +51,7 @@ namespace Molten.Samples
 
             for(int i = 0; i < 300; i++)
             {
-                _sprites.Add(new Sprite()
+                Sprite spr = new Sprite()
                 {
                     Position = new Vector2F()
                     {
@@ -59,23 +59,25 @@ namespace Molten.Samples
                         Y = Rng.Next(0, 1080),
                     },
 
-                    Style = new SpriteStyle(new Color()
-                    {
-                        R = (byte)Rng.Next(0, 255),
-                        G = (byte)Rng.Next(0, 255),
-                        B = (byte)Rng.Next(0, 255),
-                        A = 255,
-                    }),
-                 
                     Data = new SpriteData()
                     {
                         Texture = tex,
                         Source = new Rectangle(0, 0, 128, 128),
                         ArraySlice = Rng.Next(0, 3),
-                    },                    
-                    Scale = new Vector2F(Rng.Next(25, 101), Rng.Next(25,101)) / 100,
+                    },
+                    Scale = new Vector2F(Rng.Next(25, 101), Rng.Next(25, 101)) / 100,
                     Origin = new Vector2F(0.5f),
-                });
+                };
+
+                spr.Data.Style = new Color()
+                {
+                    R = (byte)Rng.Next(0, 255),
+                    G = (byte)Rng.Next(0, 255),
+                    B = (byte)Rng.Next(0, 255),
+                    A = 255,
+                };
+
+                _sprites.Add(spr);
             }
 
             SampleSpriteRenderComponent com = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();

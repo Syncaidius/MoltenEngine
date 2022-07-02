@@ -99,14 +99,12 @@ namespace Molten.Samples
                 if (SampleFont == null || _glyphTriPoints == null || _colors == null)
                     return;
 
-                SpriteStyle style = new SpriteStyle(Color.Transparent, Color.Grey, 1);
-                sb.SetStyle(ref style);
-                sb.DrawRect(_glyphBounds);
+                RectStyle style = new RectStyle(Color.Transparent, Color.Grey, 1);
+                sb.DrawRect(_glyphBounds, ref style);
 
-                style.PrimaryColor = Color.Transparent;
-                style.SecondaryColor = Color.Pink;
-                sb.SetStyle(ref style);
-                sb.DrawRect(_fontBounds);
+                style.FillColor = Color.Transparent;
+                style.BorderColor = Color.Pink;
+                sb.DrawRect(_fontBounds, ref style);
 
                 // Top Difference marker
                 float dif = _glyphBounds.Top - _fontBounds.Top;
@@ -128,14 +126,13 @@ namespace Molten.Samples
                 sb.DrawShapeOutline(_shape, Color.Red, Color.SkyBlue, 2);
 
                 Rectangle clickRect;
-                style = new SpriteStyle(_clickColor);
+                style = new RectStyle(_clickColor);
 
                 if (_shape != null)
                 {
                     clickRect = new Rectangle((int)_clickPoint.X, (int)_clickPoint.Y, 0, 0);
                     clickRect.Inflate(8);
-                    sb.SetStyle(ref style);
-                    sb.DrawRect(clickRect);
+                    sb.DrawRect(clickRect, ref style);
                 }
 
                 sb.DrawString(SampleFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
@@ -146,18 +143,16 @@ namespace Molten.Samples
 
                 if (_font2Test != null && _font2Test.Source.UnderlyingTexture != null)
                 {
-                    SpriteStyle boundsStyle = new SpriteStyle(Color.Transparent, Color.Grey, 2);
-                    sb.SetStyle(ref boundsStyle);
-
+                    RectStyle boundsStyle = new RectStyle(Color.Transparent, Color.Grey, 2);
                     Vector2F pos = new Vector2F(800, 65);
                     Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, 512, 512);
                     sb.Draw(texBounds, Color.White, _font2Test.Source.UnderlyingTexture);
 
-                    style.PrimaryColor = Color.Red;
-                    style.Thickness = 1;
+                    boundsStyle.BorderColor = Color.Red;
+                    boundsStyle.FillColor = Color.Transparent;
+                    boundsStyle.BorderThickness = new RectBorderThickness(1);
 
-                    sb.SetStyle(ref boundsStyle);
-                    sb.DrawRect(texBounds);
+                    sb.DrawRect(texBounds, ref boundsStyle);
 
                     pos.Y += 517;
                     sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
