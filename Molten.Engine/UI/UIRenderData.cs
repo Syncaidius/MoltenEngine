@@ -7,8 +7,6 @@ namespace Molten.UI
     {
         internal UIRenderData() { }
 
-        internal List<UIRenderData> Children { get; } = new List<UIRenderData>();
-
         /// <summary>
         /// Global position of the UI component, where 0,0 is it's origin.
         /// </summary>

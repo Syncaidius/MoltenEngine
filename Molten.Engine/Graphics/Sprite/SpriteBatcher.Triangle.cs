@@ -19,7 +19,7 @@ namespace Molten.Graphics
             ref SpriteItem item = ref Sprites[id];
             item.Texture = null;
             item.Material = null;
-            item.Format = SpriteFormat.Triangle;
+            item.Type = ItemType.Triangle;
 
             ref GpuData data = ref Data[id];
             data.Position = p1;
@@ -54,7 +54,7 @@ namespace Molten.Graphics
                 ref SpriteItem item = ref Sprites[id];
                 item.Texture = null;
                 item.Material = null;
-                item.Format = SpriteFormat.Triangle;
+                item.Type = ItemType.Triangle;
 
                 ref GpuData data = ref Data[id];
                 data.Position = points[i];

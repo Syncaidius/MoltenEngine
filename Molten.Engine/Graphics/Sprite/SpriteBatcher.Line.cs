@@ -211,7 +211,7 @@ namespace Molten.Graphics
 
             item.Texture = null;
             item.Material = null;
-            item.Format = SpriteFormat.Line;
+            item.Type = ItemType.Line;
 
             float dist = Vector2F.Distance(ref p1, ref p2) + 1;
             Vector2F dir = Vector2F.Normalize(p2 - p1);

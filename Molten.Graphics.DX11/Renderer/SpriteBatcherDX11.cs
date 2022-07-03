@@ -45,12 +45,12 @@ namespace Molten.Graphics
             _matMsdf = resultSdf[ShaderClassType.Material, "sprite-msdf"] as Material;
 
             _checkers = new Func<DeviceContext, SpriteRange, ObjectRenderData, Material>[6];
-            _checkers[(int)SpriteFormat.Sprite] = CheckSpriteRange;
-            _checkers[(int)SpriteFormat.MSDF] = CheckMsdfRange;
-            _checkers[(int)SpriteFormat.Line] = CheckLineRange;
-            _checkers[(int)SpriteFormat.Triangle] = CheckTriangleRange;
-            _checkers[(int)SpriteFormat.Ellipse] = CheckEllipseRange;
-            _checkers[(int)SpriteFormat.Grid] = CheckGridRange;
+            _checkers[(int)ItemType.Sprite] = CheckSpriteRange;
+            _checkers[(int)ItemType.MSDF] = CheckMsdfRange;
+            _checkers[(int)ItemType.Line] = CheckLineRange;
+            _checkers[(int)ItemType.Triangle] = CheckTriangleRange;
+            _checkers[(int)ItemType.Ellipse] = CheckEllipseRange;
+            _checkers[(int)ItemType.Grid] = CheckGridRange;
         }
 
         internal unsafe void Flush(DeviceContext context, RenderCamera camera, ObjectRenderData data)
@@ -58,7 +58,7 @@ namespace Molten.Graphics
             if (NextID == 0)
                 return;
 
-            Clips[0] = (Rectangle)camera.OutputSurface.Viewport.Bounds;
+            ClipStack[0] = (Rectangle)camera.OutputSurface.Viewport.Bounds;
             context.State.VertexBuffers[0].Value = null;
 
             ProcessBatches((rangeCount, vertexStartIndex, numVerticesInBuffer) => 
@@ -79,14 +79,14 @@ namespace Molten.Graphics
                 bufferOffset += range.VertexCount;
 
                 // TODO TESTING - REMOVE LATER
-                if (range.Format != SpriteFormat.Sprite && 
-                    range.Format != SpriteFormat.MSDF && 
-                    range.Format != SpriteFormat.Ellipse &&
-                    range.Format != SpriteFormat.Line &&
-                    range.Format != SpriteFormat.Grid)
+                if (range.Type != ItemType.Sprite && 
+                    range.Type != ItemType.MSDF && 
+                    range.Type != ItemType.Ellipse &&
+                    range.Type != ItemType.Line &&
+                    range.Type != ItemType.Grid)
                     continue;
 
-                Material mat = (range.Material as Material) ?? _checkers[(int)range.Format](context, range, data);
+                Material mat = (range.Material as Material) ?? _checkers[(int)range.Type](context, range, data);
 
                 mat["spriteData"].Value = _bufferData;
                 mat["vertexOffset"].Value = range.BufferOffset;
@@ -108,7 +108,7 @@ namespace Molten.Graphics
                     mat.SpriteBatch.TextureSize.Value = texSize;
                 }
 
-                context.State.SetScissorRectangles(Clips[range.ClipID]);
+                context.State.SetScissorRectangles(ClipStack[range.ClipID]);
 
                 mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
                 context.Draw(mat, range.VertexCount, VertexTopology.PointList);

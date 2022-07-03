@@ -176,7 +176,7 @@ namespace Molten.UI
                 {
                     // Un-set owner of current root UIElement, if any.
                     if (_root != null)
-                        _root.Owner = null;
+                        _root.Manager = null;
 
                     // Set new root UIElement and it's owner.
                     _root = value;
@@ -186,7 +186,7 @@ namespace Molten.UI
                         if (_root.Parent != null)
                             _root.Parent.Children.Remove(_root);
 
-                        _root.Owner = this;
+                        _root.Manager = this;
                     }
                 }
             }

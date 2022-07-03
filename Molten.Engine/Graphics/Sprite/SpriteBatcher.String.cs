@@ -78,7 +78,7 @@ namespace Molten.Graphics
                 ref SpriteItem item = ref Sprites[id];
                 item.Texture = font.Source.UnderlyingTexture;
                 item.Material = material;
-                item.Format = SpriteFormat.MSDF;
+                item.Type = ItemType.MSDF;
 
                 ref GpuData data = ref Data[id];
                 data.Position = new Vector2F(charPos.X, charPos.Y + ((cache.YOffset * font.Scale) * scale.Y));

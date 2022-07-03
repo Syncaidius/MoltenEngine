@@ -35,8 +35,8 @@ namespace Molten.UI
                 {
                     FillColor = BackgroundColor,
                     BorderColor = BorderColor,
-                    BorderThickness = 10,
-                    CornerRadius = new CornerInfo(10, 50, 20, 5).Restrict(radiusLimit)
+                    BorderThickness = BorderThickness,
+                    CornerRadius = CornerRadius.Restrict(radiusLimit)
                 };
 
 

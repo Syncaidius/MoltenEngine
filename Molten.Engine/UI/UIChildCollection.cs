@@ -25,6 +25,12 @@ namespace Molten.UI
             _readOnly = _elements.AsReadOnly();
         }
 
+        internal void SetManager(UIManagerComponent manager)
+        {
+            foreach (UIElement e in _elements)
+                e.Manager = manager;
+        }
+
         public T Add<T>()
             where T : UIElement, new()
         {
@@ -42,15 +48,9 @@ namespace Molten.UI
                 throw new Exception("Element already has a parent. Remove from previous first.");
 
             // Set new element parent.
-            child.Owner = _element.Owner;
+            child.Manager = _element.Manager;
             _elements.Add(child);
             child.Parent = _element;
-
-            _element.Engine.Scenes.QueueChange(null, new SceneUIAddChild()
-            {
-                Child = _element.BaseData,
-                Parent = _element.BaseData
-            });
 
             OnElementAdded?.Invoke(child);
         }
@@ -63,13 +63,7 @@ namespace Molten.UI
             _elements.Remove(child);
             child.Parent = null;
 
-            _element.Engine.Scenes.QueueChange(null, new SceneUIRemoveChild()
-            {
-                Child = child.BaseData,
-                Parent = _element.BaseData
-            });
-
-            _element.Owner = null;
+            _element.Manager = null;
             OnElementRemoved?.Invoke(child);
         }
 

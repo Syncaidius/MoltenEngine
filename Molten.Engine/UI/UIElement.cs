@@ -12,7 +12,7 @@ namespace Molten.UI
         [DataMember]
         internal UIRenderData BaseData;
 
-        UIManagerComponent _owner;
+        UIManagerComponent _manager;
         UIElement _parent;
         UITheme _theme;
 
@@ -77,21 +77,21 @@ namespace Molten.UI
             BaseData.RenderBounds = BaseData.BorderBounds;
             BaseData.RenderBounds.Inflate(-pad.Left, -pad.Top, -pad.Right, -pad.Bottom);
 
+            OnUpdateCompoundBounds();
             foreach (UIElement e in Children)
                 e.UpdateBounds();
 
+            OnUpdateChildBounds();
             foreach (UIElement e in CompoundElements)
                 e.UpdateBounds();
 
             OnUpdateBounds();
         }
 
-        public abstract void ApplyStateTheme(UIElementState state);
-
-        protected virtual void ApplyOwner(UIManagerComponent owner)
+        public virtual void ApplyStateTheme(UIElementState state)
         {
-            foreach (UIElement child in Children)
-                child.Owner = owner;
+            foreach (UIElement e in CompoundElements)
+                e.ApplyStateTheme(state);
         }
 
         internal void Update(Timing time)
@@ -157,6 +157,16 @@ namespace Molten.UI
         protected override void OnDispose() { }
 
         protected virtual void OnUpdateBounds() { }
+
+        /// <summary>
+        /// Invoked right before updating the bounds of compound elements.
+        /// </summary>
+        protected virtual void OnUpdateCompoundBounds() { }
+
+        /// <summary>
+        /// Invoked right before updating the bounds of child elements.
+        /// </summary>
+        protected virtual void OnUpdateChildBounds() { }
 
         protected virtual void OnUpdate(Timing time) { }
 
@@ -266,15 +276,16 @@ namespace Molten.UI
         /// <summary>
         /// Gets the internal <see cref="UIManagerComponent"/> that will draw the current <see cref="UIElement"/>.
         /// </summary>
-        internal UIManagerComponent Owner
+        internal UIManagerComponent Manager
         {
-            get => _owner;
+            get => _manager;
             set
             {
-                if (_owner != value)
+                if (_manager != value)
                 {
-                    _owner = value;
-                    ApplyOwner(_owner);
+                    _manager = value;
+                    CompoundElements.SetManager(_manager);
+                    Children.SetManager(_manager);
                 }
             }
         }
@@ -292,7 +303,7 @@ namespace Molten.UI
                     _theme = value ?? Engine.Settings.UI.Theme;
 
                     UIElementTheme newElementTheme = _theme.GetTheme(GetType());
-                    if(newElementTheme != ElementTheme)
+                    if (newElementTheme != ElementTheme)
                     {
                         if (ElementTheme != null)
                             ElementTheme.OnContentLoaded -= ElementTheme_OnContentLoaded;

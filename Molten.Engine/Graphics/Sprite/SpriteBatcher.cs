@@ -18,7 +18,7 @@ namespace Molten.Graphics
             [FieldOffset(8)] public ITexture2D Texture;     // 8-bytes (64-bit reference)
             [FieldOffset(16)] public IMaterial Material;    // 8-bytes (64-bit reference)
 
-            [FieldOffset(24)] public SpriteFormat Format;   // 1-byte
+            [FieldOffset(24)] public ItemType Type;         // 1-byte
             [FieldOffset(25)] public ushort ClipID;         // 2-bytes
             [FieldOffset(27)] public byte Reserved1;        // 1-byte unused.
 
@@ -26,7 +26,7 @@ namespace Molten.Graphics
 
             public override string ToString()
             {
-                return $"Range -- Vertices: {VertexCount} -- Format: {Format}";
+                return $"Range -- Vertices: {VertexCount} -- Format: {Type}";
             }
         }
 
@@ -36,14 +36,14 @@ namespace Molten.Graphics
             [FieldOffset(0)] public ITexture2D Texture;
             [FieldOffset(8)] public IMaterial Material;
 
-            [FieldOffset(16)] public SpriteFormat Format;   // 1-byte
+            [FieldOffset(16)] public ItemType Type;         // 1-byte
             [FieldOffset(17)] public ushort ClipID;         // 2-bytes
             [FieldOffset(19)] public byte Reserved1;        // 1-byte unused.
 
             [FieldOffset(16)] public int Hash;              // 4-bytes overlapping Format, ClipID and Padding to give us a comparison hash.
         }
 
-        protected enum SpriteFormat : byte
+        protected enum ItemType : byte
         {
             Sprite = 0, // Textured or untextured (rectangle) sprites
 
@@ -58,13 +58,12 @@ namespace Molten.Graphics
             Grid = 5,
         }
 
-
         static Vector2F DEFAULT_ORIGIN_CENTER = new Vector2F(0.5f);
 
-        protected Rectangle[] Clips;
+        protected Rectangle[] ClipStack;
+        protected GpuData[] Data;
         protected SpriteItem[] Sprites;
         protected SpriteRange[] Ranges;
-        protected GpuData[] Data;
         protected uint NextID;
 
         ushort _curClipID;
@@ -84,7 +83,7 @@ namespace Molten.Graphics
             Sprites = new SpriteItem[capacity];
             Ranges = new SpriteRange[capacity]; // Worst-case, we can expect the number of ranges to equal the capacity.
 
-            Clips = new Rectangle[256];
+            ClipStack = new Rectangle[256];
         }
 
         protected uint GetItemID()
@@ -108,13 +107,13 @@ namespace Molten.Graphics
         /// False will be returned if <paramref name="bounds"/> is invalid, or if the clip is outside of a previously-pushed clip.</returns>
         public bool PushClip(Rectangle bounds)
         {
-            if (_curClipID == Clips.Length)
-                Array.Resize(ref Clips, Clips.Length * 2);
+            if (_curClipID == ClipStack.Length)
+                Array.Resize(ref ClipStack, ClipStack.Length * 2);
 
             // Cull the bounds to the current clip, if any.
             if (_curClipID > 0)
             {
-                Rectangle cur = Clips[_curClipID];
+                Rectangle cur = ClipStack[_curClipID];
 
                 bounds.X = MathHelper.Clamp(bounds.X, cur.X, cur.Right);
                 bounds.Y = MathHelper.Clamp(bounds.Y, cur.Y, cur.Bottom);
@@ -124,7 +123,7 @@ namespace Molten.Graphics
 
             if (bounds.Width > 0 && bounds.Height > 0)
             {
-                Clips[++_curClipID] = bounds;
+                ClipStack[++_curClipID] = bounds;
                 return true;
             }
 
@@ -174,7 +173,7 @@ namespace Molten.Graphics
             ref SpriteItem item = ref Sprites[id];
             item.Texture = cellTexture;
             item.Material = material;
-            item.Format = SpriteFormat.Grid;
+            item.Type = ItemType.Grid;
 
             ref GpuData data = ref Data[id];
             data.Position = bounds.TopLeft;
@@ -346,7 +345,7 @@ namespace Molten.Graphics
             ref SpriteItem item = ref Sprites[id];
             item.Texture = texture;
             item.Material = material;
-            item.Format = SpriteFormat.Sprite;
+            item.Type = ItemType.Sprite;
 
             ref GpuData vertex = ref Data[id];
             vertex.Position = position;
@@ -383,7 +382,7 @@ namespace Molten.Graphics
                 range = ref Ranges[_curRange];
 
                 ref SpriteItem item = ref Sprites[i];
-                range.Format = item.Format;
+                range.Type = item.Type;
                 range.Texture = item.Texture;
                 range.Material = item.Material;
                 range.ClipID = item.ClipID;

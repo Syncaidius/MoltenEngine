@@ -60,7 +60,7 @@ namespace Molten.Graphics
             ref SpriteItem item = ref Sprites[id];
             item.Texture = texture;
             item.Material = material;
-            item.Format = SpriteFormat.Ellipse;
+            item.Type = ItemType.Ellipse;
 
             ref GpuData data = ref Data[id];
             data.Position = e.Center;

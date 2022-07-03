@@ -20,15 +20,9 @@ namespace Molten.UI
             _label.VerticalAlign = UIVerticalAlignment.Center;
         }
 
-        public override void ApplyStateTheme(UIElementState state)
+        protected override void OnUpdateCompoundBounds()
         {
-            _panel.ApplyStateTheme(state);
-            _label.ApplyStateTheme(state);
-        }
-
-        protected override void OnUpdateBounds()
-        {
-            base.OnUpdateBounds();
+            base.OnUpdateCompoundBounds();
 
             _panel.LocalBounds = new Rectangle(0, 0, BaseData.GlobalBounds.Width, BaseData.GlobalBounds.Height);
             _label.LocalBounds = _panel.LocalBounds;
@@ -47,7 +41,7 @@ namespace Molten.UI
             base.OnReleased(tracker, releasedOutside);
 
             _panel.ApplyStateTheme(UIElementState.Default);
-            _panel.ApplyStateTheme(UIElementState.Default);
+            _label.ApplyStateTheme(UIElementState.Default);
         }
 
         public string Text

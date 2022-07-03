@@ -109,6 +109,18 @@ namespace Molten
             return (T*)Alloc((nuint)sizeof(T) * numElements);
         }
 
+        public static void ResizeArray<T>(ref T* existing, nuint existingNumElements, nuint newNumElements) where T : unmanaged
+        {
+            nuint destBytes = (nuint)sizeof(T) * newNumElements;
+            nuint existingBytes = (nuint)sizeof(T) * existingNumElements;
+            T* newArray = (T*)Alloc(destBytes);
+
+            Buffer.MemoryCopy(existing, newArray, destBytes, existingBytes);
+            T* old = existing;
+            existing = newArray;
+            Free(ref old);
+        }
+
         public static T* AllocAlignedArray<T>(nuint numElements, nuint alignment) where T : unmanaged
         {
             return (T*)AllocAligned((nuint)sizeof(T) * numElements, alignment);
