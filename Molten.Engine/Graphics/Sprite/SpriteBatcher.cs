@@ -8,21 +8,15 @@ namespace Molten.Graphics
     /// </summary>
     public abstract partial class SpriteBatcher : IDisposable
     {
-        protected delegate void FlushRangeCallback(uint rangeCount, uint vertexStartIndex, uint numVerticesInBuffer);
+        protected delegate void FlushRangeCallback(uint firstRangeID, uint rangeCount, uint dataStartIndex, uint numDataInBuffer);
 
-        [StructLayout(LayoutKind.Explicit)]
         protected struct SpriteRange
         {
-            [FieldOffset(0)] public uint BufferOffset;      // 4-bytes
-            [FieldOffset(4)] public uint VertexCount;       // 4-bytes
-            [FieldOffset(8)] public ITexture2D Texture;     // 8-bytes (64-bit reference)
-            [FieldOffset(16)] public IMaterial Material;    // 8-bytes (64-bit reference)
-
-            [FieldOffset(24)] public ItemType Type;         // 1-byte
-            [FieldOffset(25)] public ushort ClipID;         // 2-bytes
-            [FieldOffset(27)] public byte Reserved1;        // 1-byte unused.
-
-            [FieldOffset(24)] public int Hash;              // 4-bytes overlapping Format, ClipID and Padding to give us a comparison hash.
+            public uint VertexCount;        // 4-bytes
+            public ITexture2D Texture;      // 8-bytes (64-bit reference)
+            public IMaterial Material;      // 8-bytes (64-bit reference)
+            public Rectangle Clip;          // Clipping rectangle.
+            public RangeType Type;           // 1-byte
 
             public override string ToString()
             {
@@ -30,44 +24,53 @@ namespace Molten.Graphics
             }
         }
 
-        [StructLayout(LayoutKind.Explicit)]
-        protected struct SpriteItem
+        protected enum RangeType : int
         {
-            [FieldOffset(0)] public ITexture2D Texture;
-            [FieldOffset(8)] public IMaterial Material;
+            /// <summary>
+            /// Range contains no sprites and will not draw.
+            /// </summary>
+            None = 0,
 
-            [FieldOffset(16)] public ItemType Type;         // 1-byte
-            [FieldOffset(17)] public ushort ClipID;         // 2-bytes
-            [FieldOffset(19)] public byte Reserved1;        // 1-byte unused.
+            /// <summary>
+            /// A textured sprite or untextured rectangle.
+            /// </summary>
+            Sprite = 1, // Textured or untextured (rectangle) sprites
 
-            [FieldOffset(16)] public int Hash;              // 4-bytes overlapping Format, ClipID and Padding to give us a comparison hash.
-        }
+            /// <summary>
+            /// Multi-channel signed-distance field.
+            /// </summary>
+            MSDF = 2,
 
-        protected enum ItemType : byte
-        {
-            Sprite = 0, // Textured or untextured (rectangle) sprites
+            /// <summary>
+            /// Untextured lines.
+            /// </summary>
+            Line = 3,
 
-            MSDF = 1, // Multi-channel signed-distance field.
+            /// <summary>
+            /// Untextured triangles.
+            /// </summary>
+            Triangle = 4,
 
-            Line = 2, // Untextured lines
+            /// <summary>
+            /// Ellipse or circular shape. It can be textured or untextured.
+            /// </summary>
+            Ellipse = 5,
 
-            Triangle = 3, // Untextured triangles
-
-            Ellipse = 4, // Untextured circles - Uses a geometry shader to handle this
-
-            Grid = 5,
+            /// <summary>
+            /// Textured or untextured grid.
+            /// </summary>
+            Grid = 6,
         }
 
         static Vector2F DEFAULT_ORIGIN_CENTER = new Vector2F(0.5f);
 
         protected Rectangle[] ClipStack;
         protected GpuData[] Data;
-        protected SpriteItem[] Sprites;
         protected SpriteRange[] Ranges;
-        protected uint NextID;
 
         ushort _curClipID;
         uint _curRange;
+        protected uint DataCount;
 
         /// <summary>
         /// Placeholder for internal rectangle/sprite styling.
@@ -78,25 +81,11 @@ namespace Molten.Graphics
         {
             _rectStyle = RectStyle.Default;
 
-            Capacity = capacity;
+            FlushCapacity = capacity;
             Data = new GpuData[capacity];
-            Sprites = new SpriteItem[capacity];
             Ranges = new SpriteRange[capacity]; // Worst-case, we can expect the number of ranges to equal the capacity.
 
             ClipStack = new Rectangle[256];
-        }
-
-        protected uint GetItemID()
-        {
-            if (NextID == Sprites.Length)
-            {  // Increase length by 50%
-                int len = Sprites.Length + (Sprites.Length / 2);
-                Array.Resize(ref Sprites, len);
-                Array.Resize(ref Data, len);
-            }
-
-            Sprites[NextID].ClipID = _curClipID;
-            return NextID++;
         }
 
         /// <summary>
@@ -124,6 +113,11 @@ namespace Molten.Graphics
             if (bounds.Width > 0 && bounds.Height > 0)
             {
                 ClipStack[++_curClipID] = bounds;
+
+                // Insert a range with the newest clipping rectangle.
+                ref SpriteRange range = ref GetRange(RangeType.None);
+                range.Clip = bounds;
+
                 return true;
             }
 
@@ -136,6 +130,58 @@ namespace Molten.Graphics
                 throw new Exception("There are no clips available to pop");
 
             _curClipID--;
+
+            ref SpriteRange range = ref GetRange(RangeType.None);
+            range.Clip = ClipStack[_curClipID];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected ref GpuData GetData(RangeType type, ITexture2D texture, IMaterial material)
+        {
+            ref SpriteRange range = ref Ranges[_curRange];
+            if (range.Type != type ||
+                range.Texture != texture ||
+                range.Material != material ||
+                range.VertexCount == FlushCapacity)
+            {
+                ref Rectangle curClip = ref range.Clip;
+                range = ref GetRange(type);
+                range.Texture = texture;
+                range.Material = material;
+                range.Clip = curClip;
+            }
+
+            range.VertexCount++;
+
+            if (DataCount == Data.Length) // Increase length by 50%
+                Array.Resize(ref Data, Data.Length + (Data.Length / 2));
+
+            return ref Data[DataCount++];
+        }
+
+        /// <summary>Inserts a new sprite range, without any <see cref="GpuData"/>. 
+        /// This is useful for state changes, which do not require any sprites to be drawn. e.g. pushing or popping clip rectangles.</summary>
+        /// <param name="type"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ref SpriteRange GetRange(RangeType type)
+        {
+            if(_curRange == Ranges.Length) // Increase length by 50%
+                Array.Resize(ref Ranges, Ranges.Length + (Ranges.Length / 2));
+
+            ref SpriteRange range = ref Ranges[++_curRange];
+            range.Type = type;
+            range.VertexCount = 0;
+
+            return ref range;
+        }
+
+        private void Reset()
+        {
+            _curRange = 0;
+            _curClipID = 0;
+            DataCount = 0;
+            Ranges[_curRange].Type = RangeType.None;
+            Ranges[_curRange].Clip = ClipStack[_curClipID];
         }
 
         public void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, Color cellColor, Color lineColor, float lineThickness, ITexture2D cellTexture = null, IMaterial material = null, uint arraySlice = 0)
@@ -168,14 +214,7 @@ namespace Molten.Graphics
             float cellIncX = bounds.Size.X / cellSize.X;
             float cellIncY = bounds.Size.Y / cellSize.Y;
 
-
-            uint id = GetItemID();
-            ref SpriteItem item = ref Sprites[id];
-            item.Texture = cellTexture;
-            item.Material = material;
-            item.Type = ItemType.Grid;
-
-            ref GpuData data = ref Data[id];
+            ref GpuData data = ref GetData(RangeType.Grid, cellTexture, material);
             data.Position = bounds.TopLeft;
             data.Rotation = rotation;
             data.Size = bounds.Size;
@@ -341,13 +380,7 @@ namespace Molten.Graphics
             IMaterial material,
             float arraySlice)
         {
-            uint id = GetItemID();
-            ref SpriteItem item = ref Sprites[id];
-            item.Texture = texture;
-            item.Material = material;
-            item.Type = ItemType.Sprite;
-
-            ref GpuData vertex = ref Data[id];
+            ref GpuData vertex = ref GetData(RangeType.Sprite, texture, material);
             vertex.Position = position;
             vertex.Rotation = rotation;
             vertex.ArraySlice = arraySlice;
@@ -363,70 +396,52 @@ namespace Molten.Graphics
             vertex.Extra.D4 = style.BorderThickness.Bottom / size.Y; // Convert to UV coordinate system (0 - 1) range
         }
 
-        protected void ProcessBatches(FlushRangeCallback flushCallback)
+        protected void ProcessBatches(RenderCamera camera, FlushRangeCallback flushCallback)
         {
+            ClipStack[0] = (Rectangle)camera.OutputSurface.Viewport.Bounds;
+
             SpriteRange t = new SpriteRange();
             ref SpriteRange range = ref t;
 
             // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.            
-            uint i = 0;
-            while (i < NextID)
+            uint dataID = 0;
+            uint rangeID = 0;
+
+            while (dataID < DataCount && rangeID <= _curRange)
             {
-                // Reset vertex array pointer and ranges, so we can prepare the next batch of vertices.
-                uint remaining = NextID - i;
-                uint end = i + Math.Min(remaining, Capacity);
-                uint firstVertexID = i;
-                uint start = i;
+                uint flushCount = 0; // Number of data elements to flush.
 
-                _curRange = 0;
-                range = ref Ranges[_curRange];
+                uint firstRangeID = rangeID;
+                uint firstDataID = dataID;
 
-                ref SpriteItem item = ref Sprites[i];
-                range.Type = item.Type;
-                range.Texture = item.Texture;
-                range.Material = item.Material;
-                range.ClipID = item.ClipID;
-
-                uint v = 0;
-                for (; i < end; i++)
+                for(; rangeID <= _curRange; rangeID++)
                 {
-                    item = ref Sprites[i];
-                    v++;
+                    range = ref Ranges[rangeID];
 
-                    // If the current item does not match that of the current range, start a new range.
-                    if (item.Texture != range.Texture ||
-                        item.Material != range.Material ||
-                        item.Hash != range.Hash)
-                    {
-                        range.VertexCount = i - start;
-                        _curRange++;
+                    if (range.Type == RangeType.None || range.VertexCount == 0)
+                        continue;
 
-                        range = ref Ranges[_curRange];
-                        start = i;
-                        range.Texture = item.Texture;
-                        range.Material = item.Material;
-                        range.Hash = item.Hash;
-                    }
+                    if (flushCount + range.VertexCount > FlushCapacity)
+                        break;
+
+                    flushCount += range.VertexCount;
                 }
 
-                // Include the last range, if it has any vertices.
-                range.VertexCount = i - start;
-                if (range.VertexCount > 0)
-                    _curRange++;
+                uint rangeCount = rangeID - firstRangeID;
+                dataID += flushCount;
 
-                if (_curRange > 0)
-                    flushCallback(_curRange, firstVertexID, v);
+                if (flushCount > 0)
+                    flushCallback(firstRangeID, rangeCount, firstDataID, flushCount);
             }
 
-            // Reset
-            NextID = 0;
+            Reset();
         }
 
         public abstract void Dispose();
 
         /// <summary>
-        /// Gets the capacity of the Spritebatcher.
+        /// Gets the maximum number of sprites that the current <see cref="SpriteBatcher"/> can render at a time when flushing.
         /// </summary>
-        public uint Capacity { get; }
+        public uint FlushCapacity { get; }
     }
 }

@@ -56,13 +56,7 @@ namespace Molten.Graphics
         {
             RectangleF source = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
 
-            uint id = GetItemID();
-            ref SpriteItem item = ref Sprites[id];
-            item.Texture = texture;
-            item.Material = material;
-            item.Type = ItemType.Ellipse;
-
-            ref GpuData data = ref Data[id];
+            ref GpuData data = ref GetData(RangeType.Ellipse, texture, material);
             data.Position = e.Center;
             data.Rotation = rotation + e.StartAngle;
             data.ArraySlice = arraySlice;

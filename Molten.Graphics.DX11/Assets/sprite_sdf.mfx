@@ -20,7 +20,7 @@
 	</pass>
 </material>
 
-#include "sprite_common_v2.mfx";
+#include "sprite_common.mfx";
 
 float pxRange = 2;
 

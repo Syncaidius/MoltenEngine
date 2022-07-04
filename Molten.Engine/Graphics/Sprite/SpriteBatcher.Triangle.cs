@@ -15,13 +15,7 @@ namespace Molten.Graphics
         /// <param name="color">The color of the triangle.</param>
         public void DrawTriangle(Vector2F p1, Vector2F p2, Vector2F p3, Color color)
         {
-            uint id = GetItemID();
-            ref SpriteItem item = ref Sprites[id];
-            item.Texture = null;
-            item.Material = null;
-            item.Type = ItemType.Triangle;
-
-            ref GpuData data = ref Data[id];
+            ref GpuData data = ref GetData(RangeType.Triangle, null, null);
             data.Position = p1;
             data.Rotation = 0; // TODO triangle rotation.
             data.ArraySlice = 0;
@@ -50,13 +44,7 @@ namespace Molten.Graphics
             {
                 int colID = i / 3;
 
-                uint id = GetItemID();
-                ref SpriteItem item = ref Sprites[id];
-                item.Texture = null;
-                item.Material = null;
-                item.Type = ItemType.Triangle;
-
-                ref GpuData data = ref Data[id];
+                ref GpuData data = ref GetData(RangeType.Triangle, null, null);
                 data.Position = points[i];
                 data.Rotation = 0;
                 data.ArraySlice = 0;

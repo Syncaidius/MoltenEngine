@@ -24,9 +24,7 @@
     <None Remove="Assets\skybox.mfx" />
     <None Remove="Assets\sprite.mfx" />
     <None Remove="Assets\sprite_common.mfx" />
-    <None Remove="Assets\sprite_common_v2.mfx" />
     <None Remove="Assets\sprite_sdf.mfx" />
-    <None Remove="Assets\sprite_v2.mfx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,11 +34,9 @@
     <EmbeddedResource Include="Assets\light_common.mfx" />
     <EmbeddedResource Include="Assets\light_point.mfx" />
     <EmbeddedResource Include="Assets\skybox.mfx" />
-    <EmbeddedResource Include="Assets\sprite_v2.mfx" />
     <EmbeddedResource Include="Assets\sprite.mfx" />
-    <EmbeddedResource Include="Assets\sprite_common_v2.mfx" />
-    <EmbeddedResource Include="Assets\sprite_sdf.mfx" />
     <EmbeddedResource Include="Assets\sprite_common.mfx" />
+    <EmbeddedResource Include="Assets\sprite_sdf.mfx" />
   </ItemGroup>
 
   <ItemGroup>

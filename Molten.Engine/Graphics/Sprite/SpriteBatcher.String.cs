@@ -74,13 +74,7 @@ namespace Molten.Graphics
             {
                 TextFontSource.CachedGlyph cache = font.Source.GetCharGlyph(text[i]);
 
-                uint id = GetItemID();
-                ref SpriteItem item = ref Sprites[id];
-                item.Texture = font.Source.UnderlyingTexture;
-                item.Material = material;
-                item.Type = ItemType.MSDF;
-
-                ref GpuData data = ref Data[id];
+                ref GpuData data = ref GetData(RangeType.MSDF, font.Source.UnderlyingTexture, material);
                 data.Position = new Vector2F(charPos.X, charPos.Y + ((cache.YOffset * font.Scale) * scale.Y));
                 data.Rotation = 0; // TODO 2D text rotation.
                 data.ArraySlice = 0; // TODO SpriteFont array slice support.

@@ -205,14 +205,7 @@ namespace Molten.Graphics
         /// <param name="p2">The second point.</param>
         public void DrawLine(Vector2F p1, Vector2F p2, ref LineStyle style)
         {
-            uint id = GetItemID();
-            ref SpriteItem item = ref Sprites[id];
-            ref GpuData data = ref Data[id];
-
-            item.Texture = null;
-            item.Material = null;
-            item.Type = ItemType.Line;
-
+            ref GpuData data = ref GetData(RangeType.Line, null, null);
             float dist = Vector2F.Distance(ref p1, ref p2) + 1;
             Vector2F dir = Vector2F.Normalize(p2 - p1);
 

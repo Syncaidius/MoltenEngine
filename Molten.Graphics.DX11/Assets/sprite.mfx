@@ -1,8 +1,8 @@
 <material>
     <name value="sprite-texture" />
     <author value="James Yarwood"/>
-	<description>The default material for rendering sprites in a SpriteBatch with a texture</description>
-	<pass>
+    <description>The default material for rendering sprites in a SpriteBatch with a texture</description>
+    <pass>
         <name value="main"/>
         <iterations value="1"/>
         <vertex value="VS"/>
@@ -20,62 +20,18 @@
             <condition value="Multisampling"/>
             <condition value="ScissorTest"/>
         </rasterizer>
-	</pass>
-</material>
-
-<material>
-    <name value="sprite-texture-ms" />
-    <author value="James Yarwood"/>
-    <description>The default material for rendering sprites in a SpriteBatch with a multi-sampled texture</description>
-    <pass>
-        <name value="main"/>
-        <iterations value="1"/>
-        <vertex value="VS"/>
-        <geometry value="GS"/>
-        <fragment value="PS_MS"/>
-        <blend preset="PreMultipliedAlpha" />
-        <rasterizer preset="ScissorTest" />
-        <rasterizer preset="DefaultMultisample">
-            <condition value="Multisampling"/>
-        </rasterizer>
-        <rasterizer preset="ScissorTestMultiSample">
-            <condition value="Multisampling"/>
-            <condition value="ScissorTest"/>
-        </rasterizer>
     </pass>
 </material>
 
 <material>
     <name value="sprite-no-texture" />
     <author value="James Yarwood"/>
-	<description>The default material for rendering sprites in a SpriteBatch with no texture.</description>
-	<pass>
-		<name value="main"/>
-		<iterations value="1"/>
-		<vertex value="VS"/>
-        <geometry value="GS"/>
-        <fragment value="PS_NoTexture"/>
-        <blend preset="PreMultipliedAlpha" />
-        <rasterizer preset="ScissorTest" />
-        <rasterizer preset="DefaultMultisample">
-            <condition value="Multisampling"/>
-        </rasterizer>
-        <rasterizer preset="ScissorTestMultiSample">
-            <condition value="Multisampling"/>
-            <condition value="ScissorTest"/>
-        </rasterizer>
-	</pass>
-</material>
-
-<material>
-    <name value="line" />
-    <author value="James Yarwood"/>
-    <description>The default material for rendering un-textured lines with 1 point per line.</description>
+    <description>The default material for rendering sprites in a SpriteBatch with no texture.</description>
     <pass>
         <name value="main"/>
         <iterations value="1"/>
-        <vertex value="VS_Line" />
-        <geometry value="GS_Line" />
+        <vertex value="VS"/>
+        <geometry value="GS"/>
         <fragment value="PS_NoTexture"/>
         <blend preset="PreMultipliedAlpha" />
         <rasterizer preset="ScissorTest" />
@@ -96,9 +52,9 @@
     <pass>
         <name value="main"/>
         <iterations value="1"/>
-        <vertex value="VS_Circle"/>
-        <geometry value="GS_Circle"/>
-        <fragment value="PS_NoTexture"/>
+        <vertex value="VS"/>
+        <geometry value="GS"/>
+        <fragment value="PS_Circle"/>
         <blend preset="PreMultipliedAlpha" />
         <rasterizer preset="ScissorTest" />
         <rasterizer preset="DefaultMultisample">
@@ -112,16 +68,60 @@
 </material>
 
 <material>
-    <name value="triangle" />
+    <name value="circle-no-texture" />
     <author value="James Yarwood"/>
-    <description>The default material for rendering an un-textured triangle from a single point.</description>
+    <description value="The default material for rendering an un-textured circle from a single point" />
     <pass>
         <name value="main"/>
         <iterations value="1"/>
-        <vertex value="VS_Tri"/>
-        <geometry value="GS_Tri"/>
-        <fragment value="PS_NoTexture"/>
-        <blend preset="PreMultipliedAlpha"/>
+        <vertex value="VS"/>
+        <geometry value="GS"/>
+        <fragment value="PS_Circle_NoTex"/>
+        <blend preset="PreMultipliedAlpha" />
+        <rasterizer preset="ScissorTest" />
+        <rasterizer preset="DefaultMultisample">
+            <condition value="Multisampling"/>
+        </rasterizer>
+        <rasterizer preset="ScissorTestMultiSample">
+            <condition value="Multisampling"/>
+            <condition value="ScissorTest"/>
+        </rasterizer>
+    </pass>
+</material>
+
+<material>
+    <name value="line" />
+    <author value="James Yarwood"/>
+    <description value="The default material for rendering an un-textured circle from a single point" />
+    <pass>
+        <name value="main"/>
+        <iterations value="1"/>
+        <vertex value="VS"/>
+        <geometry value="GS"/>
+        <fragment value="PS_Line"/>
+        <blend preset="PreMultipliedAlpha" />
+        <rasterizer preset="ScissorTest" />
+        <rasterizer preset="DefaultMultisample">
+            <condition value="Multisampling"/>
+        </rasterizer>
+        <rasterizer preset="ScissorTestMultiSample">
+            <condition value="Multisampling"/>
+            <condition value="ScissorTest"/>
+        </rasterizer>
+    </pass>
+</material>
+
+<material>
+    <name value="grid" />
+    <author value="James Yarwood"/>
+    <description value="The default material for rendering an un-textured circle from a single point" />
+    <pass>
+        <name value="main"/>
+        <iterations value="1"/>
+        <vertex value="VS"/>
+        <geometry value="GS"/>
+        <fragment value="PS_Grid"/>
+        <blend preset="PreMultipliedAlpha" />
         <rasterizer preset="ScissorTest" />
         <rasterizer preset="DefaultMultisample">
             <condition value="Multisampling"/>
