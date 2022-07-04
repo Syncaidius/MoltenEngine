@@ -6,86 +6,76 @@ namespace Molten.UI
     /// <summary>
     /// A UI component dedicated to presenting text.
     /// </summary>
-    public class UIText : UIElement<UIText.Data>
+    public class UIText : UIElement
     {
-        public struct Data : IUIRenderData
-        {
-            [DataMember]
-            public Color Color;
+        [DataMember]
+        public Color Color;
 
-            [DataMember]
-            public string Text;
+        [DataMember]
+        public string Text;
 
-            internal TextFont Font;
+        [DataMember]
+        public Vector2F Position;
 
-            [DataMember]
-            public Vector2F Position;
+        [IgnoreDataMember]
+        public IMaterial Material;
 
-            [IgnoreDataMember]
-            public IMaterial Material;
-
-            public void Render(SpriteBatcher sb, UIRenderData data)
-            {
-                if (Font != null && Color.A > 0)
-                    sb.DrawString(Font, Text, Position, Color, Material);
-            }
-
-            public void ApplyTheme(UITheme theme, UIElementTheme eTheme, UIStateTheme stateTheme)
-            {
-                Color = stateTheme.TextColor;
-                Font = eTheme.Font;
-            }
-        }
-
+        TextFont _font;
         UIHorizonalAlignment _hAlign;
         UIVerticalAlignment _vAlign;
 
         protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
         {
             base.OnInitialize(engine, settings, theme);
-            Properties.Text = Name;
+            Text = Name;
         }
 
-        public override void ApplyStateTheme(UIElementState state)
+        protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)
         {
-            TextFont curFont = Properties.Font;
+            base.OnApplyTheme(theme, elementTheme, stateTheme);
 
-            base.ApplyStateTheme(state);
+            Color = stateTheme.TextColor;
+            Font = elementTheme.Font;
+        }
 
-            if (ElementTheme.Font != curFont)
-                OnUpdateBounds();
+        internal override void Render(SpriteBatcher sb)
+        {
+            if (Font != null && Color.A > 0)
+                sb.DrawString(Font, Text, Position, Color, Material);
+
+            base.Render(sb);
         }
 
         protected override void OnUpdateBounds()
         {
             base.OnUpdateBounds();
 
-            if (Properties.Font == null || string.IsNullOrEmpty(Properties.Text))
+            if (_font == null || string.IsNullOrEmpty(Text))
                 return;
 
             Rectangle gBounds = GlobalBounds;
-            Properties.Position = (Vector2F)gBounds.TopLeft;
-            Vector2F textSize = Properties.Font.MeasureString(Properties.Text);
+            Position = (Vector2F)gBounds.TopLeft;
+            Vector2F textSize = _font.MeasureString(Text);
 
             switch (_hAlign)
             {
                 case UIHorizonalAlignment.Center:
-                    Properties.Position.X = gBounds.Center.X - (textSize.X / 2);
+                    Position.X = gBounds.Center.X - (textSize.X / 2);
                     break;
 
                 case UIHorizonalAlignment.Right:
-                    Properties.Position.X = gBounds.Right - textSize.X;
+                    Position.X = gBounds.Right - textSize.X;
                     break;
             }
 
             switch (_vAlign)
             {
                 case UIVerticalAlignment.Center:
-                    Properties.Position.Y = gBounds.Center.Y - (textSize.Y / 2);
+                    Position.Y = gBounds.Center.Y - (textSize.Y / 2);
                     break;
 
                 case UIVerticalAlignment.Bottom:
-                    Properties.Position.Y = gBounds.Bottom - textSize.Y;
+                    Position.Y = gBounds.Bottom - textSize.Y;
                     break;
             }
         }
@@ -127,27 +117,15 @@ namespace Molten.UI
         /// </summary>
         public TextFont Font
         {
-            get => Properties.Font;
+            get => _font;
             set
             {
-                if(Properties.Font != value)
+                if(_font != value)
                 {
-                    Properties.Font = value;
+                    _font = value;
                     OnUpdateBounds();
                 }
             }
-        }
-
-        public Color Color
-        {
-            get => Properties.Color;
-            set => Properties.Color = value;
-        }
-
-        public string Text
-        {
-            get => Properties.Text;
-            set => Properties.Text = value;
         }
     }
 }

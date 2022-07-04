@@ -10,7 +10,7 @@ namespace Molten.UI
     public abstract class UIElement : EngineObject
     {
         [DataMember]
-        internal UIRenderData BaseData;
+        protected internal UIRenderData BaseData { get; }
 
         UIManagerComponent _manager;
         UIElement _parent;
@@ -88,11 +88,15 @@ namespace Molten.UI
             OnUpdateBounds();
         }
 
-        public virtual void ApplyStateTheme(UIElementState state)
+        public void ApplyStateTheme(UIElementState state)
         {
             foreach (UIElement e in CompoundElements)
                 e.ApplyStateTheme(state);
+
+            OnApplyTheme(Theme, ElementTheme, ElementTheme[state]);
         }
+
+        protected virtual void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme) { }
 
         internal void Update(Timing time)
         {
@@ -126,6 +130,13 @@ namespace Molten.UI
 
             if (Contains(point))
             {
+                for (int i = CompoundElements.Count - 1; i >= 0; i--)
+                {
+                    result = CompoundElements[i].Pick(point);
+                    if (result != null)
+                        return result;
+                }
+
                 for (int i = Children.Count - 1; i >= 0; i--)
                 {
                     result = Children[i].Pick(point);
@@ -322,28 +333,5 @@ namespace Molten.UI
         /// Gets the <see cref="UIElementState"/> of the current <see cref="UIElement"/>.
         /// </summary>
         public UIElementState State { get; private set; }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="EP">Extended property structure.</typeparam>
-    public abstract class UIElement<EP> : UIElement
-        where EP : struct, IUIRenderData
-    {
-        EP _data = new EP();
-
-        internal override void Render(SpriteBatcher sb)
-        {
-            _data.Render(sb, BaseData);
-            base.Render(sb);
-        }
-
-        public override void ApplyStateTheme(UIElementState state)
-        {
-            _data.ApplyTheme(Theme, ElementTheme, ElementTheme[state]);
-        }
-
-        protected ref EP Properties => ref _data;
     }
 }

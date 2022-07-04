@@ -24,6 +24,36 @@ namespace Molten.Graphics
             BottomLeft = bl;
         }
 
+        public void Zero()
+        {
+            Set(0);
+        }
+
+        public void Set(float radius)
+        {
+            TopLeft = TopRight = BottomRight = BottomLeft = radius;
+        }
+
+        public void Set(float topLeft, float topRight, float bottomRight, float bottomLeft)
+        {
+            TopLeft = topLeft;
+            TopRight = topRight;
+            BottomRight = bottomRight;
+            BottomLeft = bottomLeft;
+        }
+
+        public void SetTopBottom(float top, float bottom)
+        {
+            TopLeft = TopRight = top;
+            BottomLeft = BottomRight = bottom;
+        }
+
+        public void SetLeftRight(float left, float right)
+        {
+            TopLeft = BottomLeft = left;
+            TopRight = BottomRight = right;
+        }
+
         public CornerInfo(float radius)
         {
             TopLeft = radius;

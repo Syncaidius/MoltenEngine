@@ -86,6 +86,7 @@ namespace Molten.Graphics
             Ranges = new SpriteRange[capacity]; // Worst-case, we can expect the number of ranges to equal the capacity.
 
             ClipStack = new Rectangle[256];
+            Reset();
         }
 
         /// <summary>

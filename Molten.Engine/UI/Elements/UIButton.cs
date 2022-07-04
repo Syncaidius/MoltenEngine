@@ -67,5 +67,13 @@ namespace Molten.UI
             get => _label.Font;
             set => _label.Font = value;
         }
+
+        public ref CornerInfo CornerRadius => ref _panel.CornerRadius;
+
+        public ref Color FillColor => ref _panel.FillColor;
+
+        public ref Color BorderColor => ref _panel.BorderColor;
+
+        public ref float BorderThickness => ref _panel.BorderThickness;
     }
 }

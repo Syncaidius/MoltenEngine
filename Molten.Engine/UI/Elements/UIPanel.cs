@@ -3,45 +3,43 @@ using System.Runtime.Serialization;
 
 namespace Molten.UI
 {
-    public class UIPanel : UIElement<UIPanel.Data>
+    public class UIPanel : UIElement
     {
-        /// <summary>
-        /// Container for panel render data.
-        /// </summary>
-        public struct Data : IUIRenderData
+        public Color BorderColor;
+
+        public float BorderThickness;
+
+        public Color FillColor;
+
+        public CornerInfo CornerRadius;
+
+        protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)
         {
-            public Color BorderColor;
+            base.OnApplyTheme(theme, elementTheme, stateTheme);
 
-            public float BorderThickness;
+            BorderColor = stateTheme.BorderColor;
+            BorderThickness = stateTheme.BorderThickness;
+            FillColor = stateTheme.BackgroundColor;
+            CornerRadius = stateTheme.CornerRadius;
+        }
 
-            public Color BackgroundColor;
+        internal override void Render(SpriteBatcher sb)
+        {
+            // TODO replace properties with this
 
-            public CornerInfo CornerRadius;
-
-            public void ApplyTheme(UITheme theme, UIElementTheme eTheme, UIStateTheme stateTheme)
+            float radiusLimit = Math.Min(BaseData.GlobalBounds.Width, BaseData.GlobalBounds.Height) / 2;
+            RoundedRectStyle style = new RoundedRectStyle()
             {
-                BorderColor = stateTheme.BorderColor;
-                BorderThickness = stateTheme.BorderThickness;
-                BackgroundColor = stateTheme.BackgroundColor;
-                CornerRadius = stateTheme.CornerRadius;
-            }
-
-            public void Render(SpriteBatcher sb, UIRenderData data)
-            {
-                // TODO replace properties with this
-
-                float radiusLimit = Math.Min(data.GlobalBounds.Width, data.GlobalBounds.Height) / 2;
-                RoundedRectStyle style = new RoundedRectStyle()
-                {
-                    FillColor = BackgroundColor,
-                    BorderColor = BorderColor,
-                    BorderThickness = BorderThickness,
-                    CornerRadius = CornerRadius.Restrict(radiusLimit)
-                };
+                FillColor = FillColor,
+                BorderColor = BorderColor,
+                BorderThickness = BorderThickness,
+                CornerRadius = CornerRadius.Restrict(radiusLimit)
+            };
 
 
-                sb.DrawRoundedRect(data.RenderBounds, 0, Vector2F.Zero, ref style);
-            }
+            sb.DrawRoundedRect(BaseData.RenderBounds, 0, Vector2F.Zero, ref style);
+
+            base.Render(sb);
         }
     }
 }

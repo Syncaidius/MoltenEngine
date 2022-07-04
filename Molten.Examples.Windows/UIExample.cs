@@ -53,37 +53,6 @@ namespace Molten.Samples
             {
                 LocalBounds = new Rectangle(100, 150, 600, 450)
             };
-            /*_ui.Root = new UIPanel()
-            {
-                LocalBounds = new Rectangle(100, 150, 600, 450),
-            };*/
-
-            UIPanel childPanel = new UIPanel()
-            {
-                LocalBounds = new Rectangle(100, 10, 220, 200),
-                //BackgroundColor = new Color(0, 128, 0, 200),
-                //BorderColor = Color.LimeGreen
-            };
-
-            /*UIText label = new UIText()
-            {
-                LocalBounds = new Rectangle(0, 10, _ui.Root.LocalBounds.Width, 20),
-                HorizontalAlign = UIHorizonalAlignment.Center
-            };
-
-            _ui.Root.Children.Add(childPanel);
-            _ui.Root.Children.Add(label);*/
-
-            for (int i = 0; i < 10; i++)
-            {
-                UIButton button = new UIButton()
-                {
-                    LocalBounds = new Rectangle(10, 250 + (20 * i), 150, 20),
-                    Text = $"Click Me {i}!"
-                };
-
-                _ui.Root.Children.Add(button);
-            }
         }
 
         protected override void OnHudDraw(SpriteBatcher sb)

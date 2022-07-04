@@ -15,15 +15,13 @@ namespace Molten.UI
         UIButton _btnMaximize;
         UIText _title;
         int _titleBarHeight = 25;
-        List<UIButton> _buttons;
+        List<UIButton> _titleBarButtons;
 
         protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
         {
             base.OnInitialize(engine, settings, theme);
 
-            _buttons = new List<UIButton>();
-
-            // TODO add title bar with top-left/right round corners
+            _titleBarButtons = new List<UIButton>();
 
             // Change _panel corners to only round bottom left/right.
             _panel = CompoundElements.Add<UIPanel>();
@@ -35,16 +33,32 @@ namespace Molten.UI
                 b.Text = $"{i}";
             }
 
-            /*_btnClose = CompoundElements.Add<UIButton>();
-            _btnClose.Text = "X";
-
-            _btnMinimize = CompoundElements.Add<UIButton>();
-            _btnMinimize.Text = "_";
-
-            _btnMaximize = CompoundElements.Add<UIButton>();
-            _btnMaximize.Text = "^";*/
+            _btnClose = AddTitleButton("X");
+            _btnMaximize = AddTitleButton("^");
+            _btnMinimize = AddTitleButton("_");
 
             Title = Name;
+        }
+
+        protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)
+        {
+            base.OnApplyTheme(theme, elementTheme, stateTheme);
+
+            for (int i = 0; i < _titleBarButtons.Count; i++)
+            {
+                if (i == 0)
+                    _titleBarButtons[i].CornerRadius.Set(0, CornerRadius.TopRight, 0, 0);
+                else
+                    _titleBarButtons[i].CornerRadius.Set(0);
+            }
+        }
+
+        private UIButton AddTitleButton(string text)
+        {
+            UIButton btn = CompoundElements.Add<UIButton>();
+            _titleBarButtons.Add(btn);
+            btn.Text = text;
+            return btn;
         }
 
         protected override void OnUpdateCompoundBounds()
@@ -55,13 +69,8 @@ namespace Molten.UI
 
             _panel.LocalBounds = new Rectangle(0, 0, gb.Width, gb.Height);
             _title.LocalBounds = new Rectangle(0, 0, _panel.LocalBounds.Width, _titleBarHeight);
-            /*_btnClose.LocalBounds = new Rectangle(gb.Width - _titleBarHeight, 0, _titleBarHeight, _titleBarHeight);
-            _btnMinimize.LocalBounds = new Rectangle(gb.Width - (_titleBarHeight * 2), 0, _titleBarHeight, _titleBarHeight);
-            _btnMaximize.LocalBounds = new Rectangle(gb.Width - (_titleBarHeight * 3), 0, _titleBarHeight, _titleBarHeight);*/
-            for(int i = 0; i < _buttons.Count; i++)
-                _buttons[i].LocalBounds = new Rectangle(gb.Width - (_titleBarHeight * (i + 1)), 0, _titleBarHeight, _titleBarHeight);
-
-            // TODO Implement button bar manager and use this to manage top-right window buttons (user can add more next to the 3 standard buttons)
+            for(int i = 0; i < _titleBarButtons.Count; i++)
+                _titleBarButtons[i].LocalBounds = new Rectangle(gb.Width - (_titleBarHeight * (i+1)), 0, _titleBarHeight, _titleBarHeight);
         }
 
         public string Title
@@ -79,5 +88,7 @@ namespace Molten.UI
                 OnUpdateBounds();
             }
         }
+
+        public ref CornerInfo CornerRadius => ref _panel.CornerRadius;
     }
 }
