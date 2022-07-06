@@ -84,69 +84,72 @@ namespace Molten.Graphics
             float rightEdgeWidth = 0;
 
             // Draw left edge
-            if (corners.LeftHasRadius())
+            if (style.FillColor.A > 0)
             {
-                if (corners.LeftSameRadius())
+                if (corners.LeftHasRadius())
                 {
-                    DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, dest.Height - (corners.TopLeft * 2)), ref innerStyle);
-                    leftEdgeWidth = corners.TopLeft;
-                }
-                else
-                {
-                    if (corners.TopLeft < corners.BottomLeft)
+                    if (corners.LeftSameRadius())
                     {
-                        leftEdgeWidth = corners.BottomLeft;
-                        float dif = corners.BottomLeft - corners.TopLeft;
-                        float leftHeight2 = leftHeight + corners.TopLeft;
-                        DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, leftHeight), ref innerStyle, 0, material);
-                        DrawRect(new RectangleF(dest.X + corners.TopLeft, dest.Y, dif, leftHeight2), ref innerStyle, 0, material);
-                    }
-                    else
-                    {
+                        DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, dest.Height - (corners.TopLeft * 2)), ref innerStyle);
                         leftEdgeWidth = corners.TopLeft;
-                        float dif = corners.TopLeft - corners.BottomLeft;
-                        float leftHeight2 = leftHeight + corners.BottomLeft;
-                        DrawRect(new RectangleF(dest.X, tl.Y, corners.BottomLeft, leftHeight), ref innerStyle, 0, material);
-                        DrawRect(new RectangleF(dest.X + corners.BottomLeft, dest.Y + corners.TopLeft, dif, leftHeight2), ref innerStyle, 0, material);
-                    }
-                }
-            }
-
-            // Draw right edge
-            if (corners.RightHasRadius())
-            {
-                if (corners.RightSameRadius())
-                {
-                    DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, dest.Height - (corners.TopRight * 2)), ref innerStyle);
-                    rightEdgeWidth = corners.TopRight;
-                }
-                else
-                {
-
-                    if (corners.TopRight < corners.BottomRight)
-                    {
-                        rightEdgeWidth = corners.BottomRight;
-                        float dif = corners.BottomRight - corners.TopRight;
-                        float rightHeight2 = rightHeight + corners.TopRight;
-                        DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, rightHeight), ref innerStyle, 0, material);
-                        DrawRect(new RectangleF(dest.Right - corners.BottomRight, dest.Y, dif, rightHeight2), ref innerStyle, 0, material);
                     }
                     else
                     {
-                        rightEdgeWidth = corners.TopRight;
-                        float dif = corners.TopRight - corners.BottomRight;
-                        float rightHeight2 = rightHeight + corners.BottomRight;
-                        DrawRect(new RectangleF(dest.Right - corners.BottomRight, tr.Y, corners.BottomRight, rightHeight), ref innerStyle, 0, material);
-                        DrawRect(new RectangleF(dest.Right - corners.TopRight, dest.Y + corners.TopRight, dif, rightHeight2), ref innerStyle, 0, material);
+                        if (corners.TopLeft < corners.BottomLeft)
+                        {
+                            leftEdgeWidth = corners.BottomLeft;
+                            float dif = corners.BottomLeft - corners.TopLeft;
+                            float leftHeight2 = leftHeight + corners.TopLeft;
+                            DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, leftHeight), ref innerStyle, 0, material);
+                            DrawRect(new RectangleF(dest.X + corners.TopLeft, dest.Y, dif, leftHeight2), ref innerStyle, 0, material);
+                        }
+                        else
+                        {
+                            leftEdgeWidth = corners.TopLeft;
+                            float dif = corners.TopLeft - corners.BottomLeft;
+                            float leftHeight2 = leftHeight + corners.BottomLeft;
+                            DrawRect(new RectangleF(dest.X, tl.Y, corners.BottomLeft, leftHeight), ref innerStyle, 0, material);
+                            DrawRect(new RectangleF(dest.X + corners.BottomLeft, dest.Y + corners.TopLeft, dif, leftHeight2), ref innerStyle, 0, material);
+                        }
                     }
                 }
+
+                // Draw right edge
+                if (corners.RightHasRadius())
+                {
+                    if (corners.RightSameRadius())
+                    {
+                        DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, dest.Height - (corners.TopRight * 2)), ref innerStyle);
+                        rightEdgeWidth = corners.TopRight;
+                    }
+                    else
+                    {
+
+                        if (corners.TopRight < corners.BottomRight)
+                        {
+                            rightEdgeWidth = corners.BottomRight;
+                            float dif = corners.BottomRight - corners.TopRight;
+                            float rightHeight2 = rightHeight + corners.TopRight;
+                            DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, rightHeight), ref innerStyle, 0, material);
+                            DrawRect(new RectangleF(dest.Right - corners.BottomRight, dest.Y, dif, rightHeight2), ref innerStyle, 0, material);
+                        }
+                        else
+                        {
+                            rightEdgeWidth = corners.TopRight;
+                            float dif = corners.TopRight - corners.BottomRight;
+                            float rightHeight2 = rightHeight + corners.BottomRight;
+                            DrawRect(new RectangleF(dest.Right - corners.BottomRight, tr.Y, corners.BottomRight, rightHeight), ref innerStyle, 0, material);
+                            DrawRect(new RectangleF(dest.Right - corners.TopRight, dest.Y + corners.TopRight, dif, rightHeight2), ref innerStyle, 0, material);
+                        }
+                    }
+                }
+
+                // Draw center
+                RectangleF c = new RectangleF(dest.X + leftEdgeWidth, dest.Y, dest.Width - leftEdgeWidth - rightEdgeWidth, dest.Height);
+                DrawRect(c, ref innerStyle, 0, material);
             }
 
-            // Draw center
-            RectangleF c = new RectangleF(dest.X + leftEdgeWidth, dest.Y, dest.Width - leftEdgeWidth - rightEdgeWidth, dest.Height);
-            DrawRect(c, ref innerStyle, 0, material);
-
-            if (style.BorderThickness > 0)
+            if (style.BorderThickness > 0 && style.BorderColor.A > 0)
             {
                 float lo = 0.5f * style.BorderThickness; // Line offset
                 Vector2F l = new Vector2F(dest.Left + lo, dest.Top + corners.TopLeft);
