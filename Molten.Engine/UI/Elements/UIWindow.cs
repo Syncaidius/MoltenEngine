@@ -31,12 +31,6 @@ namespace Molten.UI
             _title = CompoundElements.Add<UIText>();
             _title.VerticalAlign = UIVerticalAlignment.Center;
 
-            for(int i = 0; i < 10; i++)
-            {
-                UIButton b = CompoundElements.Add<UIButton>();
-                b.Text = $"{i}";
-            }
-
             _btnClose = AddTitleButton("X");
             _btnMaximize = AddTitleButton("^");
             _btnMinimize = AddTitleButton("_");
@@ -57,6 +51,7 @@ namespace Molten.UI
             }
 
             _titleBar.CornerRadius.Set(CornerRadius.TopLeft, CornerRadius.TopRight, 0, 0);
+            _titleBar.FillColor = stateTheme.BorderColor;
             _panel.CornerRadius.Set(0, 0, CornerRadius.BottomRight, CornerRadius.BottomLeft);
         }
 

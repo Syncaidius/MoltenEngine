@@ -25,6 +25,11 @@ namespace Molten.UI
             _readOnly = _elements.AsReadOnly();
         }
 
+        public override string ToString()
+        {
+            return $"{GetType().Name} - Owner: {_element} - Count: {_readOnly.Count}";
+        }
+
         internal void SetManager(UIManagerComponent manager)
         {
             foreach (UIElement e in _elements)

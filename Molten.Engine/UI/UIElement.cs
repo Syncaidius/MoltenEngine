@@ -24,11 +24,12 @@ namespace Molten.UI
 
             SettingValue<UITheme> themeSetting = Engine.Settings.UI.Theme;
             Theme = themeSetting;
-            themeSetting.OnChanged += ThemeSetting_OnChanged;
             BaseData = new UIRenderData();
             State = UIElementState.Default;
             OnInitialize(Engine, Engine.Settings.UI, Theme);
             ApplyStateTheme(State);
+
+            themeSetting.OnChanged += ThemeSetting_OnChanged;
         }
 
         private void ThemeSetting_OnChanged(UITheme oldValue, UITheme newValue)
@@ -90,9 +91,6 @@ namespace Molten.UI
 
         public void ApplyStateTheme(UIElementState state)
         {
-            foreach (UIElement e in CompoundElements)
-                e.ApplyStateTheme(state);
-
             OnApplyTheme(Theme, ElementTheme, ElementTheme[state]);
         }
 
