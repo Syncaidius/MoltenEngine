@@ -18,6 +18,7 @@ namespace Molten.UI
             _label.Text = Name;
             _label.HorizontalAlign = UIHorizonalAlignment.Center;
             _label.VerticalAlign = UIVerticalAlignment.Center;
+            InputRules = UIInputRuleFlags.Self | UIInputRuleFlags.Children;
         }
 
         protected override void OnUpdateCompoundBounds()

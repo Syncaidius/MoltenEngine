@@ -28,6 +28,7 @@ namespace Molten.UI
         {
             base.OnInitialize(engine, settings, theme);
             Text = Name;
+            InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Children;
         }
 
         protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)

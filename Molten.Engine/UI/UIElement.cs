@@ -123,31 +123,49 @@ namespace Molten.UI
         /// Returns the current <see cref="UIElement"/> or one of it's children (recursive), depending on which contains <paramref name="point"/>.
         /// </summary>
         /// <param name="point">The point to use for picking a <see cref="UIElement"/>.</param>
+        /// <param name="ignoreRules">If true, <see cref="InputRules"/> is ignored when picking.</param>
         /// <returns></returns>
-        public UIElement Pick(Vector2F point)
+        public UIElement Pick(Vector2F point, bool ignoreRules = false)
         {
             UIElement result = null;
 
             if (Contains(point))
             {
-                for (int i = CompoundElements.Count - 1; i >= 0; i--)
+                if ((!ignoreRules && HasInputRules(UIInputRuleFlags.Compound)))
                 {
-                    result = CompoundElements[i].Pick(point);
-                    if (result != null)
-                        return result;
+                    for (int i = CompoundElements.Count - 1; i >= 0; i--)
+                    {
+                        result = CompoundElements[i].Pick(point);
+                        if (result != null)
+                            return result;
+                    }
                 }
 
-                for (int i = Children.Count - 1; i >= 0; i--)
+                if ((!ignoreRules && HasInputRules(UIInputRuleFlags.Children)))
                 {
-                    result = Children[i].Pick(point);
-                    if (result != null)
-                        return result;
+                    for (int i = Children.Count - 1; i >= 0; i--)
+                    {
+                        result = Children[i].Pick(point);
+                        if (result != null)
+                            return result;
+                    }
                 }
 
-                return this;
+                if(!ignoreRules && HasInputRules(UIInputRuleFlags.Self))
+                    return this;
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Returns true if the given <see cref="UIInputRuleFlags"/> are set on the current <see cref="UIElement"/>.
+        /// </summary>
+        /// <param name="rules"></param>
+        /// <returns></returns>
+        public bool HasInputRules(UIInputRuleFlags rules)
+        {
+            return (InputRules & rules) == rules;
         }
 
         public virtual void OnPressed(ScenePointerTracker tracker)
@@ -333,5 +351,10 @@ namespace Molten.UI
         /// Gets the <see cref="UIElementState"/> of the current <see cref="UIElement"/>.
         /// </summary>
         public UIElementState State { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the input rules for the current <see cref="UIElement"/>.
+        /// </summary>
+        public UIInputRuleFlags InputRules { get; set; } = UIInputRuleFlags.All;
     }
 }
