@@ -45,6 +45,9 @@ namespace Molten.UI
             _label.ApplyStateTheme(UIElementState.Default);
         }
 
+        /// <summary>
+        /// The text of the current <see cref="UIButton"/>.
+        /// </summary>
         public string Text
         {
             get => _label.Text;
@@ -63,18 +66,33 @@ namespace Molten.UI
             set => _label.HorizontalAlign = value;
         }
 
+        /// <summary>
+        /// The <see cref="TextFont"/> of the current <see cref="UIButton"/>.
+        /// </summary>
         public TextFont Font
         {
             get => _label.Font;
             set => _label.Font = value;
         }
 
+        /// <summary>
+        /// The corner radius values of the current <see cref="UIButton"/>. Setting them all to 0 will produce a regular rectangle.
+        /// </summary>
         public ref CornerInfo CornerRadius => ref _panel.CornerRadius;
 
+        /// <summary>
+        /// The fill/inner color of the current <see cref="UIButton"/>.
+        /// </summary>
         public ref Color FillColor => ref _panel.FillColor;
 
+        /// <summary>
+        /// The border color of the current <see cref="UIButton"/>.
+        /// </summary>
         public ref Color BorderColor => ref _panel.BorderColor;
 
+        /// <summary>
+        /// The border line thickness of the current <see cref="UIButton"/>.
+        /// </summary>
         public ref float BorderThickness => ref _panel.BorderThickness;
     }
 }

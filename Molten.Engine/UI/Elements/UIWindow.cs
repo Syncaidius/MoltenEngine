@@ -76,12 +76,18 @@ namespace Molten.UI
                 _titleBarButtons[i].LocalBounds = new Rectangle(gb.Width - (_titleBarSize * (i+1)), 0, _titleBarSize, _titleBarSize);
         }
 
+        /// <summary>
+        /// The title of the current <see cref="UIWindow"/>.
+        /// </summary>
         public string Title
         {
             get => _title.Text;
             set => _title.Text = value;
         }
 
+        /// <summary>
+        /// The title bar height of the current <see cref="UIWindow"/>, in pixels. This value will also be the size of any buttons on the title bar.
+        /// </summary>
         public int TitleBarHeight
         {
             get => _titleBarSize;
@@ -92,6 +98,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// The corner radius values of the current <see cref="UIWindow"/>. Setting them all to 0 will produce a regular rectangle.
+        /// </summary>
         public ref CornerInfo CornerRadius => ref _panel.CornerRadius;
     }
 }

@@ -211,8 +211,14 @@ namespace Molten.UI
 
         public string Tooltip => Name;
 
+        /// <summary>
+        /// The current <see cref="UIElement"/> being hovered over by a pointing device (e.g. mouse or stylus).
+        /// </summary>
         public UIElement HoverElement { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the <see cref="UITheme"/> of all UI controlled by the current <see cref="UIManagerComponent"/>.
+        /// </summary>
         public UITheme Theme
         {
             get => _theme;

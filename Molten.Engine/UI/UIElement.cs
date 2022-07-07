@@ -331,7 +331,6 @@ namespace Molten.UI
         /// </summary>
         protected UIElementTheme ElementTheme { get; private set; }
 
-
         /// <summary>
         /// Gets the <see cref="UIElementState"/> of the current <see cref="UIElement"/>.
         /// </summary>
