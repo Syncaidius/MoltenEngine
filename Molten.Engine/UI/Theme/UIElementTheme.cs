@@ -10,8 +10,6 @@ namespace Molten.UI
 {
     public class UIElementTheme
     {
-        public event ObjectHandler<UIElementTheme> OnContentLoaded;
-
         [DataMember]
         Dictionary<UIElementState, UIStateTheme> _states = new Dictionary<UIElementState, UIStateTheme>()
         {
@@ -31,21 +29,22 @@ namespace Molten.UI
         [IgnoreDataMember]
         public TextFont Font { get; private set; }
 
-        internal void LoadContent(Engine engine, string rootDirectory = null)
+        string _requestedFontName;
+
+        internal void OnRequestContent(ContentRequest cr)
         {
-            if (Font != null && Font.Source.Name == FontName)
+            _requestedFontName = FontName;
+
+            // Don't request the same font we already have loaded, if any.
+            if (Font != null && Font.Source.Name == _requestedFontName)
                 return;
 
-            ContentRequest cr = engine.Content.BeginRequest(rootDirectory);
-            cr.Load<TextFont>(FontName);
-            cr.OnCompleted += LoadContent_Request;
-            cr.Commit();
+            cr.Load<TextFont>(_requestedFontName);
         }
 
-        private void LoadContent_Request(ContentRequest cr)
+        internal void OnContentLoaded(ContentRequest cr)
         {
-            Font = cr.Get<TextFont>(0);
-            OnContentLoaded?.Invoke(this);
+            Font = cr.Get<TextFont>(_requestedFontName);
         }
 
         /// <summary>

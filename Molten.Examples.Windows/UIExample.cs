@@ -63,10 +63,10 @@ namespace Molten.Samples
             base.OnHudDraw(sb);
 
             string text = $"Hovered UI Element: {(_ui.HoverElement != null ? _ui.HoverElement.Name : "None")}";
-            Vector2F tSize = SampleFont.MeasureString(text, 16);
+            Vector2F tSize = SampleFont.MeasureString(text);
             Vector2F pos = new Vector2F()
             {
-                X = Window.Width / 2 + (-tSize.X / 2),
+                X = (Window.Width / 2) - (tSize.X / 2),
                 Y = 25,
             };
 

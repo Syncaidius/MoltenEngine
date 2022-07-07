@@ -14,6 +14,7 @@ namespace Molten.UI
             public UIElement Pressed;
         }
 
+        UITheme _theme;
         UIElement _root;
         Dictionary<ScenePointerTracker, UITracker> _trackers;
         List<ScenePointerTracker> _trackersToRemove;
@@ -22,6 +23,20 @@ namespace Molten.UI
         {
             _trackers = new Dictionary<ScenePointerTracker, UITracker>();
             _trackersToRemove = new List<ScenePointerTracker>();
+        }
+
+        protected override void OnInitialize(SceneObject obj)
+        {
+            base.OnInitialize(obj);
+
+            SettingValue<UITheme> themeSetting = obj.Engine.Settings.UI.Theme;
+            Theme = themeSetting;
+            themeSetting.OnChanged += ThemeSetting_OnChanged;
+        }
+
+        private void ThemeSetting_OnChanged(UITheme oldValue, UITheme newValue)
+        {
+            Theme = newValue;
         }
 
         private void UpdateTracker(ScenePointerTracker pTracker, Action<UITracker> callback)
@@ -187,6 +202,8 @@ namespace Molten.UI
                             _root.Parent.Children.Remove(_root);
 
                         _root.Manager = this;
+                        if (_theme.IsLoaded)
+                            ApplyTheme(_theme);
                     }
                 }
             }
@@ -195,5 +212,31 @@ namespace Molten.UI
         public string Tooltip => Name;
 
         public UIElement HoverElement { get; private set; }
+
+        public UITheme Theme
+        {
+            get => _theme;
+            set
+            {
+                if(_theme != value)
+                {
+                    if(_theme != null)
+                        _theme.OnContentLoaded -= ApplyTheme;
+
+                    _theme = value ?? Engine.Current.Settings.UI.Theme;
+                    if (_theme != null)
+                        _theme.OnContentLoaded += ApplyTheme;
+
+                    if (_theme.IsLoaded)
+                        ApplyTheme(_theme);
+                }
+            }
+        }
+
+        private void ApplyTheme(UITheme theme)
+        {
+            if (_root != null)
+                _root.Theme = theme;
+        }
     }
 }

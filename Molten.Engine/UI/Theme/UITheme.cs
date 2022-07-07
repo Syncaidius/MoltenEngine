@@ -5,6 +5,8 @@ namespace Molten.UI
 {
     public class UITheme
     {
+        public event ObjectHandler<UITheme> OnContentLoaded;
+
         [DataMember]
         Dictionary<string, UIElementTheme> _themes = new Dictionary<string, UIElementTheme>();
 
@@ -15,7 +17,6 @@ namespace Molten.UI
         public Engine Engine { get; private set; }
 
         string _contentRoot;
-
 
         public UIElementTheme GetTheme<T>()
             where T : UIElement
@@ -32,10 +33,34 @@ namespace Molten.UI
         {
             Engine = engine;
             _contentRoot = themeRootDirectory;
+            LoadContent(engine);
+        }
 
-            DefaultElementTheme.LoadContent(engine);
+        /// <summary>
+        /// (Re)loads the content of the current <see cref="UITheme"/>.
+        /// </summary>
+        /// <param name="engine">The engine instance to use when loading content.</param>
+        public void LoadContent(Engine engine)
+        {
+            IsLoaded = false;
+            ContentRequest cr = engine.Content.BeginRequest(_contentRoot);
+
+            DefaultElementTheme.OnRequestContent(cr);
             foreach (UIElementTheme eTheme in _themes.Values)
-                eTheme.LoadContent(Engine, themeRootDirectory);
+                eTheme.OnRequestContent(cr);
+
+            cr.OnCompleted += ContentRequest_OnCompleted;
+            cr.Commit();
+        }
+
+        private void ContentRequest_OnCompleted(ContentRequest request)
+        {
+            DefaultElementTheme.OnContentLoaded(request);
+            foreach (UIElementTheme eTheme in _themes.Values)
+                eTheme.OnContentLoaded(request);
+
+            OnContentLoaded?.Invoke(this);
+            IsLoaded = true;
         }
 
         public UIElementTheme GetTheme(Type elementType)
@@ -51,14 +76,14 @@ namespace Molten.UI
         {
             string tName = typeof(T).FullName;
             if (_themes.TryGetValue(tName, out theme))
-            {
                 throw new Exception($"A theme is already set for {tName}");
-            }
             else
-            {
-                theme.LoadContent(Engine, _contentRoot);
                 _themes[tName] = theme;
-            }
-        }        
+        }
+
+        /// <summary>
+        /// Gets whether or not the theme's content has finished loading.
+        /// </summary>
+        public bool IsLoaded { get; private set; }
     }
 }

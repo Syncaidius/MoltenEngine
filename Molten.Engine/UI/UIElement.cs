@@ -22,30 +22,18 @@ namespace Molten.UI
             CompoundElements = new UIChildCollection(this);
             Engine = Engine.Current;
 
-            SettingValue<UITheme> themeSetting = Engine.Settings.UI.Theme;
-            Theme = themeSetting;
+            
+            
             BaseData = new UIRenderData();
             State = UIElementState.Default;
             OnInitialize(Engine, Engine.Settings.UI, Theme);
-            ApplyStateTheme(State);
-
-            themeSetting.OnChanged += ThemeSetting_OnChanged;
-        }
-
-        private void ThemeSetting_OnChanged(UITheme oldValue, UITheme newValue)
-        {
-            Theme = newValue;
+            Theme = Engine.Settings.UI.Theme;
         }
 
         protected virtual void OnInitialize(Engine engine, UISettings settings, UITheme theme)
         {
             BaseData.Margin.OnChanged += MarginPadding_OnChanged;
             BaseData.Padding.OnChanged += MarginPadding_OnChanged;
-        }
-
-        private void ElementTheme_OnContentLoaded(UIElementTheme theme)
-        {
-            ApplyStateTheme(State);
         }
 
         private void MarginPadding_OnChanged()
@@ -323,25 +311,24 @@ namespace Molten.UI
         public UITheme Theme
         {
             get => _theme;
-            set
+            internal set
             {
-                if (_theme != value)
-                {
-                    _theme = value ?? Engine.Settings.UI.Theme;
+                _theme = value;
 
-                    UIElementTheme newElementTheme = _theme.GetTheme(GetType());
-                    if (newElementTheme != ElementTheme)
-                    {
-                        if (ElementTheme != null)
-                            ElementTheme.OnContentLoaded -= ElementTheme_OnContentLoaded;
+                foreach (UIElement e in CompoundElements)
+                    e.Theme = _theme;
 
-                        ElementTheme = newElementTheme;
-                        ElementTheme.OnContentLoaded += ElementTheme_OnContentLoaded;
-                    }
-                }
+                foreach (UIElement e in Children)
+                    e.Theme = _theme;
+
+                ElementTheme = _theme.GetTheme(GetType());
+                ApplyStateTheme(State);
             }
         }
 
+        /// <summary>
+        /// Gets the <see cref="UIElementTheme"/> applied to the current <see cref="UIElement"/> when a <see cref="UITheme"/> was applied.
+        /// </summary>
         protected UIElementTheme ElementTheme { get; private set; }
 
 

@@ -165,16 +165,17 @@ namespace Molten.Samples
             if (SampleFont == null)
                 return;
 
+            float oldSize = SampleFont.Size;
+            SampleFont.Size = 30;
             string text = "[F1] debug overlay";
-            Vector2F tSize = SampleFont.MeasureString(text, 30);
+            Vector2F tSize = SampleFont.MeasureString(text);
             Vector2F pos = new Vector2F()
             {
-                X = Window.Width / 2 + (-tSize.X / 2),
+                X = (Window.Width / 2)  - (tSize.X / 2),
                 Y = 5,
             };
 
-            float oldSize = SampleFont.Size;
-            SampleFont.Size = 30;
+
             sb.DrawString(SampleFont, text, pos, Color.White);
             SampleFont.Size = oldSize;
         }
