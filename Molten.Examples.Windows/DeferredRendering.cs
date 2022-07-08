@@ -2,7 +2,7 @@
 
 namespace Molten.Samples
 {
-    public class DeferredRenderingSample : SampleSceneGame
+    public class DeferredRenderingSample : SampleGame
     {
         class ParentChildPair
         {

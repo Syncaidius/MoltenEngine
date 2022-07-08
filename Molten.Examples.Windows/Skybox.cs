@@ -2,7 +2,7 @@
 
 namespace Molten.Samples
 {
-    public class SkyboxSample : SampleSceneGame
+    public class SkyboxSample : SampleGame
     {
         public override string Description => "A skybox demonstration.";
 

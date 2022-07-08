@@ -2,6 +2,7 @@
 {
     public delegate void RenderCameraProjectionFunc(IRenderSurface2D surface, float nearClip, float farClip, float fov, ref Matrix4F projection);
     public delegate void RendercameraSurfaceHandler(RenderCamera camera, IRenderSurface2D oldSurface, IRenderSurface2D newSurface);
+    public delegate void RenderCameraResizedHandler(RenderCamera camera, IRenderSurface2D surface);
 
     public class RenderCamera : EngineObject
     {
@@ -20,7 +21,15 @@
         static Dictionary<RenderCameraMode, RenderCameraProjectionFunc> _projectionFuncs;
         static Dictionary<RenderCameraMode, ClipRange> _clipPreset;
 
+        /// <summary>
+        /// Invoked when the <see cref="OutputSurface"/> property is changed.
+        /// </summary>
         public event RendercameraSurfaceHandler OnOutputSurfaceChanged;
+
+        /// <summary>
+        /// Invoked when the bound <see cref="IRenderSurface2D"/> is resized.
+        /// </summary>
+        public event RenderCameraResizedHandler OnSurfaceResized;
 
         Matrix4F _view;
         Matrix4F _projection;
@@ -108,6 +117,7 @@
         private void _surface_OnPostResize(ITexture texture)
         {
             CalculateProjection();
+            OnSurfaceResized?.Invoke(this, texture as IRenderSurface2D);
         }
 
         /// <summary>Gets or sets the camera's view matrix.</summary>

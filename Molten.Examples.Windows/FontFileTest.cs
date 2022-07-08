@@ -6,7 +6,7 @@ using Molten.Input;
 
 namespace Molten.Samples
 {
-    public class FontFileTest : SampleSceneGame
+    public class FontFileTest : SampleGame
     {
         const int CHAR_CURVE_RESOLUTION = 8;
 

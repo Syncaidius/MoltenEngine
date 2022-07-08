@@ -3,12 +3,9 @@ using Molten.UI;
 
 namespace Molten.Samples
 {
-    public class UIExample : SampleSceneGame
+    public class UIExample : SampleGame
     {
         public override string Description => "Demonstrates Molten's UI system.";
-
-        UIManagerComponent _ui;
-
         public UIExample() : base("UI Example") { }
 
         protected override void OnInitialize(Engine engine)
@@ -41,30 +38,36 @@ namespace Molten.Samples
             mat.SetDefaultResource(tex, 0);
             TestMesh.Material = mat;
 
-            _ui = SpriteLayer.AddObjectWithComponent<UIManagerComponent>();
-
             UIStateTheme pressTheme = Settings.UI.Theme.Value.DefaultElementTheme[UIElementState.Pressed];
             pressTheme.TextColor = Color.White;
             pressTheme.BackgroundColor = Color.SkyBlue * 0.5f;
             pressTheme.BorderColor = Color.SkyBlue;
             pressTheme.TextColor = Color.Yellow;
 
-            UIWindow window = new UIWindow()
+            UIWindow window1 = new UIWindow()
             {
-                LocalBounds = new Rectangle(100, 150, 600, 450)
+                LocalBounds = new Rectangle(100, 150, 600, 440),
+                Title = "This is a Window"
             };
-            _ui.Camera = SceneCamera;
-            _ui.Children.Add(window);
+
+            UIWindow window2 = new UIWindow()
+            {
+                LocalBounds = new Rectangle(500, 250, 640, 550),
+                Title = "This is another Window"
+            };
+
+            UI.Children.Add(window1);
+            UI.Children.Add(window2);
         }
 
-        protected override void OnHudDraw(SpriteBatcher sb)
+        protected override void OnDrawSprites(SpriteBatcher sb)
         {
             if (SampleFont == null)
                 return;
 
-            base.OnHudDraw(sb);
+            base.OnDrawSprites(sb);
 
-            string text = $"Hovered UI Element: {(_ui.HoverElement != null ? _ui.HoverElement.Name : "None")}";
+            string text = $"Hovered UI Element: {(UI.HoverElement != null ? UI.HoverElement.Name : "None")}";
             Vector2F tSize = SampleFont.MeasureString(text);
             Vector2F pos = new Vector2F()
             {

@@ -73,19 +73,25 @@ namespace Molten.UI
             OnElementRemoved?.Invoke(child);
         }
 
-        internal void Render(SpriteBatcher sb)
+        internal void Render(SpriteBatcher sb, ref Rectangle renderBounds)
         {
+            if (_elements.Count == 0)
+                return;
+
             if (_element.BaseData.IsClipEnabled)
             {
-                sb.PushClip(_element.BaseData.RenderBounds);
-                foreach (UIElement child in _elements)
-                    child.Render(sb);
-                sb.PopClip();
+                if (sb.PushClip(renderBounds))
+                {
+                    for (int i = 0; i < _elements.Count; i++)
+                        _elements[i].Render(sb);
+
+                    sb.PopClip();
+                }
             }
             else
             {
-                foreach (UIElement child in _elements)
-                    child.Render(sb);
+                for (int i = 0; i < _elements.Count; i++)
+                    _elements[i].Render(sb);
             }
         }
 

@@ -3,7 +3,7 @@ using Molten.Input;
 
 namespace Molten.Samples
 {
-    public class SaveTextureSample : SampleSceneGame
+    public class SaveTextureSample : SampleGame
     {
         public override string Description => "A demonstration of saving a texture to file.";
 

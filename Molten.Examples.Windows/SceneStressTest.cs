@@ -2,7 +2,7 @@
 
 namespace Molten.Samples
 {
-    public class SceneStressTest : SampleSceneGame
+    public class SceneStressTest : SampleGame
     {
         public override string Description => "A simple scene test using colored cubes with";
 

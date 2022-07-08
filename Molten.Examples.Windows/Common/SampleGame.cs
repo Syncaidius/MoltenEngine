@@ -1,5 +1,6 @@
 ﻿using Molten.Graphics;
 using Molten.Input;
+using Molten.UI;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -14,6 +15,14 @@ namespace Molten.Samples
         SceneLayer _uiLayer;
         CameraComponent _cam2D;
 
+        SceneObject _player;
+        SampleCameraController _camController;
+        SceneObject _parent;
+        SceneObject _child;
+
+        UIText _txtDebug;
+        UIText _txtMovement;
+        UIText _txtGamepad;
 
         public SampleGame(string title) : base(title) { }
 
@@ -27,13 +36,17 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
-            if(Window != null)
+            if (Window != null)
+            {
                 Window.OnHandleChanged += Window_OnHandleChanged;
+                Window.OnPostResize += Window_OnPostResize;
+            }
 
             MainScene = CreateScene("Main");
             _spriteLayer = MainScene.AddLayer("sprite", true);
             _uiLayer = MainScene.AddLayer("ui", true);
             _uiLayer.BringToFront();
+            UI = _uiLayer.AddObjectWithComponent<UIManagerComponent>();
 
             // Use the same camera for both the sprite and UI scenes.
             _cam2D = MainScene.AddObjectWithComponent<CameraComponent>(_uiLayer);
@@ -42,6 +55,8 @@ namespace Molten.Samples
             _cam2D.MaxDrawDistance = 1.0f;
             _cam2D.OutputSurface = Window;
             _cam2D.LayerMask = SceneLayerMask.Layer0;
+
+            UI.Camera = _cam2D;
 
             Settings.Input.PointerSensitivity.Value = 0.75f;
             Settings.Input.PointerSensitivity.Apply();
@@ -55,6 +70,74 @@ namespace Molten.Samples
             OnContentRequested(cr);
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
+
+            SpawnPlayer();
+            TestMesh = GetTestCubeMesh();
+            SpawnParentChild(TestMesh, Vector3F.Zero, out _parent, out _child);
+        }
+
+        private void Gamepad_OnConnectionStatusChanged(InputDevice device, bool isConnected)
+        {
+            UpdateGamepadUI();
+        }
+
+        private void SpawnPlayer()
+        {
+            _player = CreateObject();
+            _player.Transform.LocalPosition = new Vector3F(0, 0, -10);
+            SceneCamera = _player.Components.Add<CameraComponent>();
+            _camController = _player.Components.Add<SampleCameraController>();
+            SceneCamera.LayerMask = SceneLayerMask.Layer1 | SceneLayerMask.Layer2;
+            SceneCamera.OutputSurface = Window;
+            SceneCamera.MaxDrawDistance = 300;
+            //SceneCamera.MultiSampleLevel = AntiAliasLevel.X8;
+            MainScene.AddObject(_player);
+        }
+
+
+        protected virtual IMesh GetTestCubeMesh()
+        {
+            IMesh<VertexTexture> cube = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
+            cube.SetVertices(SampleVertexData.TexturedCube);
+            return cube;
+        }
+
+        private SceneObject SpawnTestCube(IMesh mesh, Vector3F pos)
+        {
+            SceneObject obj = CreateObject(pos, MainScene);
+            MeshComponent meshCom = obj.Components.Add<MeshComponent>();
+            meshCom.RenderedObject = mesh;
+            return obj;
+        }
+
+        protected void SpawnParentChild(IMesh mesh, Vector3F origin, out SceneObject parent, out SceneObject child)
+        {
+            parent = SpawnTestCube(mesh, Vector3F.Zero);
+            child = SpawnTestCube(mesh, Vector3F.Zero);
+
+            child.Transform.LocalScale = new Vector3F(0.5f);
+            child.Transform.LocalPosition = new Vector3F(0, 0, 2);
+            parent.Transform.LocalPosition = origin;
+            parent.Children.Add(child);
+        }
+
+        protected void RotateParentChild(SceneObject parent, SceneObject child, Timing time, float speed = 0.5f, float childSpeed = 1.0f)
+        {
+            var rotateTime = (float)time.TotalTime.TotalSeconds;
+
+            parent.Transform.LocalRotationY += speed;
+            if (parent.Transform.LocalRotationY >= 360)
+                parent.Transform.LocalRotationY -= 360;
+
+            child.Transform.LocalRotationX += childSpeed;
+            if (child.Transform.LocalRotationX >= 360)
+                child.Transform.LocalRotationX -= 360;
+        }
+
+        private void Window_OnPostResize(ITexture texture)
+        {
+            if (_baseContentLoaded)
+                UpdateUIlayout(UI);
         }
 
         private void Window_OnHandleChanged(INativeSurface surface)
@@ -99,6 +182,58 @@ namespace Molten.Samples
             MainScene.BackgroundColor = color;
         }
 
+        private void UpdateGamepadUI()
+        {
+            if (Gamepad.IsConnected)
+            {
+                _txtGamepad.Text = "Gamepad [LEFT STICK] or [D-PAD] to move -- [RIGHT STICK] to aim";
+            }
+            else
+            {
+                _txtGamepad.Text = "Connect a gamepad / controller";
+            }
+        }
+
+        protected void BuildUI(UIManagerComponent ui)
+        {
+            _txtDebug = new UIText()
+            {
+                Text = "[F1] debug overlay",
+                HorizontalAlign = UIHorizonalAlignment.Center,
+            };
+
+            _txtMovement = new UIText()
+            {
+                Text = "[W][A][S][D] to move -- [ESC] close -- [LMB] and [MOUSE] to rotate",
+                HorizontalAlign = UIHorizonalAlignment.Center,
+            };
+
+            _txtGamepad = new UIText()
+            {
+                HorizontalAlign = UIHorizonalAlignment.Center,
+            };
+
+            ui.Children.Add(_txtDebug);
+            ui.Children.Add(_txtMovement);
+            ui.Children.Add(_txtGamepad);
+
+            UpdateGamepadUI();
+            Gamepad.OnConnectionStatusChanged += Gamepad_OnConnectionStatusChanged;
+
+            OnBuildUI(ui);
+            UpdateUIlayout(ui);
+        }
+
+        protected virtual void OnBuildUI(UIManagerComponent ui) { }
+
+        protected virtual void UpdateUIlayout(UIManagerComponent ui)
+        {
+            int xCenter = (int)(Window.Width / 2);
+            _txtDebug.LocalBounds = new Rectangle(xCenter, 5, 0, 0);
+            _txtGamepad.LocalBounds = new Rectangle(xCenter, (int)Window.Height - 20, 0, 0);
+            _txtMovement.LocalBounds = new Rectangle(xCenter, _txtGamepad.LocalBounds.Y - 20, 0, 0);
+        }
+
         private void Cr_OnCompleted(ContentRequest cr)
         {
             _sampleFont = cr.Get<TextFont>(0);
@@ -106,14 +241,26 @@ namespace Molten.Samples
 
             OnContentLoaded(cr);
             SampleSpriteRenderComponent com = _uiLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
-            com.RenderCallback = OnHudDraw;
+            com.RenderCallback = OnDrawSprites;
             com.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
+            BuildUI(UI);
             _baseContentLoaded = true;
         }
 
         protected virtual void OnContentRequested(ContentRequest cr) { }
 
         protected virtual void OnContentLoaded(ContentRequest cr) { }
+
+        /// <summary>
+        /// Called when the <see cref="SampleGame"/> should update and handle gamepad input. <see cref="SampleGame"/> provides default handling.
+        /// </summary> 
+        /// <param name="time"></param>
+        protected virtual void OnGamepadInput(Timing time)
+        {
+            // Apply left and right vibration equal to left and right trigger values 
+            Gamepad.VibrationLeft.Value = Gamepad.LeftTrigger.Value;
+            Gamepad.VibrationRight.Value = Gamepad.RightTrigger.Value;
+        }
 
         protected override void OnUpdate(Timing time)
         {
@@ -158,26 +305,42 @@ namespace Molten.Samples
                     Debug.WriteLine($"Overlay toggled with F1 -- Frame ID: {time.FrameID}");
                 }
             }
+
+            if (Keyboard.IsTapped(KeyCode.Escape))
+                Exit();
+
+            RotateParentChild(_parent, _child, time);
+            OnGamepadInput(time);
         }
 
-        protected virtual void OnHudDraw(SpriteBatcher sb)
+        protected virtual void OnDrawSprites(SpriteBatcher sb)
         {
             if (SampleFont == null)
                 return;
 
-            float oldSize = SampleFont.Size;
-            SampleFont.Size = 30;
-            string text = "[F1] debug overlay";
-            Vector2F tSize = SampleFont.MeasureString(text);
-            Vector2F pos = new Vector2F()
+            /*if (Gamepad.IsConnected)
             {
-                X = (Window.Width / 2)  - (tSize.X / 2),
-                Y = 5,
-            };
+                text = "Gamepad [LEFT STICK] or [D-PAD] to move -- [RIGHT STICK] to aim";
+                tSize = SampleFont.MeasureString(text);
+                pos.X = (Window.Width / 2) - (tSize.X / 2);
+                pos.Y -= tSize.Y + 5;
+                sb.DrawString(SampleFont, text, pos, Color.White);
 
-
-            sb.DrawString(SampleFont, text, pos, Color.White);
-            SampleFont.Size = oldSize;
+                // Stats
+                pos.X = 5;
+                pos.Y = 300; sb.DrawString(SampleFont, $"Left stick: {Gamepad.LeftStick.X},{Gamepad.LeftStick.Y}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Right stick: {Gamepad.RightStick.X},{Gamepad.RightStick.Y}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Left Trigger: {Gamepad.LeftTrigger.Value}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Right Trigger: {Gamepad.RightTrigger.Value}", pos, Color.White);
+            }
+            else
+            {
+                text = "Connect a gamepad / controller";
+                tSize = SampleFont.MeasureString(text);
+                pos.X = (Window.Width / 2) - (tSize.X / 2);
+                pos.Y -= tSize.Y + 5;
+                sb.DrawString(SampleFont, text, pos, Color.White);
+            }*/
         }
 
         public abstract string Description { get; }
@@ -190,16 +353,26 @@ namespace Molten.Samples
         /// <summary>
         /// Gets the sample's UI scene layer.
         /// </summary>
-        public SceneLayer UI => _uiLayer;
+        public SceneLayer UILayer => _uiLayer;
 
         /// <summary>
         /// Gets the sample's sprite scene layer.
         /// </summary>
         public SceneLayer SpriteLayer => _spriteLayer;
 
+        public UIManagerComponent UI { get; private set; }
+
         /// <summary>
         /// Gets the sample's sprite scene. This is rendered before <see cref="UIScene"/>.
         /// </summary>
         public Scene MainScene { get; private set; }
+
+        protected IMesh TestMesh { get; private set; }
+
+        public SceneObject Player => _player;
+
+        public CameraComponent SceneCamera { get; set; }
+
+        public SampleCameraController CameraController => _camController;
     }
 }

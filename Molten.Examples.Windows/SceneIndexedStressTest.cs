@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Molten.Samples
 {
-    public class SceneIndexedStressTest : SampleSceneGame
+    public class SceneIndexedStressTest : SampleGame
     {
         public override string Description => "A simple scene test using colored cubes with indexed meshes.";
         List<SceneObject> _objects;

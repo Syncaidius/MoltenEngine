@@ -197,42 +197,8 @@ namespace Molten.UI
         {
             // Render compound components, inside global bounds rather than render bounds.
             // Note - RenderBounds is intended for rendering child elements, not compound component elements.
-            if (CompoundElements.Count > 0)
-            {
-                if (BaseData.IsClipEnabled)
-                {
-                    if (sb.PushClip(BaseData.GlobalBounds))
-                    {
-                        foreach (UIElement e in CompoundElements)
-                            e.Render(sb);
-                        sb.PopClip();
-                    }
-                }
-                else
-                {
-                    foreach (UIElement e in CompoundElements)
-                        e.Render(sb);
-                }
-            }
-
-            // Render children.
-            if (Children.Count > 0)
-            {
-                if (BaseData.IsClipEnabled)
-                {
-                    if (sb.PushClip(BaseData.RenderBounds))
-                    {
-                        foreach (UIElement child in Children)
-                            child.Render(sb);
-                        sb.PopClip();
-                    }
-                }
-                else
-                {
-                    foreach (UIElement child in Children)
-                        child.Render(sb);
-                }
-            }
+            CompoundElements.Render(sb, ref BaseData.GlobalBounds);
+            Children.Render(sb, ref BaseData.RenderBounds);
         }
 
         /// <summary>

@@ -2,7 +2,7 @@
 
 namespace Molten.Samples
 {
-    public class OneDTextureTest : SampleSceneGame
+    public class OneDTextureTest : SampleGame
     {
         public override string Description => "A simple test for 1D texture loading and usage.";
 

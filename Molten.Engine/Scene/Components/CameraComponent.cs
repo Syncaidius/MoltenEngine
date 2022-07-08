@@ -14,6 +14,8 @@ namespace Molten
         /// </summary>
         public event InputCameraSurfaceHandler OnSurfaceChanged;
 
+        public event InputCameraSurfaceHandler OnSurfaceResized;
+
         /// <summary>
         /// Creates a new instance of <see cref="CameraComponent"/>
         /// </summary>
@@ -21,6 +23,12 @@ namespace Molten
         {
             _camera = new RenderCamera(RenderCameraMode.Perspective);
             _camera.OnOutputSurfaceChanged += _camera_OnOutputSurfaceChanged;
+            _camera.OnSurfaceResized += _camera_OnSurfaceResized;
+        }
+
+        private void _camera_OnSurfaceResized(RenderCamera camera, IRenderSurface2D surface)
+        {
+            OnSurfaceResized?.Invoke(this, surface);
         }
 
         protected override void OnDispose() { }

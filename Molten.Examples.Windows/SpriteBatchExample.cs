@@ -3,7 +3,7 @@ using Molten.Input;
 
 namespace Molten.Samples
 {
-    public class SpriteBatchExample : SampleSceneGame
+    public class SpriteBatchExample : SampleGame
     {
         const int SPRITE_RECT_INCREMENT = 100;
 

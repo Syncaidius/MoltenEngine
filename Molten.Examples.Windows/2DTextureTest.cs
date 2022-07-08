@@ -2,7 +2,7 @@
 
 namespace Molten.Samples
 {
-    public class TwoDTextureTest : SampleSceneGame
+    public class TwoDTextureTest : SampleGame
     {
         public override string Description => "A simple test for 2D texture loading and usage.";
 

@@ -2,7 +2,7 @@
 
 namespace Molten.Samples
 {
-    public class SceneTexture1DArrayTest : SampleSceneGame
+    public class SceneTexture1DArrayTest : SampleGame
     {
         public override string Description => "A sample of 1D texture arrays via a material shared between two parented objects.";
 

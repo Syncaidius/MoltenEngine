@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
 namespace Molten.UI
@@ -8,19 +9,20 @@ namespace Molten.UI
     /// </summary>
     public class UIText : UIElement
     {
-        [DataMember]
+        [JsonProperty]
         public Color Color;
 
-        [DataMember]
-        public string Text;
+        [JsonProperty]
+        public string _text;
 
-        [DataMember]
-        public Vector2F Position;
+        [JsonProperty]
+        private Vector2F _position;
 
         [IgnoreDataMember]
         public IMaterial Material;
 
         TextFont _font;
+        Vector2F _textSize;
         UIHorizonalAlignment _hAlign;
         UIVerticalAlignment _vAlign;
 
@@ -42,7 +44,7 @@ namespace Molten.UI
         internal override void Render(SpriteBatcher sb)
         {
             if (Font != null && Color.A > 0)
-                sb.DrawString(Font, Text, Position, Color, Material);
+                sb.DrawString(Font, Text, _position, Color, Material);
 
             base.Render(sb);
         }
@@ -55,28 +57,27 @@ namespace Molten.UI
                 return;
 
             Rectangle gBounds = GlobalBounds;
-            Position = (Vector2F)gBounds.TopLeft;
-            Vector2F textSize = _font.MeasureString(Text);
+            _position = (Vector2F)gBounds.TopLeft;
 
             switch (_hAlign)
             {
                 case UIHorizonalAlignment.Center:
-                    Position.X = gBounds.Center.X - (textSize.X / 2);
+                    _position.X = gBounds.Center.X - (_textSize.X / 2);
                     break;
 
                 case UIHorizonalAlignment.Right:
-                    Position.X = gBounds.Right - textSize.X;
+                    _position.X = gBounds.Right - _textSize.X;
                     break;
             }
 
             switch (_vAlign)
             {
                 case UIVerticalAlignment.Center:
-                    Position.Y = gBounds.Center.Y - (textSize.Y / 2);
+                    _position.Y = gBounds.Center.Y - (_textSize.Y / 2);
                     break;
 
                 case UIVerticalAlignment.Bottom:
-                    Position.Y = gBounds.Bottom - textSize.Y;
+                    _position.Y = gBounds.Bottom - _textSize.Y;
                     break;
             }
         }
@@ -124,8 +125,20 @@ namespace Molten.UI
                 if(_font != value)
                 {
                     _font = value;
+                    _textSize = _font.MeasureString(Text);
                     OnUpdateBounds();
                 }
+            }
+        }
+
+        public string Text
+        {
+            get => _text;
+            set
+            {
+                _text = value;
+                _textSize = _font?.MeasureString(Text) ?? new Vector2F();
+                OnUpdateBounds();
             }
         }
     }
