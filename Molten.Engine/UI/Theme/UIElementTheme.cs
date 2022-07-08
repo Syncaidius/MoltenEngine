@@ -5,12 +5,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Graphics;
+using Newtonsoft.Json;
 
 namespace Molten.UI
 {
     public class UIElementTheme
     {
-        [DataMember]
+        [JsonProperty]
         Dictionary<UIElementState, UIStateTheme> _states = new Dictionary<UIElementState, UIStateTheme>()
         {
             [UIElementState.Default] = new UIStateTheme(),
@@ -23,10 +24,10 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets the default font path, or name of a system font.
         /// </summary>
-        [DataMember]
+        [JsonProperty]
         public string FontName { get; set; } = "Arial";
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public TextFont Font { get; private set; }
 
         string _requestedFontName;
@@ -48,7 +49,17 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets the <see cref="UIStateTheme"/> for a particular <see cref="UIElementState"/>.
+        /// Sets all of the <see cref="UIElementTheme"/> state themes to the provided <see cref="UIStateTheme"/>.
+        /// </summary>
+        /// <param name="stateTheme"></param>
+        public void Set(UIStateTheme stateTheme)
+        {
+            foreach (UIStateTheme theme in _states.Values)
+                theme.Set(stateTheme);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="UIStateTheme"/> for the given <see cref="UIElementState"/>. 
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>

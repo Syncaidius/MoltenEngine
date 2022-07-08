@@ -32,17 +32,6 @@ namespace Molten.UI
         [DataMember]
         public int TabSize { get; set; } = 3;
 
-        /// <summary>
-        /// Gets or sets the default number of points per curve, when rendering font characters.
-        /// </summary>
-        [DataMember]
-        public int FontPointsPerCurve { get; set; } = 12;
-
-        /// <summary>
-        /// Gets or sets the default font character padding.
-        /// </summary>
-        [DataMember]
-        public int CharacterPadding { get; set; } = 2;
 
         [DataMember]
         public UIVerticalAlignment VerticalAlign { get; set; }
@@ -50,7 +39,20 @@ namespace Molten.UI
         [DataMember]
         public UIHorizonalAlignment HorizontalAlign { get; set; }
 
-        [DataMember]
-        public Dictionary<string, Color> CustomColors { get; private set; } = new Dictionary<string, Color>();
+        /// <summary>
+        /// Sets the current <see cref="UIStateTheme"/> by copying all of the values from another <see cref="UIStateTheme"/>.
+        /// </summary>
+        /// <param name="source">The source <see cref="UIStateTheme"/> from which to copy values.</param>
+        public void Set(UIStateTheme source)
+        {
+            TextColor = source.TextColor;
+            BackgroundColor = source.BackgroundColor;
+            BorderColor = source.BorderColor;
+            BorderThickness = source.BorderThickness;
+            CornerRadius = source.CornerRadius;
+            TabSize = source.TabSize;
+            VerticalAlign = source.VerticalAlign;
+            HorizontalAlign = source.HorizontalAlign;
+        }
     }
 }

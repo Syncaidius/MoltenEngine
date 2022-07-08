@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Graphics;
+using Newtonsoft.Json;
 
 namespace Molten.UI
 {
@@ -18,11 +19,13 @@ namespace Molten.UI
         int _titleBarSize = 25;
         int _iconSpacing = 5;
         List<UIButton> _titleBarButtons;
+        CornerInfo _cornerRadius;
 
         protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
         {
             base.OnInitialize(engine, settings, theme);
 
+            
             _titleBarButtons = new List<UIButton>();
 
             // Change _panel corners to only round bottom left/right.
@@ -42,25 +45,28 @@ namespace Molten.UI
         {
             base.OnApplyTheme(theme, elementTheme, stateTheme);
 
-            for (int i = 0; i < _titleBarButtons.Count; i++)
-            {
-                if (i == 0)
-                    _titleBarButtons[i].CornerRadius.Set(0, CornerRadius.TopRight, 0, 0);
-                else
-                    _titleBarButtons[i].CornerRadius.Set(0);
-            }
-
-            _titleBar.CornerRadius.Set(CornerRadius.TopLeft, CornerRadius.TopRight, 0, 0);
+            _cornerRadius = stateTheme.CornerRadius;
+            _titleBar.CornerRadius.Set(_cornerRadius.TopLeft, _cornerRadius.TopRight, 0, 0);
             _titleBar.FillColor = stateTheme.BorderColor;
-            _panel.CornerRadius.Set(0, 0, CornerRadius.BottomRight, CornerRadius.BottomLeft);
+            _panel.CornerRadius.Set(0, 0, _cornerRadius.BottomRight, _cornerRadius.BottomLeft);
         }
 
         private UIButton AddTitleButton(string text)
         {
             UIButton btn = CompoundElements.Add<UIButton>();
             _titleBarButtons.Add(btn);
+            btn.OnThemeApplied += Btn_OnThemeApplied;
             btn.Text = text;
             return btn;
+        }
+
+        private void Btn_OnThemeApplied(UIElement element, UIElementTheme elementTheme, UIStateTheme stateTheme)
+        {
+            UIButton btn = element as UIButton;
+            if (btn == _titleBarButtons.FirstOrDefault())
+                btn.CornerRadius.Set(0, _cornerRadius.TopRight, 0, 0);
+            else
+                btn.CornerRadius.Set(0);
         }
 
         protected override void OnUpdateCompoundBounds()
@@ -79,6 +85,7 @@ namespace Molten.UI
         /// <summary>
         /// The title of the current <see cref="UIWindow"/>.
         /// </summary>
+        [JsonProperty]
         public string Title
         {
             get => _title.Text;
@@ -88,6 +95,7 @@ namespace Molten.UI
         /// <summary>
         /// The title bar height of the current <see cref="UIWindow"/>, in pixels. This value will also be the size of any buttons on the title bar.
         /// </summary>
+        [JsonProperty]
         public int TitleBarHeight
         {
             get => _titleBarSize;
@@ -97,10 +105,5 @@ namespace Molten.UI
                 OnUpdateBounds();
             }
         }
-
-        /// <summary>
-        /// The corner radius values of the current <see cref="UIWindow"/>. Setting them all to 0 will produce a regular rectangle.
-        /// </summary>
-        public ref CornerInfo CornerRadius => ref _panel.CornerRadius;
     }
 }

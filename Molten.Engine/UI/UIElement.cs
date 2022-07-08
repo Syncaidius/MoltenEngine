@@ -9,6 +9,13 @@ namespace Molten.UI
     [Serializable]
     public abstract class UIElement : EngineObject
     {
+        public delegate void ThemeEventHandler(UIElement element, UIElementTheme elementTheme, UIStateTheme stateTheme);
+
+        /// <summary>
+        /// Invoked when the state-based theme of the current <see cref="UIElement"/> changes or is re-applied.
+        /// </summary>
+        public event ThemeEventHandler OnThemeApplied;
+
         [DataMember]
         protected internal UIRenderData BaseData { get; }
 
@@ -21,9 +28,7 @@ namespace Molten.UI
             Children = new UIChildCollection(this);
             CompoundElements = new UIChildCollection(this);
             Engine = Engine.Current;
-
-            
-            
+     
             BaseData = new UIRenderData();
             State = UIElementState.Default;
             OnInitialize(Engine, Engine.Settings.UI, Theme);
@@ -79,7 +84,10 @@ namespace Molten.UI
 
         public void ApplyStateTheme(UIElementState state)
         {
-            OnApplyTheme(Theme, ElementTheme, ElementTheme[state]);
+            UIStateTheme stateTheme = ElementTheme[state];
+
+            OnApplyTheme(Theme, ElementTheme, stateTheme);
+            OnThemeApplied?.Invoke(this, ElementTheme, stateTheme);
         }
 
         protected virtual void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme) { }

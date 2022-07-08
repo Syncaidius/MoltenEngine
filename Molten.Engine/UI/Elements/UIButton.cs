@@ -32,9 +32,10 @@ namespace Molten.UI
         public override void OnPressed(ScenePointerTracker tracker)
         {
             base.OnPressed(tracker);
-
             _panel.ApplyStateTheme(UIElementState.Pressed);
             _label.ApplyStateTheme(UIElementState.Pressed);
+
+            ApplyStateTheme(UIElementState.Pressed);
         }
 
         public override void OnReleased(ScenePointerTracker tracker, bool releasedOutside)
@@ -43,6 +44,8 @@ namespace Molten.UI
 
             _panel.ApplyStateTheme(UIElementState.Default);
             _label.ApplyStateTheme(UIElementState.Default);
+
+            ApplyStateTheme(UIElementState.Default);
         }
 
         /// <summary>
