@@ -321,8 +321,11 @@ namespace Molten.UI
                 foreach (UIElement e in Children)
                     e.Theme = _theme;
 
-                ElementTheme = _theme.GetTheme(GetType());
-                ApplyStateTheme(State);
+                if (_theme != null)
+                {
+                    ElementTheme = _theme.GetTheme(GetType());
+                    ApplyStateTheme(State);
+                }
             }
         }
 

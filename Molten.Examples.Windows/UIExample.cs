@@ -49,10 +49,12 @@ namespace Molten.Samples
             pressTheme.BorderColor = Color.SkyBlue;
             pressTheme.TextColor = Color.Yellow;
 
-            _ui.Root = new UIWindow()
+            UIWindow window = new UIWindow()
             {
                 LocalBounds = new Rectangle(100, 150, 600, 450)
             };
+            _ui.Camera = SceneCamera;
+            _ui.Children.Add(window);
         }
 
         protected override void OnHudDraw(SpriteBatcher sb)

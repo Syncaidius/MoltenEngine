@@ -56,6 +56,7 @@ namespace Molten.UI
             child.Manager = _element.Manager;
             _elements.Add(child);
             child.Parent = _element;
+            child.Theme = _element.Theme;
 
             OnElementAdded?.Invoke(child);
         }

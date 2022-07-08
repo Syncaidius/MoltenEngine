@@ -14,8 +14,9 @@ namespace Molten.UI
             public UIElement Pressed;
         }
 
+        CameraComponent _camera;
         UITheme _theme;
-        UIElement _root;
+        UIContainer _root;
         Dictionary<ScenePointerTracker, UITracker> _trackers;
         List<ScenePointerTracker> _trackersToRemove;
 
@@ -29,6 +30,12 @@ namespace Molten.UI
         {
             base.OnInitialize(obj);
 
+            _root = new UIContainer()
+            {
+                LocalBounds = new Rectangle(0,0,600,480),
+                Manager = this,
+            };
+            Children = _root.Children;
             SettingValue<UITheme> themeSetting = obj.Engine.Settings.UI.Theme;
             Theme = themeSetting;
             themeSetting.OnChanged += ThemeSetting_OnChanged;
@@ -63,27 +70,17 @@ namespace Molten.UI
         public override void OnUpdate(Timing time)
         {
             base.OnUpdate(time);
-
-            if (Root == null)
-                return;
-
-            Root.Update(time);
+            _root.Update(time);
         }
 
         protected override void OnRender(SpriteBatcher sb)
         {
-            if (Root == null)
-                return;
-
-            Root.Render(sb);
+            _root.Render(sb);
         }
 
         public bool Contains(Vector2F point)
         {
-            if (Root != null)
-                return Root.Pick(point) != null;
-            else
-                return false;
+            return _root.Pick(point) != null;
         }
 
         public void PointerDrag(ScenePointerTracker tracker, Vector2F pos, Vector2F delta)
@@ -110,7 +107,7 @@ namespace Molten.UI
                 {
                     if (uiTracker.Pressed == null)
                     {
-                        uiTracker.Pressed = Root.Pick(pos);
+                        uiTracker.Pressed = _root.Pick(pos);
                         if (uiTracker.Pressed != null)
                             uiTracker.Pressed.OnPressed(tracker);
                     }
@@ -163,10 +160,7 @@ namespace Molten.UI
 
         public void PointerHover(Vector2F pos)
         {
-            if (Root != null)
-                HoverElement = Root.Pick(pos);
-            else
-                HoverElement = null;
+            HoverElement = _root.Pick(pos);
         }
 
         public void PointerFocus()
@@ -180,34 +174,9 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets or sets the Root <see cref="UIElement"/> to be drawn.
+        /// Gets all of the child <see cref="UIElement"/> attached to the current <see cref="UIManagerComponent"/>.
         /// </summary>
-        public UIElement Root
-        {
-            get => _root;
-            set
-            {
-                if (_root != value)
-                {
-                    // Un-set owner of current root UIElement, if any.
-                    if (_root != null)
-                        _root.Manager = null;
-
-                    // Set new root UIElement and it's owner.
-                    _root = value;
-                    if (_root != null)
-                    {
-                        // A root element cannot have a parent.
-                        if (_root.Parent != null)
-                            _root.Parent.Children.Remove(_root);
-
-                        _root.Manager = this;
-                        if (_theme.IsLoaded)
-                            ApplyTheme(_theme);
-                    }
-                }
-            }
-        }
+        public UIChildCollection Children { get; private set; }
 
         public string Tooltip => Name;
 
@@ -241,8 +210,33 @@ namespace Molten.UI
 
         private void ApplyTheme(UITheme theme)
         {
-            if (_root != null)
-                _root.Theme = theme;
+            _root.Theme = theme;
+        }
+
+        private void UpdateRootBounds(IInputCamera camera, IRenderSurface2D surface)
+        {
+            _root.LocalBounds = new Rectangle(0, 0, (int)surface.Width, (int)surface.Height);
+        }
+
+        public CameraComponent Camera
+        {
+            get { return _camera; }
+            set
+            {
+                if(_camera != value)
+                {
+                    if(_camera != null)
+                        _camera.OnSurfaceChanged -= UpdateRootBounds;
+
+                    _camera = value;
+
+                    if (_camera != null)
+                    {
+                        UpdateRootBounds(_camera, _camera.OutputSurface);
+                        _camera.OnSurfaceChanged += UpdateRootBounds;
+                    }
+                }
+            }
         }
     }
 }
