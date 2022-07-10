@@ -1,4 +1,5 @@
-﻿using Molten.Graphics;
+﻿using Molten.Data;
+using Molten.Graphics;
 using Molten.UI;
 
 namespace Molten.Samples
@@ -56,8 +57,34 @@ namespace Molten.Samples
                 Title = "This is another Window"
             };
 
+            UILineGraph lineGraph = new UILineGraph()
+            {
+                LocalBounds = new Rectangle(1150, 200, 600, 420)
+            };
+
+            PlotGraphData(lineGraph);
+
             UI.Children.Add(window1);
             UI.Children.Add(window2);
+            UI.Children.Add(lineGraph);
+        }
+
+        private void PlotGraphData(UILineGraph graph)
+        {
+            GraphDataSet graphSet = new GraphDataSet(200);
+            graphSet.KeyColor = Color.Grey;
+            for (int i = 0; i < graphSet.Capacity; i++)
+                graphSet.Plot(Rng.Next(0, 500));
+
+            GraphDataSet graphSet2 = new GraphDataSet(200);
+            graphSet2.KeyColor = Color.Lime;
+            float piInc = MathHelper.TwoPi / 20;
+            float waveScale = 100;
+            for (int i = 0; i < graphSet2.Capacity; i++)
+                graphSet2.Plot(waveScale * Math.Sin(piInc * i));
+
+            graph.AddDataSet(graphSet);
+            graph.AddDataSet(graphSet2);
         }
 
         protected override void OnDrawSprites(SpriteBatcher sb)

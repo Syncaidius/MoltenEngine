@@ -193,13 +193,23 @@ namespace Molten.UI
 
         protected virtual void OnUpdate(Timing time) { }
 
-        internal virtual void Render(SpriteBatcher sb)
+        internal void Render(SpriteBatcher sb)
         {
-            // Render compound components, inside global bounds rather than render bounds.
-            // Note - RenderBounds is intended for rendering child elements, not compound component elements.
+            if (IsClipEnabled && sb.PushClip(GlobalBounds))
+            {
+                OnRenderSelf(sb);
+                sb.PopClip();
+            }
+            else
+            {
+                OnRenderSelf(sb);
+            }
+
             CompoundElements.Render(sb, ref BaseData.GlobalBounds);
             Children.Render(sb, ref BaseData.RenderBounds);
         }
+
+        protected virtual void OnRenderSelf(SpriteBatcher sb) { }
 
         /// <summary>
         /// Gets or sets the local bounds of the current <see cref="UIElement"/>.

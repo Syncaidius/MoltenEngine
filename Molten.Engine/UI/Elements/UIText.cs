@@ -9,6 +9,11 @@ namespace Molten.UI
     /// </summary>
     public class UIText : UIElement
     {
+        /// <summary>
+        /// Invoked when either <see cref="Font"/> or <see cref="Text"/> were changed, causing a re-measurement of the text dimensions.
+        /// </summary>
+        public event ObjectHandler<UIText> OnMeasurementChanged;
+
         [JsonProperty]
         public Color Color;
 
@@ -26,6 +31,11 @@ namespace Molten.UI
         UIHorizonalAlignment _hAlign;
         UIVerticalAlignment _vAlign;
 
+        /// <summary>
+        /// Gets the measured size of the current <see cref="Text"/> string.
+        /// </summary>
+        public Vector2F MeasuredSize => _textSize;
+
         protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
         {
             base.OnInitialize(engine, settings, theme);
@@ -39,14 +49,17 @@ namespace Molten.UI
 
             Color = stateTheme.TextColor;
             Font = elementTheme.Font;
+            _hAlign = stateTheme.HorizontalAlign;
+            _vAlign = stateTheme.VerticalAlign;
+            OnUpdateBounds();
         }
 
-        internal override void Render(SpriteBatcher sb)
+        protected override void OnRenderSelf(SpriteBatcher sb)
         {
             if (Font != null && Color.A > 0)
                 sb.DrawString(Font, Text, _position, Color, Material);
 
-            base.Render(sb);
+            base.OnRenderSelf(sb);
         }
 
         protected override void OnUpdateBounds()
@@ -125,12 +138,16 @@ namespace Molten.UI
                 if(_font != value)
                 {
                     _font = value;
-                    _textSize = _font.MeasureString(Text);
+                    _textSize = _font?.MeasureString(Text) ?? new Vector2F();
+                    OnMeasurementChanged?.Invoke(this);
                     OnUpdateBounds();
                 }
             }
         }
 
+        /// <summary>
+        /// Gets or sets the string of text shown by the current <see cref="UIText"/>.
+        /// </summary>
         public string Text
         {
             get => _text;
@@ -138,6 +155,7 @@ namespace Molten.UI
             {
                 _text = value;
                 _textSize = _font?.MeasureString(Text) ?? new Vector2F();
+                OnMeasurementChanged?.Invoke(this);
                 OnUpdateBounds();
             }
         }

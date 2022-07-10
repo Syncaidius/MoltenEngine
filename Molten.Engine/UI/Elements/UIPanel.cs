@@ -35,10 +35,8 @@ namespace Molten.UI
             CornerRadius = stateTheme.CornerRadius;
         }
 
-        internal override void Render(SpriteBatcher sb)
+        protected override void OnRenderSelf(SpriteBatcher sb)
         {
-            // TODO replace properties with this
-
             float radiusLimit = Math.Min(BaseData.GlobalBounds.Width, BaseData.GlobalBounds.Height) / 2;
             RoundedRectStyle style = new RoundedRectStyle()
             {
@@ -51,7 +49,7 @@ namespace Molten.UI
 
             sb.DrawRoundedRect(BaseData.RenderBounds, 0, Vector2F.Zero, ref style);
 
-            base.Render(sb);
+            base.OnRenderSelf(sb);
         }
     }
 }
