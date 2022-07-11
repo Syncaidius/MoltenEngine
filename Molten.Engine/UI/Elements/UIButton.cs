@@ -6,14 +6,14 @@ namespace Molten.UI
     public class UIButton : UIElement
     {
         UIPanel _panel;
-        UIText _label;
+        UILabel _label;
 
         protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
         {
             base.OnInitialize(engine, settings, theme);
 
             _panel = CompoundElements.Add<UIPanel>();
-            _label = CompoundElements.Add<UIText>();
+            _label = CompoundElements.Add<UILabel>();
 
             _label.Text = Name;
             _label.HorizontalAlign = UIHorizonalAlignment.Center;

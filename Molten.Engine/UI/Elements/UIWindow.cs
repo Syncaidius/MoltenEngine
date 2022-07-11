@@ -15,7 +15,7 @@ namespace Molten.UI
         UIButton _btnClose;
         UIButton _btnMinimize;
         UIButton _btnMaximize;
-        UIText _title;
+        UILabel _title;
         int _titleBarSize = 25;
         int _iconSpacing = 5;
         List<UIButton> _titleBarButtons;
@@ -31,7 +31,7 @@ namespace Molten.UI
             // Change _panel corners to only round bottom left/right.
             _titleBar = CompoundElements.Add<UIPanel>();
             _panel = CompoundElements.Add<UIPanel>();
-            _title = CompoundElements.Add<UIText>();
+            _title = CompoundElements.Add<UILabel>();
             _title.VerticalAlign = UIVerticalAlignment.Center;
 
             _btnClose = AddTitleButton("X");

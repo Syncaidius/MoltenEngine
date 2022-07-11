@@ -39,31 +39,36 @@ namespace Molten.UI
             }
         }
 
+        [UIThemeMember]
         public Color BackgroundColor { get; set; }
 
         /// <summary>
         /// Gets the style used for drawing the axis marker lines of the current <see cref="UILineGraph"/>.
         /// </summary>
+        [UIThemeMember]
         public ref LineStyle AxisLineStyle => ref _axisLineStyle;
 
         /// <summary>
         /// Gets the style used for drawing the plotted data lines of the current <see cref="UILineGraph"/>.
         /// </summary>
+        [UIThemeMember]
         public ref LineStyle DataLineStyle => ref _dataLineStyle;
 
         /// <summary>
         /// Gets the style used for drawing the average value line of the current <see cref="UILineGraph"/>.
         /// </summary>
+        [UIThemeMember]
         public ref LineStyle AverageLineStyle => ref _avgLineStyle;
 
         /// <summary>
         /// Gets or sets whether the average line is shown.
         /// </summary>
+        [UIThemeMember]
         public bool ShowAverageLine { get; set; } = true;
 
-        UIText _labelTitle;
-        UIText _labelXAxis;
-        UIText _labelYAxis;
+        UILabel _labelTitle;
+        UILabel _labelXAxis;
+        UILabel _labelYAxis;
 
         List<GraphDataSet> _datasets;
 
@@ -78,15 +83,15 @@ namespace Molten.UI
             base.OnInitialize(engine, settings, theme);
             _datasets = new List<GraphDataSet>();
 
-            _labelTitle = CompoundElements.Add<UIText>();
+            _labelTitle = CompoundElements.Add<UILabel>();
             _labelTitle.Text = "Line Graph";
             _labelTitle.OnMeasurementChanged += Label_OnMeasurementChanged;
 
-            _labelXAxis = CompoundElements.Add<UIText>();
+            _labelXAxis = CompoundElements.Add<UILabel>();
             _labelXAxis.Text = "X Axis";
             _labelXAxis.OnMeasurementChanged += Label_OnMeasurementChanged;
 
-            _labelYAxis = CompoundElements.Add<UIText>();
+            _labelYAxis = CompoundElements.Add<UILabel>();
             _labelYAxis.Text = "Y Axis";
             _labelYAxis.OnMeasurementChanged += Label_OnMeasurementChanged;
         }
@@ -96,7 +101,7 @@ namespace Molten.UI
             _datasets.Add(dataset);
         }
 
-        private void Label_OnMeasurementChanged(UIText obj)
+        private void Label_OnMeasurementChanged(UILabel obj)
         {
             OnUpdateBounds();
         }
@@ -122,7 +127,8 @@ namespace Molten.UI
             _borderLineStyle.Thickness = 1;
 
             _dataLineStyle = _axisLineStyle;
-            _dataLineStyle.Thickness = 1;
+            _dataLineStyle.Thickness = 4;
+            _dataLineStyle.Sharpness = 0.1f;
 
             _avgLineStyle = _dataLineStyle;
             _avgLineStyle.Color1 = _avgLineStyle.Color2 = Color.Yellow;
@@ -157,8 +163,6 @@ namespace Molten.UI
         protected override void OnRenderSelf(SpriteBatcher sb)
         {
             sb.DrawRect(_plotArea, BackgroundColor);
-            sb.DrawLine(_plotArea.TopLeft, _plotArea.BottomLeft, ref _axisLineStyle);
-            sb.DrawLine(_plotArea.BottomLeft, _plotArea.BottomRight, ref _axisLineStyle);
 
             GraphMeasurements gm = new GraphMeasurements();
 
@@ -211,6 +215,11 @@ namespace Molten.UI
                 sb.DrawLine(avg1, avg2, ref _avgLineStyle);
             }
 
+
+            Vector2F yAxisOffset = new Vector2F(_axisLineStyle.Thickness / 2, 0);
+            sb.DrawLine(_plotArea.TopLeft + yAxisOffset, _plotArea.BottomLeft  + yAxisOffset, ref _axisLineStyle);
+            sb.DrawLine(_plotArea.BottomLeft, _plotArea.BottomRight, ref _axisLineStyle);
+
             base.OnRenderSelf(sb);
         }
 
@@ -225,8 +234,8 @@ namespace Molten.UI
 
                 Vector2F p = new Vector2F()
                 {
-                    X = _plotArea.Left + (float)(gm.XPerValue * (i + startIndex)),
-                    Y = _plotArea.Bottom - (float)(gm.YPerUnit * graphLocalValue)
+                    X = _plotArea.Left + (int)(gm.XPerValue * (i + startIndex)),
+                    Y = _plotArea.Bottom - (int)(gm.YPerUnit * graphLocalValue)
                 };
 
                 if (i > 0)

@@ -20,9 +20,9 @@ namespace Molten.Samples
         SceneObject _parent;
         SceneObject _child;
 
-        UIText _txtDebug;
-        UIText _txtMovement;
-        UIText _txtGamepad;
+        UILabel _txtDebug;
+        UILabel _txtMovement;
+        UILabel _txtGamepad;
 
         public SampleGame(string title) : base(title) { }
 
@@ -196,19 +196,19 @@ namespace Molten.Samples
 
         protected void BuildUI(UIManagerComponent ui)
         {
-            _txtDebug = new UIText()
+            _txtDebug = new UILabel()
             {
                 Text = "[F1] debug overlay",
                 HorizontalAlign = UIHorizonalAlignment.Center,
             };
 
-            _txtMovement = new UIText()
+            _txtMovement = new UILabel()
             {
                 Text = "[W][A][S][D] to move -- [ESC] close -- [LMB] and [MOUSE] to rotate",
                 HorizontalAlign = UIHorizonalAlignment.Center,
             };
 
-            _txtGamepad = new UIText()
+            _txtGamepad = new UILabel()
             {
                 HorizontalAlign = UIHorizonalAlignment.Center,
             };

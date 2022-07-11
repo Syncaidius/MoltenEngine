@@ -7,29 +7,27 @@ namespace Molten.UI
     /// <summary>
     /// A UI component dedicated to presenting text.
     /// </summary>
-    public class UIText : UIElement
+    public class UILabel : UIElement
     {
         /// <summary>
         /// Invoked when either <see cref="Font"/> or <see cref="Text"/> were changed, causing a re-measurement of the text dimensions.
         /// </summary>
-        public event ObjectHandler<UIText> OnMeasurementChanged;
+        public event ObjectHandler<UILabel> OnMeasurementChanged;
 
-        [JsonProperty]
+        [UIThemeMember]
         public Color Color;
 
-        [JsonProperty]
+        [UIThemeMember]
         public string _text;
 
-        [JsonProperty]
         private Vector2F _position;
 
-        [IgnoreDataMember]
         public IMaterial Material;
 
         TextFont _font;
         Vector2F _textSize;
-        UIHorizonalAlignment _hAlign;
-        UIVerticalAlignment _vAlign;
+        UIHorizonalAlignment _hAlign = UIHorizonalAlignment.Left;
+        UIVerticalAlignment _vAlign = UIVerticalAlignment.Center;
 
         /// <summary>
         /// Gets the measured size of the current <see cref="Text"/> string.
@@ -98,6 +96,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets the horizontal alignment.
         /// </summary>
+        [UIThemeMember]
         public UIHorizonalAlignment HorizontalAlign
         {
             get => _hAlign;
@@ -114,6 +113,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets the vertical alignment.
         /// </summary>
+        [UIThemeMember]
         public UIVerticalAlignment VerticalAlign
         {
             get => _vAlign;
@@ -128,8 +128,9 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="TextFont"/> of the current <see cref="UIText"/>.
+        /// Gets or sets the <see cref="TextFont"/> of the current <see cref="UILabel"/>.
         /// </summary>
+        [UIThemeMember]
         public TextFont Font
         {
             get => _font;
@@ -146,8 +147,9 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets or sets the string of text shown by the current <see cref="UIText"/>.
+        /// Gets or sets the string of text shown by the current <see cref="UILabel"/>.
         /// </summary>
+        [UIThemeMember]
         public string Text
         {
             get => _text;

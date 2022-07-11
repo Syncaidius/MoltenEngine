@@ -53,14 +53,19 @@ namespace Molten.Samples
 
             UIWindow window2 = new UIWindow()
             {
-                LocalBounds = new Rectangle(500, 250, 640, 550),
+                LocalBounds = new Rectangle(460, 250, 540, 550),
                 Title = "This is another Window"
             };
 
             UILineGraph lineGraph = new UILineGraph()
             {
-                LocalBounds = new Rectangle(1150, 200, 600, 420)
+                LocalBounds = new Rectangle(1050, 200, 700, 420)
             };
+
+            UITheme2 test = new UITheme2();
+            test.Initialize(Engine);
+            test.AddStyle("Molten.UI.UIWindow/Molten.UI.UIButton/Molten.UI.UILabel");
+            test.ApplyTheme(lineGraph);
 
             PlotGraphData(lineGraph);
 
