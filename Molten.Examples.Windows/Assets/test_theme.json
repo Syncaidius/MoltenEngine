@@ -1,0 +1,10 @@
+{
+  "Molten.UI.UIWindow/Molten.UI.UIButton/Molten.UI.UILabel": {
+    "Color": {
+      "Default": "255 255 255 255"
+    },
+    "Text": {
+      "Default": 
+    }
+  }
+}

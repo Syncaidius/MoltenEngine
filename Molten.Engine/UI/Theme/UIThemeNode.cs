@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Molten.UI
 {
@@ -11,9 +12,9 @@ namespace Molten.UI
     {
         const char PATH_DELIMITER = '/';
 
-        public void Initialize(Engine engine)
+        public UITheme2() : base(null)
         {
-            Engine = engine;
+            Engine = Engine.Current;
         }
 
         /// <summary>
@@ -22,7 +23,7 @@ namespace Molten.UI
         /// <param name="stylePath">The path of the theme style.</param>
         /// <param name="populateWithDefault">If true, the created style will be populated with the default values of its <see cref="UIElement"/> type.</param>
         /// <returns>The created <see cref="UIStyle"/>.</returns>
-        public UIStyle AddStyle(string stylePath, bool populateWithDefault = true)
+        public UIStyle AddStyle(string stylePath, Dictionary<string, Dictionary<UIElementState, object>> values = null)
         {
             string[] typeNames = stylePath.Split(PATH_DELIMITER, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
@@ -33,7 +34,7 @@ namespace Molten.UI
             for (int i = typeNames.Length - 1; i >= 0; i--)
             {
                 Type t = Type.GetType(typeNames[i]);
-                if(t == null)
+                if (t == null)
                 {
                     Engine.Log.Error($"Type '{typeNames[i]}' not found for theme path of '{stylePath}'");
                     continue;
@@ -43,13 +44,13 @@ namespace Molten.UI
 
                 if (!node.Parents.TryGetValue(t, out UIStyle parent))
                 {
-                    parent = new UIStyle();
+                    parent = new UIStyle(node);
                     node.Parents.Add(t, parent);
                 }
 
                 node = parent;
-                if (i == 0 && populateWithDefault)
-                    node.PopulateProperties(startType);
+                if (i == 0)
+                    node.Populate(startType, values);
             }
 
             return node;
@@ -59,12 +60,18 @@ namespace Molten.UI
         /// Applies the theme to the given <see cref="UIElement"/>.
         /// </summary>
         /// <param name="element"></param>
-        public void ApplyTheme(UIElement element)
+        public void ApplyStyle(UIElement element)
         {
             UIStyle chosenNode = null;
             UIStyle node = this;
             UIElement e = element;
 
+            // Get the the closest match we can find. For example:
+            // We want "UIWindow/UIButton/UIText" but only "UIButton/UIText" is available, the latter will be returned.
+            // Remember styles are stored backwards - inner-most style first. This is for performance reasons.
+            //
+            // When searching for a style we'd actually look for UIText -> UIButton -> UIWindow
+            // and get then hopefully get a style stored for UIText in the UIWindow style node
             while(e != null)
             {
                 Type t = e.GetType();
@@ -92,53 +99,99 @@ namespace Molten.UI
 
     public class UIStyle
     {
-        internal Dictionary<MemberInfo, UIThemeValue> Properties { get; } = new Dictionary<MemberInfo, UIThemeValue>();
+        internal Dictionary<MemberInfo, UIStyleValue> Properties { get; } = new Dictionary<MemberInfo, UIStyleValue>();
 
         internal Dictionary<Type, UIStyle> Parents { get; } = new Dictionary<Type, UIStyle>();
 
-        internal void PopulateProperties(Type t)
+        internal UIStyle Child { get; }
+
+        internal UIStyle(UIStyle child)
         {
-            MemberInfo[] members = t.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            Child = child;
+        }
+
+        internal void Populate(Type t, Dictionary<string, Dictionary<UIElementState, object>> values)
+        {
             object objInstance = Activator.CreateInstance(t);
+            BindingFlags bFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-            foreach (MemberInfo info in members)
+            if (values != null)
             {
-                UIThemeMemberAttribute att = info.GetCustomAttribute<UIThemeMemberAttribute>(true);
+                MemberTypes mTypes = MemberTypes.Field | MemberTypes.Property;
 
-                if (att != null)
+                foreach (string memberName in values.Keys)
                 {
-                    object defaultVal = null;
-                    if (info is FieldInfo fInfo)
-                        defaultVal = fInfo.GetValue(objInstance);
-                    else if (info is PropertyInfo pInfo)
-                        defaultVal = pInfo.GetValue(objInstance);
+                    Dictionary<UIElementState, object> stateValues = values[memberName];
 
-                    Properties[info] = new UIThemeValue(defaultVal);
+                    MemberInfo[] members = t.GetMember(memberName, mTypes, bFlags);
+                    if(members.Length > 0)
+                    {
+                        MemberInfo mInfo = members[0]; // We only care about the first one.
+                        object defaultVal = GetMemberValue(mInfo, objInstance);
+
+                        UIStyleValue styleVal = new UIStyleValue(defaultVal);
+                        Properties[mInfo] = styleVal;
+
+                        foreach (UIElementState state in stateValues.Keys)
+                            styleVal[state] = stateValues[state];
+                    }
+                }
+            }
+            else
+            {
+                MemberInfo[] members = t.GetMembers(bFlags);
+
+                foreach (MemberInfo mInfo in members)
+                {
+                    UIThemeMemberAttribute att = mInfo.GetCustomAttribute<UIThemeMemberAttribute>(true);
+
+                    if (att != null)
+                    {
+                        object defaultVal = GetMemberValue(mInfo, objInstance);
+                        Properties[mInfo] = new UIStyleValue(defaultVal);
+                    }
                 }
             }
         }
+
+        private object GetMemberValue(MemberInfo info, object obj)
+        {
+            if (info is FieldInfo fInfo)
+                return fInfo.GetValue(obj);
+            else if (info is PropertyInfo pInfo)
+                return pInfo.GetValue(obj);
+            else
+                return null;
+        }
     }
 
-    internal class UIThemeValue
+    public class UIStyleValue
     {
-        public Dictionary<UIElementState, object> _values = new Dictionary<UIElementState, object>();
+        internal Dictionary<UIElementState, object> Values = new Dictionary<UIElementState, object>();
 
-        internal UIThemeValue(object defaultValue)
+        internal UIStyle Style { get; }
+
+        internal UIStyleValue(object defaultValue)
         {
-            _values[UIElementState.Default] = defaultValue;
+            Values[UIElementState.Default] = defaultValue;
+        }
+
+        internal void PopulateWith(UIStyleValue value)
+        {
+
         }
 
         public object this[UIElementState state]
         {
             get
             {
-                if (state != UIElementState.Default & _values.TryGetValue(state, out object val))
+                if (state != UIElementState.Default & Values.TryGetValue(state, out object val))
                     return val;
                 else
-                    return _values[UIElementState.Default];
+                    return Values[UIElementState.Default];
             }
 
-            set => _values[state] = value;
+            set => Values[state] = value;
         }
     }
 

@@ -17,7 +17,6 @@ namespace Molten.UI
         [UIThemeMember]
         public Color Color;
 
-        [UIThemeMember]
         public string _text;
 
         private Vector2F _position;
@@ -139,9 +138,16 @@ namespace Molten.UI
                 if(_font != value)
                 {
                     _font = value;
-                    _textSize = _font?.MeasureString(Text) ?? new Vector2F();
-                    OnMeasurementChanged?.Invoke(this);
-                    OnUpdateBounds();
+                    if (_font != null)
+                    {
+                        _textSize = _font.MeasureString(Text);
+                        OnMeasurementChanged?.Invoke(this);
+                        OnUpdateBounds();
+                    }
+                    else
+                    {
+                        _textSize = new Vector2F();
+                    }
                 }
             }
         }
@@ -155,10 +161,17 @@ namespace Molten.UI
             get => _text;
             set
             {
-                _text = value;
-                _textSize = _font?.MeasureString(Text) ?? new Vector2F();
-                OnMeasurementChanged?.Invoke(this);
-                OnUpdateBounds();
+                _text = value; 
+                if (_font != null)
+                {
+                    _textSize = _font.MeasureString(Text);
+                    OnMeasurementChanged?.Invoke(this);
+                    OnUpdateBounds();
+                }
+                else
+                {
+                    _textSize = new Vector2F();
+                }
             }
         }
     }
