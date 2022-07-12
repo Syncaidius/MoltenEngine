@@ -11,9 +11,11 @@ namespace Molten.UI
     public class UITheme2 : UIStyle
     {
         const char PATH_DELIMITER = '/';
+        Dictionary<Type, MemberInfo[]> _memberCache;
 
         public UITheme2() : base(null)
         {
+            _memberCache = new Dictionary<Type, MemberInfo[]>();
             Engine = Engine.Current;
         }
 
@@ -21,7 +23,7 @@ namespace Molten.UI
         /// Adds a theme style path to the current <see cref="UITheme"/>.
         /// </summary>
         /// <param name="stylePath">The path of the theme style.</param>
-        /// <param name="populateWithDefault">If true, the created style will be populated with the default values of its <see cref="UIElement"/> type.</param>
+        /// <param name="values">A set of values to populate the style with. Useful when deserializing <see cref="UITheme2"/> values.</param>
         /// <returns>The created <see cref="UIStyle"/>.</returns>
         public UIStyle AddStyle(string stylePath, Dictionary<string, Dictionary<UIElementState, object>> values = null)
         {
@@ -50,7 +52,26 @@ namespace Molten.UI
 
                 node = parent;
                 if (i == 0)
-                    node.Populate(startType, values);
+                {
+                    if (!_memberCache.TryGetValue(startType, out MemberInfo[] members))
+                    {                            
+                        BindingFlags bFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                        members = startType.GetMembers(bFlags);
+
+                        // Strip out any irrelevant members that do not have UIThemeMemberAttribute.
+                        List<MemberInfo> miList = members.ToList();
+                        for (int m = miList.Count - 1; m >= 0; m--)
+                        {
+                            UIThemeMemberAttribute att = miList[m].GetCustomAttribute<UIThemeMemberAttribute>(true);
+                            if (att == null)
+                                miList.RemoveAt(m);
+                        }
+
+                        _memberCache.Add(startType, miList.ToArray());
+                    }
+
+                    node.Populate(startType, members, values);
+                }
             }
 
             return node;
@@ -110,46 +131,39 @@ namespace Molten.UI
             Child = child;
         }
 
-        internal void Populate(Type t, Dictionary<string, Dictionary<UIElementState, object>> values)
+        internal void Populate(Type t, MemberInfo[] members, Dictionary<string, Dictionary<UIElementState, object>> values)
         {
             object objInstance = Activator.CreateInstance(t);
-            BindingFlags bFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
             if (values != null)
             {
-                MemberTypes mTypes = MemberTypes.Field | MemberTypes.Property;
-
                 foreach (string memberName in values.Keys)
                 {
                     Dictionary<UIElementState, object> stateValues = values[memberName];
 
-                    MemberInfo[] members = t.GetMember(memberName, mTypes, bFlags);
-                    if(members.Length > 0)
+                    foreach (MemberInfo member in members)
                     {
-                        MemberInfo mInfo = members[0]; // We only care about the first one.
-                        object defaultVal = GetMemberValue(mInfo, objInstance);
+                        if (member.Name == memberName)
+                        {
+                            object defaultVal = GetMemberValue(member, objInstance);
 
-                        UIStyleValue styleVal = new UIStyleValue(defaultVal);
-                        Properties[mInfo] = styleVal;
+                            UIStyleValue styleVal = new UIStyleValue(defaultVal);
+                            Properties[member] = styleVal;
 
-                        foreach (UIElementState state in stateValues.Keys)
-                            styleVal[state] = stateValues[state];
+                            foreach (UIElementState state in stateValues.Keys)
+                                styleVal[state] = stateValues[state];
+
+                            break;
+                        }
                     }
                 }
             }
             else
             {
-                MemberInfo[] members = t.GetMembers(bFlags);
-
                 foreach (MemberInfo mInfo in members)
                 {
-                    UIThemeMemberAttribute att = mInfo.GetCustomAttribute<UIThemeMemberAttribute>(true);
-
-                    if (att != null)
-                    {
-                        object defaultVal = GetMemberValue(mInfo, objInstance);
-                        Properties[mInfo] = new UIStyleValue(defaultVal);
-                    }
+                    object defaultVal = GetMemberValue(mInfo, objInstance);
+                    Properties[mInfo] = new UIStyleValue(defaultVal);
                 }
             }
         }

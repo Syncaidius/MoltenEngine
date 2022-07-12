@@ -63,7 +63,6 @@ namespace Molten.Samples
             };
 
             UITheme2 test = new UITheme2();
-            test.Initialize(Engine);
             test.AddStyle("Molten.UI.UIWindow/Molten.UI.UIButton/Molten.UI.UILabel");
             test.ApplyStyle(lineGraph);
 

@@ -1,10 +1,14 @@
 {
   "Molten.UI.UIWindow/Molten.UI.UIButton/Molten.UI.UILabel": {
     "Color": {
-      "Default": "255 255 255 255"
+      "Default": "255 255 255 255",
+      "Pressed": "255 255 0 255"
     },
     "Text": {
-      "Default": 
-    }
+      "Default": "This is a Button"
+    },
+    "VerticalAlign": "Center",
+    "HorizontalAlign": "Center",
+    "Font": "Arial"
   }
 }
