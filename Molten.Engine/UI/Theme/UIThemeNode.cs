@@ -20,7 +20,10 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Adds a theme style path to the current <see cref="UITheme"/>.
+        /// Adds a theme style path to the current <see cref="UITheme"/>. 
+        /// <para>
+        /// If <paramref name="values"/> is null or empty, default values will be taken from the UI element type referred to in <paramref name="stylePath"/>.
+        /// </para>
         /// </summary>
         /// <param name="stylePath">The path of the theme style.</param>
         /// <param name="values">A set of values to populate the style with. Useful when deserializing <see cref="UITheme2"/> values.</param>
@@ -81,32 +84,34 @@ namespace Molten.UI
         /// <param name="element"></param>
         public void ApplyStyle(UIElement element)
         {
-            UIStyle chosenNode = null;
-            UIStyle node = this;
+            UIStyle style = null;
             UIElement e = element;
+            Type elementType = element.GetType();
 
-            // Get the the closest match we can find. For example:
-            // We want "UIWindow/UIButton/UIText" but only "UIButton/UIText" is available, the latter will be returned.
-            // Remember styles are stored backwards - inner-most style first. This is for performance reasons.
-            //
-            // When searching for a style we'd actually look for UIText -> UIButton -> UIWindow
-            // and get then hopefully get a style stored for UIText in the UIWindow style node
             while(e != null)
             {
-                Type t = e.GetType();
-
-                if (!node.Parents.TryGetValue(t, out node))
+                Type eType = e.GetType();
+                if (Parents.TryGetValue(eType, out UIStyle nextStyle))
                     break;
 
-                e = element.Parent;
-                chosenNode = node;
+                //A more precise styling is available.
+                e = e.Parent;
+                style = nextStyle;
             }
 
-            // No theme found, generate default for it.
-            if(chosenNode == null)
+            // No style found, not even a default one. Lets make a default.
+            if(style == null)
+                style = AddStyle(elementType.FullName);
+
+            // Apply the style
+            MemberInfo[] members = _memberCache[elementType];
+            foreach(MemberInfo member in members)
             {
-                Type et = element.GetType();
-                chosenNode = AddStyle(et.FullName);
+                object val = style.GetValue(member, element.State);
+                if (member is FieldInfo field)
+                    field.SetValue(element, val);
+                else if (member is PropertyInfo property)
+                    property.SetValue(element, val);
             }
         }
 
@@ -129,11 +134,26 @@ namespace Molten.UI
             Child = child;
         }
 
+        internal object GetValue(MemberInfo member, UIElementState state)
+        {
+            // First try to find the value on self or child styles
+            UIStyle style = this;
+            while (style != null)
+            {
+                if (Properties.TryGetValue(member, out UIStyleValue value))
+                    return value[state];
+
+                style = style.Child;
+            }
+
+            return null;
+        }
+
         internal void Populate(Type t, MemberInfo[] members, Dictionary<string, Dictionary<UIElementState, object>> values)
         {
             object objInstance = Activator.CreateInstance(t);
 
-            if (values != null)
+            if (values != null || values.Count == 0)
             {
                 foreach (string memberName in values.Keys)
                 {
@@ -145,7 +165,7 @@ namespace Molten.UI
                         {
                             object defaultVal = GetMemberValue(member, objInstance);
 
-                            UIStyleValue styleVal = new UIStyleValue(defaultVal);
+                            UIStyleValue styleVal = new UIStyleValue(this, defaultVal);
                             Properties[member] = styleVal;
 
                             foreach (UIElementState state in stateValues.Keys)
@@ -161,7 +181,7 @@ namespace Molten.UI
                 foreach (MemberInfo mInfo in members)
                 {
                     object defaultVal = GetMemberValue(mInfo, objInstance);
-                    Properties[mInfo] = new UIStyleValue(defaultVal);
+                    Properties[mInfo] = new UIStyleValue(this, defaultVal);
                 }
             }
         }
@@ -181,16 +201,15 @@ namespace Molten.UI
     {
         internal Dictionary<UIElementState, object> Values = new Dictionary<UIElementState, object>();
 
+        /// <summary>
+        /// Gets the parent style which owns the current <see cref="UIStyleValue"/>.
+        /// </summary>
         internal UIStyle Style { get; }
 
-        internal UIStyleValue(object defaultValue)
+        internal UIStyleValue(UIStyle parentStyle, object defaultValue)
         {
+            Style = parentStyle;
             Values[UIElementState.Default] = defaultValue;
-        }
-
-        internal void PopulateWith(UIStyleValue value)
-        {
-
         }
 
         public object this[UIElementState state]
