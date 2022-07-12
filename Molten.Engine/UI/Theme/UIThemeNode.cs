@@ -59,15 +59,13 @@ namespace Molten.UI
                         members = startType.GetMembers(bFlags);
 
                         // Strip out any irrelevant members that do not have UIThemeMemberAttribute.
-                        List<MemberInfo> miList = members.ToList();
-                        for (int m = miList.Count - 1; m >= 0; m--)
+                        members = members.Where(m =>
                         {
-                            UIThemeMemberAttribute att = miList[m].GetCustomAttribute<UIThemeMemberAttribute>(true);
-                            if (att == null)
-                                miList.RemoveAt(m);
-                        }
+                            UIThemeMemberAttribute att = m.GetCustomAttribute<UIThemeMemberAttribute>(true);
+                            return att != null;
+                        }).ToArray();
 
-                        _memberCache.Add(startType, miList.ToArray());
+                        _memberCache.Add(startType, members);
                     }
 
                     node.Populate(startType, members, values);
