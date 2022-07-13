@@ -29,22 +29,11 @@ namespace Molten.UI
         /// </summary>
         public Vector2F MeasuredSize => _textSize;
 
-        protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
+        protected override void OnInitialize(Engine engine, UISettings settings)
         {
-            base.OnInitialize(engine, settings, theme);
+            base.OnInitialize(engine, settings);
             Text = Name;
             InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Children;
-        }
-
-        protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)
-        {
-            base.OnApplyTheme(theme, elementTheme, stateTheme);
-
-            Color = stateTheme.TextColor;
-            Font = elementTheme.Font;
-            _hAlign = stateTheme.HorizontalAlign;
-            _vAlign = stateTheme.VerticalAlign;
-            OnUpdateBounds();
         }
 
         protected override void OnRenderSelf(SpriteBatcher sb)
@@ -157,7 +146,6 @@ namespace Molten.UI
             OnMeasurementChanged?.Invoke(this);
             OnUpdateBounds();
         }
-
 
         /// <summary>
         /// Gets or sets the text color of the current <see cref="UILabel"/>.

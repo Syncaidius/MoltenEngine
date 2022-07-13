@@ -1,89 +1,179 @@
-﻿using Molten.Graphics;
-using System.Runtime.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Molten.Graphics;
+using Newtonsoft.Json;
 
 namespace Molten.UI
 {
-    public class UITheme
+    public class UITheme : UIStyle
     {
-        public event ObjectHandler<UITheme> OnContentLoaded;
+        const char PATH_DELIMITER = '/';
+        Dictionary<Type, MemberInfo[]> _memberCache;
+        string _defaultFontName;
+        bool _isInitialized;
+        float _defaultFontSize = 16;
 
-        [DataMember]
-        Dictionary<string, UIElementTheme> _themes = new Dictionary<string, UIElementTheme>();
+        public TextFont DefaultFont { get; private set; }
 
-        [DataMember]
-        public UIElementTheme DefaultElementTheme { get; } = new UIElementTheme();
-
-        [IgnoreDataMember]
         public Engine Engine { get; private set; }
 
-        string _contentRoot;
-
-        public UIElementTheme GetTheme<T>()
-            where T : UIElement
+        [JsonProperty]
+        public float DefaultFontSize
         {
-            return GetTheme(typeof(T));
+            get => _defaultFontSize;
+            set
+            {
+                if (_defaultFontSize != value)
+                {
+                    _defaultFontSize = value;
+                    if (DefaultFont != null)
+                        DefaultFont.Size = _defaultFontSize;
+                }
+            }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="engine"></param>
-        /// <param name="themeRootDirectory">The content root directory for the current theme, or null if default.</param>
-        internal void Initialize(Engine engine, string themeRootDirectory = null)
+        [JsonProperty]
+        public string DefaultFontName
+        {
+            get => _defaultFontName;
+            set
+            {
+                if (_defaultFontName != value)
+                {
+                    _defaultFontName = value;
+
+                    if(_isInitialized)
+                        LoadFont();
+                }
+            }
+        }
+
+        private void Content_OnCompleted(ContentRequest request)
+        {
+            TextFontSource src = request.Get<TextFontSource>(0);
+            if (src != null)
+                DefaultFont = new TextFont(src, DefaultFontSize);
+        }
+
+        public UITheme() : base(null)
+        {
+            _memberCache = new Dictionary<Type, MemberInfo[]>();
+        }
+
+        internal void Initialize(Engine engine)
         {
             Engine = engine;
-            _contentRoot = themeRootDirectory;
-            LoadContent(engine);
+            LoadFont();
+            _isInitialized = true;
+        }
+
+        private void LoadFont()
+        {
+            if (!string.IsNullOrWhiteSpace(_defaultFontName))
+            {
+                ContentRequest cr = Engine.Current.Content.BeginRequest();
+                cr.Load<TextFontSource>(_defaultFontName);
+                cr.OnCompleted += Content_OnCompleted;
+                cr.CommitImmediate();
+            }
         }
 
         /// <summary>
-        /// (Re)loads the content of the current <see cref="UITheme"/>.
+        /// Adds a theme style path to the current <see cref="UITheme"/>. 
+        /// <para>
+        /// If <paramref name="values"/> is null or empty, default values will be taken from the UI element type referred to in <paramref name="stylePath"/>.
+        /// </para>
         /// </summary>
-        /// <param name="engine">The engine instance to use when loading content.</param>
-        public void LoadContent(Engine engine)
+        /// <param name="stylePath">The path of the theme style.</param>
+        /// <param name="values">A set of values to populate the style with. Useful when deserializing <see cref="UITheme"/> values.</param>
+        /// <returns>The created <see cref="UIStyle"/>.</returns>
+        public UIStyle AddStyle(string stylePath, Dictionary<string, Dictionary<UIElementState, object>> values = null)
         {
-            IsLoaded = false;
-            ContentRequest cr = engine.Content.BeginRequest(_contentRoot);
+            string[] typeNames = stylePath.Split(PATH_DELIMITER, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-            DefaultElementTheme.OnRequestContent(cr);
-            foreach (UIElementTheme eTheme in _themes.Values)
-                eTheme.OnRequestContent(cr);
+            // Iterate backwards. Paths are parsed in reverse order - end-most child first.
+            UIStyle node = this;
+            Type startType = null;
 
-            cr.OnCompleted += ContentRequest_OnCompleted;
-            cr.Commit();
-        }
+            for (int i = typeNames.Length - 1; i >= 0; i--)
+            {
+                Type t = Type.GetType(typeNames[i]);
+                if (t == null)
+                {
+                    Engine.Current.Log.Error($"Type '{typeNames[i]}' not found for theme path of '{stylePath}'");
+                    continue;
+                }
 
-        private void ContentRequest_OnCompleted(ContentRequest request)
-        {
-            DefaultElementTheme.OnContentLoaded(request);
-            foreach (UIElementTheme eTheme in _themes.Values)
-                eTheme.OnContentLoaded(request);
+                startType = startType ?? t;
 
-            OnContentLoaded?.Invoke(this);
-            IsLoaded = true;
-        }
+                if (!node.Parents.TryGetValue(t, out UIStyle parent))
+                {
+                    parent = new UIStyle(node);
+                    node.Parents.Add(t, parent);
+                }
 
-        public UIElementTheme GetTheme(Type elementType)
-        {
-            if (_themes.TryGetValue(elementType.FullName, out UIElementTheme theme))
-                return theme;
-            else
-                return DefaultElementTheme;
-        }
+                node = parent;
+                if (i == 0)
+                {
+                    if (!_memberCache.TryGetValue(startType, out MemberInfo[] members))
+                    {
+                        BindingFlags bFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                        members = startType.GetMembers(bFlags);
+                        members = members.Where(m =>
+                        {
+                            UIThemeMemberAttribute att = m.GetCustomAttribute<UIThemeMemberAttribute>(true);
+                            return att != null;
+                        }).ToArray();
 
-        public void SetTheme<T>(UIElementTheme theme)
-            where T : UIElement
-        {
-            string tName = typeof(T).FullName;
-            if (_themes.TryGetValue(tName, out theme))
-                throw new Exception($"A theme is already set for {tName}");
-            else
-                _themes[tName] = theme;
+                        _memberCache.Add(startType, members);
+                    }
+
+                    node.Populate(startType, members, values);
+                }
+            }
+
+            return node;
         }
 
         /// <summary>
-        /// Gets whether or not the theme's content has finished loading.
+        /// Applies the theme to the given <see cref="UIElement"/>.
         /// </summary>
-        public bool IsLoaded { get; private set; }
+        /// <param name="element"></param>
+        public void ApplyStyle(UIElement element)
+        {
+            UIStyle style = null;
+            UIElement e = element;
+            Type elementType = element.GetType();
+
+            while (e != null)
+            {
+                Type eType = e.GetType();
+                if (Parents.TryGetValue(eType, out UIStyle nextStyle))
+                    break;
+
+                //A more precise styling is available.
+                e = e.Parent;
+                style = nextStyle;
+            }
+
+            // No style found, not even a default one. Lets make a default.
+            if (style == null)
+                style = AddStyle(elementType.FullName);
+
+            // Apply the style
+            MemberInfo[] members = _memberCache[elementType];
+            foreach (MemberInfo member in members)
+            {
+                object val = style.GetValue(member, element.State);
+                if (member is FieldInfo field)
+                    field.SetValue(element, val);
+                else if (member is PropertyInfo property)
+                    property.SetValue(element, val);
+            }
+        }
     }
 }

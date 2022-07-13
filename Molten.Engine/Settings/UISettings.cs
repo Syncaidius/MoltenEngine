@@ -9,7 +9,10 @@ namespace Molten
         {
             TooltipDelay = AddSetting("tooltip_delay", 500);
             DragThreshold = AddSetting("drag_threshold", 10f);
-            Theme = AddSetting("theme", new UITheme());
+            Theme = AddSetting("theme", new UITheme()
+            {
+                DefaultFontName = "Arial"
+            });
         }
 
         /// <summary>
@@ -27,7 +30,7 @@ namespace Molten
         /// <summary>
         /// Gets the current <see cref="UITheme"/>. This setting is not serialized when settings are saved to file.
         /// </summary>
-        [IgnoreDataMember]
+        [DataMember]
         public SettingValue<UITheme> Theme { get; }        
        
     }

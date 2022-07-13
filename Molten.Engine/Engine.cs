@@ -58,7 +58,6 @@ namespace Molten
             foreach (EngineService service in _services)
                 service.Initialize(Settings, Log);
 
-            Settings.UI.Theme.Value.Initialize(this);
             Settings.UI.Theme.OnChanged += Theme_OnChanged;
         }
 
@@ -70,7 +69,6 @@ namespace Molten
         private void Renderer_OnStarted(EngineService o)
         {
             UITheme theme = Settings.UI.Theme.Value;
-            DefaultFont = Fonts.GetFont(Log, theme.DefaultElementTheme.FontName);
             Log.Error("Failed to load default font.");
         }
 
@@ -256,11 +254,6 @@ namespace Molten
         /// Disposing of a <see cref="ContentManager"/> instance will unload all of the content that was loaded by it.<para />
         /// </summary>
         public ContentManager Content { get; }
-
-        /// <summary>
-        /// Gets the default font as defined in <see cref="EngineSettings"/>.
-        /// </summary>
-        public TextFontSource DefaultFont { get; private set; }
 
         /// <summary>Gets the <see cref="InputService"/> attached to the current <see cref="Engine"/> instance.</summary>
         public InputService Input { get; private set; }

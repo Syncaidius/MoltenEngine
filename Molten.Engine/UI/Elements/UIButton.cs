@@ -8,16 +8,13 @@ namespace Molten.UI
         UIPanel _panel;
         UILabel _label;
 
-        protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
+        protected override void OnInitialize(Engine engine, UISettings settings)
         {
-            base.OnInitialize(engine, settings, theme);
+            base.OnInitialize(engine, settings);
 
             _panel = CompoundElements.Add<UIPanel>();
             _label = CompoundElements.Add<UILabel>();
 
-            _label.Text = Name;
-            _label.HorizontalAlign = UIHorizonalAlignment.Center;
-            _label.VerticalAlign = UIVerticalAlignment.Center;
             InputRules = UIInputRuleFlags.Self | UIInputRuleFlags.Children;
         }
 
@@ -31,38 +28,38 @@ namespace Molten.UI
 
         public override void OnPressed(ScenePointerTracker tracker)
         {
-            base.OnPressed(tracker);
-            _panel.ApplyStateTheme(UIElementState.Pressed);
-            _label.ApplyStateTheme(UIElementState.Pressed);
+            _panel.State = UIElementState.Pressed;
+            _label.State = UIElementState.Pressed;
 
-            ApplyStateTheme(UIElementState.Pressed);
+            base.OnPressed(tracker);
         }
 
         public override void OnReleased(ScenePointerTracker tracker, bool releasedOutside)
         {
+            _panel.State = UIElementState.Default;
+            _label.State = UIElementState.Default;
+
             base.OnReleased(tracker, releasedOutside);
-
-            _panel.ApplyStateTheme(UIElementState.Default);
-            _label.ApplyStateTheme(UIElementState.Default);
-
-            ApplyStateTheme(UIElementState.Default);
         }
 
         /// <summary>
         /// The text of the current <see cref="UIButton"/>.
         /// </summary>
+        [UIThemeMember]
         public string Text
         {
             get => _label.Text;
             set => _label.Text = value;
         }
 
+        [UIThemeMember]
         public UIVerticalAlignment VerticalAlign
         {
             get => _label.VerticalAlign;
             set => _label.VerticalAlign = value;
         }
 
+        [UIThemeMember]
         public UIHorizonalAlignment HorizontalAlign
         {
             get => _label.HorizontalAlign;
@@ -72,30 +69,40 @@ namespace Molten.UI
         /// <summary>
         /// The <see cref="TextFont"/> of the current <see cref="UIButton"/>.
         /// </summary>
-        public TextFont Font
+        public TextFont Font => _label.Font;
+
+        /// <summary>
+        /// Gets or sets the label font of the current <see cref="UIButton"/>.
+        /// </summary>
+        [UIThemeMember]
+        public string FontName
         {
-            get => _label.Font;
-            set => _label.Font = value;
+            get => _label.FontName;
+            set => _label.FontName = value;
         }
 
         /// <summary>
         /// The corner radius values of the current <see cref="UIButton"/>. Setting them all to 0 will produce a regular rectangle.
         /// </summary>
+        [UIThemeMember]
         public ref CornerInfo CornerRadius => ref _panel.CornerRadius;
 
         /// <summary>
         /// The fill/inner color of the current <see cref="UIButton"/>.
         /// </summary>
+        [UIThemeMember]
         public ref Color FillColor => ref _panel.FillColor;
 
         /// <summary>
         /// The border color of the current <see cref="UIButton"/>.
         /// </summary>
+        [UIThemeMember]
         public ref Color BorderColor => ref _panel.BorderColor;
 
         /// <summary>
         /// The border line thickness of the current <see cref="UIButton"/>.
         /// </summary>
+        [UIThemeMember]
         public ref float BorderThickness => ref _panel.BorderThickness;
     }
 }

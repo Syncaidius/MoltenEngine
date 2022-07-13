@@ -39,12 +39,6 @@ namespace Molten.Samples
             mat.SetDefaultResource(tex, 0);
             TestMesh.Material = mat;
 
-            UIStateTheme pressTheme = Settings.UI.Theme.Value.DefaultElementTheme[UIElementState.Pressed];
-            pressTheme.TextColor = Color.White;
-            pressTheme.BackgroundColor = Color.SkyBlue * 0.5f;
-            pressTheme.BorderColor = Color.SkyBlue;
-            pressTheme.TextColor = Color.Yellow;
-
             UIWindow window1 = new UIWindow()
             {
                 LocalBounds = new Rectangle(100, 150, 600, 440),
@@ -62,7 +56,7 @@ namespace Molten.Samples
                 LocalBounds = new Rectangle(1050, 200, 700, 420)
             };
 
-            UITheme2 test = new UITheme2();
+            UITheme test = new UITheme();
             test.AddStyle("Molten.UI.UIWindow/Molten.UI.UIButton/Molten.UI.UILabel");
             test.ApplyStyle(lineGraph);
 

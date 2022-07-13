@@ -78,9 +78,9 @@ namespace Molten.UI
         LineStyle _avgLineStyle;
         RectangleF _plotArea;
 
-        protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
+        protected override void OnInitialize(Engine engine, UISettings settings)
         {
-            base.OnInitialize(engine, settings, theme);
+            base.OnInitialize(engine, settings);
             _datasets = new List<GraphDataSet>();
 
             _labelTitle = CompoundElements.Add<UILabel>();
@@ -106,7 +106,7 @@ namespace Molten.UI
             OnUpdateBounds();
         }
 
-        protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)
+        /*protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)
         {
             base.OnApplyTheme(theme, elementTheme, stateTheme);
 
@@ -132,7 +132,7 @@ namespace Molten.UI
 
             _avgLineStyle = _dataLineStyle;
             _avgLineStyle.Color1 = _avgLineStyle.Color2 = Color.Yellow;
-        }
+        }*/
 
         protected override void OnUpdateBounds()
         {

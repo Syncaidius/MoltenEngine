@@ -8,31 +8,32 @@ namespace Molten.UI
         /// <summary>
         /// The border color
         /// </summary>
+        [UIThemeMember]
         public Color BorderColor;
 
         /// <summary>
         /// The border line thickness
         /// </summary>
+        [UIThemeMember]
         public float BorderThickness;
 
         /// <summary>
         /// The fill/inner color of the current <see cref="UIPanel"/>.
         /// </summary>
+        [UIThemeMember]
         public Color FillColor;
 
         /// <summary>
         /// The corner radius values of the current <see cref="UIPanel"/>. Setting them all to 0 will produce a regular rectangle.
         /// </summary>
+        [UIThemeMember]
         public CornerInfo CornerRadius;
 
-        protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)
+        protected override void OnInitialize(Engine engine, UISettings settings)
         {
-            base.OnApplyTheme(theme, elementTheme, stateTheme);
+            base.OnInitialize(engine, settings);
 
-            BorderColor = stateTheme.BorderColor;
-            BorderThickness = stateTheme.BorderThickness;
-            FillColor = stateTheme.BackgroundColor;
-            CornerRadius = stateTheme.CornerRadius;
+            InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Compound;
         }
 
         protected override void OnRenderSelf(SpriteBatcher sb)

@@ -195,15 +195,8 @@ namespace Molten.UI
             {
                 if(_theme != value)
                 {
-                    if(_theme != null)
-                        _theme.OnContentLoaded -= ApplyTheme;
-
                     _theme = value ?? Engine.Current.Settings.UI.Theme;
-                    if (_theme != null)
-                        _theme.OnContentLoaded += ApplyTheme;
-
-                    if (_theme.IsLoaded)
-                        ApplyTheme(_theme);
+                    ApplyTheme(_theme);
                 }
             }
         }

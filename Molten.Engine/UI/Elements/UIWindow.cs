@@ -21,9 +21,9 @@ namespace Molten.UI
         List<UIButton> _titleBarButtons;
         CornerInfo _cornerRadius;
 
-        protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
+        protected override void OnInitialize(Engine engine, UISettings settings)
         {
-            base.OnInitialize(engine, settings, theme);
+            base.OnInitialize(engine, settings);
 
             
             _titleBarButtons = new List<UIButton>();
@@ -41,7 +41,7 @@ namespace Molten.UI
             Title = Name;
         }
 
-        protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)
+        /*protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)
         {
             base.OnApplyTheme(theme, elementTheme, stateTheme);
 
@@ -49,25 +49,24 @@ namespace Molten.UI
             _titleBar.CornerRadius.Set(_cornerRadius.TopLeft, _cornerRadius.TopRight, 0, 0);
             _titleBar.FillColor = stateTheme.BorderColor;
             _panel.CornerRadius.Set(0, 0, _cornerRadius.BottomRight, _cornerRadius.BottomLeft);
-        }
+        }*/
 
         private UIButton AddTitleButton(string text)
         {
             UIButton btn = CompoundElements.Add<UIButton>();
             _titleBarButtons.Add(btn);
-            btn.OnThemeApplied += Btn_OnThemeApplied;
             btn.Text = text;
             return btn;
         }
 
-        private void Btn_OnThemeApplied(UIElement element, UIElementTheme elementTheme, UIStateTheme stateTheme)
+        /*private void Btn_OnThemeApplied(UIElement element, UIElementTheme elementTheme, UIStateTheme stateTheme)
         {
             UIButton btn = element as UIButton;
             if (btn == _titleBarButtons.FirstOrDefault())
                 btn.CornerRadius.Set(0, _cornerRadius.TopRight, 0, 0);
             else
                 btn.CornerRadius.Set(0);
-        }
+        }*/
 
         protected override void OnUpdateCompoundBounds()
         {

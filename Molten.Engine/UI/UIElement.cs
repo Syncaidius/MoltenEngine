@@ -9,19 +9,13 @@ namespace Molten.UI
     [Serializable]
     public abstract class UIElement : EngineObject
     {
-        public delegate void ThemeEventHandler(UIElement element, UIElementTheme elementTheme, UIStateTheme stateTheme);
-
-        /// <summary>
-        /// Invoked when the state-based theme of the current <see cref="UIElement"/> changes or is re-applied.
-        /// </summary>
-        public event ThemeEventHandler OnThemeApplied;
-
         [DataMember]
         protected internal UIRenderData BaseData { get; }
 
         UIManagerComponent _manager;
         UIElement _parent;
         UITheme _theme;
+        UIElementState _state;
 
         public UIElement()
         {
@@ -31,7 +25,7 @@ namespace Molten.UI
      
             BaseData = new UIRenderData();
             State = UIElementState.Default;
-            OnInitialize(Engine, Engine.Settings.UI, Theme);
+            OnInitialize(Engine, Engine.Settings.UI);
             Theme = Engine.Settings.UI.Theme;
         }
 
@@ -53,7 +47,7 @@ namespace Molten.UI
             };
         }
 
-        protected virtual void OnInitialize(Engine engine, UISettings settings, UITheme theme)
+        protected virtual void OnInitialize(Engine engine, UISettings settings)
         {
             BaseData.Margin.OnChanged += MarginPadding_OnChanged;
             BaseData.Padding.OnChanged += MarginPadding_OnChanged;
@@ -100,15 +94,17 @@ namespace Molten.UI
             OnUpdateBounds();
         }
 
-        public void ApplyStateTheme(UIElementState state)
+        protected virtual void ApplyTheme()
         {
-            UIStateTheme stateTheme = ElementTheme[state];
+            if (_theme == null)
+                return;
 
-            OnApplyTheme(Theme, ElementTheme, stateTheme);
-            OnThemeApplied?.Invoke(this, ElementTheme, stateTheme);
+            foreach (UIElement e in CompoundElements)
+                e.Theme = _theme;
+
+            _theme?.ApplyStyle(this);
+            UpdateBounds();
         }
-
-        protected virtual void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme) { }
 
         internal void Update(Timing time)
         {
@@ -315,31 +311,31 @@ namespace Molten.UI
             get => _theme;
             internal set
             {
-                _theme = value;
-
-                foreach (UIElement e in CompoundElements)
-                    e.Theme = _theme;
-
-                foreach (UIElement e in Children)
-                    e.Theme = _theme;
-
-                if (_theme != null)
+                if (_theme != value)
                 {
-                    ElementTheme = _theme.GetTheme(GetType());
-                    ApplyStateTheme(State);
+                    _theme = value;
+
+                    if (_theme != null)
+                        ApplyTheme();
                 }
             }
         }
 
         /// <summary>
-        /// Gets the <see cref="UIElementTheme"/> applied to the current <see cref="UIElement"/> when a <see cref="UITheme"/> was applied.
-        /// </summary>
-        protected UIElementTheme ElementTheme { get; private set; }
-
-        /// <summary>
         /// Gets the <see cref="UIElementState"/> of the current <see cref="UIElement"/>.
         /// </summary>
-        public UIElementState State { get; private set; }
+        public UIElementState State
+        {
+            get => _state;
+            set
+            {
+                if(_state != value)
+                {
+                    _state = value;
+                    _theme?.ApplyStyle(this);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the input rules for the current <see cref="UIElement"/>.

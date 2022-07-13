@@ -10,9 +10,9 @@ namespace Molten.UI
     /// </summary>
     public abstract class UIGraphBase : UIElement
     {
-        protected override void OnInitialize(Engine engine, UISettings settings, UITheme theme)
+        protected override void OnInitialize(Engine engine, UISettings settings)
         {
-            base.OnInitialize(engine, settings, theme);
+            base.OnInitialize(engine, settings);
 
             InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Children;
         }
