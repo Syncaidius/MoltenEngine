@@ -44,6 +44,7 @@ namespace Molten.UI
                 T content = request.Get<T>(0);
                 callback(request, content);
             };
+            cr.Commit();
         }
 
         protected virtual void OnInitialize(Engine engine, UISettings settings)

@@ -9,25 +9,25 @@ namespace Molten.UI
         /// The border color
         /// </summary>
         [UIThemeMember]
-        public Color BorderColor;
+        public Color BorderColor = new Color(52, 189, 235, 255);
 
         /// <summary>
         /// The border line thickness
         /// </summary>
         [UIThemeMember]
-        public float BorderThickness;
+        public float BorderThickness = 2;
 
         /// <summary>
         /// The fill/inner color of the current <see cref="UIPanel"/>.
         /// </summary>
         [UIThemeMember]
-        public Color FillColor;
+        public Color FillColor = new Color(0, 109, 155, 200);
 
         /// <summary>
         /// The corner radius values of the current <see cref="UIPanel"/>. Setting them all to 0 will produce a regular rectangle.
         /// </summary>
         [UIThemeMember]
-        public CornerInfo CornerRadius;
+        public CornerInfo CornerRadius = new CornerInfo(8f);
 
         protected override void OnInitialize(Engine engine, UISettings settings)
         {

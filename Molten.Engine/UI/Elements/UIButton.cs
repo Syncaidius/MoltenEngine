@@ -72,7 +72,7 @@ namespace Molten.UI
         public TextFont Font => _label.Font;
 
         /// <summary>
-        /// Gets or sets the label font of the current <see cref="UIButton"/>.
+        /// Gets or sets the label font of the current <see cref="UIBu"/>.
         /// </summary>
         [UIThemeMember]
         public string FontName
@@ -85,24 +85,40 @@ namespace Molten.UI
         /// The corner radius values of the current <see cref="UIButton"/>. Setting them all to 0 will produce a regular rectangle.
         /// </summary>
         [UIThemeMember]
-        public ref CornerInfo CornerRadius => ref _panel.CornerRadius;
+        public CornerInfo CornerRadius
+        {
+            get => _panel.CornerRadius;
+            set => _panel.CornerRadius = value;
+        }
 
         /// <summary>
         /// The fill/inner color of the current <see cref="UIButton"/>.
         /// </summary>
         [UIThemeMember]
-        public ref Color FillColor => ref _panel.FillColor;
+        public Color FillColor
+        {
+            get => _panel.FillColor;
+            set => _panel.FillColor = value;
+        }
 
         /// <summary>
         /// The border color of the current <see cref="UIButton"/>.
         /// </summary>
         [UIThemeMember]
-        public ref Color BorderColor => ref _panel.BorderColor;
+        public Color BorderColor
+        {
+            get => _panel.BorderColor;
+            set => _panel.BorderColor = value;
+        }
 
         /// <summary>
         /// The border line thickness of the current <see cref="UIButton"/>.
         /// </summary>
         [UIThemeMember]
-        public ref float BorderThickness => ref _panel.BorderThickness;
+        public float BorderThickness
+        {
+            get => _panel.BorderThickness;
+            set => _panel.BorderThickness = value;
+        }
     }
 }

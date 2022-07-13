@@ -19,12 +19,14 @@ namespace Molten.UI
         int _titleBarSize = 25;
         int _iconSpacing = 5;
         List<UIButton> _titleBarButtons;
-        CornerInfo _cornerRadius;
+
+        Color _borderColor= new Color(52, 189, 235, 255);
+        Color _fillColor = new Color(0, 109, 155, 200);
+        CornerInfo _cornerRadius = new CornerInfo(8f);
 
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
             base.OnInitialize(engine, settings);
-
             
             _titleBarButtons = new List<UIButton>();
 
@@ -41,15 +43,14 @@ namespace Molten.UI
             Title = Name;
         }
 
-        /*protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)
+        protected override void ApplyTheme()
         {
-            base.OnApplyTheme(theme, elementTheme, stateTheme);
+            base.ApplyTheme();
 
-            _cornerRadius = stateTheme.CornerRadius;
             _titleBar.CornerRadius.Set(_cornerRadius.TopLeft, _cornerRadius.TopRight, 0, 0);
-            _titleBar.FillColor = stateTheme.BorderColor;
+            _titleBar.FillColor = _borderColor;
             _panel.CornerRadius.Set(0, 0, _cornerRadius.BottomRight, _cornerRadius.BottomLeft);
-        }*/
+        }
 
         private UIButton AddTitleButton(string text)
         {
@@ -102,6 +103,50 @@ namespace Molten.UI
             {
                 _titleBarSize = value;
                 OnUpdateBounds();
+            }
+        }
+
+        [UIThemeMember]
+        public Color BorderColor
+        {
+            get => _borderColor;
+            set
+            {
+                _borderColor = value;
+                _titleBar.FillColor = _borderColor;
+                _titleBar.BorderColor = _borderColor;
+                _panel.BorderColor = _borderColor;
+            }
+        }
+
+        [UIThemeMember]
+        public Color FillColor
+        {
+            get => _fillColor;
+            set
+            {
+                _fillColor = value;
+                _panel.FillColor = _fillColor;
+            }
+        }
+
+        [UIThemeMember]
+        public CornerInfo CornerRadius
+        {
+            get => _cornerRadius;
+            set
+            {
+                _cornerRadius = value;
+
+                _titleBar.CornerRadius.Set(_cornerRadius.TopLeft, _cornerRadius.TopRight, 0, 0);
+                _panel.CornerRadius.Set(0, 0, _cornerRadius.BottomRight, _cornerRadius.BottomLeft);
+
+                if (_titleBarButtons.Count > 0)
+                {
+                    CornerInfo btnRadius = _titleBarButtons[0].CornerRadius;
+                    btnRadius.TopRight = _cornerRadius.TopRight;
+                    _titleBarButtons[0].CornerRadius = btnRadius;
+                }
             }
         }
     }

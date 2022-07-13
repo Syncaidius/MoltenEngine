@@ -40,25 +40,25 @@ namespace Molten.UI
         }
 
         [UIThemeMember]
-        public Color BackgroundColor { get; set; }
+        public RectStyle BackgroundStyle { get; set; }
 
         /// <summary>
         /// Gets the style used for drawing the axis marker lines of the current <see cref="UILineGraph"/>.
         /// </summary>
         [UIThemeMember]
-        public ref LineStyle AxisLineStyle => ref _axisLineStyle;
+        public LineStyle AxisLineStyle;
 
         /// <summary>
         /// Gets the style used for drawing the plotted data lines of the current <see cref="UILineGraph"/>.
         /// </summary>
         [UIThemeMember]
-        public ref LineStyle DataLineStyle => ref _dataLineStyle;
+        public LineStyle DataLineStyle;
 
         /// <summary>
         /// Gets the style used for drawing the average value line of the current <see cref="UILineGraph"/>.
         /// </summary>
         [UIThemeMember]
-        public ref LineStyle AverageLineStyle => ref _avgLineStyle;
+        public LineStyle AverageLineStyle;
 
         /// <summary>
         /// Gets or sets whether the average line is shown.
@@ -72,10 +72,6 @@ namespace Molten.UI
 
         List<GraphDataSet> _datasets;
 
-        LineStyle _axisLineStyle;
-        LineStyle _borderLineStyle;
-        LineStyle _dataLineStyle;
-        LineStyle _avgLineStyle;
         RectangleF _plotArea;
 
         protected override void OnInitialize(Engine engine, UISettings settings)
@@ -162,7 +158,7 @@ namespace Molten.UI
 
         protected override void OnRenderSelf(SpriteBatcher sb)
         {
-            sb.DrawRect(_plotArea, BackgroundColor);
+            sb.DrawRect(_plotArea, BackgroundStyle);
 
             GraphMeasurements gm = new GraphMeasurements();
 
@@ -212,13 +208,13 @@ namespace Molten.UI
                 double avgLocalValue = gm.Average - gm.Low;
                 Vector2F avg1 = new Vector2F(_plotArea.X, _plotArea.Bottom - (float)(gm.YPerUnit * avgLocalValue));
                 Vector2F avg2 = new Vector2F(_plotArea.Right, avg1.Y);
-                sb.DrawLine(avg1, avg2, ref _avgLineStyle);
+                sb.DrawLine(avg1, avg2, ref AverageLineStyle);
             }
 
 
-            Vector2F yAxisOffset = new Vector2F(_axisLineStyle.Thickness / 2, 0);
-            sb.DrawLine(_plotArea.TopLeft + yAxisOffset, _plotArea.BottomLeft  + yAxisOffset, ref _axisLineStyle);
-            sb.DrawLine(_plotArea.BottomLeft, _plotArea.BottomRight, ref _axisLineStyle);
+            Vector2F yAxisOffset = new Vector2F(AxisLineStyle.Thickness / 2, 0);
+            sb.DrawLine(_plotArea.TopLeft + yAxisOffset, _plotArea.BottomLeft  + yAxisOffset, ref AxisLineStyle);
+            sb.DrawLine(_plotArea.BottomLeft, _plotArea.BottomRight, ref AxisLineStyle);
 
             base.OnRenderSelf(sb);
         }
@@ -240,10 +236,10 @@ namespace Molten.UI
 
                 if (i > 0)
                 {
-                    _dataLineStyle.Color1 = set.KeyColor;
-                    _dataLineStyle.Color2 = set.KeyColor;
+                    DataLineStyle.Color1 = set.KeyColor;
+                    DataLineStyle.Color2 = set.KeyColor;
 
-                    sb.DrawLine(pPrev, p, ref _dataLineStyle);
+                    sb.DrawLine(pPrev, p, ref DataLineStyle);
                 }
 
                 pPrev = p;

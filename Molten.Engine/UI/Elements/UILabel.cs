@@ -33,6 +33,7 @@ namespace Molten.UI
         {
             base.OnInitialize(engine, settings);
             Text = Name;
+            FontName = settings.Theme.Value.DefaultFontName;
             InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Children;
         }
 
@@ -162,16 +163,19 @@ namespace Molten.UI
             get => _fontName;
             set
             {
-                value = value.ToLower();
+                value = (value ?? string.Empty).ToLower();
                 if(_fontName != value)
                 {
                     _fontName = value;
-                    LoadContent<TextFontSource>(_fontName, (request, content) =>
+                    if (!string.IsNullOrWhiteSpace(_fontName))
                     {
+                        LoadContent<TextFontSource>(_fontName, (request, content) =>
+                        {
                         // If we can, use the previous font size
-                        float fontSize = _font != null ? _font.Size : 16;
-                        Font = new TextFont(content, fontSize);
-                    });
+                            float fontSize = _font != null ? _font.Size : 16;
+                            Font = new TextFont(content, fontSize);
+                        });
+                    }
                 }
             }
         }
