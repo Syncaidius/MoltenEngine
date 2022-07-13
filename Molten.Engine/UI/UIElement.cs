@@ -26,7 +26,6 @@ namespace Molten.UI
             BaseData = new UIRenderData();
             State = UIElementState.Default;
             OnInitialize(Engine, Engine.Settings.UI);
-            Theme = Engine.Settings.UI.Theme;
         }
 
         /// <summary>

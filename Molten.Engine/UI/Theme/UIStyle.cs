@@ -39,7 +39,15 @@ namespace Molten.UI
         {
             object objInstance = Activator.CreateInstance(t);
 
-            if (values != null || values.Count == 0)
+            if (values == null || values.Count == 0)
+            {
+                foreach (MemberInfo mInfo in members)
+                {
+                    object defaultVal = GetMemberValue(mInfo, objInstance);
+                    Properties[mInfo] = new UIStyleValue(this, defaultVal);
+                }
+            }
+            else
             {
                 foreach (string memberName in values.Keys)
                 {
@@ -60,14 +68,6 @@ namespace Molten.UI
                             break;
                         }
                     }
-                }
-            }
-            else
-            {
-                foreach (MemberInfo mInfo in members)
-                {
-                    object defaultVal = GetMemberValue(mInfo, objInstance);
-                    Properties[mInfo] = new UIStyleValue(this, defaultVal);
                 }
             }
         }
