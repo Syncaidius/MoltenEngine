@@ -4,14 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Graphics;
+using Newtonsoft.Json;
 
 namespace Molten.Graphics
 {
     public class TextFont
     {
+        public event ObjectHandler<TextFont> OnSizeChanged;
+
         float _fontSize;
 
-        internal TextFont(TextFontSource source, float fontSize)
+        public TextFont(TextFontSource source, float fontSize)
         {
             Source = source;
             Size = fontSize;
@@ -80,6 +83,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        [JsonProperty]
         public float Size
         {
             get => _fontSize;
@@ -90,12 +94,14 @@ namespace Molten.Graphics
                     _fontSize = value;
                     Scale = (_fontSize / TextFontSource.BASE_FONT_SIZE);
                     LineSpacing = Source.ToPixels(Source.Font.HorizonalHeader.LineSpace) * Scale;
+                    OnSizeChanged?.Invoke(this);
                 }
             }
         }
 
         public TextFontSource Source { get; private set; }
 
+        [JsonProperty]
         /// <summary>
         /// Gets the font's recommended line spacing between two lines, in pixels.
         /// </summary>
@@ -104,6 +110,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the scale used when converting from <see cref="TextFontSource.BASE_FONT_SIZE"/> to the font size of the current <see cref="TextFont"/>.
         /// </summary>
+        [JsonProperty]
         public float Scale { get; private set; }
     }
 }

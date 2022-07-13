@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.Graphics;
 using Newtonsoft.Json;
 
 namespace Molten.UI
@@ -12,6 +13,53 @@ namespace Molten.UI
     {
         const char PATH_DELIMITER = '/';
         Dictionary<Type, MemberInfo[]> _memberCache;
+        string _defaultFontName;
+        float _defaultFontSize = 16;
+
+        public TextFont DefaultFont { get; private set; }
+
+        public Engine Engine { get; private set; }
+
+        [JsonProperty]
+        public float DefaultFontSize
+        {
+            get => _defaultFontSize;
+            set
+            {
+                if(_defaultFontSize != value)
+                {
+                    _defaultFontSize = value;
+                    if (DefaultFont != null)
+                        DefaultFont.Size = _defaultFontSize;
+                }
+            }
+        }
+
+        [JsonProperty]
+        public string DefaultFontName
+        {
+            get => _defaultFontName;
+            set
+            {
+                if(_defaultFontName != value)
+                {
+                    _defaultFontName = value;
+                    if (!string.IsNullOrWhiteSpace(_defaultFontName))
+                    {
+                        ContentRequest cr = Engine.Current.Content.BeginRequest();
+                        cr.Load<TextFontSource>(_defaultFontName);
+                        cr.OnCompleted += Content_OnCompleted;
+                    }
+                }
+            }
+        }
+
+        private void Content_OnCompleted(ContentRequest request)
+        {
+            TextFontSource src = request.Get<TextFontSource>(0);
+            if (src != null)
+                DefaultFont = new TextFont(src, DefaultFontSize);
+        }
 
         public UITheme2() : base(null)
         {
@@ -41,7 +89,7 @@ namespace Molten.UI
                 Type t = Type.GetType(typeNames[i]);
                 if (t == null)
                 {
-                    Engine.Log.Error($"Type '{typeNames[i]}' not found for theme path of '{stylePath}'");
+                    Engine.Current.Log.Error($"Type '{typeNames[i]}' not found for theme path of '{stylePath}'");
                     continue;
                 }
 
@@ -60,8 +108,6 @@ namespace Molten.UI
                     {                            
                         BindingFlags bFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
                         members = startType.GetMembers(bFlags);
-
-                        // Strip out any irrelevant members that do not have UIThemeMemberAttribute.
                         members = members.Where(m =>
                         {
                             UIThemeMemberAttribute att = m.GetCustomAttribute<UIThemeMemberAttribute>(true);
@@ -114,11 +160,6 @@ namespace Molten.UI
                     property.SetValue(element, val);
             }
         }
-
-        /// <summary>
-        /// Gets the engine that the current <see cref="UITheme2"/> is bound to.
-        /// </summary>
-        public Engine Engine { get; private set; }
     }
 
     public class UIStyle
@@ -186,11 +227,11 @@ namespace Molten.UI
             }
         }
 
-        private object GetMemberValue(MemberInfo info, object obj)
+        private object GetMemberValue(MemberInfo member, object obj)
         {
-            if (info is FieldInfo fInfo)
+            if (member is FieldInfo fInfo)
                 return fInfo.GetValue(obj);
-            else if (info is PropertyInfo pInfo)
+            else if (member is PropertyInfo pInfo)
                 return pInfo.GetValue(obj);
             else
                 return null;

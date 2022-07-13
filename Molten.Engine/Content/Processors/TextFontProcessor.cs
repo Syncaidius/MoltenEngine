@@ -4,7 +4,7 @@ namespace Molten.Content
 {
     public class TextFontProcessor : ContentProcessor<SpriteFontParameters>
     {
-        public override Type[] AcceptedTypes { get; } = new Type[] { typeof(TextFont) };
+        public override Type[] AcceptedTypes { get; } = new Type[] { typeof(TextFont), typeof(TextFontSource) };
 
         public override Type[] RequiredServices => null;
 
@@ -13,8 +13,15 @@ namespace Molten.Content
             TextFontSource tfs = context.Engine.Fonts.GetFont(context.Log, context.Filename);
             if (tfs != null)
             {
-                TextFont tf = new TextFont(tfs, p.FontSize);
-                context.AddOutput(tf);
+                if (context.ContentType == typeof(TextFont))
+                {
+                    TextFont tf = new TextFont(tfs, p.FontSize);
+                    context.AddOutput(tf);
+                }
+                else if(context.ContentType == typeof(TextFontSource))
+                {
+                    context.AddOutput(tfs);
+                }
             }
         }
 

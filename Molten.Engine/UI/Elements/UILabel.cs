@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace Molten.UI
 {
     /// <summary>
-    /// A UI component dedicated to presenting text.
+    /// A UI label element.
     /// </summary>
     public class UILabel : UIElement
     {
@@ -14,15 +14,11 @@ namespace Molten.UI
         /// </summary>
         public event ObjectHandler<UILabel> OnMeasurementChanged;
 
-        [UIThemeMember]
-        public Color Color;
-
         public string _text;
-
         private Vector2F _position;
-
         public IMaterial Material;
 
+        string _fontName;
         TextFont _font;
         Vector2F _textSize;
         UIHorizonalAlignment _hAlign = UIHorizonalAlignment.Left;
@@ -53,8 +49,8 @@ namespace Molten.UI
 
         protected override void OnRenderSelf(SpriteBatcher sb)
         {
-            if (Font != null && Color.A > 0)
-                sb.DrawString(Font, Text, _position, Color, Material);
+            if (_font != null && Color.A > 0)
+                sb.DrawString(_font, _text, _position, Color, Material);
 
             base.OnRenderSelf(sb);
         }
@@ -127,27 +123,67 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="TextFont"/> of the current <see cref="UILabel"/>.
+        /// Gets the <see cref="TextFont"/> of the current <see cref="UILabel"/>.
         /// </summary>
-        [UIThemeMember]
         public TextFont Font
         {
             get => _font;
-            set
+            private set
             {
                 if(_font != value)
                 {
+                    // Unbind previous font
+                    if(_font != null)
+                        _font.OnSizeChanged -= RecalculateMeasurements;
+
+                    // Bind new font, if any.
                     _font = value;
                     if (_font != null)
                     {
-                        _textSize = _font.MeasureString(Text);
-                        OnMeasurementChanged?.Invoke(this);
-                        OnUpdateBounds();
+                        RecalculateMeasurements(_font);
+                        _font.OnSizeChanged += RecalculateMeasurements;                   
                     }
                     else
                     {
                         _textSize = new Vector2F();
                     }
+                }
+            }
+        }
+
+        private void RecalculateMeasurements(TextFont obj)
+        {
+            _textSize = _font.MeasureString(Text);
+            OnMeasurementChanged?.Invoke(this);
+            OnUpdateBounds();
+        }
+
+
+        /// <summary>
+        /// Gets or sets the text color of the current <see cref="UILabel"/>.
+        /// </summary>
+        [UIThemeMember]
+        public Color Color { get; set; } = Color.White;
+
+        /// <summary>
+        /// Gets or sets the name of the font for the current <see cref="UILabel"/>. This will attempt to load/retrieve and populate <see cref="Font"/>.
+        /// </summary>
+        [UIThemeMember]
+        public string FontName
+        {
+            get => _fontName;
+            set
+            {
+                value = value.ToLower();
+                if(_fontName != value)
+                {
+                    _fontName = value;
+                    LoadContent<TextFontSource>(_fontName, (request, content) =>
+                    {
+                        // If we can, use the previous font size
+                        float fontSize = _font != null ? _font.Size : 16;
+                        Font = new TextFont(content, fontSize);
+                    });
                 }
             }
         }
@@ -163,15 +199,9 @@ namespace Molten.UI
             {
                 _text = value; 
                 if (_font != null)
-                {
-                    _textSize = _font.MeasureString(Text);
-                    OnMeasurementChanged?.Invoke(this);
-                    OnUpdateBounds();
-                }
+                    RecalculateMeasurements(_font);
                 else
-                {
                     _textSize = new Vector2F();
-                }
             }
         }
     }
