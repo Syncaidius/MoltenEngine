@@ -45,7 +45,6 @@ namespace Molten.UI
         /// <summary>
         /// The text of the current <see cref="UIButton"/>.
         /// </summary>
-        [UIThemeMember]
         public string Text
         {
             get => _label.Text;

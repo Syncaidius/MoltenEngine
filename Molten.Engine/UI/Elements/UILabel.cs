@@ -22,7 +22,7 @@ namespace Molten.UI
         TextFont _font;
         Vector2F _textSize;
         UIHorizonalAlignment _hAlign = UIHorizonalAlignment.Left;
-        UIVerticalAlignment _vAlign = UIVerticalAlignment.Center;
+        UIVerticalAlignment _vAlign = UIVerticalAlignment.Top;
 
         /// <summary>
         /// Gets the measured size of the current <see cref="Text"/> string.
