@@ -40,25 +40,24 @@ namespace Molten.UI
         }
 
         [UIThemeMember]
-        public RectStyle BackgroundStyle { get; set; }
-
-        /// <summary>
-        /// Gets the style used for drawing the axis marker lines of the current <see cref="UILineGraph"/>.
-        /// </summary>
-        [UIThemeMember]
-        public LineStyle AxisLineStyle;
+        public RectStyle BackgroundStyle { get; set; } = new RectStyle()
+        {
+            BorderColor = new Color(52, 189, 235, 255),
+            BorderThickness = new RectBorderThickness(2,0, 0, 2),
+            FillColor = new Color(0, 109, 155, 200),
+        };
 
         /// <summary>
         /// Gets the style used for drawing the plotted data lines of the current <see cref="UILineGraph"/>.
         /// </summary>
         [UIThemeMember]
-        public LineStyle DataLineStyle;
+        public LineStyle DataLineStyle = new LineStyle(Color.White, 4, 0.1f);
 
         /// <summary>
         /// Gets the style used for drawing the average value line of the current <see cref="UILineGraph"/>.
         /// </summary>
         [UIThemeMember]
-        public LineStyle AverageLineStyle;
+        public LineStyle AverageLineStyle = new LineStyle(Color.Yellow, 1, 1);
 
         /// <summary>
         /// Gets or sets whether the average line is shown.
@@ -210,11 +209,6 @@ namespace Molten.UI
                 Vector2F avg2 = new Vector2F(_plotArea.Right, avg1.Y);
                 sb.DrawLine(avg1, avg2, ref AverageLineStyle);
             }
-
-
-            Vector2F yAxisOffset = new Vector2F(AxisLineStyle.Thickness / 2, 0);
-            sb.DrawLine(_plotArea.TopLeft + yAxisOffset, _plotArea.BottomLeft  + yAxisOffset, ref AxisLineStyle);
-            sb.DrawLine(_plotArea.BottomLeft, _plotArea.BottomRight, ref AxisLineStyle);
 
             base.OnRenderSelf(sb);
         }

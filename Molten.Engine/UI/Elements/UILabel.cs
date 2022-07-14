@@ -29,10 +29,14 @@ namespace Molten.UI
         /// </summary>
         public Vector2F MeasuredSize => _textSize;
 
+        public UILabel()
+        {
+            _text = Name;
+        }
+
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
             base.OnInitialize(engine, settings);
-            Text = Name;
             FontName = settings.Theme.Value.DefaultFontName;
             InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Children;
         }
@@ -183,7 +187,6 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets the string of text shown by the current <see cref="UILabel"/>.
         /// </summary>
-        [UIThemeMember]
         public string Text
         {
             get => _text;
