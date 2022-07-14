@@ -50,26 +50,10 @@ namespace Molten
             Input = GetService<InputService>();
             Net = GetService<NetworkService>();
 
-            if (Renderer != null)
-                Renderer.OnStarted += Renderer_OnStarted;
-
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             foreach (EngineService service in _services)
                 service.Initialize(Settings, Log);
-
-            Settings.UI.Theme.OnChanged += Theme_OnChanged;
-        }
-
-        private void Theme_OnChanged(UITheme oldValue, UITheme newValue)
-        {
-            newValue.Initialize(this);
-        }
-
-        private void Renderer_OnStarted(EngineService o)
-        {
-            UITheme theme = Settings.UI.Theme.Value;
-            Log.Error("Failed to load default font.");
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

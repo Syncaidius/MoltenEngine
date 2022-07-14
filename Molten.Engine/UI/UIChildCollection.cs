@@ -54,6 +54,7 @@ namespace Molten.UI
 
             // Set new element parent.
             child.Manager = _element.Manager;
+            child.IsCompoundChild = true;
             _elements.Add(child);
             child.Parent = _element;
             child.Theme = _element.Theme;
@@ -67,6 +68,7 @@ namespace Molten.UI
                 return;
 
             _elements.Remove(child);
+            child.IsCompoundChild = false;
             child.Parent = null;
 
             _element.Manager = null;

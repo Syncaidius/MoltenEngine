@@ -102,6 +102,9 @@ namespace Molten.UI
             foreach (UIElement e in CompoundElements)
                 e.Theme = _theme;
 
+            foreach (UIElement e in Children)
+                e.Theme = _theme;
+
             _theme?.ApplyStyle(this);
             UpdateBounds();
         }
@@ -341,5 +344,10 @@ namespace Molten.UI
         /// Gets or sets the input rules for the current <see cref="UIElement"/>.
         /// </summary>
         public UIInputRuleFlags InputRules { get; set; } = UIInputRuleFlags.All;
+
+        /// <summary>
+        /// Gets whether or not the current <see cref="UIElement"/> is a compound component of another element.
+        /// </summary>
+        public bool IsCompoundChild { get; internal set; }
     }
 }

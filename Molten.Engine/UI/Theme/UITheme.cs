@@ -52,6 +52,19 @@ namespace Molten.UI
             }
         }
 
+        public UITheme() : base(null)
+        {
+            _memberCache = new Dictionary<Type, MemberInfo[]>();
+        }
+
+        internal void Clear()
+        {
+            _memberCache.Clear();
+            DefaultFont = null;
+            Properties.Clear();
+            Parents.Clear();
+        }
+
         private void Content_OnCompleted(ContentRequest request)
         {
             TextFontSource src = request.Get<TextFontSource>(0);
@@ -59,13 +72,12 @@ namespace Molten.UI
                 DefaultFont = new TextFont(src, DefaultFontSize);
         }
 
-        public UITheme() : base(null)
-        {
-            _memberCache = new Dictionary<Type, MemberInfo[]>();
-        }
 
         internal void Initialize(Engine engine)
         {
+            if (_isInitialized)
+                return;
+
             Engine = engine;
             LoadFont();
             _isInitialized = true;

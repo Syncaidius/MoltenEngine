@@ -7,11 +7,14 @@ namespace Molten.Graphics
     internal class FontManager
     {
         Engine _engine;
+        object _locker;
+
         ConcurrentDictionary<string, FontFile> _fileByPath;
         ConcurrentDictionary<FontFile, TextFontSource> _cache;
 
         internal FontManager(Engine engine)
         {
+            _locker = new object();
             _engine = engine;
             _cache = new ConcurrentDictionary<FontFile, TextFontSource>();
             _fileByPath = new ConcurrentDictionary<string, FontFile>();
@@ -49,44 +52,47 @@ namespace Molten.Graphics
 
             path = path.ToLower();
 
-            if (_fileByPath.TryGetValue(path, out FontFile fFile))
-                return _cache[fFile];
-
-            FileInfo fInfo = new FileInfo(path);
-
-            if (fInfo.Exists)
+            lock (_locker)
             {
-                using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                if (_fileByPath.TryGetValue(path, out FontFile fFile))
+                    return _cache[fFile];
+
+                FileInfo fInfo = new FileInfo(path);
+
+                if (fInfo.Exists)
                 {
-                    using (FontReader reader = new FontReader(stream, log, path))
+                    using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                    {
+                        using (FontReader reader = new FontReader(stream, log, path))
+                            fFile = reader.ReadFont(true);
+                    }
+                }
+                else
+                {
+                    string sysFontName = fInfo.Name;
+
+                    if (!string.IsNullOrEmpty(fInfo.Extension))
+                        sysFontName = sysFontName.Replace(fInfo.Extension, "");
+
+                    using (FontReader reader = new FontReader(sysFontName, log))
                         fFile = reader.ReadFont(true);
                 }
+
+                if (fFile.HasFlag(FontFlags.Invalid))
+                {
+                    log.Error($"The font '{path}' is invalid. Unable to create sprite font");
+                    return null;
+                }
+
+                // Create a new instance of the font
+                TextFontSource newFont = new TextFontSource(_engine.Renderer, fFile, texturePageSize, initialPages, charPadding);
+
+                _fileByPath.TryAdd(path, fFile);
+                _cache.TryAdd(fFile, newFont);
+                newFont.OnDisposing += NewFont_OnDisposing;
+
+                return newFont;
             }
-            else
-            {
-                string sysFontName = fInfo.Name;
-
-                if (!string.IsNullOrEmpty(fInfo.Extension))
-                    sysFontName = sysFontName.Replace(fInfo.Extension, "");
-
-                using (FontReader reader = new FontReader(sysFontName, log))
-                    fFile = reader.ReadFont(true);
-            }
-
-            if (fFile.HasFlag(FontFlags.Invalid))
-            {
-                log.Error($"The font '{path}' is invalid. Unable to create sprite font");
-                return null;
-            }
-
-            // Create a new instance of the font
-            TextFontSource newFont = new TextFontSource(_engine.Renderer, fFile, texturePageSize, initialPages, charPadding);
-
-            _fileByPath.TryAdd(path, fFile);
-            _cache.TryAdd(fFile, newFont);
-            newFont.OnDisposing += NewFont_OnDisposing;
-
-            return newFont;
         }
 
         private void NewFont_OnDisposing(EngineObject o)
@@ -94,17 +100,20 @@ namespace Molten.Graphics
             TextFontSource tfs = o as TextFontSource;
 
             string pathToRemove = null;
-            foreach(string key in _fileByPath.Keys)
+            lock (_locker)
             {
-                if(_fileByPath[key] == tfs.Font)
+                foreach (string key in _fileByPath.Keys)
                 {
-                    pathToRemove = key;
-                    _cache.TryRemove(tfs.Font, out tfs);
-                    break;
+                    if (_fileByPath[key] == tfs.Font)
+                    {
+                        pathToRemove = key;
+                        _cache.TryRemove(tfs.Font, out tfs);
+                        break;
+                    }
                 }
-            }
 
-            _fileByPath.TryRemove(pathToRemove, out FontFile fFile);
+                _fileByPath.TryRemove(pathToRemove, out FontFile fFile);
+            }
         }
     }
 }

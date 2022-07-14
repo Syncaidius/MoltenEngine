@@ -9,10 +9,7 @@ namespace Molten
         {
             TooltipDelay = AddSetting("tooltip_delay", 500);
             DragThreshold = AddSetting("drag_threshold", 10f);
-            Theme = AddSetting("theme", new UITheme()
-            {
-                DefaultFontName = "Arial"
-            });
+            DefaultFontName = AddSetting("default_font", "Arial");
         }
 
         /// <summary>
@@ -28,10 +25,10 @@ namespace Molten
         public SettingValue<float> DragThreshold { get; }
 
         /// <summary>
-        /// Gets the current <see cref="UITheme"/>. This setting is not serialized when settings are saved to file.
+        /// Gets the default font that should be used for text rendering.
         /// </summary>
         [DataMember]
-        public SettingValue<UITheme> Theme { get; }        
+        public SettingValue<string> DefaultFontName { get; }        
        
     }
 }

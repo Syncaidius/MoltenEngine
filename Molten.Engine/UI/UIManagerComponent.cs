@@ -36,14 +36,6 @@ namespace Molten.UI
                 Manager = this,
             };
             Children = _root.Children;
-            SettingValue<UITheme> themeSetting = obj.Engine.Settings.UI.Theme;
-            Theme = themeSetting;
-            themeSetting.OnChanged += ThemeSetting_OnChanged;
-        }
-
-        private void ThemeSetting_OnChanged(UITheme oldValue, UITheme newValue)
-        {
-            Theme = newValue;
         }
 
         private void UpdateTracker(ScenePointerTracker pTracker, Action<UITracker> callback)
@@ -184,22 +176,6 @@ namespace Molten.UI
         /// The current <see cref="UIElement"/> being hovered over by a pointing device (e.g. mouse or stylus).
         /// </summary>
         public UIElement HoverElement { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the <see cref="UITheme"/> of all UI controlled by the current <see cref="UIManagerComponent"/>.
-        /// </summary>
-        public UITheme Theme
-        {
-            get => _theme;
-            set
-            {
-                if(_theme != value)
-                {
-                    _theme = value ?? Engine.Current.Settings.UI.Theme;
-                    ApplyTheme(_theme);
-                }
-            }
-        }
 
         private void ApplyTheme(UITheme theme)
         {

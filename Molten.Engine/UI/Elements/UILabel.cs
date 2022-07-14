@@ -37,7 +37,7 @@ namespace Molten.UI
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
             base.OnInitialize(engine, settings);
-            FontName = settings.Theme.Value.DefaultFontName;
+            FontName = settings.DefaultFontName;
             InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Children;
         }
 

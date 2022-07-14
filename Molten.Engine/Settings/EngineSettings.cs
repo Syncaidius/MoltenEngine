@@ -123,6 +123,7 @@ namespace Molten
         public List<JsonConverter> JsonConverters { get; private set; } = new List<JsonConverter>()
         {
             new MathConverter(),
+            new UIThemeConverter(),
         };
 
         /// <summary>Gets or sets the product name.</summary>
