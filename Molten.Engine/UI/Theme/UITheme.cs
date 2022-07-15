@@ -131,24 +131,33 @@ namespace Molten.UI
                 node = parent;
                 if (i == 0)
                 {
-                    if (!_memberCache.TryGetValue(startType, out MemberInfo[] members))
-                    {
-                        BindingFlags bFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-                        members = startType.GetMembers(bFlags);
-                        members = members.Where(m =>
-                        {
-                            UIThemeMemberAttribute att = m.GetCustomAttribute<UIThemeMemberAttribute>(true);
-                            return att != null;
-                        }).ToArray();
-
-                        _memberCache.Add(startType, members);
-                    }
-
+                    MemberInfo[] members = GetMembers(startType);
                     node.Populate(startType, members, values);
                 }
             }
 
             return node;
+        }
+
+        public MemberInfo[] GetMembers(Type type)
+        {
+            if (!typeof(UIElement).IsAssignableFrom(type))
+                throw new Exception($"The specified type is not derived from UIElement");
+
+            if (!_memberCache.TryGetValue(type, out MemberInfo[] members))
+            {
+                BindingFlags bFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                members = type.GetMembers(bFlags);
+                members = members.Where(m =>
+                {
+                    UIThemeMemberAttribute att = m.GetCustomAttribute<UIThemeMemberAttribute>(true);
+                    return att != null;
+                }).ToArray();
+
+                _memberCache.Add(type, members);
+            }
+
+            return members;
         }
 
         /// <summary>

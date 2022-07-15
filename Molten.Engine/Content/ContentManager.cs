@@ -337,11 +337,10 @@ namespace Molten
 
                 try
                 {
-                    ValidateParameters(context, proc);
-
                     switch (context.RequestType)
                     {
                         case ContentRequestType.Read:
+                            ValidateParameters(context, proc);
                             DoRead(request, context, proc);
                             break;
 
@@ -354,6 +353,7 @@ namespace Molten
                             break;
 
                         case ContentRequestType.Write:
+                            ValidateParameters(context, proc);
                             DoWrite(context, proc);
                             break;
 

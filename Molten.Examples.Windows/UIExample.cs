@@ -14,6 +14,7 @@ namespace Molten.Samples
             base.OnInitialize(engine);
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
+            cr.Deserialize<UITheme>("test_theme.json");
             cr.Load<IMaterial>("BasicTexture.mfx");
             cr.Load<ITexture2D>("dds_test.dds", new TextureParameters()
             {
@@ -56,9 +57,9 @@ namespace Molten.Samples
                 LocalBounds = new Rectangle(1050, 200, 700, 420)
             };
 
-            UITheme test = new UITheme();
+            /*UITheme test = new UITheme();
             test.AddStyle("Molten.UI.UIWindow/Molten.UI.UIButton/Molten.UI.UILabel");
-            test.ApplyStyle(lineGraph);
+            test.ApplyStyle(lineGraph);*/
 
             PlotGraphData(lineGraph);
 

@@ -97,35 +97,35 @@ namespace Molten
         /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
         /// <typeparam name="T">The type of object to be deserialized.</typeparam>
         /// <param name="fn">The relative file path from the request's root directory.</param>
-        public void Deserialize<T>(string fn, IContentParameters parameters = null)
+        public void Deserialize<T>(string fn)
         {
-            AddElement(fn, ContentRequestType.Deserialize, typeof(T), parameters);
+            AddElement(fn, ContentRequestType.Deserialize, typeof(T), null);
         }
 
         /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
         /// <param name="type">The type of object to be deserialized.</typeparam>
         /// <param name="fn">The file name and path.</param>
-        public void Deserialize(Type type, string fn, IContentParameters parameters = null)
+        public void Deserialize(Type type, string fn)
         {
-            AddElement(fn, ContentRequestType.Deserialize, type, parameters);
+            AddElement(fn, ContentRequestType.Deserialize, type, null);
         }
 
         /// <summary>Adds a serialization operation to the current <see cref="ContentRequest"/>. This will serialize an object into JSON and write it to the specified file.</summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="fn">The filename.</param>
         /// <param name="obj">The object to be serialized.</param>
-        public void Serialize<T>(string fn, T obj, IContentParameters parameters = null)
+        public void Serialize<T>(string fn, T obj)
         {
-            Serialize(typeof(T), fn, obj, parameters);
+            Serialize(typeof(T), fn, obj);
         }
 
         /// <summary>Adds a serialization operation to the current <see cref="ContentRequest"/>. This will serialize an object into JSON and write it to the specified file.</summary>
         /// <param name="fn">The filename.</param>
         /// <param name="obj">The object to be serialized.</param>
         /// <param name="type">The type of object to be serialized.</param>
-        public void Serialize(Type type, string fn, object obj, IContentParameters parameters = null)
+        public void Serialize(Type type, string fn, object obj)
         {
-            AddElement(fn, ContentRequestType.Serialize, type, parameters, (e) =>
+            AddElement(fn, ContentRequestType.Serialize, type, null, (e) =>
             {
                 e.AddInput(type, obj);
             });

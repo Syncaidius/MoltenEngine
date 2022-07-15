@@ -25,10 +25,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="log">The log with which to log messages or errors while loading the font.</param>
         /// <param name="path">The file path or system font name.</param>
-        /// <param name="ptSize">the font size.</param>
-        /// <param name="tabSize">The number of space characters which represent one tab-space.</param>
         /// <param name="texturePageSize">The size of the sprite font's internal texture pages.</param>
-        /// <param name="pointsPerCurve">The maximum number of points within a font character curvature. This is akin to a level of detail or resolution.</param>
         /// <param name="initialPages">The number of initial pages inside the font upon creation, if it doesn't already exist.</param>
         /// <param name="charPadding">The spacing between characters.</param>
         /// <returns></returns>
