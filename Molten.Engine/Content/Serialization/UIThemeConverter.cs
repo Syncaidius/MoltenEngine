@@ -42,10 +42,18 @@ namespace Molten
                         IEnumerable<JProperty> styleProperties = styleObj.Properties();
                         foreach(JProperty p in styleProperties)
                         {
-                            switch (p.Type)
+                            string pName = p.Name.ToLower();
+                            if(!infoByName.TryGetValue(pName, out MemberInfo pMember))
                             {
-                                case JTokenType.Object:
-                                    // We have multiple style values for this property. e.g. Default, Pressed, etc
+                                Engine.Current.Log.Warning($"[UITheme] Invalid property '{p.Name}' found while deserializing");
+                                continue;
+                            }
+
+                            switch (p.Value.Type)
+                            {
+                                // We have multiple style values for this property. e.g. Default, Pressed, etc
+                                case JTokenType.Object: 
+                                    DeserializeUIValue(pMember, p, serializer);
                                     break;
 
                                 case JTokenType.Array:
@@ -57,10 +65,6 @@ namespace Molten
                                     // TODO Assume we've been given a single value. Try to directly serialize it into the style member's 'Default' value.
                                     break;
                             }
-                            if (p.Type == JTokenType.Object)
-                            {
-                                
-                            }
                         }
                     }
                     else
@@ -71,6 +75,28 @@ namespace Molten
             }
 
             return theme;
+        }
+
+        private void DeserializeUIValue(MemberInfo member, JProperty pVal, JsonSerializer serializer)
+        {
+            JObject valObject = pVal.Value as JObject;
+            IEnumerable<JProperty> valProperties = valObject.Properties();
+            var test = serializer.Converters;
+
+            if (member is PropertyInfo pInfo)
+            {
+                foreach (JProperty property in valProperties)
+                {
+                    if (Enum.TryParse(property.Name, true, out UIElementState state))
+                    {
+                        object obj = property.Value.ToObject(pInfo.PropertyType, serializer);
+                    }
+                }
+            }
+            else if (member is FieldInfo fInfo)
+            {
+
+            }
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
