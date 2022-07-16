@@ -199,7 +199,7 @@ namespace Molten.Samples
             settings.UseGuiControl = chkUseControl.IsChecked.Value;
 
             _curTest = Activator.CreateInstance(lastTestType) as SampleGame;
-            _curTest.Start(settings, true);
+            _curTest.Start(settings, false);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Molten.Samples
             base.OnInitialize(engine);
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Deserialize<UITheme>("test_theme.json");
+            //cr.Deserialize<UITheme>("test_theme.json");
             cr.Load<IMaterial>("BasicTexture.mfx");
             cr.Load<ITexture2D>("dds_test.dds", new TextureParameters()
             {

@@ -122,8 +122,9 @@ namespace Molten
         /// </summary>
         public List<JsonConverter> JsonConverters { get; private set; } = new List<JsonConverter>()
         {
-            new ColorConverter(),
-            new MathConverter(),
+            new SettingValueConverter(),
+            new EnumConverter(),
+            new ValueTypeConverter(),
             new UIThemeConverter(),
         };
 
