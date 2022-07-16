@@ -9,7 +9,6 @@ namespace Molten
     public abstract class ContentLoadHandle<T> : ParameterizedContentHandle
     {
         internal Action<T> _completionCallback;
-        internal T Asset;
 
         bool _canHotReload;
         ContentWatcher _watcher;
@@ -29,7 +28,7 @@ namespace Molten
 
         protected override void OnComplete()
         {
-            _completionCallback?.Invoke(Asset);
+            _completionCallback?.Invoke((T)Asset);
 
             // Setup a watcher for the file so we can reload it if any changes occur.
             if(_watcher == null && _canHotReload)
@@ -38,12 +37,27 @@ namespace Molten
 
         protected override bool OnProcess()
         {
-            return base.OnProcess() && Processor.Read(this, out Asset);
+            if (Processor.Read(this, Asset, out Asset))
+            {
+                Manager.Log.WriteLine($"[CONTENT] [LOAD] {Path}: {Asset.GetType().FullName}");
+                return base.OnProcess();
+            }
+
+            return false;
         }
 
+
+        /// <summary>
+        /// Gets the asset held by the current <see cref="ContentLoadHandle{T}"/>.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception">If the asset has not been loaded yet.</exception>
         public T Get()
         {
-            return Asset;
+            if (Status != ContentHandleStatus.Completed)
+                throw new ContentNotLoadedException("Unable to retrieve asset that has not loaded yet.");
+
+            return (T)Asset;
         }
 
         /// <summary>

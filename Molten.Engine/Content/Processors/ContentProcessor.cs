@@ -4,11 +4,9 @@
     {
         Type GetParameterType();
 
-        object Get(Engine engine, Type contentType, IContentParameters p, IList<object> groupContent);
+        bool Read(ParameterizedContentHandle handle, object existingAsset, out object asset);
 
-        void Read(ContentContext context);
-
-        void Write(ContentContext context);
+        bool Write(ParameterizedContentHandle handle, object asset);
 
         Type[] AcceptedTypes { get; }
 
@@ -26,49 +24,36 @@
             return typeof(P);
         }
 
-        /// <summary>Invoked when a content retrieval request was called with metadata tags (prefixed with @) or when multiple objects are available which were loaded from the same file.</summary>
-        /// <param name="engine">The <see cref="Engine"/> instance that content should be bound to.</param>
-        /// <param name="contentType">The type of content being loaded.</param>
-        /// <param name="parameters">An array of parameters that were attached to the request.</param>
-        /// <param name="groupContent">A list of viable objects which match the requested filename</param>
-        /// <returns></returns>
-        object IContentProcessor.Get(Engine engine, Type contentType, IContentParameters p, IList<object> groupContent)
+        bool IContentProcessor.Read(ParameterizedContentHandle handle, object existingAsset, out object asset)
         {
-            P pt = (P)p;
-            return OnGet(engine, contentType, pt, groupContent);
+            P parameters = (P)handle.Parameters;
+            return OnRead(handle, parameters, existingAsset, out asset);
         }
 
-        void IContentProcessor.Read(ContentContext context)
+        bool IContentProcessor.Write(ParameterizedContentHandle handle, object asset)
         {
-            P pt = (P)context.Parameters;
-            OnRead(context, pt);
+            P parameters = (P)handle.Parameters;
+            return OnWrite(handle, parameters, asset);
         }
-
-        void IContentProcessor.Write(ContentContext context)
-        {
-            P pt = (P)context.Parameters;
-            OnWrite(context, pt);
-        }
-
-        /// <summary>Invoked when a content retrieval request was called with metadata tags (prefixed with @) or when multiple objects are available which were loaded from the same file.</summary>
-        /// <param name="engine">The <see cref="Engine"/> instance that content should be bound to.</param>
-        /// <param name="contentType">The type of content being loaded.</param>
-        /// <param name="parameters">An array of parameters that were attached to the request.</param>
-        /// <param name="groupContent">A list of viable objects which match the requested filename</param>
-        /// <returns></returns>
-        protected virtual object OnGet(Engine engine, Type contentType, P parameters, IList<object> groupContent) { return groupContent[0]; }
 
         /// <summary>
         /// Invoked when content matching <see cref="AcceptedTypes"/> needs to be read.
         /// </summary>
-        /// <param name="context">The <see cref="ContentContext"/> with which to read content.</param>
-        protected abstract void OnRead(ContentContext context, P p);
+        /// <param name="handle"></param>
+        /// <param name="parameters"></param>
+        /// <param name="existingAsset"></param>
+        /// <param name="asset"></param>
+        /// <returns></returns>
+        protected abstract bool OnRead(ParameterizedContentHandle handle, P parameters, object existingAsset, out object asset);
 
         /// <summary>
         /// Invoked when content matching <see cref="AcceptedTypes"/> needs to be written.
         /// </summary>
-        /// <param name="context">The <see cref="ContentContext"/> with which to write content.</param>
-        protected abstract void OnWrite(ContentContext context, P p);
+        /// <param name="handle">A <see cref="ParameterizedContentHandle"/> which holds the currnet state of an asset.</param>
+        /// <param name="parameters"></param>
+        /// <param name="asset"></param>
+        /// <returns></returns>
+        protected abstract bool OnWrite(ParameterizedContentHandle handle, P parameters, object asset);
 
         /// <summary>Gets a list of accepted </summary>
         public abstract Type[] AcceptedTypes { get; }

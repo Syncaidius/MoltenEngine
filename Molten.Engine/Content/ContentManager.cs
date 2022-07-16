@@ -437,7 +437,8 @@ namespace Molten
             }
         }
 
-        private void DoRead(ContentRequest request, ContentContext context, IContentProcessor proc)
+        // *** REPLACED BY ContentLoadHandle ***
+        /*private void DoRead(ContentRequest request, ContentContext context, IContentProcessor proc)
         {
             proc.Read(context);
 
@@ -453,7 +454,7 @@ namespace Molten
                     _log.WriteLine($"[CONTENT] [READ]    {result.Count}x {t.FullName}");
                 }
             }
-        }
+        }*/
 
         private void DoWrite(ContentContext context, IContentProcessor proc)
         {
@@ -511,6 +512,11 @@ namespace Molten
             ICollection<ContentFile> files = _content.Values;
             foreach (ContentFile file in files)
                 file.Dispose();
+
+            foreach (ContentWatcher watcher in _watchers.Values)
+                watcher.Dispose();
+
+            _watchers.Clear();
         }
 
         /// <summary>

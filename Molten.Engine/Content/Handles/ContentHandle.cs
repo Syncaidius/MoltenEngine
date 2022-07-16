@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 namespace Molten
 {
     /// <summary>
-    /// A handle for content.
+    /// A handle for a content asset.
     /// </summary>
     public abstract class ContentHandle
     {
+        object _asset;
+
         internal ContentHandle(ContentManager manager, Type contentType)
         {
             Manager = manager;
@@ -51,5 +53,10 @@ namespace Molten
         /// Gets the path of the asset file that the current <see cref="ContentHan"/> represents.
         /// </summary>
         public string Path => Info.Name;
+
+        /// <summary>
+        /// Gets a reference to the asset <see cref="object"/> to be processed.
+        /// </summary>
+        internal ref object Asset => ref _asset;
     }
 }
