@@ -1,6 +1,7 @@
 ﻿using Molten.Collections;
 using Molten.Threading;
 using Newtonsoft.Json;
+using System.Collections.Concurrent;
 using System.Reflection;
 
 namespace Molten
@@ -14,6 +15,8 @@ namespace Molten
         Dictionary<Type, IContentProcessor> _customProcessors;
         ThreadedDictionary<string, ContentFile> _content;
         ThreadedDictionary<string, ContentDirectory> _directories;
+
+        ConcurrentDictionary<string, ContentWatcher> _watchers;
 
         Type[] _defaultServices = new Type[0];
         WorkerGroup _workers;
@@ -45,6 +48,7 @@ namespace Molten
         internal ContentManager(Logger log, Engine engine, int workerThreads = 1)
         {
             _defaultProcessors = new Dictionary<Type, IContentProcessor>();
+            _watchers = new ConcurrentDictionary<string, ContentWatcher>();
 
             Type t = typeof(IContentProcessor);
             AddProcessorsFromAssembly(t.Assembly);
@@ -73,6 +77,41 @@ namespace Molten
             };
 
             AddCustomJsonConverters(_jsonSettings, engine.Settings.JsonConverters);
+        }
+
+        internal ContentWatcher StartWatching(ContentHandle handle)
+        {
+            string dir = handle.Info.DirectoryName;
+
+            if(!_watchers.TryGetValue(dir, out ContentWatcher watcher))
+            {
+                watcher = new ContentWatcher(this, new DirectoryInfo(dir));
+                _watchers.TryAdd(dir, watcher);
+            }
+
+            watcher.Handles.Add(handle);
+
+            return watcher;
+        }
+
+        internal bool StopWatching(ContentHandle handle)
+        {
+            string dir = handle.Info.DirectoryName;
+            bool removed = false;
+
+            if (!_watchers.TryGetValue(dir, out ContentWatcher watcher))
+            {
+                removed = watcher.Handles.Remove(handle);
+
+                // If watcher has no handles to watch, remove the watcher.
+                if (watcher.Handles.Count == 0 &&
+                    _watchers.Remove(dir, out watcher))
+                {
+                    watcher.Dispose();
+                }
+            }
+
+            return removed;
         }
 
         /// <summary>
