@@ -2,6 +2,7 @@
 using Molten.Input;
 using Molten.Utility;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -123,7 +124,7 @@ namespace Molten
         public List<JsonConverter> JsonConverters { get; private set; } = new List<JsonConverter>()
         {
             new SettingValueConverter(),
-            new EnumConverter(),
+            new StringEnumConverter(),
             new ValueTypeConverter(),
             new UIThemeConverter(),
         };
