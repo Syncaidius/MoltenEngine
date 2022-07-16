@@ -26,7 +26,7 @@ namespace Molten
             Log = Logger.Get();
             string serviceName = this.GetType().Name;
 
-            _logWriter = new LogFileWriter($"Logs/{serviceName}.txt");
+            _logWriter = new LogFileWriter($"Logs/{serviceName}.log");
             Log.AddOutput(_logWriter);
         }
 
