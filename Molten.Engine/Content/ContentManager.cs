@@ -10,12 +10,8 @@ namespace Molten
     public class ContentManager : EngineObject
     {
         Dictionary<Type, IContentProcessor> _defaultProcessors;
-        ObjectPool<ContentRequest> _requestPool;
-        internal ObjectPool<ContentContext> ContextPool;
         Dictionary<Type, IContentProcessor> _customProcessors;
-        ThreadedDictionary<string, ContentFile> _content;
-        ThreadedDictionary<string, ContentDirectory> _directories;
-
+        ThreadedDictionary<string, ContentHandle> _content;
         ConcurrentDictionary<string, ContentWatcher> _watchers;
 
         Type[] _defaultServices = new Type[0];
@@ -53,16 +49,14 @@ namespace Molten
             Type t = typeof(IContentProcessor);
             AddProcessorsFromAssembly(t.Assembly);
 
-            _engine = engine;            
-            _requestPool = new ObjectPool<ContentRequest>(() => new ContentRequest());
-            ContextPool = new ObjectPool<ContentContext>(() => new ContentContext());            
+            _engine = engine;                       
 
             // Store all the provided custom processors by type.
             _customProcessors = new Dictionary<Type, IContentProcessor>();
-            _content = new ThreadedDictionary<string, ContentFile>();
-            _directories = new ThreadedDictionary<string, ContentDirectory>();
+            _content = new ThreadedDictionary<string, ContentHandle>();
             _workers = engine.Threading.CreateWorkerGroup("content workers", workerThreads, paused:true);
             _log = log;
+
             _jsonSettings = new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.None,
@@ -137,12 +131,33 @@ namespace Molten
                 settings.Converters.Add(jc);
         }
 
+        public ContentLoadHandle<T> Load<T>(string path, Action<T> completionCallback, IContentParameters parameters = null, bool canHotReload = true)
+        {
+            Type contentType = typeof(T);
+            IContentProcessor proc = GetProcessor(path, contentType);
+
+            if (proc == null)
+            {
+                _log.Error($"[CONTENT] {path}: Unable to load unsupported content of type '{contentType.Name}'");
+                return null;
+            }
+
+            if (!_content.TryGetValue(path, out ContentHandle handle))
+            {
+                handle = new ContentLoadHandle<T>(this, proc, parameters, completionCallback, canHotReload);
+                //_content.Add(path, handle);
+                // TODO add to queue to be loaded
+            }
+
+            return handle as ContentLoadHandle<T>;
+        }
+
         /// <summary>
         /// Spawns a new content request and returns it for the provided directory.
         /// </summary>
         /// <param name="rootDirectory">The root directory of all operations added to the request.</param>
         /// <returns></returns>
-        public ContentRequest BeginRequest(string rootDirectory = null)
+        /*public ContentRequest BeginRequest(string rootDirectory = null)
         {
             return BeginRequest(rootDirectory, null);
         }
@@ -174,7 +189,7 @@ namespace Molten
             request.RootDirectory = Path.GetFullPath(rootDirectory);
             request.Manager = this;
             return request;
-        }
+        }*/
 
         internal void CommitImmediate(ContentRequest request)
         {
@@ -287,7 +302,7 @@ namespace Molten
             return file;
         }
 
-        internal IContentProcessor GetProcessor(ContentContext context, Type type)
+        internal IContentProcessor GetProcessor(string path, Type type)
         {
             IContentProcessor proc = null;
             if (_customProcessors.TryGetValue(type, out proc) || 
@@ -303,7 +318,7 @@ namespace Molten
                     if (!_engine.IsServiceAvailable(serviceType))
                     {
                         hasAllServices = false;
-                        Log.Error($"[CONTENT] {context.File}: missing required service '{serviceType.Name}' for viable content processor '{proc.GetType().Name}'");
+                        Log.Error($"[CONTENT] {path}: missing required service '{serviceType.Name}' for viable content processor '{proc.GetType().Name}'");
                         break;
                     }
                 }
@@ -318,7 +333,7 @@ namespace Molten
             {
                 if (type.BaseType != typeof(EngineObject))
                 {
-                    proc = GetProcessor(context, type.BaseType);
+                    proc = GetProcessor(path, type.BaseType);
                     return proc;
                 }
                 else
@@ -330,7 +345,7 @@ namespace Molten
             IEnumerable<Type> baseInterfaces = type.GetInterfaces();
             foreach (Type iType in baseInterfaces)
             {
-                proc = GetProcessor(context, iType);
+                proc = GetProcessor(path, iType);
                 if (proc != null)
                     return proc;
             }

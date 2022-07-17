@@ -7,13 +7,13 @@ using Newtonsoft.Json;
 
 namespace Molten
 {
-    public abstract class ContentLoadJsonHandle<T> : ContentLoadHandle<T>
+    public class ContentLoadJsonHandle<T> : ContentLoadHandle<T>
     {
         internal ContentLoadJsonHandle(
             ContentManager manager,
             Action<T> completionCallback, 
             JsonSerializerSettings jsonSettings,
-            bool canHotReload = true) :
+            bool canHotReload) :
             base(manager, null, null, completionCallback, canHotReload)
         {
             JsonSettings = jsonSettings.Clone();

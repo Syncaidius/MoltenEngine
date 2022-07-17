@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public abstract class ContentLoadHandle<T> : ContentHandle
+    public class ContentLoadHandle<T> : ContentHandle
     {
         internal Action<T> _completionCallback;
 
@@ -18,7 +18,7 @@ namespace Molten
             IContentProcessor processor, 
             IContentParameters parameters, 
             Action<T> completionCallback, 
-            bool canHotReload = true) : 
+            bool canHotReload) : 
             base(manager, typeof(T), processor, parameters, ContentHandleType.Load)
         {
             _completionCallback = completionCallback;
@@ -38,7 +38,7 @@ namespace Molten
             if (!_canHotReload)
             {
                 if (_watcher != null)
-                    Manager.StopWatching(this);
+                    Manager.StopWatching(_watcher, this);
             }
             else
             {

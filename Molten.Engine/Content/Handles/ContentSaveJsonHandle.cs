@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Molten
 {
-    public abstract class ContentSaveJsonHandle : ContentSaveHandle
+    public class ContentSaveJsonHandle : ContentSaveHandle
     {
         internal ContentSaveJsonHandle(
             ContentManager manager,

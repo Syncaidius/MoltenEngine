@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public abstract class ContentSaveHandle : ContentHandle
+    public class ContentSaveHandle : ContentHandle
     {
         internal Action<FileInfo> _completionCallback;
 
