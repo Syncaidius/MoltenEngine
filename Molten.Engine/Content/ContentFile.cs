@@ -59,9 +59,9 @@ namespace Molten
         {
             if (_segments.TryGetValue(t, out ThreadedList<object> list))
             {
-                if (OriginalRequestType == ContentRequestType.Read)
+                if (OriginalRequestType == ContentHandleType.Load)
                     return OriginalProcessor.Get(engine, t, parameters, list);
-                else if (OriginalRequestType == ContentRequestType.Deserialize)
+                else if (OriginalRequestType == ContentHandleType.SaveSerialized)
                     return list[0];
             }
 
@@ -80,7 +80,7 @@ namespace Molten
 
         internal string Path { get; private set; }
 
-        internal ContentRequestType OriginalRequestType { get; set; }
+        internal ContentHandleType OriginalRequestType { get; set; }
 
         /// <summary>
         /// The content processor which loaded the file, if any.

@@ -66,7 +66,7 @@ namespace Molten
         /// <param name="parameters">A list of parameters to use when loading the asset.</param>
         public void Load<T>(string fn, IContentParameters parameters = null)
         {
-            AddElement(fn, ContentRequestType.Read, typeof(T), parameters);
+            AddElement(fn, ContentHandleType.Load, typeof(T), parameters);
         }
 
         /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>.
@@ -75,7 +75,7 @@ namespace Molten
         /// <param name="parameters">A set of to use when loading the asset.</param>
         public void Load(Type t, string fn, IContentParameters parameters = null)
         {
-            AddElement(fn, ContentRequestType.Read, t, parameters);
+            AddElement(fn, ContentHandleType.Load, t, parameters);
         }
 
         /// <summary>Adds a write request for the provided object.</summary>
@@ -91,7 +91,7 @@ namespace Molten
         /// <param name="obj">The object to be written.</param>
         public void Save(Type type, string fn, object obj, IContentParameters parameters = null)
         {
-            AddElement(fn, ContentRequestType.Write, type, parameters, (e) => e.AddInput(type, obj));
+            AddElement(fn, ContentHandleType.Save, type, parameters, (e) => e.AddInput(type, obj));
         }
 
         /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
@@ -99,7 +99,7 @@ namespace Molten
         /// <param name="fn">The relative file path from the request's root directory.</param>
         public void Deserialize<T>(string fn)
         {
-            AddElement(fn, ContentRequestType.Deserialize, typeof(T), null);
+            AddElement(fn, ContentHandleType.SaveSerialized, typeof(T), null);
         }
 
         /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
@@ -107,7 +107,7 @@ namespace Molten
         /// <param name="fn">The file name and path.</param>
         public void Deserialize(Type type, string fn)
         {
-            AddElement(fn, ContentRequestType.Deserialize, type, null);
+            AddElement(fn, ContentHandleType.SaveSerialized, type, null);
         }
 
         /// <summary>Adds a serialization operation to the current <see cref="ContentRequest"/>. This will serialize an object into JSON and write it to the specified file.</summary>
@@ -125,7 +125,7 @@ namespace Molten
         /// <param name="type">The type of object to be serialized.</param>
         public void Serialize(Type type, string fn, object obj)
         {
-            AddElement(fn, ContentRequestType.Serialize, type, null, (e) =>
+            AddElement(fn, ContentHandleType.LoadSerialized, type, null, (e) =>
             {
                 e.AddInput(type, obj);
             });
@@ -137,7 +137,7 @@ namespace Molten
         /// <param name="fn">The relative file path from the content manager's root directory.</param>
         public void Delete(string fn)
         {
-            AddElement(fn, ContentRequestType.Delete, null, null);
+            AddElement(fn, ContentHandleType.Delete, null, null);
         }
 
         /// <summary>
@@ -148,12 +148,12 @@ namespace Molten
         /// <param name="contentType"></param>
         /// <param name="parameters"></param>
         /// <param name="populator">A callback method for populating various elements of a <see cref="ContentContext"/>.</param>
-        private void AddElement(string path, ContentRequestType type, Type contentType, IContentParameters parameters, Action<ContentContext> populator = null)
+        private void AddElement(string path, ContentHandleType type, Type contentType, IContentParameters parameters, Action<ContentContext> populator = null)
         {
             ContentContext c = Manager.ContextPool.GetInstance();
             string contentPath = Path.Combine(RootDirectory, path);
 
-            if (type == ContentRequestType.Read || type == ContentRequestType.Deserialize)
+            if (type == ContentHandleType.Load || type == ContentHandleType.SaveSerialized)
                 _requestedFiles.Add(path);
 
             c.ContentType = contentType;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public abstract class ContentLoadHandle<T> : ParameterizedContentHandle
+    public abstract class ContentLoadHandle<T> : ContentHandle
     {
         internal Action<T> _completionCallback;
 
@@ -19,7 +19,7 @@ namespace Molten
             IContentParameters parameters, 
             Action<T> completionCallback, 
             bool canHotReload = true) : 
-            base(manager, processor, parameters, typeof(T))
+            base(manager, typeof(T), processor, parameters, ContentHandleType.Load)
         {
             _completionCallback = completionCallback;
             _canHotReload = canHotReload;
@@ -29,21 +29,27 @@ namespace Molten
         protected override void OnComplete()
         {
             _completionCallback?.Invoke((T)Asset);
+            UpdateWatcher();
+        }
 
-            // Setup a watcher for the file so we can reload it if any changes occur.
-            if(_watcher == null && _canHotReload)
-                _watcher = Manager.StartWatching(this);
+        private void UpdateWatcher()
+        {
+            // Delete the watcher if we have one to prevent reloads.
+            if (!_canHotReload)
+            {
+                if (_watcher != null)
+                    Manager.StopWatching(this);
+            }
+            else
+            {
+                if (_watcher == null)
+                    _watcher = Manager.StartWatching(this);
+            }
         }
 
         protected override bool OnProcess()
         {
-            if (Processor.Read(this, Asset, out Asset))
-            {
-                Manager.Log.WriteLine($"[CONTENT] [LOAD] {Path}: {Asset.GetType().FullName}");
-                return base.OnProcess();
-            }
-
-            return false;
+            return Processor.Read(this, Asset, out Asset);
         }
 
 
@@ -71,12 +77,7 @@ namespace Molten
                 if (_canHotReload != value)
                 {
                     _canHotReload = value;
-
-                    // Delete the watcher if we have one to prevent reloads.
-                    if (!_canHotReload && _watcher != null)
-                    {
-                        Manager.StopWatching(this);
-                    }
+                    UpdateWatcher();
                 }
             }
         }

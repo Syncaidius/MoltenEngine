@@ -94,21 +94,19 @@ namespace Molten
             return watcher;
         }
 
-        internal bool StopWatching(ContentHandle handle)
+        internal bool StopWatching(ContentWatcher watcher, ContentHandle handle)
         {
             string dir = handle.Info.DirectoryName;
             bool removed = false;
 
-            if (!_watchers.TryGetValue(dir, out ContentWatcher watcher))
-            {
-                removed = watcher.Handles.Remove(handle);
+            removed = watcher.Handles.Remove(handle);
 
-                // If watcher has no handles to watch, remove the watcher.
-                if (watcher.Handles.Count == 0 &&
-                    _watchers.Remove(dir, out watcher))
-                {
+            // If watcher has no handles to watch, remove the watcher.
+            if (watcher.Handles.Count == 0)
+            {
+                watcher.IsEnabled = false;
+                if(_watchers.Remove(dir, out watcher))
                     watcher.Dispose();
-                }
             }
 
             return removed;
@@ -227,7 +225,7 @@ namespace Molten
 
             // Add as input objects, all that were loaded from the original version of the file.
             // It is up to the content processor to update existing object instances and output them.
-            if (file.OriginalRequestType == ContentRequestType.Read)
+            if (file.OriginalRequestType == ContentHandleType.Load)
             {
                 if (file.OriginalProcessor == null)
                 {
@@ -243,7 +241,7 @@ namespace Molten
                     DoRead(null, context, file.OriginalProcessor);
                 }
             }
-            else if (file.OriginalRequestType == ContentRequestType.Deserialize)
+            else if (file.OriginalRequestType == ContentHandleType.SaveSerialized)
             {
                 foreach (Type t in types)
                 {
@@ -363,8 +361,8 @@ namespace Molten
                     }
                 }
 
-                if (context.RequestType != ContentRequestType.Deserialize && 
-                    context.RequestType != ContentRequestType.Serialize)
+                if (context.RequestType != ContentHandleType.SaveSerialized && 
+                    context.RequestType != ContentHandleType.LoadSerialized)
                 {
                     proc = proc ?? GetProcessor(context, context.ContentType);
                     if (proc == null)
@@ -378,25 +376,25 @@ namespace Molten
                 {
                     switch (context.RequestType)
                     {
-                        case ContentRequestType.Read:
+                        case ContentHandleType.Load:
                             ValidateParameters(context, proc);
                             DoRead(request, context, proc);
                             break;
 
-                        case ContentRequestType.Deserialize:
+                        case ContentHandleType.SaveSerialized:
                             DoDeserialize(request, context);
                             break;
 
-                        case ContentRequestType.Serialize:
+                        case ContentHandleType.LoadSerialized:
                             DoSerialize(request, context);
                             break;
 
-                        case ContentRequestType.Write:
+                        case ContentHandleType.Save:
                             ValidateParameters(context, proc);
                             DoWrite(context, proc);
                             break;
 
-                        case ContentRequestType.Delete:
+                        case ContentHandleType.Delete:
                             context.File.Delete();
                             break;
                     }
@@ -414,7 +412,7 @@ namespace Molten
             _requestPool.Recycle(request);
         }
 
-        private void DoDeserialize(ContentRequest request, ContentContext context)
+        /*private void DoDeserialize(ContentRequest request, ContentContext context)
         {
             using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
             {
@@ -435,7 +433,7 @@ namespace Molten
                     _log.Error(ex, true);
                 }
             }
-        }
+        }*/
 
         // *** REPLACED BY ContentLoadHandle ***
         /*private void DoRead(ContentRequest request, ContentContext context, IContentProcessor proc)
@@ -456,13 +454,13 @@ namespace Molten
             }
         }*/
 
-        private void DoWrite(ContentContext context, IContentProcessor proc)
+        /*private void DoWrite(ContentContext context, IContentProcessor proc)
         {
             proc.Write(context);
             _log.WriteLine($"[CONTENT] [WRITE] {context.Filename}");
-        }
+        }*/
 
-        private void DoSerialize(ContentRequest request, ContentContext context)
+        /*private void DoSerialize(ContentRequest request, ContentContext context)
         {
             try
             {
@@ -486,9 +484,9 @@ namespace Molten
                 _log.Error($"[CONTENT] [SERIALIZE] { ex.Message}", context.Filename);
                 _log.Error(ex, true);
             }
-        }
+        }*/
 
-        private void ValidateParameters(ContentContext context, IContentProcessor processor)
+        /*private void ValidateParameters(ContentContext context, IContentProcessor processor)
         {
             Type pExpectedType = processor.GetParameterType();
 
@@ -503,7 +501,7 @@ namespace Molten
             }
 
             context.Parameters = Activator.CreateInstance(pExpectedType) as IContentParameters;
-        }
+        }*/
 
         protected override void OnDispose()
         {

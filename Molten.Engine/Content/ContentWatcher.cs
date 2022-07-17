@@ -17,6 +17,7 @@ namespace Molten
             _directory = dInfo;
             _watcher = new FileSystemWatcher(dInfo.ToString());
             _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.CreationTime;
+            _watcher.EnableRaisingEvents = true;
             _watcher.Changed += _watcher_Changed;
         }
 
@@ -40,5 +41,11 @@ namespace Molten
         public ContentManager Manager { get; }
 
         internal ThreadedList<ContentHandle> Handles { get; } = new ThreadedList<ContentHandle>();
+
+        internal bool IsEnabled
+        {
+            get => _watcher.EnableRaisingEvents;
+            set => _watcher.EnableRaisingEvents = value;
+        }
     }
 }

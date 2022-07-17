@@ -4,9 +4,9 @@
     {
         Type GetParameterType();
 
-        bool Read(ParameterizedContentHandle handle, object existingAsset, out object asset);
+        bool Read(ContentHandle handle, object existingAsset, out object asset);
 
-        bool Write(ParameterizedContentHandle handle, object asset);
+        bool Write(ContentHandle handle, object asset);
 
         Type[] AcceptedTypes { get; }
 
@@ -24,13 +24,13 @@
             return typeof(P);
         }
 
-        bool IContentProcessor.Read(ParameterizedContentHandle handle, object existingAsset, out object asset)
+        bool IContentProcessor.Read(ContentHandle handle, object existingAsset, out object asset)
         {
             P parameters = (P)handle.Parameters;
             return OnRead(handle, parameters, existingAsset, out asset);
         }
 
-        bool IContentProcessor.Write(ParameterizedContentHandle handle, object asset)
+        bool IContentProcessor.Write(ContentHandle handle, object asset)
         {
             P parameters = (P)handle.Parameters;
             return OnWrite(handle, parameters, asset);
@@ -44,7 +44,7 @@
         /// <param name="existingAsset"></param>
         /// <param name="asset"></param>
         /// <returns></returns>
-        protected abstract bool OnRead(ParameterizedContentHandle handle, P parameters, object existingAsset, out object asset);
+        protected abstract bool OnRead(ContentHandle handle, P parameters, object existingAsset, out object asset);
 
         /// <summary>
         /// Invoked when content matching <see cref="AcceptedTypes"/> needs to be written.
@@ -53,7 +53,7 @@
         /// <param name="parameters"></param>
         /// <param name="asset"></param>
         /// <returns></returns>
-        protected abstract bool OnWrite(ParameterizedContentHandle handle, P parameters, object asset);
+        protected abstract bool OnWrite(ContentHandle handle, P parameters, object asset);
 
         /// <summary>Gets a list of accepted </summary>
         public abstract Type[] AcceptedTypes { get; }
