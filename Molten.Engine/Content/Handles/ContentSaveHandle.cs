@@ -8,15 +8,16 @@ namespace Molten
 {
     public class ContentSaveHandle : ContentHandle
     {
-        internal Action<FileInfo> _completionCallback;
+        Action<FileInfo> _completionCallback;
 
         internal ContentSaveHandle(
             ContentManager manager, 
+            string path, 
             object asset,
             IContentProcessor processor, 
             IContentParameters parameters, 
             Action<FileInfo> completionCallback) : 
-            base(manager, asset.GetType(), processor, parameters, ContentHandleType.Save)
+            base(manager, path, asset.GetType(), processor, parameters, ContentHandleType.Save)
         {
             _completionCallback = completionCallback;
             Asset = asset;

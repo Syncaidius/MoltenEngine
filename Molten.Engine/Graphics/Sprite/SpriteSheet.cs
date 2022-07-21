@@ -12,6 +12,8 @@ namespace Molten.Graphics
     public class SpriteSheet
     {
         ITexture2D _texture;
+        ContentLoadHandle<ITexture2D> _loadHandle;
+
         Dictionary<string, SpriteData> _sprites = new Dictionary<string, SpriteData>();
 
         public SpriteSheet()
@@ -34,23 +36,9 @@ namespace Molten.Graphics
         /// Tries to load the texture at <see cref="TexturePath"/> via the provided <see cref="ContentManager"/>.
         /// </summary>
         /// <param name="content"></param>
-        public void LoadTexture(ContentManager content, ContentRequestHandler onLoadedCallback = null, string rootDirectory = null)
+        public void LoadTexture(ContentManager content)
         {
-            ContentRequest request = content.BeginRequest(rootDirectory);
-            request.Load<ITexture2D>(TexturePath);
-            request.OnCompleted += Request_OnCompleted;
-
-            if(onLoadedCallback != null)
-                request.OnCompleted += onLoadedCallback;
-
-            request.Commit();
-        }
-
-        private void Request_OnCompleted(ContentRequest request)
-        {
-            ITexture2D tex = request.Get<ITexture2D>(0);
-            if (tex != null)
-                SetTexture(tex);
+            _loadHandle = content.Load<ITexture2D>(TexturePath, t => _texture = t);
         }
 
         private void SetTexture(ITexture2D texture)
@@ -58,7 +46,8 @@ namespace Molten.Graphics
             if (texture == _texture)
                 return;
 
-            if (texture != null)
+            _texture = texture;
+            if (_texture != null)
             {
                 Width = _texture.Width;
                 Height = _texture.Height;   
@@ -68,8 +57,6 @@ namespace Molten.Graphics
                 Width = 0;
                 Height = 0;
             }
-
-            _texture = texture;
 
             foreach (SpriteData data in _sprites.Values)
                 data.Texture = _texture;

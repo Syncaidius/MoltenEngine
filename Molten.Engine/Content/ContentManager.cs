@@ -131,7 +131,31 @@ namespace Molten
                 settings.Converters.Add(jc);
         }
 
-        public ContentLoadHandle<T> Load<T>(string path, Action<T> completionCallback, IContentParameters parameters = null, bool canHotReload = true)
+        /// <summary>
+        /// Unloads the content represented by the provided <see cref="ContentLoadHandle{T}"/>. If the content has already been unloaded, this method will return false.
+        /// </summary>
+        /// <typeparam name="T">The type of content to be unloaded.</typeparam>
+        /// <param name="handle">The handle of the content to be unloaded.</param>
+        /// <returns>True if the content was successfully unloaded, or false if it was already unloaded.</returns>
+        public bool Unload<T>(ContentLoadHandle<T> handle)
+        {
+            if(handle.Status != ContentHandleStatus.Unloaded)
+            {
+                handle.Status = ContentHandleStatus.Unloaded;
+
+                if (_content.TryRemoveValue(handle.Path, out ContentHandle cHandle))
+                {
+                    if (handle.Asset is IDisposable disposable)
+                        disposable.Dispose();
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public ContentLoadHandle<T> Load<T>(string path, Action<T> completionCallback = null, IContentParameters parameters = null, bool canHotReload = true)
         {
             Type contentType = typeof(T);
             IContentProcessor proc = GetProcessor(path, contentType);
@@ -144,162 +168,45 @@ namespace Molten
 
             if (!_content.TryGetValue(path, out ContentHandle handle))
             {
-                handle = new ContentLoadHandle<T>(this, proc, parameters, completionCallback, canHotReload);
-                //_content.Add(path, handle);
-                // TODO add to queue to be loaded
+                handle = new ContentLoadHandle<T>(this, path, proc, parameters, completionCallback, canHotReload);
+                _workers.QueueTask(handle);
             }
 
             return handle as ContentLoadHandle<T>;
         }
 
-        /// <summary>
-        /// Spawns a new content request and returns it for the provided directory.
-        /// </summary>
-        /// <param name="rootDirectory">The root directory of all operations added to the request.</param>
-        /// <returns></returns>
-        /*public ContentRequest BeginRequest(string rootDirectory = null)
+        public ContentLoadJsonHandle<T> Deserialize<T>(string path, Action<T> completionCallback = null, JsonSerializerSettings settings = null, bool canHotReload = true)
         {
-            return BeginRequest(rootDirectory, null);
+            if (!_content.TryGetValue(path, out ContentHandle handle))
+            {
+                handle = new ContentLoadJsonHandle<T>(this, path, completionCallback, settings, canHotReload);
+                _workers.QueueTask(handle);
+            }
+
+            return handle as ContentLoadJsonHandle<T>;
         }
 
-        /// <summary>
-        /// Spawns a new content request and returns it for the provided directory.
-        /// </summary>
-        /// <param name="rootDirectory">The root directory of all operations added to the request.</param>
-        /// <param name="customJsonSettings">Custom Json settings to be applied to any serialization or deserialization operation performed by the <see cref="ContentRequest"/>.</param>
-        /// <returns></returns>
-        public ContentRequest BeginRequest(string rootDirectory, JsonSerializerSettings customJsonSettings)
+        public ContentSaveHandle SaveToFile(string path, object asset, Action<FileInfo> completionCallback = null, IContentParameters parameters = null)
         {
-            ContentRequest request = _requestPool.GetInstance();
+            Type contentType = asset.GetType();
+            IContentProcessor proc = GetProcessor(path, contentType);
 
-            if (customJsonSettings != null)
+            if (proc == null)
             {
-                request.JsonSettings = customJsonSettings.Clone();
-                AddCustomJsonConverters(request.JsonSettings, _jsonSettings.Converters);
-            }
-            else
-            {
-                request.JsonSettings = _jsonSettings;
+                _log.Error($"[CONTENT] {path}: Unable to load unsupported content of type '{contentType.Name}'");
+                return null;
             }
 
-            if (string.IsNullOrEmpty(rootDirectory))
-                rootDirectory = Engine.Settings.DefaultAssetPath;
-
-            rootDirectory = rootDirectory.StartsWith("/") ? rootDirectory.Substring(1, rootDirectory.Length - 1) : rootDirectory;
-            request.RootDirectory = Path.GetFullPath(rootDirectory);
-            request.Manager = this;
-            return request;
-        }*/
-
-        internal void CommitImmediate(ContentRequest request)
-        {
-            if (request.RequestElements.Count == 0)
-            {
-                request.Complete();
-                _requestPool.Recycle(request);
-                return;
-            }
-
-            ProcessRequest(request);
+            ContentSaveHandle handle = new ContentSaveHandle(this, path, asset, proc, parameters, completionCallback);
+            _workers.QueueTask(handle);
+            return handle;
         }
 
-        internal void Commit(ContentRequest request)
-        {
-            if (request.RequestElements.Count == 0)
-            {
-                request.Complete();
-                _requestPool.Recycle(request);
-                return;
-            }
-
-            ContentWorkerTask task = ContentWorkerTask.Get();
-            task.Request = request;
-            _workers.QueueTask(task);
-        }
-
-        private void Watcher_Changed(ContentDirectory dir, FileSystemEventArgs e)
-        {
-            string pathLower = e.FullPath.ToLower();
-            if (_content.TryGetValue(pathLower, out ContentFile file))
-            {
-                ContentReloadTask task = ContentReloadTask.Get();
-                task.File = file;
-                task.Manager = this;
-                _workers.QueueTask(task);
-            }
-        }
-
-        internal void ReloadFile(ContentFile file)
-        {
-            ContentContext context = ContextPool.GetInstance();
-            context.File = file.File;
-            context.ContentType = file.OriginalContentType;
-
-            // Create a local copy of the keys to avoid threading issues
-            Type[] types = file.GetTypeArray();
-
-            // Add as input objects, all that were loaded from the original version of the file.
-            // It is up to the content processor to update existing object instances and output them.
-            if (file.OriginalRequestType == ContentHandleType.Load)
-            {
-                if (file.OriginalProcessor == null)
-                {
-                    _log.Warning($"[CONTENT] [RELOAD] Unable to reload {file.Path}. Not loaded via content manager.");
-                    return;
-                }
-
-                foreach (Type t in types)
-                {
-                    IList<object> existingObjects = file.GetObjects(t);
-                    context.Input.Add(t, new List<object>(existingObjects));
-                    _log.WriteLine($"[CONTENT] [RELOAD] {file.Path}");
-                    DoRead(null, context, file.OriginalProcessor);
-                }
-            }
-            else if (file.OriginalRequestType == ContentHandleType.SaveSerialized)
-            {
-                foreach (Type t in types)
-                {
-                    IList<object> existingObjects = file.GetObjects(t);
-                    context.Input.Add(t, new List<object>(existingObjects));
-                    _log.WriteLine($"[CONTENT] [RELOAD] {file.Path}");
-                    DoDeserialize(null, context);
-                }
-            }
-        }
-
-        private ContentFile GetContentFile(ContentContext context, ContentRequest request = null, IContentProcessor processor = null)
-        {
-            string fnLower = context.Filename.ToLower();
-
-            if (!_content.TryGetValue(fnLower, out ContentFile file))
-            {
-                file = new ContentFile()
-                {
-                    OriginalProcessor = processor,
-                    OriginalContentType = context.ContentType,
-                    File = context.File,
-                    OriginalRequestType = context.RequestType,
-                    Parameters = context.Parameters,
-                };
-
-                ContentDirectory directory;
-                string strDirectory = context.File.Directory.ToString();
-                if (!_directories.TryGetValue(strDirectory, out directory))
-                {
-                    directory = new ContentDirectory(strDirectory);
-                    directory.OnChanged += Watcher_Changed;
-                    _directories.Add(strDirectory, directory);
-                }
-
-                _content.Add(fnLower, file);
-                directory.AddFile(file);
-            }
-
-            if (request != null)
-                request.RetrievedContent[fnLower] = file;
-
-            return file;
+        public ContentSaveJsonHandle SerializeToFile(string path, object asset, Action<FileInfo> completionCallback = null, JsonSerializerSettings settings = null)
+        { 
+            ContentSaveJsonHandle handle = new ContentSaveJsonHandle(this, path, asset, settings, completionCallback);
+            _workers.QueueTask(handle);
+            return handle;
         }
 
         internal IContentProcessor GetProcessor(string path, Type type)
@@ -352,179 +259,9 @@ namespace Molten
  
             return proc;
         }
-
-        internal void ProcessRequest(ContentRequest request)
-        {
-            foreach (ContentContext context in request.RequestElements)
-            {
-                context.Engine = _engine;
-                context.Log = _log;
-
-                IContentProcessor proc = null;
-
-                // First check if the content already exists
-                string fnLower = context.Filename.ToLower();
-                if (_content.TryGetValue(fnLower, out ContentFile file))
-                {
-                    ValidateParameters(context, file.OriginalProcessor);
-
-                    object existing = file.GetObject(_engine, context.ContentType, context.Parameters);
-                    if (existing != null)
-                    {
-                        request.RetrievedContent[fnLower] = file;
-                        continue;
-                    }
-                }
-
-                if (context.RequestType != ContentHandleType.SaveSerialized && 
-                    context.RequestType != ContentHandleType.LoadSerialized)
-                {
-                    proc = proc ?? GetProcessor(context, context.ContentType);
-                    if (proc == null)
-                    {
-                        _log.Error($"[CONTENT] {context.File}: Unable to load unsupported content of type '{context.ContentType.Name}'");
-                        continue;
-                    }
-                }
-
-                try
-                {
-                    switch (context.RequestType)
-                    {
-                        case ContentHandleType.Load:
-                            ValidateParameters(context, proc);
-                            DoRead(request, context, proc);
-                            break;
-
-                        case ContentHandleType.SaveSerialized:
-                            DoDeserialize(request, context);
-                            break;
-
-                        case ContentHandleType.LoadSerialized:
-                            DoSerialize(request, context);
-                            break;
-
-                        case ContentHandleType.Save:
-                            ValidateParameters(context, proc);
-                            DoWrite(context, proc);
-                            break;
-
-                        case ContentHandleType.Delete:
-                            context.File.Delete();
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _log.Error($"An error occurred while processing content {context.Filename}");
-                    _log.Error(ex, true);
-                }
-
-                ContextPool.Recycle(context);
-            }
-
-            request.Complete();
-            _requestPool.Recycle(request);
-        }
-
-        /*private void DoDeserialize(ContentRequest request, ContentContext context)
-        {
-            using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
-            {
-                string json;
-                using (StreamReader reader = new StreamReader(stream))
-                    json = reader.ReadToEnd();
-
-                try
-                {
-                    object result = JsonConvert.DeserializeObject(json, context.ContentType, request.JsonSettings);
-                    ContentFile file = GetContentFile(context, request);
-                    file.AddObject(context.ContentType, result);
-                    _log.WriteLine($"[CONTENT] [DESERIALIZE] '{result.GetType().Name}' from {context.Filename}");
-                }
-                catch (Exception ex)
-                {
-                    _log.Error($"[CONTENT] [DESERIALIZE] { ex.Message}", context.Filename);
-                    _log.Error(ex, true);
-                }
-            }
-        }*/
-
-        // *** REPLACED BY ContentLoadHandle ***
-        /*private void DoRead(ContentRequest request, ContentContext context, IContentProcessor proc)
-        {
-            proc.Read(context);
-
-            if (context.Output.Count > 0)
-            {
-                _log.WriteLine($"[CONTENT] [READ] {context.Filename}:");
-
-                foreach (Type t in context.Output.Keys)
-                {
-                    ContentFile file = GetContentFile(context, request, proc);
-                    List<object> result = context.Output[t];
-                    file.AddObjects(t, result);
-                    _log.WriteLine($"[CONTENT] [READ]    {result.Count}x {t.FullName}");
-                }
-            }
-        }*/
-
-        /*private void DoWrite(ContentContext context, IContentProcessor proc)
-        {
-            proc.Write(context);
-            _log.WriteLine($"[CONTENT] [WRITE] {context.Filename}");
-        }*/
-
-        /*private void DoSerialize(ContentRequest request, ContentContext context)
-        {
-            try
-            {
-                string json = JsonConvert.SerializeObject(context.Input[context.ContentType][0], request.JsonSettings);
-
-                if (!context.File.Directory.Exists)
-                    context.File.Directory.Create();
-
-                using (Stream stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
-                {
-                    using (StreamWriter writer = new StreamWriter(stream))
-                    {
-                        writer.Write(json);
-                    }
-                }
-
-                _log.WriteLine($"[CONTENT] [SERIALIZE] {context.Filename}");
-            }
-            catch (Exception ex)
-            {
-                _log.Error($"[CONTENT] [SERIALIZE] { ex.Message}", context.Filename);
-                _log.Error(ex, true);
-            }
-        }*/
-
-        /*private void ValidateParameters(ContentContext context, IContentProcessor processor)
-        {
-            Type pExpectedType = processor.GetParameterType();
-
-            if (context.Parameters != null)
-            {
-                Type pType = context.Parameters.GetType();
-
-                if (!pExpectedType.IsAssignableFrom(pType))
-                    _log.Warning($"[CONTENT] {context.File}: Invalid parameter type provided. Expected '{pExpectedType.Name}' but received '{pType.Name}'. Using defaults instead.");
-                else
-                    return;
-            }
-
-            context.Parameters = Activator.CreateInstance(pExpectedType) as IContentParameters;
-        }*/
-
         protected override void OnDispose()
         {
             _workers.Dispose();
-
-            ICollection<ContentFile> files = _content.Values;
-            foreach (ContentFile file in files)
-                file.Dispose();
 
             foreach (ContentWatcher watcher in _watchers.Values)
                 watcher.Dispose();
@@ -542,6 +279,9 @@ namespace Molten
         /// </summary>
         internal Engine Engine => _engine;
 
+        /// <summary>
+        /// Gets the <see cref="WorkerGroup"/> used by the current <see cref="ContentManager"/> for loading and processing content.
+        /// </summary>
         internal WorkerGroup Workers => _workers;
     }
 }

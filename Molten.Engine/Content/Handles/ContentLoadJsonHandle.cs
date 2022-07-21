@@ -11,10 +11,11 @@ namespace Molten
     {
         internal ContentLoadJsonHandle(
             ContentManager manager,
+            string path,
             Action<T> completionCallback, 
             JsonSerializerSettings jsonSettings,
             bool canHotReload) :
-            base(manager, null, null, completionCallback, canHotReload)
+            base(manager, path, null, null, completionCallback, canHotReload)
         {
             JsonSettings = jsonSettings.Clone();
         }

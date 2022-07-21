@@ -65,14 +65,6 @@ namespace Molten.UI
             Parents.Clear();
         }
 
-        private void Content_OnCompleted(ContentRequest request)
-        {
-            TextFontSource src = request.Get<TextFontSource>(0);
-            if (src != null)
-                DefaultFont = new TextFont(src, DefaultFontSize);
-        }
-
-
         internal void Initialize(Engine engine)
         {
             if (_isInitialized)
@@ -87,10 +79,10 @@ namespace Molten.UI
         {
             if (!string.IsNullOrWhiteSpace(_defaultFontName))
             {
-                ContentRequest cr = Engine.Current.Content.BeginRequest();
-                cr.Load<TextFontSource>(_defaultFontName);
-                cr.OnCompleted += Content_OnCompleted;
-                cr.CommitImmediate();
+                Engine.Content.Load<TextFontSource>(_defaultFontName, (fs) =>
+                {
+                    DefaultFont = new TextFont(fs, DefaultFontSize);
+                });
             }
         }
 

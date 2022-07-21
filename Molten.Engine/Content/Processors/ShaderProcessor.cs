@@ -9,18 +9,24 @@ namespace Molten.Content
 
         public override Type[] RequiredServices { get; } = { typeof(RenderService) };
 
-        protected override void OnRead(ContentContext context, ShaderParameters p)
+        protected override bool OnRead(ContentHandle handle, ShaderParameters parameters, object existingAsset, out object asset)
         {
-            using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
+            asset = null;
+
+            using (Stream stream = new FileStream(handle.Path, FileMode.Open, FileAccess.Read))
             {
                 using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 2048, true))
                 {
                     string source = reader.ReadToEnd();
-                    ShaderCompileResult r = context.Engine.Renderer.Resources.CompileShaders(ref source, context.Filename);
+                    ShaderCompileResult r = handle.Manager.Engine.Renderer.Resources.CompileShaders(ref source, handle.RelativePath);
                     foreach (ShaderClassType classType in r.ShaderGroups.Keys)
                     {
                         List<IShaderElement> list = r.ShaderGroups[classType];
-                        foreach (IShader shader in list)
+
+                        // Temp solution to limitation of new content manager.
+                        asset = list[0];
+                        break;
+                        /*foreach (IShader shader in list)
                         {
                             if (shader is IMaterial mat)
                                 context.AddOutput(mat);
@@ -28,30 +34,18 @@ namespace Molten.Content
                                 context.AddOutput(ct);
 
                             context.AddOutput(shader);
-                        }
+                        }*/
                     }
                 }
             }
+
+            return true;
         }
 
-        protected override void OnWrite(ContentContext context, ShaderParameters p)
+
+        protected override bool OnWrite(ContentHandle handle, ShaderParameters parameters, object asset)
         {
             throw new NotImplementedException();
-        }
-
-        protected override object OnGet(Engine engine, Type contentType, ShaderParameters p, IList<object> groupContent)
-        {
-            if (!string.IsNullOrEmpty(p.MaterialName))
-            {
-                foreach (object obj in groupContent)
-                {
-                    IMaterial mat = obj as IMaterial;
-                    if (mat.Name == p.MaterialName)
-                        return mat;
-                }
-            }
-
-            return groupContent[0];
         }
     }
 }

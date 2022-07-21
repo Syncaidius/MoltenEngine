@@ -11,12 +11,12 @@ namespace Molten
     {
         internal ContentSaveJsonHandle(
             ContentManager manager,
+            string path,
             object asset,
             JsonSerializerSettings jsonSettings,
             Action<FileInfo> completionCallback) :
-            base(manager, asset, null, null, completionCallback)
+            base(manager, path, asset, null, null, completionCallback)
         {
-            _completionCallback = completionCallback;
             JsonSettings = jsonSettings.Clone();
         }
 

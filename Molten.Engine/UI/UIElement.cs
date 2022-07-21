@@ -28,25 +28,6 @@ namespace Molten.UI
             OnInitialize(Engine, Engine.Settings.UI);
         }
 
-        /// <summary>
-        /// Loads a content file and invokes a callback with the loaded content object and it's originating <see cref="ContentContext"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="path">The path or name of the content object to be loaded.</param>
-        /// <param name="callback">The callback to invoke once the content object has loaded.</param>
-        /// <param name="p">Any content parameters to add to the request, if any. Default value is null.</param>
-        protected void LoadContent<T>(string path, Action<ContentRequest, T> callback, IContentParameters p = null)
-        {
-            ContentRequest cr = Engine.Content.BeginRequest();
-            cr.Load<T>(path, p);
-            cr.OnCompleted += (request) =>
-            {
-                T content = request.Get<T>(0);
-                callback(request, content);
-            };
-            cr.Commit();
-        }
-
         protected virtual void OnInitialize(Engine engine, UISettings settings)
         {
             BaseData.Margin.OnChanged += MarginPadding_OnChanged;

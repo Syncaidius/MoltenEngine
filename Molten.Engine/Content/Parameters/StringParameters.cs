@@ -10,6 +10,5 @@ namespace Molten
     public class StringParameters : IContentParameters
     {
         public bool IsBinary = false;
-        public bool IsPerLine = false;
     }
 }

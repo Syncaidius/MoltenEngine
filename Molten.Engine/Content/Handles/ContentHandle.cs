@@ -1,32 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.Threading;
 
 namespace Molten
 {
     /// <summary>
     /// A handle for a content asset.
     /// </summary>
-    public abstract class ContentHandle
+    public abstract class ContentHandle : WorkerTask, IDisposable
     {
         object _asset;
+        static FileInfo _exePath;
 
-        internal ContentHandle(ContentManager manager, Type contentType, ContentHandleType handleType) :
-            this(manager, contentType, null, null, handleType)
+        public event ObjectHandler<ContentHandle> OnUnloading;
+
+        static ContentHandle()
+        {
+            string exePath = Assembly.GetEntryAssembly().Location;
+            FileInfo info = new FileInfo(exePath);
+        }
+
+        internal ContentHandle(ContentManager manager, string path, Type contentType, ContentHandleType handleType) :
+            this(manager, path, contentType, null, null, handleType)
         { }
 
-        internal ContentHandle(ContentManager manager, Type contentType, IContentProcessor processor, IContentParameters parameters, ContentHandleType handleType)
+        internal ContentHandle(ContentManager manager, string path, Type contentType, IContentProcessor processor, IContentParameters parameters, ContentHandleType handleType)
         {
+            Info = new FileInfo(path);
             Manager = manager;
             ContentType = contentType;
             Processor = processor;
             Parameters = parameters;
             HandleType = handleType;
+            RelativePath = System.IO.Path.GetRelativePath(_exePath.Directory.FullName, Info.Directory.FullName);
         }
 
-        internal bool Process()
+        protected override sealed bool OnRun()
         {
             Status = ContentHandleStatus.Processing;
             ValidateParameters();
@@ -48,6 +61,8 @@ namespace Molten
 
             return false;
         }
+
+        protected override void OnFree() { }
 
         private void ValidateParameters()
         {
@@ -76,7 +91,7 @@ namespace Molten
         /// <summary>
         /// The status of the current <see cref="ContentHandle"/>.
         /// </summary>
-        public ContentHandleStatus Status { get; protected set; }
+        public ContentHandleStatus Status { get; internal set; }
 
         /// <summary>
         /// The <see cref="ContentManager"/> that the currnet <see cref="ContentHandle"/> is bound to.
@@ -85,7 +100,12 @@ namespace Molten
 
         public Type ContentType { get; }
 
-        internal FileInfo Info { get; }
+        public FileInfo Info { get; }
+
+        /// <summary>
+        /// The handle's relative path to the current application executable.
+        /// </summary>
+        public string RelativePath { get; }
 
         /// <summary>
         /// Gets the path of the asset file that the current <see cref="ContentHan"/> represents, relative to the executing directory.

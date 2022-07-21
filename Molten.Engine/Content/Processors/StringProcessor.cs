@@ -6,60 +6,46 @@
 
         public override Type[] RequiredServices => null;
 
-        protected override void OnRead(ContentContext context, StringParameters parameters)
+        protected override bool OnRead(ContentHandle handle, StringParameters parameters, object existingAsset, out object asset)
         {
-            using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
+            asset = null;
+
+            using (Stream stream = new FileStream(handle.Path, FileMode.Open, FileAccess.Read))
             {
                 if (parameters.IsBinary)
                 {
                     using (BinaryReader reader = new BinaryReader(stream))
-                    {
-                        while (reader.BaseStream.Position < reader.BaseStream.Length)
-                            context.AddOutput(reader.ReadString());
-                    }
+                        asset = (reader.ReadString());
                 }
                 else
                 {
                     using (StreamReader reader = new StreamReader(stream))
-                    {
-                        if (parameters.IsPerLine)
-                        {
-                            while (!reader.EndOfStream)
-                                context.AddOutput(reader.ReadLine());
-                        }
-                        else
-                        {
-                            context.AddOutput(reader.ReadToEnd());
-                        }
-                    }
+                        asset = reader.ReadToEnd();
                 }
             }
+
+            return true;
         }
 
-        protected override void OnWrite(ContentContext context, StringParameters parameters)
+        protected override bool OnWrite(ContentHandle handle, StringParameters parameters, object asset)
         {
-            if (context.Input.TryGetValue(AcceptedTypes[0], out List<object> strings))
+            string str = (string)asset;
+
+            using (Stream stream = new FileStream(handle.Path, FileMode.Create, FileAccess.Write))
             {
-                using (Stream stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
+                if (parameters.IsBinary)
                 {
-                    if (parameters.IsBinary)
-                    {
-                        using (BinaryWriter writer = new BinaryWriter(stream))
-                        {
-                            foreach (string str in strings)
-                                writer.Write(str);
-                        }
-                    }
-                    else
-                    {
-                        using (StreamWriter writer = new StreamWriter(stream))
-                        {
-                            foreach (string str in strings)
-                                writer.WriteLine(str);
-                        }
-                    }
+                    using (BinaryWriter writer = new BinaryWriter(stream))
+                        writer.Write(str);
+                }
+                else
+                {
+                    using (StreamWriter writer = new StreamWriter(stream))
+                        writer.Write(str);
                 }
             }
+
+            return true;
         }
     }
 }

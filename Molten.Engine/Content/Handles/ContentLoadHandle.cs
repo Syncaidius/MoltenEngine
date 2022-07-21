@@ -15,11 +15,12 @@ namespace Molten
 
         internal ContentLoadHandle(
             ContentManager manager, 
+            string path,
             IContentProcessor processor, 
             IContentParameters parameters, 
             Action<T> completionCallback, 
             bool canHotReload) : 
-            base(manager, typeof(T), processor, parameters, ContentHandleType.Load)
+            base(manager, path, typeof(T), processor, parameters, ContentHandleType.Load)
         {
             _completionCallback = completionCallback;
             _canHotReload = canHotReload;

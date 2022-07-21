@@ -120,8 +120,6 @@ namespace Molten.Samples
             _mesh.Material = mat;
         }
 
-        protected override void OnContentRequested(ContentRequest cr) { }
-
         protected override void OnContentLoaded(ContentRequest cr) { }
 
         private void Window_OnClose(INativeSurface surface)

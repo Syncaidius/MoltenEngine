@@ -11,6 +11,7 @@ namespace Molten
     {
         FileSystemWatcher _watcher;
         DirectoryInfo _directory;
+        ContentManager _manager;
 
         internal ContentWatcher(ContentManager manager, DirectoryInfo dInfo)
         {
@@ -25,7 +26,7 @@ namespace Molten
         {
             Handles.For(0, 1, (index, handle) =>
             {
-                handle.Process();
+                _manager.Workers.QueueTask(handle);
                 return false;
             });
         }

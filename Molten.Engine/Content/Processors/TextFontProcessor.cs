@@ -8,24 +8,25 @@ namespace Molten.Content
 
         public override Type[] RequiredServices => null;
 
-        protected override void OnRead(ContentContext context, SpriteFontParameters p)
+        protected override bool OnRead(ContentHandle handle, SpriteFontParameters parameters, object existingAsset, out object asset)
         {
-            TextFontSource tfs = context.Engine.Fonts.GetFont(context.Log, context.Filename);
+            TextFontSource tfs = handle.Manager.Engine.Fonts.GetFont(handle.Manager.Log, handle.Path);
+            asset = null;
+
             if (tfs != null)
             {
-                if (context.ContentType == typeof(TextFont))
-                {
-                    TextFont tf = new TextFont(tfs, p.FontSize);
-                    context.AddOutput(tf);
-                }
-                else if(context.ContentType == typeof(TextFontSource))
-                {
-                    context.AddOutput(tfs);
-                }
+                if (handle.ContentType == typeof(TextFont))
+                    asset = new TextFont(tfs, parameters.FontSize);
+                else if (handle.ContentType == typeof(TextFontSource))
+                    asset = tfs;
+
+                return true;
             }
+
+            return false;
         }
 
-        protected override void OnWrite(ContentContext context, SpriteFontParameters p)
+        protected override bool OnWrite(ContentHandle handle, SpriteFontParameters parameters, object asset)
         {
             throw new NotImplementedException();
         }

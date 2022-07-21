@@ -64,12 +64,14 @@ namespace Molten.Samples
             if (engine.Input != null && engine.Input.State == EngineServiceState.Ready)
                 Engine.Input.Camera = _cam2D;
 
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<TextFont>("BroshK.ttf");
-
-            OnContentRequested(cr);
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
+            Engine.Content.BeginBatch();
+            Engine.Content.Load<TextFont>("assets/BroshK.ttf", (font) =>
+            {
+                _sampleFont = font;
+                Engine.Renderer.Overlay.Font = _sampleFont;
+            });
+            OnContentRequested(Engine.Content);
+            ContentHandleBatch batch = Engine.Content.EndBatch(Cr_OnCompleted);
 
             SpawnPlayer();
             TestMesh = GetTestCubeMesh();
@@ -234,12 +236,9 @@ namespace Molten.Samples
             _txtMovement.LocalBounds = new Rectangle(xCenter, _txtGamepad.LocalBounds.Y - 20, 0, 0);
         }
 
-        private void Cr_OnCompleted(ContentRequest cr)
+        private void ContentBatch_OnCompleted(ContentLoadBatch content)
         {
-            _sampleFont = cr.Get<TextFont>(0);
-            Engine.Renderer.Overlay.Font = _sampleFont;
-
-            OnContentLoaded(cr);
+            OnContentLoaded();
             SampleSpriteRenderComponent com = _uiLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             com.RenderCallback = OnDrawSprites;
             com.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
@@ -247,9 +246,9 @@ namespace Molten.Samples
             _baseContentLoaded = true;
         }
 
-        protected virtual void OnContentRequested(ContentRequest cr) { }
+        protected virtual void OnContentRequested(ContentManager content) { }
 
-        protected virtual void OnContentLoaded(ContentRequest cr) { }
+        protected virtual void OnContentLoaded() { }
 
         /// <summary>
         /// Called when the <see cref="SampleGame"/> should update and handle gamepad input. <see cref="SampleGame"/> provides default handling.
