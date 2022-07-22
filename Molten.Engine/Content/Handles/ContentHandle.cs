@@ -39,6 +39,14 @@ namespace Molten
             RelativePath = System.IO.Path.GetRelativePath(_exePath.Directory.FullName, Info.Directory.FullName);
         }
 
+        /// <summary>
+        /// Dispatches the current <see cref="ContentHandle"/> to it's parent <see cref="ContentManager"/> for processing.
+        /// </summary>
+        public void Dispatch()
+        {
+            Manager.Workers.QueueTask(this);
+        }
+
         protected override sealed bool OnRun()
         {
             Status = ContentHandleStatus.Processing;

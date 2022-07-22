@@ -12,7 +12,7 @@ namespace Molten
         internal ContentLoadJsonHandle(
             ContentManager manager,
             string path,
-            Action<T> completionCallback, 
+            ContentLoadCallbackHandler<T> completionCallback, 
             JsonSerializerSettings jsonSettings,
             bool canHotReload) :
             base(manager, path, null, null, completionCallback, canHotReload)
@@ -32,9 +32,13 @@ namespace Molten
                 string strLoad = reload ? "RELOAD" : "LOAD";
 
                 if (reload)
+                {
                     JsonConvert.PopulateObject(json, Asset);
+                }
                 else
+                {
                     Asset = JsonConvert.DeserializeObject(json, ContentType, JsonSettings);
+                }
 
                 return true;
             }

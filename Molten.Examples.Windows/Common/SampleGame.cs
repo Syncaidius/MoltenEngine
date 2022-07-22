@@ -15,6 +15,8 @@ namespace Molten.Samples
         SceneLayer _uiLayer;
         CameraComponent _cam2D;
 
+        ContentLoadBatch _loader;
+
         SceneObject _player;
         SampleCameraController _camController;
         SceneObject _parent;
@@ -64,14 +66,13 @@ namespace Molten.Samples
             if (engine.Input != null && engine.Input.State == EngineServiceState.Ready)
                 Engine.Input.Camera = _cam2D;
 
-            Engine.Content.BeginBatch();
+            _loader = Engine.Content.GetLoadBatch();
             Engine.Content.Load<TextFont>("assets/BroshK.ttf", (font) =>
             {
                 _sampleFont = font;
                 Engine.Renderer.Overlay.Font = _sampleFont;
             });
             OnContentRequested(Engine.Content);
-            ContentHandleBatch batch = Engine.Content.EndBatch(Cr_OnCompleted);
 
             SpawnPlayer();
             TestMesh = GetTestCubeMesh();

@@ -155,7 +155,12 @@ namespace Molten
             return false;
         }
 
-        public ContentLoadHandle<T> Load<T>(string path, Action<T> completionCallback = null, IContentParameters parameters = null, bool canHotReload = true)
+        public ContentLoadBatch GetLoadBatch()
+        {
+            return new ContentLoadBatch(this);
+        }
+
+        public ContentLoadHandle<T> Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, IContentParameters parameters = null, bool canHotReload = true, bool dispatch = true)
         {
             Type contentType = typeof(T);
             IContentProcessor proc = GetProcessor(path, contentType);
@@ -169,24 +174,29 @@ namespace Molten
             if (!_content.TryGetValue(path, out ContentHandle handle))
             {
                 handle = new ContentLoadHandle<T>(this, path, proc, parameters, completionCallback, canHotReload);
-                _workers.QueueTask(handle);
+
+                if (dispatch)
+                    handle.Dispatch();
+
             }
 
             return handle as ContentLoadHandle<T>;
         }
 
-        public ContentLoadJsonHandle<T> Deserialize<T>(string path, Action<T> completionCallback = null, JsonSerializerSettings settings = null, bool canHotReload = true)
+        public ContentLoadJsonHandle<T> Deserialize<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, JsonSerializerSettings settings = null, bool canHotReload = true, bool dispatch = true)
         {
             if (!_content.TryGetValue(path, out ContentHandle handle))
             {
                 handle = new ContentLoadJsonHandle<T>(this, path, completionCallback, settings, canHotReload);
-                _workers.QueueTask(handle);
+
+                if (dispatch)
+                    handle.Dispatch();
             }
 
             return handle as ContentLoadJsonHandle<T>;
         }
 
-        public ContentSaveHandle SaveToFile(string path, object asset, Action<FileInfo> completionCallback = null, IContentParameters parameters = null)
+        public ContentSaveHandle SaveToFile(string path, object asset, Action<FileInfo> completionCallback = null, IContentParameters parameters = null, bool dispatch = true)
         {
             Type contentType = asset.GetType();
             IContentProcessor proc = GetProcessor(path, contentType);
@@ -198,14 +208,20 @@ namespace Molten
             }
 
             ContentSaveHandle handle = new ContentSaveHandle(this, path, asset, proc, parameters, completionCallback);
-            _workers.QueueTask(handle);
+
+            if (dispatch)
+                handle.Dispatch();
+
             return handle;
         }
 
-        public ContentSaveJsonHandle SerializeToFile(string path, object asset, Action<FileInfo> completionCallback = null, JsonSerializerSettings settings = null)
+        public ContentSaveJsonHandle SerializeToFile(string path, object asset, Action<FileInfo> completionCallback = null, JsonSerializerSettings settings = null, bool dispatch = true)
         { 
             ContentSaveJsonHandle handle = new ContentSaveJsonHandle(this, path, asset, settings, completionCallback);
-            _workers.QueueTask(handle);
+            
+            if(dispatch)
+                handle.Dispatch();
+
             return handle;
         }
 
