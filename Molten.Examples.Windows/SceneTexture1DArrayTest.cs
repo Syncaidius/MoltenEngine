@@ -4,42 +4,36 @@ namespace Molten.Samples
 {
     public class SceneTexture1DArrayTest : SampleGame
     {
+        ContentLoadHandle<IMaterial> _hMaterial;
+        ContentLoadHandle<TextureData> _hTexture1;
+        ContentLoadHandle<TextureData> _hTexture2;
+        ContentLoadHandle<TextureData> _hTexture3;
+
         public override string Description => "A sample of 1D texture arrays via a material shared between two parented objects.";
 
         public SceneTexture1DArrayTest() : base("1D Texture Array") { }
 
-        protected override void OnInitialize(Engine engine)
+        protected override void OnLoadContent(ContentLoadBatch loader)
         {
-            base.OnInitialize(engine);    
-
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicTextureArray1D.mfx");
-            cr.Load<TextureData>("1d_1.png");
-            cr.Load<TextureData>("1d_2.png");
-            cr.Load<TextureData>("1d_3.png");
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
+            _hMaterial = loader.Load<IMaterial>("assets/BasicTextureArray1D.mfx");
+            _hTexture1 = loader.Load<TextureData>("assets/1d_1.png");
+            _hTexture2 = loader.Load<TextureData>("assets/1d_2.png");
+            _hTexture3 = loader.Load<TextureData>("assets/1d_3.png");
+            loader.OnCompleted += Loader_OnCompleted;
         }
 
-        protected override IMesh GetTestCubeMesh()
+        private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            IMesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
-            cube.SetVertices(SampleVertexData.TextureArrayCubeVertices);
-            return cube;
-        }
-
-        private void Cr_OnCompleted(ContentRequest cr)
-        {
-            IMaterial mat = cr.Get<IMaterial>(0);
-
-            if (mat == null)
+            if (_hMaterial.HasAsset())
             {
                 Exit();
                 return;
             }
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
-            TextureData texData = cr.Get<TextureData>(1);
+            IMaterial mat = _hMaterial.Get();
+            TextureData texData = _hTexture1;
+
             ITexture texture = Engine.Renderer.Resources.CreateTexture1D(new Texture1DProperties()
             {
                 Width = texData.Width,
@@ -50,14 +44,21 @@ namespace Molten.Samples
             });
             texture.SetData(texData, 0, 0, texData.MipMapLevels, 1, 0, 0);
 
-            texData = cr.Get<TextureData>(2);
+            texData = _hTexture2;
             texture.SetData(texData, 0, 0, texData.MipMapLevels, 1, 0, 1);
 
-            texData = cr.Get<TextureData>(3);
+            texData = _hTexture3;
             texture.SetData(texData, 0, 0, texData.MipMapLevels, 1, 0, 2);
 
             mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;
+        }
+
+        protected override IMesh GetTestCubeMesh()
+        {
+            IMesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
+            cube.SetVertices(SampleVertexData.TextureArrayCubeVertices);
+            return cube;
         }
     }
 }

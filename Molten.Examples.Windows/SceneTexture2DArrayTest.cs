@@ -4,21 +4,36 @@ namespace Molten.Samples
 {
     public class SceneTexture2DArrayTest : SampleGame
     {
+        ContentLoadHandle<IMaterial> _hMaterial;
+        ContentLoadHandle<ITexture2D> _hTexture;
+
         public override string Description => "A simple test of texture arrays via a material shared between two parented objects.";
 
         public SceneTexture2DArrayTest() : base("2D Texture Array") { }
 
-        protected override void OnInitialize(Engine engine)
+        protected override void OnLoadContent(ContentLoadBatch loader)
         {
-            base.OnInitialize(engine);
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicTextureArray2D.mfx");
-            cr.Load<ITexture2D>("128.dds", new TextureParameters()
+            _hMaterial = loader.Load<IMaterial>("assets/BasicTextureArray2D.mfx");
+            _hTexture = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
             {
                 ArraySize = 3,
             });
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
+
+            loader.OnCompleted += Loader_OnCompleted;
+        }
+
+        private void Loader_OnCompleted(ContentLoadBatch loader)
+        {
+            if (!_hMaterial.HasAsset())
+            {
+                Exit();
+                return;
+            }
+
+            IMaterial mat = _hMaterial.Get();
+            ITexture2D tex = _hTexture.Get();
+            mat.SetDefaultResource(tex, 0);
+            TestMesh.Material = mat;
         }
 
         protected override IMesh GetTestCubeMesh()
@@ -26,21 +41,6 @@ namespace Molten.Samples
             IMesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
             cube.SetVertices(SampleVertexData.TextureArrayCubeVertices);
             return cube;
-        }
-
-        private void Cr_OnCompleted(ContentRequest cr)
-        {
-            IMaterial mat = cr.Get<IMaterial>(0);
-
-            if (mat == null)
-            {
-                Exit();
-                return;
-            }
-
-            ITexture2D texture = cr.Get<ITexture2D>(1);
-            mat.SetDefaultResource(texture, 0);
-            TestMesh.Material = mat;
         }
     }
 }

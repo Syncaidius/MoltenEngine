@@ -4,19 +4,34 @@ namespace Molten.Samples
 {
     public class OneDTextureTest : SampleGame
     {
+        ContentLoadHandle<IMaterial> _hMaterial;
+        ContentLoadHandle<ITexture2D> _hTexture;
+
         public override string Description => "A simple test for 1D texture loading and usage.";
 
         public OneDTextureTest() : base("1D Texture Test") { }
 
-        protected override void OnInitialize(Engine engine)
+        protected override void OnLoadContent(ContentLoadBatch loader)
         {
-            base.OnInitialize(engine);    
+            _hMaterial = loader.Load<IMaterial>("assets/BasicTexture1D.mfx");
+            _hTexture = loader.Load<ITexture2D>("assets/1d_1.png");
+            loader.OnCompleted += Loader_OnCompleted;
+        }
 
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicTexture1D.mfx");
-            cr.Load<ITexture>("1d_1.png");
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
+        private void Loader_OnCompleted(ContentLoadBatch loader)
+        {
+            if (_hMaterial.HasAsset())
+            {
+                Exit();
+                return;
+            }
+
+            // Manually construct a 2D texture array from the 3 textures we requested earlier
+            IMaterial mat = _hMaterial.Get();
+            ITexture texture = _hTexture.Get();
+
+            mat.SetDefaultResource(texture, 0);
+            TestMesh.Material = mat;
         }
 
         protected override IMesh GetTestCubeMesh()
@@ -24,23 +39,6 @@ namespace Molten.Samples
             IMesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
             cube.SetVertices(SampleVertexData.TextureArrayCubeVertices);
             return cube;
-        }
-
-        private void Cr_OnCompleted(ContentRequest cr)
-        {
-            IMaterial mat = cr.Get<IMaterial>(0);
-
-            if (mat == null)
-            {
-                Exit();
-                return;
-            }
-
-            // Manually construct a 2D texture array from the 3 textures we requested earlier
-            ITexture texture = cr.Get<ITexture>(1);
-
-            mat.SetDefaultResource(texture, 0);
-            TestMesh.Material = mat;
         }
     }
 }
