@@ -73,7 +73,12 @@ namespace Molten
             if (Status != ContentHandleStatus.Completed)
                 throw new ContentNotLoadedException("Unable to retrieve asset that has not loaded yet.");
 
-            return (T)Asset;
+            return Asset != null ? (T)Asset : default(T);
+        }
+
+        public bool HasAsset()
+        {
+            return Asset != null;
         }
 
         /// <summary>
@@ -90,6 +95,11 @@ namespace Molten
                     UpdateWatcher();
                 }
             }
+        }
+
+        public static implicit operator T(ContentLoadHandle<T> handle)
+        {
+            return handle.Get();
         }
     }
 }

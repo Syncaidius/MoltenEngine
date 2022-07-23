@@ -67,12 +67,13 @@ namespace Molten.Samples
                 Engine.Input.Camera = _cam2D;
 
             _loader = Engine.Content.GetLoadBatch();
-            Engine.Content.Load<TextFont>("assets/BroshK.ttf", (font) =>
+            _loader.Load<TextFont>("assets/BroshK.ttf", (font, isReload) =>
             {
                 _sampleFont = font;
                 Engine.Renderer.Overlay.Font = _sampleFont;
             });
-            OnContentRequested(Engine.Content);
+            OnLoadContent(_loader);
+            _loader.Dispatch();
 
             SpawnPlayer();
             TestMesh = GetTestCubeMesh();
@@ -185,6 +186,8 @@ namespace Molten.Samples
             MainScene.BackgroundColor = color;
         }
 
+        protected abstract void OnLoadContent(ContentLoadBatch loader);
+
         private void UpdateGamepadUI()
         {
             if (Gamepad.IsConnected)
@@ -246,8 +249,6 @@ namespace Molten.Samples
             BuildUI(UI);
             _baseContentLoaded = true;
         }
-
-        protected virtual void OnContentRequested(ContentManager content) { }
 
         protected virtual void OnContentLoaded() { }
 

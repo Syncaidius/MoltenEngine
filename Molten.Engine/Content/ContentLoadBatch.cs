@@ -10,6 +10,13 @@ namespace Molten
 {
     public class ContentLoadBatch
     {
+        public delegate void DispatchCompleteHandler(ContentLoadBatch loader);
+
+        /// <summary>
+        /// Invoked once the current <see cref="Dispatch"/> call has been completed.
+        /// </summary>
+        public event DispatchCompleteHandler OnCompleted;
+
         ThreadedList<ContentHandle> _handles;
 
         volatile int _loadedCount;
@@ -25,6 +32,11 @@ namespace Molten
         /// </summary>
         public void Dispatch()
         {
+            if (Status == ContentLoadBatchStatus.Dispatched)
+                throw new InvalidOperationException("ContentLoadBatch has not yet completed the previous Dispatch()");
+
+            _loadedCount = 0;
+
             _handles.For(0, 1, (index, handle) =>
             {
                 if(handle.Status != ContentHandleStatus.Processing)
@@ -34,10 +46,21 @@ namespace Molten
 
         public ContentLoadHandle<T> Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, IContentParameters parameters = null, bool canHotReload = true)
         {
+            if (Status == ContentLoadBatchStatus.Dispatched)
+                throw new InvalidOperationException("Cannot load more content before Dispatch() is complete");
+
             ContentLoadHandle<T> handle = Manager.Load<T>(path, (asset, isReload) =>
             {
                 if (!isReload)
+                {
                     _loadedCount++;
+
+                    if (_loadedCount == _handles.Count)
+                    {
+                        Status = ContentLoadBatchStatus.Completed;
+                        OnCompleted?.Invoke(this);
+                    }
+                }
 
                 completionCallback?.Invoke(asset, isReload);
             }, parameters, canHotReload, false);
@@ -49,10 +72,21 @@ namespace Molten
 
         public ContentLoadJsonHandle<T> Deserialize<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, JsonSerializerSettings settings = null, bool canHotReload = true)
         {
+            if (Status == ContentLoadBatchStatus.Dispatched)
+                throw new InvalidOperationException("Cannot load more content before Dispatch() is complete");
+
             ContentLoadJsonHandle<T> handle = Manager.Deserialize<T>(path, (asset, isReload) =>
             {
                 if (!isReload)
+                {
                     _loadedCount++;
+
+                    if (_loadedCount == _handles.Count)
+                    {
+                        Status = ContentLoadBatchStatus.Completed;
+                        OnCompleted?.Invoke(this);
+                    }
+                }
 
                 completionCallback?.Invoke(asset, isReload);
             }, settings, canHotReload, false);
@@ -62,6 +96,9 @@ namespace Molten
             return handle;
         }
 
+        /// <summary>
+        /// Gets the <see cref="ContentManager"/> that the current <see cref="ContentLoadBatch"/> is bound to.
+        /// </summary>
         public ContentManager Manager { get; }
 
         /// <summary>
@@ -73,5 +110,10 @@ namespace Molten
         /// Gets the number of handles that have finished loading for the first time via the current <see cref="ContentLoadBatch"/>.
         /// </summary>
         public int LoadedHandleCount => _loadedCount;
+
+        /// <summary>
+        /// Gets the status of the current <see cref="ContentLoadBatch"/>.
+        /// </summary>
+        public ContentLoadBatchStatus Status { get; private set; }
     }
 }

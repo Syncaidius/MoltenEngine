@@ -62,7 +62,6 @@ namespace Molten.Samples
         {
             ContentRequest cr = Engine.Content.BeginRequest("assets/");
             cr.Load<TextFont>(loadString);
-            OnContentRequested(cr);
             cr.OnCompleted += FontLoad_OnCompleted;
             cr.Commit();
         }

@@ -5,19 +5,55 @@ namespace Molten.Samples
 {
     public class SaveTextureSample : SampleGame
     {
+        ContentLoadHandle<IMaterial> _hMaterial;
+        ContentLoadHandle<ITexture2D> _hTexture;
+        ContentLoadHandle<TextureData> _hTexData;
+
         public override string Description => "A demonstration of saving a texture to file.";
 
         public SaveTextureSample() : base("Save Texture") { }
 
-        protected override void OnInitialize(Engine engine)
+        protected override void OnLoadContent(ContentLoadBatch loader)
         {
-            base.OnInitialize(engine);    
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicTexture.mfx");
-            cr.Load<ITexture2D>("dds_dxt5.dds");
-            cr.Load<TextureData>("dds_dxt5.dds");
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
+            _hMaterial = loader.Load<IMaterial>("assets/BasicTexture.mfx");
+            _hTexture = loader.Load<ITexture2D>("assets/dds_dxt5.dds");
+            _hTexData = loader.Load<TextureData>("assets/dds_dxt5.dds");
+            loader.OnCompleted += Loader_OnCompleted;
+        }
+
+        private void Loader_OnCompleted(ContentLoadBatch loader)
+        {
+            if (!_hMaterial.HasAsset())
+            {
+                Exit();
+                return;
+            }
+
+            IMaterial mat = _hMaterial.Get();
+
+            // Manually construct a 2D texture array from the 3 textures we requested earlier
+            ITexture2D texture = _hTexture.Get();
+            mat.SetDefaultResource(texture, 0);
+            TestMesh.Material = mat;
+
+            Texture2DProperties p = texture.Get2DProperties();
+            p.Flags = TextureFlags.Staging;
+            ITexture2D staging = Engine.Renderer.Resources.CreateTexture2D(p);
+
+            TextureData loadedData = _hTexData;
+            loadedData.Decompress(Log);
+
+            TextureParameters texParams = new TextureParameters()
+            {
+                BlockCompressionFormat = DDSFormat.DXT5,
+            };
+
+            Engine.Content.SaveToFile("assets/saved_recompressed_texture_raw.dds", loadedData, parameters: texParams);
+
+            texture.GetData(staging, (data) =>
+            {
+                ContentSaveHandle saveHandle = Engine.Content.SaveToFile("assets/saved_texture.dds", data, parameters: texParams);
+            });
         }
 
         protected override IMesh GetTestCubeMesh()
@@ -27,57 +63,13 @@ namespace Molten.Samples
             return cube;
         }
 
-        private void Cr_OnCompleted(ContentRequest cr)
-        {
-            IMaterial mat = cr.Get<IMaterial>(0);
-
-            if (mat == null)
-            {
-                Exit();
-                return;
-            }
-
-            // Manually construct a 2D texture array from the 3 textures we requested earlier
-            ITexture2D texture = cr.Get<ITexture2D>("dds_dxt5.dds");
-            mat.SetDefaultResource(texture, 0);
-            TestMesh.Material = mat;
-
-            Texture2DProperties p = texture.Get2DProperties();
-            p.Flags = TextureFlags.Staging;
-            ITexture2D staging = Engine.Renderer.Resources.CreateTexture2D(p);
-
-            TextureData loadedData = cr.Get<TextureData>("dds_dxt5.dds");
-            loadedData.Decompress(Log);
-            cr = Engine.Content.BeginRequest("assets/");
-
-            TextureParameters texParams = new TextureParameters()
-            {
-                BlockCompressionFormat = DDSFormat.DXT5,
-            };
-
-            cr.Save("saved_recompressed_texture_raw.dds", loadedData, texParams);
-            cr.Commit();
-
-
-            texture.GetData(staging, (data) =>
-            {
-                cr = Engine.Content.BeginRequest("assets/");
-                cr.Save("saved_texture.dds", data, texParams);
-                cr.Commit();
-            });
-
-            //ITexture2D decompressedTexture = Engine.Renderer.Resources.CreateTexture2D(loadedData);
-            //mat.SetDefaultResource(decompressedTexture, 0);
-        }
-
         protected override void OnUpdate(Timing time)
         {
             // Save a screenhot of the window surface when space is pressed!
             if (Keyboard.IsTapped(KeyCode.Space))
             {
-                ContentRequest cr = Engine.Content.BeginRequest("assets/");
-                cr.Save<ITexture2D>("screenshot.png", Window);
-                cr.Commit();
+                ContentSaveHandle saveHandle = Engine.Content.SaveToFile("assets/screenshot.png", Window);
+                // TODO Add some loading/saving UI
             }
 
             base.OnUpdate(time);
