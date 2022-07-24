@@ -7,34 +7,32 @@ namespace Molten.Samples
     {
         const int SPRITE_RECT_INCREMENT = 100;
 
+        ContentLoadHandle<IMaterial> _hMaterial;
+        ContentLoadHandle<ITexture2D> _hTexMesh;
+        ContentLoadHandle<ITexture2D> _hTexPrimitive;
+
         public override string Description => "Demonstrates the cabilities of SpriteBatcher by drawing various primitives.";
 
         Rectangle[] _rects;
         RectStyle[] _rectStyles;
-        ITexture2D _texMesh;
-        ITexture2D _texPrimitives;
         float _rotAngle;
         int _numRects = 100;
 
         public SpriteBatchExample() : base("SpriteBatch Example") { }
 
-        protected override void OnInitialize(Engine engine)
+        protected override void OnLoadContent(ContentLoadBatch loader)
         {
-            base.OnInitialize(engine);
-
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicTexture.mfx");
-            cr.Load<ITexture2D>("dds_test.dds", new TextureParameters()
+            _hMaterial = loader.Load<IMaterial>("assets/BasicTexture.mfx");
+            _hTexMesh = loader.Load<ITexture2D>("assets/dds_test.dds", parameters: new TextureParameters()
             {
                 GenerateMipmaps = true,
-            }); 
-            cr.Load<ITexture2D>("128.dds", new TextureParameters()
+            });
+            _hTexPrimitive = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
             {
                 ArraySize = 3,
             });
 
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
+            loader.OnCompleted += Loader_OnCompleted;
         }
 
         private void RefreshRects()
@@ -87,21 +85,17 @@ namespace Molten.Samples
             }
         }
 
-        private void Cr_OnCompleted(ContentRequest cr)
+        private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (cr.RequestedFileCount == 0)
-                return;
-
-            IMaterial mat = cr.Get<IMaterial>(0);
-            if (mat == null)
+            if (_hMaterial.HasAsset())
             {
                 Exit();
                 return;
             }
 
-            _texMesh = cr.Get<ITexture2D>(1);
-            _texPrimitives = cr.Get<ITexture2D>("128.dds");
-            mat.SetDefaultResource(_texMesh, 0);
+            IMaterial mat = _hMaterial.Get();
+            ITexture2D texMesh = _hTexMesh.Get();
+            mat.SetDefaultResource(texMesh, 0);
             TestMesh.Material = mat;
 
             // Create points for zig-zagging lines.
@@ -274,6 +268,8 @@ namespace Molten.Samples
                 rectTextured.Y += (pSize * 3);
                 Vector2F rectOrigin = new Vector2F(0.5f);
 
+                ITexture2D texPrimitives = _hTexPrimitive.Get();
+
                 for (int i = 0; i < styles.Length; i++)
                 {
                     float angle = MathHelper.TwoPi * (0.15f * (i + 1));
@@ -282,9 +278,9 @@ namespace Molten.Samples
                     el.EndAngle = angle;
 
                     sb.DrawEllipse(ref cl, ref styles[i], _rotAngle);
-                    sb.DrawEllipse(ref el, ref styles[i], _rotAngle, _texPrimitives, null, texArrayID);
+                    sb.DrawEllipse(ref el, ref styles[i], _rotAngle, texPrimitives, null, texArrayID);
                     sb.DrawRect(rect, _rotAngle, rectOrigin, ref _rectStyles[i]);
-                    sb.Draw(rectTextured, _rotAngle, new Vector2F(0.5f), ref _rectStyles[i], _texPrimitives, null, texArrayID);
+                    sb.Draw(rectTextured, _rotAngle, new Vector2F(0.5f), ref _rectStyles[i], texPrimitives, null, texArrayID);
 
                     cl.Center.X += (pSize * 2) + 5;
                     el.Center.X = cl.Center.X;

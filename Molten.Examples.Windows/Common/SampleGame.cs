@@ -73,6 +73,7 @@ namespace Molten.Samples
                 Engine.Renderer.Overlay.Font = _sampleFont;
             });
             OnLoadContent(_loader);
+            _loader.OnCompleted += ContentBatch_OnCompleted;
             _loader.Dispatch();
 
             SpawnPlayer();
@@ -242,15 +243,12 @@ namespace Molten.Samples
 
         private void ContentBatch_OnCompleted(ContentLoadBatch content)
         {
-            OnContentLoaded();
             SampleSpriteRenderComponent com = _uiLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             com.RenderCallback = OnDrawSprites;
             com.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
             BuildUI(UI);
             _baseContentLoaded = true;
         }
-
-        protected virtual void OnContentLoaded() { }
 
         /// <summary>
         /// Called when the <see cref="SampleGame"/> should update and handle gamepad input. <see cref="SampleGame"/> provides default handling.

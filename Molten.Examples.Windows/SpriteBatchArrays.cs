@@ -6,42 +6,38 @@ namespace Molten.Samples
     {
         public override string Description => "An example of using a SpriteRenderComponent to draw sprites with a texture array.";
 
-        List<Sprite> _sprites;
+        List<Sprite> _sprites; 
+        ContentLoadHandle<IMaterial> _hMaterial;
+        ContentLoadHandle<ITexture2D> _hTexture;
+        ContentLoadHandle<ITexture2D> _hSpriteTexture;
 
         public SpriteBatchArraySample() : base("Sprite Batch Texture Array") { }
 
-        protected override void OnInitialize(Engine engine)
+        protected override void OnLoadContent(ContentLoadBatch loader)
         {
-            base.OnInitialize(engine);
-
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicTexture.mfx");
-            cr.Load<ITexture2D>("png_test.png");
-            cr.Load<ITexture2D>("128.dds", new TextureParameters()
+            _hMaterial = loader.Load<IMaterial>("assets/BasicTexture.mfx");
+            _hTexture = loader.Load<ITexture2D>("assets/png_test.png");
+            _hSpriteTexture = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
             {
                 ArraySize = 3,
             });
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
+            loader.OnCompleted += Loader_OnCompleted;
         }
 
-        private void Cr_OnCompleted(ContentRequest cr)
+        private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (cr.RequestedFileCount == 0)
-                return;
-
-            IMaterial mat = cr.Get<IMaterial>(0);
-            if (mat == null)
+            if (_hMaterial.HasAsset())
             {
                 Exit();
                 return;
             }
 
-            ITexture2D tex = cr.Get<ITexture2D>("png_test.png");
+            IMaterial mat = _hMaterial.Get();
+            ITexture2D tex = _hTexture.Get();
             mat.SetDefaultResource(tex, 0);
             TestMesh.Material = mat;
 
-            ITexture2D texSprites = cr.Get<ITexture2D>("128.dds");
+            ITexture2D texSprites = _hSpriteTexture.Get();
             SetupSprites(texSprites);
         }
 

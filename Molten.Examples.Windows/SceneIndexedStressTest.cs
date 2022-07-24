@@ -10,6 +10,8 @@ namespace Molten.Samples
 
         public SceneIndexedStressTest() : base("Scene Stress (Indexed)") { }
 
+        protected override void OnLoadContent(ContentLoadBatch loader) { }
+
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);

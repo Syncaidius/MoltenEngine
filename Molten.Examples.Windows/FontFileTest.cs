@@ -25,21 +25,25 @@ namespace Molten.Samples
         List<Color> _colors;
         Vector2F _charOffset = new Vector2F(300, 300);
 
+        ContentLoadHandle<IMaterial> _hMaterial;
+        ContentLoadHandle<ITexture2D> _hTexture;
+
         public FontFileTest() : base("Fonts") { }
+
+
+        protected override void OnLoadContent(ContentLoadBatch loader)
+        {
+            _hMaterial = loader.Load<IMaterial>("assets/BasicTexture.mfx");
+            _hTexture = loader.Load<ITexture2D>("assets/dds_test.dds", parameters: new TextureParameters()
+            {
+                GenerateMipmaps = true
+            });
+            loader.OnCompleted += Loader_OnCompleted;
+        }
 
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<ITexture2D>("dds_test.dds", new TextureParameters()
-            {
-                GenerateMipmaps = true
-            });
-
-            cr.Load<IMaterial>("Basictexture.mfx");
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
 
             CameraController.AcceptInput = false;
             Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
@@ -60,22 +64,17 @@ namespace Molten.Samples
 
         private void LoadFontFile(string loadString)
         {
-            ContentRequest cr = Engine.Content.BeginRequest("assets/");
-            cr.Load<TextFont>(loadString);
-            cr.OnCompleted += FontLoad_OnCompleted;
-            cr.Commit();
-        }
+            ContentLoadHandle<TextFont> handle = Engine.Content.Load<TextFont>($"assets/{loadString}", (font, isReload) =>
+            {
+                _font2Test = font;
+                if (_font2Test == null)
+                    return;
 
-        private unsafe void FontLoad_OnCompleted(ContentRequest cr)
-        {
-            _font2Test = cr.Get<TextFont>(0);
-            if (_font2Test == null)
-                return;
-
-            _fontFile = _font2Test.Source.Font;
-            InitializeFontDebug();
-            GenerateChar('j', CHAR_CURVE_RESOLUTION);
-            _font2Test.MeasureString("abcdefghijklmnopqrstuvwxyz1234567890", 16);
+                _fontFile = _font2Test.Source.Font;
+                InitializeFontDebug();
+                GenerateChar('j', CHAR_CURVE_RESOLUTION);
+                _font2Test.MeasureString("abcdefghijklmnopqrstuvwxyz1234567890", 16);
+            });
         }
 
         private void InitializeFontDebug()
@@ -183,20 +182,16 @@ namespace Molten.Samples
             _shape.Triangulate(_glyphTriPoints, CHAR_CURVE_RESOLUTION);
         }
 
-        private void Cr_OnCompleted(ContentRequest cr)
+        private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (cr.RequestedFileCount == 0)
-                return;
-
-            ITexture2D tex = cr.Get<ITexture2D>(0);
-            IMaterial mat = cr.Get<IMaterial>(1);
-
-            if (mat == null)
+            if (!_hMaterial.HasAsset())
             {
                 Exit();
                 return;
             }
 
+            IMaterial mat = _hMaterial.Get();
+            ITexture2D tex = _hTexture.Get();
             mat.SetDefaultResource(tex, 0);
             TestMesh.Material = mat;
         }

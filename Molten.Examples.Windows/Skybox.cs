@@ -4,20 +4,22 @@ namespace Molten.Samples
 {
     public class SkyboxSample : SampleGame
     {
+        ContentLoadHandle<IMaterial> _hMaterial;
+        ContentLoadHandle<ITexture2D> _hTexture;
+
         public override string Description => "A skybox demonstration.";
 
         public SkyboxSample() : base("Skybox") { }
 
-        protected override void OnInitialize(Engine engine)
+        protected override void OnLoadContent(ContentLoadBatch loader)
         {
-            base.OnInitialize(engine);    
+            _hMaterial = loader.Load<IMaterial>("assets/BasicTexture.mfx");
+            _hTexture = loader.Load<ITexture2D>("assets/dds_dxt5.dds");
 
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicTexture.mfx");
-            cr.Load<ITexture2D>("dds_dxt5.dds");
-            cr.Load<ITextureCube>("cubemap.dds");
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
+            loader.Load<ITextureCube>("assets/cubemap.dds", 
+                (tex, isReload) => MainScene.SkyboxTeture = tex);
+
+            loader.OnCompleted += Loader_OnCompleted;
         }
 
         protected override IMesh GetTestCubeMesh()
@@ -27,19 +29,16 @@ namespace Molten.Samples
             return cube;
         }
 
-        private void Cr_OnCompleted(ContentRequest cr)
+        private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            IMaterial mat = cr.Get<IMaterial>("BasicTexture.mfx");
-
-            if (mat == null)
+            if (_hMaterial.HasAsset())
             {
                 Exit();
                 return;
             }
 
-            // Manually construct a 2D texture array from the 3 textures we requested earlier
-            ITexture2D texture = cr.Get<ITexture2D>("dds_dxt5.dds");
-            MainScene.SkyboxTeture = cr.Get<ITextureCube>("cubemap.dds");
+            IMaterial mat = _hMaterial.Get();
+            ITexture2D texture = _hTexture.Get();
 
             mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;

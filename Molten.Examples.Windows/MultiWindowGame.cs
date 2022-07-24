@@ -15,8 +15,16 @@ namespace Molten.Samples
         List<SceneObject> _children;
         IMesh<VertexColor> _mesh;
 
+        ContentLoadHandle<IMaterial> _hMaterial;
+
         public MultiWindowGame() : base("Multi-Window")
         {
+        }
+
+        protected override void OnLoadContent(ContentLoadBatch loader)
+        {
+            _hMaterial = loader.Load<IMaterial>("assets/BasicColor.mfx");
+            loader.OnCompleted += Loader_OnCompleted;
         }
 
         protected override void OnInitialize(Engine engine)
@@ -28,11 +36,6 @@ namespace Molten.Samples
             _children = new List<SceneObject>();
             _extraWindows = new List<INativeSurface>();
             Random rng = new Random();
-
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicColor.mfx");
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
 
             _mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
             _mesh.SetVertices(SampleVertexData.ColoredCube);
@@ -107,20 +110,17 @@ namespace Molten.Samples
             _parents.Add(parent);
         }
 
-        private void Cr_OnCompleted(ContentRequest cr)
+        private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            IMaterial mat = cr.Get<IMaterial>(0);
-
-            if (mat == null)
+            if (!_hMaterial.HasAsset())
             {
                 Exit();
                 return;
             }
 
+            IMaterial mat = _hMaterial.Get();
             _mesh.Material = mat;
         }
-
-        protected override void OnContentLoaded(ContentRequest cr) { }
 
         private void Window_OnClose(INativeSurface surface)
         {
