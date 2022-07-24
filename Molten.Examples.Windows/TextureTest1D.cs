@@ -2,19 +2,19 @@
 
 namespace Molten.Samples
 {
-    public class OneDTextureTest : SampleGame
+    public class TextureTest1D : SampleGame
     {
         ContentLoadHandle<IMaterial> _hMaterial;
-        ContentLoadHandle<ITexture2D> _hTexture;
+        ContentLoadHandle<ITexture> _hTexture;
 
         public override string Description => "A simple test for 1D texture loading and usage.";
 
-        public OneDTextureTest() : base("1D Texture Test") { }
+        public TextureTest1D() : base("1D Texture Test") { }
 
         protected override void OnLoadContent(ContentLoadBatch loader)
         {
             _hMaterial = loader.Load<IMaterial>("assets/BasicTexture1D.mfx");
-            _hTexture = loader.Load<ITexture2D>("assets/1d_1.png");
+            _hTexture = loader.Load<ITexture>("assets/1d_1.png");
             loader.OnCompleted += Loader_OnCompleted;
         }
 
@@ -26,7 +26,6 @@ namespace Molten.Samples
                 return;
             }
 
-            // Manually construct a 2D texture array from the 3 textures we requested earlier
             IMaterial mat = _hMaterial.Get();
             ITexture texture = _hTexture.Get();
 

@@ -4,21 +4,23 @@ namespace Molten.Samples
 {
     public class SceneStressTest : SampleGame
     {
+        ContentLoadHandle<IMaterial> _hMaterial;
+
         public override string Description => "A simple scene test using colored cubes with";
 
         List<SceneObject> _objects;
 
         public SceneStressTest() : base("Scene Stress") { }
 
+        protected override void OnLoadContent(ContentLoadBatch loader)
+        {
+            _hMaterial = loader.Load<IMaterial>("assets/BasicColor.mfx");
+            loader.OnCompleted += Loader_OnCompleted;
+        }
+
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-
-            _objects = new List<SceneObject>();
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicColor.mfx");
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
 
             for (int i = 0; i < 10000; i++)
                 SpawnRandomTestCube(TestMesh, 70);
@@ -31,17 +33,15 @@ namespace Molten.Samples
             return cube;
         }
 
-        private void Cr_OnCompleted(ContentRequest cr)
+        private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            IMaterial mat = cr.Get<IMaterial>(0);
-
-            if (mat == null)
+            if (_hMaterial.HasAsset())
             {
                 Exit();
                 return;
             }
 
-            TestMesh.Material = mat;
+            TestMesh.Material = _hMaterial.Get();
         }
 
         private void SpawnRandomTestCube(IMesh mesh, int spawnRadius)

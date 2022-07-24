@@ -6,38 +6,34 @@ namespace Molten.Samples
 {
     public class UIExample : SampleGame
     {
+        ContentLoadHandle<IMaterial> _hMaterial;
+        ContentLoadHandle<ITexture2D> _hTexture;
+
         public override string Description => "Demonstrates Molten's UI system.";
         public UIExample() : base("UI Example") { }
 
-        protected override void OnInitialize(Engine engine)
+        protected override void OnLoadContent(ContentLoadBatch loader)
         {
-            base.OnInitialize(engine);
-
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            //cr.Deserialize<UITheme>("test_theme.json");
-            cr.Load<IMaterial>("BasicTexture.mfx");
-            cr.Load<ITexture2D>("dds_test.dds", new TextureParameters()
+            _hMaterial = loader.Load<IMaterial>("assets/BasicTexture.mfx");
+            _hTexture = loader.Load<ITexture2D>("assets/dds_test.dds", parameters: new TextureParameters()
             {
                 GenerateMipmaps = true,
             });
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
+
+            loader.OnCompleted += Loader_OnCompleted;
         }
 
-        private void Cr_OnCompleted(ContentRequest cr)
+        private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (cr.RequestedFileCount == 0)
-                return;
-
-            IMaterial mat = cr.Get<IMaterial>(0);
-            if (mat == null)
+            if (_hMaterial.HasAsset())
             {
                 Exit();
                 return;
             }
 
-            ITexture2D tex = cr.Get<ITexture2D>(1);
-            mat.SetDefaultResource(tex, 0);
+            IMaterial mat = _hMaterial.Get();
+            ITexture2D texture = _hTexture.Get();
+            mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;
 
             UIWindow window1 = new UIWindow()
