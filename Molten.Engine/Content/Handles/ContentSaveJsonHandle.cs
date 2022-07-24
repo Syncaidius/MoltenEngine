@@ -27,7 +27,7 @@ namespace Molten
             if (!Info.Directory.Exists)
                 Info.Directory.Create();
 
-            using (Stream stream = new FileStream(Path, FileMode.Create, FileAccess.Write))
+            using (Stream stream = new FileStream(RelativePath, FileMode.Create, FileAccess.Write))
             {
                 using (StreamWriter writer = new StreamWriter(stream))
                     writer.Write(json);

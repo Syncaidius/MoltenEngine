@@ -143,7 +143,7 @@ namespace Molten
             {
                 handle.Status = ContentHandleStatus.Unloaded;
 
-                if (_content.TryRemoveValue(handle.Path, out ContentHandle cHandle))
+                if (_content.TryRemoveValue(handle.RelativePath, out ContentHandle cHandle))
                 {
                     if (handle.Asset is IDisposable disposable)
                         disposable.Dispose();

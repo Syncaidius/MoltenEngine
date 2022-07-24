@@ -22,7 +22,7 @@ namespace Molten
 
         protected override bool OnProcess()
         {
-            using (Stream stream = new FileStream(Path, FileMode.Open, FileAccess.Read))
+            using (Stream stream = new FileStream(RelativePath, FileMode.Open, FileAccess.Read))
             {
                 string json;
                 using (StreamReader reader = new StreamReader(stream))

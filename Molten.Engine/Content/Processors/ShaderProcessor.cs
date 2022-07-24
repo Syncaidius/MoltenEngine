@@ -13,7 +13,7 @@ namespace Molten.Content
         {
             asset = null;
 
-            using (Stream stream = new FileStream(handle.Path, FileMode.Open, FileAccess.Read))
+            using (Stream stream = new FileStream(handle.RelativePath, FileMode.Open, FileAccess.Read))
             {
                 using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 2048, true))
                 {

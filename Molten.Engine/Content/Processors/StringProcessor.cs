@@ -10,7 +10,7 @@
         {
             asset = null;
 
-            using (Stream stream = new FileStream(handle.Path, FileMode.Open, FileAccess.Read))
+            using (Stream stream = new FileStream(handle.RelativePath, FileMode.Open, FileAccess.Read))
             {
                 if (parameters.IsBinary)
                 {
@@ -31,7 +31,7 @@
         {
             string str = (string)asset;
 
-            using (Stream stream = new FileStream(handle.Path, FileMode.Create, FileAccess.Write))
+            using (Stream stream = new FileStream(handle.RelativePath, FileMode.Create, FileAccess.Write))
             {
                 if (parameters.IsBinary)
                 {

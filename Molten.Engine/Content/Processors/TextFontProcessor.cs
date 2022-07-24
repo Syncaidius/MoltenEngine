@@ -10,7 +10,7 @@ namespace Molten.Content
 
         protected override bool OnRead(ContentHandle handle, SpriteFontParameters parameters, object existingAsset, out object asset)
         {
-            TextFontSource tfs = handle.Manager.Engine.Fonts.GetFont(handle.Manager.Log, handle.Path);
+            TextFontSource tfs = handle.Manager.Engine.Fonts.GetFont(handle.Manager.Log, handle.RelativePath);
             asset = null;
 
             if (tfs != null)

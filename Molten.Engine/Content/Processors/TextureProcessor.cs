@@ -16,8 +16,8 @@ namespace Molten.Content
             asset = null;
             string extension = handle.Info.Extension.ToLower();
             TextureData finalData = null;
-            TextureReader texReader = null;
-            string fn = handle.Path;
+            TextureReader texReader;
+            string fn = handle.RelativePath;
 
             if (parameters.ArraySize > 1)
             {
@@ -105,11 +105,12 @@ namespace Molten.Content
             else
             {
                 ITexture tex = existingAsset as ITexture;
+                asset = tex;
 
                 if (tex != null)
                     ReloadTexture(tex, finalData);
                 else
-                    CreateTexture(handle, finalData);
+                    asset = CreateTexture(handle, finalData);
             }
 
             return true;
@@ -171,7 +172,7 @@ namespace Molten.Content
 
         protected override bool OnWrite(ContentHandle handle, TextureParameters parameters, object asset)
         {
-            using (FileStream stream = new FileStream(handle.Path, FileMode.Create, FileAccess.Write))
+            using (FileStream stream = new FileStream(handle.RelativePath, FileMode.Create, FileAccess.Write))
             {
                 string extension = handle.Info.Extension.ToLower();
                 TextureWriter texWriter = null;
@@ -200,7 +201,7 @@ namespace Molten.Content
 
                 if (texWriter == null)
                 {
-                    handle.Manager.Log.Error($"Unable to write texture to file. Unsupported format: {extension}", handle.Path);
+                    handle.Manager.Log.Error($"Unable to write texture to file. Unsupported format: {extension}", handle.RelativePath);
                     return false;
                 }
 
@@ -209,7 +210,7 @@ namespace Molten.Content
                 if (handle.ContentType == typeof(TextureData))
                 {
                     TextureData dataToSave = asset as TextureData;
-                    texWriter.WriteData(stream, dataToSave, handle.Manager.Log, handle.Path);
+                    texWriter.WriteData(stream, dataToSave, handle.Manager.Log, handle.RelativePath);
                 }
                 else
                 {

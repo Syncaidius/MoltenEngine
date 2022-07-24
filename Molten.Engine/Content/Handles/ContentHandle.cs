@@ -16,8 +16,6 @@ namespace Molten
         object _asset;
         static FileInfo _exePath;
 
-        public event ObjectHandler<ContentHandle> OnUnloading;
-
         static ContentHandle()
         {
             string exePath = Assembly.GetEntryAssembly().Location;
@@ -37,6 +35,7 @@ namespace Molten
             Parameters = parameters;
             HandleType = handleType;
             RelativePath = System.IO.Path.GetRelativePath(_exePath.Directory.FullName, Info.Directory.FullName);
+            RelativePath = $"{RelativePath}\\{Info.Name}";
         }
 
         /// <summary>
@@ -55,7 +54,7 @@ namespace Molten
             {
                 if (OnProcess())
                 {
-                    Manager.Log.WriteLine($"[CONTENT] [{HandleType}] {Path}: {Asset.GetType().FullName}");
+                    Manager.Log.WriteLine($"[CONTENT] [{HandleType}] {RelativePath}: {Asset.GetType().FullName}");
                     OnComplete();
                     Status = ContentHandleStatus.Completed;
                     return true;
@@ -63,7 +62,7 @@ namespace Molten
             }
             catch (Exception ex)
             {
-                Manager.Log.Error($"[CONTENT] [{HandleType}] {Path}: {ex.Message}");
+                Manager.Log.Error($"[CONTENT] [{HandleType}] {RelativePath}: {ex.Message}");
                 Manager.Log.Error(ex, true);
             }
 
@@ -114,11 +113,6 @@ namespace Molten
         /// The handle's relative path to the current application executable.
         /// </summary>
         public string RelativePath { get; }
-
-        /// <summary>
-        /// Gets the path of the asset file that the current <see cref="ContentHan"/> represents, relative to the executing directory.
-        /// </summary>
-        public string Path => Info.FullName;
 
         /// <summary>
         /// Gets a reference to the asset <see cref="object"/> to be processed.
