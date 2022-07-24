@@ -21,7 +21,7 @@ namespace Molten
         static ContentHandle()
         {
             string exePath = Assembly.GetEntryAssembly().Location;
-            FileInfo info = new FileInfo(exePath);
+            _exePath = new FileInfo(exePath);
         }
 
         internal ContentHandle(ContentManager manager, string path, Type contentType, ContentHandleType handleType) :

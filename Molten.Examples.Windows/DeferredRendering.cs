@@ -10,6 +10,13 @@ namespace Molten.Samples
             public SceneObject Child;
         }
 
+        ContentLoadHandle<ITexture2D> _hTex;
+        ContentLoadHandle<ITexture2D> _hTexNormal;
+        ContentLoadHandle<ITexture2D> _hTexEmissive;
+        ContentLoadHandle<ITexture2D> _hTexMetal;
+        ContentLoadHandle<ITexture2D> _hTexMetalNormal;
+        ContentLoadHandle<ITexture2D> _hTexMetalEmissive;
+        ContentLoadHandle<ITextureCube> _hTexSkybox;
         public override string Description => "A test/sample for deferred rendering";
 
         List<ParentChildPair> _pairs;
@@ -17,6 +24,41 @@ namespace Molten.Samples
         IMesh<GBufferVertex> _floorMesh;
 
         public DeferredRenderingSample() : base("Deferred Rendering") { }
+
+        protected override void OnLoadContent(ContentLoadBatch loader)
+        {
+            _hTex = loader.Load<ITexture2D>("assets/dds_test.dds");
+            _hTexNormal = loader.Load<ITexture2D>("assets/dds_test_n.dds");
+            _hTexEmissive = loader.Load<ITexture2D>("assets/dds_test_e.dds");
+            _hTexMetal = loader.Load<ITexture2D>("assets/metal.dds");
+            _hTexMetalNormal = loader.Load<ITexture2D>("assets/metal_n.dds");
+            _hTexMetalEmissive = loader.Load<ITexture2D>("assets/metal_e.dds");
+            _hTexSkybox = loader.Load<ITextureCube>("assets/cubemap.dds");
+            loader.OnCompleted += Loader_OnCompleted;
+        }
+
+        private void Loader_OnCompleted(ContentLoadBatch loader)
+        {
+            ITexture2D diffuseMap = _hTex.Get();
+            _mesh.SetResource(diffuseMap, 0);
+
+            ITexture2D normalMap = _hTexNormal.Get();
+            _mesh.SetResource(normalMap, 1);
+
+            ITexture2D emssiveMap = _hTexEmissive.Get();
+            _mesh.SetResource(emssiveMap, 2);
+
+            diffuseMap = _hTexMetal.Get();
+            _floorMesh.SetResource(diffuseMap, 0);
+
+            normalMap = _hTexMetalNormal.Get();
+            _floorMesh.SetResource(normalMap, 1);
+
+            emssiveMap = _hTexMetalEmissive.Get();
+            _floorMesh.SetResource(emssiveMap, 2);
+
+            MainScene.SkyboxTeture = _hTexSkybox.Get();
+        }
 
         protected override void OnInitialize(Engine engine)
         {
@@ -34,17 +76,6 @@ namespace Molten.Samples
             SetupFloor(Vector3F.Zero, 30);
 
             SceneCamera.Flags = RenderCameraFlags.Deferred;
-            ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<ITexture2D>("dds_test.dds");
-            cr.Load<ITexture2D>("dds_test_n.dds");
-            cr.Load<ITexture2D>("dds_test_e.dds");
-            cr.Load<ITexture2D>("metal.dds");
-            cr.Load<ITexture2D>("metal_n.dds");
-            cr.Load<ITexture2D>("metal_e.dds");
-            cr.Load<ITexture2D>("metal_s.dds");
-            cr.Load<ITextureCube>("cubemap.dds");
-            cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
         }
 
         private void SpawnParentChildren(int count, Vector3F origin, float outerRadius)
@@ -116,32 +147,6 @@ namespace Molten.Samples
                 };
                 angle += angInc;
             }
-        }
-
-        private void Cr_OnCompleted(ContentRequest cr)
-        {
-            if (cr.RequestedFileCount == 0)
-                return;
-
-            ITexture2D diffuseMap = cr.Get<ITexture2D>(0);
-            _mesh.SetResource(diffuseMap, 0);
-
-            ITexture2D normalMap = cr.Get<ITexture2D>(1);
-            _mesh.SetResource(normalMap, 1);
-
-            ITexture2D emssiveMap = cr.Get<ITexture2D>(2);
-            _mesh.SetResource(emssiveMap, 2);
-            
-            diffuseMap = cr.Get<ITexture2D>(3);
-            _floorMesh.SetResource(diffuseMap, 0);
-
-            normalMap = cr.Get<ITexture2D>(4);
-            _floorMesh.SetResource(normalMap, 1);
-
-            emssiveMap = cr.Get<ITexture2D>(5);
-            _floorMesh.SetResource(emssiveMap, 2);
-
-            MainScene.SkyboxTeture = cr.Get<ITextureCube>("cubemap.dds");
         }
 
         protected override void OnUpdate(Timing time)

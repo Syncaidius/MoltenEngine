@@ -17,7 +17,7 @@ namespace Molten.Content
             string extension = handle.Info.Extension.ToLower();
             TextureData finalData = null;
             TextureReader texReader = null;
-            string fn = handle.RelativePath;
+            string fn = handle.Path;
 
             if (parameters.ArraySize > 1)
             {

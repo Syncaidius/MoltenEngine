@@ -31,7 +31,7 @@ namespace Molten.Samples
 
         private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (_hMaterial.HasAsset())
+            if (!_hMaterial.HasAsset())
             {
                 Exit();
                 return;

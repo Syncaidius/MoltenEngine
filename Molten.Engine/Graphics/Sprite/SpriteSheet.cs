@@ -38,7 +38,7 @@ namespace Molten.Graphics
         /// <param name="content"></param>
         public void LoadTexture(ContentManager content)
         {
-            _loadHandle = content.Load<ITexture2D>(TexturePath, t => _texture = t);
+            _loadHandle = content.Load<ITexture2D>(TexturePath, (t, isReload) => _texture = t);
         }
 
         private void SetTexture(ITexture2D texture)

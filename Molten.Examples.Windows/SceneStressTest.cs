@@ -22,6 +22,7 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
+            _objects = new List<SceneObject>();
             for (int i = 0; i < 10000; i++)
                 SpawnRandomTestCube(TestMesh, 70);
         }
@@ -35,7 +36,7 @@ namespace Molten.Samples
 
         private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (_hMaterial.HasAsset())
+            if (!_hMaterial.HasAsset())
             {
                 Exit();
                 return;

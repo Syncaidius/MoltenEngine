@@ -173,7 +173,7 @@ namespace Molten.UI
                     _fontName = value;
                     if (!string.IsNullOrWhiteSpace(_fontName))
                     {
-                        Engine.Content.Load<TextFontSource>(_fontName, (fontSource) =>
+                        Engine.Content.Load<TextFontSource>(_fontName, (fontSource, isReload) =>
                         {
                             // If we can, use the previous font size
                             float fontSize = _font != null ? _font.Size : 16;
