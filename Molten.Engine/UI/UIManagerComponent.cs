@@ -177,11 +177,6 @@ namespace Molten.UI
         /// </summary>
         public UIElement HoverElement { get; private set; }
 
-        private void ApplyTheme(UITheme theme)
-        {
-            _root.Theme = theme;
-        }
-
         private void UpdateRootBounds(IInputCamera camera, IRenderSurface2D surface)
         {
             _root.LocalBounds = new Rectangle(0, 0, (int)surface.Width, (int)surface.Height);

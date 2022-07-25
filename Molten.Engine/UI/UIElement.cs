@@ -293,15 +293,12 @@ namespace Molten.UI
         public UITheme Theme
         {
             get => _theme;
-            internal set
+            set
             {
-                if (_theme != value)
-                {
-                    _theme = value;
+                _theme = value;
 
-                    if (_theme != null)
-                        ApplyTheme();
-                }
+                if (_theme != null)
+                    ApplyTheme();
             }
         }
 

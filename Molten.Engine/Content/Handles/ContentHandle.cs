@@ -27,7 +27,7 @@ namespace Molten
             Processor = processor;
             Parameters = parameters;
             HandleType = handleType;
-            RelativePath = System.IO.Path.GetRelativePath(Manager.ExecutablePath.Directory.FullName, Info.Directory.FullName);
+            RelativePath = Path.GetRelativePath(Manager.ExecutablePath.Directory.FullName, Info.Directory.FullName);
             RelativePath = $"{RelativePath}\\{Info.Name}";
         }
 

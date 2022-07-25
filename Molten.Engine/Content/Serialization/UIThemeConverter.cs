@@ -49,11 +49,13 @@ namespace Molten
                                 continue;
                             }
 
+                            UIStyleValue styleValue = style.Properties[pMember];
+
                             switch (p.Value.Type)
                             {
                                 // We have multiple style values for this property. e.g. Default, Pressed, etc
                                 case JTokenType.Object: 
-                                    DeserializeUIValue(pMember, p, serializer);
+                                    DeserializeUIValue(styleValue, pMember, p, serializer);
                                     break;
 
                                 case JTokenType.Array:
@@ -62,7 +64,10 @@ namespace Molten
                                     break;
 
                                 default:
-                                    // TODO Assume we've been given a single value. Try to directly serialize it into the style member's 'Default' value.
+                                    if (pMember is PropertyInfo pInfo)
+                                        styleValue[UIElementState.Default] = p.Value.ToObject(pInfo.PropertyType, serializer);
+                                    else if (pMember is FieldInfo fInfo)
+                                        styleValue[UIElementState.Default] = p.Value.ToObject(fInfo.FieldType, serializer);
                                     break;
                             }
                         }
@@ -77,25 +82,20 @@ namespace Molten
             return theme;
         }
 
-        private void DeserializeUIValue(MemberInfo member, JProperty pVal, JsonSerializer serializer)
+        private void DeserializeUIValue(UIStyleValue value, MemberInfo member, JProperty pVal, JsonSerializer serializer)
         {
             JObject valObject = pVal.Value as JObject;
             IEnumerable<JProperty> valProperties = valObject.Properties();
-            var test = serializer.Converters;
 
-            if (member is PropertyInfo pInfo)
+            foreach (JProperty property in valProperties)
             {
-                foreach (JProperty property in valProperties)
+                if (Enum.TryParse(property.Name, true, out UIElementState state))
                 {
-                    if (Enum.TryParse(property.Name, true, out UIElementState state))
-                    {
-                        object obj = property.Value.ToObject(pInfo.PropertyType, serializer);
-                    }
+                    if (member is PropertyInfo pInfo)
+                        value[state] = property.Value.ToObject(pInfo.PropertyType, serializer);
+                    else if (member is FieldInfo fInfo)
+                        value[state] = property.Value.ToObject(fInfo.FieldType, serializer);
                 }
-            }
-            else if (member is FieldInfo fInfo)
-            {
-
             }
         }
 

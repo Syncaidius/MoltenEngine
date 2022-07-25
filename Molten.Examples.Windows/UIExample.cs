@@ -8,6 +8,9 @@ namespace Molten.Samples
     {
         ContentLoadHandle<IMaterial> _hMaterial;
         ContentLoadHandle<ITexture2D> _hTexture;
+        UIWindow _window1;
+        UIWindow _window2;
+        UILineGraph _lineGraph;
 
         public override string Description => "Demonstrates Molten's UI system.";
         public UIExample() : base("UI Example") { }
@@ -22,7 +25,8 @@ namespace Molten.Samples
 
             loader.Deserialize<UITheme>("assets/test_theme.json",(theme, isReload) =>
             {
-
+                if (_window2 != null)
+                    _window2.Theme = theme;
             });
 
             loader.OnCompleted += Loader_OnCompleted;
@@ -42,19 +46,19 @@ namespace Molten.Samples
             mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;
 
-            UIWindow window1 = new UIWindow()
+            _window1 = new UIWindow()
             {
                 LocalBounds = new Rectangle(100, 150, 600, 440),
                 Title = "This is a Window"
             };
 
-            UIWindow window2 = new UIWindow()
+            _window2 = new UIWindow()
             {
                 LocalBounds = new Rectangle(460, 250, 540, 550),
                 Title = "This is another Window"
             };
 
-            UILineGraph lineGraph = new UILineGraph()
+            _lineGraph = new UILineGraph()
             {
                 LocalBounds = new Rectangle(1050, 200, 700, 420)
             };
@@ -63,11 +67,11 @@ namespace Molten.Samples
             test.AddStyle("Molten.UI.UIWindow/Molten.UI.UIButton/Molten.UI.UILabel");
             test.ApplyStyle(lineGraph);*/
 
-            PlotGraphData(lineGraph);
+            PlotGraphData(_lineGraph);
 
-            UI.Children.Add(window1);
-            UI.Children.Add(window2);
-            UI.Children.Add(lineGraph);
+            UI.Children.Add(_window1);
+            UI.Children.Add(_window2);
+            UI.Children.Add(_lineGraph);
         }
 
         private void PlotGraphData(UILineGraph graph)

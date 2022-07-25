@@ -7,5 +7,18 @@
     "VerticalAlign": "Center",
     "HorizontalAlign": "Center",
     "Font": "Arial"
+  },
+  "Molten.UI.UIWindow/Molten.UI.UIButton": {
+    "FillColor": {
+      "Default": "255 255 255 255",
+      "Pressed": "255 255 0 255"
+    },
+    "BorderColor": {
+      "Default": "255 0 0 255",
+      "Pressed": "255 255 0 255"
+    },
+    "VerticalAlign": "Center",
+    "HorizontalAlign": "Center",
+    "Font": "Arial"
   }
 }
