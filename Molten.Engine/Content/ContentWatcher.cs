@@ -15,6 +15,7 @@ namespace Molten
 
         internal ContentWatcher(ContentManager manager, DirectoryInfo dInfo)
         {
+            _manager = manager;
             _directory = dInfo;
             _watcher = new FileSystemWatcher(dInfo.ToString());
             _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.CreationTime;
@@ -24,8 +25,13 @@ namespace Molten
 
         private void _watcher_Changed(object sender, FileSystemEventArgs e)
         {
+            string relativePath = Path.GetRelativePath(_manager.ExecutablePath.Directory.FullName, e.FullPath);
+
             Handles.For(0, 1, (index, handle) =>
             {
+                if (handle.RelativePath != relativePath)
+                    return false;
+
                 _manager.Workers.QueueTask(handle);
                 return false;
             });

@@ -43,6 +43,9 @@ namespace Molten
         /// <param name="workerThreads">The number of worker threads that will be used to fulfil content requests.</param>
         internal ContentManager(Logger log, Engine engine, int workerThreads = 1)
         {
+            string exePath = Assembly.GetEntryAssembly().Location;
+            ExecutablePath = new FileInfo(exePath);
+
             _defaultProcessors = new Dictionary<Type, IContentProcessor>();
             _watchers = new ConcurrentDictionary<string, ContentWatcher>();
 
@@ -174,6 +177,7 @@ namespace Molten
             if (!_content.TryGetValue(path, out ContentHandle handle))
             {
                 handle = new ContentLoadHandle<T>(this, path, proc, parameters, completionCallback, canHotReload);
+                _content.Add(path, handle);
 
                 if (dispatch)
                     handle.Dispatch();
@@ -187,7 +191,9 @@ namespace Molten
         {
             if (!_content.TryGetValue(path, out ContentHandle handle))
             {
-                handle = new ContentLoadJsonHandle<T>(this, path, completionCallback, settings, canHotReload);
+                settings = settings ?? _jsonSettings;
+                handle = new ContentLoadJsonHandle<T>(this, path, completionCallback, settings, canHotReload); 
+                _content.Add(path, handle);
 
                 if (dispatch)
                     handle.Dispatch();
@@ -216,7 +222,8 @@ namespace Molten
         }
 
         public ContentSaveJsonHandle SerializeToFile(string path, object asset, Action<FileInfo> completionCallback = null, JsonSerializerSettings settings = null, bool dispatch = true)
-        { 
+        {
+            settings = settings ?? _jsonSettings;
             ContentSaveJsonHandle handle = new ContentSaveJsonHandle(this, path, asset, settings, completionCallback);
             
             if(dispatch)
@@ -299,5 +306,10 @@ namespace Molten
         /// Gets the <see cref="WorkerGroup"/> used by the current <see cref="ContentManager"/> for loading and processing content.
         /// </summary>
         internal WorkerGroup Workers => _workers;
+
+        /// <summary>
+        /// Gets file information for the current executable.
+        /// </summary>
+        internal FileInfo ExecutablePath { get; }
     }
 }

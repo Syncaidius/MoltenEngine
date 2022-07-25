@@ -14,13 +14,6 @@ namespace Molten
     public abstract class ContentHandle : WorkerTask, IDisposable
     {
         object _asset;
-        static FileInfo _exePath;
-
-        static ContentHandle()
-        {
-            string exePath = Assembly.GetEntryAssembly().Location;
-            _exePath = new FileInfo(exePath);
-        }
 
         internal ContentHandle(ContentManager manager, string path, Type contentType, ContentHandleType handleType) :
             this(manager, path, contentType, null, null, handleType)
@@ -34,7 +27,7 @@ namespace Molten
             Processor = processor;
             Parameters = parameters;
             HandleType = handleType;
-            RelativePath = System.IO.Path.GetRelativePath(_exePath.Directory.FullName, Info.Directory.FullName);
+            RelativePath = System.IO.Path.GetRelativePath(Manager.ExecutablePath.Directory.FullName, Info.Directory.FullName);
             RelativePath = $"{RelativePath}\\{Info.Name}";
         }
 

@@ -20,6 +20,11 @@ namespace Molten.Samples
                 GenerateMipmaps = true,
             });
 
+            loader.Deserialize<UITheme>("assets/test_theme.json",(theme, isReload) =>
+            {
+
+            });
+
             loader.OnCompleted += Loader_OnCompleted;
         }
 
@@ -33,6 +38,7 @@ namespace Molten.Samples
 
             IMaterial mat = _hMaterial.Get();
             ITexture2D texture = _hTexture.Get();
+            
             mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;
 
