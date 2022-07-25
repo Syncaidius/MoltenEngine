@@ -55,8 +55,8 @@ namespace Molten
                 if (OnProcess())
                 {
                     Manager.Log.WriteLine($"[CONTENT] [{HandleType}] {RelativePath}: {Asset.GetType().FullName}");
-                    OnComplete();
                     Status = ContentHandleStatus.Completed;
+                    OnComplete();
                     return true;
                 }
             }
