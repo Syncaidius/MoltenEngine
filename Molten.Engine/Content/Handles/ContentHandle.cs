@@ -31,6 +31,11 @@ namespace Molten
             RelativePath = $"{RelativePath}\\{Info.Name}";
         }
 
+        public override string ToString()
+        {
+            return $"{GetType().Name}: {RelativePath} - {ContentType.Name}";
+        }
+
         /// <summary>
         /// Dispatches the current <see cref="ContentHandle"/> to it's parent <see cref="ContentManager"/> for processing.
         /// </summary>
@@ -100,7 +105,7 @@ namespace Molten
 
         public Type ContentType { get; }
 
-        public FileInfo Info { get; }
+        public FileInfo Info { get; internal set; }
 
         /// <summary>
         /// The handle's relative path to the current application executable.
@@ -115,6 +120,11 @@ namespace Molten
         internal IContentProcessor Processor { get; }
 
         internal IContentParameters Parameters { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the last-write timestamp of the asset. This is especially useful for tracking if/when changes happened on hot-reloaded assets.
+        /// </summary>
+        internal DateTime LastWriteTime { get; set; }
 
         public ContentHandleType HandleType { get;  }
     }

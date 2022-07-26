@@ -54,12 +54,25 @@ namespace Molten
 
         protected override bool OnProcess()
         {
-            if(Processor.Read(this, Asset, out Asset))
+            bool reload = Asset != null;
+
+            if (reload)
             {
-                return true;
+                Type assetType = Asset.GetType();
+                object[] att = assetType.GetCustomAttributes(typeof(ContentReloadAttribute), true);
+                if (att.Length > 0)
+                {
+                    // Can we reuse the existing asset, or reinstantiate it?
+                    if (att[0] is ContentReloadAttribute attReload && attReload.Reinstantiate)
+                    {
+                        // Reinstantiating, so dispose of existing asset if possible.
+                        if (Asset is IDisposable disposable)
+                            disposable.Dispose();
+                    }
+                }
             }
 
-            return false;
+            return Processor.Read(this, Asset, out Asset);
         }
 
 

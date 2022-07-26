@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 namespace Molten.UI
 {
+    [ContentReload(true)]
     public class UITheme : UIStyle
     {
         const char PATH_DELIMITER = '/';

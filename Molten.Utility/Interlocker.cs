@@ -15,7 +15,7 @@
         /// <summary>
         /// Takes the lock by internally using <see cref="Interlocked.Exchange(ref int, int)"/>. Skips lock checks if the current thread already holds the lock.
         /// </summary>
-        /// <param name="callback"></param>
+        /// <param name="callback">The callback to invoke once a lock is acquired.</param>
         public void Lock(Action callback)
         {
             // Ignore locking if the current thread already own's the lock.

@@ -18,7 +18,7 @@ namespace Molten
             _manager = manager;
             _directory = dInfo;
             _watcher = new FileSystemWatcher(dInfo.ToString());
-            _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.CreationTime;
+            _watcher.NotifyFilter = NotifyFilters.LastWrite;
             _watcher.EnableRaisingEvents = true;
             _watcher.Changed += _watcher_Changed;
         }
@@ -32,7 +32,13 @@ namespace Molten
                 if (handle.RelativePath != relativePath)
                     return false;
 
-                _manager.Workers.QueueTask(handle);
+                FileInfo fInfo = new FileInfo(e.FullPath);
+                if (handle.LastWriteTime != fInfo.LastWriteTime)
+                {
+                    handle.Info = fInfo;
+                    handle.LastWriteTime = fInfo.LastWriteTime;
+                    _manager.Workers.QueueTask(handle);
+                }
                 return false;
             });
         }
