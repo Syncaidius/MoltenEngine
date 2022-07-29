@@ -121,11 +121,6 @@ namespace Molten
 
         internal IContentParameters Parameters { get; private set; }
 
-        /// <summary>
-        /// Gets or sets the last-write timestamp of the asset. This is especially useful for tracking if/when changes happened on hot-reloaded assets.
-        /// </summary>
-        internal DateTime LastWriteTime { get; set; }
-
         public ContentHandleType HandleType { get;  }
     }
 }

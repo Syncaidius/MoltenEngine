@@ -14,11 +14,21 @@
       "Pressed": "255 255 0 255"
     },
     "BorderColor": {
-      "Default": "255 0 0 255",
+      "Default": "255 252 0 255",
       "Pressed": "255 255 0 255"
     },
     "VerticalAlign": "Center",
     "HorizontalAlign": "Center",
     "Font": "Arial"
+  },
+  "Molten.UI.UIWindow": {
+    "FillColor": {
+      "Default": "0 109 155 200",
+      "Pressed": "0 109 155 200"
+    },
+    "BorderColor": {
+      "Default": "52 189 235 255",
+      "Pressed": "255 189 235 255"
+    }
   }
 }

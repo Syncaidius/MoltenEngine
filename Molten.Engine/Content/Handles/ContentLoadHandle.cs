@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,48 +9,46 @@ namespace Molten
 {
     public delegate void ContentLoadCallbackHandler<T>(T asset, bool isReload);
 
-    public class ContentLoadHandle<T> : ContentHandle
+    public abstract class ContentLoadHandle : ContentHandle
     {
-        internal ContentLoadCallbackHandler<T> _completionCallback;
-
         bool _canHotReload;
-        bool _isLoaded;
         ContentWatcher _watcher;
 
         internal ContentLoadHandle(
-            ContentManager manager, 
+            ContentManager manager,
             string path,
-            IContentProcessor processor, 
+            Type contentType,
+            IContentProcessor processor,
             IContentParameters parameters,
-            ContentLoadCallbackHandler<T> completionCallback, 
-            bool canHotReload) : 
-            base(manager, path, typeof(T), processor, parameters, ContentHandleType.Load)
+            bool canHotReload) :
+            base(manager, path, contentType, processor, parameters, ContentHandleType.Load)
         {
-            _completionCallback = completionCallback;
             _canHotReload = canHotReload;
-            Asset = default(T);
         }
 
-        protected override void OnComplete()
+        /// <summary>
+        /// Check if the asset source file was altered by doing an integrity check.
+        /// </summary>
+        /// <param name="hashAlgorithm">A <see cref="HashAlgorithm"/> to generate and compare a checksum hash.</param>
+        /// <param name="updateChecksum">If true, the current <see cref="Checksum"/> will be updated.</param>
+        /// <returns>True if the file has not been altered since it's last (re)load</returns>
+        public bool IntegrityCheck(HashAlgorithm hashAlgorithm, bool updateChecksum)
         {
-            _completionCallback.Invoke((T)Asset, _isLoaded);
-            _isLoaded = true;
-            UpdateWatcher();
-        }
+            // Perform a checksum comparison
+            byte[] hashBytes = null;
+            using (FileStream stream = Info.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+                hashBytes = hashAlgorithm.ComputeHash(stream);
 
-        private void UpdateWatcher()
-        {
-            // Delete the watcher if we have one to prevent reloads.
-            if (!_canHotReload)
+            string checksum = BitConverter.ToString(hashBytes);
+            if (checksum != Checksum)
             {
-                if (_watcher != null)
-                    Manager.StopWatching(_watcher, this);
+                if(updateChecksum)
+                    Checksum = checksum;
+
+                return false;
             }
-            else
-            {
-                if (_watcher == null)
-                    _watcher = Manager.StartWatching(this);
-            }
+
+            return true;
         }
 
         protected override bool OnProcess()
@@ -75,24 +74,36 @@ namespace Molten
             return Processor.Read(this, Asset, out Asset);
         }
 
-
-        /// <summary>
-        /// Gets the asset held by the current <see cref="ContentLoadHandle{T}"/>.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="Exception">If the asset has not been loaded yet.</exception>
-        public T Get()
+        private void UpdateWatcher()
         {
-            if (Status != ContentHandleStatus.Completed)
-                throw new ContentNotLoadedException("Unable to retrieve asset that has not loaded yet.");
+            // Delete the watcher if we have one to prevent reloads.
+            if (!_canHotReload)
+            {
+                if (_watcher != null)
+                    Manager.StopWatching(_watcher, this);
+            }
+            else
+            {
+                if (_watcher == null)
+                    _watcher = Manager.StartWatching(this);
+            }
+        }
 
-            return Asset != null ? (T)Asset : default(T);
+        protected override void OnComplete()
+        {
+            IsLoaded = true;
+            UpdateWatcher();
         }
 
         public bool HasAsset()
         {
             return Asset != null;
         }
+
+        /// <summary>
+        /// Gets whether or not the current <see cref="ContentLoadHandle"/> has completed it's first-time load.
+        /// </summary>
+        public bool IsLoaded { get; protected set; }
 
         /// <summary>
         /// Gets or sets whether the asset is allowed to hot-reload when changes occur to it's file.
@@ -108,6 +119,53 @@ namespace Molten
                     UpdateWatcher();
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the last-write timestamp of the asset. This is especially useful for tracking if/when changes happened on hot-reloaded assets.
+        /// </summary>
+        internal DateTime LastWriteTime { get; set; }
+
+        /// <summary>
+        /// Gets the checksum string generated by the latest <see cref="IntegrityCheck(HashAlgorithm, bool)"/> call, where the checksum was allowed to update.
+        /// </summary>
+        public string Checksum { get; private set; }
+    }
+
+    public class ContentLoadHandle<T> : ContentLoadHandle
+    {
+        internal ContentLoadCallbackHandler<T> _completionCallback;
+
+        internal ContentLoadHandle(
+            ContentManager manager, 
+            string path,
+            IContentProcessor processor, 
+            IContentParameters parameters,
+            ContentLoadCallbackHandler<T> completionCallback, 
+            bool canHotReload) : 
+            base(manager, path, typeof(T), processor, parameters, canHotReload)
+        {
+            _completionCallback = completionCallback;
+            Asset = default(T);
+        }
+
+        protected override void OnComplete()
+        {
+            _completionCallback.Invoke((T)Asset, IsLoaded);
+            base.OnComplete();
+        }
+
+        /// <summary>
+        /// Gets the asset held by the current <see cref="ContentLoadHandle{T}"/>.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception">If the asset has not been loaded yet.</exception>
+        public T Get()
+        {
+            if (Status != ContentHandleStatus.Completed)
+                throw new ContentNotLoadedException("Unable to retrieve asset that has not loaded yet.");
+
+            return Asset != null ? (T)Asset : default(T);
         }
 
         public static implicit operator T(ContentLoadHandle<T> handle)

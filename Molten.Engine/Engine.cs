@@ -42,7 +42,7 @@ namespace Molten
             Threading = new ThreadManager(Log);
             _taskQueue = new ThreadedQueue<EngineTask>();
             _services = new List<EngineService>(Settings.StartupServices);
-            Content = new ContentManager(Log, this, Settings.ContentWorkerThreads);
+            Content = new ContentManager(Log, this, Settings.ContentWorkerThreads, Settings.AllowContentHotReload);
             Fonts = new FontManager(this);
             Scenes = new SceneManager();
 

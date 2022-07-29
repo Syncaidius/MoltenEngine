@@ -119,6 +119,11 @@ namespace Molten
         public int ContentWorkerThreads { get; set; } = 2;
 
         /// <summary>
+        /// Gets or sets whether or not hot-reloading of content is allowed. Default value is <see cref="true"/>.
+        /// </summary>
+        public bool AllowContentHotReload { get; set; } = true;
+
+        /// <summary>
         /// Gets a list of <see cref="JsonConverter"/> instances that will be to added every new instantiation of <see cref="ContentManager"/>.
         /// </summary>
         public List<JsonConverter> JsonConverters { get; private set; } = new List<JsonConverter>()

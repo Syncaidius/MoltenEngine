@@ -9,9 +9,12 @@ namespace Molten
     /// <summary>Manages the loading, unloading and reusing of content.</summary>
     public class ContentManager : EngineObject
     {
+        const int CONTENT_WATCH_INTERVAL = 250;
+        const int CONTENT_WATCH_FULL_SCAN_INTERVAL = 2000;
+
         Dictionary<Type, IContentProcessor> _defaultProcessors;
         Dictionary<Type, IContentProcessor> _customProcessors;
-        ThreadedDictionary<string, ContentHandle> _content;
+        ConcurrentDictionary<string, ContentHandle> _content;
         ConcurrentDictionary<string, ContentWatcher> _watchers;
 
         Type[] _defaultServices = new Type[0];
@@ -19,6 +22,8 @@ namespace Molten
         Logger _log;
         Engine _engine;
         JsonSerializerSettings _jsonSettings;
+        EngineThread _watcherThread;
+        bool _hotReloadEnabled;
 
         private void AddProcessorsFromAssembly(Assembly assembly)
         {
@@ -41,11 +46,12 @@ namespace Molten
         /// <param name="log">A logger to output content information.</param>
         /// <param name="engine">The engine instance to which the content manager will be bound.</param>
         /// <param name="workerThreads">The number of worker threads that will be used to fulfil content requests.</param>
-        internal ContentManager(Logger log, Engine engine, int workerThreads = 1)
+        internal ContentManager(Logger log, Engine engine, int workerThreads, bool hotReloadEnabled)
         {
             string exePath = Assembly.GetEntryAssembly().Location;
             ExecutablePath = new FileInfo(exePath);
 
+            _hotReloadEnabled = true;
             _defaultProcessors = new Dictionary<Type, IContentProcessor>();
             _watchers = new ConcurrentDictionary<string, ContentWatcher>();
 
@@ -56,7 +62,7 @@ namespace Molten
 
             // Store all the provided custom processors by type.
             _customProcessors = new Dictionary<Type, IContentProcessor>();
-            _content = new ThreadedDictionary<string, ContentHandle>();
+            _content = new ConcurrentDictionary<string, ContentHandle>();
             _workers = engine.Threading.CreateWorkerGroup("content workers", workerThreads, paused:true);
             _log = log;
 
@@ -74,9 +80,19 @@ namespace Molten
             };
 
             AddCustomJsonConverters(_jsonSettings, engine.Settings.JsonConverters);
+
+            _watcherThread = Engine.Threading.CreateThread("Content Watcher", _hotReloadEnabled, false, ScanContentHandles);
         }
 
-        internal ContentWatcher StartWatching(ContentHandle handle)
+        private void ScanContentHandles(Timing timing)
+        {
+            foreach (KeyValuePair<string, ContentWatcher> kv in _watchers)
+                kv.Value.CheckForChanges();
+
+            Thread.Sleep(CONTENT_WATCH_INTERVAL);
+        }
+
+        internal ContentWatcher StartWatching(ContentLoadHandle handle)
         {
             string dir = handle.Info.DirectoryName;
 
@@ -91,7 +107,7 @@ namespace Molten
             return watcher;
         }
 
-        internal bool StopWatching(ContentWatcher watcher, ContentHandle handle)
+        internal bool StopWatching(ContentWatcher watcher, ContentLoadHandle handle)
         {
             string dir = handle.Info.DirectoryName;
             bool removed = false;
@@ -101,7 +117,6 @@ namespace Molten
             // If watcher has no handles to watch, remove the watcher.
             if (watcher.Handles.Count == 0)
             {
-                watcher.IsEnabled = false;
                 if(_watchers.Remove(dir, out watcher))
                     watcher.Dispose();
             }
@@ -146,7 +161,7 @@ namespace Molten
             {
                 handle.Status = ContentHandleStatus.Unloaded;
 
-                if (_content.TryRemoveValue(handle.RelativePath, out ContentHandle cHandle))
+                if (_content.Remove(handle.RelativePath, out ContentHandle cHandle))
                 {
                     if (handle.Asset is IDisposable disposable)
                         disposable.Dispose();
@@ -177,7 +192,7 @@ namespace Molten
             if (!_content.TryGetValue(path, out ContentHandle handle))
             {
                 handle = new ContentLoadHandle<T>(this, path, proc, parameters, completionCallback, canHotReload);
-                _content.Add(path, handle);
+                _content.TryAdd(path, handle);
 
                 if (dispatch)
                     handle.Dispatch();
@@ -193,7 +208,7 @@ namespace Molten
             {
                 settings = settings ?? _jsonSettings;
                 handle = new ContentLoadJsonHandle<T>(this, path, completionCallback, settings, canHotReload); 
-                _content.Add(path, handle);
+                _content.TryAdd(path, handle);
 
                 if (dispatch)
                     handle.Dispatch();
@@ -290,6 +305,7 @@ namespace Molten
                 watcher.Dispose();
 
             _watchers.Clear();
+            _watcherThread.Dispose();
         }
 
         /// <summary>
@@ -311,5 +327,24 @@ namespace Molten
         /// Gets file information for the current executable.
         /// </summary>
         internal FileInfo ExecutablePath { get; }
+
+        /// <summary>
+        /// Gets or sets whether hot-reloading of content is allowed with the current <see cref="ContentManager"/>.
+        /// </summary>
+        public bool HotReloadEnabled
+        {
+            get => _hotReloadEnabled;
+            set
+            {
+                if(_hotReloadEnabled != value)
+                {
+                    _hotReloadEnabled = value;
+                    if (_hotReloadEnabled)
+                        _watcherThread.Start();
+                    else
+                        _watcherThread.Pause();
+                }
+            }
+        }
     }
 }
