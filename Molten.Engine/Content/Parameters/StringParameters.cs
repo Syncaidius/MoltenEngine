@@ -9,6 +9,8 @@ namespace Molten
 {
     public class StringParameters : IContentParameters
     {
-        public bool IsBinary = false;
+        public bool IsBinary { get; set; } = false;
+
+        public Encoding Encoding { get; set; } = Encoding.UTF8;
     }
 }
