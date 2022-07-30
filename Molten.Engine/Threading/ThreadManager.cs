@@ -1,12 +1,13 @@
-﻿using Molten.Collections;
+﻿using System.Collections.Concurrent;
+using Molten.Collections;
 
 namespace Molten.Threading
 {
     public class ThreadManager : IDisposable
     {
         Logger _log;
-        ThreadedDictionary<string, EngineThread> _threadsByName;
-        ThreadedDictionary<string, WorkerGroup> _groupsByName;
+        ConcurrentDictionary<string, EngineThread> _threadsByName;
+        ConcurrentDictionary<string, WorkerGroup> _groupsByName;
         ThreadedList<EngineThread> _threads;
         ThreadedList<WorkerGroup> _groups;
 
@@ -15,8 +16,8 @@ namespace Molten.Threading
             _log = log;
             _threads = new ThreadedList<EngineThread>();
             _groups = new ThreadedList<WorkerGroup>();
-            _threadsByName = new ThreadedDictionary<string, EngineThread>();
-            _groupsByName = new ThreadedDictionary<string, WorkerGroup>();
+            _threadsByName = new ConcurrentDictionary<string, EngineThread>();
+            _groupsByName = new ConcurrentDictionary<string, WorkerGroup>();
         }
 
         /// <summary>Spawns a new <see cref="EngineThread"/> to run the provided callback."</summary>
@@ -33,7 +34,7 @@ namespace Molten.Threading
             EngineThread thread = new EngineThread(this, name, startImmediately, fixedTimeStep, callback, apartmentState);
 
             _threads.Add(thread);
-            _threadsByName.Add(name, thread);
+            _threadsByName.TryAdd(name, thread);
             _log.WriteLine($"Spawned engine thread '{name}'");
             return thread;
         }
@@ -54,7 +55,7 @@ namespace Molten.Threading
 
             WorkerGroup group = new WorkerGroup(this, name, workerCount, paused);
             _groups.Add(group);
-            _groupsByName.Add(name, group);
+            _groupsByName.TryAdd(name, group);
             _log.WriteLine($"Spawned worker group '{group.Name}'");
             return group;
         }
@@ -78,7 +79,7 @@ namespace Molten.Threading
             _log.WriteLine($"Destroyed thread '{thread.Name}'");
             thread.IsDisposed = true;
             _threads.Remove(thread);
-            _threadsByName.Remove(thread.Name);
+            _threadsByName.Remove(thread.Name, out EngineThread removed);
         }
 
         public void DestroyGroup(WorkerGroup group)
@@ -89,7 +90,7 @@ namespace Molten.Threading
             group.Clear();
             group.IsDisposed = true;
             _groups.Remove(group);
-            _groupsByName.Remove(group.Name);
+            _groupsByName.Remove(group.Name, out WorkerGroup removed);
             _log.WriteLine($"Destroyed worker group '{group.Name}'");
         }
 

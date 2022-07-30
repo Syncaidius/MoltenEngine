@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using System.Collections.Concurrent;
+using Molten.Collections;
 
 namespace Molten
 {
@@ -8,8 +9,8 @@ namespace Molten
     public class TypedObjectCache<K, V> : EngineObject
         where V : EngineObject
     {
-        ThreadedDictionary<Type, V> Cache { get; }
-        ThreadedDictionary<ulong, V> CacheByID { get; }
+        ConcurrentDictionary<Type, V> Cache { get; }
+        ConcurrentDictionary<ulong, V> CacheByID { get; }
 
         /// <summary>
         /// Gets the <see cref="Type"/> of keys accepted. Valid keys are assignable to this type.
@@ -26,8 +27,8 @@ namespace Molten
         {
             KeyType = typeof(K);
             _createCallback = createCallback;
-            Cache = new ThreadedDictionary<Type, V>();
-            CacheByID = new ThreadedDictionary<ulong, V>();
+            Cache = new ConcurrentDictionary<Type, V>();
+            CacheByID = new ConcurrentDictionary<ulong, V>();
         }
 
         protected override void OnDispose()
@@ -66,8 +67,8 @@ namespace Molten
             if (!Cache.TryGetValue(getKeyType, out V value))
             {
                 value = _createCallback(getKeyType);
-                Cache.Add(getKeyType, value);
-                CacheByID.Add(value.EOID, value);
+                Cache.TryAdd(getKeyType, value);
+                CacheByID.TryAdd(value.EOID, value);
             }
 
             return value;

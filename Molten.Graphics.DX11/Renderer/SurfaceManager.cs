@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Molten.Graphics
 {
     internal class SurfaceManager : IDisposable
     {
-        ThreadedDictionary<string, SurfaceTracker> _surfacesByKey;
+        ConcurrentDictionary<string, SurfaceTracker> _surfacesByKey;
         ThreadedList<SurfaceTracker> _surfaces;
         SurfaceTracker[] _mainSurfaces;
 
@@ -23,7 +24,7 @@ namespace Molten.Graphics
             _aaLevels = ReflectionHelper.GetEnumValues<AntiAliasLevel>();
             MainSurfaceType[] surfaceTypes = ReflectionHelper.GetEnumValues<MainSurfaceType>();
 
-            _surfacesByKey = new ThreadedDictionary<string, SurfaceTracker>();
+            _surfacesByKey = new ConcurrentDictionary<string, SurfaceTracker>();
             _mainSurfaces = new SurfaceTracker[surfaceTypes.Length];
             _surfaces = new ThreadedList<SurfaceTracker>();
             _renderer = renderer;
@@ -72,7 +73,7 @@ namespace Molten.Graphics
             if (!_surfacesByKey.TryGetValue(key, out SurfaceTracker config))
             {
                 config = new SurfaceTracker(_renderer, _aaLevels, width, height, format.ToApi(), key, sizeMode);
-                _surfacesByKey.Add(key, config);
+                _surfacesByKey.TryAdd(key, config);
                 _surfaces.Add(config);
             }
 

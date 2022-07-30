@@ -1,17 +1,18 @@
 ﻿using Molten.Collections;
 using System.Collections;
+using System.Collections.Concurrent;
 
 namespace Molten
 {
     public abstract class SettingBank
     {
         ThreadedList<SettingValue> _settings;
-        ThreadedDictionary<string, SettingValue> _byKey;
+        ConcurrentDictionary<string, SettingValue> _byKey;
 
         internal SettingBank()
         {
             _settings = new ThreadedList<SettingValue>();
-            _byKey = new ThreadedDictionary<string, SettingValue>();
+            _byKey = new ConcurrentDictionary<string, SettingValue>();
         }
 
         public void Log(Logger log, string title)
@@ -46,7 +47,7 @@ namespace Molten
         protected bool RemoveSetting(string key)
         {
             SettingValue r = null;
-            return _byKey.TryRemoveValue(key, out r);
+            return _byKey.Remove(key, out r);
         }
 
         protected SettingValue<T> AddSetting<T>(string key, T defaultValue = default(T))

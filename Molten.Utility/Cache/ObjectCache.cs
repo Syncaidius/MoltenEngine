@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using System.Collections.Concurrent;
+using Molten.Collections;
 
 namespace Molten
 {
@@ -10,8 +11,8 @@ namespace Molten
     public class ObjectCache<K, V> 
         where V : EngineObject
     {
-        ThreadedDictionary<K, V> Cache { get; } 
-        ThreadedDictionary<ulong, V> CacheByID { get; }
+        ConcurrentDictionary<K, V> Cache { get; }
+        ConcurrentDictionary<ulong, V> CacheByID { get; }
 
         Func<V> _createCallback;
 
@@ -22,8 +23,8 @@ namespace Molten
         public ObjectCache(Func<V> createCallback)
         {
             _createCallback = createCallback;
-            Cache = new ThreadedDictionary<K, V>();
-            CacheByID = new ThreadedDictionary<ulong, V>();
+            Cache = new ConcurrentDictionary<K, V>();
+            CacheByID = new ConcurrentDictionary<ulong, V>();
         }
 
         /// <summary>
@@ -47,8 +48,8 @@ namespace Molten
             if (!Cache.TryGetValue(key, out V value))
             {
                 value = _createCallback();
-                Cache.Add(key, value);
-                CacheByID.Add(value.EOID, value);
+                Cache.TryAdd(key, value);
+                CacheByID.TryAdd(value.EOID, value);
             }
 
             return default(V);
