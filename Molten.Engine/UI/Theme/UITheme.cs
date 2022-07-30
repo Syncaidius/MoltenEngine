@@ -166,7 +166,7 @@ namespace Molten.UI
             while (e != null)
             {
                 Type eType = e.GetType();
-                if (!Parents.TryGetValue(eType, out UIStyle nextStyle))
+                if (!(style ?? this).Parents.TryGetValue(eType, out UIStyle nextStyle))
                     break;
 
                 //A more precise styling is available.
@@ -174,18 +174,14 @@ namespace Molten.UI
                 style = nextStyle;
             }
 
-            // No style found, not even a default one. Lets make a default.
-            if (style != null && style.Properties.Count > 0)
+            // No style?
+            if (style == null || style.Properties.Count == 0)
+                return;
+
+            if (style.Properties.First().Key.ReflectedType != elementType)
             {
-                if (style.Properties.First().Key.ReflectedType != elementType)
-                {
-                    if(Parents.TryGetValue(elementType, out style))
-                        style = AddStyle(elementType.FullName);    
-                }
-            }
-            else
-            {
-                style = AddStyle(elementType.FullName);
+                if(!Parents.TryGetValue(elementType, out style))
+                    style = AddStyle(elementType.FullName);    
             }
 
             // Apply the style
