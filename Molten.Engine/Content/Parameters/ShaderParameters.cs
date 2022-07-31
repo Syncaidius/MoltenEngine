@@ -7,7 +7,7 @@ using Molten.Graphics;
 
 namespace Molten
 {
-    public class ShaderParameters : IContentParameters
+    public class ShaderParameters : ContentParameters
     {
         public string MaterialName = "";
     }

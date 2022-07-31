@@ -19,7 +19,7 @@ namespace Molten
             string path,
             Type contentType,
             IContentProcessor processor,
-            IContentParameters parameters,
+            ContentParameters parameters,
             bool canHotReload) :
             base(manager, path, contentType, processor, parameters, ContentHandleType.Load)
         {
@@ -140,7 +140,7 @@ namespace Molten
             ContentManager manager, 
             string path,
             IContentProcessor processor, 
-            IContentParameters parameters,
+            ContentParameters parameters,
             ContentLoadCallbackHandler<T> completionCallback, 
             bool canHotReload) : 
             base(manager, path, typeof(T), processor, parameters, canHotReload)

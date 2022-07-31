@@ -44,7 +44,7 @@ namespace Molten
             });
         }
 
-        public ContentLoadHandle<T> Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, IContentParameters parameters = null, bool canHotReload = true)
+        public ContentLoadHandle<T> Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, ContentParameters parameters = null, bool canHotReload = true)
         {
             if (Status == ContentLoadBatchStatus.Dispatched)
                 throw new InvalidOperationException("Cannot load more content before Dispatch() is complete");

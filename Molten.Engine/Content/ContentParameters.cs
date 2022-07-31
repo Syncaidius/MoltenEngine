@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public interface IContentParameters
+    public abstract class ContentParameters
     {
     }
 }

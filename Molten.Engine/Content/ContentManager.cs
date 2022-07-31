@@ -178,7 +178,7 @@ namespace Molten
             return new ContentLoadBatch(this);
         }
 
-        public ContentLoadHandle<T> Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, IContentParameters parameters = null, bool canHotReload = true, bool dispatch = true)
+        public ContentLoadHandle<T> Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, ContentParameters parameters = null, bool canHotReload = true, bool dispatch = true)
         {
             Type contentType = typeof(T);
             IContentProcessor proc = GetProcessor(path, contentType);
@@ -217,7 +217,7 @@ namespace Molten
             return handle as ContentLoadJsonHandle<T>;
         }
 
-        public ContentSaveHandle SaveToFile(string path, object asset, Action<FileInfo> completionCallback = null, IContentParameters parameters = null, bool dispatch = true)
+        public ContentSaveHandle SaveToFile(string path, object asset, Action<FileInfo> completionCallback = null, ContentParameters parameters = null, bool dispatch = true)
         {
             Type contentType = asset.GetType();
             IContentProcessor proc = GetProcessor(path, contentType);

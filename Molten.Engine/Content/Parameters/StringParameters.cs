@@ -7,7 +7,7 @@ using Molten.Graphics;
 
 namespace Molten
 {
-    public class StringParameters : IContentParameters
+    public class StringParameters : ContentParameters
     {
         public bool IsBinary { get; set; } = false;
 

@@ -15,7 +15,7 @@ namespace Molten
             string path, 
             object asset,
             IContentProcessor processor, 
-            IContentParameters parameters, 
+            ContentParameters parameters, 
             Action<FileInfo> completionCallback) : 
             base(manager, path, asset.GetType(), processor, parameters, ContentHandleType.Save)
         {

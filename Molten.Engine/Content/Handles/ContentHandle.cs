@@ -19,7 +19,7 @@ namespace Molten
             this(manager, path, contentType, null, null, handleType)
         { }
 
-        internal ContentHandle(ContentManager manager, string path, Type contentType, IContentProcessor processor, IContentParameters parameters, ContentHandleType handleType)
+        internal ContentHandle(ContentManager manager, string path, Type contentType, IContentProcessor processor, ContentParameters parameters, ContentHandleType handleType)
         {
             Info = new FileInfo(path);
             Manager = manager;
@@ -86,7 +86,7 @@ namespace Molten
                     return;
             }
 
-            Parameters = Activator.CreateInstance(pExpectedType) as IContentParameters;
+            Parameters = Activator.CreateInstance(pExpectedType) as ContentParameters;
         }
 
         protected abstract void OnComplete();
@@ -119,7 +119,7 @@ namespace Molten
 
         internal IContentProcessor Processor { get; }
 
-        internal IContentParameters Parameters { get; private set; }
+        internal ContentParameters Parameters { get; private set; }
 
         public ContentHandleType HandleType { get;  }
     }

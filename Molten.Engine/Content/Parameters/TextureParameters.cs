@@ -7,7 +7,7 @@ using Molten.Graphics;
 
 namespace Molten
 {
-    public class TextureParameters : IContentParameters
+    public class TextureParameters : ContentParameters
     {
         public uint ArraySize = 1;
 

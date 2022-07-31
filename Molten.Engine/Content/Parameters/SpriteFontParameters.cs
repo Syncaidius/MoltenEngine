@@ -1,6 +1,6 @@
 ﻿namespace Molten
 {
-    public class SpriteFontParameters : IContentParameters
+    public class SpriteFontParameters : ContentParameters
     {
         public float FontSize { get; set; } = 16;
     }

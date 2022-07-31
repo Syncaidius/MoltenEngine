@@ -17,7 +17,7 @@
     /// Provides a base implementation for content processors, used by a <see cref="ContentManager"/>.
     /// </summary>
     public abstract class ContentProcessor<P> : IContentProcessor
-        where P : class, IContentParameters, new()
+        where P : ContentParameters, new()
     {
         Type IContentProcessor.GetParameterType()
         {
