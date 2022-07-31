@@ -6,8 +6,8 @@ namespace Molten.Samples
 {
     public class UIExample : SampleGame
     {
-        ContentLoadHandle<IMaterial> _hMaterial;
-        ContentLoadHandle<ITexture2D> _hTexture;
+        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hTexture;
         UIWindow _window1;
         UIWindow _window2;
         UILineGraph _lineGraph;
@@ -40,8 +40,8 @@ namespace Molten.Samples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get();
-            ITexture2D texture = _hTexture.Get();
+            IMaterial mat = _hMaterial.Get<IMaterial>();
+            ITexture2D texture = _hTexture.Get<ITexture2D>();
             
             mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;

@@ -12,8 +12,7 @@ namespace Molten.Graphics
     public class SpriteSheet
     {
         ITexture2D _texture;
-        ContentLoadHandle<ITexture2D> _loadHandle;
-
+        ContentLoadHandle _loadHandle;
         Dictionary<string, SpriteData> _sprites = new Dictionary<string, SpriteData>();
 
         public SpriteSheet()

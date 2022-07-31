@@ -7,9 +7,9 @@ namespace Molten.Samples
     {
         const int SPRITE_RECT_INCREMENT = 100;
 
-        ContentLoadHandle<IMaterial> _hMaterial;
-        ContentLoadHandle<ITexture2D> _hTexMesh;
-        ContentLoadHandle<ITexture2D> _hTexPrimitive;
+        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hTexMesh;
+        ContentLoadHandle _hTexPrimitive;
 
         public override string Description => "Demonstrates the cabilities of SpriteBatcher by drawing various primitives.";
 
@@ -93,8 +93,8 @@ namespace Molten.Samples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get();
-            ITexture2D texMesh = _hTexMesh.Get();
+            IMaterial mat = _hMaterial.Get<IMaterial>();
+            ITexture2D texMesh = _hTexMesh.Get<ITexture2D>();
             mat.SetDefaultResource(texMesh, 0);
             TestMesh.Material = mat;
 
@@ -268,7 +268,7 @@ namespace Molten.Samples
                 rectTextured.Y += (pSize * 3);
                 Vector2F rectOrigin = new Vector2F(0.5f);
 
-                ITexture2D texPrimitives = _hTexPrimitive.Get();
+                ITexture2D texPrimitives = _hTexPrimitive.Get<ITexture2D>();
 
                 for (int i = 0; i < styles.Length; i++)
                 {

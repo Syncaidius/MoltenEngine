@@ -4,8 +4,8 @@ namespace Molten.Samples
 {
     public class TextureTest1D : SampleGame
     {
-        ContentLoadHandle<IMaterial> _hMaterial;
-        ContentLoadHandle<ITexture> _hTexture;
+        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hTexture;
 
         public override string Description => "A simple test for 1D texture loading and usage.";
 
@@ -26,8 +26,8 @@ namespace Molten.Samples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get();
-            ITexture texture = _hTexture.Get();
+            IMaterial mat = _hMaterial.Get<IMaterial>();
+            ITexture texture = _hTexture.Get<ITexture2D>();
 
             mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;

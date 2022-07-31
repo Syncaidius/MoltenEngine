@@ -152,7 +152,7 @@ namespace Molten
         /// <typeparam name="T">The type of content to be unloaded.</typeparam>
         /// <param name="handle">The handle of the content to be unloaded.</param>
         /// <returns>True if the content was successfully unloaded, or false if it was already unloaded.</returns>
-        public bool Unload<T>(ContentLoadHandle<T> handle)
+        public bool Unload(ContentLoadHandle handle)
         {
             if(handle.Status != ContentHandleStatus.Unloaded)
             {
@@ -175,9 +175,16 @@ namespace Molten
             return new ContentLoadBatch(this);
         }
 
-        public ContentLoadHandle<T> Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, ContentParameters parameters = null, bool canHotReload = true, bool dispatch = true)
+        public ContentLoadHandle Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, ContentParameters parameters = null, bool canHotReload = true, bool dispatch = true)
         {
             Type contentType = typeof(T);
+            return Load(contentType, path, 
+                (asset, isReload) => completionCallback?.Invoke((T)asset, isReload), 
+                parameters, canHotReload, dispatch);
+        }
+
+        public ContentLoadHandle Load(Type contentType, string path, ContentLoadCallbackHandler<object> completionCallback = null, ContentParameters parameters = null, bool canHotReload = true, bool dispatch = true)
+        {
             IContentProcessor proc = GetProcessor(path, contentType);
 
             if (proc == null)
@@ -188,7 +195,7 @@ namespace Molten
 
             if (!_content.TryGetValue(path, out ContentHandle handle))
             {
-                handle = new ContentLoadHandle<T>(this, path, proc, parameters, completionCallback, canHotReload);
+                handle = new ContentLoadHandle(this, path, 1, contentType, proc, parameters, completionCallback, canHotReload);
                 _content.TryAdd(path, handle);
 
                 if (dispatch)
@@ -196,22 +203,30 @@ namespace Molten
 
             }
 
-            return handle as ContentLoadHandle<T>;
+            return handle as ContentLoadHandle;
         }
 
-        public ContentLoadJsonHandle<T> Deserialize<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, JsonSerializerSettings settings = null, bool canHotReload = true, bool dispatch = true)
+        public ContentLoadJsonHandle Deserialize<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, JsonSerializerSettings settings = null, bool canHotReload = true, bool dispatch = true)
+        {
+            Type contentType = typeof(T);
+            return Deserialize(contentType, path,
+                (asset, isReload) => completionCallback?.Invoke((T)asset, isReload), 
+                settings, canHotReload, dispatch);
+        }
+
+        public ContentLoadJsonHandle Deserialize(Type contentType, string path, ContentLoadCallbackHandler<object> completionCallback = null, JsonSerializerSettings settings = null, bool canHotReload = true, bool dispatch = true)
         {
             if (!_content.TryGetValue(path, out ContentHandle handle))
             {
                 settings = settings ?? _jsonSettings;
-                handle = new ContentLoadJsonHandle<T>(this, path, completionCallback, settings, canHotReload); 
+                handle = new ContentLoadJsonHandle(this, path, contentType, completionCallback, settings, canHotReload);
                 _content.TryAdd(path, handle);
 
                 if (dispatch)
                     handle.Dispatch();
             }
 
-            return handle as ContentLoadJsonHandle<T>;
+            return handle as ContentLoadJsonHandle;
         }
 
         public ContentSaveHandle SaveToFile(string path, object asset, Action<FileInfo> completionCallback = null, ContentParameters parameters = null, bool dispatch = true)

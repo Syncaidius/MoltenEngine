@@ -7,9 +7,9 @@ namespace Molten.Samples
         public override string Description => "An example of using a SpriteRenderComponent to draw sprites with a texture array.";
 
         List<Sprite> _sprites; 
-        ContentLoadHandle<IMaterial> _hMaterial;
-        ContentLoadHandle<ITexture2D> _hTexture;
-        ContentLoadHandle<ITexture2D> _hSpriteTexture;
+        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hTexture;
+        ContentLoadHandle _hSpriteTexture;
 
         public SpriteBatchArraySample() : base("Sprite Batch Texture Array") { }
 
@@ -32,12 +32,12 @@ namespace Molten.Samples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get();
-            ITexture2D tex = _hTexture.Get();
+            IMaterial mat = _hMaterial.Get<IMaterial>();
+            ITexture2D tex = _hTexture.Get<ITexture2D>();
             mat.SetDefaultResource(tex, 0);
             TestMesh.Material = mat;
 
-            ITexture2D texSprites = _hSpriteTexture.Get();
+            ITexture2D texSprites = _hSpriteTexture.Get<ITexture2D>();
             SetupSprites(texSprites);
         }
 

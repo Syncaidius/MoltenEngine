@@ -8,6 +8,6 @@ namespace Molten
 {
     public abstract class ContentParameters
     {
-        public int PartCount { get; set; } = 1;
+       
     }
 }

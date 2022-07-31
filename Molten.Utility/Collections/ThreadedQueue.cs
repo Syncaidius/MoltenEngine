@@ -44,15 +44,15 @@ namespace Molten.Collections
                 if (_next > _queueStart)
                 {
                     for (int i = _queueStart; i < _next; i++)
-                        _items[i] = default(T);
+                        _items[i] = default;
                 }
                 else
                 {
                     for (int i = _queueStart; i < _items.Length; i++)
-                        _items[i] = default(T);
+                        _items[i] = default;
 
                     for (int i = 0; i < _next; i++)
-                        _items[i] = default(T);
+                        _items[i] = default;
                 }
                 _next = 0;
                 _count = 0;
@@ -125,7 +125,7 @@ namespace Molten.Collections
         public bool TryDequeue(out T item)
         {
             bool result = false;
-            T temp = default(T);
+            T temp = default;
             _interlocker.Lock(() =>
             {
                 if (!_isEmpty)
@@ -135,7 +135,7 @@ namespace Molten.Collections
                 }
                 else
                 {
-                    temp = default(T);
+                    temp = default;
                 }
             });
             item = temp;

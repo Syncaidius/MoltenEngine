@@ -4,8 +4,8 @@ namespace Molten.Samples
 {
     public class SkyboxSample : SampleGame
     {
-        ContentLoadHandle<IMaterial> _hMaterial;
-        ContentLoadHandle<ITexture2D> _hTexture;
+        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hTexture;
 
         public override string Description => "A skybox demonstration.";
 
@@ -37,8 +37,8 @@ namespace Molten.Samples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get();
-            ITexture2D texture = _hTexture.Get();
+            IMaterial mat = _hMaterial.Get<IMaterial>();
+            ITexture2D texture = _hTexture.Get<ITexture2D>();
 
             mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;

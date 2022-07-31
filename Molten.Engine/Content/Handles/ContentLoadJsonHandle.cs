@@ -8,15 +8,16 @@ using Newtonsoft.Json;
 
 namespace Molten
 {
-    public class ContentLoadJsonHandle<T> : ContentLoadHandle<T>
+    public class ContentLoadJsonHandle : ContentLoadHandle
     {
         internal ContentLoadJsonHandle(
             ContentManager manager,
             string path,
-            ContentLoadCallbackHandler<T> completionCallback, 
+            Type contentType,
+            ContentLoadCallbackHandler<object> completionCallback, 
             JsonSerializerSettings jsonSettings,
             bool canHotReload) :
-            base(manager, path, null, null, completionCallback, canHotReload)
+            base(manager, path, 1, contentType, null, null, completionCallback, canHotReload)
         {
             JsonSettings = jsonSettings.Clone();
         }

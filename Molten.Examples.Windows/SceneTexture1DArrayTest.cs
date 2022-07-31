@@ -4,10 +4,10 @@ namespace Molten.Samples
 {
     public class SceneTexture1DArrayTest : SampleGame
     {
-        ContentLoadHandle<IMaterial> _hMaterial;
-        ContentLoadHandle<TextureData> _hTexture1;
-        ContentLoadHandle<TextureData> _hTexture2;
-        ContentLoadHandle<TextureData> _hTexture3;
+        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hTexture1;
+        ContentLoadHandle _hTexture2;
+        ContentLoadHandle _hTexture3;
 
         public override string Description => "A sample of 1D texture arrays via a material shared between two parented objects.";
 
@@ -31,8 +31,8 @@ namespace Molten.Samples
             }
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
-            IMaterial mat = _hMaterial.Get();
-            TextureData texData = _hTexture1;
+            IMaterial mat = _hMaterial.Get<IMaterial>();
+            TextureData texData = _hTexture1.Get<TextureData>();
 
             ITexture texture = Engine.Renderer.Resources.CreateTexture1D(new Texture1DProperties()
             {
@@ -44,10 +44,10 @@ namespace Molten.Samples
             });
             texture.SetData(texData, 0, 0, texData.MipMapLevels, 1, 0, 0);
 
-            texData = _hTexture2;
+            texData = _hTexture2.Get<TextureData>();
             texture.SetData(texData, 0, 0, texData.MipMapLevels, 1, 0, 1);
 
-            texData = _hTexture3;
+            texData = _hTexture3.Get<TextureData>();
             texture.SetData(texData, 0, 0, texData.MipMapLevels, 1, 0, 2);
 
             mat.SetDefaultResource(texture, 0);

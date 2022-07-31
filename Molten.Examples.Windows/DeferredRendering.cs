@@ -10,13 +10,13 @@ namespace Molten.Samples
             public SceneObject Child;
         }
 
-        ContentLoadHandle<ITexture2D> _hTex;
-        ContentLoadHandle<ITexture2D> _hTexNormal;
-        ContentLoadHandle<ITexture2D> _hTexEmissive;
-        ContentLoadHandle<ITexture2D> _hTexMetal;
-        ContentLoadHandle<ITexture2D> _hTexMetalNormal;
-        ContentLoadHandle<ITexture2D> _hTexMetalEmissive;
-        ContentLoadHandle<ITextureCube> _hTexSkybox;
+        ContentLoadHandle _hTex;
+        ContentLoadHandle _hTexNormal;
+        ContentLoadHandle _hTexEmissive;
+        ContentLoadHandle _hTexMetal;
+        ContentLoadHandle _hTexMetalNormal;
+        ContentLoadHandle _hTexMetalEmissive;
+        ContentLoadHandle _hTexSkybox;
         public override string Description => "A test/sample for deferred rendering";
 
         List<ParentChildPair> _pairs;
@@ -39,25 +39,25 @@ namespace Molten.Samples
 
         private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            ITexture2D diffuseMap = _hTex.Get();
+            ITexture2D diffuseMap = _hTex.Get<ITexture2D>();
             _mesh.SetResource(diffuseMap, 0);
 
-            ITexture2D normalMap = _hTexNormal.Get();
+            ITexture2D normalMap = _hTexNormal.Get<ITexture2D>();
             _mesh.SetResource(normalMap, 1);
 
-            ITexture2D emssiveMap = _hTexEmissive.Get();
+            ITexture2D emssiveMap = _hTexEmissive.Get<ITexture2D>();
             _mesh.SetResource(emssiveMap, 2);
 
-            diffuseMap = _hTexMetal.Get();
+            diffuseMap = _hTexMetal.Get<ITexture2D>();
             _floorMesh.SetResource(diffuseMap, 0);
 
-            normalMap = _hTexMetalNormal.Get();
+            normalMap = _hTexMetalNormal.Get<ITexture2D>();
             _floorMesh.SetResource(normalMap, 1);
 
-            emssiveMap = _hTexMetalEmissive.Get();
+            emssiveMap = _hTexMetalEmissive.Get<ITexture2D>();
             _floorMesh.SetResource(emssiveMap, 2);
 
-            MainScene.SkyboxTeture = _hTexSkybox.Get();
+            MainScene.SkyboxTeture = _hTexSkybox.Get<ITextureCube>();
         }
 
         protected override void OnInitialize(Engine engine)

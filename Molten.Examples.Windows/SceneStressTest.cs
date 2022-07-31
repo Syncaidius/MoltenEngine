@@ -4,7 +4,7 @@ namespace Molten.Samples
 {
     public class SceneStressTest : SampleGame
     {
-        ContentLoadHandle<IMaterial> _hMaterial;
+        ContentLoadHandle _hMaterial;
 
         public override string Description => "A simple scene test using colored cubes with";
 
@@ -42,7 +42,7 @@ namespace Molten.Samples
                 return;
             }
 
-            TestMesh.Material = _hMaterial.Get();
+            TestMesh.Material = _hMaterial.Get<IMaterial>();
         }
 
         private void SpawnRandomTestCube(IMesh mesh, int spawnRadius)

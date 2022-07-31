@@ -44,12 +44,12 @@ namespace Molten
             });
         }
 
-        public ContentLoadHandle<T> Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, ContentParameters parameters = null, bool canHotReload = true)
+        public ContentLoadHandle Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, ContentParameters parameters = null, bool canHotReload = true)
         {
             if (Status == ContentLoadBatchStatus.Dispatched)
                 throw new InvalidOperationException("Cannot load more content before Dispatch() is complete");
 
-            ContentLoadHandle<T> handle = Manager.Load<T>(path, (asset, isReload) =>
+            ContentLoadHandle handle = Manager.Load<T>(path, (asset, isReload) =>
             {
                 if (!isReload)
                 {
@@ -70,12 +70,12 @@ namespace Molten
             return handle;
         }
 
-        public ContentLoadJsonHandle<T> Deserialize<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, JsonSerializerSettings settings = null, bool canHotReload = true)
+        public ContentLoadJsonHandle Deserialize<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, JsonSerializerSettings settings = null, bool canHotReload = true)
         {
             if (Status == ContentLoadBatchStatus.Dispatched)
                 throw new InvalidOperationException("Cannot load more content before Dispatch() is complete");
 
-            ContentLoadJsonHandle<T> handle = Manager.Deserialize<T>(path, (asset, isReload) =>
+            ContentLoadJsonHandle handle = Manager.Deserialize<T>(path, (asset, isReload) =>
             {
                 if (!isReload)
                 {

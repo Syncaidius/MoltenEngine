@@ -5,9 +5,9 @@ namespace Molten.Samples
 {
     public class SaveTextureSample : SampleGame
     {
-        ContentLoadHandle<IMaterial> _hMaterial;
-        ContentLoadHandle<ITexture2D> _hTexture;
-        ContentLoadHandle<TextureData> _hTexData;
+        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hTexture;
+        ContentLoadHandle _hTexData;
 
         public override string Description => "A demonstration of saving a texture to file.";
 
@@ -29,10 +29,10 @@ namespace Molten.Samples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get();
+            IMaterial mat = _hMaterial.Get<IMaterial>();
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
-            ITexture2D texture = _hTexture.Get();
+            ITexture2D texture = _hTexture.Get<ITexture2D>();
             mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;
 
@@ -40,7 +40,7 @@ namespace Molten.Samples
             p.Flags = TextureFlags.Staging;
             ITexture2D staging = Engine.Renderer.Resources.CreateTexture2D(p);
 
-            TextureData loadedData = _hTexData;
+            TextureData loadedData = _hTexData.Get<TextureData>();
             loadedData.Decompress(Log);
 
             TextureParameters texParams = new TextureParameters()

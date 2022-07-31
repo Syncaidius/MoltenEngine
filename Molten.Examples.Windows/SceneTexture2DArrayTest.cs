@@ -4,8 +4,8 @@ namespace Molten.Samples
 {
     public class SceneTexture2DArrayTest : SampleGame
     {
-        ContentLoadHandle<IMaterial> _hMaterial;
-        ContentLoadHandle<ITexture2D> _hTexture;
+        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hTexture;
 
         public override string Description => "A simple test of texture arrays via a material shared between two parented objects.";
 
@@ -30,8 +30,8 @@ namespace Molten.Samples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get();
-            ITexture2D tex = _hTexture.Get();
+            IMaterial mat = _hMaterial.Get<IMaterial>();
+            ITexture2D tex = _hTexture.Get<ITexture2D>();
             mat.SetDefaultResource(tex, 0);
             TestMesh.Material = mat;
         }

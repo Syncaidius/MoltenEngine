@@ -86,6 +86,11 @@ namespace Molten
             Parameters = Activator.CreateInstance(pExpectedType) as ContentParameters;
         }
 
+        public T Get<T>()
+        {
+            return Asset != null ? (T)Asset : default(T);
+        }
+
         protected override void OnFree() { }
 
         protected abstract ContentHandleStatus OnComplete();

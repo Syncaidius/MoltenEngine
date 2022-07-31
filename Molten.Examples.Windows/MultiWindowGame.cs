@@ -15,7 +15,7 @@ namespace Molten.Samples
         List<SceneObject> _children;
         IMesh<VertexColor> _mesh;
 
-        ContentLoadHandle<IMaterial> _hMaterial;
+        ContentLoadHandle _hMaterial;
 
         public MultiWindowGame() : base("Multi-Window")
         {
@@ -118,7 +118,7 @@ namespace Molten.Samples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get();
+            IMaterial mat = _hMaterial.Get<IMaterial>();
             _mesh.Material = mat;
         }
 
