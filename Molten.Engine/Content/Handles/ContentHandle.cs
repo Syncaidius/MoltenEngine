@@ -53,8 +53,7 @@ namespace Molten
                 if (OnProcess())
                 {
                     Manager.Log.WriteLine($"[CONTENT] [{HandleType}] {RelativePath}: {Asset.GetType().FullName}");
-                    Status = ContentHandleStatus.Completed;
-                    OnComplete();
+                    Status = OnComplete();
                     return true;
                 }
             }
@@ -66,8 +65,6 @@ namespace Molten
 
             return false;
         }
-
-        protected override void OnFree() { }
 
         private void ValidateParameters()
         {
@@ -89,7 +86,9 @@ namespace Molten
             Parameters = Activator.CreateInstance(pExpectedType) as ContentParameters;
         }
 
-        protected abstract void OnComplete();
+        protected override void OnFree() { }
+
+        protected abstract ContentHandleStatus OnComplete();
 
         protected abstract bool OnProcess();
 

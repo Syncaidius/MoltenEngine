@@ -9,9 +9,6 @@ namespace Molten
     /// <summary>Manages the loading, unloading and reusing of content.</summary>
     public class ContentManager : EngineObject
     {
-        const int CONTENT_WATCH_INTERVAL = 250;
-        const int CONTENT_WATCH_FULL_SCAN_INTERVAL = 2000;
-
         Dictionary<Type, IContentProcessor> _defaultProcessors;
         Dictionary<Type, IContentProcessor> _customProcessors;
         ConcurrentDictionary<string, ContentHandle> _content;
@@ -89,7 +86,7 @@ namespace Molten
             foreach (KeyValuePair<string, ContentWatcher> kv in _watchers)
                 kv.Value.CheckForChanges();
 
-            Thread.Sleep(CONTENT_WATCH_INTERVAL);
+            Thread.Sleep(Engine.Settings.ContentHotReloadInterval);
         }
 
         internal ContentWatcher StartWatching(ContentLoadHandle handle)

@@ -89,10 +89,11 @@ namespace Molten
             }
         }
 
-        protected override void OnComplete()
+        protected override ContentHandleStatus OnComplete()
         {
             IsLoaded = true;
             UpdateWatcher();
+            return ContentHandleStatus.Completed;
         }
 
         public bool HasAsset()
@@ -149,10 +150,10 @@ namespace Molten
             Asset = default(T);
         }
 
-        protected override void OnComplete()
+        protected override ContentHandleStatus OnComplete()
         {
             _completionCallback.Invoke((T)Asset, IsLoaded);
-            base.OnComplete();
+            return base.OnComplete();
         }
 
         /// <summary>

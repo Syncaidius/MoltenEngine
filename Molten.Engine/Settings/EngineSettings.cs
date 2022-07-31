@@ -124,6 +124,11 @@ namespace Molten
         public bool AllowContentHotReload { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets the number of milliseconds between hot-reload checks.
+        /// </summary>
+        public int ContentHotReloadInterval { get; set; } = 500;
+
+        /// <summary>
         /// Gets a list of <see cref="JsonConverter"/> instances that will be to added every new instantiation of <see cref="ContentManager"/>.
         /// </summary>
         public List<JsonConverter> JsonConverters { get; private set; } = new List<JsonConverter>()

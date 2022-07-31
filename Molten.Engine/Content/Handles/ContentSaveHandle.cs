@@ -23,9 +23,10 @@ namespace Molten
             Asset = asset;
         }
 
-        protected override void OnComplete()
+        protected override ContentHandleStatus OnComplete()
         {
             _completionCallback?.Invoke(new FileInfo(Info.FullName));
+            return ContentHandleStatus.Completed;
         }
 
         protected override bool OnProcess()
