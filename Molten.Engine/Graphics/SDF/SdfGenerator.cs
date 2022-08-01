@@ -52,6 +52,9 @@ namespace Molten.Graphics.SDF
 
         public unsafe ITexture2D ConvertToTexture(RenderService renderer, TextureSliceRef<Color3> src)
         {
+            const int NUM_SRC_CHANNELS = 3;
+            const int NUM_DEST_CHANNELS = 4;
+
             uint rowPitch = (src.Width * (uint)sizeof(Color));
             Color[] finalData = new Color[src.Width * src.Height];
             ITexture2D tex = renderer.Resources.CreateTexture2D(new Texture2DProperties()
@@ -61,16 +64,21 @@ namespace Molten.Graphics.SDF
                 Format = GraphicsFormat.R8G8B8A8_UNorm
             });
 
-
-            for (uint i = 0; i < finalData.Length; i++)
+            fixed(Color* ptr = finalData)
             {
-                finalData[i] = new Color()
+                byte* pData = (byte*)ptr;
+                float* srcData = (float*)src.Data;
+
+                for (uint i = 0; i < finalData.Length; i++)
                 {
-                    R = (byte)(255 * src[i].R),
-                    G = (byte)(255 * src[i].G),
-                    B = (byte)(255 * src[i].B),
-                    A = 255,
-                };
+                    pData[0] = (byte)srcData[0];
+                    pData[1] = (byte)srcData[1];
+                    pData[2] = (byte)srcData[2];
+                    pData[3] = 255;
+
+                    pData += NUM_DEST_CHANNELS;
+                    srcData += NUM_SRC_CHANNELS;
+                }
             }
 
             tex.SetData(0, finalData, 0, (uint)finalData.Length, rowPitch);
@@ -161,14 +169,14 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        public unsafe void Simulate8Bit(TextureSliceRef<Color3> bitmap)
+        public unsafe void To8Bit(TextureSliceRef<Color3> bitmap)
         {
             const int CHANNELS_PER_PIXEL = 3;
-
             float* data = (float*)bitmap.Data;
             float* end = data + ((bitmap.Width * bitmap.Height) * CHANNELS_PER_PIXEL);
+
             for (float* p = data; p < end; ++p)
-                *p = 1f / 255f * MathHelper.Clamp(256f * *p, 0, 255f);
+                *p = MathHelper.Clamp(256f * *p, 0, 255f);
         }
     }
 }
