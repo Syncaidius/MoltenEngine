@@ -1,10 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using Molten.Font;
-using Molten.Graphics;
 
 namespace Molten.Graphics
 {
-    internal class FontManager
+    internal class FontCache
     {
         Engine _engine;
         object _locker;
@@ -12,7 +11,7 @@ namespace Molten.Graphics
         ConcurrentDictionary<string, FontFile> _fileByPath;
         ConcurrentDictionary<FontFile, TextFontSource> _cache;
 
-        internal FontManager(Engine engine)
+        internal FontCache(Engine engine)
         {
             _locker = new object();
             _engine = engine;
@@ -29,7 +28,7 @@ namespace Molten.Graphics
         /// <param name="initialPages">The number of initial pages inside the font upon creation, if it doesn't already exist.</param>
         /// <param name="charPadding">The spacing between characters.</param>
         /// <returns></returns>
-        internal TextFontSource GetFont(Logger log, string path, 
+        internal TextFontSource GetFont(Stream stream, Logger log, string path, 
             int texturePageSize = 512,
             int initialPages = 1,
             int charPadding = 2)
@@ -54,26 +53,8 @@ namespace Molten.Graphics
                 if (_fileByPath.TryGetValue(path, out FontFile fFile))
                     return _cache[fFile];
 
-                FileInfo fInfo = new FileInfo(path);
-
-                if (fInfo.Exists)
-                {
-                    using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
-                    {
-                        using (FontReader reader = new FontReader(stream, log, path))
-                            fFile = reader.ReadFont(true);
-                    }
-                }
-                else
-                {
-                    string sysFontName = fInfo.Name;
-
-                    if (!string.IsNullOrEmpty(fInfo.Extension))
-                        sysFontName = sysFontName.Replace(fInfo.Extension, "");
-
-                    using (FontReader reader = new FontReader(sysFontName, log))
-                        fFile = reader.ReadFont(true);
-                }
+                using (FontReader reader = new FontReader(stream, log, path))
+                    fFile = reader.ReadFont(true);
 
                 if (fFile.HasFlag(FontFlags.Invalid))
                 {

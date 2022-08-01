@@ -9,10 +9,18 @@ namespace Molten
 {
     public class TextureParameters : ContentParameters
     {
-        public uint ArraySize = 1;
-
         public bool GenerateMipmaps = false;
 
         public DDSFormat? BlockCompressionFormat = null;
+
+        public override object Clone()
+        {
+            return new TextureParameters()
+            {
+                GenerateMipmaps = GenerateMipmaps,
+                BlockCompressionFormat = BlockCompressionFormat,
+                PartCount = PartCount
+            };
+        }
     }
 }

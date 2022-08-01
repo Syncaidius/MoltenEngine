@@ -20,7 +20,7 @@ namespace Molten
             JsonSettings = jsonSettings.Clone();
         }
 
-        protected override bool OnProcess()
+        protected override ContentHandleStatus OnProcess()
         {
             string json = JsonConvert.SerializeObject(Asset, JsonSettings);
 
@@ -33,7 +33,7 @@ namespace Molten
                     writer.Write(json);
             }
 
-            return true;
+            return ContentHandleStatus.Completed;
         }
 
         /// <summary>Gets the <see cref="JsonSerializerSettings"/> used for saving the asset. 

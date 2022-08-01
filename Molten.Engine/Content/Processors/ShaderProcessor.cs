@@ -9,41 +9,48 @@ namespace Molten.Content
 
         public override Type[] RequiredServices { get; } = { typeof(RenderService) };
 
-        protected override bool OnRead(ContentHandle handle, ShaderParameters parameters, object existingAsset, out object asset)
+        public override Type PartType { get; } = typeof(IShader);
+
+        protected override bool OnReadPart(ContentLoadHandle handle, Stream stream, ShaderParameters parameters, object existingPart, out object partAsset)
         {
-            asset = null;
+            partAsset = null;
 
-            using (Stream stream = new FileStream(handle.RelativePath, FileMode.Open, FileAccess.Read))
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 2048, true))
             {
-                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 2048, true))
+                string source = reader.ReadToEnd();
+                ShaderCompileResult r = handle.Manager.Engine.Renderer.Resources.CompileShaders(ref source, handle.RelativePath);
+                foreach (ShaderClassType classType in r.ShaderGroups.Keys)
                 {
-                    string source = reader.ReadToEnd();
-                    ShaderCompileResult r = handle.Manager.Engine.Renderer.Resources.CompileShaders(ref source, handle.RelativePath);
-                    foreach (ShaderClassType classType in r.ShaderGroups.Keys)
+                    List<IShaderElement> list = r.ShaderGroups[classType];
+
+                    // Temp solution to limitation of new content manager.
+                    partAsset = list[0];
+                    break;
+                    /*foreach (IShader shader in list)
                     {
-                        List<IShaderElement> list = r.ShaderGroups[classType];
+                        if (shader is IMaterial mat)
+                            context.AddOutput(mat);
+                        else if (shader is IComputeTask ct)
+                            context.AddOutput(ct);
 
-                        // Temp solution to limitation of new content manager.
-                        asset = list[0];
-                        break;
-                        /*foreach (IShader shader in list)
-                        {
-                            if (shader is IMaterial mat)
-                                context.AddOutput(mat);
-                            else if (shader is IComputeTask ct)
-                                context.AddOutput(ct);
-
-                            context.AddOutput(shader);
-                        }*/
-                    }
+                        context.AddOutput(shader);
+                    }*/
                 }
             }
 
             return true;
         }
 
+        protected override bool OnBuildAsset(ContentLoadHandle handle, ContentLoadHandle[] parts, ShaderParameters parameters, object existingAsset, out object asset)
+        {
+            if (parts.Length > 1)
+                handle.LogWarning($"ShaderProcessor does not support multi-part assets. Only first part will be used");
 
-        protected override bool OnWrite(ContentHandle handle, ShaderParameters parameters, object asset)
+            asset = parts[0].Asset;
+            return true;
+        }
+
+        protected override bool OnWrite(ContentHandle handle, Stream stream, ShaderParameters parameters, object asset)
         {
             throw new NotImplementedException();
         }

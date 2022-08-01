@@ -32,5 +32,10 @@ namespace Molten
         /// The content was unloaded by a <see cref="ContentManager"/>.
         /// </summary>
         Unloaded = 4,
+
+        /// <summary>
+        /// The content handle failed to process.
+        /// </summary>
+        Failed = 5,
     }
 }

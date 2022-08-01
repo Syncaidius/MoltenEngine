@@ -19,7 +19,7 @@ namespace Molten.Samples
             _hTexture = loader.Load<ITexture2D>("assets/png_test.png");
             _hSpriteTexture = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
             {
-                ArraySize = 3,
+                PartCount = 3,
             });
             loader.OnCompleted += Loader_OnCompleted;
         }

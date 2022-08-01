@@ -43,7 +43,7 @@ namespace Molten
             _taskQueue = new ThreadedQueue<EngineTask>();
             _services = new List<EngineService>(Settings.StartupServices);
             Content = new ContentManager(Log, this, Settings.ContentWorkerThreads, Settings.AllowContentHotReload);
-            Fonts = new FontManager(this);
+            Fonts = new FontCache(this);
             Scenes = new SceneManager();
 
             Renderer = GetService<RenderService>();
@@ -248,9 +248,9 @@ namespace Molten
         internal SceneManager Scenes { get; }
 
         /// <summary>
-        /// Gets the internal <see cref="FontManager"/> bound to the current <see cref="Engine"/> instance.
+        /// Gets the internal <see cref="FontCache"/> bound to the current <see cref="Engine"/> instance.
         /// </summary>
-        internal FontManager Fonts { get; }
+        internal FontCache Fonts { get; }
 
         /// <summary>
         /// Gets whether or not the current <see cref="Engine"/> instance has been disposed.

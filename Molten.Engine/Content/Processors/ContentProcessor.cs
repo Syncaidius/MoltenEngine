@@ -2,11 +2,15 @@
 {
     public interface IContentProcessor
     {
-        Type GetParameterType();
+        Type ParameterType { get; }
 
-        bool Read(ContentHandle handle, object existingAsset, out object asset);
+        Type PartType { get; }
 
-        bool Write(ContentHandle handle, object asset);
+        bool ReadPart(ContentLoadHandle handle, Stream stream);
+
+        bool BuildAsset(ContentLoadHandle assetHandle);
+
+        bool Write(ContentSaveHandle handle, Stream stream);
 
         Type[] AcceptedTypes { get; }
 
@@ -19,21 +23,26 @@
     public abstract class ContentProcessor<P> : IContentProcessor
         where P : ContentParameters, new()
     {
-        Type IContentProcessor.GetParameterType()
-        {
-            return typeof(P);
-        }
+        public Type ParameterType => typeof(P);
 
-        bool IContentProcessor.Read(ContentHandle handle, object existingAsset, out object asset)
+        public abstract Type PartType { get; }
+
+        bool IContentProcessor.ReadPart(ContentLoadHandle handle, Stream stream)
         {
             P parameters = (P)handle.Parameters;
-            return OnRead(handle, parameters, existingAsset, out asset);
+            return OnReadPart(handle, stream, parameters, handle.Asset, out handle.Asset);
         }
 
-        bool IContentProcessor.Write(ContentHandle handle, object asset)
+        bool IContentProcessor.BuildAsset(ContentLoadHandle handle)
         {
             P parameters = (P)handle.Parameters;
-            return OnWrite(handle, parameters, asset);
+            return OnBuildAsset(handle, handle.PartInfo.Handles, parameters, handle.Asset, out handle.Asset);
+        }
+
+        bool IContentProcessor.Write(ContentSaveHandle handle, Stream stream)
+        {
+            P parameters = (P)handle.Parameters;
+            return OnWrite(handle, stream, parameters, handle.Asset);
         }
 
         /// <summary>
@@ -41,10 +50,11 @@
         /// </summary>
         /// <param name="handle"></param>
         /// <param name="parameters"></param>
-        /// <param name="existingAsset"></param>
-        /// <param name="asset"></param>
+        /// <param name="partAsset"></param>
         /// <returns></returns>
-        protected abstract bool OnRead(ContentHandle handle, P parameters, object existingAsset, out object asset);
+        protected abstract bool OnReadPart(ContentLoadHandle handle, Stream stream, P parameters, object existingPart, out object partAsset);
+
+        protected abstract bool OnBuildAsset(ContentLoadHandle handle, ContentLoadHandle[] parts, P parameters, object existingAsset, out object asset);
 
         /// <summary>
         /// Invoked when content matching <see cref="AcceptedTypes"/> needs to be written.
@@ -53,7 +63,7 @@
         /// <param name="parameters"></param>
         /// <param name="asset"></param>
         /// <returns></returns>
-        protected abstract bool OnWrite(ContentHandle handle, P parameters, object asset);
+        protected abstract bool OnWrite(ContentHandle handle, Stream stream, P parameters, object asset);
 
         /// <summary>Gets a list of accepted </summary>
         public abstract Type[] AcceptedTypes { get; }

@@ -1,4 +1,6 @@
 ﻿using Molten.Collections;
+using Molten.Font;
+using Molten.Graphics;
 using Molten.Threading;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
@@ -175,6 +177,31 @@ namespace Molten
             return new ContentLoadBatch(this);
         }
 
+        /// <summary>
+        /// A helper method for loading a <see cref="TextFont"/> instance the provided path or system font name.
+        /// </summary>
+        /// <param name="path">The font file path, or system font name. e.g. "Arial" or "Times New Roman"</param>
+        /// <param name="completionCallback"></param>
+        /// <param name="parameters"></param>
+        /// <param name="canHotReload"></param>
+        /// <param name="dispatch"></param>
+        /// <returns></returns>
+        public ContentLoadHandle LoadFont(string path, ContentLoadCallbackHandler<TextFont> completionCallback = null, TextFontParameters parameters = null, bool canHotReload = true, bool dispatch = true)
+        {
+            if (!File.Exists(path))
+            {
+                FileInfo fInfo = new FileInfo(path);
+                string sysFontName = fInfo.Name;
+
+                if (!string.IsNullOrEmpty(fInfo.Extension))
+                    sysFontName = sysFontName.Replace(fInfo.Extension, "");
+
+                path = FontFile.GetSystemFontPath(sysFontName);
+            }
+
+            return Load(path, completionCallback, parameters, canHotReload, dispatch);
+        }
+
         public ContentLoadHandle Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, ContentParameters parameters = null, bool canHotReload = true, bool dispatch = true)
         {
             Type contentType = typeof(T);
@@ -186,6 +213,7 @@ namespace Molten
         public ContentLoadHandle Load(Type contentType, string path, ContentLoadCallbackHandler<object> completionCallback = null, ContentParameters parameters = null, bool canHotReload = true, bool dispatch = true)
         {
             IContentProcessor proc = GetProcessor(path, contentType);
+            parameters = ValidateParameters(path, proc, parameters);
 
             if (proc == null)
             {
@@ -195,7 +223,7 @@ namespace Molten
 
             if (!_content.TryGetValue(path, out ContentHandle handle))
             {
-                handle = new ContentLoadHandle(this, path, 1, contentType, proc, parameters, completionCallback, canHotReload);
+                handle = new ContentLoadHandle(this, path, parameters.PartCount, contentType, proc, parameters, completionCallback, canHotReload);
                 _content.TryAdd(path, handle);
 
                 if (dispatch)
@@ -257,6 +285,24 @@ namespace Molten
                 handle.Dispatch();
 
             return handle;
+        }
+
+        private ContentParameters ValidateParameters(string filePath, IContentProcessor processor, ContentParameters parameters)
+        {
+            if (processor == null)
+                return null;
+
+            if (parameters != null)
+            {
+                Type pType = parameters.GetType();
+
+                if (!processor.ParameterType.IsAssignableFrom(pType))
+                    Log.Warning($"[Content] {filePath}: Invalid parameter type provided. Expected '{processor.ParameterType.Name}' but received '{pType.Name}'. Using defaults instead.");
+                else
+                    return parameters;
+            }
+
+            return Activator.CreateInstance(processor.ParameterType) as ContentParameters;
         }
 
         internal IContentProcessor GetProcessor(string path, Type type)

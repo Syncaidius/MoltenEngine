@@ -47,43 +47,55 @@ namespace Molten
         protected override sealed bool OnRun()
         {
             Status = ContentHandleStatus.Processing;
-            ValidateParameters();
+
             try
             {
-                if (OnProcess())
+                Status = OnProcess();
+                switch (Status)
                 {
-                    Manager.Log.WriteLine($"[CONTENT] [{HandleType}] {RelativePath}: {Asset.GetType().FullName}");
-                    Status = OnComplete();
-                    return true;
+                    case ContentHandleStatus.Completed:
+                        LogMessage($"Loaded {Asset.GetType().FullName}");
+                        return true;
+
+                    case ContentHandleStatus.AwaitingParts:
+                        if(this is ContentLoadHandle loadHandle)
+                            LogMessage($"Awaiting {loadHandle.PartInfo.Handles.Length} parts for multi-part {ContentType.FullName}");
+                        else
+                            LogMessage($"Awaiting parts {ContentType.FullName}");
+                        return true;
+
+                    case ContentHandleStatus.Processing:
+                        LogMessage($"Still processing {ContentType.FullName}");
+                        return true;
                 }
             }
             catch (Exception ex)
             {
-                Manager.Log.Error($"[CONTENT] [{HandleType}] {RelativePath}: {ex.Message}");
-                Manager.Log.Error(ex, true);
+                LogError(ex);
             }
 
             return false;
         }
 
-        private void ValidateParameters()
+        public void LogMessage(string msg)
         {
-            if (Processor == null)
-                return;
+            Manager.Log.WriteLine($"[Content][{HandleType}] {RelativePath}: {msg}");
+        }
 
-            Type pExpectedType = Processor.GetParameterType();
+        public void LogError(string msg)
+        {
+            Manager.Log.Error($"[Content][{HandleType}] {RelativePath}: {msg}");
+        }
 
-            if (Parameters != null)
-            {
-                Type pType = Parameters.GetType();
+        public void LogWarning(string msg)
+        {
+            Manager.Log.Warning($"[Content][{HandleType}] {RelativePath}: {msg}");
+        }
 
-                if (!pExpectedType.IsAssignableFrom(pType))
-                    Manager.Log.Warning($"[CONTENT] {Info}: Invalid parameter type provided. Expected '{pExpectedType.Name}' but received '{pType.Name}'. Using defaults instead.");
-                else
-                    return;
-            }
-
-            Parameters = Activator.CreateInstance(pExpectedType) as ContentParameters;
+        public void LogError(Exception ex)
+        {
+            Manager.Log.Error($"[Content][{HandleType}] {RelativePath}: {ex.Message}");
+            Manager.Log.Error(ex);
         }
 
         public T Get<T>()
@@ -93,9 +105,7 @@ namespace Molten
 
         protected override void OnFree() { }
 
-        protected abstract ContentHandleStatus OnComplete();
-
-        protected abstract bool OnProcess();
+        protected abstract ContentHandleStatus OnProcess();
 
         /// <summary>
         /// The status of the current <see cref="ContentHandle"/>.
@@ -123,7 +133,7 @@ namespace Molten
 
         internal IContentProcessor Processor { get; }
 
-        internal ContentParameters Parameters { get; private set; }
+        internal ContentParameters Parameters { get; set; }
 
         public ContentHandleType HandleType { get;  }
     }

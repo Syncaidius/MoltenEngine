@@ -22,7 +22,7 @@ namespace Molten
             JsonSettings = jsonSettings.Clone();
         }
 
-        protected override bool OnProcess()
+        protected override ContentHandleStatus OnRead(bool reinstantiate)
         {
             string json;
             using (FileStream stream = new FileStream(RelativePath, FileMode.Open, FileAccess.Read))
@@ -31,28 +31,13 @@ namespace Molten
                     json = reader.ReadToEnd();
             }
 
-            bool reload = Asset != null;
+            if(!reinstantiate)
+                JsonConvert.PopulateObject(json, Asset, JsonSettings);
+            else
+                Asset = JsonConvert.DeserializeObject(json, ContentType, JsonSettings);
 
-            if (reload)
-            {
-                Type assetType = Asset.GetType();
-                object[] att = assetType.GetCustomAttributes(typeof(ContentReloadAttribute), true);
-                if (att.Length > 0)
-                {
-                    if (att[0] is ContentReloadAttribute attReload && !attReload.Reinstantiate)
-                    {
-                        JsonConvert.PopulateObject(json, Asset, JsonSettings);
-                        return true;
-                    }
-                }
-            }
-
-            // If we have an existing asset that is to be re-instantiated, dispose of old instance.
-            if (Asset != null && Asset is IDisposable disposable)
-                disposable.Dispose();
-
-            Asset = JsonConvert.DeserializeObject(json, ContentType, JsonSettings);
-            return true;
+            Complete();
+            return ContentHandleStatus.Completed;
         }
 
         /// <summary>Gets the <see cref="JsonSerializerSettings"/> used for loading the asset. 

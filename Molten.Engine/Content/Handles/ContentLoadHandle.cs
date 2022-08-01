@@ -11,6 +11,31 @@ namespace Molten
 
     public class ContentLoadHandle : ContentHandle
     {
+        public class Multipart
+        {
+            /// <summary>
+            /// Gets a list of handles for each part of the asset that the current <see cref="ContentLoadHandle"/> represents.
+            /// </summary>
+            public ContentLoadHandle[] Handles { get; }
+
+            /// <summary>
+            /// Gets whether or not the current <see cref="ContentLoadHandle"/> represents a multi-part asset.
+            /// </summary>
+            public bool IsPart { get; internal set; }
+
+            /// <summary>
+            /// Gets or sets whether or not the current <see cref="ContentLoadHandle"/> should keep its parts loaded. Depending on the content, this may or may not be useful.
+            /// </summary>
+            public bool KeepPartsLoaded { get; set; }
+
+            internal Multipart(int partCount)
+            {
+                Handles = new ContentLoadHandle[partCount];
+                KeepPartsLoaded = false;
+                IsPart = false;
+            }
+        }
+
         bool _canHotReload;
         ContentWatcher _watcher;
         ContentLoadCallbackHandler<object> _callback;
@@ -28,8 +53,8 @@ namespace Molten
         {
             _callback = callback;
             _canHotReload = canHotReload;
-            if (partCount > 1)
-                Parts = new ContentLoadHandle[partCount];
+            partCount = Math.Max(partCount, 1); // Asset must always have at least 1 part.
+            PartInfo = new Multipart(partCount);
         }
 
         /// <summary>
@@ -57,9 +82,10 @@ namespace Molten
             return true;
         }
 
-        protected override bool OnProcess()
+        protected override sealed ContentHandleStatus OnProcess()
         {
             bool reload = Asset != null;
+            bool reinstantiate = true;
 
             if (reload)
             {
@@ -68,8 +94,10 @@ namespace Molten
                 if (att.Length > 0)
                 {
                     // Can we reuse the existing asset, or reinstantiate it?
-                    if (att[0] is ContentReloadAttribute attReload && attReload.Reinstantiate)
+                    if (att[0] is ContentReloadAttribute attReload)
                     {
+                        reinstantiate = attReload.Reinstantiate;
+
                         // Reinstantiating, so dispose of existing asset if possible.
                         if (Asset is IDisposable disposable)
                             disposable.Dispose();
@@ -77,7 +105,87 @@ namespace Molten
                 }
             }
 
-            return Processor.Read(this, Asset, out Asset);
+            return OnRead(reinstantiate);
+        }
+
+        protected virtual ContentHandleStatus OnRead(bool reinstantiate)
+        {
+            // If the current asset (or asset-part) is made up of multiple parts, we'll queue them up
+            if (PartInfo.Handles.Length > 1)
+            {
+                string filename = Info.Name.Replace(Info.Extension, "");
+                filename = RelativePath.Replace(Info.Name, $"{filename}_{{0}}{Info.Extension}");
+
+                ContentParameters partParameters = (ContentParameters)Parameters.Clone();
+                partParameters.PartCount = 1;
+
+                for (int i = 0; i < PartInfo.Handles.Length; i++)
+                {
+                    string partPath = string.Format(filename, (i + 1));
+                    PartInfo.Handles[i] = Manager.Load(Processor.PartType, partPath, PartLoadComplete, partParameters, CanHotReload, false);
+                    PartInfo.Handles[i].PartInfo.IsPart = true;
+                    PartInfo.Handles[i].Dispatch();
+                }
+
+                if (AllPartsCompleted())
+                    return ContentHandleStatus.Completed;
+                else
+                    return ContentHandleStatus.AwaitingParts;
+            }
+            else
+            {
+                if (File.Exists(RelativePath))
+                {
+
+                    bool success = false;
+                    using (FileStream stream = new FileStream(RelativePath, FileMode.Open, FileAccess.Read))
+                        success = Processor.ReadPart(this, stream);
+
+                    if (success)
+                    {
+                        PartInfo.Handles[0] = this;
+                        if (Processor.BuildAsset(this))
+                        {
+                            Complete();
+                            return ContentHandleStatus.Completed;
+                        }
+                    }
+                    else
+                    {
+                        LogError($"Failed to read asset");
+                    }
+                }
+                else
+                {
+                    LogError($"File does not exist");
+                }
+            }
+
+            return ContentHandleStatus.Failed;
+        }
+
+        private void PartLoadComplete(object part, bool isReload)
+        {
+            // Build asset
+            if (AllPartsCompleted())
+            {
+                if (Processor.BuildAsset(this))
+                    Complete();
+            }
+        }
+
+        private bool AllPartsCompleted()
+        {
+            for (int i = 0; i < PartInfo.Handles.Length; i++)
+            {
+                if (PartInfo.Handles[i] == null ||
+                    PartInfo.Handles[i].Status != ContentHandleStatus.Completed)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void UpdateWatcher()
@@ -95,13 +203,12 @@ namespace Molten
             }
         }
 
-        protected override ContentHandleStatus OnComplete()
+        protected void Complete()
         {
+            Status = ContentHandleStatus.Completed;
             _callback?.Invoke(Asset, IsLoaded);
             IsLoaded = true;
             UpdateWatcher();
-
-            return ContentHandleStatus.Completed;
         }
 
         public bool HasAsset()
@@ -125,6 +232,10 @@ namespace Molten
                 if (_canHotReload != value)
                 {
                     _canHotReload = value;
+
+                    foreach (ContentLoadHandle partHandle in PartInfo.Handles)
+                        partHandle.CanHotReload = _canHotReload;
+
                     UpdateWatcher();
                 }
             }
@@ -141,13 +252,8 @@ namespace Molten
         public string Checksum { get; private set; }
 
         /// <summary>
-        /// Gets any part handles associated with the current <see cref="ContentLoadHandle"/>.
+        /// Gets information about the multi-part configuration of the current <see cref="ContentLoadHandle"/>.
         /// </summary>
-        public ContentLoadHandle[] Parts { get; }
-
-        /// <summary>
-        /// Gets whether or not the current <see cref="ContentLoadHandle"/> represents a part of another <see cref="ContentLoadHandle"/> asset.
-        /// </summary>
-        public bool IsPart { get; internal set; }
+        public Multipart PartInfo { get; }
     }
 }

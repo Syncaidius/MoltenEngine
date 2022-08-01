@@ -11,75 +11,77 @@ namespace Molten.Content
 
         public override Type[] RequiredServices { get; } = { typeof(RenderService) };
 
-        protected override bool OnRead(ContentHandle handle, TextureParameters parameters, object existingAsset, out object asset)
-        {
-            asset = null;
-            string extension = handle.Info.Extension.ToLower();
-            TextureData finalData = null;
-            TextureReader texReader;
-            string fn = handle.RelativePath;
+        public override Type PartType { get; } = typeof(TextureData);
 
-            if (parameters.ArraySize > 1)
+        protected override bool OnReadPart(ContentLoadHandle handle, Stream stream, TextureParameters parameters, object existingPart, out object partAsset)
+        {
+            TextureData data = null;
+            TextureReader texReader;
+            string extension = handle.Info.Extension.ToLower();
+
+            using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, true))
             {
-                fn = handle.Info.Name.Replace(handle.Info.Extension, "");
-                fn = handle.RelativePath.Replace(handle.Info.Name, $"{fn}_{{0}}{handle.Info.Extension}");
+                switch (extension)
+                {
+                    case ".dds":
+                        texReader = new DDSReader();
+                        break;
+
+                    // Although the default texture reader can load all of the formats that Magick supports, we'll stick to ones we fully support for now.
+                    // Formats such as .gif can be handled as texture arrays later down the line.
+                    case ".png":
+                    case ".jpeg":
+                    case ".bmp":
+                        texReader = new DefaultTextureReader();
+                        break;
+
+                    default:
+                        texReader = null;
+                        break;
+                }
+
+                data = texReader.Read(reader, handle.Manager.Log, handle.RelativePath);
+                texReader.Dispose();
             }
 
-            for (uint i = 0; i < parameters.ArraySize; i++)
-            {
-                string finalFn = string.Format(fn, i + 1);
+            partAsset = data;
 
-                if (!File.Exists(finalFn))
+            // Load failed?
+            if (data == null)
+                return false;
+
+            if (data.MipMapLevels == 1)
+            {
+                if (parameters.GenerateMipmaps)
+                {
+                    //if (!data.GenerateMipMaps())
+                    //   log.WriteError("[CONTENT] Unable to generate mip-maps for non-power-of-two texture.", file.ToString());
+                }
+            }
+
+            return true;
+        }
+
+        protected override bool OnBuildAsset(ContentLoadHandle handle, ContentLoadHandle[] parts, TextureParameters parameters, object existingAsset, out object asset)
+        {
+            TextureData finalData = null;
+
+            uint arraySize = (uint)(typeof(ITextureCube).IsAssignableFrom(handle.ContentType) ? Math.Min(6, parts.Length) : parts.Length);
+
+            for (uint i = 0; i < parts.Length; i++)
+            {
+                ContentLoadHandle partHandle = parts[i];
+                if (partHandle.Asset == null)
                     continue;
 
-                TextureData data = null;
-                using (Stream stream = new FileStream(finalFn, FileMode.Open, FileAccess.Read))
-                {
-                    using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, true))
-                    {
-                        switch (extension)
-                        {
-                            case ".dds":
-                                texReader = new DDSReader();
-                                break;
+                TextureData data = partHandle.Get<TextureData>();
 
-                            // Although the default texture reader can load all of the formats that Magick supports, we'll stick to ones we fully support for now.
-                            // Formats such as .gif can be handled as texture arrays later down the line.
-                            case ".png":
-                            case ".jpeg":
-                            case ".bmp":
-                                texReader = new DefaultTextureReader();
-                                break;
-
-                            default:
-                                texReader = null;
-                                break;
-                        }
-
-                        data = texReader.Read(reader, handle.Manager.Log, handle.RelativePath);
-                        texReader.Dispose();
-                    }
-                }
-
-                // Load failed?
-                if (data == null)
-                    return false;
-
-                if (data.MipMapLevels == 1)
-                {
-                    if (parameters.GenerateMipmaps)
-                    {
-                            //if (!data.GenerateMipMaps())
-                            //   log.WriteError("[CONTENT] Unable to generate mip-maps for non-power-of-two texture.", file.ToString());
-                    }
-                }
-
-                uint arraySize = typeof(ITextureCube).IsAssignableFrom(handle.ContentType) ? 6U : parameters.ArraySize;
                 finalData = finalData ?? new TextureData(data.Width, data.Height, data.MipMapLevels, arraySize)
                 {
                     Format = data.Format,
                     IsCompressed = data.IsCompressed,
                 };
+
 
                 finalData.Set(data, i);
             }
@@ -170,112 +172,109 @@ namespace Molten.Content
             }
         }
 
-        protected override bool OnWrite(ContentHandle handle, TextureParameters parameters, object asset)
+        protected override bool OnWrite(ContentHandle handle, Stream stream, TextureParameters parameters, object asset)
         {
-            using (FileStream stream = new FileStream(handle.RelativePath, FileMode.Create, FileAccess.Write))
+            string extension = handle.Info.Extension.ToLower();
+            TextureWriter texWriter = null;
+
+            switch (extension)
             {
-                string extension = handle.Info.Extension.ToLower();
-                TextureWriter texWriter = null;
+                case ".dds":
+                    DDSFormat? pFormat = parameters.BlockCompressionFormat;
+                    DDSFormat ddsFormat = pFormat.HasValue ? pFormat.Value : DDSFormat.DXT5;
+                    texWriter = new DDSWriter(ddsFormat);
+                    break;
 
-                switch (extension)
-                {
-                    case ".dds":
-                        DDSFormat? pFormat = parameters.BlockCompressionFormat;
-                        DDSFormat ddsFormat = pFormat.HasValue ? pFormat.Value : DDSFormat.DXT5;
-                        texWriter = new DDSWriter(ddsFormat);
-                        break;
+                case ".png":
+                    texWriter = new PNGWriter();
+                    break;
 
-                    case ".png":
-                        texWriter = new PNGWriter();
-                        break;
+                case ".jpeg":
+                case ".jpg":
+                    texWriter = new JPEGWriter();
+                    break;
 
-                    case ".jpeg":
-                    case ".jpg":
-                        texWriter = new JPEGWriter();
-                        break;
-
-                    case ".bmp":
-                        texWriter = new BMPWriter();
-                        break;
-                }
-
-                if (texWriter == null)
-                {
-                    handle.Manager.Log.Error($"Unable to write texture to file. Unsupported format: {extension}", handle.RelativePath);
-                    return false;
-                }
-
-                // TODO improve for texture arrays - Only update the array slice(s) that have changed.
-                // Check if an existing texture was passed in.
-                if (handle.ContentType == typeof(TextureData))
-                {
-                    TextureData dataToSave = asset as TextureData;
-                    texWriter.WriteData(stream, dataToSave, handle.Manager.Log, handle.RelativePath);
-                }
-                else
-                {
-                    // TODO finish support for writing textures directly
-
-                    ITexture tex = asset as ITexture;
-                    ITexture staging = null;
-
-                    switch (tex)
-                    {
-                        case ITextureCube texCube:
-                            staging = handle.Manager.Engine.Renderer.Resources.CreateTextureCube(new Texture2DProperties()
-                            {
-                                Flags = TextureFlags.Staging,
-                                Format = texCube.DataFormat,
-                                ArraySize = texCube.ArraySize,
-                                Height = texCube.Height,
-                                MipMapLevels = texCube.MipMapCount,
-                                MultiSampleLevel = texCube.MultiSampleLevel,
-                                Width = texCube.Width,
-                            });
-                            break;
-
-                        case ITexture2D tex2D:
-                            staging = handle.Manager.Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
-                            {
-                                Flags = TextureFlags.Staging,
-                                Format = tex2D.DataFormat,
-                                ArraySize = tex2D.ArraySize,
-                                Height = tex2D.Height,
-                                MipMapLevels = tex2D.MipMapCount,
-                                MultiSampleLevel = tex2D.MultiSampleLevel,
-                                Width = tex2D.Width,
-                            });
-                            break;
-
-                        case ITexture tex1D:
-                            staging = handle.Manager.Engine.Renderer.Resources.CreateTexture1D(new Texture1DProperties()
-                            {
-                                Flags = TextureFlags.Staging,
-                                Format = tex1D.DataFormat,
-                                ArraySize = tex1D.ArraySize,
-                                MipMapLevels = tex1D.MipMapCount,
-                                Width = tex1D.Width,
-                            });
-                            break;
-                    }
-
-                    if (staging != null)
-                    {
-                        TextureData tData = null;
-                        tex.GetData(staging, (data) =>
-                        {
-                            tData = data;
-                        });
-
-                        while (tData == null)
-                            Thread.Sleep(5);
-
-                        texWriter.WriteData(stream, tData, handle.Manager.Log, handle.RelativePath);
-                    }
-                }
-
-                return true;
+                case ".bmp":
+                    texWriter = new BMPWriter();
+                    break;
             }
+
+            if (texWriter == null)
+            {
+                handle.Manager.Log.Error($"Unable to write texture to file. Unsupported format: {extension}", handle.RelativePath);
+                return false;
+            }
+
+            // TODO improve for texture arrays - Only update the array slice(s) that have changed.
+            // Check if an existing texture was passed in.
+            if (handle.ContentType == typeof(TextureData))
+            {
+                TextureData dataToSave = asset as TextureData;
+                texWriter.WriteData(stream, dataToSave, handle.Manager.Log, handle.RelativePath);
+            }
+            else
+            {
+                // TODO finish support for writing textures directly
+
+                ITexture tex = asset as ITexture;
+                ITexture staging = null;
+
+                switch (tex)
+                {
+                    case ITextureCube texCube:
+                        staging = handle.Manager.Engine.Renderer.Resources.CreateTextureCube(new Texture2DProperties()
+                        {
+                            Flags = TextureFlags.Staging,
+                            Format = texCube.DataFormat,
+                            ArraySize = texCube.ArraySize,
+                            Height = texCube.Height,
+                            MipMapLevels = texCube.MipMapCount,
+                            MultiSampleLevel = texCube.MultiSampleLevel,
+                            Width = texCube.Width,
+                        });
+                        break;
+
+                    case ITexture2D tex2D:
+                        staging = handle.Manager.Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
+                        {
+                            Flags = TextureFlags.Staging,
+                            Format = tex2D.DataFormat,
+                            ArraySize = tex2D.ArraySize,
+                            Height = tex2D.Height,
+                            MipMapLevels = tex2D.MipMapCount,
+                            MultiSampleLevel = tex2D.MultiSampleLevel,
+                            Width = tex2D.Width,
+                        });
+                        break;
+
+                    case ITexture tex1D:
+                        staging = handle.Manager.Engine.Renderer.Resources.CreateTexture1D(new Texture1DProperties()
+                        {
+                            Flags = TextureFlags.Staging,
+                            Format = tex1D.DataFormat,
+                            ArraySize = tex1D.ArraySize,
+                            MipMapLevels = tex1D.MipMapCount,
+                            Width = tex1D.Width,
+                        });
+                        break;
+                }
+
+                if (staging != null)
+                {
+                    TextureData tData = null;
+                    tex.GetData(staging, (data) =>
+                    {
+                        tData = data;
+                    });
+
+                    while (tData == null)
+                        Thread.Sleep(5);
+
+                    texWriter.WriteData(stream, tData, handle.Manager.Log, handle.RelativePath);
+                }
+            }
+
+            return true;
         }
     }
 }

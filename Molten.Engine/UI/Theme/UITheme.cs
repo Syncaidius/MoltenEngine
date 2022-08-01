@@ -80,9 +80,10 @@ namespace Molten.UI
         {
             if (!string.IsNullOrWhiteSpace(_defaultFontName))
             {
-                Engine.Content.Load<TextFontSource>(_defaultFontName, (fs, isReload) =>
+                Engine.Content.LoadFont(_defaultFontName, (font, isReload) => DefaultFont = font, 
+                new TextFontParameters()
                 {
-                    DefaultFont = new TextFont(fs, DefaultFontSize);
+                    FontSize = DefaultFontSize
                 });
             }
         }

@@ -23,18 +23,23 @@ namespace Molten
             Asset = asset;
         }
 
-        protected override ContentHandleStatus OnComplete()
-        {
-            _completionCallback?.Invoke(new FileInfo(Info.FullName));
-            return ContentHandleStatus.Completed;
-        }
-
-        protected override bool OnProcess()
+        protected override ContentHandleStatus OnProcess()
         {
             if (!Info.Directory.Exists)
                 Info.Directory.Create();
 
-            return Processor.Write(this, Asset);
+            bool success = false;
+
+            using (FileStream stream = new FileStream(RelativePath, FileMode.Create, FileAccess.Write))
+                success = Processor.Write(this, stream);
+
+            if (success)
+            {
+                _completionCallback?.Invoke(new FileInfo(Info.FullName));
+                return ContentHandleStatus.Completed;
+            }
+
+            return ContentHandleStatus.Failed;
         }
     }
 }
