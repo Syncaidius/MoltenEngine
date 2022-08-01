@@ -161,31 +161,14 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        public unsafe void Simulate8bit(TextureSliceRef<Color3> bitmap)
+        public unsafe void Simulate8Bit(TextureSliceRef<Color3> bitmap)
         {
-            Color3* end = bitmap.Data + (bitmap.Width * bitmap.Height);
-            for (Color3* p = bitmap.Data; p < end; ++p)
-                *p = PixelByteToFloat(PixelFloatToByte(p));
-        }
+            const int CHANNELS_PER_PIXEL = 3;
 
-        private unsafe static Color PixelFloatToByte(Color3* x)
-        {
-            return new Color()
-            {
-                R = (byte)MathHelper.Clamp(256f * x->R, 0, 255f),
-                G = (byte)MathHelper.Clamp(256f * x->G, 0, 255f),
-                B = (byte)MathHelper.Clamp(256f * x->B, 0, 255f)
-            };
-        }
-
-        private static Color3 PixelByteToFloat(Color x)
-        {
-            return new Color3()
-            {
-                R = 1f / 255f * x.R,
-                G = 1f / 255f * x.G,
-                B = 1f / 255f * x.B,
-            };
+            float* data = (float*)bitmap.Data;
+            float* end = data + ((bitmap.Width * bitmap.Height) * CHANNELS_PER_PIXEL);
+            for (float* p = data; p < end; ++p)
+                *p = 1f / 255f * MathHelper.Clamp(256f * *p, 0, 255f);
         }
     }
 }
