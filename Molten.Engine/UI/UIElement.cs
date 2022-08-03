@@ -161,6 +161,20 @@ namespace Molten.UI
             return (InputRules & rules) == rules;
         }
 
+        public virtual void OnHover(Vector2F localPos, Vector2F globalPos)
+        {
+            if (State == UIElementState.Default)
+                State = UIElementState.Hovered;
+        }
+
+        public virtual void OnEnter(Vector2F localPos, Vector2F globalPos) { }
+
+        public virtual void OnLeave(Vector2F localPos, Vector2F globalPos)
+        {
+            if (State == UIElementState.Hovered)
+                State = UIElementState.Default;
+        }
+
         public virtual void OnPressed(ScenePointerTracker tracker)
         {
             State = UIElementState.Pressed;

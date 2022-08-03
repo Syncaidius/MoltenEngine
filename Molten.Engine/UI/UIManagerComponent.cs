@@ -15,15 +15,12 @@ namespace Molten.UI
         }
 
         CameraComponent _camera;
-        UITheme _theme;
         UIContainer _root;
         Dictionary<ScenePointerTracker, UITracker> _trackers;
-        List<ScenePointerTracker> _trackersToRemove;
 
         public UIManagerComponent()
         {
             _trackers = new Dictionary<ScenePointerTracker, UITracker>();
-            _trackersToRemove = new List<ScenePointerTracker>();
         }
 
         protected override void OnInitialize(SceneObject obj)
@@ -152,7 +149,30 @@ namespace Molten.UI
 
         public void PointerHover(Vector2F pos)
         {
+            UIElement prevHover = HoverElement; 
+            Vector2F localPos;
+
             HoverElement = _root.Pick(pos);
+
+            // Trigger on-leave of previous hover element.
+            if (HoverElement != prevHover)
+            {
+                if (prevHover != null)
+                {
+                    localPos = pos - (Vector2F)prevHover.BaseData.GlobalBounds.TopLeft;
+                    prevHover.OnLeave(localPos, pos);
+                }
+            }
+
+            // Update currently-hovered element
+            if (HoverElement != null)
+            {
+                localPos = pos - (Vector2F)HoverElement.BaseData.GlobalBounds.TopLeft;
+                if (prevHover != HoverElement)
+                    HoverElement.OnEnter(localPos, pos);
+
+                HoverElement.OnHover(localPos, pos);
+            }
         }
 
         public void PointerFocus()

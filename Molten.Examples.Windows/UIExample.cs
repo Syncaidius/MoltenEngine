@@ -11,6 +11,7 @@ namespace Molten.Samples
         UIWindow _window1;
         UIWindow _window2;
         UILineGraph _lineGraph;
+        UIButton _button;
 
         public override string Description => "Demonstrates Molten's UI system.";
         public UIExample() : base("UI Example") { }
@@ -61,6 +62,12 @@ namespace Molten.Samples
                 Title = "This is another Window"
             };
 
+            _button = new UIButton()
+            {
+                LocalBounds = new Rectangle(100, 100, 100, 30),
+                Text = "Click me!"
+            };
+
             _lineGraph = new UILineGraph()
             {
                 LocalBounds = new Rectangle(1050, 200, 700, 420)
@@ -71,6 +78,7 @@ namespace Molten.Samples
             UI.Children.Add(_window1);
             UI.Children.Add(_window2);
             UI.Children.Add(_lineGraph);
+            _window2.Children.Add(_button);
         }
 
         private void PlotGraphData(UILineGraph graph)
