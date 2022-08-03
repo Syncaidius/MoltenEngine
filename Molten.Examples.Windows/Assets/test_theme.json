@@ -6,21 +6,24 @@
     },
     "VerticalAlign": "Center",
     "HorizontalAlign": "Center",
-    "Font": "Arial"
+    "FontName": "Arial"
   },
+
   "Molten.UI.UIWindow/Molten.UI.UIButton": {
     "FillColor": {
-      "Default": "255 255 255 255",
-      "Pressed": "255 255 0 255"
+      "Default": "0 109 155 255",
+      "Pressed": "122 209 255 255"
     },
     "BorderColor": {
-      "Default": "255 252 0 255",
-      "Pressed": "255 255 0 255"
+      "Default": "52 189 235 255",
+      "Pressed": "255 255 0 0"
     },
     "VerticalAlign": "Center",
     "HorizontalAlign": "Center",
-    "Font": "Arial"
+    "FontName": "Arial",
+    "CornerRadius": "0 0 0 0"
   },
+
   "Molten.UI.UIWindow": {
     "FillColor": {
       "Default": "0 109 155 200",
@@ -28,7 +31,11 @@
     },
     "BorderColor": {
       "Default": "52 189 235 255",
-      "Pressed": "255 189 235 255"
+      "Pressed": "122 209 255 255"
     }
+  },
+
+  "Molten.UI.UILineGraph": {
+    "ShowAverageLine": false
   }
 }

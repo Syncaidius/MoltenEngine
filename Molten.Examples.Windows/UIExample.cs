@@ -27,6 +27,9 @@ namespace Molten.Samples
             {
                 if (_window2 != null)
                     _window2.Theme = theme;
+
+                if (_lineGraph != null)
+                    _lineGraph.Theme = theme;
             });
 
             loader.OnCompleted += Loader_OnCompleted;
@@ -62,10 +65,6 @@ namespace Molten.Samples
             {
                 LocalBounds = new Rectangle(1050, 200, 700, 420)
             };
-
-            /*UITheme test = new UITheme();
-            test.AddStyle("Molten.UI.UIWindow/Molten.UI.UIButton/Molten.UI.UILabel");
-            test.ApplyStyle(lineGraph);*/
 
             PlotGraphData(_lineGraph);
 
