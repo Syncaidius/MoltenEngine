@@ -41,7 +41,7 @@
 
   <ItemGroup>
     <PackageReference Include="Silk.NET.Core" Version="2.16.0" />
-    <PackageReference Include="Silk.NET.Direct3D.Compilers" Version="2.15.0" />
+    <PackageReference Include="Silk.NET.Direct3D.Compilers" Version="2.16.0" />
     <PackageReference Include="Silk.NET.Direct3D11" Version="2.16.0" />
   </ItemGroup>
 
