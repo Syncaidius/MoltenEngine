@@ -161,14 +161,29 @@ namespace Molten.UI
             return (InputRules & rules) == rules;
         }
 
+        /// <summary>
+        /// Invoked when a pointer is hovering over the current <see cref="UIElement"/>.
+        /// </summary>
+        /// <param name="localPos">The local position of the pointer, relative to the current <see cref="UIElement"/>.</param>
+        /// <param name="globalPos">The global position of the pointer.</param>
         public virtual void OnHover(Vector2F localPos, Vector2F globalPos)
         {
             if (State == UIElementState.Default)
                 State = UIElementState.Hovered;
         }
 
+        /// <summary>
+        /// Invoked when a pointer enters the current <see cref="UIElement"/>.
+        /// </summary>
+        /// <param name="localPos">The local position of the pointer, relative to the current <see cref="UIElement"/>.</param>
+        /// <param name="globalPos">The global position of the pointer.</param>
         public virtual void OnEnter(Vector2F localPos, Vector2F globalPos) { }
 
+        /// <summary>
+        /// Invoked when a pointer leaves the current <see cref="UIElement"/>.
+        /// </summary>
+        /// <param name="localPos">The local position of the pointer, relative to the current <see cref="UIElement"/>.</param>
+        /// <param name="globalPos">The global position of the pointer.</param>
         public virtual void OnLeave(Vector2F localPos, Vector2F globalPos)
         {
             if (State == UIElementState.Hovered)
