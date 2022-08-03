@@ -145,9 +145,12 @@ namespace Molten.UI
             }
         }
 
-        private void RecalculateMeasurements(TextFont obj)
+        private void RecalculateMeasurements(TextFont font)
         {
-            _textSize = _font.MeasureString(Text);
+            if (_text == null)
+                return;
+
+            _textSize = font.MeasureString(_text);
             OnMeasurementChanged?.Invoke(this);
             OnUpdateBounds();
         }
@@ -173,7 +176,10 @@ namespace Molten.UI
                     _fontName = value;
                     if (!string.IsNullOrWhiteSpace(_fontName))
                     {
-                        Engine.Content.LoadFont(_fontName, (font, isReload) => Font = font, 
+                        Engine.Content.LoadFont(_fontName, (font, isReload) =>
+                        {
+                            Font = font;
+                        },
                             new TextFontParameters()
                             {
                                 FontSize = 16,

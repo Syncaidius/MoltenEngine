@@ -38,7 +38,7 @@ namespace Molten
 
         bool _canHotReload;
         ContentWatcher _watcher;
-        ContentLoadCallbackHandler<object> _callback;
+        internal event ContentLoadCallbackHandler<object> Callbacks;
 
         internal ContentLoadHandle(
             ContentManager manager,
@@ -51,7 +51,7 @@ namespace Molten
             bool canHotReload) :
             base(manager, path, contentType, processor, parameters, ContentHandleType.Load)
         {
-            _callback = callback;
+            Callbacks += callback;
             _canHotReload = canHotReload;
             partCount = Math.Max(partCount, 1); // Asset must always have at least 1 part.
             PartInfo = new Multipart(partCount);
@@ -206,7 +206,7 @@ namespace Molten
         protected void Complete()
         {
             Status = ContentHandleStatus.Completed;
-            _callback?.Invoke(Asset, IsLoaded);
+            Callbacks?.Invoke(Asset, IsLoaded);
             IsLoaded = true;
             UpdateWatcher();
         }

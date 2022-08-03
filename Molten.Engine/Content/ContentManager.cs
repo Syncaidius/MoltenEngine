@@ -230,6 +230,13 @@ namespace Molten
                     handle.Dispatch();
 
             }
+            else
+            {
+                if (handle.Status == ContentHandleStatus.Completed)
+                    completionCallback?.Invoke(handle.Asset, false);
+                else
+                    (handle as ContentLoadHandle).Callbacks += completionCallback;
+            }
 
             return handle as ContentLoadHandle;
         }
