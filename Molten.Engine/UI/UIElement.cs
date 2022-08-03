@@ -26,6 +26,7 @@ namespace Molten.UI
             BaseData = new UIRenderData();
             State = UIElementState.Default;
             OnInitialize(Engine, Engine.Settings.UI);
+            ApplyTheme();
         }
 
         protected virtual void OnInitialize(Engine engine, UISettings settings)

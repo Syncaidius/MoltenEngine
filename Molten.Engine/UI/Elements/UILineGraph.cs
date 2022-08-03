@@ -101,33 +101,15 @@ namespace Molten.UI
             OnUpdateBounds();
         }
 
-        /*protected override void OnApplyTheme(UITheme theme, UIElementTheme elementTheme, UIStateTheme stateTheme)
+        protected override void ApplyTheme()
         {
-            base.OnApplyTheme(theme, elementTheme, stateTheme);
-
-            BackgroundColor = stateTheme.BackgroundColor;
-            _axisLineStyle = new LineStyle()
-            {
-                Color1 = stateTheme.BorderColor,
-                Color2 = stateTheme.BorderColor,
-                Thickness = stateTheme.BorderThickness
-            };
+            base.ApplyTheme();
 
             _labelTitle.HorizontalAlign = UIHorizonalAlignment.Center;
             _labelXAxis.HorizontalAlign = UIHorizonalAlignment.Center;
             _labelYAxis.HorizontalAlign = UIHorizonalAlignment.Right;
             _labelYAxis.VerticalAlign = UIVerticalAlignment.Center;
-
-            _borderLineStyle = _axisLineStyle;
-            _borderLineStyle.Thickness = 1;
-
-            _dataLineStyle = _axisLineStyle;
-            _dataLineStyle.Thickness = 4;
-            _dataLineStyle.Sharpness = 0.1f;
-
-            _avgLineStyle = _dataLineStyle;
-            _avgLineStyle.Color1 = _avgLineStyle.Color2 = Color.Yellow;
-        }*/
+        }
 
         protected override void OnUpdateBounds()
         {
