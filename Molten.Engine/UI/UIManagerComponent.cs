@@ -159,7 +159,7 @@ namespace Molten.UI
             {
                 if (prevHover != null)
                 {
-                    localPos = pos - (Vector2F)prevHover.BaseData.GlobalBounds.TopLeft;
+                    localPos = pos - (Vector2F)prevHover.GlobalBounds.TopLeft;
                     prevHover.OnLeave(localPos, pos);
                 }
             }
@@ -167,7 +167,7 @@ namespace Molten.UI
             // Update currently-hovered element
             if (HoverElement != null)
             {
-                localPos = pos - (Vector2F)HoverElement.BaseData.GlobalBounds.TopLeft;
+                localPos = pos - (Vector2F)HoverElement.GlobalBounds.TopLeft;
                 if (prevHover != HoverElement)
                     HoverElement.OnEnter(localPos, pos);
 

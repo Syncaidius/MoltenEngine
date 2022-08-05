@@ -60,20 +60,16 @@ namespace Molten.UI
             return btn;
         }
 
-        /*private void Btn_OnThemeApplied(UIElement element, UIElementTheme elementTheme, UIStateTheme stateTheme)
+        protected override bool OnPicked(Vector2F globalPos)
         {
-            UIButton btn = element as UIButton;
-            if (btn == _titleBarButtons.FirstOrDefault())
-                btn.CornerRadius.Set(0, _cornerRadius.TopRight, 0, 0);
-            else
-                btn.CornerRadius.Set(0);
-        }*/
+            return true; // !RenderBounds.Contains(globalPos);
+        }
 
         protected override void OnUpdateCompoundBounds()
         {
             base.OnUpdateCompoundBounds();
 
-            ref Rectangle gb = ref BaseData.GlobalBounds;
+            Rectangle gb = GlobalBounds;
 
             _titleBar.LocalBounds = new Rectangle(0, 0, gb.Width, _titleBarSize);
             _panel.LocalBounds = new Rectangle(0, _titleBarSize, gb.Width, gb.Height - _titleBarSize);

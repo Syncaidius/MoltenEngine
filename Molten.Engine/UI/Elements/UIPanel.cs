@@ -38,7 +38,7 @@ namespace Molten.UI
 
         protected override void OnRenderSelf(SpriteBatcher sb)
         {
-            float radiusLimit = Math.Min(BaseData.GlobalBounds.Width, BaseData.GlobalBounds.Height) / 2;
+            float radiusLimit = Math.Min(GlobalBounds.Width, GlobalBounds.Height) / 2;
             RoundedRectStyle style = new RoundedRectStyle()
             {
                 FillColor = FillColor,
@@ -48,7 +48,7 @@ namespace Molten.UI
             };
 
 
-            sb.DrawRoundedRect(BaseData.RenderBounds, 0, Vector2F.Zero, ref style);
+            sb.DrawRoundedRect(RenderBounds, 0, Vector2F.Zero, ref style);
 
             base.OnRenderSelf(sb);
         }

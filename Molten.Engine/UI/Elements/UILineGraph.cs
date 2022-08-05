@@ -115,7 +115,7 @@ namespace Molten.UI
         {
             base.OnUpdateBounds();
 
-            Rectangle gb = BaseData.GlobalBounds;
+            Rectangle gb = GlobalBounds;
 
             float labelSeparation = 5;
             float titleSpace = _labelTitle.MeasuredSize.Y + labelSeparation;

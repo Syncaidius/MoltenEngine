@@ -80,7 +80,7 @@ namespace Molten.UI
             if (_elements.Count == 0)
                 return;
 
-            if (_element.BaseData.IsClipEnabled)
+            if (_element.IsClipEnabled)
             {
                 if (sb.PushClip(renderBounds))
                 {

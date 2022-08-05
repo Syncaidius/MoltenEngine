@@ -26,21 +26,20 @@ namespace Molten.UI
         /// </summary>
         public event UIElementPositionHandler Hovered;
 
-        [DataMember]
-        protected internal UIRenderData BaseData { get; }
-
         UIManagerComponent _manager;
         UIElement _parent;
         UITheme _theme;
         UIElementState _state;
+        Rectangle _localBounds;
+        Rectangle _globalBounds;
+        Rectangle _borderBounds;
+        Rectangle _renderBounds;
 
         public UIElement()
         {
             Children = new UIChildCollection(this);
             CompoundElements = new UIChildCollection(this);
             Engine = Engine.Current;
-     
-            BaseData = new UIRenderData();
             State = UIElementState.Default;
             OnInitialize(Engine, Engine.Settings.UI);
             ApplyTheme();
@@ -48,8 +47,8 @@ namespace Molten.UI
 
         protected virtual void OnInitialize(Engine engine, UISettings settings)
         {
-            BaseData.Margin.OnChanged += MarginPadding_OnChanged;
-            BaseData.Padding.OnChanged += MarginPadding_OnChanged;
+            Margin.OnChanged += MarginPadding_OnChanged;
+            Padding.OnChanged += MarginPadding_OnChanged;
         }
 
         private void MarginPadding_OnChanged()
@@ -61,33 +60,31 @@ namespace Molten.UI
         {
             if (Parent != null)
             {
-                BaseData.GlobalBounds = new Rectangle()
+                _globalBounds = new Rectangle()
                 {
-                    X = Parent.BaseData.RenderBounds.X + BaseData.LocalBounds.X,
-                    Y = Parent.BaseData.RenderBounds.Y + BaseData.LocalBounds.Y,
-                    Width = BaseData.LocalBounds.Width,
-                    Height = BaseData.LocalBounds.Height,
+                    X = Parent._renderBounds.X + _localBounds.X,
+                    Y = Parent._renderBounds.Y + _localBounds.Y,
+                    Width = _localBounds.Width,
+                    Height = _localBounds.Height,
                 };
             }
             else
             {
-                BaseData.GlobalBounds = BaseData.LocalBounds;
+                _globalBounds = _localBounds;
             }
 
-            UISpacing pad = BaseData.Padding;
-            UISpacing mrg = BaseData.Margin;
-            BaseData.BorderBounds = BaseData.GlobalBounds;
-            BaseData.BorderBounds.Inflate(-mrg.Left, -mrg.Top, -mrg.Right, -mrg.Bottom);
+            _borderBounds = _globalBounds;
+            _borderBounds.Inflate(-Margin.Left, -Margin.Top, -Margin.Right, -Margin.Bottom);
 
-            BaseData.RenderBounds = BaseData.BorderBounds;
-            BaseData.RenderBounds.Inflate(-pad.Left, -pad.Top, -pad.Right, -pad.Bottom);
+            _renderBounds = _borderBounds;
+            _renderBounds.Inflate(-Padding.Left, -Padding.Top, -Padding.Right, -Padding.Bottom);
 
             OnUpdateCompoundBounds();
-            foreach (UIElement e in Children)
+            foreach (UIElement e in CompoundElements)
                 e.UpdateBounds();
 
             OnUpdateChildBounds();
-            foreach (UIElement e in CompoundElements)
+            foreach (UIElement e in Children)
                 e.UpdateBounds();
 
             OnUpdateBounds();
@@ -126,7 +123,7 @@ namespace Molten.UI
         /// <returns></returns>
         public bool Contains(Vector2F point)
         {
-            return BaseData.GlobalBounds.Contains(point);
+            return _globalBounds.Contains(point);
         }
 
         /// <summary>
@@ -162,10 +159,15 @@ namespace Molten.UI
                 }
 
                 if(!ignoreRules && HasInputRules(UIInputRuleFlags.Self))
-                    return this;
+                    return OnPicked(point) ? this : null;
             }
 
             return result;
+        }
+
+        protected virtual bool OnPicked(Vector2F globalPos)
+        {
+            return true;
         }
 
         /// <summary>
@@ -265,8 +267,8 @@ namespace Molten.UI
                 OnRenderSelf(sb);
             }
 
-            CompoundElements.Render(sb, ref BaseData.GlobalBounds);
-            Children.Render(sb, ref BaseData.RenderBounds);
+            CompoundElements.Render(sb, ref _globalBounds);
+            Children.Render(sb, ref _renderBounds);
         }
 
         protected virtual void OnRenderSelf(SpriteBatcher sb) { }
@@ -277,10 +279,10 @@ namespace Molten.UI
         [DataMember]
         public Rectangle LocalBounds
         {
-            get => BaseData.LocalBounds;
+            get => _localBounds;
             set
             {
-                BaseData.LocalBounds = value;
+                _localBounds = value;
                 UpdateBounds();
             }
         }
@@ -289,17 +291,22 @@ namespace Molten.UI
         /// Gets the global bounds, relative to the <see cref="UIManagerComponent"/> that is drawing the current <see cref="UIElement"/>.
         /// <para>Global bounds are the area in which input is accepted and from which <see cref="RenderBounds"/> is calculated, based on padding, borders and other properties.</para>
         /// </summary>
-        public Rectangle GlobalBounds => BaseData.GlobalBounds;
+        public Rectangle GlobalBounds => _globalBounds;
 
         /// <summary>
         /// Gets the bounds in which child components should be drawn.
         /// </summary>
-        public Rectangle RenderBounds => BaseData.RenderBounds;
+        public Rectangle RenderBounds => _renderBounds;
+
+        /// <summary>
+        /// Gets the bounds at which borders should extend to beyond the <see cref="RenderBounds"/>.
+        /// </summary>
+        public Rectangle BorderBounds => _borderBounds;
 
         /// <summary>
         /// Gets or sets whether clipping is enabled.
         /// </summary>
-        public ref bool IsClipEnabled => ref BaseData.IsClipEnabled;
+        public bool IsClipEnabled { get; set; }
 
         /// <summary>
         /// Gets a read-only list of child components attached to the current <see cref="UIElement"/>.
@@ -389,5 +396,14 @@ namespace Molten.UI
         /// Gets whether or not the current <see cref="UIElement"/> is a compound component of another element.
         /// </summary>
         public bool IsCompoundChild { get; internal set; }
+
+        [DataMember]
+        public UISpacing Margin { get; } = new UISpacing();
+
+        [DataMember]
+        public UISpacing Padding { get; } = new UISpacing();
+
+        [DataMember]
+        public UIAnchorFlags Anchor { get; set; }
     }
 }

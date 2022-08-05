@@ -22,7 +22,7 @@ namespace Molten.UI
         {
             base.OnUpdateCompoundBounds();
 
-            _panel.LocalBounds = new Rectangle(0, 0, BaseData.GlobalBounds.Width, BaseData.GlobalBounds.Height);
+            _panel.LocalBounds = new Rectangle(0, 0, GlobalBounds.Width, GlobalBounds.Height);
             _label.LocalBounds = _panel.LocalBounds;
         }
 
