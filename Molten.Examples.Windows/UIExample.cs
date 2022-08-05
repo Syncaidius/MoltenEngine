@@ -11,7 +11,11 @@ namespace Molten.Samples
         UIWindow _window1;
         UIWindow _window2;
         UILineGraph _lineGraph;
-        UIButton _button;
+        UIButton _button1;
+        UIButton _button2;
+
+        GraphDataSet _graphSet;
+        GraphDataSet _graphSet2;
 
         public override string Description => "Demonstrates Molten's UI system.";
         public UIExample() : base("UI Example") { }
@@ -62,10 +66,16 @@ namespace Molten.Samples
                 Title = "This is another Window"
             };
 
-            _button = new UIButton()
+            _button1 = new UIButton()
             {
                 LocalBounds = new Rectangle(100, 100, 100, 30),
-                Text = "Click me!"
+                Text = "Plot Data!"
+            };
+
+            _button2 = new UIButton()
+            {
+                LocalBounds = new Rectangle(100, 140, 120, 30),
+                Text = "Plot More Data!"
             };
 
             _lineGraph = new UILineGraph()
@@ -78,25 +88,39 @@ namespace Molten.Samples
             UI.Children.Add(_window1);
             UI.Children.Add(_window2);
             UI.Children.Add(_lineGraph);
-            _window2.Children.Add(_button);
+            _window2.Children.Add(_button1);
+            _window2.Children.Add(_button2);
+
+            _button1.Pressed += _button1_Pressed;
+            _button2.Pressed += _button2_Pressed;
+        }
+
+        private void _button1_Pressed(UIElement element, ScenePointerTracker tracker)
+        {
+            _graphSet.Plot(Rng.Next(10, 450));
+        }
+
+        private void _button2_Pressed(UIElement element, ScenePointerTracker tracker)
+        {
+            _graphSet2.Plot(Rng.Next(100, 300));
         }
 
         private void PlotGraphData(UILineGraph graph)
         {
-            GraphDataSet graphSet = new GraphDataSet(200);
-            graphSet.KeyColor = Color.Grey;
-            for (int i = 0; i < graphSet.Capacity; i++)
-                graphSet.Plot(Rng.Next(0, 500));
+            _graphSet = new GraphDataSet(200);
+            _graphSet.KeyColor = Color.Grey;
+            for (int i = 0; i < _graphSet.Capacity; i++)
+                _graphSet.Plot(Rng.Next(0, 500));
 
-            GraphDataSet graphSet2 = new GraphDataSet(200);
-            graphSet2.KeyColor = Color.Lime;
+            _graphSet2 = new GraphDataSet(200);
+            _graphSet2.KeyColor = Color.Lime;
             float piInc = MathHelper.TwoPi / 20;
             float waveScale = 100;
-            for (int i = 0; i < graphSet2.Capacity; i++)
-                graphSet2.Plot(waveScale * Math.Sin(piInc * i));
+            for (int i = 0; i < _graphSet2.Capacity; i++)
+                _graphSet2.Plot(waveScale * Math.Sin(piInc * i));
 
-            graph.AddDataSet(graphSet);
-            graph.AddDataSet(graphSet2);
+            graph.AddDataSet(_graphSet);
+            graph.AddDataSet(_graphSet2);
         }
 
         protected override void OnDrawSprites(SpriteBatcher sb)

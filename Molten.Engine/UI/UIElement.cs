@@ -3,12 +3,29 @@ using System.Runtime.Serialization;
 
 namespace Molten.UI
 {
+    public delegate void UIElementPointerHandler(UIElement element, ScenePointerTracker tracker);
+
+    public delegate void UIElementHandler(UIElement element);
+
+    public delegate void UIElementPositionHandler(UIElement element, Vector2F localPos, Vector2F globalPos);
+
     /// <summary>
     /// The base class for a UI component.
     /// </summary>
     [Serializable]
     public abstract class UIElement : EngineObject
     {
+        public event UIElementPointerHandler Pressed;
+        public event UIElementPointerHandler Released;
+
+        public event UIElementPositionHandler Enter;
+        public event UIElementPositionHandler Leave;
+
+        /// <summary>
+        /// Invoked when a pointer has hovered over the 
+        /// </summary>
+        public event UIElementPositionHandler Hovered;
+
         [DataMember]
         protected internal UIRenderData BaseData { get; }
 
@@ -170,6 +187,8 @@ namespace Molten.UI
         {
             if (State == UIElementState.Default)
                 State = UIElementState.Hovered;
+
+            Hovered?.Invoke(this, localPos, globalPos);
         }
 
         /// <summary>
@@ -177,7 +196,10 @@ namespace Molten.UI
         /// </summary>
         /// <param name="localPos">The local position of the pointer, relative to the current <see cref="UIElement"/>.</param>
         /// <param name="globalPos">The global position of the pointer.</param>
-        public virtual void OnEnter(Vector2F localPos, Vector2F globalPos) { }
+        public virtual void OnEnter(Vector2F localPos, Vector2F globalPos)
+        {
+            Enter?.Invoke(this, localPos, globalPos);
+        }
 
         /// <summary>
         /// Invoked when a pointer leaves the current <see cref="UIElement"/>.
@@ -188,11 +210,17 @@ namespace Molten.UI
         {
             if (State == UIElementState.Hovered)
                 State = UIElementState.Default;
+
+            Leave?.Invoke(this, localPos, globalPos);
         }
 
         public virtual void OnPressed(ScenePointerTracker tracker)
         {
-            State = UIElementState.Pressed;
+            if (State != UIElementState.Disabled && State != UIElementState.Pressed)
+            {
+                State = UIElementState.Pressed;
+                Pressed?.Invoke(this, tracker);
+            }
         }
 
         /// <summary>
@@ -202,7 +230,11 @@ namespace Molten.UI
         /// <param name="releasedOutside">The current <see cref="UIElement"/> was released outside of it's bounds.</param>
         public virtual void OnReleased(ScenePointerTracker tracker, bool releasedOutside)
         {
-            State = UIElementState.Default;
+            if (State == UIElementState.Pressed)
+            {
+                State = UIElementState.Default;
+                Released?.Invoke(this, tracker);
+            }
         }
 
         protected override void OnDispose() { }

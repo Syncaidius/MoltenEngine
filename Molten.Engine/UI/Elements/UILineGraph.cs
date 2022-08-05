@@ -175,7 +175,9 @@ namespace Molten.UI
                     int p2Len = set.NextValueIndex;
 
                     DrawRange(sb, set, ref gm, set.GetSpan(set.NextValueIndex, p1Len), 0);
+                    DrawConnectingLine(sb, set, ref gm, p1Len - 1);
                     DrawRange(sb, set, ref gm, set.GetSpan(0, p2Len), p1Len);
+
                 }
                 else
                 {
@@ -193,6 +195,24 @@ namespace Molten.UI
             }
 
             base.OnRenderSelf(sb);
+        }
+
+        /// <summary>
+        /// Draws a connecting line between first range end-point and second range start-point
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="set"></param>
+        /// <param name="gm"></param>
+        private unsafe void DrawConnectingLine(SpriteBatcher sb, GraphDataSet set, ref GraphMeasurements gm, int startIndex)
+        {
+            DataLineStyle.Color1 = set.KeyColor;
+            DataLineStyle.Color2 = set.KeyColor;
+
+            double* points = stackalloc double[2];
+            points[0] = set[set.Count - 1];
+            points[1] = set[0];
+
+            DrawRange(sb, set, ref gm, new Span<double>(points, 2), startIndex);
         }
 
         private void DrawRange(SpriteBatcher sb, GraphDataSet set, ref GraphMeasurements gm, Span<double> range, int startIndex)

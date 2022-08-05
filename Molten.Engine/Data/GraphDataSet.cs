@@ -60,6 +60,9 @@ namespace Molten.Data
         /// <param name="value">The value to plot.</param>
         public void Plot(double value)
         {
+            if (NextValueIndex == Values.Length)
+                NextValueIndex = 0;
+
             if (Count < Values.Length)
             {
                 Values[NextValueIndex++] = value;
@@ -69,9 +72,6 @@ namespace Molten.Data
             {
                 Values[NextValueIndex] = value;
                 NextValueIndex++;
-
-                if (NextValueIndex == Values.Length)
-                    NextValueIndex = 0;
             }
 
             _isDirty = true;
