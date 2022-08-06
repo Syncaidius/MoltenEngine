@@ -10,7 +10,15 @@ namespace Molten.UI
 {
     public class UIWindow : UIElement
     {
-        public event UIElementHandler<UIWindow> Closing;
+        /// <summary>
+        /// Invoked when <see cref="Close(bool)"/> was called on the current <see cref="UIWindow"/>. The closure can be cancelled by any subscriber to this event.
+        /// </summary>
+        public event UIElementCancelHandler<UIWindow> Closing;
+
+        /// <summary>
+        /// Invoked when the current <see cref="UIWindow"/> has finished closing.
+        /// </summary>
+        public event UIElementHandler<UIWindow> Closed;
 
         UIPanel _titleBar;
         UIPanel _panel;
@@ -38,11 +46,17 @@ namespace Molten.UI
             _title.VerticalAlign = UIVerticalAlignment.Center;
 
             _btnClose = AddTitleButton("X");
+            _btnClose.Pressed += _btnClose_Pressed;
             _btnMaximize = AddTitleButton("^");
             _btnMinimize = AddTitleButton("_");
 
             Title = Name;
             TitleBarHeight = 25;
+        }
+
+        private void _btnClose_Pressed(UIElement element, ScenePointerTracker tracker)
+        {
+            Close();
         }
 
         protected override void ApplyTheme()
@@ -79,6 +93,45 @@ namespace Molten.UI
 
             for(int i = 0; i < _titleBarButtons.Count; i++)
                 _titleBarButtons[i].LocalBounds = new Rectangle(gb.Width - (TitleBarHeight * (i+1)), 0, TitleBarHeight, TitleBarHeight);
+        }
+
+        protected virtual bool OnClosing() { return true; }
+
+        protected virtual void OnClosed() { }
+
+        /// <summary>
+        /// Closes the window.
+        /// </summary>
+        /// <param name="hide">If true, the window will only be hidden, instead of removed from it's parent, once closed.</param>
+        public void Close(bool hide = false)
+        {
+            UICancelEventArgs args = new UICancelEventArgs();
+
+            // Iterate over Closing event subscribers to check if any of them want to block the closure.
+            if (Closing != null)
+            {
+                UIElementCancelHandler<UIWindow> handler = Closing;
+                Delegate[] handlers = handler.GetInvocationList();
+
+                foreach (UIElementCancelHandler<UIWindow> sub in handlers)
+                {
+                    sub(this, args);
+                    if (args.Cancel)
+                        break;
+                }
+            }
+
+            // Close if we have the go-ahead to do so.
+            if (OnClosing() && !args.Cancel)
+            {
+                if (!hide && Parent != null)
+                    Parent.Children.Remove(this);
+
+                IsVisible = false;
+
+                Closed?.Invoke(this);
+                OnClosed();
+            }
         }
 
         /// <summary>

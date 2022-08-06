@@ -11,6 +11,8 @@ namespace Molten.UI
 
     public delegate void UIElementPositionHandler(UIElement element, Vector2F localPos, Vector2F globalPos);
 
+    public delegate void UIElementCancelHandler<T>(T element, UICancelEventArgs args) where T : UIElement;
+
     /// <summary>
     /// The base class for a UI component.
     /// </summary>
@@ -261,6 +263,9 @@ namespace Molten.UI
 
         internal void Render(SpriteBatcher sb)
         {
+            if (!IsVisible)
+                return;
+
             if (IsClipEnabled && sb.PushClip(GlobalBounds))
             {
                 OnRenderSelf(sb);
@@ -284,6 +289,10 @@ namespace Molten.UI
 #endif
         }
 
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> should perform any custom rendering to display itself.
+        /// </summary>
+        /// <param name="sb"></param>
         protected virtual void OnRenderSelf(SpriteBatcher sb) { }
 
         /// <summary>
@@ -319,7 +328,33 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets whether clipping is enabled.
         /// </summary>
-        public bool IsClipEnabled { get; set; }
+        public bool IsClipEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets whether the current <see cref="UIElement"/> is visible.
+        /// </summary>
+        public bool IsVisible { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets whether the current <see cref="UIElement"/> is enabled.
+        /// </summary>
+        public bool IsEnabled
+        {
+            get => State == UIElementState.Disabled;
+            set
+            {
+                bool enabled = State != UIElementState.Disabled;
+
+                if (value != enabled)
+                {
+                    foreach (UIElement e in CompoundElements)
+                        e.IsEnabled = value;
+
+                    // Changing the state triggers a recursive theme update, so we don't need to do it ourselves here.
+                    State = value ? UIElementState.Default : UIElementState.Disabled;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets a read-only list of child components attached to the current <see cref="UIElement"/>.
