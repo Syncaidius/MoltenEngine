@@ -20,6 +20,7 @@ namespace Molten.UI
     public abstract class UIElement : EngineObject
     {
         public event UIElementPointerHandler Pressed;
+        public event UIElementPointerHandler Held;
         public event UIElementPointerHandler Released;
 
         public event UIElementPositionHandler Enter;
@@ -231,6 +232,12 @@ namespace Molten.UI
             }
         }
 
+        public virtual void OnHeld(ScenePointerTracker tracker)
+        {
+            if (State == UIElementState.Pressed)
+                Held?.Invoke(this, tracker);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -362,7 +369,7 @@ namespace Molten.UI
         public UIChildCollection Children { get; }
 
         /// <summary>
-        /// Gets a list of compound child <see cref="UIElement"/>. These cannot be externally-modified outside of the current <see cref="UIElement"/>.
+        /// Gets a list of compound child <see cref="UIElement"/>. These can only be modified by the current <see cref="UIElement"/>.
         /// </summary>
         protected UIChildCollection CompoundElements { get; }
 

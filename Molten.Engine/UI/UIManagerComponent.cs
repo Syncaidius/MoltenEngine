@@ -12,6 +12,8 @@ namespace Molten.UI
         class UITracker
         {
             public UIElement Pressed;
+
+            public UIElement Held;
         }
 
         CameraComponent _camera;
@@ -84,7 +86,17 @@ namespace Molten.UI
         {
             UpdateTracker(tracker, (uiTracker) =>
             {
-
+                if(tracker.Button == PointerButton.Left)
+                {
+                    if(uiTracker.Pressed != null)
+                    {
+                        if(uiTracker.Held != null)
+                        {
+                            uiTracker.Held = uiTracker.Pressed;
+                            uiTracker.Held.OnHeld(tracker);
+                        }
+                    }
+                }
             });
         }
 

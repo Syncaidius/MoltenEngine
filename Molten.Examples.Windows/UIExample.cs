@@ -58,7 +58,7 @@ namespace Molten.Samples
             {
                 LocalBounds = new Rectangle(100, 150, 700, 440),
                 Title = "This is a Window",
-                //ShowDebugBounds = true
+                //ShowDebugBounds = true,
             };
 
             _window2 = new UIWindow()
