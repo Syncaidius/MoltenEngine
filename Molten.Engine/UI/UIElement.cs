@@ -97,6 +97,9 @@ namespace Molten.UI
             OnUpdateBounds();
         }
 
+        /// <summary>
+        /// Invoked when a theme has been applied to the current <see cref="UIElement"/>, or <see cref="State"/> has changed.
+        /// </summary>
         protected virtual void ApplyTheme()
         {
             if (_theme == null)
@@ -114,6 +117,9 @@ namespace Molten.UI
 
         internal void Update(Timing time)
         {
+            if (!IsEnabled)
+                return;
+
             OnUpdate(time);
 
             for (int i = CompoundElements.Count - 1; i >= 0; i--)
@@ -172,6 +178,12 @@ namespace Molten.UI
             return result;
         }
 
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> is picked by a pointer or other form of input.
+        /// <para>Overriding this method allows custom picking detection to be implemented. For example, a polygonal-shaped UI element.</para>
+        /// </summary>
+        /// <param name="globalPos">The global picking position.</param>
+        /// <returns></returns>
         protected virtual bool OnPicked(Vector2F globalPos)
         {
             return true;
@@ -254,6 +266,9 @@ namespace Molten.UI
 
         protected override void OnDispose() { }
 
+        /// <summary>
+        /// Invoked when the bounds need to be updated on the current <see cref="UIElement"/>.
+        /// </summary>
         protected virtual void OnUpdateBounds() { }
 
         /// <summary>
@@ -266,6 +281,10 @@ namespace Molten.UI
         /// </summary>
         protected virtual void OnUpdateChildBounds() { }
 
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> should perform update its logic or internal state.
+        /// </summary>
+        /// <param name="time">An instance of <see cref="Timing"/>.</param>
         protected virtual void OnUpdate(Timing time) { }
 
         internal void Render(SpriteBatcher sb)
