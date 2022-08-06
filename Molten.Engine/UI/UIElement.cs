@@ -7,6 +7,8 @@ namespace Molten.UI
 
     public delegate void UIElementHandler(UIElement element);
 
+    public delegate void UIElementHandler<T>(T element) where T : UIElement;
+
     public delegate void UIElementPositionHandler(UIElement element, Vector2F localPos, Vector2F globalPos);
 
     /// <summary>
@@ -49,28 +51,29 @@ namespace Molten.UI
         {
             Margin.OnChanged += MarginPadding_OnChanged;
             Padding.OnChanged += MarginPadding_OnChanged;
+            InternalPadding.OnChanged += MarginPadding_OnChanged;
         }
 
         private void MarginPadding_OnChanged()
         {
-            UpdateBounds();
+            UpdateBounds(Parent?.RenderBounds);
         }
 
-        private void UpdateBounds()
+        private void UpdateBounds(Rectangle? parentBounds)
         {
-            if (Parent != null)
+            if (parentBounds != null)
             {
                 _globalBounds = new Rectangle()
                 {
-                    X = Parent._renderBounds.X + _localBounds.X,
-                    Y = Parent._renderBounds.Y + _localBounds.Y,
+                    X = parentBounds.Value.X + _localBounds.X,
+                    Y = parentBounds.Value.Y + _localBounds.Y,
                     Width = _localBounds.Width,
                     Height = _localBounds.Height,
                 };
             }
             else
             {
-                _globalBounds = _localBounds;
+                _globalBounds = LocalBounds;
             }
 
             _borderBounds = _globalBounds;
@@ -78,14 +81,15 @@ namespace Molten.UI
 
             _renderBounds = _borderBounds;
             _renderBounds.Inflate(-Padding.Left, -Padding.Top, -Padding.Right, -Padding.Bottom);
+            _renderBounds.Inflate(-InternalPadding.Left, -InternalPadding.Top, -InternalPadding.Right, -InternalPadding.Bottom);
 
             OnUpdateCompoundBounds();
             foreach (UIElement e in CompoundElements)
-                e.UpdateBounds();
+                e.UpdateBounds(_globalBounds);
 
             OnUpdateChildBounds();
             foreach (UIElement e in Children)
-                e.UpdateBounds();
+                e.UpdateBounds(_renderBounds);
 
             OnUpdateBounds();
         }
@@ -102,7 +106,7 @@ namespace Molten.UI
                 e.Theme = _theme;
 
             _theme?.ApplyStyle(this);
-            UpdateBounds();
+            UpdateBounds(Parent?.RenderBounds);
         }
 
         internal void Update(Timing time)
@@ -269,6 +273,15 @@ namespace Molten.UI
 
             CompoundElements.Render(sb, ref _globalBounds);
             Children.Render(sb, ref _renderBounds);
+
+#if DEBUG
+            if (ShowDebugBounds)
+            {
+                sb.DrawRect(_globalBounds, new Color(255,0,0,200), 0);
+                sb.DrawRect(_borderBounds, new Color(255,255,0,190), 0);
+                sb.DrawRect(_renderBounds, new Color(0,255,0, 180), 0);
+            }
+#endif
         }
 
         protected virtual void OnRenderSelf(SpriteBatcher sb) { }
@@ -283,7 +296,7 @@ namespace Molten.UI
             set
             {
                 _localBounds = value;
-                UpdateBounds();
+                UpdateBounds(Parent?.RenderBounds);
             }
         }
 
@@ -329,7 +342,7 @@ namespace Molten.UI
                 if (_parent != value)
                 {
                     _parent = value;
-                    UpdateBounds();
+                    UpdateBounds(Parent?.RenderBounds);
                 }
             }
         }
@@ -397,13 +410,31 @@ namespace Molten.UI
         /// </summary>
         public bool IsCompoundChild { get; internal set; }
 
+        /// <summary>
+        /// Gets the margin of the current <see cref="UIElement"/>. This spacing directly affects the <see cref="BorderBounds"/>.
+        /// </summary>
         [DataMember]
         public UISpacing Margin { get; } = new UISpacing();
 
+        /// <summary>
+        /// Gets the padding of the current <see cref="UIElement"/>. This is the spacing between the <see cref="Margin"/> and <see cref="RenderBounds"/>.
+        /// </summary>
         [DataMember]
         public UISpacing Padding { get; } = new UISpacing();
 
+        /// <summary>
+        /// Gets the current <see cref="UIElement"/>'s internal padding. This can only be modified interally, by the current <see cref="UIElement"/>. 
+        /// <para>This is the spacing between the <see cref="Margin"/> and <see cref="RenderBounds"/>, which is added to <see cref="Padding"/>.</para>
+        /// </summary>
+        protected UISpacing InternalPadding { get; } = new UISpacing();
+
         [DataMember]
         public UIAnchorFlags Anchor { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the current <see cref="UIElement"/> should show its global, border and render bounds.
+        /// <para>Only displays in debug builds. Red is global bounds. Yellow is border bounds and green is render bounds.</para>
+        /// </summary>
+        public bool ShowDebugBounds { get; set; }
     }
 }

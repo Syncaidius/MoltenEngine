@@ -57,6 +57,7 @@ namespace Molten.UI
                 return;
 
             Rectangle gBounds = GlobalBounds;
+
             _position = (Vector2F)gBounds.TopLeft;
 
             switch (_hAlign)

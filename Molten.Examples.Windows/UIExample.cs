@@ -56,14 +56,16 @@ namespace Molten.Samples
 
             _window1 = new UIWindow()
             {
-                LocalBounds = new Rectangle(100, 150, 600, 440),
-                Title = "This is a Window"
+                LocalBounds = new Rectangle(100, 150, 700, 440),
+                Title = "This is a Window",
+                //ShowDebugBounds = true
             };
 
             _window2 = new UIWindow()
             {
-                LocalBounds = new Rectangle(460, 250, 540, 550),
-                Title = "This is another Window"
+                LocalBounds = new Rectangle(660, 250, 540, 550),
+                Title = "This is another Window",
+                //ShowDebugBounds = true
             };
 
             _button1 = new UIButton()
@@ -80,16 +82,16 @@ namespace Molten.Samples
 
             _lineGraph = new UILineGraph()
             {
-                LocalBounds = new Rectangle(1050, 200, 700, 420)
+                LocalBounds = new Rectangle(0, 0, 700, 420)
             };
 
             PlotGraphData(_lineGraph);
 
             UI.Children.Add(_window1);
             UI.Children.Add(_window2);
-            UI.Children.Add(_lineGraph);
             _window2.Children.Add(_button1);
             _window2.Children.Add(_button2);
+            _window1.Children.Add(_lineGraph);
 
             _button1.Pressed += _button1_Pressed;
             _button2.Pressed += _button2_Pressed;

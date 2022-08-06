@@ -10,13 +10,14 @@ namespace Molten.UI
 {
     public class UIWindow : UIElement
     {
+        public event UIElementHandler<UIWindow> Closing;
+
         UIPanel _titleBar;
         UIPanel _panel;
         UIButton _btnClose;
         UIButton _btnMinimize;
         UIButton _btnMaximize;
         UILabel _title;
-        int _titleBarSize = 25;
         int _iconSpacing = 5;
         List<UIButton> _titleBarButtons;
 
@@ -27,7 +28,7 @@ namespace Molten.UI
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
             base.OnInitialize(engine, settings);
-            
+
             _titleBarButtons = new List<UIButton>();
 
             // Change _panel corners to only round bottom left/right.
@@ -41,6 +42,7 @@ namespace Molten.UI
             _btnMinimize = AddTitleButton("_");
 
             Title = Name;
+            TitleBarHeight = 25;
         }
 
         protected override void ApplyTheme()
@@ -62,7 +64,7 @@ namespace Molten.UI
 
         protected override bool OnPicked(Vector2F globalPos)
         {
-            return true; // !RenderBounds.Contains(globalPos);
+            return !RenderBounds.Contains(globalPos);
         }
 
         protected override void OnUpdateCompoundBounds()
@@ -71,11 +73,12 @@ namespace Molten.UI
 
             Rectangle gb = GlobalBounds;
 
-            _titleBar.LocalBounds = new Rectangle(0, 0, gb.Width, _titleBarSize);
-            _panel.LocalBounds = new Rectangle(0, _titleBarSize, gb.Width, gb.Height - _titleBarSize);
-            _title.LocalBounds = new Rectangle(_titleBarSize + (_iconSpacing * 2), 0, gb.Width, _titleBarSize);
+            _titleBar.LocalBounds = new Rectangle(0, 0, gb.Width, TitleBarHeight);
+            _panel.LocalBounds = new Rectangle(0, TitleBarHeight, gb.Width, gb.Height - TitleBarHeight);
+            _title.LocalBounds = new Rectangle(TitleBarHeight + (_iconSpacing * 2), 0, gb.Width, TitleBarHeight);
+
             for(int i = 0; i < _titleBarButtons.Count; i++)
-                _titleBarButtons[i].LocalBounds = new Rectangle(gb.Width - (_titleBarSize * (i+1)), 0, _titleBarSize, _titleBarSize);
+                _titleBarButtons[i].LocalBounds = new Rectangle(gb.Width - (TitleBarHeight * (i+1)), 0, TitleBarHeight, TitleBarHeight);
         }
 
         /// <summary>
@@ -94,12 +97,8 @@ namespace Molten.UI
         [JsonProperty]
         public int TitleBarHeight
         {
-            get => _titleBarSize;
-            set
-            {
-                _titleBarSize = value;
-                OnUpdateBounds();
-            }
+            get => InternalPadding.Top;
+            set => InternalPadding.Top = value; // Triggers a bounds update, so we don't need to do one ourselves here.
         }
 
         [UIThemeMember]
