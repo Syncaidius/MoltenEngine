@@ -404,13 +404,23 @@ namespace Molten
         }
 
         /// <summary>
-        /// Checks, if specified <see cref="SharpDX.Vector2"/> is inside <see cref="SharpDX.Rectangle"/>.
+        /// Checks, if specified <see cref="Vector2F"/> is inside <see cref="Rectangle"/>.
         /// </summary>
-        /// <param name="vector2D">Coordinate <see cref="SharpDX.Vector2"/>.</param>
-        /// <returns><c>true</c> if <see cref="SharpDX.Vector2"/> is inside <see cref="SharpDX.Rectangle"/>, otherwise <c>false</c>.</returns>
-        public bool Contains(Vector2F vector2D)
+        /// <param name="vector">Coordinate <see cref="Vector2F"/>.</param>
+        /// <returns><c>true</c> if <see cref="Vector2F"/> is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
+        public bool Contains(Vector2F vector)
         {
-            return Contains(vector2D.X, vector2D.Y);
+            return Contains(vector.X, vector.Y);
+        }
+
+        /// <summary>
+        /// Checks, if specified <see cref="Vector2I"/> is inside the current <see cref="Rectangle"/>
+        /// </summary>
+        /// <param name="vector">Coordinate <see cref="Vector2I"/>.</param>
+        /// <returns><c>true</c> if <see cref="Vector2I"/> is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
+        public bool Contains(Vector2I vector)
+        {
+            return Contains(vector.X, vector.Y);
         }
 
         /// <summary>Determines whether a specified rectangle intersects with this rectangle.</summary>
@@ -551,7 +561,19 @@ namespace Molten
                 return result;
             }
         }
+        
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "X:{0} Y:{1} Width:{2} Height:{3}", X, Y, Width, Height);
+        }
 
+        internal void MakeXYAndWidthHeight()
+        {
+            Right = (Right - Left);
+            Bottom = (Bottom - Top);
+        }
+
+        #region Operators
         /// <summary>
         /// Implements the operator ==.
         /// </summary>
@@ -587,15 +609,27 @@ namespace Molten
             return new RectangleF(value.X, value.Y, value.Width, value.Height);
         }
 
-        public override string ToString()
+        /// <summary>
+        /// Adds a <see cref="Vector2I"/> to a <see cref="Rectangle"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Rectangle"/>.</param>
+        /// <param name="vector">The <see cref="Vector2I"/>.</param>
+        /// <returns></returns>
+        public static Rectangle operator +(Rectangle value, Vector2I vector)
         {
-            return string.Format(CultureInfo.InvariantCulture, "X:{0} Y:{1} Width:{2} Height:{3}", X, Y, Width, Height);
+            return new Rectangle(value.X + vector.X, value.Y + vector.Y, value.Width, value.Height);
         }
 
-        internal void MakeXYAndWidthHeight()
+        /// <summary>
+        /// Adds a <see cref="Vector2F"/> to a <see cref="Rectangle"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Rectangle"/>.</param>
+        /// <param name="vector">The <see cref="Vector2F"/>.</param>
+        /// <returns></returns>
+        public static Rectangle operator +(Rectangle value, Vector2F vector)
         {
-            Right = (Right - Left);
-            Bottom = (Bottom - Top);
+            return new Rectangle(value.X + (int)vector.X, value.Y + (int)vector.Y, value.Width, value.Height);
         }
+        #endregion
     }
 }

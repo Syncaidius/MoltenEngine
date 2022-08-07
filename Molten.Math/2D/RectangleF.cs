@@ -559,6 +559,7 @@ namespace Molten
             return string.Format(CultureInfo.InvariantCulture, "X:{0} Y:{1} Width:{2} Height:{3}", X, Y, Width, Height);
         }
 
+        #region Operators
         /// <summary>
         /// Implements the operator ==.
         /// </summary>
@@ -593,5 +594,17 @@ namespace Molten
         {
             return new Rectangle((int)value.X, (int)value.Y, (int)value.Width, (int)value.Height);
         }
+
+        /// <summary>
+        /// Adds a <see cref="Vector2F"/> to a <see cref="RectangleF"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="RectangleF"/>.</param>
+        /// <param name="vector">The <see cref="Vector2F"/>.</param>
+        /// <returns></returns>
+        public static RectangleF operator +(RectangleF value, Vector2F vector)
+        {
+            return new RectangleF(value.X + vector.X, value.Y + vector.Y, value.Width, value.Height);
+        }
+        #endregion
     }
 }

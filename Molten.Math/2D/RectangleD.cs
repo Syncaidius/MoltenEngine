@@ -559,5 +559,16 @@ namespace Molten.DoublePrecision
         {
             return new Rectangle((int)value.X, (int)value.Y, (int)value.Width, (int)value.Height);
         }
+
+        /// <summary>
+        /// Adds a <see cref="Vector2D"/> to a <see cref="RectangleD"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="RectangleD"/>.</param>
+        /// <param name="vector">The <see cref="Vector2D"/>.</param>
+        /// <returns></returns>
+        public static RectangleD operator +(RectangleD value, Vector2D vector)
+        {
+            return new RectangleD(value.X + vector.X, value.Y + vector.Y, value.Width, value.Height);
+        }
     }
 }

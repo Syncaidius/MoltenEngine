@@ -103,14 +103,7 @@ namespace Molten.UI
         public override void OnDragged(ScenePointerTracker tracker)
         {
             base.OnDragged(tracker);
-
-            Rectangle lBounds = LocalBounds;
-
-            lBounds.X += tracker.IntegerDelta.X;
-            lBounds.Y += tracker.IntegerDelta.Y;
-
-            // TODO track drag-defecit (leftovers from non-integer fractionals).
-            LocalBounds = lBounds;
+            LocalBounds += tracker.IntegerDelta;
         }
 
         protected virtual bool OnClosing() { return true; }

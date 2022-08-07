@@ -338,23 +338,6 @@ namespace Molten
             return (X <= x) && (x < Right) && (Y <= y) && (y < Bottom);
         }
 
-        ///// <summary>Determines whether this rectangle contains a specified Point.</summary>
-        ///// <param name="value">The Pouint to evaluate.</param>
-        //public bool Contains(Pouint value)
-        //{
-        //    bool result;
-        //    Contains(ref value, out result);
-        //    return result;
-        //}
-
-        ///// <summary>Determines whether this rectangle contains a specified Point.</summary>
-        ///// <param name="value">The Pouint to evaluate.</param>
-        ///// <param name="result">[OutAttribute] true if the specified Pouint is contained within this rectangle; false otherwise.</param>
-        //public void Contains(ref Pouint value, out bool result)
-        //{
-        //    result = (X <= value.X) && (value.X < Right) && (Y <= value.Y) && (value.Y < Bottom);
-        //}
-
         /// <summary>Determines whether this rectangle entirely contains a specified rectangle.</summary>
         /// <param name="value">The rectangle to evaluate.</param>
         public bool Contains(RectangleUI value)
@@ -384,11 +367,21 @@ namespace Molten
         }
 
         /// <summary>
-        /// Checks, if specified <see cref="SharpDX.Vector2"/> is inside <see cref="SharpDX.Rectangle"/>.
+        /// Checks, if specified <see cref="Vector2F"/> is inside <see cref="Rectangle"/>.
         /// </summary>
-        /// <param name="vector2D">Coordinate <see cref="SharpDX.Vector2"/>.</param>
-        /// <returns><c>true</c> if <see cref="SharpDX.Vector2"/> is inside <see cref="SharpDX.Rectangle"/>, otherwise <c>false</c>.</returns>
+        /// <param name="vector2D">Coordinate <see cref="Vector2F"/>.</param>
+        /// <returns><c>true</c> if <see cref="Vector2F"/> is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
         public bool Contains(Vector2F vector2D)
+        {
+            return Contains(vector2D.X, vector2D.Y);
+        }
+
+        /// <summary>
+        /// Checks, if specified <see cref="Vector2UI"/> is inside <see cref="Rectangle"/>.
+        /// </summary>
+        /// <param name="vector2D">Coordinate <see cref="Vector2UI"/>.</param>
+        /// <returns><c>true</c> if <see cref="Vector2UI"/> is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
+        public bool Contains(Vector2UI vector2D)
         {
             return Contains(vector2D.X, vector2D.Y);
         }
@@ -532,6 +525,18 @@ namespace Molten
             }
         }
 
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "X:{0} Y:{1} Width:{2} Height:{3}", X, Y, Width, Height);
+        }
+
+        internal void MakeXYAndWidthHeight()
+        {
+            Right = (Right - Left);
+            Bottom = (Bottom - Top);
+        }
+
+        #region Operators
         /// <summary>
         /// Implements the operator ==.
         /// </summary>
@@ -567,15 +572,16 @@ namespace Molten
             return new RectangleF(value.X, value.Y, value.Width, value.Height);
         }
 
-        public override string ToString()
+        /// <summary>
+        /// Adds a <see cref="Vector2UI"/> to a <see cref="RectangleUI"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="RectangleUI"/>.</param>
+        /// <param name="vector">The <see cref="Vector2UI"/>.</param>
+        /// <returns></returns>
+        public static RectangleUI operator +(RectangleUI value, Vector2UI vector)
         {
-            return string.Format(CultureInfo.InvariantCulture, "X:{0} Y:{1} Width:{2} Height:{3}", X, Y, Width, Height);
+            return new RectangleUI(value.X + vector.X, value.Y + vector.Y, value.Width, value.Height);
         }
-
-        internal void MakeXYAndWidthHeight()
-        {
-            Right = (Right - Left);
-            Bottom = (Bottom - Top);
-        }
+        #endregion
     }
 }
