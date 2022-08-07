@@ -15,6 +15,10 @@ namespace Molten.UI
 
     public delegate void UIElementCancelHandler<T>(T element, UICancelEventArgs args) where T : UIElement;
 
+    public delegate void UIParentChangedHandler(UIElement oldParent, UIElement newParent);
+
+    public delegate void UIManagerChangedHandler(UIManagerComponent oldManager, UIManagerComponent newManager);
+
     /// <summary>
     /// The base class for a UI component.
     /// </summary>
@@ -56,6 +60,17 @@ namespace Molten.UI
         /// </summary>
         public event UIElementPositionHandler Hovered;
 
+        /// <summary>
+        /// Invoked when the parent of the current <see cref="UIElement"/> has changed.
+        /// </summary>
+        public event UIParentChangedHandler ParentChanged;
+
+        /// <summary>
+        /// Invoked when the <see cref="UIManagerComponent"/> of the current <see cref="UIElement"/> has changed.
+        /// </summary>
+        public event UIManagerChangedHandler ManagerChanged;
+
+
         UIManagerComponent _manager;
         UIElement _parent;
         UITheme _theme;
@@ -67,8 +82,8 @@ namespace Molten.UI
 
         public UIElement()
         {
-            Children = new UIChildCollection(this);
-            CompoundElements = new UIChildCollection(this);
+            Children = new UIChildCollection(this, false);
+            CompoundElements = new UIChildCollection(this, true);
             Engine = Engine.Current;
             State = UIElementState.Default;
             OnInitialize(Engine, Engine.Settings.UI);
@@ -303,6 +318,34 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Sends the current <see cref="UIElement"/> to the front of it's parents child stack, so it will be drawn on top of all other children.
+        /// </summary>
+        public void BringToFront()
+        {
+            if (Parent == null)
+                return;
+
+            if (IsCompoundChild)
+                Parent.CompoundElements.BringToFront(this);
+            else
+                Parent.Children.BringToFront(this);
+        }
+
+        /// <summary>
+        /// Sends the current <see cref="UIElement"/> to the back of it's parents child stack, so it will be drawn underneath all other children.
+        /// </summary>
+        public void SendToBack()
+        {
+            if (Parent == null)
+                return;
+
+            if (IsCompoundChild)
+                Parent.CompoundElements.SendToBack(this);
+            else
+                Parent.Children.SendToBack(this);
+        }
+
         protected override void OnDispose() { }
 
         /// <summary>
@@ -319,6 +362,26 @@ namespace Molten.UI
         /// Invoked right before updating the bounds of child elements.
         /// </summary>
         protected virtual void OnUpdateChildBounds() { }
+
+        /// <summary>
+        /// Invoked when the parent of the current <see cref="UIElement"/> has changed.
+        /// </summary>
+        /// <param name="oldParent">The old parent, or null if none.</param>
+        /// <param name="newParent">The new parent, or null if none.</param>
+        protected virtual void OnParentChanged(UIElement oldParent, UIElement newParent)
+        {
+            ParentChanged?.Invoke(oldParent, newParent);
+        }
+
+        /// <summary>
+        /// Invoked when the <see cref="UIManagerComponent"/> of the current <see cref="UIElement"/> has changed.
+        /// </summary>
+        /// <param name="oldManager">The old manager, or null if none.</param>
+        /// <param name="newManager">The new manager, or null if none.</param>
+        protected virtual void OnManagerChanged(UIManagerComponent oldManager, UIManagerComponent newManager)
+        {
+            ManagerChanged?.Invoke(oldManager, newManager);
+        }
 
         /// <summary>
         /// Invoked when the current <see cref="UIElement"/> should perform update its logic or internal state.
@@ -441,7 +504,9 @@ namespace Molten.UI
             {
                 if (_parent != value)
                 {
+                    UIElement oldParent = _parent;
                     _parent = value;
+                    OnParentChanged(oldParent, _parent);
                     UpdateBounds(Parent?.RenderBounds);
                 }
             }
@@ -462,7 +527,9 @@ namespace Molten.UI
             {
                 if (_manager != value)
                 {
+                    UIManagerComponent oldManager = _manager;
                     _manager = value;
+                    OnManagerChanged(oldManager, _manager);
                     CompoundElements.SetManager(_manager);
                     Children.SetManager(_manager);
                 }

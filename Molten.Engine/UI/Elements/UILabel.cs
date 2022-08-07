@@ -181,10 +181,10 @@ namespace Molten.UI
                         {
                             Font = font;
                         },
-                            new TextFontParameters()
-                            {
-                                FontSize = 16,
-                            });
+                        new TextFontParameters()
+                        {
+                            FontSize = 16,
+                        });
                     }
                 }
             }

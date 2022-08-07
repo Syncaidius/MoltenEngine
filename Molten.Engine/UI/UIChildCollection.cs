@@ -18,8 +18,9 @@ namespace Molten.UI
         IReadOnlyList<UIElement> _readOnly;
         UIElement _element;
 
-        internal UIChildCollection(UIElement parent)
+        internal UIChildCollection(UIElement parent, bool isCompound)
         {
+            IsCompound = isCompound;
             _element = parent;
             _elements = new List<UIElement>();
             _readOnly = _elements.AsReadOnly();
@@ -54,7 +55,7 @@ namespace Molten.UI
 
             // Set new element parent.
             child.Manager = _element.Manager;
-            child.IsCompoundChild = true;
+            child.IsCompoundChild = IsCompound;
             _elements.Add(child);
             child.Parent = _element;
             child.Theme = _element.Theme;
@@ -73,6 +74,40 @@ namespace Molten.UI
 
             _element.Manager = null;
             OnElementRemoved?.Invoke(child);
+        }
+
+        internal void BringToFront(UIElement child)
+        {
+            if (child.Parent != _element)
+                return;
+
+            _elements.Remove(child);
+            _elements.Add(child);
+        }
+
+        internal void SendToBack(UIElement child)
+        {
+            if (child.Parent != _element)
+                return;
+
+            _elements.Remove(child);
+            _elements.Insert(0, child);
+        }
+
+        public bool IsAtFront(UIElement child)
+        {
+            if (child.Parent != _element)
+                return false;
+
+            return _elements.LastOrDefault() == child;
+        }
+
+        public bool IsAtBack(UIElement child)
+        {
+            if (child.Parent != _element)
+                return false;
+
+            return _elements.FirstOrDefault() == child;
         }
 
         internal void Render(SpriteBatcher sb, ref Rectangle renderBounds)
@@ -108,6 +143,8 @@ namespace Molten.UI
         }
 
         public int Count => _elements.Count;
+
+        public bool IsCompound { get; }
 
         public UIElement this[int index] => _elements[index]; 
     }

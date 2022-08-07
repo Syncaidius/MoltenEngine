@@ -98,6 +98,7 @@ namespace Molten.UI
         public override void OnPressed(ScenePointerTracker tracker)
         {
             base.OnPressed(tracker);
+            BringToFront();
         }
 
         public override void OnDragged(ScenePointerTracker tracker)
