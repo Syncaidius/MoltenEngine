@@ -8,7 +8,9 @@ namespace Molten
         IPointerReceiver _pressedObj = null;
         Vector2F _dragDistance;
         Vector2F _delta;
+        Vector2I _iDelta;
         Vector2F _curPos;
+        Vector2F _dragDefecit;
         bool _inputDragged = false;
 
 
@@ -42,6 +44,8 @@ namespace Molten
         /// </summary>
         public Vector2F Delta => _delta;
 
+        public Vector2I IntegerDelta => _iDelta;
+
         /// <summary>
         /// The total distance moved from the initial 'press' location.
         /// </summary>
@@ -57,12 +61,22 @@ namespace Molten
             Device = pDevice;
             SetID = setID;
             Button = button;
+            _curPos = pDevice.Position;
         }
 
         internal void Update(SceneManager manager, Timing time)
         {
+            _delta = Device.Position - _curPos;
             _curPos = Device.Position;
-            _delta = Device.Delta;
+
+            _dragDefecit.X = _delta.X + _dragDefecit.X;
+            _dragDefecit.Y = _delta.Y + _dragDefecit.Y;
+
+            _iDelta.X = (int)_dragDefecit.X;
+            _iDelta.Y = (int)_dragDefecit.Y;
+
+            _dragDefecit.X -= _iDelta.X;
+            _dragDefecit.Y -= _iDelta.Y;
 
             // Handle clicking and dragging.
             if (Device.IsDown(Button, SetID))
@@ -83,7 +97,7 @@ namespace Molten
                         }
 
                         // Trigger press-start event
-                        _pressedObj.PointerPressed(this, _curPos);
+                        _pressedObj.PointerPressed(this);
                     }
 
                     _inputDragged = false;
@@ -98,7 +112,7 @@ namespace Molten
                     if (distDragged >= _dragThreshold)
                     {
                         _inputDragged = true;
-                        _pressedObj.PointerDrag(this, _curPos, _delta);
+                        _pressedObj.PointerDrag(this);
                     }
                 }
             }
@@ -108,9 +122,9 @@ namespace Molten
                 if (_pressedObj != null)
                 {
                     if (_pressedObj.Contains(_curPos) == true)
-                        _pressedObj.PointerReleased(this, _curPos, _inputDragged);
+                        _pressedObj.PointerReleased(this, _inputDragged);
                     else
-                        _pressedObj.PointerReleasedOutside(this, _curPos);
+                        _pressedObj.PointerReleasedOutside(this);
 
                     _pressedObj = null;
                 }
@@ -128,7 +142,7 @@ namespace Molten
 
             if (_pressedObj != null)
             {
-                _pressedObj.PointerReleased(this, _curPos, false);
+                _pressedObj.PointerReleased(this, false);
                 _pressedObj = null;
             }
         }

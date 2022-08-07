@@ -95,6 +95,24 @@ namespace Molten.UI
                 _titleBarButtons[i].LocalBounds = new Rectangle(gb.Width - (TitleBarHeight * (i+1)), 0, TitleBarHeight, TitleBarHeight);
         }
 
+        public override void OnPressed(ScenePointerTracker tracker)
+        {
+            base.OnPressed(tracker);
+        }
+
+        public override void OnDragged(ScenePointerTracker tracker)
+        {
+            base.OnDragged(tracker);
+
+            Rectangle lBounds = LocalBounds;
+
+            lBounds.X += tracker.IntegerDelta.X;
+            lBounds.Y += tracker.IntegerDelta.Y;
+
+            // TODO track drag-defecit (leftovers from non-integer fractionals).
+            LocalBounds = lBounds;
+        }
+
         protected virtual bool OnClosing() { return true; }
 
         protected virtual void OnClosed() { }

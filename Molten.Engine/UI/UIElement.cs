@@ -11,6 +11,8 @@ namespace Molten.UI
 
     public delegate void UIElementPositionHandler(UIElement element, Vector2F localPos, Vector2F globalPos);
 
+    public delegate void UIElementDeltaPositionHandler(UIElement element, ScenePointerTracker tracker, Vector2F localPos, Vector2F globalPos, Vector2I delta);
+
     public delegate void UIElementCancelHandler<T>(T element, UICancelEventArgs args) where T : UIElement;
 
     /// <summary>
@@ -19,11 +21,34 @@ namespace Molten.UI
     [Serializable]
     public abstract class UIElement : EngineObject
     {
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> is pressed by a <see cref="ScenePointerTracker"/>.
+        /// </summary>
         public event UIElementPointerHandler Pressed;
-        public event UIElementPointerHandler Held;
+
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> is held by a <see cref="ScenePointerTracker"/>.
+        /// </summary>
+        public event UIElementDeltaPositionHandler Held;
+
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> is dragged by a <see cref="ScenePointerTracker"/>.
+        /// </summary>
+        public event UIElementDeltaPositionHandler Dragged;
+
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> is released by a <see cref="ScenePointerTracker"/>.
+        /// </summary>
         public event UIElementPointerHandler Released;
 
+        /// <summary>
+        /// Invoked when a pointer or other form of input enters the bounds of the current <see cref="UIElement"/>.
+        /// </summary>
         public event UIElementPositionHandler Enter;
+
+        /// <summary>
+        /// Invoked when a pointer or other form of input leaves the bounds of the current <see cref="UIElement"/>.
+        /// </summary>
         public event UIElementPositionHandler Leave;
 
         /// <summary>
@@ -217,8 +242,9 @@ namespace Molten.UI
         /// </summary>
         /// <param name="localPos">The local position of the pointer, relative to the current <see cref="UIElement"/>.</param>
         /// <param name="globalPos">The global position of the pointer.</param>
-        public virtual void OnEnter(Vector2F localPos, Vector2F globalPos)
+        public virtual void OnEnter(Vector2F globalPos)
         {
+            Vector2F localPos = globalPos - (Vector2F)_globalBounds.TopLeft;
             Enter?.Invoke(this, localPos, globalPos);
         }
 
@@ -227,11 +253,12 @@ namespace Molten.UI
         /// </summary>
         /// <param name="localPos">The local position of the pointer, relative to the current <see cref="UIElement"/>.</param>
         /// <param name="globalPos">The global position of the pointer.</param>
-        public virtual void OnLeave(Vector2F localPos, Vector2F globalPos)
+        public virtual void OnLeave(Vector2F globalPos)
         {
             if (State == UIElementState.Hovered)
                 State = UIElementState.Default;
 
+            Vector2F localPos = globalPos - (Vector2F)_globalBounds.TopLeft;
             Leave?.Invoke(this, localPos, globalPos);
         }
 
@@ -247,7 +274,19 @@ namespace Molten.UI
         public virtual void OnHeld(ScenePointerTracker tracker)
         {
             if (State == UIElementState.Pressed)
-                Held?.Invoke(this, tracker);
+            {
+                Vector2F localPos = tracker.Position - (Vector2F)_globalBounds.TopLeft;
+                Held?.Invoke(this, tracker, localPos, tracker.Position, tracker.IntegerDelta);
+            }
+        }
+
+        public virtual void OnDragged(ScenePointerTracker tracker)
+        {
+            if (State == UIElementState.Pressed)
+            {
+                Vector2F localPos = tracker.Position - (Vector2F)_globalBounds.TopLeft;
+                Dragged?.Invoke(this, tracker, localPos, tracker.Position, tracker.IntegerDelta);
+            }
         }
 
         /// <summary>

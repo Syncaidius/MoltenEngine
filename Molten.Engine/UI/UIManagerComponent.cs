@@ -14,6 +14,15 @@ namespace Molten.UI
             public UIElement Pressed;
 
             public UIElement Held;
+
+            public UIElement Dragging;
+
+            public void Reset()
+            {
+                Pressed = null;
+                Held = null;
+                Dragging = null;
+            }
         }
 
         CameraComponent _camera;
@@ -74,15 +83,28 @@ namespace Molten.UI
             return _root.Pick(point) != null;
         }
 
-        public void PointerDrag(ScenePointerTracker tracker, Vector2F pos, Vector2F delta)
+        public void PointerDrag(ScenePointerTracker tracker)
         {
             UpdateTracker(tracker, (uiTracker) =>
             {
+                if (uiTracker.Pressed != null)
+                {
+                    if (uiTracker.Dragging == null)
+                    {
+                        if (uiTracker.Pressed.Contains(tracker.Position))
+                        {
+                            uiTracker.Dragging = uiTracker.Pressed;
 
+                            // TODO perform start of drag-drop if element allows being drag-dropped
+                        }
+                    }
+
+                    uiTracker.Dragging?.OnDragged(tracker);
+                }
             });
         }
 
-        public void PointerHeld(ScenePointerTracker tracker, Vector2F pos, Vector2F delta)
+        public void PointerHeld(ScenePointerTracker tracker)
         {
             UpdateTracker(tracker, (uiTracker) =>
             {
@@ -90,7 +112,7 @@ namespace Molten.UI
                 {
                     if(uiTracker.Pressed != null)
                     {
-                        if(uiTracker.Held != null)
+                        if(uiTracker.Held == null && uiTracker.Pressed.Contains(tracker.Position))
                         {
                             uiTracker.Held = uiTracker.Pressed;
                             uiTracker.Held.OnHeld(tracker);
@@ -100,7 +122,7 @@ namespace Molten.UI
             });
         }
 
-        public void PointerPressed(ScenePointerTracker tracker, Vector2F pos)
+        public void PointerPressed(ScenePointerTracker tracker)
         {
             UpdateTracker(tracker, (uiTracker) =>
             {
@@ -108,7 +130,7 @@ namespace Molten.UI
                 {
                     if (uiTracker.Pressed == null)
                     {
-                        uiTracker.Pressed = _root.Pick(pos);
+                        uiTracker.Pressed = _root.Pick(tracker.Position);
                         if (uiTracker.Pressed != null)
                             uiTracker.Pressed.OnPressed(tracker);
                     }
@@ -116,19 +138,19 @@ namespace Molten.UI
             });
         }
 
-        public void PointerReleasedOutside(ScenePointerTracker tracker, Vector2F pos)
+        public void PointerReleasedOutside(ScenePointerTracker tracker)
         {
             UpdateTracker(tracker, (uiTracker) =>
             {
                 if (tracker.Button == PointerButton.Left)
                 {
                     uiTracker.Pressed?.OnReleased(tracker, true);
-                    uiTracker.Pressed = null;
+                    uiTracker.Reset();
                 }
             });
         }
 
-        public void PointerReleased(ScenePointerTracker tracker, Vector2F pos, bool wasDragged)
+        public void PointerReleased(ScenePointerTracker tracker, bool wasDragged)
         {
             UpdateTracker(tracker, (uiTracker) =>
             {
@@ -136,9 +158,15 @@ namespace Molten.UI
                 {
                     if (uiTracker.Pressed != null)
                     {
-                        bool inside = uiTracker.Pressed.Contains(pos);
+                        bool inside = uiTracker.Pressed.Contains(tracker.Position);
                         uiTracker.Pressed.OnReleased(tracker, !inside);
-                        uiTracker.Pressed = null;
+
+                        if(uiTracker.Dragging != null)
+                        {
+                            // TODO perform drop action of drag-drop, if element allows being drag-dropped and target can receive drag-drop actions.
+                        }
+
+                        uiTracker.Reset();
                     }
                 }
             });
@@ -168,20 +196,14 @@ namespace Molten.UI
 
             // Trigger on-leave of previous hover element.
             if (HoverElement != prevHover)
-            {
-                if (prevHover != null)
-                {
-                    localPos = pos - (Vector2F)prevHover.GlobalBounds.TopLeft;
-                    prevHover.OnLeave(localPos, pos);
-                }
-            }
+                prevHover?.OnLeave(pos);
 
             // Update currently-hovered element
             if (HoverElement != null)
             {
                 localPos = pos - (Vector2F)HoverElement.GlobalBounds.TopLeft;
                 if (prevHover != HoverElement)
-                    HoverElement.OnEnter(localPos, pos);
+                    HoverElement.OnEnter(pos);
 
                 HoverElement.OnHover(localPos, pos);
             }
