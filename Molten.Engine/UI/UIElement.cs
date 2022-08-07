@@ -255,7 +255,6 @@ namespace Molten.UI
         /// <summary>
         /// Invoked when a pointer enters the current <see cref="UIElement"/>.
         /// </summary>
-        /// <param name="localPos">The local position of the pointer, relative to the current <see cref="UIElement"/>.</param>
         /// <param name="globalPos">The global position of the pointer.</param>
         public virtual void OnEnter(Vector2F globalPos)
         {
@@ -266,7 +265,6 @@ namespace Molten.UI
         /// <summary>
         /// Invoked when a pointer leaves the current <see cref="UIElement"/>.
         /// </summary>
-        /// <param name="localPos">The local position of the pointer, relative to the current <see cref="UIElement"/>.</param>
         /// <param name="globalPos">The global position of the pointer.</param>
         public virtual void OnLeave(Vector2F globalPos)
         {
@@ -282,6 +280,7 @@ namespace Molten.UI
             if (State != UIElementState.Disabled && State != UIElementState.Pressed)
             {
                 State = UIElementState.Pressed;
+                ParentWindow?.BringToFront();
                 Pressed?.Invoke(this, tracker);
             }
         }
@@ -603,5 +602,10 @@ namespace Molten.UI
         /// <para>Only displays in debug builds. Red is global bounds. Yellow is border bounds and green is render bounds.</para>
         /// </summary>
         public bool ShowDebugBounds { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="UIWindow"/> that contains the current <see cref="UIElement"/>.
+        /// </summary>
+        public UIWindow ParentWindow { get; internal set; }
     }
 }

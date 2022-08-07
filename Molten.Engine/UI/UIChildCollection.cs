@@ -60,6 +60,11 @@ namespace Molten.UI
             child.Parent = _element;
             child.Theme = _element.Theme;
 
+            if (_element is UIWindow window)
+                child.ParentWindow = window;
+            else
+                child.ParentWindow = _element.ParentWindow;
+
             OnElementAdded?.Invoke(child);
         }
 
@@ -71,6 +76,7 @@ namespace Molten.UI
             _elements.Remove(child);
             child.IsCompoundChild = false;
             child.Parent = null;
+            child.ParentWindow = null;
 
             _element.Manager = null;
             OnElementRemoved?.Invoke(child);
@@ -78,7 +84,7 @@ namespace Molten.UI
 
         internal void BringToFront(UIElement child)
         {
-            if (child.Parent != _element)
+            if (child.Parent != _element || _elements.LastOrDefault() == child)
                 return;
 
             _elements.Remove(child);
@@ -87,7 +93,7 @@ namespace Molten.UI
 
         internal void SendToBack(UIElement child)
         {
-            if (child.Parent != _element)
+            if (child.Parent != _element || _elements.FirstOrDefault() == child)
                 return;
 
             _elements.Remove(child);
