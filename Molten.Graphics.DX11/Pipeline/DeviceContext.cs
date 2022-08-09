@@ -39,7 +39,7 @@ namespace Molten.Graphics
             Device = device;
             Log = log;
 
-            if (_context->GetType() == DeviceContextType.DeviceContextImmediate)
+            if (_context->GetType() == DeviceContextType.Immediate)
                 Type = GraphicsContextType.Immediate;
             else
                 Type = GraphicsContextType.Deferred;
@@ -86,8 +86,8 @@ namespace Molten.Graphics
             MappedSubresource mapping = new MappedSubresource();
             Native->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
 
-            bool canWrite = mapType != Map.MapRead;
-            bool canRead = mapType == Map.MapRead || mapType == Map.MapReadWrite;
+            bool canWrite = mapType != Map.Read;
+            bool canRead = mapType == Map.Read || mapType == Map.ReadWrite;
             stream = new RawStream(mapping.PData, uint.MaxValue, canRead, canWrite);
 
             return mapping;

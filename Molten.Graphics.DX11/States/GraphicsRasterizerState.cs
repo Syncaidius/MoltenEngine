@@ -17,8 +17,8 @@ namespace Molten.Graphics
         {
             _defaultDesc = new RasterizerDesc()
             {
-                FillMode = FillMode.FillSolid,
-                CullMode = CullMode.CullBack,
+                FillMode = FillMode.Solid,
+                CullMode = CullMode.Back,
                 FrontCounterClockwise = 0,
                 DepthBias = 0,
                 SlopeScaledDepthBias = 0.0f,

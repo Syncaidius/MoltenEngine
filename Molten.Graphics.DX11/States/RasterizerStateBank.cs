@@ -11,7 +11,7 @@ namespace Molten.Graphics
             //wireframe preset.
              AddPreset(RasterizerPreset.Wireframe, new GraphicsRasterizerState(device)
             {
-                FillMode = FillMode.FillWireframe,
+                FillMode = FillMode.Wireframe,
             });
 
             //scissor test preset
@@ -23,7 +23,7 @@ namespace Molten.Graphics
             //no culling preset.
              AddPreset(RasterizerPreset.NoCulling, new GraphicsRasterizerState(device)
             {
-                CullMode = CullMode.CullNone,
+                CullMode = CullMode.None,
             });
 
              AddPreset(RasterizerPreset.DefaultMultisample, new GraphicsRasterizerState(device)

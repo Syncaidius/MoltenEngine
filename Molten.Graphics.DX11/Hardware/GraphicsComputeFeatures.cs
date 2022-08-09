@@ -18,7 +18,7 @@ namespace Molten.Graphics
             MaxDispatchZDimension = 65535;
 
             FeatureDataD3D10XHardwareOptions fData =
-                _features.GetFeatureSupport<FeatureDataD3D10XHardwareOptions>(Feature.FeatureD3D10XHardwareOptions);
+                _features.GetFeatureSupport<FeatureDataD3D10XHardwareOptions>(Feature.D3D10XHardwareOptions);
 
             Supported = fData.ComputeShadersPlusRawAndStructuredBuffersViaShader4X > 0;
         }
@@ -33,7 +33,7 @@ namespace Molten.Graphics
                 InFormat = format,
             };
 
-            _features.GetFeatureSupport(Feature.FeatureFormatSupport2, &pData);
+            _features.GetFeatureSupport(Feature.FormatSupport2, &pData);
 
             return (FormatSupport2)pData.OutFormatSupport2;
         }

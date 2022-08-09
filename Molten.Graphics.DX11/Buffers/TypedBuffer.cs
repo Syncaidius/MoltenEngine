@@ -46,9 +46,9 @@ namespace Molten.Graphics
             bool shaderResource = true)
             : base(device, 
                   flags,
-                  (shaderResource ? BindFlag.BindShaderResource : 0) | (unorderedAccess ? BindFlag.BindUnorderedAccess : 0), 
+                  (shaderResource ? BindFlag.ShaderResource : 0) | (unorderedAccess ? BindFlag.UnorderedAccess : 0), 
                   capacity, 
-                  ResourceMiscFlag.ResourceMiscBufferStructured)
+                  ResourceMiscFlag.BufferStructured)
         {
             _bufferType = typeof(T);
             ValidateType();
@@ -61,9 +61,9 @@ namespace Molten.Graphics
         public TypedBuffer(Device device, BufferMode mode, uint stride, uint capacity)
             : base(device, 
                   mode, 
-                  BindFlag.BindShaderResource, 
+                  BindFlag.ShaderResource, 
                   capacity, 
-                  ResourceMiscFlag.ResourceMiscBufferStructured)
+                  ResourceMiscFlag.BufferStructured)
         {
             ValidateType();
         }
@@ -86,7 +86,7 @@ namespace Molten.Graphics
             if (allocatedType != _bufferType)
                 throw new InvalidOperationException("Typed buffers can only accept the data type they were initialized with.");
 
-            if (HasFlags(BindFlag.BindShaderResource))
+            if (HasFlags(BindFlag.ShaderResource))
             {
                 srv.Desc = new ShaderResourceViewDesc()
                 {
@@ -104,17 +104,17 @@ namespace Molten.Graphics
             }
 
             // See UAV notes: https://docs.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-resources-intro#raw-views-of-buffers
-            if (HasFlags(BindFlag.BindUnorderedAccess))
+            if (HasFlags(BindFlag.UnorderedAccess))
             {
                 UnorderedAccessViewDesc uavDesc = new UnorderedAccessViewDesc()
                 {
                     Format = Format.FormatUnknown,
-                    ViewDimension = UavDimension.UavDimensionBuffer,
+                    ViewDimension = UavDimension.Buffer,
                     Buffer = new BufferUav()
                     {
                         NumElements = elementCount,
                         FirstElement = byteOffset / Description.StructureByteStride,
-                        Flags = (uint)BufferUavFlag.BufferUavFlagRaw,
+                        Flags = (uint)BufferUavFlag.Raw,
                     }
                 };
                 UAV.Create(this);

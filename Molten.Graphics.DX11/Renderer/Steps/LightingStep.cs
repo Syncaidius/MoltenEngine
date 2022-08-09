@@ -16,7 +16,7 @@ namespace Molten.Graphics
             uint maxLights = 2000; // TODO move to graphics settings
             uint bufferByteSize = stride * maxLights;
             _lightDataBuffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicRing, 
-                BindFlag.BindShaderResource, bufferByteSize, ResourceMiscFlag.ResourceMiscBufferStructured, structuredStride: stride);
+                BindFlag.ShaderResource, bufferByteSize, ResourceMiscFlag.BufferStructured, structuredStride: stride);
             _lightSegment = _lightDataBuffer.Allocate<LightData>(maxLights);
 
             // Load shaders

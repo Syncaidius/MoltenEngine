@@ -18,14 +18,14 @@ namespace Molten.Graphics
             AddPreset(DepthStencilPreset.ZDisabled, new GraphicsDepthState(device)
             {
                 IsDepthEnabled = false,
-                DepthWriteMask = DepthWriteMask.DepthWriteMaskZero,
+                DepthWriteMask = DepthWriteMask.Zero,
             });
 
             AddPreset(DepthStencilPreset.Sprite2D, new GraphicsDepthState(device)
             {
                 IsDepthEnabled = true,
                 IsStencilEnabled = true,
-                DepthComparison = ComparisonFunc.ComparisonLessEqual,
+                DepthComparison = ComparisonFunc.LessEqual,
             });
         }
 

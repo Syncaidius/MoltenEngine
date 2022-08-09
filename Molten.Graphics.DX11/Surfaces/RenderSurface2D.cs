@@ -52,7 +52,7 @@ namespace Molten.Graphics
 
             if (_description.SampleDesc.Count > 1)
             {
-                RTV.Desc.ViewDimension = RtvDimension.RtvDimensionTexture2Dmsarray;
+                RTV.Desc.ViewDimension = RtvDimension.Texture2Dmsarray;
                 RTV.Desc.Texture2DMSArray = new Tex2DmsArrayRtv
                 {
                     ArraySize = _description.ArraySize,
@@ -61,7 +61,7 @@ namespace Molten.Graphics
             }
             else
             {
-                RTV.Desc.ViewDimension = RtvDimension.RtvDimensionTexture2Darray;
+                RTV.Desc.ViewDimension = RtvDimension.Texture2Darray;
                 RTV.Desc.Texture2DArray = new Tex2DArrayRtv()
                 {
                     ArraySize = _description.ArraySize,

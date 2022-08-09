@@ -113,7 +113,7 @@ namespace Molten.Graphics
                 MappedSubresource destBox = context.MapResource(
                     texture.NativePtr,
                     subLevel,
-                    Map.MapWriteDiscard,
+                    Map.WriteDiscard,
                     0,
                     out stream);
 

@@ -53,7 +53,7 @@ namespace Molten.Graphics
                     InputSlot = 0, // This does not need to be set. A shader has a single layout, 
                     InstanceDataStepRate = 0, // This does not need to be set. The data is set via Context.DrawInstanced + vertex data/layout.
                     AlignedByteOffset = 16 * pDesc.Register,
-                    InputSlotClass = InputClassification.InputPerVertexData,
+                    InputSlotClass = InputClassification.PerVertexData,
                 };
 
                 RegisterComponentMaskFlags pDescMask = (RegisterComponentMaskFlags)pDesc.Mask;

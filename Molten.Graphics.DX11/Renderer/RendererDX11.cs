@@ -51,8 +51,8 @@ namespace Molten.Graphics
             _clearedSurfaces = new HashSet<Texture2D>();
 
             uint maxBufferSize = (uint)ByteMath.FromMegabytes(3.5);
-            StaticVertexBuffer = new GraphicsBuffer(Device, BufferMode.Default, BindFlag.BindVertexBuffer | BindFlag.BindIndexBuffer, maxBufferSize);
-            DynamicVertexBuffer = new GraphicsBuffer(Device, BufferMode.DynamicRing, BindFlag.BindVertexBuffer | BindFlag.BindIndexBuffer, maxBufferSize);
+            StaticVertexBuffer = new GraphicsBuffer(Device, BufferMode.Default, BindFlag.VertexBuffer | BindFlag.IndexBuffer, maxBufferSize);
+            DynamicVertexBuffer = new GraphicsBuffer(Device, BufferMode.DynamicRing, BindFlag.VertexBuffer | BindFlag.IndexBuffer, maxBufferSize);
 
             StagingBuffer = new StagingBuffer(Device, StagingBufferFlags.Write, maxBufferSize);
             SpriteBatcher = new SpriteBatcherDX11(this, 3000);
@@ -160,7 +160,7 @@ namespace Molten.Graphics
         }
 
         internal bool ClearIfFirstUse(DeviceContext context, DepthStencilSurface surface,
-            ClearFlag flags = ClearFlag.ClearDepth, 
+            ClearFlag flags = ClearFlag.Depth, 
             float depth = 1.0f, byte stencil = 0)
         {
             if (!_clearedSurfaces.Contains(surface))

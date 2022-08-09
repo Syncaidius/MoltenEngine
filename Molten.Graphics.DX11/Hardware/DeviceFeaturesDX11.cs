@@ -19,7 +19,7 @@ namespace Molten.Graphics
 
             Compute = new GraphicsComputeFeatures(this);
             Shaders = new GraphicsShaderFeatures(this);
-            MiscFeatures = GetFeatureSupport<FeatureDataD3D11Options>(Feature.FeatureD3D11Options);
+            MiscFeatures = GetFeatureSupport<FeatureDataD3D11Options>(Feature.D3D11Options);
 
             CounterInfo cInfo = new CounterInfo();
             _device->CheckCounterInfo(&cInfo);
@@ -55,7 +55,7 @@ namespace Molten.Graphics
                     break;
             }
 
-            FeatureDataThreading fThreadData = GetFeatureSupport<FeatureDataThreading>(Feature.FeatureThreading);
+            FeatureDataThreading fThreadData = GetFeatureSupport<FeatureDataThreading>(Feature.Threading);
             ConcurrentResources = fThreadData.DriverConcurrentCreates > 0;
             CommandListSupport = fThreadData.DriverCommandLists > 0 ? 
                 DX11CommandListSupport.Supported : 
@@ -94,12 +94,12 @@ namespace Molten.Graphics
         {
             FormatSupport support = GetFormatSupport(format);
 
-            bool supported = support.HasFlag(FormatSupport.FormatSupportTexture2D | 
-                FormatSupport.FormatSupportTexture3D | 
-                FormatSupport.FormatSupportCpuLockable |
-                FormatSupport.FormatSupportShaderSample | 
-                FormatSupport.FormatSupportShaderLoad | 
-                FormatSupport.FormatSupportMip);
+            bool supported = support.HasFlag(FormatSupport.Texture2D | 
+                FormatSupport.Texture3D | 
+                FormatSupport.CpuLockable |
+                FormatSupport.ShaderSample | 
+                FormatSupport.ShaderLoad | 
+                FormatSupport.Mip);
 
             return supported;
         }

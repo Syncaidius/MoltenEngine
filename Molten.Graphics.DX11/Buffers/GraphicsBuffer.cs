@@ -26,8 +26,8 @@ namespace Molten.Graphics
             StagingBufferFlags stagingType = StagingBufferFlags.None, 
             uint structuredStride = 0, 
             Array initialData = null) : base(device,
-                ((bindFlags & BindFlag.BindUnorderedAccess) == BindFlag.BindUnorderedAccess ? ContextBindTypeFlags.Output : ContextBindTypeFlags.None) |
-                ((bindFlags & BindFlag.BindShaderResource) == BindFlag.BindShaderResource ? ContextBindTypeFlags.Input : ContextBindTypeFlags.None))
+                ((bindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess ? ContextBindTypeFlags.Output : ContextBindTypeFlags.None) |
+                ((bindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource ? ContextBindTypeFlags.Input : ContextBindTypeFlags.None))
         {
             _freeSegments = new List<BufferSegment>();
             Mode = mode;
@@ -57,7 +57,7 @@ namespace Molten.Graphics
             uint structureByteStride)
         {
             Description = new BufferDesc();
-            Description.Usage = Usage.UsageDefault;
+            Description.Usage = Usage.Default;
             Description.BindFlags = (uint)flags;
             Description.MiscFlags = (uint)opFlags;
             Description.ByteWidth = byteCapacity;
@@ -66,19 +66,19 @@ namespace Molten.Graphics
             switch (Mode)
             {
                 case BufferMode.Default:
-                    Description.Usage = Usage.UsageDefault;
+                    Description.Usage = Usage.Default;
                     Description.CPUAccessFlags = 0;
                     break;
 
                 case BufferMode.DynamicDiscard:
                 case BufferMode.DynamicRing:
-                    Description.Usage = Usage.UsageDynamic;
-                    Description.CPUAccessFlags = (uint)CpuAccessFlag.CpuAccessWrite;
+                    Description.Usage = Usage.Dynamic;
+                    Description.CPUAccessFlags = (uint)CpuAccessFlag.Write;
                     break;
 
 
                 case BufferMode.Immutable:
-                    Description.Usage = Usage.UsageImmutable;
+                    Description.Usage = Usage.Immutable;
                     Description.CPUAccessFlags = 0;
                     break;
             }
@@ -88,19 +88,19 @@ namespace Molten.Graphics
             {
                 Description.BindFlags = 0;
                 Description.MiscFlags = 0;
-                Description.Usage = Usage.UsageStaging;
-                Description.CPUAccessFlags = (uint)CpuAccessFlag.CpuAccessRead;
+                Description.Usage = Usage.Staging;
+                Description.CPUAccessFlags = (uint)CpuAccessFlag.Read;
                 Description.StructureByteStride = 0;
 
                 if ((stageMode & StagingBufferFlags.Read) == StagingBufferFlags.Read)
-                    Description.CPUAccessFlags = (uint)CpuAccessFlag.CpuAccessRead;
+                    Description.CPUAccessFlags = (uint)CpuAccessFlag.Read;
 
                 if ((stageMode & StagingBufferFlags.Write) == StagingBufferFlags.Write)
-                    Description.CPUAccessFlags = (uint)CpuAccessFlag.CpuAccessWrite;
+                    Description.CPUAccessFlags = (uint)CpuAccessFlag.Write;
             }
 
             // Ensure structured buffers get the stride info.
-            if (Description.MiscFlags == (uint)ResourceMiscFlag.ResourceMiscBufferStructured)
+            if (Description.MiscFlags == (uint)ResourceMiscFlag.BufferStructured)
                 Description.StructureByteStride = structureByteStride;
         }
 
@@ -145,7 +145,7 @@ namespace Molten.Graphics
 
         protected virtual void OnValidateAllocationStride(uint stride)
         {
-            if (((BindFlag)Description.BindFlags & BindFlag.BindUnorderedAccess) == BindFlag.BindUnorderedAccess)
+            if (((BindFlag)Description.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess)
             {
                 if (stride != Description.StructureByteStride)
                     throw new GraphicsBufferException("Buffer is structured. Stride must match that of the structured buffer.");
@@ -161,7 +161,7 @@ namespace Molten.Graphics
                 throw new Exception("The destination buffer is not large enough.");
 
             // If the current buffer is a staging buffer, initialize and apply all its pending changes.
-            if (Description.Usage == Usage.UsageStaging)
+            if (Description.Usage == Usage.Staging)
                 ApplyChanges(context);
 
             ValidateCopyBufferUsage(destination);
@@ -171,7 +171,7 @@ namespace Molten.Graphics
         internal void CopyTo(DeviceContext context, GraphicsBuffer destination, Box sourceRegion, uint destByteOffset = 0)
         {
             // If the current buffer is a staging buffer, initialize and apply all its pending changes.
-            if (Description.Usage == Usage.UsageStaging)
+            if (Description.Usage == Usage.Staging)
                 ApplyChanges(context);
 
             ValidateCopyBufferUsage(destination);
@@ -181,11 +181,11 @@ namespace Molten.Graphics
 
         private void ValidateCopyBufferUsage(GraphicsBuffer destination)
         {
-            if (Description.Usage != Usage.UsageDefault && 
-                Description.Usage != Usage.UsageImmutable)
+            if (Description.Usage != Usage.Default && 
+                Description.Usage != Usage.Immutable)
                 throw new Exception("The current buffer must have a usage flag of Default or Immutable. Only these flags allow the GPU read access for copying/reading data from the buffer.");
 
-            if (destination.Description.Usage != Usage.UsageDefault)
+            if (destination.Description.Usage != Usage.Default)
                 throw new Exception("The destination buffer must have a usage flag of Staging or Default. Only these two allow the GPU write access for copying/writing data to the destination.");
         }
 
@@ -196,9 +196,9 @@ namespace Molten.Graphics
             GraphicsBuffer staging = null)
         {
             // Check buffer type.
-            bool isDynamic = Description.Usage == Usage.UsageDynamic;
-            bool isStaged = Description.Usage == Usage.UsageStaging &&
-                (Description.CPUAccessFlags & (uint)CpuAccessFlag.CpuAccessWrite) == (uint)CpuAccessFlag.CpuAccessWrite;
+            bool isDynamic = Description.Usage == Usage.Dynamic;
+            bool isStaged = Description.Usage == Usage.Staging &&
+                (Description.CPUAccessFlags & (uint)CpuAccessFlag.Write) == (uint)CpuAccessFlag.Write;
 
             RawStream stream;
 
@@ -208,7 +208,7 @@ namespace Molten.Graphics
                 switch (Mode)
                 {
                     case BufferMode.DynamicDiscard:
-                        context.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
+                        context.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
                         stream.Position = byteOffset;
                         context.Profiler.Current.MapDiscardCount++;
                         break;
@@ -216,18 +216,18 @@ namespace Molten.Graphics
                     case BufferMode.DynamicRing:
                         // NOTE: D3D11_MAP_WRITE_NO_OVERWRITE is only valid on vertex and index buffers. 
                         // See: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476181(v=vs.85).aspx
-                        if (HasFlags(BindFlag.BindVertexBuffer) || HasFlags(BindFlag.BindIndexBuffer))
+                        if (HasFlags(BindFlag.VertexBuffer) || HasFlags(BindFlag.IndexBuffer))
                         {
                             if (_ringPos > 0 && _ringPos + dataSize < Description.ByteWidth)
                             {
-                                context.MapResource(NativePtr, 0, Map.MapWriteNoOverwrite, 0, out stream);
+                                context.MapResource(NativePtr, 0, Map.WriteNoOverwrite, 0, out stream);
                                 context.Profiler.Current.MapNoOverwriteCount++;
                                 stream.Position = _ringPos;
                                 _ringPos += dataSize;
                             }
                             else
                             {                                
-                                context.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
+                                context.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
                                 context.Profiler.Current.MapDiscardCount++;
                                 stream.Position = 0;
                                 _ringPos = dataSize;
@@ -235,14 +235,14 @@ namespace Molten.Graphics
                         }
                         else
                         {
-                            context.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
+                            context.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
                             context.Profiler.Current.MapDiscardCount++;
                             stream.Position = byteOffset;
                         }
                         break;
 
                     default:
-                        context.MapResource(NativePtr, 0, Map.MapWrite, 0, out stream);
+                        context.MapResource(NativePtr, 0, Map.Write, 0, out stream);
                         context.Profiler.Current.MapWriteCount++;
                         break;
                 }     
@@ -256,8 +256,8 @@ namespace Molten.Graphics
                 if (staging == null)
                     throw new GraphicsBufferException("Staging buffer required. Non-dynamic/staged buffers require a staging buffer to access data.");
 
-                isDynamic = staging.Description.Usage == Usage.UsageDynamic;
-                isStaged = staging.Description.Usage == Usage.UsageStaging;
+                isDynamic = staging.Description.Usage == Usage.Dynamic;
+                isStaged = staging.Description.Usage == Usage.Staging;
 
                 if (!isDynamic && !isStaged)
                     throw new GraphicsBufferException("The provided staging buffer is invalid. Must be either dynamic or staged.");
@@ -268,12 +268,12 @@ namespace Molten.Graphics
                 // Write updated data into buffer
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
                 {
-                    context.MapResource(staging.NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
+                    context.MapResource(staging.NativePtr, 0, Map.WriteDiscard, 0, out stream);
                     context.Profiler.Current.MapDiscardCount++;
                 }
                 else
                 {
-                    context.MapResource(staging.NativePtr, 0, Map.MapWrite, 0, out stream);
+                    context.MapResource(staging.NativePtr, 0, Map.Write, 0, out stream);
                     context.Profiler.Current.MapWriteCount++;
                 }
 
@@ -328,7 +328,7 @@ namespace Molten.Graphics
         {
             uint readOffset = startIndex * dataStride;
 
-            if ((Description.CPUAccessFlags & (uint)CpuAccessFlag.CpuAccessRead) != (uint)CpuAccessFlag.CpuAccessRead)
+            if ((Description.CPUAccessFlags & (uint)CpuAccessFlag.Read) != (uint)CpuAccessFlag.Read)
                 throw new InvalidOperationException("Cannot use GetData() on a non-readable buffer.");
 
             if (destination.Length < count)
@@ -336,7 +336,7 @@ namespace Molten.Graphics
 
             //now set the structured variable's data
             RawStream stream = null;
-            MappedSubresource dataBox = context.MapResource(NativePtr, 0, Map.MapRead, 0, out stream);
+            MappedSubresource dataBox = context.MapResource(NativePtr, 0, Map.Read, 0, out stream);
             context.Profiler.Current.MapReadCount++;
             stream.Position = byteOffset;
             stream.ReadRange<T>(destination, readOffset, count);
@@ -392,7 +392,7 @@ namespace Molten.Graphics
         protected virtual void CreateResources(uint stride, uint byteOffset, uint elementCount,
             SRView srv, UAView uav)
         {
-            if (HasFlags(BindFlag.BindShaderResource))
+            if (HasFlags(BindFlag.ShaderResource))
             {
                 srv.Desc = new ShaderResourceViewDesc()
                 {
@@ -408,12 +408,12 @@ namespace Molten.Graphics
                 srv.Create(this);
             }
 
-            if (HasFlags(BindFlag.BindUnorderedAccess))
+            if (HasFlags(BindFlag.UnorderedAccess))
             {
                 uav.Desc = new UnorderedAccessViewDesc()
                 {
                     Format = Format.FormatUnknown,
-                    ViewDimension = UavDimension.UavDimensionBuffer,
+                    ViewDimension = UavDimension.Buffer,
                     Buffer = new BufferUav()
                     {
                         NumElements = elementCount,
@@ -627,11 +627,11 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets a value indicating whether the current buffer is a shader resource.
         /// </summary>
-        public bool IsShaderResource =>((BindFlag)Description.BindFlags & BindFlag.BindShaderResource) == BindFlag.BindShaderResource;
+        public bool IsShaderResource =>((BindFlag)Description.BindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource;
 
         /// <summary>
         /// Gets a value indicating whether the current buffer has unordered access.
         /// </summary>
-        public bool IsUnorderedAccess => ((BindFlag)Description.BindFlags & BindFlag.BindUnorderedAccess) == BindFlag.BindUnorderedAccess;
+        public bool IsUnorderedAccess => ((BindFlag)Description.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
     }
 }

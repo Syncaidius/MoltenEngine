@@ -22,15 +22,15 @@ namespace Molten.Graphics
             // See for defaults: https://docs.microsoft.com/en-us/windows/win32/api/d3d11/ns-d3d11-d3d11_sampler_desc
             _desc = new SamplerDesc()
             {
-                Filter = Filter.FilterMinMagMipLinear,
-                AddressU = TextureAddressMode.TextureAddressClamp,
-                AddressV = TextureAddressMode.TextureAddressClamp,
-                AddressW = TextureAddressMode.TextureAddressClamp,
+                Filter = Filter.MinMagMipLinear,
+                AddressU = TextureAddressMode.Clamp,
+                AddressV = TextureAddressMode.Clamp,
+                AddressW = TextureAddressMode.Clamp,
                 MinLOD = float.MinValue,
                 MaxLOD = float.MaxValue,
                 MipLODBias = 0f,
                 MaxAnisotropy = 1,
-                ComparisonFunc = Silk.NET.Direct3D11.ComparisonFunc.ComparisonNever
+                ComparisonFunc = Silk.NET.Direct3D11.ComparisonFunc.Never
             };
 
             BorderColor = Color4.White;
@@ -41,8 +41,8 @@ namespace Molten.Graphics
 
         private void CheckIfComparisonSampler()
         {
-            IsComparisonSampler = _desc.Filter >= Filter.FilterComparisonMinMagMipPoint &&
-                    _desc.Filter <= Filter.FilterComparisonAnisotropic;
+            IsComparisonSampler = _desc.Filter >= Filter.ComparisonMinMagMipPoint &&
+                    _desc.Filter <= Filter.ComparisonAnisotropic;
         }
 
         protected override void OnApply(DeviceContext pipe)
@@ -142,8 +142,8 @@ namespace Molten.Graphics
             set
             {
                 _desc.Filter = value.ToApi();
-                IsComparisonSampler = _desc.Filter >= Filter.FilterComparisonMinMagMipPoint && 
-                    _desc.Filter <= Filter.FilterComparisonAnisotropic;
+                IsComparisonSampler = _desc.Filter >= Filter.ComparisonMinMagMipPoint && 
+                    _desc.Filter <= Filter.ComparisonAnisotropic;
                 _isDirty = true;
             }
         }

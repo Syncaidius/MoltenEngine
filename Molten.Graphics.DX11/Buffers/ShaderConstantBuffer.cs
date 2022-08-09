@@ -18,7 +18,7 @@ namespace Molten.Graphics
 
         internal ShaderConstantBuffer(Device device, BufferMode flags, 
             ID3D11ShaderReflectionConstantBuffer* srConstBuffer, ref ShaderBufferDesc desc)
-            : base(device, flags, BindFlag.BindConstantBuffer, desc.Size)
+            : base(device, flags, BindFlag.ConstantBuffer, desc.Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
             _constData = (byte*)EngineUtil.Alloc(desc.Size);
@@ -81,7 +81,7 @@ namespace Molten.Graphics
                 foreach(ShaderConstantVariable v in Variables)
                     v.Write(_constData + v.ByteOffset);
 
-                MappedSubresource data = context.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0);
+                MappedSubresource data = context.MapResource(NativePtr, 0, Map.WriteDiscard, 0);
                 Buffer.MemoryCopy(_constData, data.PData, data.DepthPitch, Description.ByteWidth);
                 context.UnmapResource(NativePtr, 0);
             }

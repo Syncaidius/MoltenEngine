@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
                 if (seg != null)
                 {
-                    if (((BindFlag)seg.Buffer.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
+                    if (((BindFlag)seg.Buffer.Description.BindFlags & BindFlag.VertexBuffer) != BindFlag.VertexBuffer)
                         throw new InvalidOperationException($"The buffer segment in vertex buffer slot {i} is not part of a vertex buffer.");
 
                     pBuffers[p] = seg.Buffer.ResourcePtr;
@@ -44,7 +44,7 @@ namespace Molten.Graphics
         {
             BufferSegment seg = slot.BoundValue;
 
-            if (((BindFlag)seg.Buffer.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
+            if (((BindFlag)seg.Buffer.Description.BindFlags & BindFlag.VertexBuffer) != BindFlag.VertexBuffer)
                 throw new InvalidOperationException($"The buffer segment in vertex buffer slot {slot.SlotIndex} is not part of a vertex buffer.");
 
             ID3D11Buffer** pBuffers = stackalloc ID3D11Buffer*[1];

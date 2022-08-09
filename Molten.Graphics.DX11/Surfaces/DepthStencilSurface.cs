@@ -45,7 +45,7 @@ namespace Molten.Graphics
 
             if (MultiSampleLevel >= AntiAliasLevel.X2)
             {
-                _depthDesc.ViewDimension = DsvDimension.DsvDimensionTexture2Dmsarray;
+                _depthDesc.ViewDimension = DsvDimension.Texture2Dmsarray;
                 _depthDesc.Flags = 0U; // DsvFlag.None;
                 _depthDesc.Texture2DMSArray = new Tex2DmsArrayDsv()
                 {
@@ -55,7 +55,7 @@ namespace Molten.Graphics
             }
             else
             {
-                _depthDesc.ViewDimension = DsvDimension.DsvDimensionTexture2Darray;
+                _depthDesc.ViewDimension = DsvDimension.Texture2Darray;
                 _depthDesc.Flags = 0U; //DsvFlag.None;
                 _depthDesc.Texture2DArray = new Tex2DArrayDsv()
                 {
@@ -120,9 +120,9 @@ namespace Molten.Graphics
             {
                 default:
                 case DepthFormat.R24G8_Typeless:
-                    return DsvFlag.DsvReadOnlyDepth | DsvFlag.DsvReadOnlyStencil;
+                    return DsvFlag.Depth | DsvFlag.Stencil;
                 case DepthFormat.R32_Typeless:
-                    return DsvFlag.DsvReadOnlyDepth;
+                    return DsvFlag.Depth;
             }
         }
 
@@ -157,7 +157,7 @@ namespace Molten.Graphics
             UpdateViewport();
         }
 
-        internal void Clear(DeviceContext pipe, ClearFlag clearFlags = ClearFlag.ClearDepth, float depth = 1.0f, byte stencil = 0)
+        internal void Clear(DeviceContext pipe, ClearFlag clearFlags = ClearFlag.Depth, float depth = 1.0f, byte stencil = 0)
         {
             if (_depthView == null)
                 CreateTexture(false);

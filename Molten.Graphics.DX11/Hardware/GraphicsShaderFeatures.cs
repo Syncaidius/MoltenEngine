@@ -14,14 +14,14 @@ namespace Molten.Graphics
             Geometry = true;
             HullAndDomain = true;
 
-            FeatureDataDoubles fData = _features.GetFeatureSupport<FeatureDataDoubles>(Feature.FeatureDoubles);
+            FeatureDataDoubles fData = _features.GetFeatureSupport<FeatureDataDoubles>(Feature.Doubles);
             DoublePrecision = fData.DoublePrecisionFloatShaderOps > 0;
 
             // DirectX 11.1 or higher features
-            if (_features.FeatureLevel >= D3DFeatureLevel.D3DFeatureLevel111)
+            if (_features.FeatureLevel >= D3DFeatureLevel.Level111)
             {
                 FeatureDataShaderMinPrecisionSupport mData =
-                    _features.GetFeatureSupport<FeatureDataShaderMinPrecisionSupport>(Feature.FeatureShaderMinPrecisionSupport);
+                    _features.GetFeatureSupport<FeatureDataShaderMinPrecisionSupport>(Feature.ShaderMinPrecisionSupport);
                 
                 MinimumPrecision = mData.AllOtherShaderStagesMinPrecision;
                 MinimumPrecisionPixelShaders = mData.PixelShaderMinPrecision;

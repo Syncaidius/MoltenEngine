@@ -72,24 +72,24 @@ namespace Molten.Graphics
             _defaultDesc = new DepthStencilDesc()
             {
                 DepthEnable = 1,
-                DepthWriteMask = DepthWriteMask.DepthWriteMaskAll,
-                DepthFunc = ComparisonFunc.ComparisonLess,
+                DepthWriteMask = DepthWriteMask.All,
+                DepthFunc = ComparisonFunc.Less,
                 StencilEnable = 0,
                 StencilReadMask = D3D11.DefaultStencilReadMask,
                 StencilWriteMask = D3D11.DefaultStencilWriteMask,
                 FrontFace = new DepthStencilopDesc()
                 {
-                    StencilFunc = ComparisonFunc.ComparisonAlways,
-                    StencilDepthFailOp = StencilOp.StencilOpKeep,
-                    StencilPassOp = StencilOp.StencilOpKeep,
-                    StencilFailOp = StencilOp.StencilOpKeep,
+                    StencilFunc = ComparisonFunc.Always,
+                    StencilDepthFailOp = StencilOp.Keep,
+                    StencilPassOp = StencilOp.Keep,
+                    StencilFailOp = StencilOp.Keep,
                 },
                 BackFace = new DepthStencilopDesc()
                 {
-                    StencilFunc = ComparisonFunc.ComparisonAlways,
-                    StencilDepthFailOp = StencilOp.StencilOpKeep,
-                    StencilPassOp = StencilOp.StencilOpKeep,
-                    StencilFailOp = StencilOp.StencilOpKeep,
+                    StencilFunc = ComparisonFunc.Always,
+                    StencilDepthFailOp = StencilOp.Keep,
+                    StencilPassOp = StencilOp.Keep,
+                    StencilFailOp = StencilOp.Keep,
                 }
             };
         }

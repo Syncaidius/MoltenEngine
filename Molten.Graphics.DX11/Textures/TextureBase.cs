@@ -99,16 +99,16 @@ namespace Molten.Graphics
             BindFlag result = 0;
 
             if (HasFlags(TextureFlags.AllowUAV))
-                result |= BindFlag.BindUnorderedAccess;
+                result |= BindFlag.UnorderedAccess;
 
             if (!HasFlags(TextureFlags.NoShaderResource))
-                result |= BindFlag.BindShaderResource;
+                result |= BindFlag.ShaderResource;
 
             if (this is RenderSurface2D)
-                result |= BindFlag.BindRenderTarget;
+                result |= BindFlag.RenderTarget;
 
             if (this is DepthStencilSurface)
-                result |= BindFlag.BindDepthStencil;
+                result |= BindFlag.DepthStencil;
 
             return result;
         }
@@ -118,10 +118,10 @@ namespace Molten.Graphics
             ResourceMiscFlag result = 0;
 
             if (HasFlags(TextureFlags.SharedResource))
-                result |= ResourceMiscFlag.ResourceMiscShared;
+                result |= ResourceMiscFlag.Shared;
 
             if (HasFlags(TextureFlags.AllowMipMapGeneration))
-                result |= ResourceMiscFlag.ResourceMiscGenerateMips;
+                result |= ResourceMiscFlag.GenerateMips;
 
             return result;
         }
@@ -129,19 +129,19 @@ namespace Molten.Graphics
         protected Usage GetUsageFlags()
         {
             if (HasFlags(TextureFlags.Staging))
-                return Usage.UsageStaging;
+                return Usage.Staging;
             else if (HasFlags(TextureFlags.Dynamic))
-                return Usage.UsageDynamic;
+                return Usage.Dynamic;
             else
-                return Usage.UsageDefault;
+                return Usage.Default;
         }
 
         protected CpuAccessFlag GetAccessFlags()
         {
             if (HasFlags(TextureFlags.Staging))
-                return CpuAccessFlag.CpuAccessRead;
+                return CpuAccessFlag.Read;
             else if (HasFlags(TextureFlags.Dynamic))
-                return CpuAccessFlag.CpuAccessWrite;
+                return CpuAccessFlag.Write;
             else
                 return 0;
         }
@@ -418,7 +418,7 @@ namespace Molten.Graphics
             }
 
             // Now pull data from it
-            MappedSubresource mapping = pipe.MapResource(resToMap, subID, Map.MapRead, 0);
+            MappedSubresource mapping = pipe.MapResource(resToMap, subID, Map.Read, 0);
             // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
             // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
 

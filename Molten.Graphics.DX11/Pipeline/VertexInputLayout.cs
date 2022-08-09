@@ -46,7 +46,7 @@ namespace Molten.Graphics
                     e.InputSlot = i; // Vertex buffer input slot.
                     elements[eID] = e;
 
-                    _isInstanced = _isInstanced || e.InputSlotClass == InputClassification.InputPerInstanceData;
+                    _isInstanced = _isInstanced || e.InputSlotClass == InputClassification.PerInstanceData;
                 }
 
                 _expectedFormatIDs[i] = format.EOID;

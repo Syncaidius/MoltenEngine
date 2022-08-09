@@ -35,11 +35,11 @@ namespace Molten.Graphics
                 BufferUsage = (uint)DxgiUsage.RenderTargetOutput,
                 BufferCount = Device.Settings.BackBufferSize,
                 SampleDesc = new SampleDesc(1, 0),
-                SwapEffect = SwapEffect.SwapEffectDiscard,
+                SwapEffect = SwapEffect.Discard,
                 Flags = (uint)DxgiSwapChainFlags.None,
                 Stereo = 0,
-                Scaling = Scaling.ScalingStretch,
-                AlphaMode = AlphaMode.AlphaModeIgnore // TODO implement this correctly
+                Scaling = Scaling.Stretch,
+                AlphaMode = AlphaMode.Ignore // TODO implement this correctly
             };
 
             WinHResult hr = Device.DisplayManager.DxgiFactory->CreateSwapChainForHwnd((IUnknown*)Device.NativeDevice, controlHandle, ref _swapDesc, null, null, ref NativeSwapChain);
@@ -80,7 +80,7 @@ namespace Molten.Graphics
                 RTV.Desc = new RenderTargetViewDesc()
                 {
                     Format = _swapDesc.Format,
-                    ViewDimension = RtvDimension.RtvDimensionTexture2D,
+                    ViewDimension = RtvDimension.Texture2D,
                 };
 
                 res = (ID3D11Resource*)NativeTexture;

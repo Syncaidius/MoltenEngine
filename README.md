@@ -17,7 +17,7 @@ Blank - Not Started\
 
 | Feature                    | Windows    | Android  | Linux  | Mac  |
 | :---                       | :-------:  | :-----:  | :---:  | :-:  |
-| Renderer - OpenGL          |            | 🚫       | 🚧     | 🚧   |
+| Renderer - OpenGL          |            | 🚫       |        |      |
 | Renderer - OpenES          |            |          | 🚫     | 🚫   |
 | Renderer - Vulkan          |            |          |        |      |
 | Renderer - DirectX 11      | 🚧         | 🚫       | 🚫    | 🚫   |
@@ -30,7 +30,7 @@ Blank - Not Started\
 | Game pad support           | ✔️         |          |        |      |
 | Entity component system    | ✔️         | ✔️       | ✔️     | ✔️    |
 | Example projects           | 🚧         |          |        |      |
-| Networking                 | 🚧         |          |        |      |
+| Networking                 |            |          |        |      |
 | 2D Physics engine          |            |          |        |      |
 | 3D Physics engine          |            |          |        |      |
 | Google Analytics           |            |          |        |      |
@@ -52,7 +52,7 @@ Blank - Not Started\
 | :---                   | :-------:  | :-----: | :---:   | :-:        | :-:    |
 | Deferrend rendering    | 🚧         |         |        |             |       |
 | Geometry Shaders       | ✔️         |         |        |             |       |
-| Tessellation           | ✔️         |         |        |             |       |
+| Tessellation           | ✔         |         |        |             |       |
 | Hull & Domain Shaders  | ✔️         |         |        |             |       |
 | Compute Shaders        | ✔️         |         |        |             |       |
 | 2D Spite batching      | ✔️         |         |        |             |       |
@@ -77,8 +77,8 @@ Blank - Not Started\
 | Render into Android UI | 🚫         | 🚫      |       | 🚫          | 🚫   |
 | Raytracing             | 🚫         |         | 🚫    | 🚫          |       |
 | HLSL Shader Compiler   | 🚧		  | 🚫      | 🚫    | 🚫          | 🚫   |
-| GLSL Shader Compiler   | 🚧		  |         |        |             |      |
-| SPIR-V Shader Compiler | 🚧		  |         |        |             |      |
+| GLSL Shader Compiler   |  		  |         |        |             |      |
+| SPIR-V Shader Compiler |  		  |         |        |             |      |
 
 # Android
 Molten has recently been upgraded to .NET 6. To build for Android you will need to install the Android workloads by running  

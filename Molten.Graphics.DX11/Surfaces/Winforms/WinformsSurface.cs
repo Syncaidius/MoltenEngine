@@ -70,8 +70,8 @@ namespace Molten.Graphics
                 Height = (uint)_bounds.Height,
                 RefreshRate = new Rational(60, 1),
                 Format = DxgiFormat,
-                Scaling = ModeScaling.ModeScalingStretched,
-                ScanlineOrdering = ModeScanlineOrder.ModeScanlineOrderProgressive,
+                Scaling = ModeScaling.Stretched,
+                ScanlineOrdering = ModeScanlineOrder.Progressive,
             };
 
             _displayMode = new DisplayMode(ref modeDesc);

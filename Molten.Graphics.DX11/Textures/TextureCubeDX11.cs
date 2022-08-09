@@ -22,7 +22,7 @@ namespace Molten.Graphics
                 MipLevels = mipCount,
                 ArraySize = 6 * CubeCount,
                 Format = format,
-                BindFlags = (uint)BindFlag.BindShaderResource,
+                BindFlags = (uint)BindFlag.ShaderResource,
                 CPUAccessFlags = (uint)GetAccessFlags(),
                 SampleDesc = new SampleDesc()
                 {
@@ -30,7 +30,7 @@ namespace Molten.Graphics
                     Quality = 0,
                 },
                 Usage = GetUsageFlags(),
-                MiscFlags = (uint)(GetResourceFlags() | ResourceMiscFlag.ResourceMiscTexturecube),
+                MiscFlags = (uint)(GetResourceFlags() | ResourceMiscFlag.Texturecube),
             };
         }
 
@@ -50,7 +50,7 @@ namespace Molten.Graphics
         protected override void SetUAVDescription(ref ShaderResourceViewDesc srvDesc, ref UnorderedAccessViewDesc desc)
         {
             desc.Format = srvDesc.Format;
-            desc.ViewDimension = UavDimension.UavDimensionTexture2Darray;
+            desc.ViewDimension = UavDimension.Texture2Darray;
 
             desc.Texture2DArray = new Tex2DArrayUav()
             {

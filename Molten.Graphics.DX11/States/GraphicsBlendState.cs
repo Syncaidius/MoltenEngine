@@ -27,13 +27,13 @@ namespace Molten.Graphics
 
             _defaultDesc.RenderTarget[0] = new RenderTargetBlendDesc()
             {
-                SrcBlend = Blend.BlendOne,
-                DestBlend = Blend.BlendZero,
-                BlendOp = BlendOp.BlendOpAdd,
-                SrcBlendAlpha = Blend.BlendOne,
-                DestBlendAlpha = Blend.BlendZero,
-                BlendOpAlpha = BlendOp.BlendOpAdd,
-                RenderTargetWriteMask = (byte)ColorWriteEnable.ColorWriteEnableAll,
+                SrcBlend = Blend.One,
+                DestBlend = Blend.Zero,
+                BlendOp = BlendOp.Add,
+                SrcBlendAlpha = Blend.One,
+                DestBlendAlpha = Blend.Zero,
+                BlendOpAlpha = BlendOp.Add,
+                RenderTargetWriteMask = (byte)ColorWriteEnable.All,
                 BlendEnable = 1
             };
         }

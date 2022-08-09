@@ -11,13 +11,13 @@ namespace Molten.Graphics
             // Additive blending preset.
             GraphicsBlendState state = new GraphicsBlendState(device, new RenderTargetBlendDesc()
             {
-                SrcBlend = Blend.BlendOne,
-                DestBlend = Blend.BlendOne,
-                BlendOp = BlendOp.BlendOpAdd,
-                SrcBlendAlpha = Blend.BlendOne,
-                DestBlendAlpha = Blend.BlendOne,
-                BlendOpAlpha = BlendOp.BlendOpAdd,
-                RenderTargetWriteMask = (byte)ColorWriteEnable.ColorWriteEnableAll,
+                SrcBlend = Blend.One,
+                DestBlend = Blend.One,
+                BlendOp = BlendOp.Add,
+                SrcBlendAlpha = Blend.One,
+                DestBlendAlpha = Blend.One,
+                BlendOpAlpha = BlendOp.Add,
+                RenderTargetWriteMask = (byte)ColorWriteEnable.All,
                 BlendEnable = 1,
             })
             {
@@ -30,15 +30,15 @@ namespace Molten.Graphics
             // Pre-multiplied alpha
             state = new GraphicsBlendState(device, new RenderTargetBlendDesc()
             {
-                SrcBlend = Blend.BlendSrcAlpha,
-                DestBlend = Blend.BlendInvSrcAlpha,
-                BlendOp = BlendOp.BlendOpAdd,
+                SrcBlend = Blend.SrcAlpha,
+                DestBlend = Blend.InvSrcAlpha,
+                BlendOp = BlendOp.Add,
 
-                SrcBlendAlpha = Blend.BlendInvDestAlpha,
-                DestBlendAlpha = Blend.BlendOne,
-                BlendOpAlpha = BlendOp.BlendOpAdd,
+                SrcBlendAlpha = Blend.InvDestAlpha,
+                DestBlendAlpha = Blend.One,
+                BlendOpAlpha = BlendOp.Add,
 
-                RenderTargetWriteMask = (byte)ColorWriteEnable.ColorWriteEnableAll,
+                RenderTargetWriteMask = (byte)ColorWriteEnable.All,
                 BlendEnable = 1,
             })
             {
