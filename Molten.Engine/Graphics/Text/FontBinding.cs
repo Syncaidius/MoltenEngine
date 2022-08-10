@@ -9,14 +9,43 @@ namespace Molten.Graphics
 {
     internal class FontBinding
     {
-        public FontFile File { get; }
-
-        public FontLookupTable Lookup { get; }
-
-        public FontBinding(FontFile file, FontLookupTable lookup)
+        struct CharData
         {
-            File = file;
-            Lookup = lookup;
+            public ushort GlyphIndex;
+
+            public bool Initialized;
+
+            public CharData(ushort gIndex)
+            {
+                GlyphIndex = gIndex;
+                Initialized = true;
+            }
         }
+
+        FontGlyphBinding[] _bindings;
+        CharData[] _charData;
+
+
+        public FontBinding(FontManager manager, FontFile font)
+        {
+            Manager = manager;
+            Font = font;
+
+            if (Font.GlyphCount > 0)
+            {
+                _bindings = new FontGlyphBinding[Font.GlyphCount];
+            }
+            else
+            {
+                _bindings = new FontGlyphBinding[1];
+                _bindings[0] = new FontGlyphBinding(Manager, font, '\0');
+            }
+
+            _charData = new CharData[char.MaxValue]; // TODO Optimize this - 65536 Char data entries is overkill.       
+        }
+
+        public FontFile Font { get; }
+
+        internal FontManager Manager { get; }
     }
 }

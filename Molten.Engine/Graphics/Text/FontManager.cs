@@ -12,20 +12,26 @@ namespace Molten.Graphics
     public class FontManager
     {
         Engine _engine;
-        ConcurrentDictionary<string, FontBinding> _fonts;
+        Dictionary<string, FontBinding> _fonts;
         SceneRenderData _renderData;
         RenderService _renderer; 
         IRenderSurface2D _rt;
+        IRenderSurface2D _rtTransfer;
         ThreadedQueue<FontGlyphBinding> _pendingGlyphs;
+        ThreadedList<FontPage> _pages;
+        object _locker;
 
         internal FontManager(Logger log, Engine engine)
         {
             _engine = engine;
-            _fonts = new ConcurrentDictionary<string, FontBinding>();
+            _locker = new object();
+            _fonts = new Dictionary<string, FontBinding>();
             _pendingGlyphs = new ThreadedQueue<FontGlyphBinding>();
+            _pages = new ThreadedList<FontPage>();
+
             Log = log;
 
-            _rt = engine.Renderer.Resources.CreateSurface((uint)PageSize, (uint)PageSize, arraySize: 1, flags: TextureFlags.AllowMipMapGeneration);
+            _rt = _engine.Renderer.Resources.CreateSurface((uint)PageSize, (uint)PageSize, arraySize: 1, flags: TextureFlags.AllowMipMapGeneration);
             _rt.Clear(Color.Transparent);
 
             _renderData = engine.Renderer.CreateRenderData();
@@ -54,6 +60,25 @@ namespace Molten.Graphics
         {
             RectStyle style = RectStyle.Default;
 
+            if(_pages.Count > _rt.ArraySize)
+            {
+                uint newArraySize = (uint)_pages.Count;
+                _rtTransfer = _engine.Renderer.Resources.CreateSurface(
+                    (uint)PageSize,
+                    (uint)PageSize,
+                    arraySize: newArraySize,
+                    flags: TextureFlags.AllowMipMapGeneration);
+
+                for(uint i = 0; i < _rt.ArraySize; i++)
+                {
+                    // TODO support rendering to a particular render surface slice in SpriteBatch.
+                    // TODO render each page of the existing _rt to _rtTransfer as one sprite per page.
+                    // TODO wait at least 10 frames before disposing of _rt and replacing it with _rtTransfer.
+                    // TODO during this time, _pendingGlyphs should render to _rtTransf
+                }
+                return;
+            }
+
             while (_pendingGlyphs.TryDequeue(out FontGlyphBinding binding))
             {
                 // TODO generate SDF texture here
@@ -69,14 +94,32 @@ namespace Molten.Graphics
             _rt.GenerateMipMaps();
         }
 
-        public Font GetFont(string path)
+        internal Font LoadFont(Stream stream, string path)
         {
-            return null;
+            lock (_locker)
+            {
+                FontFile fFile = null;
+                using (FontReader reader = new FontReader(stream, Log, path))
+                    fFile = reader.ReadFont(true);
+
+                FontBinding binding = new FontBinding(this, fFile);
+
+                if (_fonts.TryAdd(path, binding))
+                    return new Font(this, binding);
+                else
+                    return new Font(this, _fonts[path]);
+            }
         }
 
-        private void AddPage()
+        internal Font GetFont(string path)
         {
-            // TODO generate render surface to add a new page. Copy previous texture data to new texture.
+            lock (_locker)
+            {
+                if (_fonts.TryGetValue(path, out FontBinding binding))
+                    return new Font(this, binding);
+                else
+                    return null;
+            }
         }
 
         internal int ToPixels(FontFile font, float designUnits)
@@ -90,6 +133,9 @@ namespace Molten.Graphics
 
         public int PageSize { get; } = 512;
 
+        /// <summary>
+        /// Gets the <see cref="Logger"/> used by the current <see cref="FontManager"/> to log font-load messages, warnings and errors.
+        /// </summary>
         public Logger Log { get; }
     }
 }
