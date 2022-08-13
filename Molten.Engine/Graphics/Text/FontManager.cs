@@ -14,7 +14,6 @@ namespace Molten.Graphics
         Engine _engine;
         Dictionary<string, FontBinding> _fonts;
         SceneRenderData _renderData;
-        RenderService _renderer; 
         IRenderSurface2D _rt;
         IRenderSurface2D _rtTransfer;
         ThreadedQueue<FontGlyphBinding> _pendingGlyphs;
@@ -40,7 +39,7 @@ namespace Molten.Graphics
             LayerRenderData layer = _renderData.CreateLayerData("font chars");
             _renderData.AddLayer(layer);
 
-            ISpriteRenderer _spriteRenderer = _renderer.Resources.CreateSpriteRenderer(OnDraw);
+            ISpriteRenderer _spriteRenderer = _engine.Renderer.Resources.CreateSpriteRenderer(OnDraw);
 
             ObjectRenderData ord = new ObjectRenderData()
             {

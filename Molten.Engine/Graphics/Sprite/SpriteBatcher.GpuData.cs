@@ -18,6 +18,13 @@ namespace Molten.Graphics
                 public float D4;
             }
 
+            public struct ArrayData
+            {
+                public float SrcArraySlice;
+
+                public uint DestSurfaceSlice;
+            }
+
             public Vector4F UV;
 
             public Color4 Color1;
@@ -43,7 +50,7 @@ namespace Molten.Graphics
             /// <summary>
             /// The rotation (X) and array slice index (Y).
             /// </summary>
-            public float ArraySlice;
+            public ArrayData Array;
         }
     }
 }

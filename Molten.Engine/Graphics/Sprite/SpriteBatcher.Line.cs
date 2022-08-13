@@ -20,10 +20,10 @@ namespace Molten.Graphics
         /// <param name="color">The color of the lines</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
         /// <param name="sharpness">The edge-sharpness of path lines.</param>
-        public void DrawLinePath(IList<Vector2F> points, Color color, float thickness, float sharpness = 1.0f)
+        public void DrawLinePath(IList<Vector2F> points, Color color, float thickness, float sharpness = 1.0f, uint surfaceSlice = 0)
         {
             _singleColorList[0] = color;
-            DrawLinePath(points, 0, points.Count, _singleColorList, thickness, sharpness);
+            DrawLinePath(points, 0, points.Count, _singleColorList, thickness, sharpness, surfaceSlice);
         }
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
@@ -31,9 +31,9 @@ namespace Molten.Graphics
         /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
         /// <param name="sharpness">The edge-sharpness of path lines.</param>
-        public void DrawLinePath(IList<Vector2F> points, IList<Color> pointColors, float thickness, float sharpness = 1.0f)
+        public void DrawLinePath(IList<Vector2F> points, IList<Color> pointColors, float thickness, float sharpness = 1.0f, uint surfaceSlice = 0)
         {
-            DrawLinePath(points, 0, points.Count, pointColors, thickness, sharpness);
+            DrawLinePath(points, 0, points.Count, pointColors, thickness, sharpness, surfaceSlice);
         }
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
@@ -43,10 +43,10 @@ namespace Molten.Graphics
         /// <param name="startIndex">The start index within the points list from which to start drawing.</param>
         /// <param name="count">The number of points from the point list to draw.</param>
         /// <param name="sharpness">The edge-sharpness of path lines.</param>
-        public void DrawLinePath(IList<Vector2F> points, int startIndex, int count, Color color, float thickness, float sharpness = 1.0f)
+        public void DrawLinePath(IList<Vector2F> points, int startIndex, int count, Color color, float thickness, float sharpness = 1.0f, uint surfaceSlice = 0)
         {
             _singleColorList[0] = color;
-            DrawLinePath(points, startIndex, count, _singleColorList, thickness, sharpness);
+            DrawLinePath(points, startIndex, count, _singleColorList, thickness, sharpness, surfaceSlice);
         }
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
@@ -56,7 +56,7 @@ namespace Molten.Graphics
         /// <param name="startIndex">The start index within the points list from which to start drawing.</param>
         /// <param name="count">The number of points from the point list to draw.</param>
         /// <param name="sharpness">The edge-sharpness of path lines.</param>
-        public void DrawLinePath(IList<Vector2F> points, int startIndex, int count, IList<Color> pointColors, float thickness, float sharpness = 1.0f)
+        public void DrawLinePath(IList<Vector2F> points, int startIndex, int count, IList<Color> pointColors, float thickness, float sharpness = 1.0f, uint surfaceSlice = 0)
         {
             if (pointColors.Count == 0)
                 throw new SpriteBatcherException(this, "There must be at least one color available in the pointColors list.");
@@ -70,7 +70,7 @@ namespace Molten.Graphics
             if (count == 2)
             {
                 int secondCol = pointColors.Count > 1 ? 1 : 0;
-                DrawLine(points[0], points[1], pointColors[0], pointColors[secondCol], thickness, sharpness);
+                DrawLine(points[0], points[1], pointColors[0], pointColors[secondCol], thickness, sharpness, surfaceSlice);
             }
             else
             {
@@ -104,9 +104,9 @@ namespace Molten.Graphics
         /// <param name="startIndex">The start index within the points list from which to start drawing.</param>
         /// <param name="count">The number of points from the point list to draw.</param>
         /// <param name="style">The <see cref="LineStyle"/> to apply to the path.</param>
-        public void DrawLinePath(IList<Vector2F> points, ref LineStyle style)
+        public void DrawLinePath(IList<Vector2F> points, ref LineStyle style, uint surfaceSlice = 0)
         {
-            DrawLinePath(points, 0, points.Count, ref style);
+            DrawLinePath(points, 0, points.Count, ref style, surfaceSlice);
         }
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
@@ -114,9 +114,9 @@ namespace Molten.Graphics
         /// <param name="startIndex">The start index within the points list from which to start drawing.</param>
         /// <param name="count">The number of points from the point list to draw.</param>
         /// <param name="style">The <see cref="LineStyle"/> to apply to the path.</param>
-        public void DrawLinePath(IList<Vector2F> points, int count, ref LineStyle style)
+        public void DrawLinePath(IList<Vector2F> points, int count, ref LineStyle style, uint surfaceSlice = 0)
         {
-            DrawLinePath(points, 0, count, ref style);
+            DrawLinePath(points, 0, count, ref style, surfaceSlice);
         }
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
@@ -124,7 +124,7 @@ namespace Molten.Graphics
         /// <param name="startIndex">The start index within the points list from which to start drawing.</param>
         /// <param name="count">The number of points from the point list to draw.</param>
         /// <param name="style">The <see cref="LineStyle"/> to apply to the path.</param>
-        public void DrawLinePath(IList<Vector2F> points, int startIndex, int count, ref LineStyle style)
+        public void DrawLinePath(IList<Vector2F> points, int startIndex, int count, ref LineStyle style, uint surfaceSlice = 0)
         {
             if (startIndex + count > points.Count)
                 throw new SpriteBatcherException(this, "The sum of the start index and the count must be less than the point count.");
@@ -134,7 +134,7 @@ namespace Molten.Graphics
 
             if (count == 2)
             {
-                DrawLine(points[0], points[1], ref style);
+                DrawLine(points[0], points[1], ref style, surfaceSlice);
             }
             else
             {
@@ -176,9 +176,9 @@ namespace Molten.Graphics
         /// <param name="color">The color of the line.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
         /// <param name="sharpness">The edge-sharpness of the line.</param>
-        public void DrawLine(Vector2F p1, Vector2F p2, Color color, float thickness, float sharpness = 1.0f)
+        public void DrawLine(Vector2F p1, Vector2F p2, Color color, float thickness, float sharpness = 1.0f, uint surfaceSlice = 0)
         {
-            DrawLine(p1, p2, color, color, thickness, sharpness);
+            DrawLine(p1, p2, color, color, thickness, sharpness, surfaceSlice);
         }
         /// <summary>
         /// Draws a line between two points with a color gradient produced with the two provided colors.
@@ -189,13 +189,13 @@ namespace Molten.Graphics
         /// <param name="color2">The color for <paramref name="p2"/>.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
         /// <param name="sharpness">The edge-sharpness of the line.</param>
-        public void DrawLine(Vector2F p1, Vector2F p2, Color color1, Color color2, float thickness, float sharpness = 1.0f)
+        public void DrawLine(Vector2F p1, Vector2F p2, Color color1, Color color2, float thickness, float sharpness = 1.0f, uint surfaceSlice = 0)
         {
             _lineStyle.Color1 = color1;
             _lineStyle.Color2 = color2;
             _lineStyle.Thickness = thickness;
             _lineStyle.Sharpness = sharpness;
-            DrawLine(p1, p2, ref _lineStyle);
+            DrawLine(p1, p2, ref _lineStyle, surfaceSlice);
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="p1">The first point.</param>
         /// <param name="p2">The second point.</param>
-        public void DrawLine(Vector2F p1, Vector2F p2, ref LineStyle style)
+        public void DrawLine(Vector2F p1, Vector2F p2, ref LineStyle style, uint surfaceSlice = 0)
         {
             ref GpuData data = ref GetData(RangeType.Line, null, null);
             float dist = Vector2F.Distance(ref p1, ref p2) + 1;
@@ -214,7 +214,8 @@ namespace Molten.Graphics
 
             data.Position = pos;
             data.Rotation = (float)Math.Atan2(dir.Y, dir.X);
-            data.ArraySlice = 0;
+            data.Array.SrcArraySlice = 0;
+            data.Array.DestSurfaceSlice = surfaceSlice;
             data.Size = size;
             data.UV = Vector4F.Zero;
             data.Color1 = style.Color1;

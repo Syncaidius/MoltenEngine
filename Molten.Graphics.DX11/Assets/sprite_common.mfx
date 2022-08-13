@@ -11,6 +11,7 @@ struct SpriteData
 	float2 origin;
 	float rotation;
 	float arraySlice;
+    uint surfaceSlice;
 };
 
 struct VS_GS
@@ -24,6 +25,7 @@ struct PS_IN
 	float3 uv       : TEXCOORD0;
     float2 uvLocal  : TEXCOORD1;      //UV Relative to top left of sprite (0 - 1 range)
     uint id         : VERTEXID;
+    uint surfID     : SV_RenderTargetArrayIndex;
 };
 
 StructuredBuffer<SpriteData> spriteData : register(t0);
@@ -82,6 +84,7 @@ void GS(point VS_GS input[1], uint pID : SV_PrimitiveID, inout TriangleStream<PS
     v.id = vertexOffset + input[0].vID;
     SpriteData sv = spriteData[v.id];
     float4 uv = sv.uv;
+    v.surfID = sv.surfaceSlice;
 
     uv.xz /= textureSize.x; // scale left (x) and right(z) to 0 - 1.0 range.
 	uv.yw /= textureSize.y; // Scale top (y) and bottom(w) to 0 - 1.0 range.

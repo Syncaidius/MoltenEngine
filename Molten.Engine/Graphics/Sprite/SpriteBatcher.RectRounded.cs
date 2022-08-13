@@ -9,7 +9,7 @@ namespace Molten.Graphics
     public abstract partial class SpriteBatcher
     {
         public void DrawRoundedRect(RectangleF dest, Color fillColor, Color borderColor, float rotation, 
-            Vector2F origin, float cornerRadius, float borderThickness = 0, IMaterial material = null)
+            Vector2F origin, float cornerRadius, float borderThickness = 0, IMaterial material = null, uint surfaceSlice = 0)
         {
             RoundedRectStyle style = new RoundedRectStyle()
             {
@@ -23,7 +23,7 @@ namespace Molten.Graphics
         }
 
         public void DrawRoundedRect(RectangleF dest, Color fillColor, Color borderColor, float rotation, 
-            Vector2F origin, CornerInfo cornerRadius, float borderThickness = 0, IMaterial material = null)
+            Vector2F origin, CornerInfo cornerRadius, float borderThickness = 0, IMaterial material = null, uint surfaceSlice = 0)
         {
             RoundedRectStyle style = new RoundedRectStyle()
             {
@@ -36,14 +36,14 @@ namespace Molten.Graphics
             DrawRoundedRect(dest, rotation, origin, ref style, material);
         }
 
-        public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, ref RoundedRectStyle style, IMaterial material = null)
+        public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, ref RoundedRectStyle style, IMaterial material = null, uint surfaceSlice = 0)
         {
             ref CornerInfo corners = ref style.CornerRadius;
 
             if (!corners.HasRounded())
             {
                 RectStyle rectStyle = style.ToRectStyle();
-                DrawRect(dest, rotation, origin, ref rectStyle, material);
+                DrawRect(dest, rotation, origin, ref rectStyle, material, surfaceSlice);
                 return;
             }
 
@@ -66,16 +66,16 @@ namespace Molten.Graphics
 
             EllipseStyle cornerStyle = new EllipseStyle(style.FillColor, style.BorderColor, style.BorderThickness);
             if (corners.TopLeft > 0)
-                DrawEllipse(ref ctl, ref cornerStyle);
+                DrawEllipse(ref ctl, ref cornerStyle, surfaceSlice);
 
             if (corners.TopRight > 0)
-                DrawEllipse(ref ctr, ref cornerStyle);
+                DrawEllipse(ref ctr, ref cornerStyle, surfaceSlice);
 
             if (corners.BottomRight > 0)
-                DrawEllipse(ref cbr, ref cornerStyle);
+                DrawEllipse(ref cbr, ref cornerStyle, surfaceSlice);
 
             if (corners.BottomLeft > 0)
-                DrawEllipse(ref cbl, ref cornerStyle);
+                DrawEllipse(ref cbl, ref cornerStyle, surfaceSlice);
 
             RectStyle innerStyle = style.ToRectStyle();
             innerStyle.BorderThickness.Zero();
@@ -90,7 +90,7 @@ namespace Molten.Graphics
                 {
                     if (corners.LeftSameRadius())
                     {
-                        DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, dest.Height - (corners.TopLeft * 2)), ref innerStyle);
+                        DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, dest.Height - (corners.TopLeft * 2)), ref innerStyle, surfaceSlice);
                         leftEdgeWidth = corners.TopLeft;
                     }
                     else
@@ -100,16 +100,16 @@ namespace Molten.Graphics
                             leftEdgeWidth = corners.BottomLeft;
                             float dif = corners.BottomLeft - corners.TopLeft;
                             float leftHeight2 = leftHeight + corners.TopLeft;
-                            DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, leftHeight), ref innerStyle, 0, material);
-                            DrawRect(new RectangleF(dest.X + corners.TopLeft, dest.Y, dif, leftHeight2), ref innerStyle, 0, material);
+                            DrawRect(new RectangleF(dest.X, tl.Y, corners.TopLeft, leftHeight), ref innerStyle, 0, material, surfaceSlice);
+                            DrawRect(new RectangleF(dest.X + corners.TopLeft, dest.Y, dif, leftHeight2), ref innerStyle, 0, material, surfaceSlice);
                         }
                         else
                         {
                             leftEdgeWidth = corners.TopLeft;
                             float dif = corners.TopLeft - corners.BottomLeft;
                             float leftHeight2 = leftHeight + corners.BottomLeft;
-                            DrawRect(new RectangleF(dest.X, tl.Y, corners.BottomLeft, leftHeight), ref innerStyle, 0, material);
-                            DrawRect(new RectangleF(dest.X + corners.BottomLeft, dest.Y + corners.TopLeft, dif, leftHeight2), ref innerStyle, 0, material);
+                            DrawRect(new RectangleF(dest.X, tl.Y, corners.BottomLeft, leftHeight), ref innerStyle, 0, material, surfaceSlice);
+                            DrawRect(new RectangleF(dest.X + corners.BottomLeft, dest.Y + corners.TopLeft, dif, leftHeight2), ref innerStyle, 0, material, surfaceSlice);
                         }
                     }
                 }
@@ -119,7 +119,7 @@ namespace Molten.Graphics
                 {
                     if (corners.RightSameRadius())
                     {
-                        DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, dest.Height - (corners.TopRight * 2)), ref innerStyle);
+                        DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, dest.Height - (corners.TopRight * 2)), ref innerStyle, surfaceSlice);
                         rightEdgeWidth = corners.TopRight;
                     }
                     else
@@ -130,23 +130,23 @@ namespace Molten.Graphics
                             rightEdgeWidth = corners.BottomRight;
                             float dif = corners.BottomRight - corners.TopRight;
                             float rightHeight2 = rightHeight + corners.TopRight;
-                            DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, rightHeight), ref innerStyle, 0, material);
-                            DrawRect(new RectangleF(dest.Right - corners.BottomRight, dest.Y, dif, rightHeight2), ref innerStyle, 0, material);
+                            DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, rightHeight), ref innerStyle, 0, material, surfaceSlice);
+                            DrawRect(new RectangleF(dest.Right - corners.BottomRight, dest.Y, dif, rightHeight2), ref innerStyle, 0, material, surfaceSlice);
                         }
                         else
                         {
                             rightEdgeWidth = corners.TopRight;
                             float dif = corners.TopRight - corners.BottomRight;
                             float rightHeight2 = rightHeight + corners.BottomRight;
-                            DrawRect(new RectangleF(dest.Right - corners.BottomRight, tr.Y, corners.BottomRight, rightHeight), ref innerStyle, 0, material);
-                            DrawRect(new RectangleF(dest.Right - corners.TopRight, dest.Y + corners.TopRight, dif, rightHeight2), ref innerStyle, 0, material);
+                            DrawRect(new RectangleF(dest.Right - corners.BottomRight, tr.Y, corners.BottomRight, rightHeight), ref innerStyle, 0, material, surfaceSlice);
+                            DrawRect(new RectangleF(dest.Right - corners.TopRight, dest.Y + corners.TopRight, dif, rightHeight2), ref innerStyle, 0, material, surfaceSlice);
                         }
                     }
                 }
 
                 // Draw center
                 RectangleF c = new RectangleF(dest.X + leftEdgeWidth, dest.Y, dest.Width - leftEdgeWidth - rightEdgeWidth, dest.Height);
-                DrawRect(c, ref innerStyle, 0, material);
+                DrawRect(c, ref innerStyle, 0, material, surfaceSlice);
             }
 
             if (style.BorderThickness > 0 && style.BorderColor.A > 0)
@@ -158,10 +158,10 @@ namespace Molten.Graphics
                 Vector2F b = new Vector2F(dest.Left + corners.BottomLeft, dest.Bottom - lo);
 
                 LineStyle lineStyle = new LineStyle(style.BorderColor, style.BorderThickness);
-                DrawLine(l, l + new Vector2F(0, leftHeight), ref lineStyle); // Left
-                DrawLine(r, r + new Vector2F(0, rightHeight), ref lineStyle); // Right
-                DrawLine(t, t + new Vector2F(topWidth, 0), ref lineStyle); // Top
-                DrawLine(b, b + new Vector2F(bottomWidth, 0), ref lineStyle); // Bottom
+                DrawLine(l, l + new Vector2F(0, leftHeight), ref lineStyle, surfaceSlice); // Left
+                DrawLine(r, r + new Vector2F(0, rightHeight), ref lineStyle, surfaceSlice); // Right
+                DrawLine(t, t + new Vector2F(topWidth, 0), ref lineStyle, surfaceSlice); // Top
+                DrawLine(b, b + new Vector2F(bottomWidth, 0), ref lineStyle, surfaceSlice); // Bottom
             }
         }
     }
