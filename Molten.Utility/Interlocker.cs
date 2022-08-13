@@ -34,7 +34,7 @@
         /// </summary>
         public void Unlock()
         {
-            if (LockingThread != Thread.CurrentThread)
+            if (LockingThread != null && LockingThread != Thread.CurrentThread)
                 throw new ThreadStateException($"The thread calling Unlock() is not the one holding the current Lock()");
 
             LockingThread = null;
