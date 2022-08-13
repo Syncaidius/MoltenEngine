@@ -10,15 +10,20 @@ namespace Molten.Graphics
 {
     public class Font
     {
+        FontBinding _binding;
         internal Font(FontManager manager, FontBinding binding)
         {
             Manager = manager;
-            Binding = binding;
+            _binding = binding;
+        }
+
+        public FontGlyphBinding GetCharacter(char c)
+        {
+            return _binding.GetCharacter(c);
         }
 
         public FontManager Manager { get; }
 
-        internal FontBinding Binding { get; }
 
         [JsonProperty]
         /// <summary>

@@ -12,16 +12,16 @@ namespace Molten.Graphics
     /// </summary>
     internal class FontPage
     {
-        ConcurrentDictionary<char, FontGlyphBinding> _bindings;
+        List<FontGlyphBinding> _bindings;
         BinPacker _packer;
         Interlocker _interlocker;
 
-        internal FontPage(FontManager manager, int pageID, int width, int height)
+        internal FontPage(FontManager manager, int pageID)
         {
             Manager = manager;
             ID = pageID;
-            _bindings = new ConcurrentDictionary<char, FontGlyphBinding>(); 
-            _packer = new BinPacker(width, height);
+            _bindings = new List<FontGlyphBinding>();
+            _packer = new BinPacker(manager.PageSize, manager.PageSize);
             _interlocker = new Interlocker();
         }
 
@@ -47,7 +47,8 @@ namespace Molten.Graphics
             if (paddedLoc == null)
                 return false;
 
-            Rectangle loc = new Rectangle()
+            binding.Page = ID;
+            binding.Location = new Rectangle()
             {
                 X = paddedLoc.Value.X + Manager.Padding,
                 Y = paddedLoc.Value.Y + Manager.Padding,
@@ -55,9 +56,14 @@ namespace Molten.Graphics
                 Height = binding.PHeight,
             };
 
-            binding.Location = loc;
-            binding.Page = ID;
+            _bindings.Add(binding);
+
             return true;
+        }
+
+        internal void Remove(FontGlyphBinding binding)
+        {
+            _bindings.Remove(binding);
         }
 
         /// <summary>

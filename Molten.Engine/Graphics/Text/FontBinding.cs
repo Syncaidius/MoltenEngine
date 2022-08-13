@@ -9,22 +9,9 @@ namespace Molten.Graphics
 {
     internal class FontBinding
     {
-        struct CharData
-        {
-            public ushort GlyphIndex;
+        internal FontGlyphBinding[] Glyphs { get; }
 
-            public bool Initialized;
-
-            public CharData(ushort gIndex)
-            {
-                GlyphIndex = gIndex;
-                Initialized = true;
-            }
-        }
-
-        FontGlyphBinding[] _bindings;
-        CharData[] _charData;
-
+        internal CharData[] Data { get; }
 
         public FontBinding(FontManager manager, FontFile font)
         {
@@ -33,15 +20,32 @@ namespace Molten.Graphics
 
             if (Font.GlyphCount > 0)
             {
-                _bindings = new FontGlyphBinding[Font.GlyphCount];
+                Glyphs = new FontGlyphBinding[Font.GlyphCount];
             }
             else
             {
-                _bindings = new FontGlyphBinding[1];
-                _bindings[0] = new FontGlyphBinding(Manager, font, '\0');
+                Glyphs = new FontGlyphBinding[1];
+                Glyphs[0] = new FontGlyphBinding()
+                {
+                    AdvanceWidth = 1,
+                    AdvanceHeight = 1,
+                    Location = new Rectangle(0, 0, 1, 1),
+                    Page = 0,
+                    PWidth = 1,
+                    PHeight = 1,
+                    YOffset = 0
+                };
             }
 
-            _charData = new CharData[char.MaxValue]; // TODO Optimize this - 65536 Char data entries is overkill.       
+            Data = new CharData[char.MaxValue]; // TODO Optimize this - 65536 Char data entries is overkill.       
+        }
+
+        public FontGlyphBinding GetCharacter(char c)
+        {
+            if (!Data[c].Initialized)
+                Manager.AddCharacter(this, c, true);
+
+            return Glyphs[Data[c].GlyphIndex] ?? Glyphs[Data[FontManager.PLACEHOLDER_CHAR].GlyphIndex];
         }
 
         public FontFile Font { get; }

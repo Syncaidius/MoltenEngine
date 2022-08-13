@@ -17,7 +17,7 @@ namespace Molten.Font
         {
             // MS Docs: Character codes that do not correspond to any glyph in the font should be mapped to glyph index 0.
             // See: https://www.microsoft.com/typography/OTSPEC/cmap.htm
-            ushort result = 0;
+            ushort result;
 
             if (!_charIndexToGlyph.TryGetValue(codepoint, out result))
             {

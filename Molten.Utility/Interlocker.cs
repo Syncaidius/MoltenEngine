@@ -13,28 +13,43 @@
         public Thread LockingThread { get; private set; }
 
         /// <summary>
-        /// Takes the lock by internally using <see cref="Interlocked.Exchange(ref int, int)"/>. Skips lock checks if the current thread already holds the lock.
+        /// Acquires an interlocked-based lock. Subsequent calls to <see cref="Lock"/> from the same thread will be ignored until <see cref="Unlock"/> is called.
+        /// </summary>
+        public void Lock()
+        {
+            // Ignore locking if the current thread already own's the lock.
+            // This allows nested locks on the same thread.
+            if (LockingThread == Thread.CurrentThread)
+                return;
+
+            SpinWait spin = new SpinWait();
+            while (0 != Interlocked.Exchange(ref _blockingVal, 1))
+                spin.SpinOnce();
+
+            LockingThread = Thread.CurrentThread;
+        }
+
+        /// <summary>
+        /// Releases the previously' acquired lock. Can only be performed by the thread which acquired <see cref="Lock"/>.
+        /// </summary>
+        public void Unlock()
+        {
+            if (LockingThread != Thread.CurrentThread)
+                throw new ThreadStateException($"The thread calling Unlock() is not the one holding the current Lock()");
+
+            LockingThread = null;
+            Interlocked.Exchange(ref _blockingVal, 0);
+        }
+
+        /// <summary>
+        /// Takes the lock by internally using <see cref="Lock"/> and <see cref="Unlock"/> 
         /// </summary>
         /// <param name="callback">The callback to invoke once a lock is acquired.</param>
         public void Lock(Action callback)
         {
-            // Ignore locking if the current thread already own's the lock.
-            // This allows nested locks on the same thread.
-            if (LockingThread != Thread.CurrentThread)
-            {
-                SpinWait spin = new SpinWait();
-                while (0 != Interlocked.Exchange(ref _blockingVal, 1))
-                    spin.SpinOnce();
-
-                LockingThread = Thread.CurrentThread;
-                callback();
-                LockingThread = null;
-                Interlocked.Exchange(ref _blockingVal, 0);
-            }
-            else
-            {
-                callback();
-            }
+            Lock();
+            callback();
+            Unlock();
         }
 
         /// <summary>
