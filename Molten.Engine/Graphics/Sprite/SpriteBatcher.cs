@@ -433,7 +433,7 @@ namespace Molten.Graphics
 
         protected void ProcessBatches(RenderCamera camera, FlushRangeCallback flushCallback)
         {
-            ClipStack[0] = (Rectangle)camera.OutputSurface.Viewport.Bounds;
+            ClipStack[0] = (Rectangle)camera.Surface.Viewport.Bounds;
 
             SpriteRange t = new SpriteRange();
             ref SpriteRange range = ref t;

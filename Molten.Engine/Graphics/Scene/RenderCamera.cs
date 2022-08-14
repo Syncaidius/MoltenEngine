@@ -22,7 +22,7 @@
         static Dictionary<RenderCameraMode, ClipRange> _clipPreset;
 
         /// <summary>
-        /// Invoked when the <see cref="OutputSurface"/> property is changed.
+        /// Invoked when the <see cref="Surface"/> property is changed.
         /// </summary>
         public event RendercameraSurfaceHandler OnOutputSurfaceChanged;
 
@@ -145,7 +145,7 @@
             }
         }
 
-        /// <summary>Gets the camera's projection matrix. The projection is ignored during rendering if <see cref="OutputSurface"/> is not set.</summary>
+        /// <summary>Gets the camera's projection matrix. The projection is ignored during rendering if <see cref="Surface"/> is not set.</summary>
         public Matrix4F Projection => _projection;
 
         /// <summary>Gets the camera's combined view-projection matrix. This is the result of the view matrix multiplied by the projection matrix.</summary>
@@ -157,7 +157,7 @@
         public Matrix4F InvViewProjection => _invViewProjection;
 
         /// <summary>Gets or sets the <see cref="IRenderSurface2D"/> that the camera's view should be rendered out to.</summary>
-        public IRenderSurface2D OutputSurface
+        public IRenderSurface2D Surface
         {
             get => _surface;
             set

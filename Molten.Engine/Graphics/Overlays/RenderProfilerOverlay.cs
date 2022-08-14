@@ -18,7 +18,7 @@
             float lineHeight = font.GetHeight('|');
             float graphWidth = 400;
             _fpsGraph.MaxPoints = time.TargetUPS * 10; // Aim for 10 seconds worth of frames
-            _fpsGraph.Bounds = new RectangleF(camera.OutputSurface.Width - graphWidth - 5, 5, graphWidth, 200);
+            _fpsGraph.Bounds = new RectangleF(camera.Surface.Width - graphWidth - 5, 5, graphWidth, 200);
 
             // Renderer frame profiler stats.
             RenderProfiler.Snapshot frame = rendererProfiler.Previous;

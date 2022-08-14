@@ -20,7 +20,7 @@
             SetMaterialCommon(renderer.StandardMeshMaterial, camera, sScene);
             SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, sScene);
 
-            device.State.SetViewports(camera.OutputSurface.Viewport);
+            device.State.SetViewports(camera.Surface.Viewport);
 
             device.BeginDraw(context.BaseStateConditions);
             renderer.RenderSceneLayer(device, context.Layer, camera);
@@ -35,8 +35,8 @@
             material.Scene.ViewProjection.Value = camera.ViewProjection;
             material.Scene.MaxSurfaceUV.Value = new Vector2F()
             {
-                X = (float)camera.OutputSurface.Width / gBufferScene.Width,
-                Y = (float)camera.OutputSurface.Height / gBufferScene.Height,
+                X = (float)camera.Surface.Width / gBufferScene.Width,
+                Y = (float)camera.Surface.Height / gBufferScene.Height,
             };
         }
     }

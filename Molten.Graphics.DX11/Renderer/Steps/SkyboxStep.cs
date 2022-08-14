@@ -38,7 +38,7 @@
             if (context.Scene.SkyboxTexture == null || context.Scene.Layers.First() != context.Layer)
                 return;
 
-            Rectangle bounds = (Rectangle)camera.OutputSurface.Viewport.Bounds;
+            Rectangle bounds = (Rectangle)camera.Surface.Viewport.Bounds;
             Device device = renderer.Device;
 
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
@@ -50,7 +50,7 @@
             device.State.SetRenderSurface(destSurface, 0);
             device.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
             device.State.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
-            device.State.SetViewports(camera.OutputSurface.Viewport);
+            device.State.SetViewports(camera.Surface.Viewport);
             device.State.SetScissorRectangle(bounds);
 
             renderer.Device.BeginDraw(context.BaseStateConditions);

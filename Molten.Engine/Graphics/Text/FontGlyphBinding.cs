@@ -30,6 +30,11 @@ namespace Molten.Graphics
 
         public int PHeight { get; init; }
 
-        internal FontGlyphBinding() { }
+        internal FontBinding Font { get; }
+
+        internal FontGlyphBinding(FontBinding font)
+        {
+            Font = font;
+        }
     }
 }

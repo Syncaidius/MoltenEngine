@@ -82,8 +82,8 @@ namespace Molten.Graphics
             _matPoint.Light.CameraPosition.Value = camera.Position;
             _matPoint.Scene.MaxSurfaceUV.Value = new Vector2F()
             {
-                X = (float)camera.OutputSurface.Width / sScene.Width,
-                Y = (float)camera.OutputSurface.Height / sScene.Height,
+                X = (float)camera.Surface.Width / sScene.Width,
+                Y = (float)camera.Surface.Height / sScene.Height,
             };
 
             //set correct buffers and shaders

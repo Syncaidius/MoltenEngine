@@ -32,14 +32,7 @@ namespace Molten.Graphics
         /// <returns>True if the <see cref="FontGlyphBinding"/> was successfully given a place on the page. False if there was no space available.</returns>
         internal bool Pack(FontGlyphBinding binding)
         {
-            Rectangle gBounds = binding.Glyph.Bounds;
             int padding2 = Manager.Padding * 2;
-
-            Vector2F glyphScale = new Vector2F()
-            {
-                X = (float)binding.PWidth / gBounds.Width,
-                Y = (float)binding.PHeight / gBounds.Height,
-            };
 
             Rectangle? paddedLoc = null;
             _interlocker.Lock(() => paddedLoc = _packer.Insert(binding.PWidth + padding2, binding.PHeight + padding2));

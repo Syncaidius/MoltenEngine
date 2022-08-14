@@ -16,16 +16,16 @@ namespace Molten.Graphics
         public FontBinding(FontManager manager, FontFile font)
         {
             Manager = manager;
-            Font = font;
+            File = font;
 
-            if (Font.GlyphCount > 0)
+            if (File.GlyphCount > 0)
             {
-                Glyphs = new FontGlyphBinding[Font.GlyphCount];
+                Glyphs = new FontGlyphBinding[File.GlyphCount];
             }
             else
             {
                 Glyphs = new FontGlyphBinding[1];
-                Glyphs[0] = new FontGlyphBinding()
+                Glyphs[0] = new FontGlyphBinding(this)
                 {
                     AdvanceWidth = 1,
                     AdvanceHeight = 1,
@@ -48,7 +48,7 @@ namespace Molten.Graphics
             return Glyphs[Data[c].GlyphIndex] ?? Glyphs[Data[FontManager.PLACEHOLDER_CHAR].GlyphIndex];
         }
 
-        public FontFile Font { get; }
+        public FontFile File { get; }
 
         internal FontManager Manager { get; }
     }

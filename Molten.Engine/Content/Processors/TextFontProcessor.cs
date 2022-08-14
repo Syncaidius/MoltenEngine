@@ -13,6 +13,7 @@ namespace Molten.Content
         protected override bool OnReadPart(ContentLoadHandle handle, Stream stream, TextFontParameters parameters, object existingPart, out object partAsset)
         {
             partAsset = handle.Manager.Engine.Fonts.GetFont(stream, handle.Manager.Log, handle.RelativePath);
+
             return true;
         }
 

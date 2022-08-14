@@ -18,11 +18,11 @@
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
-            _orthoCamera.OutputSurface = camera.OutputSurface;
+            _orthoCamera.Surface = camera.Surface;
 
-            RectangleUI bounds = new RectangleUI(0, 0, camera.OutputSurface.Width, camera.OutputSurface.Height);
+            RectangleUI bounds = new RectangleUI(0, 0, camera.Surface.Width, camera.Surface.Height);
             Device device = renderer.Device;
-            RenderSurface2D finalSurface = camera.OutputSurface as RenderSurface2D;
+            RenderSurface2D finalSurface = camera.Surface as RenderSurface2D;
 
             if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
                 renderer.ClearIfFirstUse(device, finalSurface, context.Scene.BackgroundColor);
@@ -31,8 +31,8 @@
             device.State.SetRenderSurface(finalSurface, 0);
             device.State.DepthSurface.Value = null;
             device.State.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
-            device.State.SetViewports(camera.OutputSurface.Viewport);
-            device.State.SetScissorRectangle((Rectangle)camera.OutputSurface.Viewport.Bounds);
+            device.State.SetViewports(camera.Surface.Viewport);
+            device.State.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
 
             // We only need scissor testing here
             StateConditions conditions = StateConditions.ScissorTest;
@@ -41,7 +41,7 @@
             RectStyle style = RectStyle.Default;
 
             renderer.Device.BeginDraw(conditions);
-            renderer.SpriteBatcher.Draw(sourceSurface, bounds, Vector2F.Zero, camera.OutputSurface.Viewport.Bounds.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
+            renderer.SpriteBatcher.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Bounds.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
 
             if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
                 renderer.Overlay.Render(time, renderer.SpriteBatcher, renderer.Profiler, context.Scene.Profiler, camera);

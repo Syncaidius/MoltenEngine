@@ -142,22 +142,22 @@ namespace Molten.Graphics
                 {
                     camera.Skip = false;
 
-                    if (camera.OutputSurface == null)
+                    if (camera.Surface == null)
                     {
                         camera.Skip = true;
                         continue;
                     }
 
-                    if (camera.OutputSurface.Width > BiggestWidth)
+                    if (camera.Surface.Width > BiggestWidth)
                     {
                         _surfaceResizeRequired = true;
-                        BiggestWidth = camera.OutputSurface.Width;
+                        BiggestWidth = camera.Surface.Width;
                     }
 
-                    if (camera.OutputSurface.Height > BiggestHeight)
+                    if (camera.Surface.Height > BiggestHeight)
                     {
                         _surfaceResizeRequired = true;
-                        BiggestHeight = camera.OutputSurface.Height;
+                        BiggestHeight = camera.Surface.Height;
                     }
                 }
             }

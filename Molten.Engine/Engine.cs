@@ -118,6 +118,8 @@ namespace Molten
             foreach (EngineService service in _services)
                 service.Start(Threading, Log);
 
+            //Fonts.Initialize();
+
             Content.Workers.IsPaused = false;
 
             _mainThread = Threading.CreateThread("engine", true, true, (timing) =>
@@ -248,7 +250,7 @@ namespace Molten
         internal SceneManager Scenes { get; }
 
         /// <summary>
-        /// Gets the internal <see cref="FontCache"/> bound to the current <see cref="Engine"/> instance.
+        /// Gets the internal <see cref="FontManager"/> bound to the current <see cref="Engine"/> instance.
         /// </summary>
         internal FontCache Fonts { get; }
 

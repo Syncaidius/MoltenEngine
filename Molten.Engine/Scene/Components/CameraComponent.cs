@@ -140,8 +140,8 @@ namespace Molten
         /// <summary>Gets or sets the <see cref="IRenderSurface2D"/> that the camera's view should be rendered out to.</summary>
         public IRenderSurface2D OutputSurface
         {
-            get => _camera.OutputSurface;
-            set => _camera.OutputSurface = value;
+            get => _camera.Surface;
+            set => _camera.Surface = value;
         }
 
         /// <summary>Gets or sets the minimum draw dinstance. Also known as the near-clip plane. 

@@ -34,9 +34,9 @@
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
-            _orthoCamera.OutputSurface = camera.OutputSurface;
+            _orthoCamera.Surface = camera.Surface;
 
-            RectangleF vpBounds = camera.OutputSurface.Viewport.Bounds;
+            RectangleF vpBounds = camera.Surface.Viewport.Bounds;
             Device device = renderer.Device;
 
             context.CompositionSurface.Clear(context.Scene.BackgroundColor);
@@ -44,7 +44,7 @@
             device.State.SetRenderSurface(context.CompositionSurface, 0);
             device.State.DepthSurface.Value = null;
             device.State.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
-            device.State.SetViewports(camera.OutputSurface.Viewport);
+            device.State.SetViewports(camera.Surface.Viewport);
             device.State.SetScissorRectangle((Rectangle)vpBounds);
 
             StateConditions conditions = context.BaseStateConditions | StateConditions.ScissorTest;

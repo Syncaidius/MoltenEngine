@@ -17,8 +17,8 @@
 
             device.State.SetRenderSurface(sScene, 0);
             device.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
-            device.State.SetViewports(camera.OutputSurface.Viewport);
-            device.State.SetScissorRectangle((Rectangle)camera.OutputSurface.Viewport.Bounds);
+            device.State.SetViewports(camera.Surface.Viewport);
+            device.State.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
 
             StateConditions conditions = context.BaseStateConditions | StateConditions.ScissorTest;
 

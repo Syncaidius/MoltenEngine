@@ -135,7 +135,7 @@ namespace Molten.Graphics
             _renderData.OnPostRender += _renderData_OnPostRender;
             _renderData.AddObject(new RenderCamera(RenderCameraMode.Orthographic)
             {
-                OutputSurface = _rt,
+                Surface = _rt,
                 Flags = RenderCameraFlags.DoNotClear
             });
 
