@@ -10,27 +10,27 @@ namespace Molten.Graphics
     /// <summary>
     /// Represents a page of the main font texture array
     /// </summary>
-    internal class FontPage
+    internal class SpriteFontPage
     {
-        List<FontGlyphBinding> _bindings;
+        List<SpriteFontGlyphBinding> _bindings;
         BinPacker _packer;
         Interlocker _interlocker;
 
-        internal FontPage(FontManager manager, int pageID)
+        internal SpriteFontPage(SpriteFontManager manager, int pageID)
         {
             Manager = manager;
             ID = pageID;
-            _bindings = new List<FontGlyphBinding>();
+            _bindings = new List<SpriteFontGlyphBinding>();
             _packer = new BinPacker(manager.PageSize, manager.PageSize);
             _interlocker = new Interlocker();
         }
 
         /// <summary>
-        /// Attempts to pack a <see cref="FontGlyphBinding"/> onto the current <see cref="FontPage"/>.
+        /// Attempts to pack a <see cref="SpriteFontGlyphBinding"/> onto the current <see cref="SpriteFontPage"/>.
         /// </summary>
-        /// <param name="binding">The <see cref="FontGlyphBinding"/> to pack.</param>
-        /// <returns>True if the <see cref="FontGlyphBinding"/> was successfully given a place on the page. False if there was no space available.</returns>
-        internal bool Pack(FontGlyphBinding binding)
+        /// <param name="binding">The <see cref="SpriteFontGlyphBinding"/> to pack.</param>
+        /// <returns>True if the <see cref="SpriteFontGlyphBinding"/> was successfully given a place on the page. False if there was no space available.</returns>
+        internal bool Pack(SpriteFontGlyphBinding binding)
         {
             int padding2 = Manager.Padding * 2;
 
@@ -40,7 +40,7 @@ namespace Molten.Graphics
             if (paddedLoc == null)
                 return false;
 
-            binding.Page = ID;
+            binding.PageID = ID;
             binding.Location = new Rectangle()
             {
                 X = paddedLoc.Value.X + Manager.Padding,
@@ -54,15 +54,15 @@ namespace Molten.Graphics
             return true;
         }
 
-        internal void Remove(FontGlyphBinding binding)
+        internal void Remove(SpriteFontGlyphBinding binding)
         {
             _bindings.Remove(binding);
         }
 
         /// <summary>
-        /// Gets the <see cref="FontManager"/> that the current <see cref="FontPage"/> is bound to.
+        /// Gets the <see cref="SpriteFontManager"/> that the current <see cref="SpriteFontPage"/> is bound to.
         /// </summary>
-        internal FontManager Manager { get; }
+        internal SpriteFontManager Manager { get; }
 
         /// <summary>
         /// Gets the page ID.

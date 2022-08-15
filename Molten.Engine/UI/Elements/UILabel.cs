@@ -19,7 +19,7 @@ namespace Molten.UI
         public IMaterial Material;
 
         string _fontName;
-        TextFont _font;
+        SpriteFont _font;
         Vector2F _textSize;
         UIHorizonalAlignment _hAlign = UIHorizonalAlignment.Left;
         UIVerticalAlignment _vAlign = UIVerticalAlignment.Top;
@@ -120,7 +120,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets the <see cref="TextFont"/> of the current <see cref="UILabel"/>.
         /// </summary>
-        public TextFont Font
+        public SpriteFont Font
         {
             get => _font;
             private set
@@ -146,7 +146,7 @@ namespace Molten.UI
             }
         }
 
-        private void RecalculateMeasurements(TextFont font)
+        private void RecalculateMeasurements(SpriteFont font)
         {
             if (_text == null)
                 return;
@@ -181,7 +181,7 @@ namespace Molten.UI
                         {
                             Font = font;
                         },
-                        new TextFontParameters()
+                        new SpriteFontParameters()
                         {
                             FontSize = 16,
                         });

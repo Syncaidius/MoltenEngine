@@ -12,7 +12,7 @@
             _colText = Color.Yellow;
         }
 
-        public void OnRender(Timing time, SpriteBatcher sb, TextFont font, RenderProfiler rendererProfiler, RenderProfiler sceneProfiler, RenderCamera camera)
+        public void OnRender(Timing time, SpriteBatcher sb, SpriteFont font, RenderProfiler rendererProfiler, RenderProfiler sceneProfiler, RenderCamera camera)
         {
             Vector2F textPos = new Vector2F(5, 5);
             float lineHeight = font.GetHeight('|');
@@ -43,10 +43,10 @@
                 textPos.X -= 5;
             }
 
-            _fpsGraph.Render(sb, font);
+            _fpsGraph.Render(sb);
         }
 
-        private void DrawStats(Timing time, SpriteBatcher sb, TextFont font, RenderProfiler.Snapshot frame, ref Vector2F textPos, float lineHeight)
+        private void DrawStats(Timing time, SpriteBatcher sb, SpriteFont font, RenderProfiler.Snapshot frame, ref Vector2F textPos, float lineHeight)
         {
             textPos.Y += lineHeight; sb.DrawString(font, $"FPS: {time.FPS}", textPos, _colText);
             textPos.Y += lineHeight; sb.DrawString(font, $"Time: {frame.Time.ToString("N2")}ms", textPos, _colText);

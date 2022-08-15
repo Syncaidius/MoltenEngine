@@ -8,7 +8,7 @@ namespace Molten.Samples
 {
     public abstract class SampleGame : Foundation
     {
-        TextFont _sampleFont;
+        SpriteFont _sampleFont;
         bool _baseContentLoaded;
         ControlSampleForm _form;
         SceneLayer _spriteLayer;
@@ -67,7 +67,7 @@ namespace Molten.Samples
                 Engine.Input.Camera = _cam2D;
 
             _loader = Engine.Content.GetLoadBatch();
-            _loader.Load<TextFont>("assets/BroshK.ttf", (font, isReload) =>
+            _loader.LoadFont("assets/BroshK.ttf", (font, isReload) =>
             {
                 _sampleFont = font;
                 Engine.Renderer.Overlay.Font = _sampleFont;
@@ -344,7 +344,7 @@ namespace Molten.Samples
 
         public abstract string Description { get; }
 
-        public TextFont SampleFont => _sampleFont;
+        public SpriteFont SampleFont => _sampleFont;
 
         /// <summary>Gets a random number generator. Used for various samples.</summary>
         public Random Rng { get; private set; } = new Random();

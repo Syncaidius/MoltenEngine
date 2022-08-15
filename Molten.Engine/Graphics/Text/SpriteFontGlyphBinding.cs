@@ -7,13 +7,13 @@ using Molten.Font;
 
 namespace Molten.Graphics
 {
-    public class FontGlyphBinding
+    public class SpriteFontGlyphBinding
     {
         public Glyph Glyph { get; init; }
 
         public Rectangle Location { get; internal set; }
 
-        internal int Page { get; set; }
+        internal int PageID { get; set; }
 
         /// <summary> The advance width (horizontal advance) of the character glyph, in pixels. </summary>
         public int AdvanceWidth { get; init; }
@@ -30,9 +30,9 @@ namespace Molten.Graphics
 
         public int PHeight { get; init; }
 
-        internal FontBinding Font { get; }
+        internal SpriteFontBinding Font { get; }
 
-        internal FontGlyphBinding(FontBinding font)
+        internal SpriteFontGlyphBinding(SpriteFontBinding font)
         {
             Font = font;
         }

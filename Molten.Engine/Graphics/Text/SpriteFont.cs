@@ -3,33 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Molten.Graphics;
+using Molten.Font;
 using Newtonsoft.Json;
 
 namespace Molten.Graphics
 {
-    public class TextFont
+    public class SpriteFont
     {
-        public event ObjectHandler<TextFont> OnSizeChanged;
+        public event ObjectHandler<SpriteFont> OnSizeChanged;
 
         float _fontSize;
 
-        public TextFont(TextFontSource source, float fontSize)
+        SpriteFontBinding _binding;
+        internal SpriteFont(SpriteFontManager manager, SpriteFontBinding binding, float size)
         {
-            Source = source;
-            Size = fontSize;
+            Manager = manager;
+            _binding = binding;
+            Size = size;
         }
 
         public float GetAdvanceWidth(char c)
         {
-            TextFontSource.CachedGlyph cache = Source.GetCharGlyph(c);
-            return cache.AdvanceWidth * Scale;
+            SpriteFontGlyphBinding glyphBinding = _binding.GetCharacter(c);
+            return glyphBinding.AdvanceWidth * Scale;
         }
 
         public float GetHeight(char c)
         {
-            TextFontSource.CachedGlyph cache = Source.GetCharGlyph(c);
-            return cache.AdvanceHeight * Scale;
+            SpriteFontGlyphBinding glyphBinding = _binding.GetCharacter(c);
+            return glyphBinding.AdvanceHeight * Scale;
         }
 
         /// <summary>Measures the provided string and returns it's width and height, in pixels.</summary>
@@ -61,9 +63,9 @@ namespace Molten.Graphics
 
             for (int i = startIndex; i < end; i++)
             {
-                TextFontSource.CachedGlyph cache = Source.GetCharGlyph(text[i]);
-                result.X += cache.AdvanceWidth * Scale;
-                result.Y = Math.Max(result.Y, cache.AdvanceHeight);
+                SpriteFontGlyphBinding glyphBinding = _binding.GetCharacter(text[i]);
+                result.X += glyphBinding.AdvanceWidth * Scale;
+                result.Y = Math.Max(result.Y, glyphBinding.AdvanceHeight);
             }
 
             result.Y *= Scale;
@@ -71,35 +73,13 @@ namespace Molten.Graphics
             return result;
         }
 
-        /// <summary>
-        /// Returns the index of the nearest character within the specified string, based on the provided local point position.
-        /// </summary>
-        /// <param name="text">A string of text.</param>
-        /// <param name="localPoint">The local point to test, relative to the string's screen or world position.</param>
-        /// <returns></returns>
-        public int GetNearestCharacter(string text, Vector2F localPoint)
+        public SpriteFontGlyphBinding GetCharacter(char c)
         {
-            // TODO This is needed when hit-testing for text editing.
-            throw new NotImplementedException();
+            return _binding.GetCharacter(c);
         }
 
-        [JsonProperty]
-        public float Size
-        {
-            get => _fontSize;
-            set
-            {
-                if(_fontSize != value)
-                {
-                    _fontSize = value;
-                    Scale = (_fontSize / TextFontSource.BASE_FONT_SIZE);
-                    LineSpacing = Source.ToPixels(Source.Font.HorizonalHeader.LineSpace) * Scale;
-                    OnSizeChanged?.Invoke(this);
-                }
-            }
-        }
+        public SpriteFontManager Manager { get; }
 
-        public TextFontSource Source { get; private set; }
 
         [JsonProperty]
         /// <summary>
@@ -112,5 +92,26 @@ namespace Molten.Graphics
         /// </summary>
         [JsonProperty]
         public float Scale { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="FontFile"/> from which the font was loaded.
+        /// </summary>
+        public FontFile File => _binding.File;
+
+        [JsonProperty]
+        public float Size
+        {
+            get => _fontSize;
+            set
+            {
+                if (_fontSize != value)
+                {
+                    _fontSize = value;
+                    Scale = (_fontSize / Manager.BaseFontSize);
+                    LineSpacing = Manager.DesignToPixels(_binding.File, _binding.File.HorizonalHeader.LineSpace) * Scale;
+                    OnSizeChanged?.Invoke(this);
+                }
+            }
+        }
     }
 }

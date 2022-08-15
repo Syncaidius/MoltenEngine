@@ -37,7 +37,7 @@
             _populated = 0;
         }
 
-        public void Render(SpriteBatcher sb, TextFont font)
+        public void Render(SpriteBatcher sb)
         {
             double highest = 0;
             double lowest = 0;

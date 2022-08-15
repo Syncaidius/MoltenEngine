@@ -4,33 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Font;
+using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    internal class FontBinding
+    internal class SpriteFontBinding
     {
-        internal FontGlyphBinding[] Glyphs { get; }
+        internal SpriteFontGlyphBinding[] Glyphs { get; }
 
         internal CharData[] Data { get; }
 
-        public FontBinding(FontManager manager, FontFile font)
+        public SpriteFontBinding(SpriteFontManager manager, FontFile font)
         {
             Manager = manager;
             File = font;
 
             if (File.GlyphCount > 0)
             {
-                Glyphs = new FontGlyphBinding[File.GlyphCount];
+                Glyphs = new SpriteFontGlyphBinding[File.GlyphCount];
             }
             else
             {
-                Glyphs = new FontGlyphBinding[1];
-                Glyphs[0] = new FontGlyphBinding(this)
+                Glyphs = new SpriteFontGlyphBinding[1];
+                Glyphs[0] = new SpriteFontGlyphBinding(this)
                 {
                     AdvanceWidth = 1,
                     AdvanceHeight = 1,
                     Location = new Rectangle(0, 0, 1, 1),
-                    Page = 0,
+                    PageID = 0,
                     PWidth = 1,
                     PHeight = 1,
                     YOffset = 0
@@ -38,18 +39,25 @@ namespace Molten.Graphics
             }
 
             Data = new CharData[char.MaxValue]; // TODO Optimize this - 65536 Char data entries is overkill.       
+
+            Manager.AddCharacter(this, SpriteFontManager.PLACEHOLDER_CHAR, false);
+
+            /*Rectangle pcRect = Glyphs[Data[' '].GlyphIndex].Location;
+            pcRect.Width *= Manager.TabSize;
+            AddCharacter('\t', false, pcRect);*/
+            Manager.AddCharacter(this, '\t', false);
         }
 
-        public FontGlyphBinding GetCharacter(char c)
+        public SpriteFontGlyphBinding GetCharacter(char c)
         {
             if (!Data[c].Initialized)
                 Manager.AddCharacter(this, c, true);
 
-            return Glyphs[Data[c].GlyphIndex] ?? Glyphs[Data[FontManager.PLACEHOLDER_CHAR].GlyphIndex];
+            return Glyphs[Data[c].GlyphIndex] ?? Glyphs[Data[SpriteFontManager.PLACEHOLDER_CHAR].GlyphIndex];
         }
 
         public FontFile File { get; }
 
-        internal FontManager Manager { get; }
+        internal SpriteFontManager Manager { get; }
     }
 }

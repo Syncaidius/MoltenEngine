@@ -11,30 +11,30 @@ using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    public class FontManager
+    public class SpriteFontManager : EngineObject
     {
         public const char PLACEHOLDER_CHAR = ' ';
 
         Engine _engine;
-        Dictionary<string, FontBinding> _fonts;
+        Dictionary<string, SpriteFontBinding> _fonts;
         SceneRenderData _renderData;
         RenderCamera _camera;
 
         IRenderSurface2D _rtTransfer;
-        ThreadedQueue<FontGlyphBinding> _pendingGlyphs;
-        List<FontPage> _pages;
+        ThreadedQueue<SpriteFontGlyphBinding> _pendingGlyphs;
+        List<SpriteFontPage> _pages;
         Interlocker _fontLocker;
         Interlocker _pageLocker;
         SdfGenerator _sdf;
 
-        internal FontManager(Logger log, Engine engine)
+        internal SpriteFontManager(Logger log, Engine engine)
         {
             _engine = engine;
             _fontLocker = new Interlocker();
             _pageLocker = new Interlocker();
-            _fonts = new Dictionary<string, FontBinding>();
-            _pendingGlyphs = new ThreadedQueue<FontGlyphBinding>();
-            _pages = new List<FontPage>();
+            _fonts = new Dictionary<string, SpriteFontBinding>();
+            _pendingGlyphs = new ThreadedQueue<SpriteFontGlyphBinding>();
+            _pages = new List<SpriteFontPage>();
             _sdf = new SdfGenerator();
 
             Log = log;
@@ -93,7 +93,7 @@ namespace Molten.Graphics
                 return;
             }
 
-            while (_pendingGlyphs.TryDequeue(out FontGlyphBinding binding))
+            while (_pendingGlyphs.TryDequeue(out SpriteFontGlyphBinding binding))
             {
                 Rectangle gBounds = binding.Glyph.Bounds;
                 Vector2F glyphScale = new Vector2F()
@@ -116,7 +116,7 @@ namespace Molten.Graphics
                 _sdf.To8Bit(sdfRef);
 
                 ITexture2D tex = _sdf.ConvertToTexture(_engine.Renderer, sdfRef);
-                sb.Draw(binding.Location, ref style, tex, null, 0, (uint)binding.Page);
+                sb.Draw(binding.Location, ref style, tex, null, 0, (uint)binding.PageID);
 
                 sdfRef.Slice.Dispose();
                // tex.Dispose(); -- TODO implement proper GPU disposal handling (only disposes gpu resources after X frames)
@@ -130,38 +130,38 @@ namespace Molten.Graphics
             _camera.Surface.GenerateMipMaps();
         }
 
-        internal Font LoadFont(Stream stream, string path)
+        internal SpriteFont LoadFont(Stream stream, string path, float size = 16)
         {
             _fontLocker.Lock();
             FontFile fFile = null;
             using (FontReader reader = new FontReader(stream, Log, path))
                 fFile = reader.ReadFont(true);
 
-            FontBinding binding = new FontBinding(this, fFile);
-            Font font = null;
+            SpriteFontBinding binding = new SpriteFontBinding(this, fFile);
+            SpriteFont font = null;
 
             if (_fonts.TryAdd(path, binding))
-                font = new Font(this, binding);
+                font = new SpriteFont(this, binding, size);
             else
-                font = new Font(this, _fonts[path]);
+                font = new SpriteFont(this, _fonts[path], size);
 
             _fontLocker.Unlock();
             return font;
         }
 
-        internal Font GetFont(string path)
+        internal SpriteFont GetFont(string path, float size = 16)
         {
             _fontLocker.Lock();
-            Font font = null;
+            SpriteFont font = null;
 
-            if (_fonts.TryGetValue(path, out FontBinding binding))
-                font = new Font(this, binding);
+            if (_fonts.TryGetValue(path, out SpriteFontBinding binding))
+                font = new SpriteFont(this, binding, size);
 
             _fontLocker.Unlock();
             return font;
         }
 
-        internal void AddCharacter(FontBinding binding, char c, bool render)
+        internal void AddCharacter(SpriteFontBinding binding, char c, bool render)
         {
             _pageLocker.Lock();
 
@@ -190,7 +190,7 @@ namespace Molten.Graphics
             gBounds.Height = Math.Max(1, gBounds.Height);
             GlyphMetrics gm = binding.File.GetMetricsByIndex(gIndex);
 
-            FontGlyphBinding glyphBinding = new FontGlyphBinding(binding)
+            SpriteFontGlyphBinding glyphBinding = new SpriteFontGlyphBinding(binding)
             {
                 Glyph = glyph,
                 AdvanceWidth = DesignToPixels(binding.File, gm.AdvanceWidth),
@@ -201,22 +201,26 @@ namespace Molten.Graphics
             };
 
             binding.Glyphs[gIndex] = glyphBinding;
+            binding.Data[c] = new CharData(gIndex);
 
             if (render)
             {
                 // Pack the glyph onto the first page we find with enough space
                 bool pageFound = false;
 
-                foreach (FontPage page in _pages)
+                foreach (SpriteFontPage page in _pages)
                 {
                     pageFound = page.Pack(glyphBinding);
                     if (pageFound)
+                    {
+                        _pendingGlyphs.Enqueue(glyphBinding);
                         break;
+                    }
                 }
 
                 if (!pageFound)
                 {
-                    FontPage page = new FontPage(this, _pages.Count);
+                    SpriteFontPage page = new SpriteFontPage(this, _pages.Count);
                     _pages.Add(page);
 
                     if (page.Pack(glyphBinding))
@@ -237,9 +241,17 @@ namespace Molten.Graphics
         /// <param name="font">The <see cref="FontFile"/> to use when measuring design units.</param>
         /// <param name="designUnits">The design unit value.</param>
         /// <returns></returns>
-        private int DesignToPixels(FontFile font, float designUnits)
+        internal int DesignToPixels(FontFile font, float designUnits)
         {
             return (int)Math.Ceiling(BaseFontSize * designUnits / font.Header.DesignUnitsPerEm);
+        }
+
+        protected override void OnDispose()
+        {
+            _camera.Surface?.Dispose();
+            _rtTransfer?.Dispose();
+            _engine.Renderer.DestroyRenderData(_renderData);
+            _renderData.Dispose();
         }
 
         /// <summary>
@@ -250,7 +262,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the base font size.
         /// </summary>
-        public int BaseFontSize { get; } = 16;
+        public int BaseFontSize { get; } = 64;
 
         /// <summary>
         /// Gets the page size of the underlying font texture array.
@@ -258,12 +270,17 @@ namespace Molten.Graphics
         public int PageSize { get; } = 512;
 
         /// <summary>
-        /// Gets the <see cref="Logger"/> used by the current <see cref="FontManager"/> to log font-load messages, warnings and errors.
+        /// Gets the <see cref="Logger"/> used by the current <see cref="SpriteFontManager"/> to log font-load messages, warnings and errors.
         /// </summary>
         public Logger Log { get; }
 
         /// <summary>
-        /// Gets the underlying texture array of the current <see cref="FontManager"/>.
+        /// Gets or sets the number of spaces that are represented by a single tab character.
+        /// </summary>
+        public int TabSize { get; set; } = 3;
+
+        /// <summary>
+        /// Gets the underlying texture array of the current <see cref="SpriteFontManager"/>.
         /// </summary>
         public ITexture2D UnderlyingTexture => _camera.Surface;
     }

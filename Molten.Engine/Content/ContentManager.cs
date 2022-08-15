@@ -186,7 +186,7 @@ namespace Molten
         /// <param name="canHotReload"></param>
         /// <param name="dispatch"></param>
         /// <returns></returns>
-        public ContentLoadHandle LoadFont(string path, ContentLoadCallbackHandler<TextFont> completionCallback = null, TextFontParameters parameters = null, bool canHotReload = true, bool dispatch = true)
+        public ContentLoadHandle LoadFont(string path, ContentLoadCallbackHandler<SpriteFont> completionCallback = null, SpriteFontParameters parameters = null, bool canHotReload = true, bool dispatch = true)
         {
             if (!File.Exists(path))
             {

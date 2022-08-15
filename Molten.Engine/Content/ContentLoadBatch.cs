@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Collections;
+using Molten.Graphics;
 using Newtonsoft.Json;
 
 namespace Molten
@@ -44,7 +45,38 @@ namespace Molten
             });
         }
 
-        public ContentLoadHandle Load<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, ContentParameters parameters = null, bool canHotReload = true)
+        public ContentLoadHandle LoadFont(string path, 
+            ContentLoadCallbackHandler<SpriteFont> completionCallback = null, 
+            SpriteFontParameters parameters = null, 
+            bool canHotReload = true)
+        {
+            if (Status == ContentLoadBatchStatus.Dispatched)
+                throw new InvalidOperationException("Cannot load more content before Dispatch() is complete");
+
+            ContentLoadHandle handle = Manager.LoadFont(path, (asset, isReload) =>
+            {
+                if (!isReload)
+                {
+                    _loadedCount++;
+
+                    if (_loadedCount == _handles.Count)
+                    {
+                        Status = ContentLoadBatchStatus.Completed;
+                        OnCompleted?.Invoke(this);
+                    }
+                }
+
+                completionCallback?.Invoke(asset, isReload);
+            }, parameters, canHotReload, false);
+
+            _handles.Add(handle);
+            return handle;
+        }
+
+        public ContentLoadHandle Load<T>(string path, 
+            ContentLoadCallbackHandler<T> completionCallback = null, 
+            ContentParameters parameters = null, 
+            bool canHotReload = true)
         {
             if (Status == ContentLoadBatchStatus.Dispatched)
                 throw new InvalidOperationException("Cannot load more content before Dispatch() is complete");

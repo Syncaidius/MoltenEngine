@@ -21,7 +21,7 @@ namespace Molten.Graphics
         /// <param name="color">The color of the text.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DrawString(TextFont font, string text, Vector2F position, Color color, IMaterial material = null, uint surfaceSlice = 0)
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, IMaterial material = null, uint surfaceSlice = 0)
         {
             DrawString(font, text, position, color, Vector2F.One, material, surfaceSlice);
         }
@@ -32,7 +32,7 @@ namespace Molten.Graphics
         /// <param name="position">The position of the text.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DrawString(TextFont font, string text, Vector2F position, ref TextStyle style, IMaterial material = null, uint surfaceSlice = 0)
+        public void DrawString(SpriteFont font, string text, Vector2F position, ref TextStyle style, IMaterial material = null, uint surfaceSlice = 0)
         {
             DrawString(font, text, position, Vector2F.One, ref style, material, surfaceSlice);
         }
@@ -44,7 +44,7 @@ namespace Molten.Graphics
         /// <param name="color">The color of the text.</param>
         /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
-        public void DrawString(TextFont font, string text, Vector2F position, Color color, Vector2F scale, IMaterial material = null, uint surfaceSlice = 0)
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, IMaterial material = null, uint surfaceSlice = 0)
         {
             if (string.IsNullOrEmpty(text))
                 return;
@@ -63,7 +63,7 @@ namespace Molten.Graphics
         /// <param name="color">The color of the text.</param>
         /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
-        public void DrawString(TextFont font, string text, Vector2F position, Vector2F scale, ref TextStyle style, IMaterial material = null, uint surfaceSlice = 0)
+        public void DrawString(SpriteFont font, string text, Vector2F position, Vector2F scale, ref TextStyle style, IMaterial material = null, uint surfaceSlice = 0)
         {
             if (string.IsNullOrEmpty(text))
                 return;
@@ -72,15 +72,15 @@ namespace Molten.Graphics
             Vector2F charPos = position;
             for (int i = 0; i < text.Length; i++)
             {
-                TextFontSource.CachedGlyph cache = font.Source.GetCharGlyph(text[i]);
+                SpriteFontGlyphBinding glyph = font.GetCharacter(text[i]);
 
-                ref GpuData data = ref GetData(RangeType.MSDF, font.Source.UnderlyingTexture, material);
-                data.Position = new Vector2F(charPos.X, charPos.Y + ((cache.YOffset * font.Scale) * scale.Y));
+                ref GpuData data = ref GetData(RangeType.MSDF, font.Manager.UnderlyingTexture, material);
+                data.Position = new Vector2F(charPos.X, charPos.Y + ((glyph.YOffset * font.Scale) * scale.Y));
                 data.Rotation = 0; // TODO 2D text rotation.
-                data.Array.SrcArraySlice = 0; // TODO SpriteFont array slice support.
+                data.Array.SrcArraySlice = glyph.PageID;
                 data.Array.DestSurfaceSlice = surfaceSlice;
-                data.Size = (new Vector2F(cache.Location.Width, cache.Location.Height) * font.Scale) * scale;
-                data.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
+                data.Size = (new Vector2F(glyph.Location.Width, glyph.Location.Height) * font.Scale) * scale;
+                data.UV = new Vector4F(glyph.Location.Left, glyph.Location.Top, glyph.Location.Right, glyph.Location.Bottom);
                 data.Color1 = style.FillColor;
                 data.Color2 = style.OutlineColor;
                 data.Origin = Vector2F.Zero;
@@ -91,7 +91,7 @@ namespace Molten.Graphics
                 data.Extra.D4 = style.DropShadowDirection.Y;
 
                 // Increase pos by size of char (along X)
-                charPos.X += (cache.AdvanceWidth * font.Scale) * scale.X;
+                charPos.X += (glyph.AdvanceWidth * font.Scale) * scale.X;
             }
         }
     }

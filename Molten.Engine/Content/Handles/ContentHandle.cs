@@ -41,11 +41,15 @@ namespace Molten
         /// </summary>
         public void Dispatch()
         {
+            Status = ContentHandleStatus.Processing;
             Manager.Workers.QueueTask(this);
         }
 
         protected override sealed bool OnRun()
         {
+            if (Status == ContentHandleStatus.Failed)
+                return false;
+
             Status = ContentHandleStatus.Processing;
 
             try

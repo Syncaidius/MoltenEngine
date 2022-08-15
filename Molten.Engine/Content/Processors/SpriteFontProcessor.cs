@@ -1,0 +1,45 @@
+﻿using Molten.Graphics;
+
+namespace Molten.Content
+{
+    public class SpriteFontProcessor : ContentProcessor<SpriteFontParameters>
+    {
+        public override Type[] AcceptedTypes { get; } = new Type[] { typeof(SpriteFont) };
+
+        public override Type[] RequiredServices => null;
+
+        public override Type PartType => typeof(SpriteFont);
+
+        protected override bool OnReadPart(ContentLoadHandle handle, Stream stream, SpriteFontParameters parameters, object existingPart, out object partAsset)
+        {
+            partAsset = handle.Manager.Engine.Fonts.GetFont(handle.RelativePath, parameters.FontSize);
+
+            if(partAsset == null)
+                partAsset = handle.Manager.Engine.Fonts.LoadFont(stream, handle.RelativePath, parameters.FontSize);
+
+            return true;
+        }
+
+        protected override bool OnBuildAsset(ContentLoadHandle handle, ContentLoadHandle[] parts, SpriteFontParameters parameters, object existingAsset, out object asset)
+        {
+            if (parts.Length > 1)
+                handle.LogWarning($"{nameof(SpriteFontProcessor)} does not support multi-part font loading. Using first part only.");
+
+            SpriteFont sf = parts[0].Get<SpriteFont>();
+            asset = null;
+
+            if (sf != null)
+            {
+                asset = sf;
+                return true;
+            }
+
+            return false;
+        }
+
+        protected override bool OnWrite(ContentHandle handle, Stream stream, SpriteFontParameters parameters, object asset)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

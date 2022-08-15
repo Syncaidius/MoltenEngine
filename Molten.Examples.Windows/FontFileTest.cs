@@ -13,7 +13,7 @@ namespace Molten.Samples
         public override string Description => "A test area for the WIP FontFile system.";
 
         FontFile _fontFile;
-        TextFont _font2Test;
+        SpriteFont _font2Test;
 
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
@@ -64,13 +64,13 @@ namespace Molten.Samples
 
         private void LoadFontFile(string loadString)
         {
-            ContentLoadHandle handle = Engine.Content.Load<TextFont>($"assets/{loadString}", (font, isReload) =>
+            ContentLoadHandle handle = Engine.Content.LoadFont($"assets/{loadString}", (font, isReload) =>
             {
                 _font2Test = font;
                 if (_font2Test == null)
                     return;
 
-                _fontFile = _font2Test.Source.Font;
+                _fontFile = _font2Test.File;
                 InitializeFontDebug();
                 GenerateChar('j', CHAR_CURVE_RESOLUTION);
                 _font2Test.MeasureString("abcdefghijklmnopqrstuvwxyz1234567890", 16);
@@ -139,12 +139,12 @@ namespace Molten.Samples
 
                 // Only draw test font if it's loaded
 
-                if (_font2Test != null && _font2Test.Source.UnderlyingTexture != null)
+                if (_font2Test != null && _font2Test.Manager.UnderlyingTexture != null)
                 {
                     RectStyle boundsStyle = new RectStyle(Color.Transparent, Color.Grey, 2);
                     Vector2F pos = new Vector2F(800, 65);
                     Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, 512, 512);
-                    sb.Draw(texBounds, Color.White, _font2Test.Source.UnderlyingTexture);
+                    sb.Draw(texBounds, Color.White, _font2Test.Manager.UnderlyingTexture);
 
                     boundsStyle.BorderColor = Color.Red;
                     boundsStyle.FillColor = Color.Transparent;
@@ -155,7 +155,7 @@ namespace Molten.Samples
                     pos.Y += 517;
                     sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
                     pos.Y += _font2Test.LineSpacing;
-                    sb.DrawString(_font2Test, $"Font Name: {_font2Test.Source.Font.Info.FullName}", pos, Color.White);
+                    sb.DrawString(_font2Test, $"Font Name: {_font2Test.File.Info.FullName}", pos, Color.White);
                     pos.Y += 30;
                 }
             };

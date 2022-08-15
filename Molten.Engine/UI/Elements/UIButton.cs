@@ -68,7 +68,7 @@ namespace Molten.UI
         /// <summary>
         /// The <see cref="TextFont"/> of the current <see cref="UIButton"/>.
         /// </summary>
-        public TextFont Font => _label.Font;
+        public SpriteFont Font => _label.Font;
 
         /// <summary>
         /// Gets or sets the label font of the current <see cref="UIBu"/>.
