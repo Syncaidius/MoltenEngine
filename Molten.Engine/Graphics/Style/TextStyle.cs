@@ -10,6 +10,17 @@ namespace Molten.Graphics
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct TextStyle
     {
+        public enum Direction
+        {
+            LeftToRight = 0,
+
+            RightToLeft = 1,
+
+            TopToBottom = 2,
+
+            BottomToTop = 3
+        }
+
         public static readonly TextStyle Default = new TextStyle(Color.White);
 
         public Color FillColor;
@@ -24,6 +35,8 @@ namespace Molten.Graphics
 
         public Vector2F DropShadowDirection;
 
+        public Direction TextDirection;
+
         public TextStyle()
         {
             FillColor = Color.White;
@@ -32,9 +45,10 @@ namespace Molten.Graphics
             OutlineSize = 0f;
             DropShadowSize = 0;
             DropShadowDirection = Vector2F.One;
+            TextDirection = Direction.LeftToRight;
         }
 
-        public TextStyle(Color fillColor)
+        public TextStyle(Color fillColor, Direction dir = Direction.LeftToRight)
         {
             FillColor = fillColor;
             OutlineColor = Color.White;
@@ -42,9 +56,10 @@ namespace Molten.Graphics
             OutlineSize = 0f;
             DropShadowSize = 0;
             DropShadowDirection = Vector2F.One;
+            TextDirection = dir;
         }
 
-        public TextStyle(Color fillColor, Color outlineColor, float outlineSize)
+        public TextStyle(Color fillColor, Color outlineColor, float outlineSize, Direction dir = Direction.LeftToRight)
         {
             FillColor = fillColor;
             OutlineColor = outlineColor;
@@ -52,9 +67,17 @@ namespace Molten.Graphics
             OutlineSize = outlineSize;
             DropShadowSize = 0;
             DropShadowDirection = Vector2F.One;
+            TextDirection = dir;
         }
 
-        public TextStyle(Color fillColor, Color outlineColor, float outlineSize, Color dropShadowColor, float dropShadowSize, Vector2F dropShadowDir)
+        public TextStyle(
+            Color fillColor, 
+            Color outlineColor, 
+            float outlineSize, 
+            Color dropShadowColor, 
+            float dropShadowSize, 
+            Vector2F dropShadowDir, 
+            Direction dir = Direction.LeftToRight)
         {
             FillColor = fillColor;
             OutlineColor = outlineColor;
@@ -62,6 +85,7 @@ namespace Molten.Graphics
             OutlineSize = outlineSize;
             DropShadowSize = dropShadowSize;
             DropShadowDirection = dropShadowDir.GetNormalized();
+            TextDirection = dir;
         }
 
         public static implicit operator TextStyle(Color color)
@@ -74,6 +98,7 @@ namespace Molten.Graphics
                 OutlineSize = 0f,
                 DropShadowSize = 0,
                 DropShadowDirection = Vector2F.One,
+                TextDirection = Direction.LeftToRight
             };
         }
 

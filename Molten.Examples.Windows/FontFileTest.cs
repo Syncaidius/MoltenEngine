@@ -134,7 +134,11 @@ namespace Molten.Samples
                 }
 
                 sb.DrawString(SampleFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
-                sb.DrawString(SampleFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
+
+                TextStyle vertStyle = new TextStyle(Color.White, TextStyle.Direction.TopToBottom);
+                sb.DrawString(SampleFont, $"Font atlas", new Vector2F(785, 65), ref vertStyle);
+                vertStyle.TextDirection = TextStyle.Direction.BottomToTop;
+                sb.DrawString(SampleFont, $"Font atlas", new Vector2F(765, 65), ref vertStyle);
 
                 // Only draw test font if it's loaded
 
@@ -154,8 +158,18 @@ namespace Molten.Samples
                     pos.Y += 517;
                     sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
                     pos.Y += _font2Test.LineSpacing;
+
                     sb.DrawString(_font2Test, $"Font Name: {_font2Test.File.Info.FullName}", pos, Color.White);
                     pos.Y += 30;
+
+                    pos.Y += 30;
+                    vertStyle.TextDirection = TextStyle.Direction.LeftToRight;
+                    sb.DrawString(_font2Test, $"This text is reversed! See if you can read it.", pos, ref vertStyle);
+                    pos.Y += _font2Test.LineSpacing;
+
+                    vertStyle.TextDirection = TextStyle.Direction.RightToLeft;
+                    sb.DrawString(_font2Test, $"This text is reversed! See if you can read it.", pos, ref vertStyle);
+                    pos.Y += _font2Test.LineSpacing;
                 }
             };
         }

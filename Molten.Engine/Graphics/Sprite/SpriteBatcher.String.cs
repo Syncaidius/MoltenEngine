@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.Font;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Molten.Graphics
 {
     public abstract partial class SpriteBatcher
     {
+        delegate void DirectionFunc(ref Vector2F charPos, ref Vector2F scale);
+
         /// <summary>
         /// Placeholder text style.
         /// </summary>
-        TextStyle _textStyle; 
+        TextStyle _textStyle;
 
         /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data.</summary>
         /// <param name="font">The spritefont from which to retrieve font data.</param>
@@ -70,13 +75,31 @@ namespace Molten.Graphics
 
             // Cycle through all characters in the string and process them
             Vector2F charPos = position;
+            int inc = 1;
+            int start = 0;
+            float totalWidth = 0;
+
+            if (style.TextDirection == TextStyle.Direction.RightToLeft || style.TextDirection == TextStyle.Direction.BottomToTop)
+            {
+                inc = -1;
+                start = text.Length - 1;
+            }                
+
             for (int i = 0; i < text.Length; i++)
             {
-                SpriteFontGlyphBinding glyph = font.GetCharacter(text[i]);
+                int c = start + (inc * i);
+                SpriteFontGlyphBinding glyph = font.GetCharacter(text[c]);
+                totalWidth += (glyph.AdvanceWidth * font.Scale);
 
                 ref GpuData data = ref GetData(RangeType.MSDF, font.Manager.UnderlyingTexture, material);
-                data.Position = new Vector2F(charPos.X, charPos.Y + ((glyph.YOffset * font.Scale) * scale.Y));
-                data.Rotation = 0; // TODO 2D text rotation.
+                float rad = MathHelper.DegreesToRadians(45);
+                data.Rotation = 0;
+                data.Position = new Vector2F()
+                {
+                    X = charPos.X,
+                    Y = charPos.Y + ((glyph.YOffset * font.Scale) * scale.Y),
+                };
+
                 data.Array.SrcArraySlice = glyph.PageID;
                 data.Array.DestSurfaceSlice = surfaceSlice;
                 data.Size = (new Vector2F(glyph.Location.Width, glyph.Location.Height) * font.Scale) * scale;
@@ -91,7 +114,18 @@ namespace Molten.Graphics
                 data.Extra.D4 = style.DropShadowDirection.Y;
 
                 // Increase pos by size of char (along X)
-                charPos.X += (glyph.AdvanceWidth * font.Scale) * scale.X;
+                switch (style.TextDirection)
+                {
+                    case TextStyle.Direction.RightToLeft:
+                    case TextStyle.Direction.LeftToRight:
+                        charPos.X += (glyph.AdvanceWidth * font.Scale) * scale.X;
+                        break;
+
+                    case TextStyle.Direction.BottomToTop:
+                    case TextStyle.Direction.TopToBottom:
+                        charPos.Y += (glyph.AdvanceHeight * font.Scale) * scale.Y;
+                        break;
+                }               
             }
         }
     }
