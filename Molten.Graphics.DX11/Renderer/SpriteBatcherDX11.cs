@@ -16,7 +16,6 @@ namespace Molten.Graphics
         Material _matGrid;
         Material _matCircle;
         Material _matCircleNoTexture;
-        Material _matTriangle;
         Material _matMsdf;
 
         internal unsafe SpriteBatcherDX11(RendererDX11 renderer, uint capacity = 3000) : base(capacity)
@@ -37,7 +36,6 @@ namespace Molten.Graphics
             _matLine = result[ShaderClassType.Material, "line"] as Material;
             _matGrid = result[ShaderClassType.Material, "grid"] as Material;
             //_matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
-            //_matTriangle = result[ShaderClassType.Material, "triangle"] as Material;
 
             ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_sdf.mfx");
             _matMsdf = resultSdf[ShaderClassType.Material, "sprite-msdf"] as Material;
@@ -47,7 +45,6 @@ namespace Molten.Graphics
             _checkers[(int)RangeType.Sprite] = CheckSpriteRange;
             _checkers[(int)RangeType.MSDF] = CheckMsdfRange;
             _checkers[(int)RangeType.Line] = CheckLineRange;
-            _checkers[(int)RangeType.Triangle] = CheckTriangleRange;
             _checkers[(int)RangeType.Ellipse] = CheckEllipseRange;
             _checkers[(int)RangeType.Grid] = CheckGridRange;
         }
@@ -76,10 +73,6 @@ namespace Molten.Graphics
             {
                 range = Ranges[rangeID++];
                 if (range.Type == RangeType.None)
-                    continue;
-
-                // TODO TESTING - REMOVE LATER
-                if (range.Type == RangeType.Triangle)
                     continue;
 
                 Material mat = (range.Material as Material) ?? _checkers[(int)range.Type](context, range, data);
@@ -141,11 +134,6 @@ namespace Molten.Graphics
             return _matLine;
         }
 
-        private Material CheckTriangleRange(DeviceContext context, SpriteRange range, ObjectRenderData data)
-        {
-            return _matTriangle;
-        }
-
         private Material CheckEllipseRange(DeviceContext context, SpriteRange range, ObjectRenderData data)
         {
             return range.Texture != null ? _matCircle : _matCircleNoTexture;
@@ -170,7 +158,6 @@ namespace Molten.Graphics
             _matLine.Dispose();
             _matCircle.Dispose();
             _matCircleNoTexture.Dispose();
-            _matTriangle.Dispose();
 
             _bufferData.Dispose();
             _buffer.Dispose();

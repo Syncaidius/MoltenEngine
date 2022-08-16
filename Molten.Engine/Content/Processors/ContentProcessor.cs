@@ -1,22 +1,5 @@
 ﻿namespace Molten
 {
-    public interface IContentProcessor
-    {
-        Type ParameterType { get; }
-
-        Type PartType { get; }
-
-        bool ReadPart(ContentLoadHandle handle, Stream stream);
-
-        bool BuildAsset(ContentLoadHandle assetHandle);
-
-        bool Write(ContentSaveHandle handle, Stream stream);
-
-        Type[] AcceptedTypes { get; }
-
-        Type[] RequiredServices { get; }
-    }
-
     /// <summary>
     /// Provides a base implementation for content processors, used by a <see cref="ContentManager"/>.
     /// </summary>

@@ -47,19 +47,14 @@ namespace Molten.Graphics
             Line = 3,
 
             /// <summary>
-            /// Untextured triangles.
-            /// </summary>
-            Triangle = 4,
-
-            /// <summary>
             /// Ellipse or circular shape. It can be textured or untextured.
             /// </summary>
-            Ellipse = 5,
+            Ellipse = 4,
 
             /// <summary>
             /// Textured or untextured grid.
             /// </summary>
-            Grid = 6,
+            Grid = 5,
         }
 
         static Vector2F DEFAULT_ORIGIN_CENTER = new Vector2F(0.5f);

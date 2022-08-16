@@ -120,7 +120,7 @@ namespace Molten.Samples
                     sb.DrawString(SampleFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - (dif / 2)), Color.White);
                 }
 
-                sb.DrawTriangleList(_glyphTriPoints, _colors);
+                //sb.DrawTriangleList(_glyphTriPoints, _colors);
                 sb.DrawShapeOutline(_shape, Color.Red, Color.SkyBlue, 2);
 
                 Rectangle clickRect;
@@ -134,7 +134,6 @@ namespace Molten.Samples
                 }
 
                 sb.DrawString(SampleFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
-
                 sb.DrawString(SampleFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
 
                 // Only draw test font if it's loaded
