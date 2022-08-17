@@ -997,6 +997,16 @@ namespace Molten
         /// </summary>
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
+        public static <#=fName#> FromAxisAngle(<#=vectorName#> axis, float angle)
+        {
+            return FromAxisAngle(ref axis, angle);
+        }
+
+        /// <summary>
+        /// Creates a <#=See(fName)#> given a rotation and an axis.
+        /// </summary>
+        /// <param name="axis">The axis of rotation.</param>
+        /// <param name="angle">The angle of rotation.</param>
         public static <#=fName#> FromAxisAngle(ref <#=vectorName#> axis, float angle)
         {
             <#=vectorName#> normalized = axis.GetNormalized();

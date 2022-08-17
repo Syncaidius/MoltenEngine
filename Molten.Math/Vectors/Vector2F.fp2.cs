@@ -1,4 +1,4 @@
-
+﻿
 
 
 
@@ -45,7 +45,8 @@ namespace Molten
             float yy = rotation.Y * y;
             float zz = rotation.Z * z;
 
-            result = new Vector2F((vector.X * (1F - yy - zz)) + (vector.Y * (xy - wz)), (vector.X * (xy + wz)) + (vector.Y * (1F - xx - zz)));
+            result.X = (vector.X * (1F - yy - zz)) + (vector.Y * (xy - wz));
+            result.Y = (vector.X * (xy + wz)) + (vector.Y * (1F - xx - zz));
         }
 
         /// <summary>

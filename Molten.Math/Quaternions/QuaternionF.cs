@@ -973,6 +973,16 @@ namespace Molten
         /// </summary>
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
+        public static QuaternionF FromAxisAngle(Vector3F axis, float angle)
+        {
+            return FromAxisAngle(ref axis, angle);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="QuaternionF"/> given a rotation and an axis.
+        /// </summary>
+        /// <param name="axis">The axis of rotation.</param>
+        /// <param name="angle">The angle of rotation.</param>
         public static QuaternionF FromAxisAngle(ref Vector3F axis, float angle)
         {
             Vector3F normalized = axis.GetNormalized();

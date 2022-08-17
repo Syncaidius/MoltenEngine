@@ -231,7 +231,7 @@ namespace Molten
         /// Gets the main <see cref="EngineThread"/> of the current <see cref="Engine"/> instance.
         /// Core/game update logic is usually done on this thread.
         /// </summary>
-        public EngineThread MainThread { get; private set; }
+        public EngineThread MainThread => _mainThread;
 
         /// <summary>
         /// Gets the main content manager bound to the current engine instance. <para/>
