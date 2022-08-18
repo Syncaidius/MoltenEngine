@@ -26,6 +26,7 @@ namespace Molten.UI
         UIButton _btnMinimize;
         UIButton _btnMaximize;
         UILabel _title;
+        int _titleBarHeight;
         int _iconSpacing = 5;
         List<UIButton> _titleBarButtons;
 
@@ -51,8 +52,8 @@ namespace Molten.UI
             _btnMaximize = AddTitleButton("^");
             _btnMinimize = AddTitleButton("_");
 
+            _titleBarHeight = 26;
             Title = Name;
-            TitleBarHeight = 26;
         }
 
         private void BorderThickness_OnChanged()
@@ -111,7 +112,7 @@ namespace Molten.UI
 
         protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
         {
-            renderbounds.Inflate(-BorderThickness.Left, -BorderThickness.Top, -BorderThickness.Right, -BorderThickness.Bottom);
+            renderbounds.Inflate(-BorderThickness.Left, -(BorderThickness.Top + _titleBarHeight), -BorderThickness.Right, -BorderThickness.Bottom);
         }
 
         public override void OnPressed(ScenePointerTracker tracker)
@@ -181,8 +182,15 @@ namespace Molten.UI
         [JsonProperty]
         public int TitleBarHeight
         {
-            get => InternalPadding.Top;
-            set => InternalPadding.Top = value; // Triggers a bounds update, so we don't need to do one ourselves here.
+            get => _titleBarHeight;
+            set
+            {
+                if(_titleBarHeight != value)
+                {
+                    _titleBarHeight = value;
+                    UpdateBounds();
+                }
+            }
         }
 
         [UIThemeMember]

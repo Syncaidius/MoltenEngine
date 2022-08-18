@@ -93,7 +93,6 @@ namespace Molten.UI
         {
             Margin.OnChanged += MarginPadding_OnChanged;
             Padding.OnChanged += MarginPadding_OnChanged;
-            InternalPadding.OnChanged += MarginPadding_OnChanged;
         }
 
         private void MarginPadding_OnChanged()
@@ -125,7 +124,6 @@ namespace Molten.UI
 
             _renderBounds = _globalBounds;
             _renderBounds.Inflate(-Padding.Left, -Padding.Top, -Padding.Right, -Padding.Bottom);
-            _renderBounds.Inflate(-InternalPadding.Left, -InternalPadding.Top, -InternalPadding.Right, -InternalPadding.Bottom);
 
             OnAdjustRenderBounds(ref _renderBounds);
 
@@ -590,12 +588,6 @@ namespace Molten.UI
         /// </summary>
         [DataMember]
         public UISpacing Padding { get; } = new UISpacing();
-
-        /// <summary>
-        /// Gets the current <see cref="UIElement"/>'s internal padding. This can only be modified interally, by the current <see cref="UIElement"/>. 
-        /// <para>This is the spacing between the <see cref="Margin"/> and <see cref="RenderBounds"/>, which is added to <see cref="Padding"/>.</para>
-        /// </summary>
-        protected UISpacing InternalPadding { get; } = new UISpacing();
 
         [DataMember]
         public UIAnchorFlags Anchor { get; set; }
