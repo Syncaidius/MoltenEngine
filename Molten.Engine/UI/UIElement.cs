@@ -77,7 +77,6 @@ namespace Molten.UI
         UIElementState _state;
         Rectangle _localBounds;
         Rectangle _globalBounds;
-        Rectangle _borderBounds;
         Rectangle _renderBounds;
 
         public UIElement()
@@ -99,7 +98,12 @@ namespace Molten.UI
 
         private void MarginPadding_OnChanged()
         {
-            UpdateBounds(Parent?.RenderBounds);
+            UpdateBounds(_parent?.RenderBounds);
+        }
+
+        protected void UpdateBounds()
+        {
+            UpdateBounds(_parent?._renderBounds);
         }
 
         private void UpdateBounds(Rectangle? parentBounds)
@@ -119,12 +123,11 @@ namespace Molten.UI
                 _globalBounds = LocalBounds;
             }
 
-            _borderBounds = _globalBounds;
-            _borderBounds.Inflate(-Margin.Left, -Margin.Top, -Margin.Right, -Margin.Bottom);
-
-            _renderBounds = _borderBounds;
+            _renderBounds = _globalBounds;
             _renderBounds.Inflate(-Padding.Left, -Padding.Top, -Padding.Right, -Padding.Bottom);
             _renderBounds.Inflate(-InternalPadding.Left, -InternalPadding.Top, -InternalPadding.Right, -InternalPadding.Bottom);
+
+            OnAdjustRenderBounds(ref _renderBounds);
 
             OnUpdateCompoundBounds();
             foreach (UIElement e in CompoundElements)
@@ -363,6 +366,12 @@ namespace Molten.UI
         protected virtual void OnUpdateChildBounds() { }
 
         /// <summary>
+        /// Invoked after the initial render-bounds calculation, giving the current <see cref="UIElement"/> a chance to make custom adjustments to it's render bounds.
+        /// </summary>
+        /// <param name="renderbounds">The render bounds <see cref="Rectangle"/>.</param>
+        protected virtual void OnAdjustRenderBounds(ref Rectangle renderbounds) { }
+
+        /// <summary>
         /// Invoked when the parent of the current <see cref="UIElement"/> has changed.
         /// </summary>
         /// <param name="oldParent">The old parent, or null if none.</param>
@@ -410,7 +419,6 @@ namespace Molten.UI
             if (ShowDebugBounds)
             {
                 sb.DrawRect(_globalBounds, new Color(255,0,0,200), 0);
-                sb.DrawRect(_borderBounds, new Color(255,255,0,190), 0);
                 sb.DrawRect(_renderBounds, new Color(0,255,0, 180), 0);
             }
 #endif
@@ -446,11 +454,6 @@ namespace Molten.UI
         /// Gets the bounds in which child components should be drawn.
         /// </summary>
         public Rectangle RenderBounds => _renderBounds;
-
-        /// <summary>
-        /// Gets the bounds at which borders should extend to beyond the <see cref="RenderBounds"/>.
-        /// </summary>
-        public Rectangle BorderBounds => _borderBounds;
 
         /// <summary>
         /// Gets or sets whether clipping is enabled.

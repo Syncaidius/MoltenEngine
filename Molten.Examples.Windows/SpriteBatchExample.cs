@@ -80,7 +80,7 @@ namespace Molten.Samples
                 {
                     FillColor = rCol,
                     BorderColor = rOutlineCol,
-                    BorderThickness = new RectBorderThickness(Rng.Next(1, 7))
+                    BorderThickness = new Thickness(Rng.Next(1, 7))
                 };
             }
         }

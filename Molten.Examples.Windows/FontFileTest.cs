@@ -151,7 +151,7 @@ namespace Molten.Samples
 
                     boundsStyle.BorderColor = Color.Red;
                     boundsStyle.FillColor = Color.Transparent;
-                    boundsStyle.BorderThickness = new RectBorderThickness(1);
+                    boundsStyle.BorderThickness = new Thickness(1);
 
                     sb.DrawRect(texBounds, ref boundsStyle);
 

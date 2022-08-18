@@ -16,37 +16,37 @@ namespace Molten.Graphics
 
         public Color BorderColor;
 
-        public RectBorderThickness BorderThickness;
+        public Thickness BorderThickness;
 
         public RectStyle()
         {
             FillColor = Color.White;
             BorderColor = Color.White;
-            BorderThickness = new RectBorderThickness(0);
+            BorderThickness = new Thickness(0);
         }
 
         public RectStyle(Color color)
         {
             FillColor = color;
             BorderColor = color;
-            BorderThickness = new RectBorderThickness(0);
+            BorderThickness = new Thickness(0);
         }
 
         public RectStyle(Color fillColor, Color borderColor, float borderThickness)
         {
             FillColor = fillColor;
             BorderColor = borderColor;
-            BorderThickness = new RectBorderThickness(borderThickness);
+            BorderThickness = new Thickness(borderThickness);
         }
 
-        public RectStyle(Color fillColor, Color borderColor, ref RectBorderThickness borderThickness)
+        public RectStyle(Color fillColor, Color borderColor, ref Thickness borderThickness)
         {
             FillColor = fillColor;
             BorderColor = borderColor;
             BorderThickness = borderThickness;
         }
 
-        public RectStyle(Color fillColor, Color borderColor, RectBorderThickness borderThickness) : 
+        public RectStyle(Color fillColor, Color borderColor, Thickness borderThickness) : 
             this(fillColor, borderColor, ref borderThickness)
         { }
 
@@ -56,7 +56,7 @@ namespace Molten.Graphics
             {
                 FillColor = color,
                 BorderColor = color,
-                BorderThickness = new RectBorderThickness(0f)
+                BorderThickness = new Thickness(0f)
             };
         }
 

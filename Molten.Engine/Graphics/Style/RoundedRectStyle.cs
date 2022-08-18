@@ -50,7 +50,7 @@ namespace Molten.Graphics
             {
                 FillColor = FillColor,
                 BorderColor = BorderColor,
-                BorderThickness = new RectBorderThickness(BorderThickness)
+                BorderThickness = new Thickness(BorderThickness)
             };
         }
 

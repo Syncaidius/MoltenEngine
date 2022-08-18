@@ -15,7 +15,7 @@ namespace Molten.UI
         /// The border line thickness
         /// </summary>
         [UIThemeMember]
-        public float BorderThickness = 2;
+        public UISpacing BorderThickness { get; } = new UISpacing(2);
 
         /// <summary>
         /// The fill/inner color of the current <see cref="UIPanel"/>.
@@ -32,8 +32,19 @@ namespace Molten.UI
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
             base.OnInitialize(engine, settings);
+            BorderThickness.OnChanged += BorderThickness_OnChanged;
 
             InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Compound;
+        }
+
+        private void BorderThickness_OnChanged()
+        {
+            UpdateBounds();
+        }
+
+        protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
+        {
+            renderbounds.Inflate(-BorderThickness.Left, -BorderThickness.Top, -BorderThickness.Right, -BorderThickness.Bottom);
         }
 
         protected override void OnRenderSelf(SpriteBatcher sb)
@@ -43,12 +54,12 @@ namespace Molten.UI
             {
                 FillColor = FillColor,
                 BorderColor = BorderColor,
-                BorderThickness = BorderThickness,
+                BorderThickness = BorderThickness.Top,
                 CornerRadius = CornerRadius.Restrict(radiusLimit)
             };
 
 
-            sb.DrawRoundedRect(RenderBounds, 0, Vector2F.Zero, ref style);
+            sb.DrawRoundedRect(GlobalBounds, 0, Vector2F.Zero, ref style);
 
             base.OnRenderSelf(sb);
         }

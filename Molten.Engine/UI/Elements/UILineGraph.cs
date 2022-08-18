@@ -43,7 +43,7 @@ namespace Molten.UI
         public RectStyle BackgroundStyle { get; set; } = new RectStyle()
         {
             BorderColor = new Color(52, 189, 235, 255),
-            BorderThickness = new RectBorderThickness(2,0, 0, 2),
+            BorderThickness = new Thickness(2,0, 0, 2),
             FillColor = new Color(0, 109, 155, 200),
         };
 

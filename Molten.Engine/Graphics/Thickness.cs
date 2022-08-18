@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public struct RectBorderThickness
+    public struct Thickness
     {
-        public static readonly RectBorderThickness One = new RectBorderThickness(1f);
+        public static readonly Thickness One = new Thickness(1f);
 
-        public static readonly RectBorderThickness None = new RectBorderThickness(0f);
+        public static readonly Thickness None = new Thickness(0f);
 
         public float Left;
 
@@ -20,18 +20,18 @@ namespace Molten.Graphics
 
         public float Bottom;
 
-        public RectBorderThickness(float value)
+        public Thickness(float value)
         {
             Left = Top = Right = Bottom = value;
         }
 
-        public RectBorderThickness(float leftRight, float topBottom)
+        public Thickness(float leftRight, float topBottom)
         {
             Left = Right = leftRight;
             Top = Bottom = topBottom;
         }
 
-        public RectBorderThickness(float left, float top, float right, float bottom)
+        public Thickness(float left, float top, float right, float bottom)
         {
             Left = left;
             Top = top;

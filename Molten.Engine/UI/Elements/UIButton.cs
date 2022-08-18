@@ -15,7 +15,19 @@ namespace Molten.UI
             _panel = CompoundElements.Add<UIPanel>();
             _label = CompoundElements.Add<UILabel>();
 
+            _panel.BorderThickness.OnChanged += BorderThickness_OnChanged;
+
             InputRules = UIInputRuleFlags.Self | UIInputRuleFlags.Children;
+        }
+
+        private void BorderThickness_OnChanged()
+        {
+            UpdateBounds();
+        }
+
+        protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
+        {
+            renderbounds.Inflate(-BorderThickness.Left, -BorderThickness.Top, -BorderThickness.Right, -BorderThickness.Bottom);
         }
 
         protected override void OnUpdateCompoundBounds()
@@ -114,10 +126,6 @@ namespace Molten.UI
         /// The border line thickness of the current <see cref="UIButton"/>.
         /// </summary>
         [UIThemeMember]
-        public float BorderThickness
-        {
-            get => _panel.BorderThickness;
-            set => _panel.BorderThickness = value;
-        }
+        public UISpacing BorderThickness => _panel.BorderThickness;
     }
 }

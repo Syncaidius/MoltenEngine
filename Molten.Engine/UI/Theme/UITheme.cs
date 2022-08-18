@@ -191,9 +191,20 @@ namespace Molten.UI
             {
                 object val = style.GetValue(member, element.State);
                 if (member is FieldInfo field)
+                {
                     field.SetValue(element, val);
+                }
                 else if (member is PropertyInfo property)
-                    property.SetValue(element, val);
+                {
+                    if (property.CanWrite)
+                    {
+                        property.SetValue(element, val);
+                    }
+                    else
+                    {
+                        // TODO see if we can apply the object member-by-member
+                    }
+                }
             }
         }
     }

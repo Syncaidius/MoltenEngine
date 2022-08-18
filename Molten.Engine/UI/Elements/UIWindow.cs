@@ -38,6 +38,7 @@ namespace Molten.UI
             base.OnInitialize(engine, settings);
 
             _titleBarButtons = new List<UIButton>();
+            BorderThickness.OnChanged += BorderThickness_OnChanged;
 
             // Change _panel corners to only round bottom left/right.
             _titleBar = CompoundElements.Add<UIPanel>();
@@ -51,7 +52,19 @@ namespace Molten.UI
             _btnMinimize = AddTitleButton("_");
 
             Title = Name;
-            TitleBarHeight = 25;
+            TitleBarHeight = 26;
+        }
+
+        private void BorderThickness_OnChanged()
+        {
+            ApplyBorderThickness();
+            UpdateBounds();
+        }
+
+        private void ApplyBorderThickness()
+        {
+            _panel.BorderThickness.Apply(BorderThickness);
+            _titleBar.BorderThickness.Apply(BorderThickness);
         }
 
         private void _btnClose_Pressed(UIElement element, ScenePointerTracker tracker)
@@ -66,6 +79,7 @@ namespace Molten.UI
             _titleBar.CornerRadius.Set(_cornerRadius.TopLeft, _cornerRadius.TopRight, 0, 0);
             _titleBar.FillColor = _borderColor;
             _panel.CornerRadius.Set(0, 0, _cornerRadius.BottomRight, _cornerRadius.BottomLeft);
+            ApplyBorderThickness();
         }
 
         private UIButton AddTitleButton(string text)
@@ -93,6 +107,11 @@ namespace Molten.UI
 
             for(int i = 0; i < _titleBarButtons.Count; i++)
                 _titleBarButtons[i].LocalBounds = new Rectangle(gb.Width - (TitleBarHeight * (i+1)), 0, TitleBarHeight, TitleBarHeight);
+        }
+
+        protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
+        {
+            renderbounds.Inflate(-BorderThickness.Left, -BorderThickness.Top, -BorderThickness.Right, -BorderThickness.Bottom);
         }
 
         public override void OnPressed(ScenePointerTracker tracker)
@@ -209,5 +228,8 @@ namespace Molten.UI
                 }
             }
         }
+
+        [UIThemeMember]
+        public UISpacing BorderThickness { get; } = new UISpacing(2);
     }
 }

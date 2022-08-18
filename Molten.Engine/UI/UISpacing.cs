@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using Molten.Graphics;
 
 namespace Molten.UI
 {
@@ -14,7 +15,7 @@ namespace Molten.UI
             get => _left;
             set
             {
-                if(_left != value)
+                if (_left != value)
                 {
                     _left = value;
                     OnChanged?.Invoke();
@@ -62,6 +63,34 @@ namespace Molten.UI
                     OnChanged?.Invoke();
                 }
             }
+        }
+
+        public UISpacing() : this(0) { }
+
+        public UISpacing(int spacing)
+        {
+            _left = _top = _right = _bottom = spacing;
+        }
+
+        public UISpacing(int left, int top, int right, int bottom)
+        {
+            _left = left;
+            _top = top;
+            _right = right;
+            _bottom = bottom;
+        }
+
+        public void Apply(UISpacing other)
+        {
+            _left = other._left;
+            _top = other._top;
+            _right = other._right;
+            _bottom = other._bottom;
+        }
+
+        public Thickness ToThickness()
+        {
+            return new Thickness(_left, _top, _right, _bottom);
         }
     }
 }
