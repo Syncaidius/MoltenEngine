@@ -4,8 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Molten.Graphics;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Molten.UI
 {
@@ -47,7 +49,7 @@ namespace Molten.UI
                 {
                     _defaultFontName = value;
 
-                    if(_isInitialized)
+                    if (_isInitialized)
                         LoadFont();
                 }
             }
@@ -80,7 +82,7 @@ namespace Molten.UI
         {
             if (!string.IsNullOrWhiteSpace(_defaultFontName))
             {
-                Engine.Content.LoadFont(_defaultFontName, (font, isReload) => DefaultFont = font, 
+                Engine.Content.LoadFont(_defaultFontName, (font, isReload) => DefaultFont = font,
                 new SpriteFontParameters()
                 {
                     FontSize = DefaultFontSize
@@ -181,8 +183,8 @@ namespace Molten.UI
 
             if (style.Properties.First().Key.ReflectedType != elementType)
             {
-                if(!Parents.TryGetValue(elementType, out style))
-                    style = AddStyle(elementType.FullName);    
+                if (!Parents.TryGetValue(elementType, out style))
+                    style = AddStyle(elementType.FullName);
             }
 
             // Apply the style
@@ -190,22 +192,59 @@ namespace Molten.UI
             foreach (MemberInfo member in members)
             {
                 object val = style.GetValue(member, element.State);
-                if (member is FieldInfo field)
+                SetMember(member, element, val);
+            }
+        }
+
+        private void SetMember(MemberInfo member, object target, object value)
+        {
+            if (member is FieldInfo field)
+            {
+                field.SetValue(target, value);
+            }
+            else if (member is PropertyInfo property)
+            {
+                // Does the property have a setter?
+                if (property.CanWrite)
                 {
-                    field.SetValue(element, val);
+                    property.SetValue(target, value);
                 }
-                else if (member is PropertyInfo property)
-                {
-                    if (property.CanWrite)
+                else // No... Now we need to try and set it by copying member values across instead...
+                {                    
+                    // ...But we can only do this for reference types, not on value-types of a get-only property.
+                    if (property.PropertyType.IsValueType)
+                        return;
+
+                    // Get the target member's value
+                    object targetMemberValue = null;
+                    GetMemberValue(member, target, ref targetMemberValue);
+
+                    // Get the members of the target's member value we just retrieved.
+                    MemberInfo[] targetMembers = targetMemberValue.GetType().GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    IEnumerable<MemberInfo> filteredMembers = targetMembers.Where(m =>
                     {
-                        property.SetValue(element, val);
-                    }
-                    else
+                        // TODO only retrieve members with the UIThemeMember, DataMember or JsonProperty attributes.
+                        return (m is FieldInfo) || (m is PropertyInfo);
+                    });
+
+                    foreach (MemberInfo m in filteredMembers)
                     {
-                        // TODO see if we can apply the object member-by-member
+                        object valueMemberValue = null;
+                        GetMemberValue(m, value, ref valueMemberValue);
+
+                        // Now try to set the members of the target's member-value we just retrieved.
+                        SetMember(m, targetMemberValue, valueMemberValue);
                     }
                 }
             }
+        }
+
+        private void GetMemberValue(MemberInfo member, object obj, ref object value)
+        {
+            if (member is FieldInfo targetField)
+                value = targetField.GetValue(obj);
+            else if (member is PropertyInfo targetProperty)
+                value = targetProperty.GetValue(obj);
         }
     }
 }
