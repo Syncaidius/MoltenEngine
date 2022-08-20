@@ -412,14 +412,6 @@ namespace Molten.UI
 
             CompoundElements.Render(sb, ref _globalBounds);
             Children.Render(sb, ref _renderBounds);
-
-#if DEBUG
-            if (ShowDebugBounds)
-            {
-                sb.DrawRect(_globalBounds, new Color(255,0,0,200), 0);
-                sb.DrawRect(_renderBounds, new Color(0,255,0, 180), 0);
-            }
-#endif
         }
 
         /// <summary>
@@ -591,12 +583,6 @@ namespace Molten.UI
 
         [DataMember]
         public UIAnchorFlags Anchor { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether the current <see cref="UIElement"/> should show its global, border and render bounds.
-        /// <para>Only displays in debug builds. Red is global bounds. Yellow is border bounds and green is render bounds.</para>
-        /// </summary>
-        public bool ShowDebugBounds { get; set; }
 
         /// <summary>
         /// Gets the <see cref="UIWindow"/> that contains the current <see cref="UIElement"/>.
