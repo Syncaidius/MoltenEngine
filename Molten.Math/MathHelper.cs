@@ -46,6 +46,8 @@
 * THE SOFTWARE.
 */
 
+using System.Runtime.CompilerServices;
+
 namespace Molten
 {
     /// <summary>
@@ -414,7 +416,7 @@ namespace Molten
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         public static float Lerp(float from, float to, float amount)
         {
-            return (1 - amount) * from + amount * to;
+            return (1f - amount) * from + amount * to;
         }
 
         /// <summary>
@@ -428,9 +430,10 @@ namespace Molten
         /// <param name="to">Value to interpolate to.</param>
         /// <param name="amount">Interpolation amount.</param>
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Lerp(float from, float to, double amount)
         {
-            return (float)((1 - amount) * from + amount * to);
+            return (float)((1.0 - amount) * from + amount * to);
         }
 
         /// <summary>
@@ -447,6 +450,38 @@ namespace Molten
         public static byte Lerp(byte from, byte to, float amount)
         {
             return (byte)Lerp(from, (float)to, amount);
+        }
+
+        /// <summary>
+        /// Interpolates between two values using a linear function by a given amount.
+        /// </summary>
+        /// <remarks>
+        /// See http://www.encyclopediaofmath.org/index.php/Linear_interpolation and
+        /// http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
+        /// </remarks>
+        /// <param name="from">Value to interpolate from.</param>
+        /// <param name="to">Value to interpolate to.</param>
+        /// <param name="amount">Interpolation amount.</param>
+        /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        public static int Lerp(int from, int to, float amount)
+        {
+            return (int)Lerp(from, (float)to, amount);
+        }
+
+        /// <summary>
+        /// Interpolates between two values using a linear function by a given amount.
+        /// </summary>
+        /// <remarks>
+        /// See http://www.encyclopediaofmath.org/index.php/Linear_interpolation and
+        /// http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
+        /// </remarks>
+        /// <param name="from">Value to interpolate from.</param>
+        /// <param name="to">Value to interpolate to.</param>
+        /// <param name="amount">Interpolation amount.</param>
+        /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        public static uint Lerp(uint from, uint to, float amount)
+        {
+            return (uint)Lerp(from, (float)to, amount);
         }
 
         /// <summary>

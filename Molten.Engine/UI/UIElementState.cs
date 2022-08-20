@@ -35,15 +35,5 @@ namespace Molten.UI
         /// Active, checked or selected.
         /// </summary>
         Active = 4,
-
-        /// <summary>
-        /// The element is opening. E.g. a window, collapsible pane or drop-down element.
-        /// </summary>
-        Opening = 5,
-
-        /// <summary>
-        /// The element is closing. E.g. a window, collapsible pane or drop-down element.
-        /// </summary>
-        Closing = 6,
     }
 }

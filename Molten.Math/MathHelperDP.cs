@@ -1,4 +1,6 @@
-﻿namespace Molten
+﻿using System.Runtime.CompilerServices;
+
+namespace Molten
 {
     /// <summary>
     /// Double-precision math helper class
@@ -335,9 +337,74 @@
         /// <param name="to">Value to interpolate to.</param>
         /// <param name="amount">Interpolation amount.</param>
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Lerp(double from, double to, double amount)
         {
             return (1D - amount) * from + amount * to;
+        }
+
+        /// <summary>
+        /// Interpolates between two values using a linear function by a given amount.
+        /// </summary>
+        /// <remarks>
+        /// See http://www.encyclopediaofmath.org/index.php/Linear_interpolation and
+        /// http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
+        /// </remarks>
+        /// <param name="from">Value to interpolate from.</param>
+        /// <param name="to">Value to interpolate to.</param>
+        /// <param name="amount">Interpolation amount.</param>
+        /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        public static int Lerp(int from, int to, double amount)
+        {
+            return (int)Lerp(from, (double)to, amount);
+        }
+
+        /// <summary>
+        /// Interpolates between two values using a linear function by a given amount.
+        /// </summary>
+        /// <remarks>
+        /// See http://www.encyclopediaofmath.org/index.php/Linear_interpolation and
+        /// http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
+        /// </remarks>
+        /// <param name="from">Value to interpolate from.</param>
+        /// <param name="to">Value to interpolate to.</param>
+        /// <param name="amount">Interpolation amount.</param>
+        /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        public static uint Lerp(uint from, uint to, double amount)
+        {
+            return (uint)Lerp(from, (double)to, amount);
+        }
+
+        /// <summary>
+        /// Interpolates between two values using a linear function by a given amount.
+        /// </summary>
+        /// <remarks>
+        /// See http://www.encyclopediaofmath.org/index.php/Linear_interpolation and
+        /// http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
+        /// </remarks>
+        /// <param name="from">Value to interpolate from.</param>
+        /// <param name="to">Value to interpolate to.</param>
+        /// <param name="amount">Interpolation amount.</param>
+        /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        public static long Lerp(long from, long to, double amount)
+        {
+            return (long)Lerp(from, (double)to, amount);
+        }
+
+        /// <summary>
+        /// Interpolates between two values using a linear function by a given amount.
+        /// </summary>
+        /// <remarks>
+        /// See http://www.encyclopediaofmath.org/index.php/Linear_interpolation and
+        /// http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
+        /// </remarks>
+        /// <param name="from">Value to interpolate from.</param>
+        /// <param name="to">Value to interpolate to.</param>
+        /// <param name="amount">Interpolation amount.</param>
+        /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        public static ulong Lerp(ulong from, ulong to, double amount)
+        {
+            return (ulong)Lerp(from, (double)to, amount);
         }
 
         /// <summary>

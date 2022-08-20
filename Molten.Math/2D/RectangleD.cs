@@ -526,6 +526,24 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
+        /// Returns an interpolated <see cref="RectangleD"/> based on the start and end rectangles given.
+        /// </summary>
+        /// <param name="start">The end <see cref="RectangleD"/>.</param>
+        /// <param name="end">The end <see cref="RectangleD"/>.</param>
+        /// <param name="percent">The percentage of interpolation, between 0.0 and 1.0f.</param>
+        /// <returns></returns>
+        public RectangleD Lerp(RectangleD start, RectangleD end, double percent)
+        {
+            return new RectangleD()
+            {
+                Left = MathHelperDP.Lerp(start.Left, end.Left, percent),
+                Right = MathHelperDP.Lerp(start.Right, end.Right, percent),
+                Top = MathHelperDP.Lerp(start.Top, end.Top, percent),
+                Bottom = MathHelperDP.Lerp(start.Bottom, end.Bottom, percent),
+            };
+        }
+
+        /// <summary>
         /// Implements the operator ==.
         /// </summary>
         /// <param name="left">The left.</param>

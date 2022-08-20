@@ -22,6 +22,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using Molten.DoublePrecision;
 
 namespace Molten
 {
@@ -557,6 +558,24 @@ namespace Molten
         public override string ToString()
         {
             return string.Format(CultureInfo.InvariantCulture, "X:{0} Y:{1} Width:{2} Height:{3}", X, Y, Width, Height);
+        }
+
+        /// <summary>
+        /// Returns an interpolated <see cref="RectangleF"/> based on the start and end rectangles given.
+        /// </summary>
+        /// <param name="start">The end <see cref="RectangleF"/>.</param>
+        /// <param name="end">The end <see cref="RectangleF"/>.</param>
+        /// <param name="percent">The percentage of interpolation, between 0.0 and 1.0f.</param>
+        /// <returns></returns>
+        public RectangleF Lerp(RectangleF start, RectangleF end, float percent)
+        {
+            return new RectangleF()
+            {
+                Left = MathHelper.Lerp(start.Left, end.Left, percent),
+                Right = MathHelper.Lerp(start.Right, end.Right, percent),
+                Top = MathHelper.Lerp(start.Top, end.Top, percent),
+                Bottom = MathHelper.Lerp(start.Bottom, end.Bottom, percent),
+            };
         }
 
         #region Operators

@@ -567,10 +567,22 @@ namespace Molten
             return string.Format(CultureInfo.InvariantCulture, "X:{0} Y:{1} Width:{2} Height:{3}", X, Y, Width, Height);
         }
 
-        internal void MakeXYAndWidthHeight()
+        /// <summary>
+        /// Returns an interpolated <see cref="Rectangle"/> based on the start and end rectangles given.
+        /// </summary>
+        /// <param name="start">The end <see cref="Rectangle"/>.</param>
+        /// <param name="end">The end <see cref="Rectangle"/>.</param>
+        /// <param name="percent">The percentage of interpolation, between 0.0 and 1.0f.</param>
+        /// <returns></returns>
+        public Rectangle Lerp(Rectangle start, Rectangle end, float percent)
         {
-            Right = (Right - Left);
-            Bottom = (Bottom - Top);
+            return new Rectangle()
+            {
+                Left = MathHelper.Lerp(start.Left, end.Left, percent),
+                Right = MathHelper.Lerp(start.Right, end.Right, percent),
+                Top = MathHelper.Lerp(start.Top, end.Top, percent),
+                Bottom = MathHelper.Lerp(start.Bottom, end.Bottom, percent),
+            };
         }
 
         #region Operators

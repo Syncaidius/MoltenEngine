@@ -134,9 +134,17 @@ namespace Molten.UI
         /// <summary>
         /// Closes the window.
         /// </summary>
-        /// <param name="hide">If true, the window will only be hidden, instead of removed from it's parent, once closed.</param>
-        public void Close(bool hide = false)
+        /// <param name="immediate">If true, the window will skip its closing animation and immediately close.</param>
+        /// <param name="hideOnly">If true, the window will only be hidden, instead of removed from it's parent, once closed.</param>
+        public void Close(bool hideOnly = false)
         {
+            if (WindowState == UIWindowState.Closing || 
+                WindowState == UIWindowState.Closed)
+                return;
+
+            if (IsVisible == false)
+                return;
+
             UICancelEventArgs args = new UICancelEventArgs();
 
             // Iterate over Closing event subscribers to check if any of them want to block the closure.
@@ -156,7 +164,7 @@ namespace Molten.UI
             // Close if we have the go-ahead to do so.
             if (OnClosing() && !args.Cancel)
             {
-                if (!hide && Parent != null)
+                if (!hideOnly && Parent != null)
                     Parent.Children.Remove(this);
 
                 IsVisible = false;
@@ -193,6 +201,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the border <see cref="Color"/> of the current <see cref="UIWindow"/>.
+        /// </summary>
         [UIThemeMember]
         public Color BorderColor
         {
@@ -206,6 +217,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the fill/background <see cref="Color"/> of the current <see cref="UIWindow"/>.
+        /// </summary>
         [UIThemeMember]
         public Color FillColor
         {
@@ -217,6 +231,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the corner radius of the current <see cref="UIWindow"/>.
+        /// </summary>
         [UIThemeMember]
         public CornerInfo CornerRadius
         {
@@ -237,7 +254,15 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the border thickness of the current <see cref="UIWindow"/>.
+        /// </summary>
         [UIThemeMember]
         public UISpacing BorderThickness { get; } = new UISpacing(2);
+
+        /// <summary>
+        /// Gets the <see cref="UIWindowState"/> of the current <see cref="UIWindow"/>.
+        /// </summary>
+        public UIWindowState WindowState { get; private set; }
     }
 }

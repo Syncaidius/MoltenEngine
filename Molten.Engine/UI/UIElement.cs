@@ -278,7 +278,9 @@ namespace Molten.UI
 
         public virtual void OnPressed(ScenePointerTracker tracker)
         {
-            if (State != UIElementState.Disabled && State != UIElementState.Pressed)
+            if (State == UIElementState.Default || 
+                State != UIElementState.Hovered || 
+                State != UIElementState.Active)
             {
                 State = UIElementState.Pressed;
                 ParentWindow?.BringToFront();
@@ -393,7 +395,10 @@ namespace Molten.UI
         /// Invoked when the current <see cref="UIElement"/> should perform update its logic or internal state.
         /// </summary>
         /// <param name="time">An instance of <see cref="Timing"/>.</param>
-        protected virtual void OnUpdate(Timing time) { }
+        protected virtual void OnUpdate(Timing time)
+        {
+            // TODO update window open/close animation
+        }
 
         internal void Render(SpriteBatcher sb)
         {
@@ -411,7 +416,9 @@ namespace Molten.UI
             }
 
             CompoundElements.Render(sb, ref _globalBounds);
-            Children.Render(sb, ref _renderBounds);
+
+            if(ChildRenderEnabled)
+                Children.Render(sb, ref _renderBounds);
         }
 
         /// <summary>
@@ -588,5 +595,10 @@ namespace Molten.UI
         /// Gets the <see cref="UIWindow"/> that contains the current <see cref="UIElement"/>.
         /// </summary>
         public UIWindow ParentWindow { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets wher or not child <see cref="UIElement"/> objects
+        /// </summary>
+        protected bool ChildRenderEnabled { get; set; } = true;
     }
 }
