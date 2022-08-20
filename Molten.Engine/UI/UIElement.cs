@@ -131,9 +131,12 @@ namespace Molten.UI
             foreach (UIElement e in CompoundElements)
                 e.UpdateBounds(_globalBounds);
 
-            OnUpdateChildBounds();
-            foreach (UIElement e in Children)
-                e.UpdateBounds(_renderBounds);
+            if (ChildrenEnabled)
+            {
+                OnUpdateChildBounds();
+                foreach (UIElement e in Children)
+                    e.UpdateBounds(_renderBounds);
+            }
 
             OnUpdateBounds();
         }
@@ -158,13 +161,13 @@ namespace Molten.UI
 
         internal void Update(Timing time)
         {
-            if (!IsEnabled)
-                return;
+            if (IsEnabled)
+            {
+                OnUpdate(time);
 
-            OnUpdate(time);
-
-            for (int i = CompoundElements.Count - 1; i >= 0; i--)
-                CompoundElements[i].Update(time);
+                for (int i = CompoundElements.Count - 1; i >= 0; i--)
+                    CompoundElements[i].Update(time);
+            }
 
             for (int i = Children.Count - 1; i >= 0; i--)
                 Children[i].Update(time);
@@ -190,7 +193,7 @@ namespace Molten.UI
         {
             UIElement result = null;
 
-            if (Contains(point))
+            if (IsEnabled && Contains(point))
             {
                 if ((!ignoreRules && HasInputRules(UIInputRuleFlags.Compound)))
                 {
@@ -202,13 +205,16 @@ namespace Molten.UI
                     }
                 }
 
-                if ((!ignoreRules && HasInputRules(UIInputRuleFlags.Children)))
+                if (ChildrenEnabled)
                 {
-                    for (int i = Children.Count - 1; i >= 0; i--)
+                    if ((!ignoreRules && HasInputRules(UIInputRuleFlags.Children)))
                     {
-                        result = Children[i].Pick(point);
-                        if (result != null)
-                            return result;
+                        for (int i = Children.Count - 1; i >= 0; i--)
+                        {
+                            result = Children[i].Pick(point);
+                            if (result != null)
+                                return result;
+                        }
                     }
                 }
 
@@ -366,6 +372,12 @@ namespace Molten.UI
         protected virtual void OnUpdateChildBounds() { }
 
         /// <summary>
+        /// Invoked when <see cref="LocalBounds"/> was changed. This allows adjustments or overrides to be applied to <see cref="LocalBounds"/> before <see cref="UpdateBounds()"/> is called internally.
+        /// </summary>
+        /// <param name="localBounds"></param>
+        protected virtual void OnUpdateLocalBounds(ref Rectangle localBounds) { }
+
+        /// <summary>
         /// Invoked after the initial render-bounds calculation, giving the current <see cref="UIElement"/> a chance to make custom adjustments to it's render bounds.
         /// </summary>
         /// <param name="renderbounds">The render bounds <see cref="Rectangle"/>.</param>
@@ -395,10 +407,7 @@ namespace Molten.UI
         /// Invoked when the current <see cref="UIElement"/> should perform update its logic or internal state.
         /// </summary>
         /// <param name="time">An instance of <see cref="Timing"/>.</param>
-        protected virtual void OnUpdate(Timing time)
-        {
-            // TODO update window open/close animation
-        }
+        protected virtual void OnUpdate(Timing time) { }
 
         internal void Render(SpriteBatcher sb)
         {
@@ -417,7 +426,7 @@ namespace Molten.UI
 
             CompoundElements.Render(sb, ref _globalBounds);
 
-            if(ChildRenderEnabled)
+            if(ChildrenEnabled)
                 Children.Render(sb, ref _renderBounds);
         }
 
@@ -437,6 +446,7 @@ namespace Molten.UI
             set
             {
                 _localBounds = value;
+                OnUpdateLocalBounds(ref _localBounds);
                 UpdateBounds(Parent?.RenderBounds);
             }
         }
@@ -467,7 +477,7 @@ namespace Molten.UI
         /// </summary>
         public bool IsEnabled
         {
-            get => State == UIElementState.Disabled;
+            get => State != UIElementState.Disabled;
             set
             {
                 bool enabled = State != UIElementState.Disabled;
@@ -597,8 +607,10 @@ namespace Molten.UI
         public UIWindow ParentWindow { get; internal set; }
 
         /// <summary>
-        /// Gets or sets wher or not child <see cref="UIElement"/> objects
+        /// Gets or sets wher or not child <see cref="UIElement"/> objects update and render. 
+        /// <para>This is useful if the current <see cref="UIElement"/> wants to avoid receiving input or 
+        /// triggering bounds updates on children, while expanding or collapsing.</para>
         /// </summary>
-        protected bool ChildRenderEnabled { get; set; } = true;
+        protected bool ChildrenEnabled { get; set; } = true;
     }
 }

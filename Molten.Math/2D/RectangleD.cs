@@ -532,7 +532,7 @@ namespace Molten.DoublePrecision
         /// <param name="end">The end <see cref="RectangleD"/>.</param>
         /// <param name="percent">The percentage of interpolation, between 0.0 and 1.0f.</param>
         /// <returns></returns>
-        public RectangleD Lerp(RectangleD start, RectangleD end, double percent)
+        public static RectangleD Lerp(RectangleD start, RectangleD end, double percent)
         {
             return new RectangleD()
             {

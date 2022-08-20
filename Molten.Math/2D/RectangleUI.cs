@@ -537,7 +537,7 @@ namespace Molten
         /// <param name="end">The end <see cref="RectangleUI"/>.</param>
         /// <param name="percent">The percentage of interpolation, between 0.0 and 1.0f.</param>
         /// <returns></returns>
-        public RectangleUI Lerp(RectangleUI start, RectangleUI end, float percent)
+        public static RectangleUI Lerp(RectangleUI start, RectangleUI end, float percent)
         {
             return new RectangleUI()
             {

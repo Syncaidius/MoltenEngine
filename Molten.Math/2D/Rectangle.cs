@@ -574,7 +574,7 @@ namespace Molten
         /// <param name="end">The end <see cref="Rectangle"/>.</param>
         /// <param name="percent">The percentage of interpolation, between 0.0 and 1.0f.</param>
         /// <returns></returns>
-        public Rectangle Lerp(Rectangle start, Rectangle end, float percent)
+        public static Rectangle Lerp(Rectangle start, Rectangle end, float percent)
         {
             return new Rectangle()
             {
