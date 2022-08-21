@@ -11,7 +11,12 @@ namespace Molten.UI
     public class UIWindow : UIElement
     {
         /// <summary>
-        /// Invoked when <see cref="Close(bool)"/> was called on the current <see cref="UIWindow"/>. The closure can be cancelled by any subscriber to this event.
+        /// Invoked when <see cref="Open(bool, bool)"/> was called on the current <see cref="UIWindow"/>. The opening can be cancelled by any subscriber to this event.
+        /// </summary>
+        public event UIElementCancelHandler<UIWindow> Opening;
+
+        /// <summary>
+        /// Invoked when <see cref="Close(bool, bool)"/> was called on the current <see cref="UIWindow"/>. The closure can be cancelled by any subscriber to this event.
         /// </summary>
         public event UIElementCancelHandler<UIWindow> Closing;
 
@@ -19,6 +24,11 @@ namespace Molten.UI
         /// Invoked when the current <see cref="UIWindow"/> has finished closing.
         /// </summary>
         public event UIElementHandler<UIWindow> Closed;
+
+        /// <summary>
+        /// Invoked when the current <see cref="UIWindow"/> has finished opening.
+        /// </summary>
+        public event UIElementHandler<UIWindow> Opened;
 
         UIPanel _titleBar;
         UIPanel _panel;
@@ -43,7 +53,7 @@ namespace Molten.UI
         Rectangle _lerpEndBounds;
         Rectangle _lerpBounds;
         float _lerpPercent = 1f;
-        float _expandRate = 0.1f;
+        float _expandRate = 0.2f;
         float _lerpMultiplier = 1f;
 
         protected override void OnInitialize(Engine engine, UISettings settings)
@@ -82,7 +92,7 @@ namespace Molten.UI
 
         private void _btnClose_Pressed(UIElement element, ScenePointerTracker tracker)
         {
-            Close(false, false);
+            Close(false);
         }
 
         protected override void ApplyTheme()
@@ -149,6 +159,10 @@ namespace Molten.UI
 
         protected virtual void OnClosed() { }
 
+        protected virtual bool OnOpening() { return true; }
+
+        protected virtual void OnOpened() { }
+
         protected override void OnUpdateLocalBounds(ref Rectangle localBounds)
         {
             if (WindowState != UIWindowState.Open)
@@ -213,24 +227,59 @@ namespace Molten.UI
                     }
                     else
                     {
-                        BeginInterpolation(_closeBounds, _defaultBounds);
+                        BeginInterpolation(_lerpBounds, _defaultBounds);
                     }
                     break;
 
                 case UIWindowState.Closed:
+                    ChildrenEnabled = false;
                     Close(true);
+                    break;
+
+                case UIWindowState.Open:
+                    ChildrenEnabled = true;
+                    Open(true);
                     break;
             }
 
             WindowState = state;
         }
 
+        public void Open(bool immediate = false, UIElement newParent = null)
+        {
+            if ((WindowState == UIWindowState.Opening && !immediate) ||
+                WindowState == UIWindowState.Open)
+                return;
+
+            if (IsVisible == true)
+                return;
+
+            IsVisible = true;
+
+            if (!immediate)
+            {
+                SetWindowState(UIWindowState.Opening);
+                return;
+            }
+
+            UICancelEventArgs args = InvokeCancelableHandler(Closing, this);
+
+            // Close if we have the go-ahead to do so.
+            if (OnOpening() && !args.Cancel)
+            {
+                if (newParent != null)
+                    Parent = newParent;
+
+                Opened?.Invoke(this);
+                OnOpened();
+            }
+        }
+
         /// <summary>
         /// Closes the window.
         /// </summary>
         /// <param name="immediate">If true, the window will skip its closing animation and immediately close.</param>
-        /// <param name="hideOnly">If true, the window will only be hidden, instead of removed from it's parent, once closed.</param>
-        public void Close(bool immediate = false, bool hideOnly = false)
+        public void Close(bool immediate = false)
         {
             if ((WindowState == UIWindowState.Closing && !immediate) ||
                 WindowState == UIWindowState.Closed)
@@ -245,28 +294,11 @@ namespace Molten.UI
                 return;
             }
 
-            UICancelEventArgs args = new UICancelEventArgs();
-
-            // Iterate over Closing event subscribers to check if any of them want to block the closure.
-            if (Closing != null)
-            {
-                UIElementCancelHandler<UIWindow> handler = Closing;
-                Delegate[] handlers = handler.GetInvocationList();
-
-                foreach (UIElementCancelHandler<UIWindow> sub in handlers)
-                {
-                    sub(this, args);
-                    if (args.Cancel)
-                        break;
-                }
-            }
+            UICancelEventArgs args = InvokeCancelableHandler(Closing, this);
 
             // Close if we have the go-ahead to do so.
             if (OnClosing() && !args.Cancel)
             {
-                if (!hideOnly && Parent != null)
-                    Parent.Children.Remove(this);
-
                 IsVisible = false;
 
                 Closed?.Invoke(this);

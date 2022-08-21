@@ -127,12 +127,12 @@ namespace Molten.Samples
 
         private void _button3_Pressed(UIElement element, ScenePointerTracker tracker)
         {
-            _window1.Close();
+            _window1.Close(false);
         }
 
         private void _button4_Pressed(UIElement element, ScenePointerTracker tracker)
         {
-            // TODO Open window 1.
+            _window1.Open();
         }
 
         private void PlotGraphData(UILineGraph graph)
