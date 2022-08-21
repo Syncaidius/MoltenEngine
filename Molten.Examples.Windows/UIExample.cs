@@ -15,6 +15,7 @@ namespace Molten.Samples
         UIButton _button2;
         UIButton _button3;
         UIButton _button4;
+        UIButton _button5;
 
         GraphDataSet _graphSet;
         GraphDataSet _graphSet2;
@@ -84,14 +85,20 @@ namespace Molten.Samples
 
             _button3 = new UIButton()
             {
-                LocalBounds = new Rectangle(100, 180, 160, 30),
+                LocalBounds = new Rectangle(100, 180, 180, 30),
                 Text = "Close Other Window"
             };
 
             _button4 = new UIButton()
             {
-                LocalBounds = new Rectangle(100, 220, 160, 30),
+                LocalBounds = new Rectangle(100, 220, 180, 30),
                 Text = "Open Other Window"
+            };
+
+            _button5 = new UIButton()
+            {
+                LocalBounds = new Rectangle(100, 260, 180, 30),
+                Text = "Minimize Other Window"
             };
 
             _lineGraph = new UILineGraph()
@@ -107,12 +114,14 @@ namespace Molten.Samples
             _window2.Children.Add(_button2);
             _window2.Children.Add(_button3);
             _window2.Children.Add(_button4);
+            _window2.Children.Add(_button5);
             _window1.Children.Add(_lineGraph);
 
             _button1.Pressed += _button1_Pressed;
             _button2.Pressed += _button2_Pressed;
             _button3.Pressed += _button3_Pressed;
             _button4.Pressed += _button4_Pressed;
+            _button5.Pressed += _button5_Pressed;
         }
 
         private void _button1_Pressed(UIElement element, ScenePointerTracker tracker)
@@ -133,6 +142,11 @@ namespace Molten.Samples
         private void _button4_Pressed(UIElement element, ScenePointerTracker tracker)
         {
             _window1.Open();
+        }
+
+        private void _button5_Pressed(UIElement element, ScenePointerTracker tracker)
+        {
+            _window1.Minimize();
         }
 
         private void PlotGraphData(UILineGraph graph)

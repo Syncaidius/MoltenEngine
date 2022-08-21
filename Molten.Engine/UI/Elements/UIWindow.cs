@@ -10,13 +10,63 @@ namespace Molten.UI
 {
     public class UIWindow : UIElement
     {
+        delegate void StateCallback(UIWindow window);
+
+        class StateChange
+        {
+            public Rectangle TargetBounds;
+            public StateCallback CustomCallback;
+
+            public UIWindowState StartState;
+            public UIWindowState EndState;
+
+            public UIElementCancelHandler<UIWindow> StartEvent;
+            public Func<bool> CheckMethod;
+
+            public UIElementHandler<UIWindow> Event;
+            public Action CompletionMethod;
+            public UIElement NewParent;
+
+            public StateChange(UIWindowState startState,
+                UIElementCancelHandler<UIWindow> startEvent,
+                Func<bool> startCheckMethod,
+                UIWindowState endState,
+                StateCallback callback)
+            {
+                StartState = startState;
+                StartEvent = startEvent;
+                Event = null;
+                CheckMethod = startCheckMethod;
+                EndState = endState;
+                CompletionMethod = null;
+                NewParent = null;
+                CustomCallback = callback;
+            }
+
+            public StateChange(UIWindowState startState, UIElementHandler<UIWindow> sEvent, Action windowMethod, StateCallback callback)
+            {
+                StartState = startState;
+                StartEvent = null;
+                Event = sEvent;
+                CheckMethod = null;
+                EndState = startState;
+                CompletionMethod = windowMethod;
+                CustomCallback = callback;
+            }
+        }
+
         /// <summary>
-        /// Invoked when <see cref="Open(bool, bool)"/> was called on the current <see cref="UIWindow"/>. The opening can be cancelled by any subscriber to this event.
+        /// Invoked when <see cref="Minimize(bool)"/> was called on the current <see cref="UIWindow"/>. The opening can be cancelled by any subscriber to this event.
+        /// </summary>
+        public event UIElementCancelHandler<UIWindow> Minimizing;
+
+        /// <summary>
+        /// Invoked when <see cref="Open(bool, UIElement)"/> was called on the current <see cref="UIWindow"/>. The opening can be cancelled by any subscriber to this event.
         /// </summary>
         public event UIElementCancelHandler<UIWindow> Opening;
 
         /// <summary>
-        /// Invoked when <see cref="Close(bool, bool)"/> was called on the current <see cref="UIWindow"/>. The closure can be cancelled by any subscriber to this event.
+        /// Invoked when <see cref="Close(bool)"/> was called on the current <see cref="UIWindow"/>. The closure can be cancelled by any subscriber to this event.
         /// </summary>
         public event UIElementCancelHandler<UIWindow> Closing;
 
@@ -29,6 +79,11 @@ namespace Molten.UI
         /// Invoked when the current <see cref="UIWindow"/> has finished opening.
         /// </summary>
         public event UIElementHandler<UIWindow> Opened;
+
+        /// <summary>
+        /// Invoked when the current <see cref="UIWindow"/> has finished minimizing.
+        /// </summary>
+        public event UIElementHandler<UIWindow> Minimized;
 
         UIPanel _titleBar;
         UIPanel _panel;
@@ -49,6 +104,9 @@ namespace Molten.UI
         Rectangle _maximizeBounds;
         Rectangle _closeBounds;
 
+        Dictionary<UIWindowState, StateChange> _changes;
+        StateChange _curChange;
+
         Rectangle _lerpStartBounds;
         Rectangle _lerpEndBounds;
         Rectangle _lerpBounds;
@@ -59,6 +117,45 @@ namespace Molten.UI
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
             base.OnInitialize(engine, settings);
+
+            _changes = new Dictionary<UIWindowState, StateChange>()
+            { 
+                [UIWindowState.Opening] = new StateChange(UIWindowState.Opening, Opening, OnOpening, UIWindowState.Open, (window) =>
+                {
+                    ChildrenEnabled = false;
+                    IsVisible = true;
+                    BeginInterpolation(_lerpBounds, _defaultBounds);
+                }),
+
+                [UIWindowState.Open] = new StateChange(UIWindowState.Open, Opened, OnOpened, (window) =>
+                {
+                    ChildrenEnabled = true;
+                    IsVisible = true;
+                }),
+
+                [UIWindowState.Closing] = new StateChange(UIWindowState.Closing, Closing, OnClosing, UIWindowState.Closed, (window) =>
+                {
+                    BeginInterpolation(_lerpBounds, _closeBounds);
+                    IsVisible = true;
+                    ChildrenEnabled = false;
+                }),
+
+                [UIWindowState.Closed] = new StateChange(UIWindowState.Closed, Closed, OnClosed, (window) =>
+                {
+                    ChildrenEnabled = false;
+                    IsVisible = false;
+                }),
+
+                [UIWindowState.Minimizing] = new StateChange(UIWindowState.Minimizing, Minimizing, OnMinimizing, UIWindowState.Minimized, (window) =>
+                {
+                    BeginInterpolation(_lerpBounds, _minimizeBounds);
+                    ChildrenEnabled = false;
+                }),
+                [UIWindowState.Minimized] = new StateChange(UIWindowState.Minimized, Minimized, OnMinimized, (window) =>
+                {
+                    ChildrenEnabled = false;
+                }),
+            };
 
             _titleBarButtons = new List<UIButton>();
             BorderThickness.OnChanged += BorderThickness_OnChanged;
@@ -163,6 +260,10 @@ namespace Molten.UI
 
         protected virtual void OnOpened() { }
 
+        protected virtual bool OnMinimizing() { return true; }
+
+        protected virtual void OnMinimized() { }
+
         protected override void OnUpdateLocalBounds(ref Rectangle localBounds)
         {
             if (WindowState != UIWindowState.Open)
@@ -175,6 +276,8 @@ namespace Molten.UI
                 _lerpBounds = localBounds;
 
                 _maximizeBounds = Parent != null ? Parent.RenderBounds : _defaultBounds;
+                _minimizeBounds.X = _defaultBounds.X;
+                _minimizeBounds.Y = _defaultBounds.Y;
                 _closeBounds = new Rectangle(_defaultBounds.Center.X, _defaultBounds.Center.Y, 10, 10);
             }
         }
@@ -183,14 +286,17 @@ namespace Molten.UI
         {
             base.OnUpdate(time);
 
-            if (_lerpPercent < 1f)
+            if (_curChange != null && _lerpPercent < 1f)
             {
                 _lerpBounds = Rectangle.Lerp(_lerpStartBounds, _lerpEndBounds, _lerpPercent);
                 LocalBounds = _lerpBounds;
 
                 _lerpPercent = Math.Min(1f, _lerpPercent + (_lerpMultiplier * _expandRate));
                 if (_lerpPercent == 1f)
-                    SetWindowState(WindowState);
+                {
+                    if (_curChange.StartState != _curChange.EndState)
+                        StartState(_curChange.EndState);
+                }
             }
         }
 
@@ -203,76 +309,36 @@ namespace Molten.UI
             _lerpEndBounds = end;
         }
 
-        private void SetWindowState(UIWindowState state)
+        private void StartState(UIWindowState state)
         {
-            switch (state)
-            {
-                case UIWindowState.Closing:
-                    if (WindowState == UIWindowState.Closing)
-                    {
-                        SetWindowState(UIWindowState.Closed);
-                    }
-                    else
-                    {
-                        BeginInterpolation(_lerpBounds, _closeBounds);
-                        ChildrenEnabled = false;
-                    }
-                    break;
+            if (!_changes.TryGetValue(state, out _curChange))
+                throw new NullReferenceException($"A StateChange instance for UIWindowState.{state} has not been created. Fix this!");
 
-                case UIWindowState.Opening:
-                    if (WindowState == UIWindowState.Opening)
-                    {
-                        ChildrenEnabled = true;
-                        SetWindowState(UIWindowState.Open);
-                    }
-                    else
-                    {
-                        BeginInterpolation(_lerpBounds, _defaultBounds);
-                    }
-                    break;
+            if (WindowState == _curChange.StartState || WindowState == _curChange.EndState)
+                return;
 
-                case UIWindowState.Closed:
-                    ChildrenEnabled = false;
-                    Close(true);
-                    break;
+            UICancelEventArgs args = InvokeCancelableHandler(_curChange.StartEvent, this);
+            if (_curChange.CheckMethod?.Invoke() == false || args.Cancel)
+                return;
 
-                case UIWindowState.Open:
-                    ChildrenEnabled = true;
-                    Open(true);
-                    break;
-            }
+            _curChange.CustomCallback?.Invoke(this);
+            WindowState = _curChange.StartState;
 
-            WindowState = state;
+            _curChange.Event?.Invoke(this);
+
+            if (_curChange.NewParent != null)
+                Parent = _curChange.NewParent;
+
+            // Call the completion method. This is likely to be a UIWindow method. e.g. OnOpened, OnClosed or OnMinimized.
+            _curChange.CompletionMethod?.Invoke();
         }
 
         public void Open(bool immediate = false, UIElement newParent = null)
         {
-            if ((WindowState == UIWindowState.Opening && !immediate) ||
-                WindowState == UIWindowState.Open)
-                return;
+            UIWindowState state = immediate ? UIWindowState.Open : UIWindowState.Opening;
+            _changes[state].NewParent = newParent;
 
-            if (IsVisible == true)
-                return;
-
-            IsVisible = true;
-
-            if (!immediate)
-            {
-                SetWindowState(UIWindowState.Opening);
-                return;
-            }
-
-            UICancelEventArgs args = InvokeCancelableHandler(Opening, this);
-
-            // Close if we have the go-ahead to do so.
-            if (OnOpening() && !args.Cancel)
-            {
-                if (newParent != null)
-                    Parent = newParent;
-
-                Opened?.Invoke(this);
-                OnOpened();
-            }
+            StartState(state);
         }
 
         /// <summary>
@@ -281,29 +347,12 @@ namespace Molten.UI
         /// <param name="immediate">If true, the window will skip its closing animation and immediately close.</param>
         public void Close(bool immediate = false)
         {
-            if ((WindowState == UIWindowState.Closing && !immediate) ||
-                WindowState == UIWindowState.Closed)
-                return;
+            StartState(immediate ? UIWindowState.Closed : UIWindowState.Closing);
+        }
 
-            if (IsVisible == false)
-                return;
-
-            if (!immediate)
-            {
-                SetWindowState(UIWindowState.Closing);
-                return;
-            }
-
-            UICancelEventArgs args = InvokeCancelableHandler(Closing, this);
-
-            // Close if we have the go-ahead to do so.
-            if (OnClosing() && !args.Cancel)
-            {
-                IsVisible = false;
-
-                Closed?.Invoke(this);
-                OnClosed();
-            }
+        public void Minimize(bool immediate = false)
+        {
+            StartState(immediate ? UIWindowState.Minimized : UIWindowState.Minimizing);
         }
 
         /// <summary>
