@@ -262,7 +262,7 @@ namespace Molten.UI
                 return;
             }
 
-            UICancelEventArgs args = InvokeCancelableHandler(Closing, this);
+            UICancelEventArgs args = InvokeCancelableHandler(Opening, this);
 
             // Close if we have the go-ahead to do so.
             if (OnOpening() && !args.Cancel)
