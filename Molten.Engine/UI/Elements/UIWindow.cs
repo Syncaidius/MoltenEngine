@@ -124,18 +124,19 @@ namespace Molten.UI
                 {
                     ChildrenEnabled = false;
                     IsVisible = true;
-                    BeginInterpolation(_lerpBounds, _defaultBounds);
+                    Interpolate(_lerpBounds, _defaultBounds, false);
                 }),
 
                 [UIWindowState.Open] = new StateChange(UIWindowState.Open, Opened, OnOpened, (window) =>
                 {
                     ChildrenEnabled = true;
                     IsVisible = true;
+                    Interpolate(_lerpBounds, _defaultBounds, true);
                 }),
 
                 [UIWindowState.Closing] = new StateChange(UIWindowState.Closing, Closing, OnClosing, UIWindowState.Closed, (window) =>
                 {
-                    BeginInterpolation(_lerpBounds, _closeBounds);
+                    Interpolate(_lerpBounds, _closeBounds, false);
                     IsVisible = true;
                     ChildrenEnabled = false;
                 }),
@@ -144,16 +145,18 @@ namespace Molten.UI
                 {
                     ChildrenEnabled = false;
                     IsVisible = false;
+                    Interpolate(_lerpBounds, _closeBounds, true);
                 }),
 
                 [UIWindowState.Minimizing] = new StateChange(UIWindowState.Minimizing, Minimizing, OnMinimizing, UIWindowState.Minimized, (window) =>
                 {
-                    BeginInterpolation(_lerpBounds, _minimizeBounds);
+                    Interpolate(_lerpBounds, _minimizeBounds, false);
                     ChildrenEnabled = false;
                 }),
                 [UIWindowState.Minimized] = new StateChange(UIWindowState.Minimized, Minimized, OnMinimized, (window) =>
                 {
                     ChildrenEnabled = false;
+                    Interpolate(_lerpBounds, _minimizeBounds, true);
                 }),
             };
 
@@ -221,17 +224,17 @@ namespace Molten.UI
 
             Rectangle gb = GlobalBounds;
 
-            int barButtonWidth = 0;
             _titleBar.LocalBounds = new Rectangle(0, 0, gb.Width, TitleBarHeight);
             _panel.LocalBounds = new Rectangle(0, TitleBarHeight, gb.Width, gb.Height - TitleBarHeight);
             _title.LocalBounds = new Rectangle(TitleBarHeight + (_iconSpacing * 2), 0, gb.Width, TitleBarHeight);
 
-            for (int i = 0; i < _titleBarButtons.Count; i++) {
-                _titleBarButtons[i].LocalBounds = new Rectangle(gb.Width - (TitleBarHeight * (i + 1)), 0, TitleBarHeight, TitleBarHeight); 
+            for (int i = 0; i < _titleBarButtons.Count; i++)
+            {
+                int pX = gb.Width - (TitleBarHeight * (i + 1));
+                _titleBarButtons[i].LocalBounds = new Rectangle(pX, 0, TitleBarHeight, TitleBarHeight);
             }
 
-            int minimizeSpacing = 10;
-            _minimizeBounds.Width = barButtonWidth + (int)_title.MeasuredSize.X + _iconSpacing + minimizeSpacing;
+            _minimizeBounds.Width = (_titleBarButtons.Count * TitleBarHeight) + _iconSpacing + (int)_title.MeasuredSize.X;
             _minimizeBounds.Height = _titleBarHeight;
         }
 
@@ -300,13 +303,22 @@ namespace Molten.UI
             }
         }
 
-        private void BeginInterpolation(Rectangle start, Rectangle end)
+        private void Interpolate(Rectangle start, Rectangle end, bool immediate)
         {
-            _lerpPercent = 0f;
-            _lerpMultiplier = 1f; // TODO alter this to be based on the largest dimension of end / start, compared to the _closeBounds / _defaultBounds rate (1f)
-            _lerpStartBounds = start;
-            _lerpBounds = start;
-            _lerpEndBounds = end;
+            if (!immediate)
+            {
+                _lerpPercent = 0f;
+                _lerpMultiplier = 1f; // TODO alter this to be based on the largest dimension of end / start, compared to the _closeBounds / _defaultBounds rate (1f)
+                _lerpStartBounds = start;
+                _lerpBounds = start;
+                _lerpEndBounds = end;
+            }
+            else
+            {
+                _lerpPercent = 1f;
+                _lerpBounds = end;
+                LocalBounds = _lerpBounds;
+            }
         }
 
         private void StartState(UIWindowState state)
