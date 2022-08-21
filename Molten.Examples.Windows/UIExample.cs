@@ -33,6 +33,9 @@ namespace Molten.Samples
 
             loader.Deserialize<UITheme>("assets/test_theme.json",(theme, isReload) =>
             {
+                if (_window1 != null)
+                    _window1.Theme = theme;
+
                 if (_window2 != null)
                     _window2.Theme = theme;
 

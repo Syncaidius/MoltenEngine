@@ -131,6 +131,7 @@ namespace Molten.UI
                 {
                     ChildrenEnabled = true;
                     IsVisible = true;
+                    _btnMinimize.IsVisible = true;
                     Interpolate(_lerpBounds, _defaultBounds, true);
                 }),
 
@@ -156,6 +157,7 @@ namespace Molten.UI
                 [UIWindowState.Minimized] = new StateChange(UIWindowState.Minimized, Minimized, OnMinimized, (window) =>
                 {
                     ChildrenEnabled = false;
+                    _btnMinimize.IsVisible = false;
                     Interpolate(_lerpBounds, _minimizeBounds, true);
                 }),
             };
@@ -171,11 +173,19 @@ namespace Molten.UI
 
             _btnClose = AddTitleButton("X");
             _btnClose.Pressed += _btnClose_Pressed;
+
             _btnMaximize = AddTitleButton("^");
+
             _btnMinimize = AddTitleButton("_");
+            _btnMinimize.Pressed += _btnMinimize_Pressed;
 
             _titleBarHeight = 26;
             Title = Name;
+        }
+
+        private void _btnMinimize_Pressed(UIElement element, ScenePointerTracker tracker)
+        {
+            Minimize();
         }
 
         private void BorderThickness_OnChanged()
@@ -215,7 +225,10 @@ namespace Molten.UI
 
         protected override bool OnPicked(Vector2F globalPos)
         {
-            return !RenderBounds.Contains(globalPos);
+            if (WindowState == UIWindowState.Minimized)
+                return true;
+            else
+                return !RenderBounds.Contains(globalPos);
         }
 
         protected override void OnUpdateCompoundBounds()
@@ -223,18 +236,24 @@ namespace Molten.UI
             base.OnUpdateCompoundBounds();
 
             Rectangle gb = GlobalBounds;
+            int iconSize = TitleBarHeight;
+            int iconWithSpacing = iconSize + (_iconSpacing * 2);
 
             _titleBar.LocalBounds = new Rectangle(0, 0, gb.Width, TitleBarHeight);
             _panel.LocalBounds = new Rectangle(0, TitleBarHeight, gb.Width, gb.Height - TitleBarHeight);
-            _title.LocalBounds = new Rectangle(TitleBarHeight + (_iconSpacing * 2), 0, gb.Width, TitleBarHeight);
+            _title.LocalBounds = new Rectangle(iconWithSpacing, 0, gb.Width, TitleBarHeight);
 
-            for (int i = 0; i < _titleBarButtons.Count; i++)
+            int bX = gb.Width;
+            foreach (UIButton button in _titleBarButtons)
             {
-                int pX = gb.Width - (TitleBarHeight * (i + 1));
-                _titleBarButtons[i].LocalBounds = new Rectangle(pX, 0, TitleBarHeight, TitleBarHeight);
+                if (!button.IsVisible)
+                    continue;
+
+                bX -= TitleBarHeight;
+                button.LocalBounds = new Rectangle(bX, 0, TitleBarHeight, TitleBarHeight);
             }
 
-            _minimizeBounds.Width = (_titleBarButtons.Count * TitleBarHeight) + _iconSpacing + (int)_title.MeasuredSize.X;
+            _minimizeBounds.Width = (gb.Width - bX) + iconWithSpacing + (int)_title.MeasuredSize.X;
             _minimizeBounds.Height = _titleBarHeight;
         }
 
