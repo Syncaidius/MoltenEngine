@@ -116,26 +116,13 @@ namespace Molten.UI
             return _elements.FirstOrDefault() == child;
         }
 
-        internal void Render(SpriteBatcher sb, ref Rectangle renderBounds)
+        internal void Render(SpriteBatcher sb)
         {
             if (_elements.Count == 0)
                 return;
 
-            if (_element.IsClipEnabled)
-            {
-                if (sb.PushClip(renderBounds))
-                {
-                    for (int i = 0; i < _elements.Count; i++)
-                        _elements[i].Render(sb);
-
-                    sb.PopClip();
-                }
-            }
-            else
-            {
                 for (int i = 0; i < _elements.Count; i++)
                     _elements[i].Render(sb);
-            }
         }
 
         public IEnumerator<UIElement> GetEnumerator()

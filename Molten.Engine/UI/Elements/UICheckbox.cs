@@ -118,7 +118,7 @@ namespace Molten.UI
             IsChecked = !IsChecked;
         }
 
-        protected override void OnRenderSelf(SpriteBatcher sb)
+        protected override void OnRender(SpriteBatcher sb)
         {
             float radiusLimit = Math.Min(GlobalBounds.Width, GlobalBounds.Height) / 2;
             RoundedRectStyle style = new RoundedRectStyle()
@@ -145,7 +145,7 @@ namespace Molten.UI
                 }
             }
 
-            base.OnRenderSelf(sb);
+            base.OnRender(sb);
         }
 
         public string Text

@@ -46,7 +46,7 @@ namespace Molten.UI
             renderbounds.Inflate(-BorderThickness.Left, -BorderThickness.Top, -BorderThickness.Right, -BorderThickness.Bottom);
         }
 
-        protected override void OnRenderSelf(SpriteBatcher sb)
+        protected override void OnRender(SpriteBatcher sb)
         {
             float radiusLimit = Math.Min(GlobalBounds.Width, GlobalBounds.Height) / 2;
             RoundedRectStyle style = new RoundedRectStyle()
@@ -59,7 +59,7 @@ namespace Molten.UI
 
             sb.DrawRoundedRect(GlobalBounds, 0, Vector2F.Zero, ref style);
 
-            base.OnRenderSelf(sb);
+            base.OnRender(sb);
         }
     }
 }

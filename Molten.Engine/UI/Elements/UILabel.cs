@@ -41,12 +41,12 @@ namespace Molten.UI
             InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Children;
         }
 
-        protected override void OnRenderSelf(SpriteBatcher sb)
+        protected override void OnRender(SpriteBatcher sb)
         {
             if (_font != null && Color.A > 0)
                 sb.DrawString(_font, _text, _position, Color, Material);
 
-            base.OnRenderSelf(sb);
+            base.OnRender(sb);
         }
 
         protected override void OnUpdateBounds()

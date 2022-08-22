@@ -78,6 +78,7 @@ namespace Molten.UI
         Rectangle _localBounds;
         Rectangle _globalBounds;
         Rectangle _renderBounds;
+        Vector2F _renderOffset;
 
         public UIElement()
         {
@@ -100,13 +101,10 @@ namespace Molten.UI
             UpdateBounds(_parent?.RenderBounds);
         }
 
-        protected void UpdateBounds()
+        protected void UpdateBounds(Rectangle? parentBounds = null)
         {
-            UpdateBounds(_parent?._renderBounds);
-        }
+            parentBounds = parentBounds ?? _parent?._renderBounds;
 
-        private void UpdateBounds(Rectangle? parentBounds)
-        {
             if (parentBounds != null)
             {
                 _globalBounds = new Rectangle()
@@ -124,8 +122,11 @@ namespace Molten.UI
 
             _renderBounds = _globalBounds;
             _renderBounds.Inflate(-Padding.Left, -Padding.Top, -Padding.Right, -Padding.Bottom);
-
             OnAdjustRenderBounds(ref _renderBounds);
+
+            Rectangle offsetRenderBounds = _renderBounds;
+            offsetRenderBounds.X += (int)_renderOffset.X;
+            offsetRenderBounds.Y += (int)_renderOffset.Y;
 
             OnUpdateCompoundBounds();
             foreach (UIElement e in CompoundElements)
@@ -135,7 +136,7 @@ namespace Molten.UI
             {
                 OnUpdateChildBounds();
                 foreach (UIElement e in Children)
-                    e.UpdateBounds(_renderBounds);
+                    e.UpdateBounds(offsetRenderBounds);
             }
 
             OnUpdateBounds();
@@ -442,27 +443,26 @@ namespace Molten.UI
             if (!IsVisible)
                 return;
 
-            if (IsClipEnabled && sb.PushClip(GlobalBounds))
-            {
-                OnRenderSelf(sb);
+            bool clipped = IsClipEnabled && sb.PushClip(_globalBounds);
+            OnRender(sb);
+            CompoundElements.Render(sb);
+            if (clipped)
                 sb.PopClip();
-            }
-            else
+
+            if (ChildrenEnabled)
             {
-                OnRenderSelf(sb);
+                clipped = IsClipEnabled && sb.PushClip(_renderBounds);
+                Children.Render(sb);
+                if (clipped)
+                    sb.PopClip();
             }
-
-            CompoundElements.Render(sb, ref _globalBounds);
-
-            if(ChildrenEnabled)
-                Children.Render(sb, ref _renderBounds);
         }
 
         /// <summary>
         /// Invoked when the current <see cref="UIElement"/> should perform any custom rendering to display itself.
         /// </summary>
         /// <param name="sb"></param>
-        protected virtual void OnRenderSelf(SpriteBatcher sb) { }
+        protected virtual void OnRender(SpriteBatcher sb) { }
 
         /// <summary>
         /// Gets or sets the local bounds of the current <see cref="UIElement"/>.
@@ -475,7 +475,7 @@ namespace Molten.UI
             {
                 _localBounds = value;
                 OnUpdateLocalBounds(ref _localBounds);
-                UpdateBounds(Parent?.RenderBounds);
+                UpdateBounds();
             }
         }
 
@@ -489,6 +489,19 @@ namespace Molten.UI
         /// Gets the bounds in which child components should be drawn.
         /// </summary>
         public Rectangle RenderBounds => _renderBounds;
+
+        /// <summary>
+        /// Gets or sets the offset of child elements rendered inside <see cref="RenderBounds"/>. This is useful for features such as scrolling.
+        /// </summary>
+        protected Vector2F RenderOffset
+        {
+            get => _renderOffset;
+            set
+            {
+                _renderOffset = value;
+                UpdateBounds();
+            }
+        }
 
         /// <summary>
         /// Gets or sets whether clipping is enabled.

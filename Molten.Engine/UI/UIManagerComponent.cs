@@ -219,10 +219,20 @@ namespace Molten.UI
 
         }
 
+        private void UpdateRootBounds(IInputCamera camera, IRenderSurface2D surface)
+        {
+            _root.LocalBounds = new Rectangle(0, 0, (int)surface.Width, (int)surface.Height);
+        }
+
         /// <summary>
-        /// Gets all of the child <see cref="UIElement"/> attached to the current <see cref="UIManagerComponent"/>.
+        /// Gets all of the child <see cref="UIElement"/> attached to <see cref="Root"/>. This is an alias propety for <see cref="Root"/>.Children.
         /// </summary>
         public UIChildCollection Children { get; private set; }
+
+        /// <summary>
+        /// Gets the root <see cref="UIContainer"/>.
+        /// </summary>
+        public UIContainer Root => _root;
 
         public string Tooltip => Name;
 
@@ -230,11 +240,6 @@ namespace Molten.UI
         /// The current <see cref="UIElement"/> being hovered over by a pointing device (e.g. mouse or stylus).
         /// </summary>
         public UIElement HoverElement { get; private set; }
-
-        private void UpdateRootBounds(IInputCamera camera, IRenderSurface2D surface)
-        {
-            _root.LocalBounds = new Rectangle(0, 0, (int)surface.Width, (int)surface.Height);
-        }
 
         public CameraComponent Camera
         {

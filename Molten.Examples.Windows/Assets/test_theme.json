@@ -9,7 +9,7 @@
     "FontName": "Arial"
   },
 
-  "Molten.UI.UIWindow/Molten.UI.UIButton": {
+  "Molten.UI.UIButton": {
     "FillColor": {
       "Default": "0 109 155 255",
       "Pressed": "122 209 255 255"

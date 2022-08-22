@@ -137,7 +137,7 @@ namespace Molten.UI
             };
         }
 
-        protected override void OnRenderSelf(SpriteBatcher sb)
+        protected override void OnRender(SpriteBatcher sb)
         {
             sb.DrawRect(_plotArea, BackgroundStyle);
 
@@ -194,7 +194,7 @@ namespace Molten.UI
                 sb.DrawLine(avg1, avg2, ref AverageLineStyle);
             }
 
-            base.OnRenderSelf(sb);
+            base.OnRender(sb);
         }
 
         /// <summary>
