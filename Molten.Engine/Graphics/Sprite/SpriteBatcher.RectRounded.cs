@@ -8,6 +8,34 @@ namespace Molten.Graphics
 {
     public abstract partial class SpriteBatcher
     {
+        public void DrawRoundedRect(RectangleF dest, Color fillColor, float rotation,
+            Vector2F origin, float cornerRadius, IMaterial material = null, uint surfaceSlice = 0)
+        {
+            RoundedRectStyle style = new RoundedRectStyle()
+            {
+                FillColor = fillColor,
+                BorderColor = fillColor,
+                CornerRadius = new CornerInfo(cornerRadius),
+                BorderThickness = 0
+            };
+
+            DrawRoundedRect(dest, rotation, origin, ref style, material);
+        }
+
+        public void DrawRoundedRect(RectangleF dest, Color fillColor, float rotation,
+            Vector2F origin, CornerInfo cornerRadius, IMaterial material = null, uint surfaceSlice = 0)
+        {
+            RoundedRectStyle style = new RoundedRectStyle()
+            {
+                FillColor = fillColor,
+                BorderColor = fillColor,
+                CornerRadius = cornerRadius,
+                BorderThickness = 0
+            };
+
+            DrawRoundedRect(dest, rotation, origin, ref style, material);
+        }
+
         public void DrawRoundedRect(RectangleF dest, Color fillColor, Color borderColor, float rotation, 
             Vector2F origin, float cornerRadius, float borderThickness = 0, IMaterial material = null, uint surfaceSlice = 0)
         {

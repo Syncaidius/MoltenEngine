@@ -1,5 +1,4 @@
 ﻿using Molten.Graphics;
-using System.Runtime.Serialization;
 
 namespace Molten.UI
 {
@@ -57,7 +56,6 @@ namespace Molten.UI
                 BorderThickness = BorderThickness.Top,
                 CornerRadius = CornerRadius.Restrict(radiusLimit)
             };
-
 
             sb.DrawRoundedRect(GlobalBounds, 0, Vector2F.Zero, ref style);
 

@@ -17,6 +17,7 @@ namespace Molten.Samples
         UIButton _button4;
         UIButton _button5;
         UIButton _button6;
+        UICheckbox _cbImmediate;
 
         GraphDataSet _graphSet;
         GraphDataSet _graphSet2;
@@ -57,7 +58,7 @@ namespace Molten.Samples
 
             IMaterial mat = _hMaterial.Get<IMaterial>();
             ITexture2D texture = _hTexture.Get<ITexture2D>();
-            
+
             mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;
 
@@ -111,6 +112,12 @@ namespace Molten.Samples
                 Text = "Maximize Other Window"
             };
 
+            _cbImmediate = new UICheckbox()
+            {
+                LocalBounds = new Rectangle(100, 340, 180, 25),
+                Text = "Disable Animation"
+            };
+
             _lineGraph = new UILineGraph()
             {
                 LocalBounds = new Rectangle(0, 0, 700, 420)
@@ -126,6 +133,7 @@ namespace Molten.Samples
             _window2.Children.Add(_button4);
             _window2.Children.Add(_button5);
             _window2.Children.Add(_button6);
+            _window2.Children.Add(_cbImmediate);
             _window1.Children.Add(_lineGraph);
 
             _button1.Pressed += _button1_Pressed;
@@ -148,22 +156,22 @@ namespace Molten.Samples
 
         private void _button3_Pressed(UIElement element, ScenePointerTracker tracker)
         {
-            _window1.Close(false);
+            _window1.Close(_cbImmediate.IsChecked);
         }
 
         private void _button4_Pressed(UIElement element, ScenePointerTracker tracker)
         {
-            _window1.Open();
+            _window1.Open(_cbImmediate.IsChecked);
         }
 
         private void _button5_Pressed(UIElement element, ScenePointerTracker tracker)
         {
-            _window1.Minimize();
+            _window1.Minimize(_cbImmediate.IsChecked);
         }
 
         private void _button6_Pressed(UIElement element, ScenePointerTracker tracker)
         {
-            _window1.Maximize();
+            _window1.Maximize(_cbImmediate.IsChecked);
         }
 
         private void PlotGraphData(UILineGraph graph)
