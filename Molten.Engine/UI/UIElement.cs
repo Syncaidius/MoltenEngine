@@ -233,7 +233,7 @@ namespace Molten.UI
                     }
                 }
 
-                if (ChildrenEnabled)
+                if (ChildrenEnabled && _renderBounds.Contains(point))
                 {
                     if ((!ignoreRules && HasInputRules(UIInputRuleFlags.Children)))
                     {
