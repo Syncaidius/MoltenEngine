@@ -92,7 +92,20 @@ namespace Molten.UI
             }
             else if(_bgBounds.Contains(tracker.Position))
             {
-                // TODO jump the scrollbar to equate to the point clicked along the scrollbar.
+                if(Direction == UIScrollBarDirection.Vertical)
+                {
+                    if (tracker.Position.Y < _barBounds.Top)
+                        Value -= Increment;
+                    else
+                        Value += Increment;
+                }
+                else
+                {
+                    if (tracker.Position.X < _barBounds.Left)
+                        Value -= Increment;
+                    else
+                        Value += Increment;
+                }
             }
         }
 
