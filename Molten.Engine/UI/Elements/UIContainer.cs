@@ -9,6 +9,7 @@ namespace Molten.UI
     public class UIContainer : UIElement
     {
         UIScrollBar _vScrollBar;
+        UIScrollBar _hScrollBar;
         int _scrollBarWidth = 25;
         bool _scrollEnabled = true;
 
@@ -19,13 +20,19 @@ namespace Molten.UI
             _vScrollBar = CompoundElements.Add<UIScrollBar>();
             _vScrollBar.Set(0, 500, 20);
 
-            _vScrollBar.ValueChanged += _vScrollBar_ValueChanged;
+            _hScrollBar = CompoundElements.Add<UIScrollBar>();
+            _hScrollBar.Direction = UIScrollBarDirection.Horizontal;
+            _hScrollBar.Set(0, 500, 20);
+
+            _vScrollBar.ValueChanged += ScrollBarChanged;
+            _hScrollBar.ValueChanged += ScrollBarChanged;
         }
 
-        private void _vScrollBar_ValueChanged(UIScrollBar element)
+        private void ScrollBarChanged(UIScrollBar element)
         {
-            RenderOffset = new Vector2F(0, element.Value);
+            RenderOffset = new Vector2F(_hScrollBar.Value, _vScrollBar.Value);
         }
+
 
         protected override void OnUpdateCompoundBounds()
         {
@@ -35,10 +42,18 @@ namespace Molten.UI
             {
                 _vScrollBar.LocalBounds = new Rectangle()
                 {
-                    X = RenderBounds.Width - ScrollBarWidth,
+                    X = RenderBounds.Width - _scrollBarWidth,
                     Y = 0,
                     Width = _scrollBarWidth,
-                    Height = RenderBounds.Height
+                    Height = RenderBounds.Height - _scrollBarWidth
+                };
+
+                _hScrollBar.LocalBounds = new Rectangle()
+                {
+                    X = 0,
+                    Y = RenderBounds.Height - _scrollBarWidth,
+                    Width = RenderBounds.Width - _scrollBarWidth,
+                    Height = _scrollBarWidth
                 };
             }
         }
@@ -64,8 +79,12 @@ namespace Molten.UI
                 if(_scrollEnabled != value)
                 {
                     _scrollEnabled = value;
+
                     _vScrollBar.IsVisible = value;
                     _vScrollBar.IsEnabled = value;
+
+                    _hScrollBar.IsVisible = value;
+                    _hScrollBar.IsEnabled = value;
 
                     UpdateBounds();
                 }

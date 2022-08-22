@@ -29,16 +29,30 @@ namespace Molten.UI
             base.OnInitialize(engine, settings);
 
             _btnDecrease = CompoundElements.Add<UIButton>();
-            _btnDecrease.Text = "^";
             _btnDecrease.HorizontalAlign = UIHorizonalAlignment.Center;
             _btnDecrease.VerticalAlign = UIVerticalAlignment.Center;
-            _btnDecrease.CornerRadius = new CornerInfo(_corners.TopLeft, _corners.TopRight, 0, 0);
 
             _btnIncrease = CompoundElements.Add<UIButton>();
-            _btnIncrease.Text = "v";
             _btnIncrease.HorizontalAlign = UIHorizonalAlignment.Center;
             _btnIncrease.VerticalAlign = UIVerticalAlignment.Center;
-            _btnIncrease.CornerRadius = new CornerInfo(0, 0, _corners.BottomRight, _corners.BottomLeft);
+
+
+            if (Direction == UIScrollBarDirection.Vertical)
+            {
+                _btnDecrease.Text = "^";
+                _btnIncrease.Text = "v";
+
+                _btnDecrease.CornerRadius = new CornerInfo(_corners.TopLeft, _corners.TopRight, 0, 0);
+                _btnIncrease.CornerRadius = new CornerInfo(0, 0, _corners.BottomRight, _corners.BottomLeft);
+            }
+            else
+            {
+                _btnDecrease.Text = "<";
+                _btnIncrease.Text = ">";
+
+                _btnDecrease.CornerRadius = new CornerInfo(_corners.TopLeft, 0, 0, _corners.BottomLeft);
+                _btnIncrease.CornerRadius = new CornerInfo(0, _corners.TopRight, _corners.BottomRight, 0);
+            }
 
             _btnDecrease.Pressed += _btnDecrease_Pressed;
             _btnIncrease.Pressed += _btnIncrease_Pressed;
@@ -88,8 +102,10 @@ namespace Molten.UI
 
             if(_barPressed)
             {
-                if(Direction == UIScrollBarDirection.Vertical)
-                Value += tracker.Delta.Y;
+                if (Direction == UIScrollBarDirection.Vertical)
+                    Value += tracker.Delta.Y;
+                else
+                    Value += tracker.Delta.X;
             }
         }
 
@@ -111,11 +127,11 @@ namespace Molten.UI
                 Height = buttonSize,
             };
 
+            _btnDecrease.LocalBounds = buttonBounds;
             Rectangle gBounds = GlobalBounds;
+
             if (Direction == UIScrollBarDirection.Vertical)
             {
-                _btnDecrease.LocalBounds = buttonBounds;
-
                 buttonBounds.Y = LocalBounds.Height - buttonSize;
                 _btnIncrease.LocalBounds = buttonBounds;
 
@@ -127,25 +143,46 @@ namespace Molten.UI
                     Height = LocalBounds.Height - (buttonSize * 2)
                 };
             }
+            else
+            {
+                buttonBounds.X = LocalBounds.Width - buttonSize;
+                _btnIncrease.LocalBounds = buttonBounds;
+
+                _bgBounds = new Rectangle()
+                {
+                    X = gBounds.X + buttonSize,
+                    Y = gBounds.Y,
+                    Width = LocalBounds.Width - (buttonSize * 2),
+                    Height = gBounds.Height
+                };
+            }
 
             UpdateBarBounds();
         }
 
         private void UpdateBarBounds()
         {
+            _barBounds = _bgBounds;
+
+            // First calculate the local size of the bar
+            float range = _maxValue - _minValue;
+            float barStep = range / Increment;
+            float percentOfRange = (_maxValue - (_maxValue - _value)) / range;
+
             if (Direction == UIScrollBarDirection.Vertical) 
             {
-                _barBounds = _bgBounds;
                 _barBounds.Inflate(-((int)BorderThickness + 1), 0);
-
-                // First calculate the local size of the bar
-                float range = _maxValue - _minValue;
-                float barStep = range / Increment;
                 float barSize = _barBounds.Height / barStep;
-                float percentOfRange = (_maxValue - (_maxValue - _value)) / range;
 
                 _barBounds.Height = (int)barSize;
                 _barBounds.Y += (int)Math.Ceiling((_bgBounds.Height - barSize) * percentOfRange);
+            }
+            else
+            {
+                _barBounds.Inflate(0, -((int)BorderThickness + 1));
+                float barSize = _barBounds.Width / barStep;
+                _barBounds.Width = (int)barSize;
+                _barBounds.X += (int)Math.Ceiling((_bgBounds.Width - barSize) * percentOfRange);
             }
         }
 
