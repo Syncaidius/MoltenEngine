@@ -2,13 +2,13 @@
 
 namespace Molten.UI
 {
-    public class UICheckbox : UIElement
+    public class UICheckBox : UIElement
     {
-        public event UIElementHandler<UICheckbox> Checked;
+        public event UIElementHandler<UICheckBox> Checked;
 
-        public event UIElementHandler<UICheckbox> Unchecked;
+        public event UIElementHandler<UICheckBox> Unchecked;
 
-        public event UIElementHandler<UICheckbox> Toggled;
+        public event UIElementHandler<UICheckBox> Toggled;
 
         /// <summary>
         /// The border color
@@ -23,7 +23,7 @@ namespace Molten.UI
         public UISpacing BorderThickness { get; } = new UISpacing(2);
 
         /// <summary>
-        /// The fill/inner color of the box area for the current <see cref="UICheckbox"/>.
+        /// The fill/inner color of the box area for the current <see cref="UICheckBox"/>.
         /// </summary>
         [UIThemeMember]
         public Color BackgroundColor = new Color(0, 109, 155, 200);
@@ -32,7 +32,7 @@ namespace Molten.UI
         public Color CheckColor = new Color(141, 212, 242, 255);
 
         /// <summary>
-        /// The corner radius values of the box area for the current <see cref="UICheckbox"/>. Setting them all to 0 will produce a regular rectangle.
+        /// The corner radius values of the box area for the current <see cref="UICheckBox"/>. Setting them all to 0 will produce a regular rectangle.
         /// </summary>
         [UIThemeMember]
         public CornerInfo CornerRadius = new CornerInfo(8f);
@@ -41,7 +41,7 @@ namespace Molten.UI
         public UICheckboxStyle CheckStyle = UICheckboxStyle.Fill;
 
         /// <summary>
-        /// Gets or sets whether the current <see cref="UICheckbox"/> is checked.
+        /// Gets or sets whether the current <see cref="UICheckBox"/> is checked.
         /// </summary>
         public bool IsChecked
         {
@@ -156,7 +156,7 @@ namespace Molten.UI
     }
 
     /// <summary>
-    /// Represents the style of the checkbox when <see cref="UICheckbox.IsChecked"/> is true.
+    /// Represents the style of the checkbox when <see cref="UICheckBox.IsChecked"/> is true.
     /// </summary>
     public enum UICheckboxStyle
     {

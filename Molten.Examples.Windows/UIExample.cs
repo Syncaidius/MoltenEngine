@@ -17,7 +17,7 @@ namespace Molten.Samples
         UIButton _button4;
         UIButton _button5;
         UIButton _button6;
-        UICheckbox _cbImmediate;
+        UICheckBox _cbImmediate;
 
         GraphDataSet _graphSet;
         GraphDataSet _graphSet2;
@@ -112,7 +112,7 @@ namespace Molten.Samples
                 Text = "Maximize Other Window"
             };
 
-            _cbImmediate = new UICheckbox()
+            _cbImmediate = new UICheckBox()
             {
                 LocalBounds = new Rectangle(100, 340, 180, 25),
                 Text = "Disable Animation"

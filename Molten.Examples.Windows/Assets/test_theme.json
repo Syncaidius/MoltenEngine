@@ -16,7 +16,8 @@
     },
     "BorderColor": {
       "Default": "52 189 235 255",
-      "Pressed": "255 255 0 0"
+      "Hovered": "122 209 255 255",
+      "Pressed": "122 209 255 255"
     },
     "VerticalAlign": "Center",
     "HorizontalAlign": "Center",
@@ -37,5 +38,16 @@
 
   "Molten.UI.UILineGraph": {
     "ShowAverageLine": false
+  },
+
+  "Molten.UI.UICheckBox": {
+    "BorderColor": {
+      "Default": "52 189 235 255",
+      "Hovered": "122 209 255 255"
+    },
+    "CheckColor": {
+      "Default": "180 180 0 255",
+      "Hovered": "255 255 0 255"
+    }
   }
 }
