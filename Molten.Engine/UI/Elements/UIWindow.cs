@@ -56,6 +56,11 @@ namespace Molten.UI
         }
 
         /// <summary>
+        /// Invoked when <see cref="Maximize(bool)"/> was called on the current <see cref="UIWindow"/>. The opening can be cancelled by any subscriber to this event.
+        /// </summary>
+        public event UIElementCancelHandler<UIWindow> Maximizing;
+
+        /// <summary>
         /// Invoked when <see cref="Minimize(bool)"/> was called on the current <see cref="UIWindow"/>. The opening can be cancelled by any subscriber to this event.
         /// </summary>
         public event UIElementCancelHandler<UIWindow> Minimizing;
@@ -84,6 +89,11 @@ namespace Molten.UI
         /// Invoked when the current <see cref="UIWindow"/> has finished minimizing.
         /// </summary>
         public event UIElementHandler<UIWindow> Minimized;
+
+        /// <summary>
+        /// Invoked when the current <see cref="UIWindow"/> has finished maximizing.
+        /// </summary>
+        public event UIElementHandler<UIWindow> Maximized;
 
         UIPanel _titleBar;
         UIPanel _panel;
@@ -124,6 +134,7 @@ namespace Molten.UI
                 {
                     ChildrenEnabled = false;
                     IsVisible = true;
+                    _btnMinimize.IsVisible = true;
                     Interpolate(_lerpBounds, _defaultBounds, false);
                 }),
 
@@ -133,6 +144,7 @@ namespace Molten.UI
                     IsVisible = true;
                     _btnMinimize.IsVisible = true;
                     Interpolate(_lerpBounds, _defaultBounds, true);
+                    // TODO set maximize icon to 'maximize'.
                 }),
 
                 [UIWindowState.Closing] = new StateChange(UIWindowState.Closing, Closing, OnClosing, UIWindowState.Closed, (window) =>
@@ -154,11 +166,28 @@ namespace Molten.UI
                     Interpolate(_lerpBounds, _minimizeBounds, false);
                     ChildrenEnabled = false;
                 }),
+
                 [UIWindowState.Minimized] = new StateChange(UIWindowState.Minimized, Minimized, OnMinimized, (window) =>
                 {
                     ChildrenEnabled = false;
                     _btnMinimize.IsVisible = false;
                     Interpolate(_lerpBounds, _minimizeBounds, true);
+                    // Set maximize icon to 'restore'
+                }),
+
+                [UIWindowState.Maximizing] = new StateChange(UIWindowState.Maximizing, Maximizing, OnMaximizing, UIWindowState.Maximized, (window) =>
+                {
+                    Interpolate(_lerpBounds, _maximizeBounds, false);
+                    _btnMinimize.IsVisible = true;
+                    ChildrenEnabled = false;
+                }),
+
+                [UIWindowState.Maximized] = new StateChange(UIWindowState.Maximized, Maximized, OnMaximized, (window) =>
+                {
+                    ChildrenEnabled = true;
+                    _btnMinimize.IsVisible = true;
+                    Interpolate(_lerpBounds, _maximizeBounds, true);
+                    // TODO set maximize button icon to 'restore'.
                 }),
             };
 
@@ -175,12 +204,21 @@ namespace Molten.UI
             _btnClose.Pressed += _btnClose_Pressed;
 
             _btnMaximize = AddTitleButton("^");
+            _btnMaximize.Pressed += _btnMaximize_Pressed;
 
             _btnMinimize = AddTitleButton("_");
             _btnMinimize.Pressed += _btnMinimize_Pressed;
 
             _titleBarHeight = 26;
             Title = Name;
+        }
+
+        private void _btnMaximize_Pressed(UIElement element, ScenePointerTracker tracker)
+        {
+            if (WindowState == UIWindowState.Open)
+                StartState(UIWindowState.Maximizing);
+            else
+                StartState(UIWindowState.Opening);
         }
 
         private void _btnMinimize_Pressed(UIElement element, ScenePointerTracker tracker)
@@ -257,6 +295,27 @@ namespace Molten.UI
             _minimizeBounds.Height = _titleBarHeight;
         }
 
+        protected override void OnUpdateLocalBounds(ref Rectangle localBounds)
+        {
+            if (WindowState != UIWindowState.Open)
+            {
+                _lerpBounds.X = localBounds.X;
+                _lerpBounds.Y = localBounds.Y;
+
+                localBounds = _lerpBounds;
+            }
+            else
+            {
+                _defaultBounds = localBounds;
+                _lerpBounds = localBounds;
+
+                _maximizeBounds = Parent != null ? Parent.RenderBounds : _defaultBounds;
+                _minimizeBounds.X = _defaultBounds.X;
+                _minimizeBounds.Y = _defaultBounds.Y;
+                _closeBounds = new Rectangle(_defaultBounds.Center.X, _defaultBounds.Center.Y, 10, 10);
+            }
+        }
+
         protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
         {
             renderbounds.Inflate(-BorderThickness.Left, -(BorderThickness.Top + _titleBarHeight), -BorderThickness.Right, -BorderThickness.Bottom);
@@ -271,6 +330,10 @@ namespace Molten.UI
         public override void OnDragged(ScenePointerTracker tracker)
         {
             base.OnDragged(tracker);
+
+            if (WindowState != UIWindowState.Minimized && WindowState != UIWindowState.Open)
+                return;
+
             LocalBounds += tracker.IntegerDelta;
         }
 
@@ -286,23 +349,9 @@ namespace Molten.UI
 
         protected virtual void OnMinimized() { }
 
-        protected override void OnUpdateLocalBounds(ref Rectangle localBounds)
-        {
-            if (WindowState != UIWindowState.Open)
-            {
-                localBounds = _lerpBounds;
-            }
-            else
-            {
-                _defaultBounds = localBounds;
-                _lerpBounds = localBounds;
+        protected virtual bool OnMaximizing() { return true; }
 
-                _maximizeBounds = Parent != null ? Parent.RenderBounds : _defaultBounds;
-                _minimizeBounds.X = _defaultBounds.X;
-                _minimizeBounds.Y = _defaultBounds.Y;
-                _closeBounds = new Rectangle(_defaultBounds.Center.X, _defaultBounds.Center.Y, 10, 10);
-            }
-        }
+        protected virtual void OnMaximized() { }
 
         protected override void OnUpdate(Timing time)
         {
@@ -384,6 +433,11 @@ namespace Molten.UI
         public void Minimize(bool immediate = false)
         {
             StartState(immediate ? UIWindowState.Minimized : UIWindowState.Minimizing);
+        }
+
+        public void Maximize(bool immediate = false)
+        {
+            StartState(immediate ? UIWindowState.Maximized : UIWindowState.Maximizing);
         }
 
         /// <summary>
