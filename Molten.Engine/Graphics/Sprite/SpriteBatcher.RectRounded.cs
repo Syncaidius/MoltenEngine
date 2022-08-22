@@ -147,7 +147,7 @@ namespace Molten.Graphics
                 {
                     if (corners.RightSameRadius())
                     {
-                        DrawRect(new RectangleF(dest.Right - corners.TopRight, tl.Y, corners.TopRight, dest.Height - (corners.TopRight * 2)), ref innerStyle, surfaceSlice);
+                        DrawRect(new RectangleF(dest.Right - corners.TopRight, tr.Y, corners.TopRight, dest.Height - (corners.TopRight * 2)), ref innerStyle, surfaceSlice);
                         rightEdgeWidth = corners.TopRight;
                     }
                     else

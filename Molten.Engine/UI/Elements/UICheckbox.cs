@@ -35,7 +35,7 @@ namespace Molten.UI
         /// The corner radius values of the box area for the current <see cref="UICheckBox"/>. Setting them all to 0 will produce a regular rectangle.
         /// </summary>
         [UIThemeMember]
-        public CornerInfo CornerRadius = new CornerInfo(8f);
+        public CornerInfo CornerRadius = new CornerInfo(3f);
 
         [UIThemeMember]
         public UICheckboxStyle CheckStyle = UICheckboxStyle.Fill;
