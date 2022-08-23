@@ -12,8 +12,8 @@ namespace Molten.UI
         {
             base.OnInitialize(engine, settings);
 
-            _panel = CompoundElements.Add<UIPanel>();
-            _label = CompoundElements.Add<UILabel>();
+            _panel = BaseElements.Add<UIPanel>();
+            _label = BaseElements.Add<UILabel>();
 
             _panel.BorderThickness.OnChanged += BorderThickness_OnChanged;
 
@@ -30,9 +30,9 @@ namespace Molten.UI
             renderbounds.Inflate(-BorderThickness.Left, -BorderThickness.Top, -BorderThickness.Right, -BorderThickness.Bottom);
         }
 
-        protected override void OnUpdateCompoundBounds()
+        protected override void OnPreUpdateLayerBounds()
         {
-            base.OnUpdateCompoundBounds();
+            base.OnPreUpdateLayerBounds();
 
             _panel.LocalBounds = new Rectangle(0, 0, GlobalBounds.Width, GlobalBounds.Height);
             _label.LocalBounds = _panel.LocalBounds;

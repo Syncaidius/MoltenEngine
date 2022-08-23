@@ -28,11 +28,11 @@ namespace Molten.UI
         {
             base.OnInitialize(engine, settings);
 
-            _btnDecrease = CompoundElements.Add<UIButton>();
+            _btnDecrease = BaseElements.Add<UIButton>();
             _btnDecrease.HorizontalAlign = UIHorizonalAlignment.Center;
             _btnDecrease.VerticalAlign = UIVerticalAlignment.Center;
 
-            _btnIncrease = CompoundElements.Add<UIButton>();
+            _btnIncrease = BaseElements.Add<UIButton>();
             _btnIncrease.HorizontalAlign = UIHorizonalAlignment.Center;
             _btnIncrease.VerticalAlign = UIVerticalAlignment.Center;
 
@@ -128,9 +128,9 @@ namespace Molten.UI
             _barPressed = false;
         }
 
-        protected override void OnUpdateCompoundBounds()
+        protected override void OnPreUpdateLayerBounds()
         {
-            base.OnUpdateCompoundBounds();
+            base.OnPreUpdateLayerBounds();
             int buttonSize = Math.Min(LocalBounds.Width, LocalBounds.Height);
             Rectangle buttonBounds = new Rectangle()
             {

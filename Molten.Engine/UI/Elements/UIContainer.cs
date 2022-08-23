@@ -8,6 +8,7 @@ namespace Molten.UI
     /// </summary>
     public class UIContainer : UIElement
     {
+        UIElementLayer _scrollBarLayer;
         UIScrollBar _vScrollBar;
         UIScrollBar _hScrollBar;
         int _scrollBarWidth = 25;
@@ -17,10 +18,12 @@ namespace Molten.UI
         {
             base.OnInitialize(engine, settings);
 
-            _vScrollBar = CompoundElements.Add<UIScrollBar>();
+            _scrollBarLayer = AddLayer(UIElementLayerBoundsUsage.GlobalBounds);
+
+            _vScrollBar = _scrollBarLayer.Add<UIScrollBar>();
             _vScrollBar.Set(0, 500, 20);
 
-            _hScrollBar = CompoundElements.Add<UIScrollBar>();
+            _hScrollBar = _scrollBarLayer.Add<UIScrollBar>();
             _hScrollBar.Direction = UIScrollBarDirection.Horizontal;
             _hScrollBar.Set(0, 500, 20);
 
@@ -34,25 +37,25 @@ namespace Molten.UI
         }
 
 
-        protected override void OnUpdateCompoundBounds()
+        protected override void OnPreUpdateLayerBounds()
         {
-            base.OnUpdateCompoundBounds();
+            base.OnPreUpdateLayerBounds();
 
             if (IsScrollingEnabled)
             {
                 _vScrollBar.LocalBounds = new Rectangle()
                 {
-                    X = RenderBounds.Width - _scrollBarWidth,
+                    X = GlobalBounds.Width - _scrollBarWidth,
                     Y = 0,
                     Width = _scrollBarWidth,
-                    Height = RenderBounds.Height - _scrollBarWidth
+                    Height = GlobalBounds.Height - _scrollBarWidth
                 };
 
                 _hScrollBar.LocalBounds = new Rectangle()
                 {
                     X = 0,
-                    Y = RenderBounds.Height - _scrollBarWidth,
-                    Width = RenderBounds.Width - _scrollBarWidth,
+                    Y = GlobalBounds.Height - _scrollBarWidth,
+                    Width = GlobalBounds.Width - _scrollBarWidth,
                     Height = _scrollBarWidth
                 };
             }

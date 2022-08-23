@@ -14,7 +14,7 @@ namespace Molten.UI
         {
             base.OnInitialize(engine, settings);
 
-            InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Children;
+            InputRules = UIInputRuleFlags.Children;
         }
     }
 }

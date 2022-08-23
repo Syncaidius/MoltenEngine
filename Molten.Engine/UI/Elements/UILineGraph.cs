@@ -78,15 +78,15 @@ namespace Molten.UI
             base.OnInitialize(engine, settings);
             _datasets = new List<GraphDataSet>();
 
-            _labelTitle = CompoundElements.Add<UILabel>();
+            _labelTitle = BaseElements.Add<UILabel>();
             _labelTitle.Text = "Line Graph";
             _labelTitle.OnMeasurementChanged += Label_OnMeasurementChanged;
 
-            _labelXAxis = CompoundElements.Add<UILabel>();
+            _labelXAxis = BaseElements.Add<UILabel>();
             _labelXAxis.Text = "X Axis";
             _labelXAxis.OnMeasurementChanged += Label_OnMeasurementChanged;
 
-            _labelYAxis = CompoundElements.Add<UILabel>();
+            _labelYAxis = BaseElements.Add<UILabel>();
             _labelYAxis.Text = "Y Axis";
             _labelYAxis.OnMeasurementChanged += Label_OnMeasurementChanged;
         }

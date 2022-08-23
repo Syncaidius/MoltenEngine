@@ -33,7 +33,7 @@ namespace Molten.UI
             base.OnInitialize(engine, settings);
             BorderThickness.OnChanged += BorderThickness_OnChanged;
 
-            InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Compound;
+            InputRules = UIInputRuleFlags.Children;
         }
 
         private void BorderThickness_OnChanged()

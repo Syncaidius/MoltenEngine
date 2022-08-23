@@ -71,7 +71,7 @@ namespace Molten.UI
             base.OnInitialize(engine, settings);
             BorderThickness.OnChanged += BorderThickness_OnChanged;
 
-            _label = CompoundElements.Add<UILabel>();
+            _label = BaseElements.Add<UILabel>();
             _label.Text = this.Name;
             _label.VerticalAlign = UIVerticalAlignment.Center;
 

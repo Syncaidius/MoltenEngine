@@ -38,7 +38,7 @@ namespace Molten.UI
         {
             base.OnInitialize(engine, settings);
             FontName = settings.DefaultFontName;
-            InputRules = UIInputRuleFlags.Compound | UIInputRuleFlags.Children;
+            InputRules = UIInputRuleFlags.Children;
         }
 
         protected override void OnRender(SpriteBatcher sb)

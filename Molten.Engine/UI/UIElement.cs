@@ -70,24 +70,60 @@ namespace Molten.UI
         /// </summary>
         public event UIManagerChangedHandler ManagerChanged;
 
-
+        List<UIElementLayer> _layers;
         UIManagerComponent _manager;
-        UIElement _parent;
+        UIElementLayer _parentLayer;
         UITheme _theme;
         UIElementState _state;
         Rectangle _localBounds;
         Rectangle _globalBounds;
         Rectangle _renderBounds;
+        Rectangle _offsetRenderBounds;
         Vector2F _renderOffset;
 
         public UIElement()
         {
-            Children = new UIChildCollection(this, false);
-            CompoundElements = new UIChildCollection(this, true);
+            _layers = new List<UIElementLayer>();
             Engine = Engine.Current;
+
+            BaseElements = AddLayer(UIElementLayerBoundsUsage.GlobalBounds);
+            Children = AddLayer(UIElementLayerBoundsUsage.RenderBounds);
+
             State = UIElementState.Default;
             OnInitialize(Engine, Engine.Settings.UI);
             ApplyTheme();
+        }
+
+        protected UIElementLayer AddLayer(UIElementLayerBoundsUsage boundsUsage)
+        {
+            UIElementLayer layer = new UIElementLayer(this, boundsUsage);
+            _layers.Add(layer);
+            return layer;
+        }
+
+        protected UIElementLayer AddLayerBefore(UIElementLayer layer, UIElementLayerBoundsUsage boundsUsage)
+        {
+            int index = _layers.IndexOf(layer);
+            UIElementLayer newLayer = new UIElementLayer(this, boundsUsage);
+            _layers.Insert(index, newLayer);
+            return newLayer;
+        }
+
+        protected UIElementLayer AddLayerAfter(UIElementLayer layer, UIElementLayerBoundsUsage boundsUsage)
+        {
+            int index = _layers.IndexOf(layer);
+            UIElementLayer newLayer = new UIElementLayer(this, boundsUsage);
+            _layers.Insert(index + 1, newLayer);
+
+            return newLayer;
+        }
+
+        protected void RemoveLayer(UIElementLayer layer)
+        {
+            if (layer == Children || layer == BaseElements)
+                throw new InvalidOperationException("Cannot remove base or child element layers");
+
+            _layers.Remove(layer);
         }
 
         protected virtual void OnInitialize(Engine engine, UISettings settings)
@@ -98,12 +134,12 @@ namespace Molten.UI
 
         private void MarginPadding_OnChanged()
         {
-            UpdateBounds(_parent?.RenderBounds);
+            UpdateBounds(_parentLayer?.Owner.RenderBounds);
         }
 
         protected void UpdateBounds(Rectangle? parentBounds = null)
         {
-            parentBounds = parentBounds ?? _parent?._renderBounds;
+            parentBounds = parentBounds ?? _parentLayer?.Owner._offsetRenderBounds;
 
             if (parentBounds != null)
             {
@@ -124,19 +160,23 @@ namespace Molten.UI
             _renderBounds.Inflate(-Padding.Left, -Padding.Top, -Padding.Right, -Padding.Bottom);
             OnAdjustRenderBounds(ref _renderBounds);
 
-            Rectangle offsetRenderBounds = _renderBounds;
-            offsetRenderBounds.X += (int)_renderOffset.X;
-            offsetRenderBounds.Y += (int)_renderOffset.Y;
+            _offsetRenderBounds = _renderBounds;
+            _offsetRenderBounds.X += (int)_renderOffset.X;
+            _offsetRenderBounds.Y += (int)_renderOffset.Y;
 
-            OnUpdateCompoundBounds();
-            foreach (UIElement e in CompoundElements)
-                e.UpdateBounds(_globalBounds);
+            OnPreUpdateLayerBounds();
 
-            if (ChildrenEnabled)
+            foreach (UIElementLayer layer in _layers)
             {
-                OnUpdateChildBounds();
-                foreach (UIElement e in Children)
-                    e.UpdateBounds(offsetRenderBounds);
+                if (!layer.IsEnabled)
+                    continue;
+
+                Rectangle pBounds = layer.BoundsUsage == UIElementLayerBoundsUsage.GlobalBounds ? 
+                    _globalBounds :
+                    _offsetRenderBounds;
+
+                foreach (UIElement e in layer)
+                    e.UpdateBounds(pBounds);
             }
 
             OnUpdateBounds();
@@ -150,28 +190,31 @@ namespace Molten.UI
             if (_theme == null)
                 return;
 
-            foreach (UIElement e in CompoundElements)
-                e.Theme = _theme;
-
-            foreach (UIElement e in Children)
-                e.Theme = _theme;
+            foreach(UIElementLayer layer in _layers)
+            {
+                foreach (UIElement e in layer)
+                    e.Theme = _theme;
+            }
 
             _theme?.ApplyStyle(this);
-            UpdateBounds(Parent?.RenderBounds);
+            UpdateBounds(ParentElement?.RenderBounds);
         }
 
         internal void Update(Timing time)
         {
-            if (IsEnabled)
+            if (!IsEnabled)
+                return;
+                
+            OnUpdate(time);
+
+            foreach (UIElementLayer layer in _layers)
             {
-                OnUpdate(time);
+                if (!layer.IsEnabled)
+                    continue;
 
-                for (int i = CompoundElements.Count - 1; i >= 0; i--)
-                    CompoundElements[i].Update(time);
+                for (int i = layer.Count - 1; i >= 0; i--)
+                    layer[i].Update(time);
             }
-
-            for (int i = Children.Count - 1; i >= 0; i--)
-                Children[i].Update(time);
         }
 
         /// <summary>
@@ -218,36 +261,36 @@ namespace Molten.UI
         /// <param name="point">The point to use for picking a <see cref="UIElement"/>.</param>
         /// <param name="ignoreRules">If true, <see cref="InputRules"/> is ignored when picking.</param>
         /// <returns></returns>
-        public UIElement Pick(Vector2F point, bool ignoreRules = false)
+        public UIElement Pick(Vector2F point)
         {
             UIElement result = null;
 
             if (IsEnabled && Contains(point))
             {
-                if ((!ignoreRules && HasInputRules(UIInputRuleFlags.Compound)))
-                {
-                    for (int i = CompoundElements.Count - 1; i >= 0; i--)
-                    {
-                        result = CompoundElements[i].Pick(point);
-                        if (result != null)
-                            return result;
-                    }
-                }
+                UIElementLayer layer;
 
-                if (ChildrenEnabled && _renderBounds.Contains(point))
+                // Check each layer in reverse order.
+                // The last layer is top-most, so we start there and work backwards to the first (lowest) layer.
+                if (HasInputRules(UIInputRuleFlags.Children))
                 {
-                    if ((!ignoreRules && HasInputRules(UIInputRuleFlags.Children)))
+                    for (int i = _layers.Count - 1; i >= 0; i--)
                     {
-                        for (int i = Children.Count - 1; i >= 0; i--)
+                        layer = _layers[i];
+
+                        if (layer.IgnoreInput)
+                            continue;
+
+                        // Try picking one of the layer's elements.
+                        for (int e = layer.Count - 1; e >= 0; e--)
                         {
-                            result = Children[i].Pick(point);
+                            result = layer[e].Pick(point);
                             if (result != null)
                                 return result;
                         }
                     }
                 }
 
-                if(!ignoreRules && HasInputRules(UIInputRuleFlags.Self))
+                if(HasInputRules(UIInputRuleFlags.Self))
                     return OnPicked(point) ? this : null;
             }
 
@@ -360,13 +403,10 @@ namespace Molten.UI
         /// </summary>
         public void BringToFront()
         {
-            if (Parent == null)
+            if (ParentElement == null)
                 return;
 
-            if (IsCompoundChild)
-                Parent.CompoundElements.BringToFront(this);
-            else
-                Parent.Children.BringToFront(this);
+            ParentLayer?.BringToFront(this);
         }
 
         /// <summary>
@@ -374,13 +414,10 @@ namespace Molten.UI
         /// </summary>
         public void SendToBack()
         {
-            if (Parent == null)
+            if (ParentElement == null)
                 return;
 
-            if (IsCompoundChild)
-                Parent.CompoundElements.SendToBack(this);
-            else
-                Parent.Children.SendToBack(this);
+            ParentLayer?.SendToBack(this);
         }
 
         protected override void OnDispose() { }
@@ -391,14 +428,9 @@ namespace Molten.UI
         protected virtual void OnUpdateBounds() { }
 
         /// <summary>
-        /// Invoked right before updating the bounds of compound elements.
+        /// Invoked right before updating the bounds of elements held in the underlying <see cref="UIElementLayer"/>s of the current <see cref="UIElement"/>.
         /// </summary>
-        protected virtual void OnUpdateCompoundBounds() { }
-
-        /// <summary>
-        /// Invoked right before updating the bounds of child elements.
-        /// </summary>
-        protected virtual void OnUpdateChildBounds() { }
+        protected virtual void OnPreUpdateLayerBounds() { }
 
         /// <summary>
         /// Invoked when <see cref="LocalBounds"/> was changed. This allows adjustments or overrides to be applied to <see cref="LocalBounds"/> before <see cref="UpdateBounds()"/> is called internally.
@@ -443,18 +475,15 @@ namespace Molten.UI
             if (!IsVisible)
                 return;
 
-            bool clipped = IsClipEnabled && sb.PushClip(_globalBounds);
-            OnRender(sb);
-            CompoundElements.Render(sb);
-            if (clipped)
-                sb.PopClip();
-
-            if (ChildrenEnabled)
+            // Only render if we were given a valid clip. i.e. it is partially/fully inside the previous clip and therefore visible.
+            if (sb.PushClip(_globalBounds))
             {
-                clipped = IsClipEnabled && sb.PushClip(_renderBounds);
-                Children.Render(sb);
-                if (clipped)
-                    sb.PopClip();
+                OnRender(sb);
+
+                for (int i = 0; i < _layers.Count; i++)
+                    _layers[i].Render(sb);
+
+                sb.PopClip();
             }
         }
 
@@ -504,11 +533,6 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets or sets whether clipping is enabled.
-        /// </summary>
-        public bool IsClipEnabled { get; set; } = true;
-
-        /// <summary>
         /// Gets or sets whether the current <see cref="UIElement"/> is visible.
         /// </summary>
         public bool IsVisible { get; set; } = true;
@@ -525,8 +549,11 @@ namespace Molten.UI
 
                 if (value != enabled)
                 {
-                    foreach (UIElement e in CompoundElements)
-                        e.IsEnabled = value;
+                    foreach (UIElementLayer layer in _layers)
+                    {
+                        foreach (UIElement e in layer)
+                            e.IsEnabled = value;
+                    }
 
                     // Changing the state triggers a recursive theme update, so we don't need to do it ourselves here.
                     State = value ? UIElementState.Default : UIElementState.Disabled;
@@ -537,30 +564,39 @@ namespace Molten.UI
         /// <summary>
         /// Gets a read-only list of child components attached to the current <see cref="UIElement"/>.
         /// </summary>
-        public UIChildCollection Children { get; }
+        public UIElementLayer Children { get; }
 
         /// <summary>
-        /// Gets a list of compound child <see cref="UIElement"/>. These can only be modified by the current <see cref="UIElement"/>.
+        /// Gets a list of base child <see cref="UIElement"/> which help form the current <see cref="UIElement"/>. 
+        /// <para>These can only be modified by the current <see cref="UIElement"/>.</para>
         /// </summary>
-        protected UIChildCollection CompoundElements { get; }
+        protected UIElementLayer BaseElements { get; }
+
+        /// <summary>
+        /// Gets a list of overlay child <see cref="UIElement"/> which are drawn over all <see cref="Children"/> elements. 
+        /// <para>These can only be modified by the current <see cref="UIElement"/></para>.
+        /// </summary>
+        protected UIElementLayer OverlayElements { get; }
+
+        public UIElementLayer ParentLayer
+        {
+            get => _parentLayer;
+            internal set
+            {
+                if (_parentLayer != value)
+                {
+                    UIElementLayer oldParent = _parentLayer;
+                    _parentLayer = value;
+                    OnParentChanged(oldParent?.Owner, ParentElement);
+                    UpdateBounds(ParentElement?.RenderBounds);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the parent of the current <see cref="UIElement"/>.
         /// </summary>
-        public UIElement Parent
-        {
-            get => _parent;
-            internal set
-            {
-                if (_parent != value)
-                {
-                    UIElement oldParent = _parent;
-                    _parent = value;
-                    OnParentChanged(oldParent, _parent);
-                    UpdateBounds(Parent?.RenderBounds);
-                }
-            }
-        }
+        public UIElement ParentElement => _parentLayer?.Owner;
 
         /// <summary>
         /// Gets the <see cref="Engine"/> instance that the current <see cref="UIElement"/> is bound to.
@@ -580,8 +616,8 @@ namespace Molten.UI
                     UIManagerComponent oldManager = _manager;
                     _manager = value;
                     OnManagerChanged(oldManager, _manager);
-                    CompoundElements.SetManager(_manager);
-                    Children.SetManager(_manager);
+                    foreach(UIElementLayer layer in _layers)
+                        layer.SetManager(_manager);
                 }
             }
         }
@@ -623,11 +659,6 @@ namespace Molten.UI
         public UIInputRuleFlags InputRules { get; set; } = UIInputRuleFlags.All;
 
         /// <summary>
-        /// Gets whether or not the current <see cref="UIElement"/> is a compound component of another element.
-        /// </summary>
-        public bool IsCompoundChild { get; internal set; }
-
-        /// <summary>
         /// Gets the margin of the current <see cref="UIElement"/>. This spacing directly affects the <see cref="BorderBounds"/>.
         /// </summary>
         [DataMember]
@@ -646,12 +677,5 @@ namespace Molten.UI
         /// Gets the <see cref="UIWindow"/> that contains the current <see cref="UIElement"/>.
         /// </summary>
         public UIWindow ParentWindow { get; internal set; }
-
-        /// <summary>
-        /// Gets or sets wher or not child <see cref="UIElement"/> objects update and render. 
-        /// <para>This is useful if the current <see cref="UIElement"/> wants to avoid receiving input or 
-        /// triggering bounds updates on children, while expanding or collapsing.</para>
-        /// </summary>
-        protected bool ChildrenEnabled { get; set; } = true;
     }
 }

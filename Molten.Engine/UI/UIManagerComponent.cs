@@ -227,7 +227,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets all of the child <see cref="UIElement"/> attached to <see cref="Root"/>. This is an alias propety for <see cref="Root"/>.Children.
         /// </summary>
-        public UIChildCollection Children { get; private set; }
+        public UIElementLayer Children { get; private set; }
 
         /// <summary>
         /// Gets the root <see cref="UIContainer"/>.

@@ -173,7 +173,7 @@ namespace Molten.UI
                     break;
 
                 //A more precise styling is available.
-                e = e.Parent;
+                e = e.ParentElement;
                 style = nextStyle;
             }
 

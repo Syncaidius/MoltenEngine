@@ -2,13 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Graphics;
 
 namespace Molten.UI
 {
-    public class UIChildCollection : IEnumerable<UIElement>
+    public class UIElementLayer : IEnumerable<UIElement>
     {
         public event ObjectHandler<UIElement> OnElementAdded;
 
@@ -18,12 +19,12 @@ namespace Molten.UI
         IReadOnlyList<UIElement> _readOnly;
         UIElement _element;
 
-        internal UIChildCollection(UIElement parent, bool isCompound)
+        internal UIElementLayer(UIElement parent, UIElementLayerBoundsUsage boundsUsage)
         {
-            IsCompound = isCompound;
             _element = parent;
             _elements = new List<UIElement>();
             _readOnly = _elements.AsReadOnly();
+            BoundsUsage = boundsUsage;
         }
 
         public override string ToString()
@@ -47,17 +48,16 @@ namespace Molten.UI
 
         public void Add(UIElement child)
         {
-            if (child.Parent == _element)
+            if (child.ParentElement == _element)
                 return;
 
-            if (child.Parent != null && child.Parent != _element)
+            if (child.ParentElement != null && child.ParentElement != _element)
                 throw new Exception("Element already has a parent. Remove from previous first.");
 
             // Set new element parent.
             child.Manager = _element.Manager;
-            child.IsCompoundChild = IsCompound;
             _elements.Add(child);
-            child.Parent = _element;
+            child.ParentLayer = this;
             child.Theme = _element.Theme;
 
             if (_element is UIWindow window)
@@ -70,12 +70,11 @@ namespace Molten.UI
 
         public void Remove(UIElement child)
         {
-            if (child.Parent != _element)
+            if (child.ParentElement != _element)
                 return;
 
             _elements.Remove(child);
-            child.IsCompoundChild = false;
-            child.Parent = null;
+            child.ParentLayer = null;
             child.ParentWindow = null;
 
             _element.Manager = null;
@@ -84,7 +83,7 @@ namespace Molten.UI
 
         internal void BringToFront(UIElement child)
         {
-            if (child.Parent != _element || _elements.LastOrDefault() == child)
+            if (child.ParentElement != _element || _elements.LastOrDefault() == child)
                 return;
 
             _elements.Remove(child);
@@ -93,7 +92,7 @@ namespace Molten.UI
 
         internal void SendToBack(UIElement child)
         {
-            if (child.Parent != _element || _elements.FirstOrDefault() == child)
+            if (child.ParentElement != _element || _elements.FirstOrDefault() == child)
                 return;
 
             _elements.Remove(child);
@@ -102,7 +101,7 @@ namespace Molten.UI
 
         public bool IsAtFront(UIElement child)
         {
-            if (child.Parent != _element)
+            if (child.ParentElement != _element)
                 return false;
 
             return _elements.LastOrDefault() == child;
@@ -110,7 +109,7 @@ namespace Molten.UI
 
         public bool IsAtBack(UIElement child)
         {
-            if (child.Parent != _element)
+            if (child.ParentElement != _element)
                 return false;
 
             return _elements.FirstOrDefault() == child;
@@ -118,11 +117,26 @@ namespace Molten.UI
 
         internal void Render(SpriteBatcher sb)
         {
-            if (_elements.Count == 0)
+            if (!IsEnabled || _elements.Count == 0)
                 return;
 
+            // We only need to push a new clip if we're in render-bounds clip mode.
+            // Global bounds are already clipped, so we don't need to push another for it.
+            if (BoundsUsage != UIElementLayerBoundsUsage.GlobalBounds)
+            {
+                if (sb.PushClip(_element.RenderBounds))
+                {
+                    for (int i = 0; i < _elements.Count; i++)
+                        _elements[i].Render(sb);
+
+                    sb.PopClip();
+                }
+            }
+            else
+            {
                 for (int i = 0; i < _elements.Count; i++)
                     _elements[i].Render(sb);
+            }          
         }
 
         public IEnumerator<UIElement> GetEnumerator()
@@ -137,8 +151,33 @@ namespace Molten.UI
 
         public int Count => _elements.Count;
 
-        public bool IsCompound { get; }
+        /// <summary>
+        /// Gets or sets whether the given layer is enabled. If false, the layer will not render or update.
+        /// </summary>
+        public bool IsEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets whether not the current <see cref="UIElementLayer"/> should ignore input.
+        /// </summary>
+        public bool IgnoreInput { get; set; }
+
+        public UIElementLayerBoundsUsage BoundsUsage { get; }
+
+        /// <summary>
+        /// Gets the <see cref="UIElement"/> that owns the current <see cref="UIElementLayer"/>.
+        /// </summary>
+        public UIElement Owner => _element;
 
         public UIElement this[int index] => _elements[index]; 
+    }
+
+    /// <summary>
+    /// Determines which bounds of a parent <see cref="UIElement"/> will be used to constrain rendering of elements within a <see cref="UIElementLayer"/>.
+    /// </summary>
+    public enum UIElementLayerBoundsUsage
+    {
+        GlobalBounds = 0,
+
+        RenderBounds = 1,
     }
 }

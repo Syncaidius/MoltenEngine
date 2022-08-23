@@ -25,7 +25,7 @@ namespace Molten.UI
 
             public UIElementHandler<UIWindow> Event;
             public Action CompletionMethod;
-            public UIElement NewParent;
+            public UIElementLayer NewParentLayer;
 
             public StateChange(UIWindowState startState,
                 UIElementCancelHandler<UIWindow> startEvent,
@@ -39,7 +39,7 @@ namespace Molten.UI
                 CheckMethod = startCheckMethod;
                 EndState = endState;
                 CompletionMethod = null;
-                NewParent = null;
+                NewParentLayer = null;
                 CustomCallback = callback;
             }
 
@@ -132,7 +132,7 @@ namespace Molten.UI
             { 
                 [UIWindowState.Opening] = new StateChange(UIWindowState.Opening, Opening, OnOpening, UIWindowState.Open, (window) =>
                 {
-                    ChildrenEnabled = false;
+                    Children.IsEnabled = false;
                     IsVisible = true;
                     _btnMinimize.IsVisible = true;
                     Interpolate(_lerpBounds, _defaultBounds, false);
@@ -140,7 +140,7 @@ namespace Molten.UI
 
                 [UIWindowState.Open] = new StateChange(UIWindowState.Open, Opened, OnOpened, (window) =>
                 {
-                    ChildrenEnabled = true;
+                    Children.IsEnabled = true;
                     IsVisible = true;
                     _btnMinimize.IsVisible = true;
                     Interpolate(_lerpBounds, _defaultBounds, true);
@@ -151,12 +151,12 @@ namespace Molten.UI
                 {
                     Interpolate(_lerpBounds, _closeBounds, false);
                     IsVisible = true;
-                    ChildrenEnabled = false;
+                    Children.IsEnabled = false;
                 }),
 
                 [UIWindowState.Closed] = new StateChange(UIWindowState.Closed, Closed, OnClosed, (window) =>
                 {
-                    ChildrenEnabled = false;
+                    Children.IsEnabled = false;
                     IsVisible = false;
                     Interpolate(_lerpBounds, _closeBounds, true);
                 }),
@@ -164,12 +164,12 @@ namespace Molten.UI
                 [UIWindowState.Minimizing] = new StateChange(UIWindowState.Minimizing, Minimizing, OnMinimizing, UIWindowState.Minimized, (window) =>
                 {
                     Interpolate(_lerpBounds, _minimizeBounds, false);
-                    ChildrenEnabled = false;
+                    Children.IsEnabled = false;
                 }),
 
                 [UIWindowState.Minimized] = new StateChange(UIWindowState.Minimized, Minimized, OnMinimized, (window) =>
                 {
-                    ChildrenEnabled = false;
+                    Children.IsEnabled = false;
                     _btnMinimize.IsVisible = false;
                     Interpolate(_lerpBounds, _minimizeBounds, true);
                     // Set maximize icon to 'restore'
@@ -179,12 +179,12 @@ namespace Molten.UI
                 {
                     Interpolate(_lerpBounds, _maximizeBounds, false);
                     _btnMinimize.IsVisible = true;
-                    ChildrenEnabled = false;
+                    Children.IsEnabled = false;
                 }),
 
                 [UIWindowState.Maximized] = new StateChange(UIWindowState.Maximized, Maximized, OnMaximized, (window) =>
                 {
-                    ChildrenEnabled = true;
+                    Children.IsEnabled = true;
                     _btnMinimize.IsVisible = true;
                     Interpolate(_lerpBounds, _maximizeBounds, true);
                     // TODO set maximize button icon to 'restore'.
@@ -195,9 +195,9 @@ namespace Molten.UI
             BorderThickness.OnChanged += BorderThickness_OnChanged;
 
             // Change _panel corners to only round bottom left/right.
-            _titleBar = CompoundElements.Add<UIPanel>();
-            _panel = CompoundElements.Add<UIPanel>();
-            _title = CompoundElements.Add<UILabel>();
+            _titleBar = BaseElements.Add<UIPanel>();
+            _panel = BaseElements.Add<UIPanel>();
+            _title = BaseElements.Add<UILabel>();
             _title.VerticalAlign = UIVerticalAlignment.Center;
 
             _btnClose = AddTitleButton("X");
@@ -255,7 +255,7 @@ namespace Molten.UI
 
         private UIButton AddTitleButton(string text)
         {
-            UIButton btn = CompoundElements.Add<UIButton>();
+            UIButton btn = BaseElements.Add<UIButton>();
             _titleBarButtons.Add(btn);
             btn.Text = text;
             return btn;
@@ -269,9 +269,9 @@ namespace Molten.UI
                 return !RenderBounds.Contains(globalPos);
         }
 
-        protected override void OnUpdateCompoundBounds()
+        protected override void OnPreUpdateLayerBounds()
         {
-            base.OnUpdateCompoundBounds();
+            base.OnPreUpdateLayerBounds();
 
             Rectangle gb = GlobalBounds;
             int iconSize = TitleBarHeight;
@@ -309,7 +309,7 @@ namespace Molten.UI
                 _defaultBounds = localBounds;
                 _lerpBounds = localBounds;
 
-                _maximizeBounds = Parent != null ? Parent.RenderBounds : _defaultBounds;
+                _maximizeBounds = ParentElement != null ? ParentElement.RenderBounds : _defaultBounds;
                 _minimizeBounds.X = _defaultBounds.X;
                 _minimizeBounds.Y = _defaultBounds.Y;
                 _closeBounds = new Rectangle(_defaultBounds.Center.X, _defaultBounds.Center.Y, 10, 10);
@@ -406,17 +406,17 @@ namespace Molten.UI
 
             _curChange.Event?.Invoke(this);
 
-            if (_curChange.NewParent != null)
-                Parent = _curChange.NewParent;
+            if (_curChange.NewParentLayer != null)
+                ParentLayer = _curChange.NewParentLayer;
 
             // Call the completion method. This is likely to be a UIWindow method. e.g. OnOpened, OnClosed or OnMinimized.
             _curChange.CompletionMethod?.Invoke();
         }
 
-        public void Open(bool immediate = false, UIElement newParent = null)
+        public void Open(bool immediate = false, UIElementLayer newParentLayer = null)
         {
             UIWindowState state = immediate ? UIWindowState.Open : UIWindowState.Opening;
-            _changes[state].NewParent = newParent;
+            _changes[state].NewParentLayer = newParentLayer;
 
             StartState(state);
         }

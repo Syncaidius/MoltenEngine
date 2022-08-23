@@ -20,18 +20,13 @@ namespace Molten.UI
         Self = 1,
 
         /// <summary>
-        /// Input on child elements is accepted.
+        /// Input on child element layers is accepted.
         /// </summary>
         Children = 2,
 
         /// <summary>
-        /// Input on compound elements is accepted.
-        /// </summary>
-        Compound = 4,
-
-        /// <summary>
         /// All types of input are accepted.
         /// </summary>
-        All = Self | Children | Compound,
+        All = Self | Children,
     }
 }
