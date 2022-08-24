@@ -308,12 +308,17 @@ namespace Molten.UI
             {
                 _defaultBounds = localBounds;
                 _lerpBounds = localBounds;
-
-                _maximizeBounds = ParentElement != null ? ParentElement.RenderBounds : _defaultBounds;
-                _minimizeBounds.X = _defaultBounds.X;
-                _minimizeBounds.Y = _defaultBounds.Y;
-                _closeBounds = new Rectangle(_defaultBounds.Center.X, _defaultBounds.Center.Y, 10, 10);
             }
+        }
+
+        protected override void OnUpdateBounds()
+        {
+            base.OnUpdateBounds(); 
+            
+            _maximizeBounds = ParentElement != null ? ParentElement.OffsetRenderBounds : _defaultBounds;
+            _minimizeBounds.X = _defaultBounds.X;
+            _minimizeBounds.Y = _defaultBounds.Y;
+            _closeBounds = new Rectangle(_defaultBounds.Center.X, _defaultBounds.Center.Y, 10, 10);
         }
 
         protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
@@ -432,11 +437,17 @@ namespace Molten.UI
 
         public void Minimize(bool immediate = false)
         {
+            if (WindowState == UIWindowState.Closing || WindowState == UIWindowState.Closed)
+                return;
+
             StartState(immediate ? UIWindowState.Minimized : UIWindowState.Minimizing);
         }
 
         public void Maximize(bool immediate = false)
         {
+            if (WindowState == UIWindowState.Closing || WindowState == UIWindowState.Closed)
+                return;
+
             StartState(immediate ? UIWindowState.Maximized : UIWindowState.Maximizing);
         }
 

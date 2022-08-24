@@ -134,13 +134,20 @@ namespace Molten.UI
 
         private void MarginPadding_OnChanged()
         {
-            UpdateBounds(_parentLayer?.Owner.RenderBounds);
+            UpdateBounds();
         }
 
         protected void UpdateBounds(Rectangle? parentBounds = null)
         {
-            parentBounds = parentBounds ?? _parentLayer?.Owner._offsetRenderBounds;
+            if (parentBounds == null && _parentLayer != null)
+            {
+                if (_parentLayer.BoundsUsage == UIElementLayerBoundsUsage.GlobalBounds)
+                    parentBounds = _parentLayer.Owner._globalBounds;
+                else
+                    parentBounds = _parentLayer.Owner._offsetRenderBounds;
+            }
 
+            // Are parent bounds still null?
             if (parentBounds != null)
             {
                 _globalBounds = new Rectangle()
@@ -197,7 +204,7 @@ namespace Molten.UI
             }
 
             _theme?.ApplyStyle(this);
-            UpdateBounds(ParentElement?.RenderBounds);
+            UpdateBounds();
         }
 
         internal void Update(Timing time)
@@ -520,6 +527,11 @@ namespace Molten.UI
         public Rectangle RenderBounds => _renderBounds;
 
         /// <summary>
+        /// Gets the <see cref="RenderBounds"/> with <see cref="RenderOffset"/> applied to it.
+        /// </summary>
+        public Rectangle OffsetRenderBounds => _offsetRenderBounds;
+
+        /// <summary>
         /// Gets or sets the offset of child elements rendered inside <see cref="RenderBounds"/>. This is useful for features such as scrolling.
         /// </summary>
         protected Vector2F RenderOffset
@@ -588,7 +600,7 @@ namespace Molten.UI
                     UIElementLayer oldParent = _parentLayer;
                     _parentLayer = value;
                     OnParentChanged(oldParent?.Owner, ParentElement);
-                    UpdateBounds(ParentElement?.RenderBounds);
+                    UpdateBounds();
                 }
             }
         }
