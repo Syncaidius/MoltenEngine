@@ -18,6 +18,7 @@ namespace Molten.Samples
         UIButton _button5;
         UIButton _button6;
         UICheckBox _cbImmediate;
+        UIListView _listView;
 
         GraphDataSet _graphSet;
         GraphDataSet _graphSet2;
@@ -64,7 +65,7 @@ namespace Molten.Samples
 
             _window2 = new UIWindow()
             {
-                LocalBounds = new Rectangle(660, 250, 540, 550),
+                LocalBounds = new Rectangle(660, 250, 640, 550),
                 Title = "This is another Window",
                 //ShowDebugBounds = true
             };
@@ -111,6 +112,11 @@ namespace Molten.Samples
                 Text = "Disable Animation"
             };
 
+            _listView = new UIListView()
+            {
+                LocalBounds = new Rectangle(300, 100, 200, 300),
+            };
+
             _lineGraph = new UILineGraph()
             {
                 LocalBounds = new Rectangle(0, 0, 700, 420)
@@ -127,6 +133,7 @@ namespace Molten.Samples
             _window2.Children.Add(_button5);
             _window2.Children.Add(_button6);
             _window2.Children.Add(_cbImmediate);
+            _window2.Children.Add(_listView);
             _window1.Children.Add(_lineGraph);
 
             _button1.Pressed += _button1_Pressed;

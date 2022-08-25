@@ -8,7 +8,7 @@ namespace Molten.UI
     /// </summary>
     public class UIContainer : UIElement
     {
-        UIElementLayer _scrollBarLayer;
+        UIElementLayer _overlayLayer;
         UIScrollBar _vScrollBar;
         UIScrollBar _hScrollBar;
         int _scrollBarWidth = 25;
@@ -18,12 +18,12 @@ namespace Molten.UI
         {
             base.OnInitialize(engine, settings);
 
-            _scrollBarLayer = AddLayer(UIElementLayerBoundsUsage.GlobalBounds);
+            _overlayLayer = AddLayer(UIElementLayerBoundsUsage.GlobalBounds);
 
-            _vScrollBar = _scrollBarLayer.Add<UIScrollBar>();
+            _vScrollBar = _overlayLayer.Add<UIScrollBar>();
             _vScrollBar.Set(0, 500, 20);
 
-            _hScrollBar = _scrollBarLayer.Add<UIScrollBar>();
+            _hScrollBar = _overlayLayer.Add<UIScrollBar>();
             _hScrollBar.Direction = UIScrollBarDirection.Horizontal;
             _hScrollBar.Set(0, 500, 20);
 
@@ -33,7 +33,7 @@ namespace Molten.UI
 
         private void ScrollBarChanged(UIScrollBar element)
         {
-            RenderOffset = new Vector2F(_hScrollBar.Value, _vScrollBar.Value);
+            RenderOffset = new Vector2F(-_hScrollBar.Value, -_vScrollBar.Value);
         }
 
 
@@ -61,6 +61,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the width of the horizontal and vertical scrollbars for the current <see cref="UIContainer"/>.
+        /// </summary>
         public int ScrollBarWidth
         {
             get => _scrollBarWidth;
@@ -74,6 +77,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets whether or not scrolling is enabled for the current <see cref="UIContainer"/>.
+        /// </summary>
         public bool IsScrollingEnabled
         {
             get => _scrollEnabled;
@@ -93,5 +99,10 @@ namespace Molten.UI
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the overlay layer of the current <see cref="UIContainer"/>.
+        /// </summary>
+        internal UIElementLayer OverlayElements => _overlayLayer;
     }
 }

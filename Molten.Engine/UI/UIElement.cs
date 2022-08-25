@@ -1,5 +1,6 @@
 ﻿using Molten.Graphics;
 using System.Runtime.Serialization;
+using System.Xml.Linq;
 
 namespace Molten.UI
 {
@@ -584,12 +585,6 @@ namespace Molten.UI
         /// </summary>
         protected UIElementLayer BaseElements { get; }
 
-        /// <summary>
-        /// Gets a list of overlay child <see cref="UIElement"/> which are drawn over all <see cref="Children"/> elements. 
-        /// <para>These can only be modified by the current <see cref="UIElement"/></para>.
-        /// </summary>
-        protected UIElementLayer OverlayElements { get; }
-
         public UIElementLayer ParentLayer
         {
             get => _parentLayer;
@@ -627,9 +622,14 @@ namespace Molten.UI
                 {
                     UIManagerComponent oldManager = _manager;
                     _manager = value;
+
                     OnManagerChanged(oldManager, _manager);
-                    foreach(UIElementLayer layer in _layers)
-                        layer.SetManager(_manager);
+
+                    foreach (UIElementLayer layer in _layers)
+                    {
+                        foreach (UIElement e in layer)
+                            e.Manager = value;
+                    }
                 }
             }
         }

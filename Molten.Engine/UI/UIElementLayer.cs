@@ -32,12 +32,6 @@ namespace Molten.UI
             return $"{GetType().Name} - Owner: {_element} - Count: {_readOnly.Count}";
         }
 
-        internal void SetManager(UIManagerComponent manager)
-        {
-            foreach (UIElement e in _elements)
-                e.Manager = manager;
-        }
-
         public T Add<T>()
             where T : UIElement, new()
         {
