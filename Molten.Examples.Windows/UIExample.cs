@@ -18,7 +18,7 @@ namespace Molten.Samples
         UIButton _button5;
         UIButton _button6;
         UICheckBox _cbImmediate;
-        UIListView _listView;
+        UIStackPanel _stackPanel;
 
         GraphDataSet _graphSet;
         GraphDataSet _graphSet2;
@@ -112,10 +112,32 @@ namespace Molten.Samples
                 Text = "Disable Animation"
             };
 
-            _listView = new UIListView()
+            _stackPanel = new UIStackPanel()
             {
                 LocalBounds = new Rectangle(300, 100, 200, 300),
             };
+
+            // Add some items to the stack panel
+            UICheckBox lvCheckbox1 = _stackPanel.Children.Add<UICheckBox>(new Rectangle(0, 0, 150, 30));
+            lvCheckbox1.Text = "Check me out!";
+            UICheckBox lvCheckbox2 = _stackPanel.Children.Add<UICheckBox>(new Rectangle(0, 0, 150, 30));
+            lvCheckbox2.Text = "Don't forget about me!";
+            UILabel lvLabel1 = _stackPanel.Children.Add<UILabel>(new Rectangle(0, 0, 150, 30));
+            lvLabel1.Text = "I'm a label";
+            UIButton lvButton1 = _stackPanel.Children.Add<UIButton>(new Rectangle(0, 0, 150, 30));
+            lvButton1.Text = "I'm Button 1";
+            UIButton lvButton2 = _stackPanel.Children.Add<UIButton>(new Rectangle(0, 0, 150, 30));
+            lvButton2.Text = "I'm Button 2";
+            UIPanel lvPanel1 = _stackPanel.Children.Add<UIPanel>(new Rectangle(0, 0, 150, 80));
+            UILabel lvPanel1Label = lvPanel1.Children.Add<UILabel>(new Rectangle(0, 0, 150, 30));
+            lvPanel1Label.Text = "I'm panel label";
+            UIButton lvButton3 = _stackPanel.Children.Add<UIButton>(new Rectangle(0, 0, 150, 30));
+            lvButton3.Text = "I'm Button 3";
+            UIButton lvButton4 = _stackPanel.Children.Add<UIButton>(new Rectangle(0, 0, 150, 30));
+            lvButton4.Text = "I'm Button 4";
+            UIPanel lvPanel2 = _stackPanel.Children.Add<UIPanel>(new Rectangle(0, 0, 150, 80));
+            UILabel lvPanel2Label = lvPanel2.Children.Add<UILabel>(new Rectangle(0, 0, 150, 30));
+            lvPanel2Label.Text = "I'm panel label";
 
             _lineGraph = new UILineGraph()
             {
@@ -133,7 +155,7 @@ namespace Molten.Samples
             _window2.Children.Add(_button5);
             _window2.Children.Add(_button6);
             _window2.Children.Add(_cbImmediate);
-            _window2.Children.Add(_listView);
+            _window2.Children.Add(_stackPanel);
             _window1.Children.Add(_lineGraph);
 
             _button1.Pressed += _button1_Pressed;

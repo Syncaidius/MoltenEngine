@@ -2,13 +2,17 @@
 
 namespace Molten.UI
 {
-    public class UIListView : UIElement
+    /// <summary>
+    /// A control for listing
+    /// </summary>
+    public class UIStackPanel : UIElement
     {
         UIScrollBar _scrollBar;
         UIPanel _panel;
 
         int _scrollBarWidth = 25;
         bool _scrollEnabled = true;
+        int _totalHeight = 0;
 
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
@@ -16,29 +20,44 @@ namespace Molten.UI
 
             _panel = BaseElements.Add<UIPanel>();
             _scrollBar = BaseElements.Add<UIScrollBar>();
+            _scrollBar.Increment = 10;
 
             _scrollBar.ValueChanged += _scrollBar_ValueChanged;
-            Children.OnElementAdded += Children_OnElementAdded;
-            Children.OnElementRemoved += Children_OnElementRemoved;
+            Children.OnElementAdded += OnChildAdded;
+            Children.OnElementRemoved += OnChildRemoved;
+
+            BorderThickness.OnChanged += BorderThickness_OnChanged;
+        }
+
+        private void BorderThickness_OnChanged()
+        {
+            _panel.BorderThickness.Apply(BorderThickness);
         }
 
         private void _scrollBar_ValueChanged(UIScrollBar element)
         {
-            RenderOffset = new Vector2F(0, element.Value);
+            RenderOffset = new Vector2F(0, -element.Value);
         }
 
-        private void Children_OnElementRemoved(UIElement obj)
+        private void OnChildRemoved(UIElement obj)
         {
             // TODO If the element is removed, was beyond our render bounds and scrolling is disabled, don't update bounds.
 
             OnUpdateBounds();
         }
 
-        private void Children_OnElementAdded(UIElement obj)
+        private void OnChildAdded(UIElement obj)
         {
             // TODO If the element is added beyond our render bounds and scrolling is disabled, don't update bounds.
 
             OnUpdateBounds();
+        }
+
+        protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
+        {
+            base.OnAdjustRenderBounds(ref renderbounds);
+
+            renderbounds.Inflate(-BorderThickness.Left, -BorderThickness.Top, -BorderThickness.Right, -BorderThickness.Bottom);
         }
 
         protected override void OnPreUpdateLayerBounds()
@@ -46,21 +65,30 @@ namespace Molten.UI
             base.OnPreUpdateLayerBounds();
 
             Rectangle gb = GlobalBounds;
+            _totalHeight = 0;
+
+            foreach (UIElement e in Children)
+            {
+                Rectangle lb = e.LocalBounds;
+                lb.Y = _totalHeight;
+                e.LocalBounds = lb;
+
+                _totalHeight += lb.Height;
+            }
 
             if (_scrollEnabled)
             {
-                int scrollingNeeded = 0;
+                int scrollingNeeded = _totalHeight - gb.Height;
                 int panelWidth = gb.Width;
-
-                // TODO Calculate how much scroll we need
 
                 if (scrollingNeeded > 0)
                 {
                     _scrollBar.IsVisible = true;
                     _scrollBar.IsEnabled = true;
                     panelWidth -= _scrollBarWidth;
+                    _scrollBar.MinValue = 0;
+                    _scrollBar.MaxValue = scrollingNeeded;
                 }
-
 
                 _panel.LocalBounds = new Rectangle(0, 0, panelWidth, gb.Height);
                 _scrollBar.LocalBounds = new Rectangle(_panel.LocalBounds.Right, 0, _scrollBarWidth, gb.Height);
@@ -68,8 +96,9 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets or sets the width of the horizontal and vertical scrollbars for the current <see cref="UIListView"/>.
+        /// Gets or sets the width of the horizontal and vertical scrollbars for the current <see cref="UIStackPanel"/>.
         /// </summary>
+        [UIThemeMember]
         public int ScrollBarWidth
         {
             get => _scrollBarWidth;
@@ -86,6 +115,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets whether or not scrolling is enabled for the current <see cref="UIContainer"/>.
         /// </summary>
+        [UIThemeMember]
         public bool IsScrollingEnabled
         {
             get => _scrollEnabled;
@@ -98,5 +128,11 @@ namespace Molten.UI
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets the border thickness of the current <see cref="UIWindow"/>.
+        /// </summary>
+        [UIThemeMember]
+        public UISpacing BorderThickness { get; } = new UISpacing(2);
     }
 }

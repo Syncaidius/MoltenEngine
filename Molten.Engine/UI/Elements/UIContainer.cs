@@ -64,6 +64,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets the width of the horizontal and vertical scrollbars for the current <see cref="UIContainer"/>.
         /// </summary>
+        [UIThemeMember]
         public int ScrollBarWidth
         {
             get => _scrollBarWidth;
@@ -80,6 +81,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets whether or not scrolling is enabled for the current <see cref="UIContainer"/>.
         /// </summary>
+        [UIThemeMember]
         public bool IsScrollingEnabled
         {
             get => _scrollEnabled;

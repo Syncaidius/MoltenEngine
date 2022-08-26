@@ -32,11 +32,15 @@ namespace Molten.UI
             return $"{GetType().Name} - Owner: {_element} - Count: {_readOnly.Count}";
         }
 
-        public T Add<T>()
+        public T Add<T>(Rectangle? localBounds = null)
             where T : UIElement, new()
         {
             T e = new T();
             Add(e);
+
+            if (localBounds != null)
+                e.LocalBounds = localBounds.Value;
+
             return e;
         }
 
