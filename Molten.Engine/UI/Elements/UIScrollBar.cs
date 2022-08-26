@@ -6,7 +6,7 @@ namespace Molten.UI
     {
         public event UIElementHandler<UIScrollBar> ValueChanged;
 
-        UIScrollBarDirection _direction;
+        UIElementFlowDirection _direction;
         UIButton _btnDecrease;
         UIButton _btnIncrease;
         CornerInfo _corners = new CornerInfo(8);
@@ -37,7 +37,7 @@ namespace Molten.UI
             _btnIncrease.VerticalAlign = UIVerticalAlignment.Center;
 
 
-            if (Direction == UIScrollBarDirection.Vertical)
+            if (Direction == UIElementFlowDirection.Vertical)
             {
                 _btnDecrease.Text = "^";
                 _btnIncrease.Text = "v";
@@ -92,7 +92,7 @@ namespace Molten.UI
             }
             else if(_bgBounds.Contains(tracker.Position))
             {
-                if(Direction == UIScrollBarDirection.Vertical)
+                if(Direction == UIElementFlowDirection.Vertical)
                 {
                     if (tracker.Position.Y < _barBounds.Top)
                         Value -= Increment;
@@ -115,7 +115,7 @@ namespace Molten.UI
 
             if(_barPressed)
             {
-                if (Direction == UIScrollBarDirection.Vertical)
+                if (Direction == UIElementFlowDirection.Vertical)
                     Value += tracker.Delta.Y;
                 else
                     Value += tracker.Delta.X;
@@ -143,7 +143,7 @@ namespace Molten.UI
             _btnDecrease.LocalBounds = buttonBounds;
             Rectangle gBounds = GlobalBounds;
 
-            if (Direction == UIScrollBarDirection.Vertical)
+            if (Direction == UIElementFlowDirection.Vertical)
             {
                 buttonBounds.Y = LocalBounds.Height - buttonSize;
                 _btnIncrease.LocalBounds = buttonBounds;
@@ -182,7 +182,7 @@ namespace Molten.UI
             float barStep = range / Increment;
             float percentOfRange = (_maxValue - (_maxValue - _value)) / range;
 
-            if (Direction == UIScrollBarDirection.Vertical) 
+            if (Direction == UIElementFlowDirection.Vertical) 
             {
                 _barBounds.Inflate(-((int)BorderThickness + 1), 0);
                 float barSize = _barBounds.Height / barStep;
@@ -210,7 +210,7 @@ namespace Molten.UI
         /// Gets or sets the direction of the current <see cref="UIScrollBar"/>.
         /// </summary>
         [UIThemeMember]
-        public UIScrollBarDirection Direction
+        public UIElementFlowDirection Direction
         {
             get => _direction;
             set
@@ -328,21 +328,5 @@ namespace Molten.UI
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// Represents the orientation of a <see cref="UIScrollBar"/>.
-    /// </summary>
-    public enum UIScrollBarDirection
-    {
-        /// <summary>
-        /// The <see cref="UIScrollBar"/> will scroll and render vertically.
-        /// </summary>
-        Vertical = 0,
-
-        /// <summary>
-        /// The <see cref="UIScrollBar"/> will scroll and render horizontally.
-        /// </summary>
-        Horizontal = 1
     }
 }

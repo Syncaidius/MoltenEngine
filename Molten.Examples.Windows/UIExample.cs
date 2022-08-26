@@ -114,7 +114,8 @@ namespace Molten.Samples
 
             _stackPanel = new UIStackPanel()
             {
-                LocalBounds = new Rectangle(300, 100, 200, 300),
+                LocalBounds = new Rectangle(300, 100, 300, 300),
+                Direction = UIElementFlowDirection.Vertical
             };
 
             // Add some items to the stack panel

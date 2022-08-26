@@ -24,7 +24,7 @@ namespace Molten.UI
             _vScrollBar.Set(0, 500, 20);
 
             _hScrollBar = _overlayLayer.Add<UIScrollBar>();
-            _hScrollBar.Direction = UIScrollBarDirection.Horizontal;
+            _hScrollBar.Direction = UIElementFlowDirection.Horizontal;
             _hScrollBar.Set(0, 500, 20);
 
             _vScrollBar.ValueChanged += ScrollBarChanged;

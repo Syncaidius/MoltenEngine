@@ -12,7 +12,7 @@ namespace Molten.UI
 
         int _scrollBarWidth = 25;
         bool _scrollEnabled = true;
-        int _totalHeight = 0;
+        UIElementFlowDirection _direction;
 
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
@@ -36,7 +36,10 @@ namespace Molten.UI
 
         private void _scrollBar_ValueChanged(UIScrollBar element)
         {
-            RenderOffset = new Vector2F(0, -element.Value);
+            if(_direction == UIElementFlowDirection.Vertical)
+                RenderOffset = new Vector2F(0, -element.Value);
+            else
+                RenderOffset = new Vector2F(-element.Value, 0);
         }
 
         private void OnChildRemoved(UIElement obj)
@@ -65,38 +68,73 @@ namespace Molten.UI
             base.OnPreUpdateLayerBounds();
 
             Rectangle gb = GlobalBounds;
-            _totalHeight = 0;
 
-            foreach (UIElement e in Children)
+            if (_direction == UIElementFlowDirection.Vertical)
             {
-                Rectangle lb = e.LocalBounds;
-                lb.Y = _totalHeight;
-                e.LocalBounds = lb;
-
-                _totalHeight += lb.Height;
-            }
-
-            if (_scrollEnabled)
-            {
-                int scrollingNeeded = _totalHeight - gb.Height;
-                int panelWidth = gb.Width;
-
-                if (scrollingNeeded > 0)
+                int totalHeight = 0;
+                foreach (UIElement e in Children)
                 {
-                    _scrollBar.IsVisible = true;
-                    _scrollBar.IsEnabled = true;
-                    panelWidth -= _scrollBarWidth;
-                    _scrollBar.MinValue = 0;
-                    _scrollBar.MaxValue = scrollingNeeded;
+                    Rectangle lb = e.LocalBounds;
+                    lb.X = 0;
+                    lb.Y = totalHeight;
+                    e.LocalBounds = lb;
+
+                    totalHeight += lb.Height;
                 }
 
-                _panel.LocalBounds = new Rectangle(0, 0, panelWidth, gb.Height);
-                _scrollBar.LocalBounds = new Rectangle(_panel.LocalBounds.Right, 0, _scrollBarWidth, gb.Height);
+                if (_scrollEnabled)
+                {
+                    int scrollingNeeded = totalHeight - gb.Height;
+                    int panelWidth = gb.Width;
+
+                    if (scrollingNeeded > 0)
+                    {
+                        _scrollBar.IsVisible = true;
+                        _scrollBar.IsEnabled = true;
+                        panelWidth -= _scrollBarWidth;
+                        _scrollBar.MinValue = 0;
+                        _scrollBar.MaxValue = scrollingNeeded;
+                    }
+
+                    _panel.LocalBounds = new Rectangle(0, 0, panelWidth, gb.Height);
+                    _scrollBar.LocalBounds = new Rectangle(_panel.LocalBounds.Right, 0, _scrollBarWidth, gb.Height);
+                }
+            }
+            else
+            {
+                int totalWidth = 0;
+                foreach (UIElement e in Children)
+                {
+                    Rectangle lb = e.LocalBounds;
+                    lb.X = totalWidth;
+                    lb.Y = 0;
+                    e.LocalBounds = lb;
+
+                    totalWidth += lb.Width;
+                }
+
+                if (_scrollEnabled)
+                {
+                    int scrollingNeeded = totalWidth - gb.Width;
+                    int panelHeight = gb.Height;
+
+                    if (scrollingNeeded > 0)
+                    {
+                        _scrollBar.IsVisible = true;
+                        _scrollBar.IsEnabled = true;
+                        panelHeight -= _scrollBarWidth;
+                        _scrollBar.MinValue = 0;
+                        _scrollBar.MaxValue = scrollingNeeded;
+                    }
+
+                    _panel.LocalBounds = new Rectangle(0, 0, gb.Width, panelHeight);
+                    _scrollBar.LocalBounds = new Rectangle(0, _panel.LocalBounds.Bottom, gb.Width, _scrollBarWidth);
+                }
             }
         }
 
         /// <summary>
-        /// Gets or sets the width of the horizontal and vertical scrollbars for the current <see cref="UIStackPanel"/>.
+        /// Gets or sets the width of the scrollbar for the current <see cref="UIStackPanel"/>.
         /// </summary>
         [UIThemeMember]
         public int ScrollBarWidth
@@ -134,5 +172,23 @@ namespace Molten.UI
         /// </summary>
         [UIThemeMember]
         public UISpacing BorderThickness { get; } = new UISpacing(2);
+
+        /// <summary>
+        /// Gets or sets the flow direction of the stack panel.
+        /// </summary>
+        [UIThemeMember]
+        public UIElementFlowDirection Direction
+        {
+            get => _direction;
+            set
+            {
+                if(_direction != value)
+                {
+                    _direction = value;
+                    _scrollBar.Direction = _direction;
+                    OnUpdateBounds();
+                }
+            }
+        }
     }
 }
