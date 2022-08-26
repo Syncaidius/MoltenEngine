@@ -9,6 +9,15 @@
     "FontName": "Arial"
   },
 
+  "Molten.UI.UIWindow/Molten.UI.UIStackPanel/Molten.UI.UILabel": {
+    "Color": {
+      "Default": "255 0 255 255"
+    },
+    "VerticalAlign": "Center",
+    "HorizontalAlign": "Center",
+    "FontName": "Arial"
+  },
+
   "Molten.UI.UIButton": {
     "FillColor": {
       "Default": "0 109 155 255",
