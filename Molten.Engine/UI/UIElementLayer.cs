@@ -19,11 +19,13 @@ namespace Molten.UI
         IReadOnlyList<UIElement> _readOnly;
         UIElement _element;
 
-        internal UIElementLayer(UIElement parent, UIElementLayerBoundsUsage boundsUsage)
+
+        internal UIElementLayer(UIElement parent, UIElementLayerBoundsUsage boundsUsage, Type[] filter)
         {
             _element = parent;
             _elements = new List<UIElement>();
             _readOnly = _elements.AsReadOnly();
+            Filter = new UIElementFilter(filter);
             BoundsUsage = boundsUsage;
         }
 
@@ -50,7 +52,10 @@ namespace Molten.UI
                 return;
 
             if (child.ParentElement != null && child.ParentElement != _element)
-                throw new Exception("Element already has a parent. Remove from previous first.");
+                throw new Exception("Element already has a parent. Remove from previous parent first.");
+
+            if (!Filter.IsAccepted(child))
+                throw new Exception("Child element type does not match the layer's filter");
 
             // Set new element parent.
             child.Manager = _element.Manager;
@@ -165,6 +170,11 @@ namespace Molten.UI
         /// Gets the <see cref="UIElement"/> that owns the current <see cref="UIElementLayer"/>.
         /// </summary>
         public UIElement Owner => _element;
+
+        /// <summary>
+        /// Gets the filter for the current <see cref="UIElementLayer"/>.
+        /// </summary>
+        public UIElementFilter Filter { get; }
 
         public UIElement this[int index] => _elements[index]; 
     }

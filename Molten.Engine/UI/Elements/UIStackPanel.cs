@@ -42,14 +42,14 @@ namespace Molten.UI
                 RenderOffset = new Vector2F(-element.Value, 0);
         }
 
-        private void OnChildRemoved(UIElement obj)
+        protected virtual void OnChildRemoved(UIElement obj)
         {
             // TODO If the element is removed, was beyond our render bounds and scrolling is disabled, don't update bounds.
 
             OnUpdateBounds();
         }
 
-        private void OnChildAdded(UIElement obj)
+        protected virtual void OnChildAdded(UIElement obj)
         {
             // TODO If the element is added beyond our render bounds and scrolling is disabled, don't update bounds.
 

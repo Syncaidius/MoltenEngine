@@ -58,5 +58,21 @@
       "Default": "180 180 0 255",
       "Hovered": "255 255 0 255"
     }
+  },
+
+  "Molten.UI.UIListView/Molten.UI.UIListViewItem/Molten.UI.UILabel": {
+    "VerticalAlign": "Center",
+    "HorizontalAlign": "Center",
+    "Color": {
+      "Default": "255 255 255 255",
+      "Pressed": "255 255 0 255",
+      "Hovered": "180 180 0 255"
+    }
+  },
+
+  "Molten.UI.UIListViewItem": {
+    "FillColor": {
+      "Active": "200 200 200 255"
+    }
   }
 }

@@ -88,32 +88,40 @@ namespace Molten.UI
             Engine = Engine.Current;
 
             BaseElements = AddLayer(UIElementLayerBoundsUsage.GlobalBounds);
-            Children = AddLayer(UIElementLayerBoundsUsage.RenderBounds);
+
+            Type[] childFilter = OnGetChildFilter();
+            Children = AddLayer(UIElementLayerBoundsUsage.RenderBounds, childFilter);
 
             State = UIElementState.Default;
             OnInitialize(Engine, Engine.Settings.UI);
             ApplyTheme();
         }
 
-        protected UIElementLayer AddLayer(UIElementLayerBoundsUsage boundsUsage)
+        /// <summary>
+        /// Invoked in the <see cref="UIElement"/> constructor when requesting a filter for <see cref="Children"/>. The default return value is <see cref="null"/>.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Type[] OnGetChildFilter() { return null; }
+
+        protected UIElementLayer AddLayer(UIElementLayerBoundsUsage boundsUsage, params Type[] filter)
         {
-            UIElementLayer layer = new UIElementLayer(this, boundsUsage);
+            UIElementLayer layer = new UIElementLayer(this, boundsUsage, filter);
             _layers.Add(layer);
             return layer;
         }
 
-        protected UIElementLayer AddLayerBefore(UIElementLayer layer, UIElementLayerBoundsUsage boundsUsage)
+        protected UIElementLayer AddLayerBefore(UIElementLayer layer, UIElementLayerBoundsUsage boundsUsage, params Type[] filter)
         {
             int index = _layers.IndexOf(layer);
-            UIElementLayer newLayer = new UIElementLayer(this, boundsUsage);
+            UIElementLayer newLayer = new UIElementLayer(this, boundsUsage, filter);
             _layers.Insert(index, newLayer);
             return newLayer;
         }
 
-        protected UIElementLayer AddLayerAfter(UIElementLayer layer, UIElementLayerBoundsUsage boundsUsage)
+        protected UIElementLayer AddLayerAfter(UIElementLayer layer, UIElementLayerBoundsUsage boundsUsage, params Type[] filter)
         {
             int index = _layers.IndexOf(layer);
-            UIElementLayer newLayer = new UIElementLayer(this, boundsUsage);
+            UIElementLayer newLayer = new UIElementLayer(this, boundsUsage, filter);
             _layers.Insert(index + 1, newLayer);
 
             return newLayer;

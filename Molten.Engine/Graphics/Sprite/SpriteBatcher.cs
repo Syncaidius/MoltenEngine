@@ -420,10 +420,20 @@ namespace Molten.Graphics
             vertex.Origin = origin;
             vertex.UV = *(Vector4F*)&source; // Source rectangle values are stored in the same layout as we need for UV: left, top, right, bottom.
 
-            vertex.Extra.D1 = style.BorderThickness.Left / size.X; // Convert to UV coordinate system (0 - 1) range
-            vertex.Extra.D2 = style.BorderThickness.Top / size.Y; // Convert to UV coordinate system (0 - 1) range
-            vertex.Extra.D3 = style.BorderThickness.Right / size.X; // Convert to UV coordinate system (0 - 1) range
-            vertex.Extra.D4 = style.BorderThickness.Bottom / size.Y; // Convert to UV coordinate system (0 - 1) range
+            if (vertex.Color2.A > 0)
+            {
+                vertex.Extra.D1 = style.BorderThickness.Left / size.X; // Convert to UV coordinate system (0 - 1) range
+                vertex.Extra.D2 = style.BorderThickness.Top / size.Y; // Convert to UV coordinate system (0 - 1) range
+                vertex.Extra.D3 = style.BorderThickness.Right / size.X; // Convert to UV coordinate system (0 - 1) range
+                vertex.Extra.D4 = style.BorderThickness.Bottom / size.Y; // Convert to UV coordinate system (0 - 1) range
+            }
+            else
+            {
+                vertex.Extra.D1 = 0; 
+                vertex.Extra.D2 = 0; 
+                vertex.Extra.D3 = 0;
+                vertex.Extra.D4 = 0;
+            }
         }
 
         protected void ProcessBatches(RenderCamera camera, FlushRangeCallback flushCallback)

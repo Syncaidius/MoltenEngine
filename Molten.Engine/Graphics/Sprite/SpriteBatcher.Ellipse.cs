@@ -68,8 +68,17 @@ namespace Molten.Graphics
             data.Origin = origin;
             data.UV = *(Vector4F*)&source; // Source rectangle values are stored in the same layout as we need for UV: left, top, right, bottom.
 
-            data.Extra.D1 = style.BorderThickness / data.Size.X; // Convert to UV coordinate system (0 - 1) range
-            data.Extra.D2 = style.BorderThickness / data.Size.Y; // Convert to UV coordinate system (0 - 1) range
+            if (data.Color2.A > 0)
+            {
+                data.Extra.D1 = style.BorderThickness / data.Size.X; // Convert to UV coordinate system (0 - 1) range
+                data.Extra.D2 = style.BorderThickness / data.Size.Y; // Convert to UV coordinate system (0 - 1) range
+            }
+            else
+            {
+                data.Extra.D1 = 0;
+                data.Extra.D2 = 0;
+            }
+
             data.Extra.D3 = e.GetAngleRange();            
         }
     }
