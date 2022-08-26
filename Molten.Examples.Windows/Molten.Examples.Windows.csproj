@@ -20,6 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Molten.Audio.OpenAL\Molten.Audio.OpenAL.csproj" />
     <ProjectReference Include="..\Molten.Engine.Windows\Molten.Engine.Windows.csproj" />
     <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj" />
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />

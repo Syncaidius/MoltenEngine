@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using Molten.Audio;
+using Molten.Collections;
 using Molten.Graphics;
 using Molten.Input;
 using Molten.Net;
@@ -48,6 +49,7 @@ namespace Molten
 
             Renderer = GetService<RenderService>();
             Input = GetService<InputService>();
+            Audio = GetService<AudioService>();
             Net = GetService<NetworkService>();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -207,16 +209,16 @@ namespace Molten
             IsDisposed = true;
         }
 
-        /// <summary>
-        /// [Internal] Gets the <see cref="Renderer"/> thread. Null if the renderer was not started.
-        /// </summary>
-        internal EngineThread RenderThread { get; private set; }
-
-        /// <summary>Gets the <see cref="RenderService"/> attached to the current <see cref="Engine"/> instance.</summary>>
+        /// <summary>Gets the main <see cref="RenderService"/> attached to the current <see cref="Engine"/> instance.</summary>>
         public RenderService Renderer { get; private set; }
 
-        /// <summary>Gets the <see cref="NetworkService"/> attached to the current <see cref="Engine"/> instance.</summary>>
+        /// <summary>Gets the main <see cref="NetworkService"/> attached to the current <see cref="Engine"/> instance.</summary>>
         public NetworkService Net { get; private set; }
+
+        /// <summary>
+        /// Gets the main <see cref="AudioService"/> attached to the current <see cref="Engine"/> instance.
+        /// </summary>
+        public AudioService Audio { get; private set; }
 
         /// <summary>Gets the log attached to the current <see cref="Engine"/> instance.</summary>
         internal Logger Log { get; }

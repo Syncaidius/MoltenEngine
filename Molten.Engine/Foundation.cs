@@ -143,15 +143,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Dispatches a callback to the renderer thread, to be executed on it's next update tick.
-        /// </summary>
-        /// <param name="callback"></param>
-        public void DispatchToRenderThread(Action callback)
-        {
-            Engine.RenderThread.Dispatch(callback);
-        }
-
-        /// <summary>
         /// Dispatches a callback to the game thread, to be executed on its next update tick.
         /// </summary>
         /// <param name="callback"></param>

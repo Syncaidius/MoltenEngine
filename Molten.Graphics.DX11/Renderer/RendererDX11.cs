@@ -1,7 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Direct3D11;
-using Silk.NET.DXGI;
 using System.Reflection;
 
 namespace Molten.Graphics

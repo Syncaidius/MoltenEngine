@@ -1,4 +1,5 @@
-﻿using Molten.Graphics;
+﻿using Molten.Audio.OpenAL;
+using Molten.Graphics;
 using Molten.Input;
 using Molten.UI;
 using System.Diagnostics;
@@ -32,6 +33,7 @@ namespace Molten.Samples
         {
             settings.AddService<RendererDX11>();
             settings.AddService<WinInputService>();
+            settings.AddService<AudioServiceAL>();
         }
 
         protected override void OnInitialize(Engine engine)

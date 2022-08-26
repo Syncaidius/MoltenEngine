@@ -18,6 +18,8 @@ namespace Molten
             StartupServices = _startupServices.AsReadOnly();
             Graphics = new GraphicsSettings();
             Input = new InputSettings();
+            Network = new NetworkSettings();
+            Audio = new AudioSettings();
             UI = new UISettings();
         }
 
@@ -90,25 +92,28 @@ namespace Molten
 
         /// <summary>Gets the graphics settings bank.</summary>
         [DataMember]
-        public GraphicsSettings Graphics { get; private set; }
+        public GraphicsSettings Graphics { get; }
 
         /// <summary>
         /// Gets the input settings bank.
         /// </summary>
         [DataMember]
-        public InputSettings Input { get; private set; }
+        public InputSettings Input { get; }
 
         /// <summary>
         /// Gets the network settings bank.
         /// </summary>
         [DataMember]
-        public NetworkSettings Network { get; private set; }
+        public NetworkSettings Network { get; }
+
+        [DataMember]
+        public AudioSettings Audio { get; }
 
         /// <summary>
         /// Gets the user interface (UI) settings bank.
         /// </summary>
         [DataMember]
-        public UISettings UI { get; private set; }
+        public UISettings UI { get; }
 
         /// <summary>Gets or sets the path (and filename) of the settings file.</summary>
         public string Path { get; set; } = "settings.json";
