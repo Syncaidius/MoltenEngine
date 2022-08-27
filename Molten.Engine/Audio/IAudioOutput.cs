@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Audio.OpenAL
+namespace Molten.Audio
 {
-    internal class DeviceInfo
+    public interface IAudioOutput
     {
+
+        public AudioDeviceType Type => AudioDeviceType.Output;
     }
 }

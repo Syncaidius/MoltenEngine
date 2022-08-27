@@ -38,5 +38,20 @@ namespace Molten.Audio
         }
 
         protected abstract void OnUpdateAudioEngine(Timing time);
+
+        /// <summary>
+        /// Gets a list of all detected <see cref="IAudioDevice"/>.
+        /// </summary>
+        public abstract IReadOnlyList<IAudioDevice> Devices { get; }
+
+        /// <summary>
+        /// Gets a list of all detected <see cref="IAudioInput"/> devices.
+        /// </summary>
+        public abstract IReadOnlyList<IAudioInput> Inputs { get; }
+
+        /// <summary>
+        /// Gets a list of all detected <see cref="IAudioOutput"/> devices.
+        /// </summary>
+        public abstract IReadOnlyList<IAudioOutput> Outputs { get; }
     }
 }

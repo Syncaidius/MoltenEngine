@@ -1,24 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Threading;
+using Silk.NET.Core.Attributes;
 using Silk.NET.OpenAL;
 using Silk.NET.OpenAL.Extensions.Enumeration;
+using GetCaptureEnumString = Silk.NET.OpenAL.Extensions.EXT.Enumeration.GetCaptureEnumerationContextString;
+using GetCaptureEnumStringList = Silk.NET.OpenAL.Extensions.EXT.Enumeration.GetCaptureContextStringList;
 
 namespace Molten.Audio.OpenAL
 {
     public class AudioServiceAL : AudioService
     {
-        internal const string ALC_ENUMERATION_EXT = "ALC_enumeration_EXT";
-
         AL _al;
         ALContext _context;
+        List<OutputDevice> _outputs;
+        List<InputDevice> _inputs;
+        List<AudioDevice> _devices;
+
 
         public AudioServiceAL()
         {
+            _inputs = new List<InputDevice>();
+            _outputs = new List<OutputDevice>();
+            _devices = new List<AudioDevice>();
 
+            Inputs = _inputs.AsReadOnly();
+            Outputs = _outputs.AsReadOnly();
+            Devices = _devices.AsReadOnly();
         }
 
         protected override void OnInitialize(EngineSettings settings)
@@ -28,42 +40,52 @@ namespace Molten.Audio.OpenAL
             Log.WriteLine($"Initializing OpenAL");
             _al = AL.GetApi(true);
             _context = ALContext.GetApi(true);
-            
-            
-            List<DeviceInfo> info = GetAvailableDevices();
+
+            DetectDevices();
         }
 
-        private unsafe List<DeviceInfo> GetAvailableDevices()
+        private unsafe void DetectDevices()
         {
-            List<DeviceInfo> available = new List<DeviceInfo>();
-
-            if (_context.IsExtensionPresent(ALC_ENUMERATION_EXT))
+            if (_context.TryGetExtension(null, out Enumeration enumeration))
             {
-                bool success = _context.TryGetExtension<Enumeration>(null, out Enumeration enumeration);
-                if (success)
-                {
-                    string defaultName = enumeration.GetString(null, GetEnumerationContextString.DefaultDeviceSpecifier);
-                    Log.WriteLine($"Default audio output: {defaultName}");
+                // Get output devices
+                string defaultName = enumeration.GetString(null, GetEnumerationContextString.DefaultDeviceSpecifier);
+                Log.WriteLine($"Default audio output: {defaultName}");
 
-                    Log.WriteLine("Available audio outputs:");
-                    IEnumerable<string> list = enumeration.GetStringList(GetEnumerationContextStringList.DeviceSpecifiers);
-                    int id = 0;
+                Log.WriteLine($"Available audio outputs:");
+                IEnumerable<string> list = enumeration.GetStringList(GetEnumerationContextStringList.DeviceSpecifiers);
+                int id = 0;
 
-                    foreach (string deviceName in list)
-                    {
-                        Log.WriteLine($"\t{id++}: {deviceName}");
-                        // TODO populate device info list.
-                        // if deviceName == defaultName, set DeviceInfo.IsDefault to true
-                    }
-                }
-                else
+                foreach (string deviceName in list)
                 {
-                    Log.Error($"Unable to detect devices due to missing extension: {ALC_ENUMERATION_EXT}");
+                    Log.WriteLine($"\t{id++}: {deviceName}");
+                    bool isDefault = deviceName == defaultName;
+                    _outputs.Add(new OutputDevice(this, deviceName, isDefault));
                 }
+
+                // Get input devices
+                defaultName = enumeration.GetString(null, (GetEnumerationContextString)GetCaptureEnumString.DefaultCaptureDeviceSpecifier);
+                Log.WriteLine($"Default audio input: {defaultName}");
+
+                Log.WriteLine($"Available audio inputs:");
+                list = enumeration.GetStringList((GetEnumerationContextStringList)GetCaptureEnumStringList.CaptureDeviceSpecifiers);
+                id = 0;
+                foreach (string deviceName in list)
+                {
+                    Log.WriteLine($"\t{id++}: {deviceName}");
+                    bool isDefault = deviceName == defaultName;
+                    _inputs.Add(new InputDevice(this, deviceName, isDefault));
+                }
+
+                _devices.AddRange(_outputs);
+                _devices.AddRange(_inputs);
             }
-
-            return available;
-        }
+            else
+            {
+                string oal_ext = ExtensionAttribute.GetExtensionAttribute(typeof(Enumeration)).Name;
+                Log.Error($"Unable to detect audio devices due to missing extension: {oal_ext}");
+            }
+        }      
 
         protected override void OnUpdateAudioEngine(Timing time)
         {
@@ -72,11 +94,16 @@ namespace Molten.Audio.OpenAL
 
         protected override void OnDispose()
         {
-            Log.Write("Shutting down OpenAL");
             base.OnDispose();
 
             _context.Dispose();
             _al.Dispose();
         }
+
+        public override IReadOnlyList<IAudioDevice> Devices { get; }
+
+        public override IReadOnlyList<IAudioInput> Inputs { get; }
+
+        public override IReadOnlyList<IAudioOutput> Outputs { get; }
     }
 }

@@ -83,7 +83,7 @@ namespace Molten.Samples
             SpawnParentChild(TestMesh, Vector3F.Zero, out _parent, out _child);
         }
 
-        private void Gamepad_OnConnectionStatusChanged(InputDevice device, bool isConnected)
+        private void Gamepad_OnConnectionStatusChanged(Input.InputDevice device, bool isConnected)
         {
             UpdateGamepadUI();
         }
