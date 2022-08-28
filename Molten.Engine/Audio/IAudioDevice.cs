@@ -8,7 +8,9 @@ namespace Molten.Audio
 {
     public interface IAudioDevice
     {
-
+        /// <summary>
+        /// Gets the name of the current <see cref="IAudioDevice"/>.
+        /// </summary>
         public string Name { get; }
 
         /// <summary>

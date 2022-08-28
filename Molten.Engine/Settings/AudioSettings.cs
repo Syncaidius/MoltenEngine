@@ -9,8 +9,10 @@ namespace Molten
         internal AudioSettings()
         {
             MasterVolume = AddSetting("vol_master", 100f);
-            MasterVolume = AddSetting("vol_sfx", 100f);
-            MasterVolume = AddSetting("vol_music", 100f);
+            SfxVolume = AddSetting("vol_sfx", 100f);
+            MusicVolume = AddSetting("vol_music", 100f);
+            InputDevice = AddSetting<string>("device_input");
+            OutputDevice = AddSetting<string>("device_input");
         }
 
         /// <summary>
@@ -30,5 +32,17 @@ namespace Molten
         /// </summary>
         [DataMember]
         public SettingValue<float> MusicVolume { get; }
+
+        /// <summary>
+        /// The audio input/capture device to use. If the device is no longer detected, the default one will be used instead.
+        /// </summary>  
+        [DataMember]
+        public SettingValue<string> InputDevice { get; }
+
+        /// <summary>
+        /// The audio output device to use. If the device is no longer detected, the default one will be used instead.
+        /// </summary>
+        [DataMember]
+        public SettingValue<string> OutputDevice { get; }
     }
 }

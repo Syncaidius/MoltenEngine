@@ -120,10 +120,17 @@ namespace Molten
         {
             Thread?.DisposeAndJoin();
 
+            OnServiceDisposing();
+
             State = EngineServiceState.Disposed;
             Thread = null;
             Log.Dispose();
         }
+
+        /// <summary>
+        /// Invoked after a the service has started disposal and stopped it's thread (if any). Always invoked before the <see cref="Log"/> is disposed.
+        /// </summary>
+        protected virtual void OnServiceDisposing() { }
 
         public void Update(Timing time)
         {
@@ -167,5 +174,8 @@ namespace Molten
         /// Gets the log bound to the current <see cref="EngineService"/>.
         /// </summary>
         public Logger Log { get; private set; }
+
+        /// <summary>Gets the version of the current service. If not set by the service, all version components will be 0.</summary>
+        public Version Version { get; protected set; } = new Version();
     }
 }

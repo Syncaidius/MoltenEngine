@@ -104,7 +104,7 @@ namespace Molten
 
                 if (settingType.IsPrimitive || settingType.IsEnum || settingType == typeof(string))
                 {
-                    JToken val = JToken.FromObject(settingValue, serializer);
+                    JToken val = JToken.FromObject(settingValue ?? string.Empty, serializer);
                     val.WriteTo(writer);
                 }
                 else

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Audio
 {
-    public interface IAudioOutput
+    public interface IAudioOutput : IAudioDevice
     {
 
         public AudioDeviceType Type => AudioDeviceType.Output;
