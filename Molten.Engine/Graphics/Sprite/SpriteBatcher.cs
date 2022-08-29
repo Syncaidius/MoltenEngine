@@ -72,13 +72,15 @@ namespace Molten.Graphics
         /// </summary>
         RectStyle _rectStyle;
 
-        public SpriteBatcher(uint capacity)
+        public SpriteBatcher(uint dataCapacity, uint rangeCapacity)
         {
             _rectStyle = RectStyle.Default;
 
-            FlushCapacity = capacity;
-            Data = new GpuData[capacity];
-            Ranges = new SpriteRange[capacity / 10]; // Worst-case, we can expect the number of ranges to equal the capacity.
+            FlushCapacity = dataCapacity;
+            Data = new GpuData[dataCapacity];
+
+            rangeCapacity = Math.Min(rangeCapacity, 20);
+            Ranges = new SpriteRange[rangeCapacity];
 
             ClipStack = new Rectangle[256];
             Reset();

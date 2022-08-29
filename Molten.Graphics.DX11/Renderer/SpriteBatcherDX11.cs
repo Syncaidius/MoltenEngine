@@ -18,15 +18,15 @@ namespace Molten.Graphics
         Material _matCircleNoTexture;
         Material _matMsdf;
 
-        internal unsafe SpriteBatcherDX11(RendererDX11 renderer, uint capacity = 3000) : base(capacity)
+        internal unsafe SpriteBatcherDX11(RendererDX11 renderer, uint dataCapacity = 3000, uint rangeCapcity = 20) : base(dataCapacity, rangeCapcity)
         {
             _buffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicDiscard, 
                 BindFlag.ShaderResource, 
-                (uint)sizeof(GpuData) * capacity,
+                (uint)sizeof(GpuData) * dataCapacity,
                 ResourceMiscFlag.BufferStructured,
                 StagingBufferFlags.None,
                 (uint)sizeof(GpuData));
-            _bufferData = _buffer.Allocate<GpuData>(capacity);
+            _bufferData = _buffer.Allocate<GpuData>(dataCapacity);
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite.mfx");
             _matDefaultNoTexture = result[ShaderClassType.Material, "sprite-no-texture"] as Material;
