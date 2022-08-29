@@ -42,13 +42,13 @@ namespace Molten.Data
             Values = new T[maxValues];
         }
 
-        public DataSet(double[] values) 
+        public DataSet(T[] values) 
         {
             Values = new T[values.Length];
             Array.Copy(values, 0, Values, 0, values.Length);
         }
 
-        public DataSet(double[] values, int startIndex, int count) 
+        public DataSet(T[] values, int startIndex, int count) 
         {
             Values = new T[count];
             Array.Copy(values, startIndex, Values, 0, count);

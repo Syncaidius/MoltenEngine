@@ -54,7 +54,7 @@ namespace Molten.Graphics
             DynamicVertexBuffer = new GraphicsBuffer(Device, BufferMode.DynamicRing, BindFlag.VertexBuffer | BindFlag.IndexBuffer, maxBufferSize);
 
             StagingBuffer = new StagingBuffer(Device, StagingBufferFlags.Write, maxBufferSize);
-            SpriteBatcher = new SpriteBatcherDX11(this, 3000);
+            SpriteBatcher = new SpriteBatcherDX11(this, 3000, 20);
 
             Surfaces.Initialize(BiggestWidth, BiggestHeight);
             LoadDefaultShaders(includeAssembly);

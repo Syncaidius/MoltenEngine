@@ -1,11 +1,9 @@
 ﻿# Molten Engine
 [![Build Status](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/MoltenEngine-.NET%20Desktop-CI)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=2)  [![Build Android](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml)  [![Build Windows](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml)
 
-Molten is a engine project I'm working on in my spare time as a means to eventually produce my own games without using a third party engine or framework such as [Unity3D](https://unity3d.com/) or [MonoGame](http://monogame.net).
+Molten started as spare-time engine project, which I eventually intend to use to develop my own games without relying on other engines. Hopefully you'll find a use for it too!
 
-In the past I've used MonoGame, XNA and Unity3D to produce a game but never felt quite satisfied with the fact that I didn't actually create the foundations myself, as well as feeling frustrated at times by the limitations of third-party frameworks.
-
-While parts of this project will inevitably be a classic case of re-inventing the wheel, I'm teating it as a chance to gain more experience in the area of game engine development. 
+While parts of this project will inevitably be a classic case of re-inventing the wheel, I'm treating it as a chance to gain more experience in the area of game engine development. 
 
 # Current Status
 See the following table for the per-platform support and status of each feature.
@@ -75,7 +73,7 @@ Blank - Not Started\
 | Render into WPF        |            |         |        | 🚫          | 🚫    |
 | Render into UWP        |            |         | 🚫    | 🚫          | 🚫    |
 |[Render into MAUI](https://docs.microsoft.com/en-us/dotnet/maui/what-is-maui) |            |         |       |             |       |
-| Render into Android UI | 🚫         | 🚫      |       | 🚫          |       |
+| Render into Android UI | 🚫         | 🚫      |       |             |       |
 | Raytracing             | 🚫         |         | 🚫    | 🚫          |       |
 | HLSL Shader Compiler   | 🚧		  | 🚫      | 🚫    | 🚫          | 🚫   |
 | GLSL Shader Compiler   |  		  |         |        |             |      |

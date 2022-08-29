@@ -74,10 +74,8 @@ namespace Molten.Samples
             };
             {
                 _lineGraph = _window1.Children.Add<UILineGraph>(new Rectangle(0, 0, 900, 430));
-                _graphSet = new GraphDataSet(500000);
+                _graphSet = new GraphDataSet(300000);
                 _graphSet.KeyColor = Color.Lime;
-                /*for (int i = 0; i < _graphSet.Capacity; i++)
-                    _graphSet.Plot(Rng.Next(0, 500));*/
 
                 _lineGraph.AddDataSet(_graphSet);
             }

@@ -18,7 +18,7 @@ namespace Molten.Graphics
         Material _matCircleNoTexture;
         Material _matMsdf;
 
-        internal unsafe SpriteBatcherDX11(RendererDX11 renderer, uint dataCapacity = 3000, uint rangeCapcity = 20) : base(dataCapacity, rangeCapcity)
+        internal unsafe SpriteBatcherDX11(RendererDX11 renderer, uint dataCapacity, uint rangeCapcity) : base(dataCapacity, rangeCapcity)
         {
             _buffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicDiscard, 
                 BindFlag.ShaderResource, 
