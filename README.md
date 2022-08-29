@@ -22,7 +22,7 @@ Blank - Not Started\
 | Renderer - Vulkan          |            |          |        |      |
 | Renderer - DirectX 11      | 🚧         | 🚫       | 🚫    | 🚫   |
 | Renderer - DirectX 12      |            | 🚫       | 🚫    | 🚫   |
-| Audio - OpenAL             |            |          |        |      |
+| Audio - OpenAL             | 🚧         |          |        |      |
 | Audio - XAudio 2           |            | 🚫       | 🚫    | 🚫   |
 | Keyboard support           | ✔️          |          |        |      |
 | Mouse support              | ✔️          |          |        |      |
@@ -38,6 +38,7 @@ Blank - Not Started\
 | Google Firebase            |            |          |        |      |
 | Tool - Content editor      |            |          |        |      |
 | Tool - Scene editor        |            |          |        |      |
+| Project templates          |            |          |        |      |
 
 
 # Renderer Feature Support
@@ -52,9 +53,9 @@ Blank - Not Started\
 | :---                   | :-------:  | :-----: | :---:   | :-:        | :-:    |
 | Deferrend rendering    | 🚧         |         |        |             |       |
 | Geometry Shaders       | ✔️         |         |        |             |       |
-| Tessellation           | ✔         |         |        |             |       |
+| Tessellation           | 🚧         |         |        |             |       |
 | Hull & Domain Shaders  | ✔️         |         |        |             |       |
-| Compute Shaders        | ✔️         |         |        |             |       |
+| Compute Shaders        | 🚧         |         |        |             |       |
 | 2D Spite batching      | ✔️         |         |        |             |       |
 | 2D Primitive batching  | ✔️         |         |        |             |       |
 | Compressed textures    | ✔️         |         |        |             |       |
@@ -74,7 +75,7 @@ Blank - Not Started\
 | Render into WPF        |            |         |        | 🚫          | 🚫    |
 | Render into UWP        |            |         | 🚫    | 🚫          | 🚫    |
 |[Render into MAUI](https://docs.microsoft.com/en-us/dotnet/maui/what-is-maui) |            |         |       |             |       |
-| Render into Android UI | 🚫         | 🚫      |       | 🚫          | 🚫   |
+| Render into Android UI | 🚫         | 🚫      |       | 🚫          |       |
 | Raytracing             | 🚫         |         | 🚫    | 🚫          |       |
 | HLSL Shader Compiler   | 🚧		  | 🚫      | 🚫    | 🚫          | 🚫   |
 | GLSL Shader Compiler   |  		  |         |        |             |      |
