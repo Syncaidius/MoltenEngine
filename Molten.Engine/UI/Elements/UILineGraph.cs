@@ -219,7 +219,10 @@ namespace Molten.UI
         {
             Vector2F pPrev = new Vector2F();
 
-            for(int i = 0; i < range.Length; i++)
+            DataLineStyle.Color1 = set.KeyColor;
+            DataLineStyle.Color2 = set.KeyColor;
+
+            for (int i = 0; i < range.Length; i++)
             {
                 // Get the value, local to the range covered by the graph, within the lowest to highest values.
                 double graphLocalValue = range[i] - set.LowestValue;
@@ -231,12 +234,7 @@ namespace Molten.UI
                 };
 
                 if (i > 0)
-                {
-                    DataLineStyle.Color1 = set.KeyColor;
-                    DataLineStyle.Color2 = set.KeyColor;
-
                     sb.DrawLine(pPrev, p, ref DataLineStyle);
-                }
 
                 pPrev = p;
             }

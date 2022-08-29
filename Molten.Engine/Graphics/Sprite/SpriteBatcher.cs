@@ -78,7 +78,7 @@ namespace Molten.Graphics
 
             FlushCapacity = capacity;
             Data = new GpuData[capacity];
-            Ranges = new SpriteRange[capacity]; // Worst-case, we can expect the number of ranges to equal the capacity.
+            Ranges = new SpriteRange[capacity / 10]; // Worst-case, we can expect the number of ranges to equal the capacity.
 
             ClipStack = new Rectangle[256];
             Reset();
@@ -161,10 +161,12 @@ namespace Molten.Graphics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ref SpriteRange GetRange(RangeType type)
         {
+            _curRange++;
+
             if(_curRange == Ranges.Length) // Increase length by 50%
                 Array.Resize(ref Ranges, Ranges.Length + (Ranges.Length / 2));
 
-            ref SpriteRange range = ref Ranges[++_curRange];
+            ref SpriteRange range = ref Ranges[_curRange];
             range.Type = type;
             range.VertexCount = 0;
 

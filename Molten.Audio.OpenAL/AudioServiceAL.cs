@@ -223,7 +223,7 @@ namespace Molten.Audio.OpenAL
 
         protected override void OnServiceDisposing()
         {
-            Log.Warning($"Disposing {_buffers.Count} leftover audio buffers. These should be disposed of properly!");
+            Log.Warning($"Disposing {_buffers.Count} leftover audio buffers. These should be properly disposed!");
             for (int i = _buffers.Count - 1; i >= 0; i--)
                 _buffers[i].Dispose();
 

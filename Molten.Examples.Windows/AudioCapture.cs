@@ -74,7 +74,12 @@ namespace Molten.Samples
             };
             {
                 _lineGraph = _window1.Children.Add<UILineGraph>(new Rectangle(0, 0, 900, 430));
-                SetupGraphData(_lineGraph);
+                _graphSet = new GraphDataSet(500000);
+                _graphSet.KeyColor = Color.Lime;
+                /*for (int i = 0; i < _graphSet.Capacity; i++)
+                    _graphSet.Plot(Rng.Next(0, 500));*/
+
+                _lineGraph.AddDataSet(_graphSet);
             }
 
             _window2 = new UIWindow()
@@ -124,16 +129,6 @@ namespace Molten.Samples
         private void btnStop_Pressed(UIElement element, ScenePointerTracker tracker)
         {
             Engine.Audio.Input?.StopCapture();
-        }
-
-        private void SetupGraphData(UILineGraph graph)
-        {
-            _graphSet = new GraphDataSet(6000);
-            _graphSet.KeyColor = Color.Lime;
-            for (int i = 0; i < _graphSet.Capacity; i++)
-                _graphSet.Plot(Rng.Next(0, 500));
-
-            graph.AddDataSet(_graphSet);
         }
 
         protected override void OnDrawSprites(SpriteBatcher sb)

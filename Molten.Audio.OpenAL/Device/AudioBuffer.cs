@@ -85,7 +85,7 @@ namespace Molten.Audio.OpenAL
             get => _writePosition;
             set
             {
-                if (_writePosition >= Size)
+                if (_writePosition > Size)
                     throw new Exception("The position cannot exceed the size of the buffer");
 
                 _writePosition = value;

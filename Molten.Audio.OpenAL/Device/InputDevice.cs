@@ -135,7 +135,7 @@ namespace Molten.Audio.OpenAL
         public int GetAvailableSamples()
         {
             if (Ptr == null)
-                throw new AudioDeviceException(this, "Input device is not opened or current");
+                return 0;
 
             int available = 0;
             Service.Alc.GetContextProperty(Ptr, (GetContextInteger)GetCaptureContextInteger.CaptureSamples, 1, &available);
