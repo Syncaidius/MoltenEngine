@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.Collections;
 using Silk.NET.OpenAL;
 
 namespace Molten.Audio.OpenAL
@@ -10,12 +11,13 @@ namespace Molten.Audio.OpenAL
     internal unsafe class OutputDevice : AudioDevice, IAudioOutput
     {
         Context* _context;
+        ThreadedList<ISoundSource> _sources;
 
         internal OutputDevice(AudioServiceAL service, string specifier, bool isDefault) :
             base(service, specifier, isDefault, AudioDeviceType.Output)
         {
+            _sources = new ThreadedList<ISoundSource>();
         }
-
 
         protected override unsafe ContextError OnOpen()
         {
@@ -28,6 +30,7 @@ namespace Molten.Audio.OpenAL
                 if (result == ContextError.NoError)
                 {
                     Service.Alc.MakeContextCurrent(_context);
+                    Service.Alc.ProcessContext(_context);
                     result = Service.Alc.GetError(Ptr);
                 }
             }
@@ -41,6 +44,7 @@ namespace Molten.Audio.OpenAL
             if (curContext == _context)
                 Service.Alc.MakeContextCurrent(null);
 
+            Service.Alc.SuspendContext(_context);
             Service.Alc.DestroyContext(_context);
             Service.Alc.CloseDevice(Ptr);
             return Service.Alc.GetError(Ptr);
@@ -48,12 +52,22 @@ namespace Molten.Audio.OpenAL
 
         protected override void OnTransferTo(AudioDevice other)
         {
-            
+            // TODO recreate all _sources and their instances on the target device.
         }
 
         protected override void OnUpdate(Timing time)
         {
             
+        }
+
+        public ISoundSource CreateSoundSource(IAudioBuffer dataBuffer = null)
+        {
+            SoundSource source = new SoundSource(this);
+            _sources.Add(source);
+            if(dataBuffer != null)
+                source.CommitBuffer(dataBuffer);
+
+            return source;
         }
     }
 }

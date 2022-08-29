@@ -247,6 +247,14 @@ namespace Molten.Audio.OpenAL
             }
         }
 
+        internal string GetErrorMessage(AudioError error)
+        {
+            switch (error)
+            {
+                default: return error.ToString();
+            }
+        }
+
         public override IReadOnlyList<IAudioDevice> AvailableDevices { get; }
 
         public override IReadOnlyList<IAudioInput> AvailableInputDevices { get; }

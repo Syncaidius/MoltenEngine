@@ -25,12 +25,19 @@ namespace Molten.Audio
         /// <returns></returns>
         int GetAvailableSamples();
 
-        AudioDeviceType Type => AudioDeviceType.Input;
-
+        /// <summary>
+        /// Gets or sets frequency at which the current <see cref="IAudioInput"/> will capture audio.
+        /// </summary>
         uint Frequency { get; set; }
 
+        /// <summary>
+        /// Gets or sets the format in which the current <see cref="IAudioInput"/> will capture audio.
+        /// </summary>
         AudioFormat Format { get; set; }
 
+        /// <summary>
+        /// Gets the capture-buffer size of the current <see cref="IAudioInput"/>.
+        /// </summary>
         int BufferSize { get; set; }
 
         /// <summary>

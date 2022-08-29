@@ -11,9 +11,52 @@ namespace Molten.Audio
      /// </summary>
     public interface ISoundInstance : IDisposable
     {
+        event ObjectHandler<ISoundInstance> OnDisposing;
+
+        event ObjectHandler<ISoundInstance> OnDisposed;
+
+        void Play(bool loop = false);
+
+        void Pause();
+
+        void Stop();
+
         /// <summary>
-        /// Gets the <see cref="ISoundSource"/> that owns the current instance.
+        /// Clears the queue (if any) and sets the current <see cref="ISoundInstance"/> to play only the provided <see cref="ISoundSource"/>.
+        /// </summary>
+        /// <param name="source"></param>
+        void SetSource(ISoundSource source);
+
+        /// <summary>
+        /// Adds the provided <see cref="ISoundSource"/> to the playback queue of the current <see cref="ISoundInstance"/>.
+        /// </summary>
+        /// <param name="source"></param>
+        void QueueSource(ISoundSource source);
+
+        /// <summary>
+        /// Queues 
+        /// </summary>
+        /// <param name="sources">A list of <see cref="ISoundSource"/> to be queued on the current <see cref="ISoundInstance"/>.</param>
+        void QueueSources(ISoundSource[] sources);
+
+        /// <summary>
+        /// Gets the <see cref="ISoundSource"/> that is being played through the current <see cref="ISoundInstance"/>.
         /// </summary>
         ISoundSource Source { get; }
+
+        /// <summary>
+        /// Gets the number of queued <see cref="ISoundSource"/> on the current <see cref="ISoundInstance"/>.
+        /// </summary>
+        int QueuedSourceCount { get; }
+
+        /// <summary>
+        /// Gets the state of the current <see cref="ISoundInstance"/>.
+        /// </summary>
+        AudioPlaybackState State { get; }
+
+        /// <summary>
+        /// Gets or sets whether or not the current <see cref="ISoundInstance"/> shound loop.
+        /// </summary>
+        bool IsLooping { get; set; }
     }
 }

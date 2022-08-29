@@ -11,26 +11,26 @@ namespace Molten.Audio
         /// <summary>
         /// Gets the name of the current <see cref="IAudioDevice"/>.
         /// </summary>
-        public string Name { get; }
+        string Name { get; }
 
         /// <summary>
         /// Gets whether the current <see cref="IAudioDevice"/> is the default.
         /// </summary>
-        public bool IsDefault { get; }
+        bool IsDefault { get; }
 
         /// <summary>
         /// Gets whether the current <see cref="IAudioDevice"/> is set as the current device for Molten.
         /// </summary>
-        public bool IsCurrent { get; }
+        bool IsCurrent { get; }
 
         /// <summary>
         /// Gets the type of the current <see cref="IAudioDevice"/>.
         /// </summary>
-        public AudioDeviceType DeviceType { get; }
+        AudioDeviceType DeviceType { get; }
 
         /// <summary>
         /// Gets the <see cref="AudioService"/> which manages the current <see cref="IAudioDevice"/>.
         /// </summary>
-        public AudioService Service { get; }
+        AudioService Service { get; }
     }
 }
