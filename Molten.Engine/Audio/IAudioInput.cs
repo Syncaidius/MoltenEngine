@@ -10,5 +10,11 @@ namespace Molten.Audio
     {
 
         public AudioDeviceType Type => AudioDeviceType.Input;
+
+        public uint Frequency { get; set; }
+
+        public AudioFormat Format { get; set; }
+
+        public int BufferSize { get; set; }
     }
 }

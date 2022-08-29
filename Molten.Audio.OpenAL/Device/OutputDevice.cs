@@ -9,38 +9,41 @@ namespace Molten.Audio.OpenAL
 {
     internal unsafe class OutputDevice : AudioDevice, IAudioOutput
     {
-        Device* _device;
+        Context* _context;
 
         internal OutputDevice(AudioServiceAL service, string specifier, bool isDefault) :
             base(service, specifier, isDefault, AudioDeviceType.Output)
         {
         }
 
-        internal override void Open()
-        {
-            if (_device != null)
-                throw new InvalidOperationException("Device is already open");
 
-            _device = Service.Context.OpenDevice(Name);
-            ContextError err = Service.Context.GetError(_device);
-            if (err != ContextError.NoError)
-                Service.Log.Error($"An error occurred while opening device '{Name}': {err}");
-            else
-                Service.Log.WriteLine($"Opened device '{Name}'");
+        protected override unsafe ContextError OnOpen()
+        {
+            Ptr = Service.Alc.OpenDevice(Name);
+            ContextError result = Service.Alc.GetError(Ptr);
+            if (result == ContextError.NoError)
+            {
+                _context = Service.Alc.CreateContext(Ptr, null);
+                result = Service.Alc.GetError(Ptr);
+                if (result == ContextError.NoError)
+                {
+                    Service.Alc.MakeContextCurrent(_context);
+                    result = Service.Alc.GetError(Ptr);
+                }
+            }
+
+            return result;
         }
 
-        internal override void Close()
+        protected override ContextError OnClose()
         {
-            if (_device != null)
-            {
-                Service.Context.CloseDevice(_device);
-                _device = null;
-                Service.Log.WriteLine($"Closed device '{Name}'");
-            }
-            else
-            {
-                Service.Log.Error($"Error closing device '{Name}': Not open");
-            }
+            Context* curContext = Service.Alc.GetCurrentContext();
+            if (curContext == _context)
+                Service.Alc.MakeContextCurrent(null);
+
+            Service.Alc.DestroyContext(_context);
+            Service.Alc.CloseDevice(Ptr);
+            return Service.Alc.GetError(Ptr);
         }
 
         protected override void OnTransferTo(AudioDevice other)
@@ -48,6 +51,9 @@ namespace Molten.Audio.OpenAL
             
         }
 
-        internal ref Device* Ptr => ref _device;
+        protected override void OnUpdate(Timing time)
+        {
+            
+        }
     }
 }

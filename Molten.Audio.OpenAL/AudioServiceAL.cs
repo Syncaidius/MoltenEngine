@@ -7,6 +7,7 @@ using Molten.Threading;
 using Newtonsoft.Json.Linq;
 using Silk.NET.Core.Attributes;
 using Silk.NET.OpenAL;
+using Silk.NET.OpenAL.Extensions;
 using Silk.NET.OpenAL.Extensions.Enumeration;
 
 using GetCaptureEnumString = Silk.NET.OpenAL.Extensions.EXT.Enumeration.GetCaptureEnumerationContextString;
@@ -14,7 +15,7 @@ using GetCaptureEnumStringList = Silk.NET.OpenAL.Extensions.EXT.Enumeration.GetC
 
 namespace Molten.Audio.OpenAL
 {
-    public class AudioServiceAL : AudioService
+    public unsafe class AudioServiceAL : AudioService
     {
         AL _al;
         ALContext _alc;
@@ -27,12 +28,14 @@ namespace Molten.Audio.OpenAL
 
         InputDevice _inputDevice;
         OutputDevice _outputDevice;
+        Dictionary<Type, ContextExtensionBase> _extensions;
 
         public AudioServiceAL()
         {
             _inputs = new List<InputDevice>();
             _outputs = new List<OutputDevice>();
             _devices = new List<AudioDevice>();
+            _extensions = new Dictionary<Type, ContextExtensionBase>();
 
             AvailableInputDevices = _inputs.AsReadOnly();
             AvailableOutputDevices = _outputs.AsReadOnly();
@@ -58,14 +61,39 @@ namespace Molten.Audio.OpenAL
 
             SwitchInput(null, _inputDevice);
             SwitchOutput(null, _outputDevice);
-        }         
+        }
+
+        internal bool TryGetExtension<T>(out T extension) where T : ContextExtensionBase
+        {
+            if (!_extensions.TryGetValue(typeof(T), out ContextExtensionBase ext))
+            {
+                string extName = ExtensionAttribute.GetExtensionAttribute(typeof(T)).Name;
+                if (_alc.TryGetExtension<T>(null, out extension))
+                {
+                    _extensions.Add(typeof(T), extension);
+                    Log.WriteLine($"Loaded extension global '{extName}'");
+                    return true;
+                }
+                else
+                {
+                    Log.Error($"Failed to load global extension '{extName}'");
+                }
+            }
+            else
+            {
+                extension = ext as T;
+                return true;
+            }
+
+            return false;
+        }
 
         private unsafe void DetectDevices(EngineSettings settings)
         {
             Log.WriteLine($"Input device from settings: {settings.Audio.InputDevice.Value}");
             Log.WriteLine($"Output device from settings: {settings.Audio.OutputDevice.Value}");
 
-            if (_alc.TryGetExtension(null, out Enumeration enumeration))
+            if (TryGetExtension(out Enumeration enumeration))
             {
                 // Get input devices
                 string defaultName = enumeration.GetString(null, (GetEnumerationContextString)GetCaptureEnumString.DefaultCaptureDeviceSpecifier);
@@ -128,14 +156,15 @@ namespace Molten.Audio.OpenAL
             }
             else
             {
-                string oal_ext = ExtensionAttribute.GetExtensionAttribute(typeof(Enumeration)).Name;
-                Log.Error($"Unable to detect audio devices due to missing extension: {oal_ext}");
+                string extName = ExtensionAttribute.GetExtensionAttribute(typeof(Enumeration)).Name;
+                Log.Error($"Unable to detect audio devices due to missing extension: {extName}");
             }
         }      
 
         protected override void OnUpdateAudioEngine(Timing time)
         {
-
+            foreach (AudioDevice device in _devices)
+                device.Update(time);
         }
 
         protected override void SwitchInput(IAudioInput oldDevice, IAudioInput newDevice)
@@ -178,8 +207,21 @@ namespace Molten.Audio.OpenAL
             foreach (AudioDevice device in _devices)
                 device.Dispose();
 
+            foreach (ContextExtensionBase ext in _extensions.Values)
+                ext.Dispose();
+
+            _extensions.Clear();
+
             _alc.Dispose();
             _al.Dispose();
+        }
+
+        internal string GetErrorMessage(ContextError error)
+        {
+            switch (error)
+            {
+                default: return error.ToString();
+            }
         }
 
         public override IReadOnlyList<IAudioDevice> AvailableDevices { get; }
@@ -192,8 +234,8 @@ namespace Molten.Audio.OpenAL
 
         internal OutputDevice ActiveOutput => _outputDevice;
 
-        internal AL Api => _al;
+        internal AL Al => _al;
 
-        internal ALContext Context => _alc;
+        internal ALContext Alc => _alc;
     }
 }
