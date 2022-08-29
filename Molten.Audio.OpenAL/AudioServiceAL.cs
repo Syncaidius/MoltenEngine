@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.Collections;
 using Molten.Threading;
 using Newtonsoft.Json.Linq;
 using Silk.NET.Core.Attributes;
@@ -29,6 +30,7 @@ namespace Molten.Audio.OpenAL
         InputDevice _inputDevice;
         OutputDevice _outputDevice;
         Dictionary<Type, ContextExtensionBase> _extensions;
+        ThreadedList<AudioBuffer> _buffers;
 
         public AudioServiceAL()
         {
@@ -36,6 +38,7 @@ namespace Molten.Audio.OpenAL
             _outputs = new List<OutputDevice>();
             _devices = new List<AudioDevice>();
             _extensions = new Dictionary<Type, ContextExtensionBase>();
+            _buffers = new ThreadedList<AudioBuffer>();
 
             AvailableInputDevices = _inputs.AsReadOnly();
             AvailableOutputDevices = _outputs.AsReadOnly();
@@ -44,8 +47,6 @@ namespace Molten.Audio.OpenAL
 
         protected unsafe override void OnInitialize(EngineSettings settings)
         {
-            base.OnInitialize(settings);
-
             _al = AL.GetApi(true);
             _alc = ALContext.GetApi(true);
 
@@ -59,8 +60,7 @@ namespace Molten.Audio.OpenAL
 
             DetectDevices(settings);
 
-            SwitchInput(null, _inputDevice);
-            SwitchOutput(null, _outputDevice);
+            base.OnInitialize(settings);
         }
 
         internal bool TryGetExtension<T>(out T extension) where T : ContextExtensionBase
@@ -114,7 +114,10 @@ namespace Molten.Audio.OpenAL
                         _defaultInputDevice = iDevice;
 
                     if (iDevice.Name == settings.Audio.InputDevice.Value)
+                    {
                         _inputDevice = iDevice;
+                        Input = iDevice;
+                    }
                 }
 
                 // Get output devices
@@ -136,7 +139,10 @@ namespace Molten.Audio.OpenAL
                         _defaultOutputDevice = oDevice;
 
                     if (oDevice.Name == settings.Audio.OutputDevice.Value)
+                    {
                         _outputDevice = oDevice;
+                        Output = oDevice;
+                    }
                 }
 
                 // Use default devices if we don't have 
@@ -165,6 +171,19 @@ namespace Molten.Audio.OpenAL
         {
             foreach (AudioDevice device in _devices)
                 device.Update(time);
+        }
+
+        public override IAudioBuffer CreateBuffer(int bufferSize)
+        {
+            AudioBuffer buffer = new AudioBuffer((uint)bufferSize);
+            buffer.OnDisposed += Buffer_OnDisposed;
+            _buffers.Add(buffer);
+            return buffer;
+        }
+
+        private void Buffer_OnDisposed(IAudioBuffer obj)
+        {
+            _buffers.Remove(obj as AudioBuffer);
         }
 
         protected override void SwitchInput(IAudioInput oldDevice, IAudioInput newDevice)
@@ -204,6 +223,10 @@ namespace Molten.Audio.OpenAL
 
         protected override void OnServiceDisposing()
         {
+            Log.Warning($"Disposing {_buffers.Count} leftover audio buffers. These should be disposed of properly!");
+            for (int i = _buffers.Count - 1; i >= 0; i--)
+                _buffers[i].Dispose();
+
             foreach (AudioDevice device in _devices)
                 device.Dispose();
 

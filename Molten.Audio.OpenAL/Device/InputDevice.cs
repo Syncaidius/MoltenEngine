@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Core.Native;
 using Silk.NET.OpenAL;
 using Silk.NET.OpenAL.Extensions.EXT;
 
@@ -15,6 +16,7 @@ namespace Molten.Audio.OpenAL
         int _bufferSize;
         AudioFormat _format;
         bool _recreate;
+        bool _isCapturing;
 
         internal InputDevice(
             AudioServiceAL service, 
@@ -40,7 +42,12 @@ namespace Molten.Audio.OpenAL
 
         private void ReinitializeDevice()
         {
-
+            if(Ptr != null)
+            {
+                OnClose();
+                OnOpen();
+                Service.Log.WriteLine($"Re-initialized input device '{Name}'");
+            }
         }
 
         protected override ContextError OnOpen()
@@ -58,6 +65,86 @@ namespace Molten.Audio.OpenAL
         protected override void OnTransferTo(AudioDevice other)
         {
             
+        }
+
+        public void StartCapture()
+        {
+            if (_isCapturing)
+                return;
+
+            if (Ptr == null)
+                throw new AudioDeviceException(this, "Input device is not opened or current");
+
+            _capture.CaptureStart(Ptr);
+
+            ContextError result = Service.Alc.GetError(null);
+            if (result != ContextError.NoError)
+                Service.Log.Error($"Failed to start capture on '{Name}': {Service.GetErrorMessage(result)}");
+            else
+                _isCapturing = true;
+        }
+
+        public void StopCapture()
+        {
+            if (Ptr == null)
+                throw new AudioDeviceException(this, "Input device is not opened or current");
+
+            _capture.CaptureStop(Ptr);
+
+            ContextError result = Service.Alc.GetError(null);
+            if (result != ContextError.NoError)
+                Service.Log.Error($"Failed to stop capture on '{Name}': {Service.GetErrorMessage(result)}");
+
+            _isCapturing = false;
+        }
+
+        public unsafe int ReadSamples(IAudioBuffer buffer, int sampleCount)
+        {
+            if (Ptr == null)
+                throw new AudioDeviceException(this, "Input device is not opened or current");
+
+            int available = 0;
+            Service.Alc.GetContextProperty(Ptr, (GetContextInteger)GetCaptureContextInteger.CaptureSamples, 1, &available);
+
+            sampleCount = MathHelper.Clamp(sampleCount, available, _bufferSize);
+
+            AudioBuffer alBuffer = buffer as AudioBuffer;
+            uint remainingCapacity = alBuffer.Size - alBuffer.WritePosition;
+
+            // Read straight into the buffer if we have capacity
+            if (remainingCapacity >= sampleCount)
+            {
+                _capture.CaptureSamples(Ptr, alBuffer.PtrWrite, sampleCount);
+                alBuffer.WritePosition += (uint)sampleCount;
+            }
+            else
+            {
+                // Fill to the end of the buffer, then put the rest back at the start of the buffer.
+                _capture.CaptureSamples(Ptr, alBuffer.PtrWrite, (int)remainingCapacity);
+                uint remainingToWrite = (uint)sampleCount - remainingCapacity;
+
+                // Go back to the start of the buffer and write the remaining data.
+                alBuffer.WritePosition = 0;
+                _capture.CaptureSamples(Ptr, alBuffer.PtrWrite, (int)remainingToWrite);
+                alBuffer.WritePosition += remainingToWrite;
+            }
+
+            return sampleCount;
+        }
+
+        public int GetAvailableSamples()
+        {
+            if (Ptr == null)
+                throw new AudioDeviceException(this, "Input device is not opened or current");
+
+            int available = 0;
+            Service.Alc.GetContextProperty(Ptr, (GetContextInteger)GetCaptureContextInteger.CaptureSamples, 1, &available);
+
+            ContextError result = Service.Alc.GetError(null);
+            if (result != ContextError.NoError)
+                Service.Log.Error($"Failed retrieve capture samples for '{Name}': {Service.GetErrorMessage(result)}");
+
+            return available;
         }
 
         protected override void OnUpdate(Timing time)
@@ -108,5 +195,7 @@ namespace Molten.Audio.OpenAL
                 }
             }
         }
+
+        public bool IsCapturing => _isCapturing;
     }
 }

@@ -19,15 +19,12 @@ namespace Molten.Audio
 
         bool _shouldUpdate;
 
-        IAudioInput _input;
-        IAudioOutput _output;
-
-        IAudioInput _newInput;
-        IAudioOutput _newOutput;
+        IAudioInput _curInput;
+        IAudioOutput _curOutput;
 
         protected override void OnInitialize(EngineSettings settings)
         {
-            
+            UpdateDeviceSwitching();
         }
 
         protected override ThreadingMode OnStart(ThreadManager threadManager)
@@ -46,22 +43,32 @@ namespace Molten.Audio
             if (!_shouldUpdate)
                 return;
 
-            if(_newInput != _input)
-            {
-                SwitchInput(_input, _newInput);
-                InputChanged?.Invoke(_input, _newInput);
-                _input = _newInput;
-            }
-
-            if (_newOutput != _output)
-            {
-                SwitchOutput(_output, _newOutput);
-                OutputChanged?.Invoke(_output, _newOutput);
-                _output = _newOutput;
-            }
-
+            UpdateDeviceSwitching();
             OnUpdateAudioEngine(time);
         }
+
+        private void UpdateDeviceSwitching()
+        {
+            if (Input != _curInput)
+            {
+                SwitchInput(_curInput, Input);
+                InputChanged?.Invoke(_curInput, Input);
+                _curInput = Input;
+            }
+
+            if (Output != _curOutput)
+            {
+                SwitchOutput(_curOutput, Output);
+                OutputChanged?.Invoke(_curOutput, Output);
+                _curOutput = Output;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="IAudioBuffer"/>
+        /// </summary>
+        /// <returns></returns>
+        public abstract IAudioBuffer CreateBuffer(int bufferSize);
 
         protected abstract void OnUpdateAudioEngine(Timing time);
 
@@ -87,19 +94,11 @@ namespace Molten.Audio
         /// <summary>
         /// Gets or sets <see cref="IAudioInput"/> used by the current application.
         /// </summary>
-        public IAudioInput Input
-        {
-            get => _newInput;
-            set => _newInput = value;
-        }
+        public IAudioInput Input { get; set; }
 
         /// <summary>
         /// Gets or sets <see cref="IAudioOutput"/> used by the current application.
         /// </summary>
-        public IAudioOutput Output
-        {
-            get => _newOutput;
-            set => _newOutput = value;
-        }
+        public IAudioOutput Output { get; set; }
     }
 }
