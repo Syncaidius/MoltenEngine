@@ -105,8 +105,9 @@ namespace Molten.Audio.OpenAL
 
             int available = 0;
             Service.Alc.GetContextProperty(Ptr, (GetContextInteger)GetCaptureContextInteger.CaptureSamples, 1, &available);
+            ContextError result = Service.Alc.GetError(Ptr);
 
-            sampleCount = MathHelper.Clamp(sampleCount, available, _bufferSize);
+            sampleCount = MathHelper.Min(MathHelper.Min(available, sampleCount), _bufferSize); 
 
             AudioBuffer alBuffer = buffer as AudioBuffer;
             uint remainingCapacity = alBuffer.Size - alBuffer.WritePosition;

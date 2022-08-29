@@ -107,7 +107,7 @@ namespace Molten.Samples
             base.OnUpdate(time);
 
 
-            if (Engine.Audio.Input != null && Engine.Audio.Input.IsCapturing)
+            if (Engine.Audio.Input != null && _buffer != null)
             {
                 int numSamples = Engine.Audio.Input.ReadSamples(_buffer, READ_SAMPLES_PER_FRAME);
 
