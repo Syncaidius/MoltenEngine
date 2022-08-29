@@ -53,12 +53,10 @@ namespace Molten.Audio.OpenAL
             if (source is SoundSource src)
             {
                 AudioPlaybackState curState = _state;
-
-                // Stop playing before changing the buffer
-                if (curState != AudioPlaybackState.Stopped)
-                    Stop();
+                Stop(); // Stop playing before changing the buffer
 
                 Service.Al.SetSourceProperty(_alSourceID, SourceInteger.Buffer, src.AlBufferID);
+                ParentSource = src;
 
                 if (curState == AudioPlaybackState.Playing)
                     Play();
@@ -147,7 +145,7 @@ namespace Molten.Audio.OpenAL
 
         public ISoundSource Source => ParentSource;
 
-        public SoundSource ParentSource { get; }
+        public SoundSource ParentSource { get; private set; }
 
         public AudioPlaybackState State => _state; 
 
