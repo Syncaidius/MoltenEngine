@@ -11,11 +11,7 @@ namespace Molten.Audio
      /// </summary>
     public interface ISoundInstance : IDisposable
     {
-        event ObjectHandler<ISoundInstance> OnDisposing;
-
-        event ObjectHandler<ISoundInstance> OnDisposed;
-
-        void Play(bool loop = false);
+        void Play();
 
         void Pause();
 

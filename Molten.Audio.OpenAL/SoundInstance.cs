@@ -11,12 +11,8 @@ using Silk.NET.OpenAL.Extensions.Enumeration;
 
 namespace Molten.Audio.OpenAL
 {
-    public class SoundInstance : ISoundInstance
+    public class SoundInstance : EngineObject, ISoundInstance
     {
-        public event ObjectHandler<ISoundInstance> OnDisposing;
-
-        public event ObjectHandler<ISoundInstance> OnDisposed;
-
         uint _alSourceID;
         AudioPlaybackState _state;
         bool _looping;
@@ -29,48 +25,76 @@ namespace Molten.Audio.OpenAL
             uint src = 0;
             Service.Al.GenSources(1, &src);
 
-            AudioServiceAL service = Service;
-            AudioError result = service.Al.GetError();
+            // Check if looping was enabled by the native drivers/implementation.
+            Service.Al.GetSourceProperty(_alSourceID, SourceBoolean.Looping, out _looping);
+            AudioError result = Service.Al.GetError();
             if (result != AudioError.NoError)
             {
-                string msg = service.GetErrorMessage(result);
-                service.Log.Error($"Failed to create sound instance from source '{source.Name}': {msg}");
+                string msg = Service.GetErrorMessage(result);
+                Service.Log.Error($"Failed to retrieve looping status '{Source.Name}' instance {_alSourceID}: {msg}");
+            }
+
+            // Set source if there are no errors.
+            result = Service.Al.GetError();
+            if (result != AudioError.NoError)
+            {
+                string msg = Service.GetErrorMessage(result);
+                Service.Log.Error($"Failed to create sound instance from source '{source.Name}': {msg}");
             }
             else
             {
                 _alSourceID = src;
-                Service.Al.SetSourceProperty(_alSourceID,SourceInteger.Buffer, source.AlBufferID);
+                SetSource(source);
             }
         }
 
         public void SetSource(ISoundSource source)
         {
-            throw new NotImplementedException();
+            if (source is SoundSource src)
+            {
+                AudioPlaybackState curState = _state;
+
+                // Stop playing before changing the buffer
+                if (curState != AudioPlaybackState.Stopped)
+                    Stop();
+
+                Service.Al.SetSourceProperty(_alSourceID, SourceInteger.Buffer, src.AlBufferID);
+
+                if (curState == AudioPlaybackState.Playing)
+                    Play();
+                else if (curState == AudioPlaybackState.Paused)
+                    Pause();
+            }
         }
 
         public void QueueSource(ISoundSource source)
         {
+            // See Page 9: http://open-activewrl.sourceforge.net/data/OpenAL_PGuide.pdf
             throw new NotImplementedException();
         }
 
         public void QueueSources(ISoundSource[] sources)
         {
+            // See Page 9: http://open-activewrl.sourceforge.net/data/OpenAL_PGuide.pdf
             throw new NotImplementedException();
         }
 
-        public void Dispose()
+        protected override void OnDispose()
         {
-            OnDisposing?.Invoke(this);
-            OnDisposed?.Invoke(this);
+            if(_alSourceID > 0)
+            {
+                Service.Al.DeleteSource(_alSourceID);
+                _alSourceID = 0;
+            }
+
             _state = AudioPlaybackState.Disposed;
         }
 
-        public void Play(bool loop = false)
+        public void Play()
         {
             if (_state == AudioPlaybackState.Playing)
                 return;
 
-            IsLooping = true;
             Service.Al.SourcePlay(_alSourceID);
             _state = AudioPlaybackState.Playing;
         }
