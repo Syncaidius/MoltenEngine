@@ -1,6 +1,6 @@
 ﻿# Molten Engine 
 [![Build Status](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/MoltenEngine-.NET%20Desktop-CI)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=2)  [![Build Android](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml)  [![Build Windows](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml)  
-![GitHub](https://img.shields.io/github/license/Syncaidius/MoltenEngine)  ![GitHub last commit](https://img.shields.io/github/last-commit/Syncaidius/MoltenEngine)
+[![GitHub](https://img.shields.io/github/license/Syncaidius/MoltenEngine)(LICENSE)  [![GitHub last commit](https://img.shields.io/github/last-commit/Syncaidius/MoltenEngine)(https://github.com/Syncaidius/MoltenEngine/commits/)
 
 Molten started as spare-time engine project, which I eventually intend to use to develop my own games without relying on other engines. Hopefully you'll find a use for it too!
 
