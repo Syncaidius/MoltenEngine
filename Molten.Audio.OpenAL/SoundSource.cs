@@ -12,17 +12,27 @@ using Silk.NET.OpenAL.Extensions.Enumeration;
 
 namespace Molten.Audio.OpenAL
 {
-    public class SoundSource : EngineObject, ISoundSource
+    public class SoundSource : OpenALObject, ISoundSource
     {
         ThreadedList<SoundInstance> _instances;
-        int _alBufferID;
+        uint _alBufferID;
+        bool _created;
 
-        internal SoundSource(OutputDevice device)
+        internal unsafe SoundSource(OutputDevice device) : base(device.Service)
         {
             _instances = new ThreadedList<SoundInstance>();
 
             ParentDevice = device;
             Output = device;
+
+            uint bID = 0;
+            Service.Al.GenBuffers(1, &bID);
+            AudioError result = Service.Al.GetError();
+            if (!CheckAlError($"Failed to generate AL buffer for sound source '{Name}'"))
+            {
+                _alBufferID = bID;
+                _created = true;
+            }
         }
 
         public ISoundInstance GetInstance()
@@ -34,7 +44,12 @@ namespace Molten.Audio.OpenAL
 
         protected override void OnDispose()
         {
-            
+            if (_created)
+            {
+                Service.Al.DeleteBuffer(_alBufferID);
+                _alBufferID = 0;
+                _created = false;
+            }
         }
 
         public void CommitBuffer(IAudioBuffer buffer)
@@ -42,12 +57,12 @@ namespace Molten.Audio.OpenAL
             throw new NotImplementedException();
         }
 
-        public int InstanceCount => _instances.Count;
-
-        public IAudioOutput Output { get; }
-
         internal OutputDevice ParentDevice { get; }
 
         internal uint AlBufferID { get; private set; }
+
+        public int InstanceCount => _instances.Count;
+
+        public IAudioOutput Output { get; }
     }
 }

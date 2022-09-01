@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Collections;
+using Silk.NET.Core.Native;
 using Silk.NET.OpenAL;
 
 namespace Molten.Audio.OpenAL
@@ -19,35 +20,46 @@ namespace Molten.Audio.OpenAL
             _sources = new ThreadedList<ISoundSource>();
         }
 
-        protected override unsafe ContextError OnOpen()
+        protected override unsafe bool OnOpen()
         {
             Ptr = Service.Alc.OpenDevice(Name);
             ContextError result = Service.Alc.GetError(Ptr);
+            if (CheckAlcError($""))
+                return false;
+
+            _context = Service.Alc.CreateContext(Ptr, null);
+            result = Service.Alc.GetError(Ptr);
             if (result == ContextError.NoError)
             {
-                _context = Service.Alc.CreateContext(Ptr, null);
+                Service.Alc.MakeContextCurrent(_context);
+                Service.Alc.ProcessContext(_context);
                 result = Service.Alc.GetError(Ptr);
-                if (result == ContextError.NoError)
-                {
-                    Service.Alc.MakeContextCurrent(_context);
-                    Service.Alc.ProcessContext(_context);
-                    result = Service.Alc.GetError(Ptr);
-                }
             }
 
-            return result;
+            return true;
         }
 
-        protected override ContextError OnClose()
+        protected override void OnClose()
         {
             Context* curContext = Service.Alc.GetCurrentContext();
+            if (CheckAlcError($"Unable to retrieve the current context for '{Name}'"))
+                return;
+
             if (curContext == _context)
+            {
                 Service.Alc.MakeContextCurrent(null);
+                if (CheckAlcError($"Failed to unset '{Name}' as a the current context"))
+                    return;
+            }
 
             Service.Alc.SuspendContext(_context);
             Service.Alc.DestroyContext(_context);
-            Service.Alc.CloseDevice(Ptr);
-            return Service.Alc.GetError(Ptr);
+            if (CheckAlcError($"Failed to destroy the context for '{Name}'"))
+                return;
+
+            Service.Alc.CloseDevice(Ptr); 
+            if (CheckAlcError($"Failed to close AL device for '{Name}'"))
+                return;
         }
 
         protected override void OnTransferTo(AudioDevice other)

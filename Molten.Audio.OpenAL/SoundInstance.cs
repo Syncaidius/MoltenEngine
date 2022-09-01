@@ -11,41 +11,31 @@ using Silk.NET.OpenAL.Extensions.Enumeration;
 
 namespace Molten.Audio.OpenAL
 {
-    public class SoundInstance : EngineObject, ISoundInstance
+    public class SoundInstance : OpenALObject, ISoundInstance
     {
         uint _alSourceID;
         AudioPlaybackState _state;
+        AudioPlaybackState _requestedState;
         bool _looping;
+        bool _created;
 
-        internal unsafe SoundInstance(SoundSource source)
+        internal unsafe SoundInstance(SoundSource source) : base(source.Service)
         {
             ParentSource = source;
-            Service = ParentSource.ParentDevice.Service;
 
             uint src = 0;
             Service.Al.GenSources(1, &src);
+            if (CheckAlError($"Failed to create AL source for instance {Name}"))
+                return;
 
             // Check if looping was enabled by the native drivers/implementation.
             Service.Al.GetSourceProperty(_alSourceID, SourceBoolean.Looping, out _looping);
-            AudioError result = Service.Al.GetError();
-            if (result != AudioError.NoError)
-            {
-                string msg = Service.GetErrorMessage(result);
-                Service.Log.Error($"Failed to retrieve looping status '{Source.Name}' instance {_alSourceID}: {msg}");
-            }
+            if (CheckAlError($"Failed to retrieve looping status '{Source.Name}' instance {_alSourceID}"))
+                return;
 
-            // Set source if there are no errors.
-            result = Service.Al.GetError();
-            if (result != AudioError.NoError)
-            {
-                string msg = Service.GetErrorMessage(result);
-                Service.Log.Error($"Failed to create sound instance from source '{source.Name}': {msg}");
-            }
-            else
-            {
-                _alSourceID = src;
-                SetSource(source);
-            }
+            _alSourceID = src;
+            _created = true;
+            SetSource(source);
         }
 
         public void SetSource(ISoundSource source)
@@ -79,69 +69,72 @@ namespace Molten.Audio.OpenAL
 
         protected override void OnDispose()
         {
-            if(_alSourceID > 0)
+            if(_created)
             {
                 Service.Al.DeleteSource(_alSourceID);
                 _alSourceID = 0;
+                _created = false;
             }
 
             _state = AudioPlaybackState.Disposed;
         }
 
         public void Play()
-        {
-            if (_state == AudioPlaybackState.Playing)
-                return;
-
-            Service.Al.SourcePlay(_alSourceID);
-            _state = AudioPlaybackState.Playing;
+        {            
+            _requestedState = AudioPlaybackState.Playing;
         }
 
         public void Pause()
         {
-            if (_state != AudioPlaybackState.Playing)
-                return;
-
-            Service.Al.SourcePause(_alSourceID);
-            _state = AudioPlaybackState.Paused;
+            _requestedState = AudioPlaybackState.Paused;
         }
 
         public void Stop()
         {
-            if (_state == AudioPlaybackState.Stopped)
-                return;
-
-            Service.Al.SourceStop(_alSourceID);
-            _state = AudioPlaybackState.Stopped;
+            _requestedState = AudioPlaybackState.Stopped;
         }
 
         internal unsafe void Update()
         {
             int playState = 0;
             Service.Al.GetSourceProperty(_alSourceID, GetSourceInteger.SourceState, &playState);
-
-            switch ((SourceState)playState)
+            if (!CheckAlError($"Failed to retrieve sound instance state for '{Name}' -- Source: '{Source.Name}'"))
             {
-                case SourceState.Initial: break;
-                case SourceState.Playing: _state = AudioPlaybackState.Playing; break;
-                case SourceState.Paused: _state = AudioPlaybackState.Paused; break;
-                case SourceState.Stopped: _state = AudioPlaybackState.Stopped; break;
-            }
-
-            if(_looping != IsLooping)
-            {
-                _looping = IsLooping;
-                Service.Al.SetSourceProperty(_alSourceID, SourceBoolean.Looping, _looping);
-                AudioError result = Service.Al.GetError();
-                if (result != AudioError.NoError)
+                if (_looping != IsLooping)
                 {
-                    string msg = Service.GetErrorMessage(result);
-                    Service.Log.Error($"Failed to set looping on '{Source.Name}' instance {_alSourceID}: {msg}");
+                    _looping = IsLooping;
+                    Service.Al.SetSourceProperty(_alSourceID, SourceBoolean.Looping, _looping);
+                    AudioError result = Service.Al.GetError();
+                    CheckAlError($"Failed to set looping on '{Source.Name}' instance {_alSourceID}");
                 }
+
+                // Ensure we have the latest state from the source, in case the native implementation decides to automatically change it.
+                switch ((SourceState)playState)
+                {
+                    case SourceState.Initial: break;
+                    case SourceState.Playing: _state = AudioPlaybackState.Playing; break;
+                    case SourceState.Paused: _state = AudioPlaybackState.Paused; break;
+                    case SourceState.Stopped: _state = AudioPlaybackState.Stopped; break;
+                }
+
+                if (_requestedState != _state)
+                {
+                    _state = _requestedState;
+                    switch (_state)
+                    {
+                        case AudioPlaybackState.Playing: Service.Al.SourcePlay(_alSourceID); break;
+                        case AudioPlaybackState.Paused: Service.Al.SourcePause(_alSourceID); break;
+                        case AudioPlaybackState.Stopped: Service.Al.SourceStop(_alSourceID); break;
+                    }
+                }
+            }
+            else
+            {
+                // TODO delete the sound instance from it's source
             }
         }
 
-        internal AudioServiceAL Service { get; }
+
 
         public ISoundSource Source => ParentSource;
 

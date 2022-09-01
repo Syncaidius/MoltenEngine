@@ -50,16 +50,16 @@ namespace Molten.Audio.OpenAL
             }
         }
 
-        protected override ContextError OnOpen()
+        protected override bool OnOpen()
         {
             Ptr = _capture.CaptureOpenDevice(Name, _frequency, _format, _bufferSize);
-            return Service.Alc.GetError(null);
+            return !CheckAlcError($"An error occurred while closing input device for '{Name}'");
         }
 
-        protected override ContextError OnClose()
+        protected override void OnClose()
         {
-             _capture.CaptureCloseDevice(Ptr);
-            return Service.Alc.GetError(null);
+            _capture.CaptureCloseDevice(Ptr);
+            CheckAlcError($"An error occurred while closing input device for '{Name}'");
         }
 
         protected override void OnTransferTo(AudioDevice other)
@@ -76,25 +76,19 @@ namespace Molten.Audio.OpenAL
                 throw new AudioDeviceException(this, "Input device is not opened or current");
 
             _capture.CaptureStart(Ptr);
-
-            ContextError result = Service.Alc.GetError(null);
-            if (result != ContextError.NoError)
-                Service.Log.Error($"Failed to start capture on '{Name}': {Service.GetErrorMessage(result)}");
-            else
-                _isCapturing = true;
+            _isCapturing = !CheckAlcError($"Failed to start capture on '{Name}'");
         }
 
         public void StopCapture()
         {
+            if (!_isCapturing)
+                return;
+
             if (Ptr == null)
                 throw new AudioDeviceException(this, "Input device is not opened or current");
 
             _capture.CaptureStop(Ptr);
-
-            ContextError result = Service.Alc.GetError(null);
-            if (result != ContextError.NoError)
-                Service.Log.Error($"Failed to stop capture on '{Name}': {Service.GetErrorMessage(result)}");
-
+            CheckAlcError($"Failed to stop capture on '{Name}'");
             _isCapturing = false;
         }
 
@@ -140,12 +134,10 @@ namespace Molten.Audio.OpenAL
 
             int available = 0;
             Service.Alc.GetContextProperty(Ptr, (GetContextInteger)GetCaptureContextInteger.CaptureSamples, 1, &available);
-
-            ContextError result = Service.Alc.GetError(null);
-            if (result != ContextError.NoError)
-                Service.Log.Error($"Failed retrieve capture samples for '{Name}': {Service.GetErrorMessage(result)}");
-
-            return available;
+            if (CheckAlcError($"Failed to get capture samples count for '{Name}'"))
+                return 0;
+            else
+                return available;
         }
 
         protected override void OnUpdate(Timing time)

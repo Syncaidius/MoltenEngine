@@ -11,13 +11,13 @@ using Silk.NET.OpenAL.Extensions.Enumeration;
 
 namespace Molten.Audio.OpenAL
 {
-    public unsafe abstract class AudioDevice : IAudioDevice, IDisposable
+    public unsafe abstract class AudioDevice : OpenALObject, IAudioDevice, IDisposable
     {
         AudioServiceAL _service; 
         Device* _device;
         Dictionary<Type, ContextExtensionBase> _extensions;
 
-        internal AudioDevice(AudioServiceAL service, string specifier, bool isDefault, AudioDeviceType deviceType)
+        internal AudioDevice(AudioServiceAL service, string specifier, bool isDefault, AudioDeviceType deviceType) : base(service)
         {
             Name = specifier;
             DeviceType = deviceType;
@@ -70,13 +70,7 @@ namespace Molten.Audio.OpenAL
             if (_device != null)
                 throw new AudioDeviceException(this, $"[{DeviceType}] device is already open");
 
-            ContextError result = OnOpen();
-
-            if (result != ContextError.NoError)
-            {
-                Service.Log.Error($"An error occurred while opening [{DeviceType}] device'{Name}': {result}");
-            }
-            else
+            if (OnOpen())
             {
                 if (_device == null)
                     throw new AudioDeviceException(this, $"An error occurred while opening [{DeviceType}] device: Ptr was not set");
@@ -90,17 +84,9 @@ namespace Molten.Audio.OpenAL
             if (_device == null)
                 throw new AudioDeviceException(this, $"[{DeviceType}] device is not open");
 
-            ContextError result = OnClose();
-
-            if (result != ContextError.NoError)
-            {
-                Service.Log.Error($"An error occurred while closing [{DeviceType}] device '{Name}': {Service.GetErrorMessage(result)}");
-            }
-            else
-            {
-                _device = null;
-                Service.Log.WriteLine($"Closed [{DeviceType}] device '{Name}'");
-            }
+            Service.Log.WriteLine($"Closing [{DeviceType}] device '{Name}'");
+            OnClose();
+            Service.Log.WriteLine($"Closed [{DeviceType}] device '{Name}'");
         }
 
         internal void Update(Timing time)
@@ -108,9 +94,9 @@ namespace Molten.Audio.OpenAL
             OnUpdate(time);
         }
 
-        protected abstract ContextError OnOpen();
+        protected abstract bool OnOpen();
 
-        protected abstract ContextError OnClose();
+        protected abstract void OnClose();
 
         protected abstract void OnUpdate(Timing time);
 
@@ -120,7 +106,7 @@ namespace Molten.Audio.OpenAL
         /// <param name="other"></param>
         protected abstract void OnTransferTo(AudioDevice other);
 
-        public void Dispose()
+        protected override void OnDispose()
         {
             foreach (ContextExtensionBase ext in _extensions.Values)
                 ext.Dispose();
@@ -131,15 +117,11 @@ namespace Molten.Audio.OpenAL
             GC.SuppressFinalize(this);
         }
 
-        public string Name { get; }
-
         public bool IsDefault { get; }
 
         public bool IsCurrent { get; }
 
         public AudioDeviceType DeviceType { get; }
-
-        public AudioServiceAL Service => _service;
 
         AudioService IAudioDevice.Service => _service;
 
