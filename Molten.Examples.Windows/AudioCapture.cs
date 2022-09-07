@@ -32,7 +32,7 @@ namespace Molten.Samples
         protected override void OnLoadContent(ContentLoadBatch loader)
         {
             _hMaterial = loader.Load<IMaterial>("assets/BasicTexture.mfx");
-            _hTexture = loader.Load<ITexture2D>("assets/dds_test.dds", parameters: new TextureParameters()
+            _hTexture = loader.Load<ITexture2D>("assets/logo_512_bc7.dds", parameters: new TextureParameters()
             {
                 GenerateMipmaps = true,
             });
@@ -74,7 +74,7 @@ namespace Molten.Samples
             };
             {
                 _lineGraph = _window1.Children.Add<UILineGraph>(new Rectangle(0, 0, 900, 430));
-                _graphSet = new GraphDataSet(300000);
+                _graphSet = new GraphDataSet(200000);
                 _graphSet.KeyColor = Color.Lime;
 
                 _lineGraph.AddDataSet(_graphSet);

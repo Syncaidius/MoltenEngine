@@ -31,7 +31,7 @@ namespace Molten.Samples
         protected override void OnLoadContent(ContentLoadBatch loader)
         {
             _hMaterial = loader.Load<IMaterial>("assets/BasicTexture.mfx");
-            _hTexture = loader.Load<ITexture2D>("assets/dds_test.dds", parameters: new TextureParameters()
+            _hTexture = loader.Load<ITexture2D>("assets/logo_512_bc7.dds", parameters: new TextureParameters()
             {
                 GenerateMipmaps = true,
             });
