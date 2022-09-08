@@ -15,9 +15,9 @@ namespace Molten.Audio
         /// <summary>
         /// Reads samples from the capture device.
         /// </summary>
-        /// <param name="buffer">The <see cref="IAudioBuffer"/> to copy samples into after reading.</param>
+        /// <param name="buffer">The <see cref="AudioBuffer"/> to copy samples into after reading.</param>
         /// <param name="samples">The number of samples to read</param>
-        int ReadSamples(IAudioBuffer buffer, int samples);
+        int ReadSamples(AudioBuffer buffer, int samples);
 
         /// <summary>
         /// Returns the number of captured samples available to read from the current <see cref="IAudioInput"/>.

@@ -4,19 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Audio.OpenAL
+namespace Molten.Audio
 {
-    public unsafe class AudioBuffer : IAudioBuffer
+    public unsafe class AudioBuffer : EngineObject
     {
-        /// <summary>
-        /// Invoked when the current <see cref="IAudioBuffer"/> is about to be disposed.
-        /// </summary>
-        public event ObjectHandler<IAudioBuffer> OnDisposing;
-
         /// <summary>
         /// Invoked when the current <see cref="IAudioBuffer"/> has been disposed.
         /// </summary>
-        public event ObjectHandler<IAudioBuffer> OnDisposed;
+        public event ObjectHandler<AudioBuffer> OnDisposed;
 
         byte* _data;
         uint _writePosition;
@@ -26,10 +21,24 @@ namespace Molten.Audio.OpenAL
         /// Creates a new instance of <see cref="AudioBuffer"/>.
         /// </summary>
         /// <param name="bufferSize">The buffer size, in bytes.</param>
-        internal AudioBuffer(uint bufferSize)
+        internal AudioBuffer(uint bufferSize, AudioFormat format, uint frequency)
         {
             Size = bufferSize;
+            Frequency = frequency;
+            Format = format;
             _data = EngineUtil.AllocArray<byte>(bufferSize);
+        }
+
+        public unsafe uint Read(byte[] buffer)
+        {
+            fixed (byte* ptr = buffer)
+                return Read(ptr, (uint)buffer.Length);
+        }
+
+        public unsafe uint Write(byte[] data)
+        {
+            fixed (byte* ptr = data)
+                return Write(ptr, (uint)data.Length);
         }
 
         public uint Read(byte* buffer, uint numBytes)
@@ -53,11 +62,10 @@ namespace Molten.Audio.OpenAL
             return numBytes;
         }
 
-        public void Dispose()
+        protected override void OnDispose()
         {
             if (_data != null)
             {
-                OnDisposing?.Invoke(this);
                 EngineUtil.Free(ref _data);
                 OnDisposed?.Invoke(this);
             }
@@ -101,16 +109,20 @@ namespace Molten.Audio.OpenAL
 
         public uint Size { get; }
 
-        internal byte* PtrStart => _data;
+        public byte* PtrStart => _data;
 
         /// <summary>
         /// Gets <see cref="PtrStart"/> offset by <see cref="ReadPosition"/>.
         /// </summary>
-        internal byte* PtrRead => _data + ReadPosition;
+        public byte* PtrRead => _data + ReadPosition;
 
         /// <summary>
         /// Gets <see cref="PtrStart"/> offset by <see cref="WritePosition"/>.
         /// </summary>
-        internal byte* PtrWrite => _data + WritePosition;
+        public byte* PtrWrite => _data + WritePosition;
+
+        public AudioFormat Format { get; }
+
+        public uint Frequency { get; }
     }
 }

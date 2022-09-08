@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Collections;
@@ -14,31 +15,28 @@ namespace Molten.Audio.OpenAL
 {
     public class SoundSource : OpenALObject, ISoundSource
     {
-        ThreadedList<SoundInstance> _instances;
-        uint _alBufferID;
+        internal ThreadedList<SoundInstance> Instances { get; }
         bool _created;
 
         internal unsafe SoundSource(OutputDevice device) : base(device.Service)
         {
-            _instances = new ThreadedList<SoundInstance>();
-
+            Instances = new ThreadedList<SoundInstance>();
             ParentDevice = device;
             Output = device;
 
             uint bID = 0;
             Service.Al.GenBuffers(1, &bID);
-            AudioError result = Service.Al.GetError();
             if (!CheckAlError($"Failed to generate AL buffer for sound source '{Name}'"))
             {
-                _alBufferID = bID;
+                AlBufferID = bID;
                 _created = true;
             }
         }
 
-        public ISoundInstance GetInstance()
+        public ISoundInstance CreateInstance()
         {
             SoundInstance instance = new SoundInstance(this);
-            _instances.Add(instance);
+            Instances.Add(instance);
             return instance;
         }
 
@@ -46,22 +44,51 @@ namespace Molten.Audio.OpenAL
         {
             if (_created)
             {
-                Service.Al.DeleteBuffer(_alBufferID);
-                _alBufferID = 0;
+                Service.Al.DeleteBuffer(AlBufferID);
+                AlBufferID = 0;
                 _created = false;
             }
         }
 
-        public void CommitBuffer(IAudioBuffer buffer)
+        /// <summary>
+        /// Commits a <see cref="IAudioBuffer"/> and all of it's data.
+        /// </summary>
+        /// <param name="buffer"></param>
+        public unsafe void CommitBuffer(AudioBuffer buffer)
         {
-            throw new NotImplementedException();
+            if (!_created)
+                throw new Exception($"The underlying OpenAL source buffer was not created yet for '{Name}'");
+
+            Service.Al.BufferData(AlBufferID, buffer.Format.ToApi(), buffer.PtrStart, (int)buffer.Size, (int)buffer.Frequency);
+            CheckAlError($"Failed to commit buffer '{buffer.Name}' to sound source '{Name}'");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="position"></param>
+        /// <param name="numSamples"></param>
+        /// <exception cref="Exception"></exception>
+        public unsafe void CommitBuffer(AudioBuffer buffer, uint position, int numSamples)
+        {
+            if (!_created)
+                throw new Exception($"The underlying OpenAL source buffer was not created yet for '{Name}'");
+
+            byte* ptrData = buffer.PtrStart + position;
+
+            if (position >= buffer.Size)
+                throw new Exception("The position exceeds the size of the provided audio buffer");
+
+            Service.Al.BufferData(AlBufferID, buffer.Format.ToApi(), ptrData, numSamples, (int)buffer.Frequency);
+            CheckAlError($"Failed to commit buffer '{buffer.Name}' to sound source '{Name}'");
         }
 
         internal OutputDevice ParentDevice { get; }
 
         internal uint AlBufferID { get; private set; }
 
-        public int InstanceCount => _instances.Count;
+        public int InstanceCount => Instances.Count;
 
         public IAudioOutput Output { get; }
     }

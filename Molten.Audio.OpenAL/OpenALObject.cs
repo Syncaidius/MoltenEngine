@@ -67,12 +67,15 @@ namespace Molten.Audio.OpenAL
         /// </summary>
         /// <param name="errorMessage">The error message to include in the log entry, if an error is detected.</param>
         /// <returns>A boolean value. True for error. False for no error.</returns>
-        internal unsafe bool CheckAlcError(string errorMessage)
+        internal unsafe bool CheckAlcError(string errorMessage, Device* device = null)
         {
             if (HasError)
                 return true;
 
-            ContextError alError = Service.Alc.GetError(Service.ActiveOutput.Ptr);
+            if (device == null)
+                device = Service.ActiveOutput.Ptr;
+
+            ContextError alError = Service.Alc.GetError(device);
             if (alError != ContextError.NoError)
             {
                 HasError = true;

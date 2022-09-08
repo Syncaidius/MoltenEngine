@@ -15,9 +15,11 @@ namespace Molten.Audio
         /// Gets a new <see cref="ISoundInstance"/> which uses the current <see cref="ISoundSource"/> as an audio data source.
         /// </summary>
         /// <returns></returns>
-        ISoundInstance GetInstance();
+        ISoundInstance CreateInstance();
 
-        void CommitBuffer(IAudioBuffer buffer);
+        void CommitBuffer(AudioBuffer buffer);
+
+        void CommitBuffer(AudioBuffer buffer, uint position, int numSamples);
 
         /// <summary>
         /// Gets the number of active <see cref="ISoundInstance"/>s bound to the current <see cref="ISoundSource"/>.
@@ -32,6 +34,6 @@ namespace Molten.Audio
         /// <summary>
         /// Gets the identifying name of the sound source. This does not have to be unique.
         /// </summary>
-        string Name { get; }
+        string Name { get; set; }
     }
 }

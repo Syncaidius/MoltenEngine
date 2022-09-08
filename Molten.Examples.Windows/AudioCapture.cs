@@ -8,22 +8,28 @@ namespace Molten.Samples
     public class AudioCaptureExample : SampleGame
     {
         const int READ_SAMPLES_PER_FRAME = 1000;
+        const int FREQUENCY = 6635;
 
         ContentLoadHandle _hMaterial;
         ContentLoadHandle _hTexture;
 
         UILabel _lblCapDevice;
         UILabel _lblSamples;
+        UILabel _lblPlayState;
 
         UIWindow _window1;
         UIWindow _window2;
         UILineGraph _lineGraph;
-        UIButton _btnStart;
-        UIButton _btnStop;
+        UIButton _btnStartCap;
+        UIButton _btnStopCap;
+        UIButton _btnPlay;
+        UICheckBox _chkLoopSound;
 
         GraphDataSet _graphSet;
 
-        IAudioBuffer _buffer;
+        AudioBuffer _buffer;
+        ISoundSource _source;
+        ISoundInstance _instance;
 
         public override string Description => "Demonstrates audio recording/capture";
 
@@ -59,13 +65,18 @@ namespace Molten.Samples
             mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;
 
-            _buffer = Engine.Audio.CreateBuffer(6635);
+            _buffer = Engine.Audio.CreateBuffer(FREQUENCY, AudioFormat.Mono8, FREQUENCY);
+            _source = Engine.Audio.Output.CreateSoundSource(null);
+            _instance = _source.CreateInstance();
 
             _lblCapDevice = UI.Children.Add<UILabel>(new Rectangle(300, 5, 500, 25));
             _lblCapDevice.Text = $"Audio Capture Device: {Engine.Audio.Input?.Name}";
 
             _lblSamples = UI.Children.Add<UILabel>(new Rectangle(300, 30, 500, 25));
             _lblSamples.Text = $"Captured Samples Available: 0";
+
+            _lblPlayState = UI.Children.Add<UILabel>(new Rectangle(300, 50, 500, 25));
+            _lblPlayState.Text = $"Play State: 0";
 
             _window1 = new UIWindow()
             {
@@ -82,22 +93,42 @@ namespace Molten.Samples
 
             _window2 = new UIWindow()
             {
-                LocalBounds = new Rectangle(960, 250, 440, 250),
+                LocalBounds = new Rectangle(960, 250, 440, 300),
                 Title = "Audio Capture Controls",
             };
             {
-                _btnStart = _window2.Children.Add<UIButton>(new Rectangle(100, 100, 120, 30));
-                _btnStart.Text = "Start Capture";
+                _btnStartCap = _window2.Children.Add<UIButton>(new Rectangle(100, 100, 130, 30));
+                _btnStartCap.Text = "Start Capture";
 
-                _btnStop = _window2.Children.Add<UIButton>(new Rectangle(100, 140, 120, 30));
-                _btnStop.Text = "Stop Capture";
+                _btnStopCap = _window2.Children.Add<UIButton>(new Rectangle(100, 140, 130, 30));
+                _btnStopCap.Text = "Stop Capture";
 
-                _btnStart.Pressed += btnStart_Pressed;
-                _btnStop.Pressed += btnStop_Pressed;
+                _btnPlay = _window2.Children.Add<UIButton>(new Rectangle(100, 180, 180, 30));
+                _btnPlay.Text = "Play Captured Audio";
+
+                _btnStartCap.Pressed += btnStart_Pressed;
+                _btnStopCap.Pressed += btnStop_Pressed;
+                _btnPlay.Pressed += _btnPlay_Pressed;
+
+                _chkLoopSound = _window2.Children.Add<UICheckBox>(new Rectangle(100, 220, 180, 30));
+                _chkLoopSound.Text = "Loop Playback";
+                _chkLoopSound.Toggled += _chkLoopSound_Toggled;
             }
 
             UI.Children.Add(_window1);
             UI.Children.Add(_window2);
+        }
+
+        private void _chkLoopSound_Toggled(UICheckBox element)
+        {
+            _instance.IsLooping = _chkLoopSound.IsChecked;
+        }
+
+        private void _btnPlay_Pressed(UIElement element, ScenePointerTracker tracker)
+        {
+            _source.CommitBuffer(_buffer);
+            _instance.Stop();
+            _instance.Play();
         }
 
         protected override void OnUpdate(Timing time)
@@ -136,9 +167,14 @@ namespace Molten.Samples
 
             base.OnDrawSprites(sb);
 
+            if (!Engine.Audio.IsDisposed)
+            {
+                int samples = Engine.Audio.Input.GetAvailableSamples();
+                _lblSamples.Text = $"Captured Samples Available: {samples}";
 
-            int samples = Engine.Audio.Input.GetAvailableSamples();
-            _lblSamples.Text = $"Captured Samples Available: {samples}";
+                if(_instance != null)
+                    _lblPlayState.Text = $"Play State: {_instance.State}";
+            }
         }
     }
 }

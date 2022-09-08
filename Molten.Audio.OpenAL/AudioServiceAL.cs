@@ -30,7 +30,6 @@ namespace Molten.Audio.OpenAL
         InputDevice _inputDevice;
         OutputDevice _outputDevice;
         Dictionary<Type, ContextExtensionBase> _extensions;
-        ThreadedList<AudioBuffer> _buffers;
 
         public AudioServiceAL()
         {
@@ -38,7 +37,6 @@ namespace Molten.Audio.OpenAL
             _outputs = new List<OutputDevice>();
             _devices = new List<AudioDevice>();
             _extensions = new Dictionary<Type, ContextExtensionBase>();
-            _buffers = new ThreadedList<AudioBuffer>();
 
             AvailableInputDevices = _inputs.AsReadOnly();
             AvailableOutputDevices = _outputs.AsReadOnly();
@@ -173,19 +171,6 @@ namespace Molten.Audio.OpenAL
                 device.Update(time);
         }
 
-        public override IAudioBuffer CreateBuffer(int bufferSize)
-        {
-            AudioBuffer buffer = new AudioBuffer((uint)bufferSize);
-            buffer.OnDisposed += Buffer_OnDisposed;
-            _buffers.Add(buffer);
-            return buffer;
-        }
-
-        private void Buffer_OnDisposed(IAudioBuffer obj)
-        {
-            _buffers.Remove(obj as AudioBuffer);
-        }
-
         protected override void SwitchInput(IAudioInput oldDevice, IAudioInput newDevice)
         {
             InputDevice dOld = oldDevice as InputDevice;
@@ -223,9 +208,7 @@ namespace Molten.Audio.OpenAL
 
         protected override void OnServiceDisposing()
         {
-            Log.Warning($"Disposing {_buffers.Count} leftover audio buffers. These should be properly disposed!");
-            for (int i = _buffers.Count - 1; i >= 0; i--)
-                _buffers[i].Dispose();
+            base.OnServiceDisposing();
 
             foreach (AudioDevice device in _devices)
                 device.Dispose();

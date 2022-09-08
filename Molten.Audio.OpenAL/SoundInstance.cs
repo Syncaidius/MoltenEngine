@@ -28,8 +28,9 @@ namespace Molten.Audio.OpenAL
             if (CheckAlError($"Failed to create AL source for instance {Name}"))
                 return;
 
+
             // Check if looping was enabled by the native drivers/implementation.
-            Service.Al.GetSourceProperty(_alSourceID, SourceBoolean.Looping, out _looping);
+            Service.Al.GetSourceProperty(src, SourceBoolean.Looping, out _looping);
             if (CheckAlError($"Failed to retrieve looping status '{Source.Name}' instance {_alSourceID}"))
                 return;
 
@@ -45,8 +46,11 @@ namespace Molten.Audio.OpenAL
                 AudioPlaybackState curState = _state;
                 Stop(); // Stop playing before changing the buffer
 
-                Service.Al.SetSourceProperty(_alSourceID, SourceInteger.Buffer, src.AlBufferID);
                 ParentSource = src;
+
+                Service.Al.SetSourceProperty(_alSourceID, SourceInteger.Buffer, src.AlBufferID);
+                if (CheckAlError($"Unable to set sound source '{source.Name}' for '{Name}'"))
+                    return;
 
                 if (curState == AudioPlaybackState.Playing)
                     Play();
@@ -96,41 +100,55 @@ namespace Molten.Audio.OpenAL
 
         internal unsafe void Update()
         {
-            int playState = 0;
-            Service.Al.GetSourceProperty(_alSourceID, GetSourceInteger.SourceState, &playState);
-            if (!CheckAlError($"Failed to retrieve sound instance state for '{Name}' -- Source: '{Source.Name}'"))
+            // TODO hook up AL_SOURCE_TYPE: See https://www.openal.org/documentation/openal-1.1-specification.pdf page 34 - Source Type
+            if (HasError)
+                return;
+
+
+
+            if (_looping != IsLooping)
             {
-                if (_looping != IsLooping)
+                _looping = IsLooping;
+                Service.Al.SetSourceProperty(_alSourceID, SourceBoolean.Looping, _looping);
+                AudioError result = Service.Al.GetError();
+                CheckAlError($"Failed to set looping on '{Source.Name}' instance {_alSourceID}");
+            }
+
+            if (_requestedState != _state)
+            {
+                switch (_requestedState)
                 {
-                    _looping = IsLooping;
-                    Service.Al.SetSourceProperty(_alSourceID, SourceBoolean.Looping, _looping);
-                    AudioError result = Service.Al.GetError();
-                    CheckAlError($"Failed to set looping on '{Source.Name}' instance {_alSourceID}");
+                    case AudioPlaybackState.Playing: Service.Al.SourcePlay(_alSourceID); break;
+                    case AudioPlaybackState.Paused: Service.Al.SourcePause(_alSourceID); break;
+                    case AudioPlaybackState.Stopped: Service.Al.SourceStop(_alSourceID); break;
                 }
 
-                // Ensure we have the latest state from the source, in case the native implementation decides to automatically change it.
-                switch ((SourceState)playState)
-                {
-                    case SourceState.Initial: break;
-                    case SourceState.Playing: _state = AudioPlaybackState.Playing; break;
-                    case SourceState.Paused: _state = AudioPlaybackState.Paused; break;
-                    case SourceState.Stopped: _state = AudioPlaybackState.Stopped; break;
-                }
-
-                if (_requestedState != _state)
-                {
+                if (CheckAlError($"Failed to change state of '{Source.Name} (instance {_alSourceID})' to {_state}"))
+                    _state = AudioPlaybackState.Stopped;
+                else
                     _state = _requestedState;
-                    switch (_state)
-                    {
-                        case AudioPlaybackState.Playing: Service.Al.SourcePlay(_alSourceID); break;
-                        case AudioPlaybackState.Paused: Service.Al.SourcePause(_alSourceID); break;
-                        case AudioPlaybackState.Stopped: Service.Al.SourceStop(_alSourceID); break;
-                    }
-                }
             }
             else
             {
-                // TODO delete the sound instance from it's source
+                int playState = 0;
+                Service.Al.GetSourceProperty(_alSourceID, GetSourceInteger.SourceState, &playState);
+                if (!CheckAlError($"Failed to retrieve sound instance state for '{Name}' -- Source: '{Source.Name}'"))
+                {
+                    // Ensure we have the latest state from the source, in case the native implementation decides to automatically change it.
+                    switch ((SourceState)playState)
+                    {
+                        case SourceState.Initial: _state = AudioPlaybackState.Stopped; break;
+                        case SourceState.Playing: _state = AudioPlaybackState.Playing; break;
+                        case SourceState.Paused: _state = AudioPlaybackState.Paused; break;
+                        case SourceState.Stopped: _state = AudioPlaybackState.Stopped; break;
+                    }
+
+                    _requestedState = _state;
+                }
+                else
+                {
+                    // TODO Gracefully handle failure
+                }
             }
         }
 

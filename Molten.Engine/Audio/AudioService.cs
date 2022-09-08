@@ -18,9 +18,15 @@ namespace Molten.Audio
         public event AudioDeviceChangedHandler<IAudioOutput> OutputChanged;
 
         bool _shouldUpdate;
+        ThreadedList<AudioBuffer> _buffers;
 
         IAudioInput _curInput;
         IAudioOutput _curOutput;
+
+        protected AudioService()
+        {
+            _buffers = new ThreadedList<AudioBuffer>();
+        }
 
         protected override void OnInitialize(EngineSettings settings)
         {
@@ -68,7 +74,27 @@ namespace Molten.Audio
         /// Creates a new <see cref="IAudioBuffer"/>
         /// </summary>
         /// <returns></returns>
-        public abstract IAudioBuffer CreateBuffer(int bufferSize);
+        public AudioBuffer CreateBuffer(uint bufferSize, AudioFormat format, uint frequency)
+        {
+            AudioBuffer buffer = new AudioBuffer(bufferSize, format, frequency);
+            buffer.OnDisposed += Buffer_OnDisposed;
+            _buffers.Add(buffer);
+            return buffer;
+        }
+
+        private void Buffer_OnDisposed(AudioBuffer obj)
+        {
+            _buffers.Remove(obj as AudioBuffer);
+        }
+
+        protected override void OnServiceDisposing()
+        {
+            base.OnServiceDisposing();
+
+            Log.Warning($"Disposing {_buffers.Count} leftover audio buffers. These should be properly disposed!");
+            for (int i = _buffers.Count - 1; i >= 0; i--)
+                _buffers[i].Dispose();
+        }
 
         protected abstract void OnUpdateAudioEngine(Timing time);
 

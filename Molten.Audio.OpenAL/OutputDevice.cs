@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Collections;
-using Silk.NET.Core.Native;
 using Silk.NET.OpenAL;
 
 namespace Molten.Audio.OpenAL
@@ -69,10 +68,16 @@ namespace Molten.Audio.OpenAL
 
         protected override void OnUpdate(Timing time)
         {
-            
+            for(int i = _sources.Count - 1; i >=0; i--)
+            {
+                SoundSource src = _sources[i] as SoundSource;
+
+                for (int s = src.InstanceCount - 1; s >= 0; s--)
+                    src.Instances[s].Update();
+            }
         }
 
-        public ISoundSource CreateSoundSource(IAudioBuffer dataBuffer = null)
+        public ISoundSource CreateSoundSource(AudioBuffer dataBuffer = null)
         {
             SoundSource source = new SoundSource(this);
             _sources.Add(source);

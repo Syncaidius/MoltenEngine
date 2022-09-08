@@ -92,36 +92,35 @@ namespace Molten.Audio.OpenAL
             _isCapturing = false;
         }
 
-        public unsafe int ReadSamples(IAudioBuffer buffer, int sampleCount)
+        public unsafe int ReadSamples(AudioBuffer buffer, int sampleCount)
         {
             if (Ptr == null)
                 throw new AudioDeviceException(this, "Input device is not opened or current");
 
             int available = 0;
             Service.Alc.GetContextProperty(Ptr, (GetContextInteger)GetCaptureContextInteger.CaptureSamples, 1, &available);
-            ContextError result = Service.Alc.GetError(Ptr);
+            if (CheckAlcError($"Unable to retrieve captured sample count from '{Name}'", Ptr))
+                return 0;
 
             sampleCount = MathHelper.Min(MathHelper.Min(available, sampleCount), _bufferSize); 
-
-            AudioBuffer alBuffer = buffer as AudioBuffer;
-            uint remainingCapacity = alBuffer.Size - alBuffer.WritePosition;
+            uint remainingCapacity = buffer.Size - buffer.WritePosition;
 
             // Read straight into the buffer if we have capacity
             if (remainingCapacity >= sampleCount)
             {
-                _capture.CaptureSamples(Ptr, alBuffer.PtrWrite, sampleCount);
-                alBuffer.WritePosition += (uint)sampleCount;
+                _capture.CaptureSamples(Ptr, buffer.PtrWrite, sampleCount);
+                buffer.WritePosition += (uint)sampleCount;
             }
             else
             {
                 // Fill to the end of the buffer, then put the rest back at the start of the buffer.
-                _capture.CaptureSamples(Ptr, alBuffer.PtrWrite, (int)remainingCapacity);
+                _capture.CaptureSamples(Ptr, buffer.PtrWrite, (int)remainingCapacity);
                 uint remainingToWrite = (uint)sampleCount - remainingCapacity;
 
                 // Go back to the start of the buffer and write the remaining data.
-                alBuffer.WritePosition = 0;
-                _capture.CaptureSamples(Ptr, alBuffer.PtrWrite, (int)remainingToWrite);
-                alBuffer.WritePosition += remainingToWrite;
+                buffer.WritePosition = 0;
+                _capture.CaptureSamples(Ptr, buffer.PtrWrite, (int)remainingToWrite);
+                buffer.WritePosition += remainingToWrite;
             }
 
             return sampleCount;
