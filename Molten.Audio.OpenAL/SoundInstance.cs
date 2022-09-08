@@ -104,8 +104,6 @@ namespace Molten.Audio.OpenAL
             if (HasError)
                 return;
 
-
-
             if (_looping != IsLooping)
             {
                 _looping = IsLooping;

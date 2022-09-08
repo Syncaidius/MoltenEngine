@@ -196,7 +196,6 @@ namespace Molten.Samples
             EngineSettings settings = new EngineSettings();
             settings.Graphics.EnableDebugLayer.Value = chkDebugLayer.IsChecked.Value;
             settings.Graphics.VSync.Value = chkVsync.IsChecked.Value;
-            settings.UseGuiControl = chkUseControl.IsChecked.Value;
 
             _curTest = Activator.CreateInstance(lastTestType) as SampleGame;
             _curTest.Start(settings, false);

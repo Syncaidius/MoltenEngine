@@ -11,7 +11,6 @@ namespace Molten.Samples
     {
         SpriteFont _sampleFont;
         bool _baseContentLoaded;
-        ControlSampleForm _form;
         SceneLayer _spriteLayer;
         SceneLayer _uiLayer;
         CameraComponent _cam2D;
@@ -42,7 +41,6 @@ namespace Molten.Samples
 
             if (Window != null)
             {
-                Window.OnHandleChanged += Window_OnHandleChanged;
                 Window.OnPostResize += Window_OnPostResize;
             }
 
@@ -145,26 +143,6 @@ namespace Molten.Samples
         {
             if (_baseContentLoaded)
                 UpdateUIlayout(UI);
-        }
-
-        private void Window_OnHandleChanged(INativeSurface surface)
-        {
-            if (Settings.UseGuiControl && _form == null)
-            {
-                // Create form and find placeholder panel.
-                _form = new ControlSampleForm();
-                Control[] placeholderPanels = _form.Controls.Find("surfacePlaceholder", true);
-                if (placeholderPanels.Length > 0)
-                {
-                    surface.ParentHandle = placeholderPanels[0].Handle;
-
-                    // TODO remove winforms sliders once engine has own GUI system.
-                    _form.SliderRed.ValueChanged += SliderRed_ValueChanged;
-                    _form.SliderGreen.ValueChanged += SliderGreen_ValueChanged;
-                    _form.SliderBlue.ValueChanged += SliderBlue_ValueChanged;
-                    _form.Show();
-                }
-            }
         }
 
         private void SliderRed_ValueChanged(object sender, EventArgs e)

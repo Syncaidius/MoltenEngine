@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj" />
+    <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />
+    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj" />
+    <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
+    <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
+  </ItemGroup>
+
+</Project>

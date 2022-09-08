@@ -27,23 +27,34 @@ namespace Molten
         /// Adds a new <see cref="EngineService"/> to be attached to an <see cref="Engine"/> instance upon initialization.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="EngineService"/>.</typeparam>
-        /// <typeparam name="S">The type of <see cref="SettingBank"/> that the service expects.</typeparam>
         /// <param name="initCallback">The initialization callback to attach to the service.</param>
         /// <exception cref="Exception"></exception>
         public void AddService<T>(MoltenEventHandler<EngineService> initCallback = null)
             where T : EngineService, new()
         {
-            // Check if service is already in startup list.
             Type t = typeof(T);
+            AddService(t, initCallback);
+        }
+
+        /// <summary>
+        /// Adds a new <see cref="EngineService"/> to be attached to an <see cref="Engine"/> instance upon initialization.
+        /// </summary>
+        /// <param name="serviceType">The type of <see cref="EngineService"/>.</param>
+        /// <param name="initCallback">The initialization callback to attach to the service.</param>
+        /// <exception cref="Exception"></exception>
+        public void AddService(Type serviceType, MoltenEventHandler<EngineService> initCallback = null)
+        {
+            // Check if service is already in startup list.
+            
             foreach (EngineService s in StartupServices)
             {
                 Type sType = s.GetType();
-                if (sType.IsAssignableFrom(t) || t.IsAssignableFrom(sType))
+                if (sType.IsAssignableFrom(serviceType) || serviceType.IsAssignableFrom(sType))
                     throw new EngineServiceException(null,
-                        $"Cannot add startup service of the same or derived type as another ({sType} and {t}).");
+                        $"Cannot add startup service of the same or derived type as another ({sType} and {serviceType}).");
             }
 
-            T service = new T();
+            EngineService service = Activator.CreateInstance(serviceType) as EngineService;
 
             if (initCallback != null)
                 service.OnInitialized += initCallback;
