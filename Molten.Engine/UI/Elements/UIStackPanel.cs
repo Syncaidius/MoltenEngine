@@ -12,6 +12,7 @@ namespace Molten.UI
 
         int _scrollBarWidth = 25;
         bool _scrollEnabled = true;
+        int _totalItemLength = 0;
         UIElementFlowDirection _direction;
 
         protected override void OnInitialize(Engine engine, UISettings settings)
@@ -46,14 +47,19 @@ namespace Molten.UI
         {
             // TODO If the element is removed, was beyond our render bounds and scrolling is disabled, don't update bounds.
 
-            OnUpdateBounds();
+            OnPreUpdateLayerBounds();
         }
 
         protected virtual void OnChildAdded(UIElement obj)
         {
             // TODO If the element is added beyond our render bounds and scrolling is disabled, don't update bounds.
 
-            OnUpdateBounds();
+            Rectangle lb = obj.LocalBounds;
+            lb.X = 0;
+            lb.Y = _totalItemLength;
+            obj.LocalBounds = lb;
+
+            _totalItemLength += lb.Height;
         }
 
         protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
@@ -71,20 +77,20 @@ namespace Molten.UI
 
             if (_direction == UIElementFlowDirection.Vertical)
             {
-                int totalHeight = 0;
+                _totalItemLength = 0;
                 foreach (UIElement e in Children)
                 {
                     Rectangle lb = e.LocalBounds;
                     lb.X = 0;
-                    lb.Y = totalHeight;
+                    lb.Y = _totalItemLength;
                     e.LocalBounds = lb;
 
-                    totalHeight += lb.Height;
+                    _totalItemLength += lb.Height;
                 }
 
                 if (_scrollEnabled)
                 {
-                    int scrollingNeeded = totalHeight - gb.Height;
+                    int scrollingNeeded = _totalItemLength - gb.Height;
                     int panelWidth = gb.Width;
 
                     if (scrollingNeeded > 0)
@@ -94,28 +100,28 @@ namespace Molten.UI
                         panelWidth -= _scrollBarWidth;
                         _scrollBar.MinValue = 0;
                         _scrollBar.MaxValue = scrollingNeeded;
+                        _scrollBar.LocalBounds = new Rectangle(_panel.LocalBounds.Right, 0, _scrollBarWidth, gb.Height);
                     }
 
                     _panel.LocalBounds = new Rectangle(0, 0, panelWidth, gb.Height);
-                    _scrollBar.LocalBounds = new Rectangle(_panel.LocalBounds.Right, 0, _scrollBarWidth, gb.Height);
                 }
             }
             else
             {
-                int totalWidth = 0;
+                _totalItemLength = 0;
                 foreach (UIElement e in Children)
                 {
                     Rectangle lb = e.LocalBounds;
-                    lb.X = totalWidth;
+                    lb.X = _totalItemLength;
                     lb.Y = 0;
                     e.LocalBounds = lb;
 
-                    totalWidth += lb.Width;
+                    _totalItemLength += lb.Width;
                 }
 
                 if (_scrollEnabled)
                 {
-                    int scrollingNeeded = totalWidth - gb.Width;
+                    int scrollingNeeded = _totalItemLength - gb.Width;
                     int panelHeight = gb.Height;
 
                     if (scrollingNeeded > 0)
@@ -125,10 +131,10 @@ namespace Molten.UI
                         panelHeight -= _scrollBarWidth;
                         _scrollBar.MinValue = 0;
                         _scrollBar.MaxValue = scrollingNeeded;
+                        _scrollBar.LocalBounds = new Rectangle(0, _panel.LocalBounds.Bottom, gb.Width, _scrollBarWidth);
                     }
 
                     _panel.LocalBounds = new Rectangle(0, 0, gb.Width, panelHeight);
-                    _scrollBar.LocalBounds = new Rectangle(0, _panel.LocalBounds.Bottom, gb.Width, _scrollBarWidth);
                 }
             }
         }

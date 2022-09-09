@@ -59,11 +59,14 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// The border line thickness
+        /// Gets or sets the border thickness of the current <see cref="UIListViewItem"/>.
         /// </summary>
         [UIThemeMember]
         public UISpacing BorderThickness { get; } = new UISpacing(2);
 
+        /// <summary>
+        /// Gets or sets the border color of the current <see cref="UIListViewItem"/>.
+        /// </summary>
         [UIThemeMember]
         public Color BorderColor
         {
@@ -71,6 +74,9 @@ namespace Molten.UI
             set => _bgStyle.BorderColor = value;
         }
 
+        /// <summary>
+        /// Gets or sets the fill color of the current <see cref="UIListViewItem"/>.
+        /// </summary>
 
         [UIThemeMember]
         public Color FillColor
@@ -79,6 +85,9 @@ namespace Molten.UI
             set => _bgStyle.FillColor = value;
         }
 
+        /// <summary>
+        /// Gets or sets whether or not the current <see cref="UIListViewItem"/> is selected.
+        /// </summary>
         public bool IsSelected
         {
             get => _selected;
@@ -101,6 +110,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the text of the current <see cref="UIListViewItem"/>
+        /// </summary>
         public string Text
         {
             get => _label.Text;

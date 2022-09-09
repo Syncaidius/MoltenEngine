@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Graphics;
+using Molten.Input;
 using Molten.UI;
 
 namespace Molten.Examples
 {
     public abstract class MoltenExample
     {
+        public event ObjectHandler<MoltenExample> Closed;
+
         ContentLoadBatch _loader;
 
         SceneLayer _spriteLayer;
@@ -18,14 +22,15 @@ namespace Molten.Examples
         SceneObject _parent;
         SceneObject _child;
 
-        public void Initialize(Engine engine, IRenderSurface2D surface)
+        public void Initialize(Engine engine, IRenderSurface2D surface, Logger log)
         {
             Engine = engine;
             Surface = surface;
+            Log = log;
 
             OnInitialize(engine);
 
-            MainScene = new Scene("Main", engine);
+            MainScene = new Scene($"Example_{GetType().Name}", engine);
             MainScene.BackgroundColor = new Color(0x333333);
             _spriteLayer = MainScene.AddLayer("sprite", true);
             _uiLayer = MainScene.AddLayer("ui", true);
@@ -51,7 +56,8 @@ namespace Molten.Examples
 
         public void Close()
         {
-
+            // TODO unload assets stored in _loader
+            Closed?.Invoke(this);
         }
 
         private void _loader_OnCompleted(ContentLoadBatch loader)
@@ -116,15 +122,22 @@ namespace Molten.Examples
 
         public void Update(Timing time)
         {
+            // Don't update until the base content is loaded.
+            if (_loader.Status != ContentLoadBatchStatus.Completed)
+            {
+                // TODO update loading screen
+                return;
+            }
+
             RotateParentChild(_parent, _child, time);
             OnUpdate(time);
         }
 
-        protected abstract void OnInitialize(Engine engine);
+        protected virtual void OnInitialize(Engine engine) { }
 
-        protected abstract void OnLoadContent(ContentLoadBatch loader);
+        protected virtual void OnLoadContent(ContentLoadBatch loader) { }
 
-        protected abstract void OnUpdate(Timing time);
+        protected virtual void OnUpdate(Timing time) { }
 
         public SpriteFont SampleFont { get; private set; }
 
@@ -161,5 +174,7 @@ namespace Molten.Examples
         public Engine Engine { get; private set; }
 
         public IRenderSurface2D Surface { get; private set; }
+
+        protected Logger Log { get; private set; }
     }
 }

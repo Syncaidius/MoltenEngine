@@ -47,7 +47,7 @@ namespace Molten.Examples
             if (Window != null)
                 Window.OnPostResize += Window_OnPostResize;
 
-            _scene = new Scene("Main", Engine);
+            _scene = new Scene("ExampleBrowser", Engine);
             _scene.BackgroundColor = new Color(0x333333);
             SpriteLayer = _scene.AddLayer("sprite", true);
             UILayer = _scene.AddLayer("ui", true);
@@ -87,7 +87,28 @@ namespace Molten.Examples
             _loader.Dispatch();
         }
 
-        protected void BuildUI(UIManagerComponent ui)
+        private void OnBaseContentLoaded(ContentLoadBatch content)
+        {
+            SampleSpriteRenderComponent com = UILayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
+            com.RenderCallback = OnDrawSprites;
+            com.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
+            BuildUI(UI);
+            DetectExamples();
+            _baseContentLoaded = true;
+        }
+
+        private void DetectExamples()
+        {
+            List<Type> eTypes = ReflectionHelper.FindType<MoltenExample>();
+            foreach(Type t in eTypes)
+            {
+                UIExampleListItem item = _lstExamples.Children.Add<UIExampleListItem>(new Rectangle(0, 0, 10, 25));
+                item.ExampleType = t;
+                item.Text = t.Name;
+            }
+        }
+
+        private void BuildUI(UIManagerComponent ui)
         {
             _txtDebug = new UILabel()
             {
@@ -161,20 +182,11 @@ namespace Molten.Examples
             _txtMovement.LocalBounds = new Rectangle(xCenter, _txtGamepad.LocalBounds.Y - 20, 0, 0);
         }
 
-        private void OnBaseContentLoaded(ContentLoadBatch content)
-        {
-            SampleSpriteRenderComponent com = UILayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
-            com.RenderCallback = OnDrawSprites;
-            com.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
-            BuildUI(UI);
-            _baseContentLoaded = true;
-        }
-
         /// <summary>
         /// Called when the <see cref="SampleBrowser"/> should update and handle gamepad input. <see cref="SampleBrowser"/> provides default handling.
         /// </summary> 
         /// <param name="time"></param>
-        protected virtual void OnGamepadInput(Timing time)
+        private void OnGamepadInput(Timing time)
         {
             // Apply left and right vibration equal to left and right trigger values 
             Gamepad.VibrationLeft.Value = Gamepad.LeftTrigger.Value;

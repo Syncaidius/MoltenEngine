@@ -9,10 +9,12 @@ namespace Molten.UI
     public class UIElementFilter
     {
         List<Type> _filteredTypes;
+        bool _allowDerivatives;
 
         internal UIElementFilter(Type[] acceptedTypes)
         {
             _filteredTypes = new List<Type>();
+
             if (acceptedTypes != null)
                 _filteredTypes.AddRange(acceptedTypes);
         }
@@ -39,7 +41,7 @@ namespace Molten.UI
             {
                 foreach (Type t in _filteredTypes)
                 {
-                    if (t == type)
+                    if (t == type || t.IsAssignableFrom(type))
                         return true;
                 }
 

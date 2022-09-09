@@ -38,10 +38,11 @@ namespace Molten.UI
             where T : UIElement, new()
         {
             T e = new T();
-            Add(e);
 
             if (localBounds != null)
                 e.LocalBounds = localBounds.Value;
+
+            Add(e);
 
             return e;
         }
