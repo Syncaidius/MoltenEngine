@@ -58,7 +58,7 @@ namespace Molten.Samples
 
         private void SpawnScene(INativeSurface surface)
         {
-            Scene scene = CreateScene("Test");
+            Scene scene = new Scene("Test", Engine);
             scene.BackgroundColor = new Color()
             {
                 R = (byte)Rng.Next(0,255),
@@ -66,12 +66,10 @@ namespace Molten.Samples
                 B = (byte)Rng.Next(0, 255),
                 A = 255,
             };
-            _player = CreateObject();
-            _player.Transform.LocalPosition = new Vector3F(0, 0, -20);
+            _player = scene.CreateObject(new Vector3F(0, 0, -20));
             CameraComponent cam = _player.Components.Add<CameraComponent>();
             cam.MaxDrawDistance = 300;
             cam.OutputSurface = surface;
-            scene.AddObject(_player);
             _scenes.Add(scene);
 
             SpawnParentChild(scene, _mesh, Vector3F.Zero);
@@ -79,7 +77,7 @@ namespace Molten.Samples
 
         protected SceneObject SpawnTestCube(Scene scene, IMesh mesh, Vector3F pos)
         {
-            SceneObject obj = CreateObject(pos, scene);
+            SceneObject obj = scene.CreateObject(pos);
             MeshComponent meshCom = obj.Components.Add<MeshComponent>();
             meshCom.RenderedObject = mesh;
             return obj;

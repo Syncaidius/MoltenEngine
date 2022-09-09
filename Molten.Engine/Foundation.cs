@@ -151,37 +151,6 @@ namespace Molten
             _engine.MainThread.Dispatch(callback);
         }
 
-        /// <summary>Creates a new instance of <see cref="Scene"/> and automatically binds it to the game engine.</summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public Scene CreateScene(string name)
-        {
-            Scene scene = new Scene(name, Engine);
-            return scene;
-        }
-
-        /// <summary>Creates a new <see cref="SceneObject"/> at position 0,0,0.</summary>
-        /// <param name="updateFlags">The update flags to set on the newly spawned object.</param>
-        /// <param name="scene">The scene to automatically add the object to. Default value is null.</param>
-        /// <returns></returns>
-        public SceneObject CreateObject(Scene scene = null, ObjectUpdateFlags updateFlags = ObjectUpdateFlags.All)
-        {
-            return CreateObject(Vector3F.Zero, scene, updateFlags);
-        }
-
-        /// <summary>Creates a new <see cref="SceneObject"/> at specified position.</summary>
-        /// <param name="position">The world position at which to create a new <see cref="SceneObject"/>.</param>
-        /// <param name="flags">The update flags to set on the newly spawned object.</param>
-        /// <param name="scene">The scene to automatically add the object to. Default value is null.</param>
-        /// <returns></returns>
-        public SceneObject CreateObject(Vector3F position, Scene scene = null, ObjectUpdateFlags flags = ObjectUpdateFlags.All)
-        {
-            SceneObject obj = new SceneObject(Engine);
-            obj.Transform.LocalPosition = position;
-            scene?.AddObject(obj);
-            return obj;
-        }
-
         /// <summary>
         /// Puases the game.
         /// </summary>

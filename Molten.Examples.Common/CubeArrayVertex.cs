@@ -1,7 +1,7 @@
 ﻿using Molten.Graphics;
 using System.Runtime.InteropServices;
 
-namespace Molten.Samples
+namespace Molten.Examples
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     /// <summary>A vertex type containing just position and color data.</summary>

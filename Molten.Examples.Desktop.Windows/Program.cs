@@ -1,7 +1,6 @@
 ﻿using Molten.Audio.OpenAL;
 using Molten.Graphics;
 using Molten.Input;
-using Molten.Samples;
 
 namespace Molten.Examples // Note: actual namespace depends on the project name.
 {

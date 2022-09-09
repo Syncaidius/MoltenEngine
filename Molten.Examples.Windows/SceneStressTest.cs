@@ -47,20 +47,18 @@ namespace Molten.Samples
 
         private void SpawnRandomTestCube(IMesh mesh, int spawnRadius)
         {
-            SceneObject obj = CreateObject();
-            MeshComponent meshCom = obj.Components.Add<MeshComponent>();
-            meshCom.RenderedObject = mesh;
-
             int maxRange = spawnRadius * 2;
-            obj.Transform.LocalPosition = new Vector3F()
+            SceneObject obj = MainScene.CreateObject(new Vector3F()
             {
                 X = -spawnRadius + (float)(Rng.NextDouble() * maxRange),
                 Y = -spawnRadius + (float)(Rng.NextDouble() * maxRange),
                 Z = spawnRadius + (float)(Rng.NextDouble() * maxRange)
-            };
+            });
+
+            MeshComponent meshCom = obj.Components.Add<MeshComponent>();
+            meshCom.RenderedObject = mesh;
 
             _objects.Add(obj);
-            MainScene.AddObject(obj);
         }
 
         protected override void OnUpdate(Timing time)

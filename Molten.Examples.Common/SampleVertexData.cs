@@ -1,6 +1,6 @@
 ﻿using Molten.Graphics;
 
-namespace Molten.Samples
+namespace Molten.Examples
 {
     public static class SampleVertexData
     {

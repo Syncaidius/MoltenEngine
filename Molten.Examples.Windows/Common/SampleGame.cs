@@ -44,7 +44,7 @@ namespace Molten.Samples
                 Window.OnPostResize += Window_OnPostResize;
             }
 
-            MainScene = CreateScene("Main");
+            MainScene = new Scene("Main", Engine);
             _spriteLayer = MainScene.AddLayer("sprite", true);
             _uiLayer = MainScene.AddLayer("ui", true);
             _uiLayer.BringToFront();
@@ -88,15 +88,13 @@ namespace Molten.Samples
 
         private void SpawnPlayer()
         {
-            _player = CreateObject();
-            _player.Transform.LocalPosition = new Vector3F(0, 0, -10);
+            _player = MainScene.CreateObject(new Vector3F(0, 0, -10));
             SceneCamera = _player.Components.Add<CameraComponent>();
             _camController = _player.Components.Add<SampleCameraController>();
             SceneCamera.LayerMask = SceneLayerMask.Layer1 | SceneLayerMask.Layer2;
             SceneCamera.OutputSurface = Window;
             SceneCamera.MaxDrawDistance = 300;
             //SceneCamera.MultiSampleLevel = AntiAliasLevel.X8;
-            MainScene.AddObject(_player);
         }
 
 
@@ -109,7 +107,7 @@ namespace Molten.Samples
 
         private SceneObject SpawnTestCube(IMesh mesh, Vector3F pos)
         {
-            SceneObject obj = CreateObject(pos, MainScene);
+            SceneObject obj = MainScene.CreateObject(pos);
             MeshComponent meshCom = obj.Components.Add<MeshComponent>();
             meshCom.RenderedObject = mesh;
             return obj;

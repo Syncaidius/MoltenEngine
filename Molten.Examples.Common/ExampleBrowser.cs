@@ -1,36 +1,37 @@
 ﻿using Molten.Audio;
+using Molten.Collections;
 using Molten.Graphics;
 using Molten.Input;
 using Molten.Net;
 using Molten.UI;
 using System.Diagnostics;
 
-namespace Molten.Samples
+namespace Molten.Examples
 {
     public class ExampleBrowser<R, I, A> : Foundation
         where R : RenderService, new()
         where I : InputService, new ()
         where A : AudioService, new()
     {
-        SpriteFont _sampleFont;
         bool _baseContentLoaded;
-        SceneLayer _spriteLayer;
-        SceneLayer _uiLayer;
+        Scene _scene;
         CameraComponent _cam2D;
-
         ContentLoadBatch _loader;
-
-        SceneObject _player;
-        SampleCameraController _camController;
-        SceneObject _parent;
-        SceneObject _child;
 
         UILabel _txtDebug;
         UILabel _txtMovement;
         UILabel _txtGamepad;
         UIListView _lstExamples;
+        UIButton _btnCloseAll;
+        UIButton _btnStart;
+        UICheckBox _chkNativeWindow;
 
-        public ExampleBrowser(string title) : base(title) { }
+        ThreadedList<MoltenExample> _activeExamples;
+
+        public ExampleBrowser(string title) : base(title)
+        {
+            _activeExamples = new ThreadedList<MoltenExample>();
+        }
 
         protected override void OnStart(EngineSettings settings)
         {
@@ -46,14 +47,15 @@ namespace Molten.Samples
             if (Window != null)
                 Window.OnPostResize += Window_OnPostResize;
 
-            MainScene = CreateScene("Main");
-            _spriteLayer = MainScene.AddLayer("sprite", true);
-            _uiLayer = MainScene.AddLayer("ui", true);
-            _uiLayer.BringToFront();
-            UI = _uiLayer.AddObjectWithComponent<UIManagerComponent>();
+            _scene = new Scene("Main", Engine);
+            _scene.BackgroundColor = new Color(0x333333);
+            SpriteLayer = _scene.AddLayer("sprite", true);
+            UILayer = _scene.AddLayer("ui", true);
+            UILayer.BringToFront();
+            UI = UILayer.AddObjectWithComponent<UIManagerComponent>();
 
             // Use the same camera for both the sprite and UI scenes.
-            _cam2D = MainScene.AddObjectWithComponent<CameraComponent>(_uiLayer);
+            _cam2D = _scene.AddObjectWithComponent<CameraComponent>(UILayer);
             _cam2D.Mode = RenderCameraMode.Orthographic;
             _cam2D.OrderDepth = 1;
             _cam2D.MaxDrawDistance = 1.0f;
@@ -72,99 +74,17 @@ namespace Molten.Samples
             _loader = Engine.Content.GetLoadBatch();
             _loader.LoadFont("assets/BroshK.ttf", (font, isReload) =>
             {
-                _sampleFont = font;
-                Engine.Renderer.Overlay.Font = _sampleFont;
+                SampleFont = font;
+                Engine.Renderer.Overlay.Font = SampleFont;
+            });
+
+            _loader.Deserialize<UITheme>("assets/test_theme.json", (theme, isReload) =>
+            {
+                UI.Root.Theme = theme;
             });
 
             _loader.OnCompleted += OnBaseContentLoaded;
             _loader.Dispatch();
-
-            SpawnPlayer();
-            TestMesh = GetTestCubeMesh();
-            SpawnParentChild(TestMesh, Vector3F.Zero, out _parent, out _child);
-        }
-
-        private void Gamepad_OnConnectionStatusChanged(Input.InputDevice device, bool isConnected)
-        {
-            UpdateGamepadUI();
-        }
-
-        private void SpawnPlayer()
-        {
-            _player = CreateObject();
-            _player.Transform.LocalPosition = new Vector3F(0, 0, -10);
-            SceneCamera = _player.Components.Add<CameraComponent>();
-            _camController = _player.Components.Add<SampleCameraController>();
-            SceneCamera.LayerMask = SceneLayerMask.Layer1 | SceneLayerMask.Layer2;
-            SceneCamera.OutputSurface = Window;
-            SceneCamera.MaxDrawDistance = 300;
-            //SceneCamera.MultiSampleLevel = AntiAliasLevel.X8;
-            MainScene.AddObject(_player);
-        }
-
-
-        protected virtual IMesh GetTestCubeMesh()
-        {
-            IMesh<VertexTexture> cube = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
-            cube.SetVertices(SampleVertexData.TexturedCube);
-            return cube;
-        }
-
-        private SceneObject SpawnTestCube(IMesh mesh, Vector3F pos)
-        {
-            SceneObject obj = CreateObject(pos, MainScene);
-            MeshComponent meshCom = obj.Components.Add<MeshComponent>();
-            meshCom.RenderedObject = mesh;
-            return obj;
-        }
-
-        protected void SpawnParentChild(IMesh mesh, Vector3F origin, out SceneObject parent, out SceneObject child)
-        {
-            parent = SpawnTestCube(mesh, Vector3F.Zero);
-            child = SpawnTestCube(mesh, Vector3F.Zero);
-
-            child.Transform.LocalScale = new Vector3F(0.5f);
-            child.Transform.LocalPosition = new Vector3F(0, 0, 2);
-            parent.Transform.LocalPosition = origin;
-            parent.Children.Add(child);
-        }
-
-        protected void RotateParentChild(SceneObject parent, SceneObject child, Timing time, float speed = 0.5f, float childSpeed = 1.0f)
-        {
-            var rotateTime = (float)time.TotalTime.TotalSeconds;
-
-            parent.Transform.LocalRotationY += speed;
-            if (parent.Transform.LocalRotationY >= 360)
-                parent.Transform.LocalRotationY -= 360;
-
-            child.Transform.LocalRotationX += childSpeed;
-            if (child.Transform.LocalRotationX >= 360)
-                child.Transform.LocalRotationX -= 360;
-        }
-
-        private void Window_OnPostResize(ITexture texture)
-        {
-            if (_baseContentLoaded)
-                UpdateUIlayout(UI);
-        }
-
-        private void ChangePresentColor(int channelIndex, byte val)
-        {
-            Color color = MainScene.BackgroundColor;
-            color[channelIndex] = val;
-            MainScene.BackgroundColor = color;
-        }
-
-        private void UpdateGamepadUI()
-        {
-            if (Gamepad.IsConnected)
-            {
-                _txtGamepad.Text = "Gamepad [LEFT STICK] or [D-PAD] to move -- [RIGHT STICK] to aim";
-            }
-            else
-            {
-                _txtGamepad.Text = "Connect a gamepad / controller";
-            }
         }
 
         protected void BuildUI(UIManagerComponent ui)
@@ -186,7 +106,19 @@ namespace Molten.Samples
                 HorizontalAlign = UIHorizonalAlignment.Center,
             };
 
-            _lstExamples = UI.Children.Add<UIListView>(new Rectangle(0, 0, 300, 600));
+            UIPanel cp = UI.Children.Add<UIPanel>(new Rectangle(0, 0, 300, 900));
+            UILabel lblExamples = UI.Children.Add<UILabel>(new Rectangle(5, 5, 300, 20));
+            lblExamples.Text = "Available examples:";
+
+            _lstExamples = cp.Children.Add<UIListView>(new Rectangle(5, 30, 285, 600));
+            _btnCloseAll = UI.Children.Add<UIButton>(new Rectangle(25, 650, 130, 25));
+            _btnCloseAll.Text = "Close All";
+
+            _btnStart = UI.Children.Add<UIButton>(new Rectangle(165, 650, 100, 25));
+            _btnStart.Text = "Start";
+
+            _chkNativeWindow = UI.Children.Add<UICheckBox>(new Rectangle(5, 690, 200, 25));
+            _chkNativeWindow.Text = "Open in Native Window";
 
             ui.Children.Add(_txtDebug);
             ui.Children.Add(_txtMovement);
@@ -196,6 +128,29 @@ namespace Molten.Samples
             Gamepad.OnConnectionStatusChanged += Gamepad_OnConnectionStatusChanged;
 
             UpdateUIlayout(ui);
+        }
+
+        private void Gamepad_OnConnectionStatusChanged(InputDevice device, bool isConnected)
+        {
+            UpdateGamepadUI();
+        }
+
+        private void Window_OnPostResize(ITexture texture)
+        {
+            if (_baseContentLoaded)
+                UpdateUIlayout(UI);
+        }
+
+        private void UpdateGamepadUI()
+        {
+            if (Gamepad.IsConnected)
+            {
+                _txtGamepad.Text = "Gamepad [LEFT STICK] or [D-PAD] to move -- [RIGHT STICK] to aim";
+            }
+            else
+            {
+                _txtGamepad.Text = "Connect a gamepad / controller";
+            }
         }
 
         protected virtual void UpdateUIlayout(UIManagerComponent ui)
@@ -208,7 +163,7 @@ namespace Molten.Samples
 
         private void OnBaseContentLoaded(ContentLoadBatch content)
         {
-            SampleSpriteRenderComponent com = _uiLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
+            SampleSpriteRenderComponent com = UILayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             com.RenderCallback = OnDrawSprites;
             com.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
             BuildUI(UI);
@@ -273,7 +228,6 @@ namespace Molten.Samples
             if (Keyboard.IsTapped(KeyCode.Escape))
                 Exit();
 
-            RotateParentChild(_parent, _child, time);
             OnGamepadInput(time);
         }
 
@@ -284,7 +238,7 @@ namespace Molten.Samples
 
         }
 
-        public SpriteFont SampleFont => _sampleFont;
+        public SpriteFont SampleFont { get; private set; }
 
         /// <summary>Gets a random number generator. Used for various samples.</summary>
         public Random Rng { get; private set; } = new Random();
@@ -292,26 +246,15 @@ namespace Molten.Samples
         /// <summary>
         /// Gets the sample's UI scene layer.
         /// </summary>
-        public SceneLayer UILayer => _uiLayer;
+        public SceneLayer UILayer { get; private set; }
 
         /// <summary>
         /// Gets the sample's sprite scene layer.
         /// </summary>
-        public SceneLayer SpriteLayer => _spriteLayer;
+        public SceneLayer SpriteLayer { get; private set; }
 
         public UIManagerComponent UI { get; private set; }
 
-        /// <summary>
-        /// Gets the sample's sprite scene. This is rendered before <see cref="UIScene"/>.
-        /// </summary>
-        public Scene MainScene { get; private set; }
-
         protected IMesh TestMesh { get; private set; }
-
-        public SceneObject Player => _player;
-
-        public CameraComponent SceneCamera { get; set; }
-
-        public SampleCameraController CameraController => _camController;
     }
 }

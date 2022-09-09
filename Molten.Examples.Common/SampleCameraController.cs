@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Molten.Input;
 
-namespace Molten
+namespace Molten.Examples
 {
     public class SampleCameraController : SceneComponent, IInputHandler
     {

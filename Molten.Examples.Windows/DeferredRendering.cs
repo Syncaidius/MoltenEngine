@@ -110,7 +110,7 @@ namespace Molten.Samples
         private void SetupFloor(Vector3F origin, float size)
         {
             _floorMesh = MeshHelper.PlainCentered(Engine.Renderer, size / 4);
-            SceneObject floorObj = CreateObject(origin, MainScene);
+            SceneObject floorObj = MainScene.CreateObject(origin);
             floorObj.Transform.LocalPosition = origin;
             floorObj.Transform.LocalScale = new Vector3F(size);
 

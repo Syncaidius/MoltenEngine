@@ -112,10 +112,7 @@ namespace Molten.Audio.OpenAL
                         _defaultInputDevice = iDevice;
 
                     if (iDevice.Name == settings.Audio.InputDevice.Value)
-                    {
                         _inputDevice = iDevice;
-                        Input = iDevice;
-                    }
                 }
 
                 // Get output devices
@@ -137,18 +134,18 @@ namespace Molten.Audio.OpenAL
                         _defaultOutputDevice = oDevice;
 
                     if (oDevice.Name == settings.Audio.OutputDevice.Value)
-                    {
                         _outputDevice = oDevice;
-                        Output = oDevice;
-                    }
                 }
 
                 // Use default devices if we don't have 
                 _inputDevice = _inputDevice ?? _defaultInputDevice;
                 _outputDevice = _outputDevice ?? _defaultOutputDevice;
 
+                Input = _inputDevice;
+                Output = _outputDevice;
+
                 // Update settings if the provided values were no longer valid.
-                if(_inputDevice.Name != settings.Audio.InputDevice.Value)
+                if (_inputDevice.Name != settings.Audio.InputDevice.Value)
                     settings.Audio.InputDevice.Value = _inputDevice.Name;
 
                 if (_outputDevice.Name != settings.Audio.OutputDevice.Value)
@@ -163,7 +160,7 @@ namespace Molten.Audio.OpenAL
                 string extName = ExtensionAttribute.GetExtensionAttribute(typeof(Enumeration)).Name;
                 Log.Error($"Unable to detect audio devices due to missing extension: {extName}");
             }
-        }      
+        }  
 
         protected override void OnUpdateAudioEngine(Timing time)
         {

@@ -1,6 +1,6 @@
 ﻿using Molten.Graphics;
 
-namespace Molten.Samples
+namespace Molten.Examples
 {
     /// <summary>
     /// A helper component which provides a render callback for custom rendering in samples.

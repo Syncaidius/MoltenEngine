@@ -1,5 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Graphics;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Molten
 {
@@ -16,7 +17,7 @@ namespace Molten
         /// <summary>Creates a new instance of <see cref="Scene"/></summary>
         /// <param name="name">The name of the scene.</param>
         /// <param name="engine">The engine instance to which the scene will be bound.</param>
-        internal Scene(string name, Engine engine)
+        public Scene(string name, Engine engine)
         {
             Name = name;
             Engine = engine;
@@ -124,6 +125,31 @@ namespace Molten
 
             AddObject(obj, layer);
 
+            return obj;
+        }
+
+        /// <summary>Creates a new <see cref="SceneObject"/> at specified position.</summary>
+        /// <param name="flags">The update flags to set on the newly spawned object.</param>
+        /// <param name="visible">If true, the object is spawned as visible. False will spawn the object as hidden.</param>
+        /// <returns></returns>
+        public SceneObject CreateObject(ObjectUpdateFlags flags = ObjectUpdateFlags.All, bool visible = true)
+        {
+            SceneObject obj = new SceneObject(Engine, flags, visible);
+            obj.Transform.LocalPosition = Vector3F.Zero;
+            AddObject(obj);
+            return obj;
+        }
+
+        /// <summary>Creates a new <see cref="SceneObject"/> at specified position.</summary>
+        /// <param name="position">The world position at which to create a new <see cref="SceneObject"/>.</param>
+        /// <param name="flags">The update flags to set on the newly spawned object.</param>
+        /// <param name="visible">If true, the object is spawned as visible. False will spawn the object as hidden.</param>
+        /// <returns></returns>
+        public SceneObject CreateObject(Vector3F position, ObjectUpdateFlags flags = ObjectUpdateFlags.All, bool visible = true)
+        {
+            SceneObject obj = new SceneObject(Engine, flags, visible);
+            obj.Transform.LocalPosition = position;
+            AddObject(obj);
             return obj;
         }
 
