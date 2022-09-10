@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+﻿using System.Reflection;
 using Molten.Graphics;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Molten.UI
 {
@@ -162,40 +155,55 @@ namespace Molten.UI
         /// <param name="element"></param>
         public void ApplyStyle(UIElement element)
         {
-            UIStyle style = null;
-            
-            // TODO support derivative types. e.g. UIExampleListItem derives from UIListViewItem
-            UIElement e = element;
             Type elementType = element.GetType();
-
-            while (e != null)
-            {
-                Type eType = e.GetType();
-                if (!(style ?? this).Parents.TryGetValue(eType, out UIStyle nextStyle))
-                    break;
-
-                //A more precise styling is available.
-                e = e.ParentElement;
-                style = nextStyle;
-            }
-
-            // No style?
-            if (style == null || style.Properties.Count == 0)
-                return;
-
-            if (style.Properties.First().Key.ReflectedType != elementType)
-            {
-                if (!Parents.TryGetValue(elementType, out style))
-                    style = AddStyle(elementType.FullName);
-            }
+            UIStyle style = FindStyle(element, elementType, this);
 
             // Apply the style
-            MemberInfo[] members = _memberCache[elementType];
-            foreach (MemberInfo member in members)
+            if (style != null && style.Properties.Count > 0)
             {
-                object val = style.GetValue(member, element.State);
-                SetMember(member, element, val);
+                MemberInfo[] members = GetMembers(elementType);
+                foreach (MemberInfo member in members)
+                {
+                    // Try to retrieve the member value from the current style, or lower-level/child/direct styles.
+                    UIStyle memberStyle = style;
+                    while (memberStyle != null)
+                    {
+                        if (memberStyle.Properties.TryGetValue(member, out UIStyleValue value))
+                        {
+                            SetMember(member, element, value[element.State]);
+                        }
+                        else if(memberStyle.PropertiesByName.TryGetValue(member.Name, out MemberInfo altMember))
+                        {
+                            if (memberStyle.Properties.TryGetValue(altMember, out value))
+                                SetMember(member, element, value[element.State]);
+                        }
+
+                        memberStyle = memberStyle.Child;
+                    }
+                }
             }
+        }
+
+        private UIStyle FindStyle(UIElement element, Type elementType, UIStyle style)
+        {
+            // Find a more granular style. e.g. A style for a UIButton on a UIPanel, instead of just the generic/base UIButton style.
+            while(typeof(UIElement).IsAssignableFrom(elementType))
+            {
+                if (style.Parents.TryGetValue(elementType, out UIStyle parentStyle))
+                {
+                    UIElement parent = element.ParentElement;
+                    if (parent != null)
+                        return FindStyle(parent, parent.GetType(), parentStyle);
+                    else
+                        return parentStyle;
+                }
+
+                // Move to base type of current element type
+                elementType = elementType.BaseType;
+            }
+
+            // Return the last matching style.
+            return style;
         }
 
         private void SetMember(MemberInfo member, object target, object value)

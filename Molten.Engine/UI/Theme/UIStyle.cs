@@ -9,30 +9,19 @@ namespace Molten.UI
 {
     public class UIStyle
     {
-        internal Dictionary<MemberInfo, UIStyleValue> Properties { get; } = new Dictionary<MemberInfo, UIStyleValue>();
-
+        /// <summary>
+        /// A lookup table of available parent elements for the element-type represented by the current <see cref="UIStyle"/>.
+        /// </summary>
         internal Dictionary<Type, UIStyle> Parents { get; } = new Dictionary<Type, UIStyle>();
 
         internal UIStyle Child { get; }
 
+        internal Dictionary<MemberInfo, UIStyleValue> Properties { get; } = new Dictionary<MemberInfo, UIStyleValue>();
+        internal Dictionary<string, MemberInfo> PropertiesByName { get; } = new Dictionary<string, MemberInfo>();
+
         internal UIStyle(UIStyle child)
         {
             Child = child;
-        }
-
-        internal object GetValue(MemberInfo member, UIElementState state)
-        {
-            // First try to find the value on self or child styles
-            UIStyle style = this;
-            while (style != null)
-            {
-                if (Properties.TryGetValue(member, out UIStyleValue value))
-                    return value[state];
-
-                style = style.Child;
-            }
-
-            return null;
         }
 
         internal void Populate(Type t, MemberInfo[] members, Dictionary<string, Dictionary<UIElementState, object>> values)
@@ -45,6 +34,7 @@ namespace Molten.UI
                 {
                     object defaultVal = GetMemberValue(mInfo, objInstance);
                     Properties[mInfo] = new UIStyleValue(this, defaultVal);
+                    PropertiesByName[mInfo.Name] = mInfo;
                 }
             }
             else
