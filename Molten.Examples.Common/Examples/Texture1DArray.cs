@@ -7,6 +7,7 @@ using Molten.Graphics;
 
 namespace Molten.Examples
 {
+    [Example("Texture Arrays - 1D", "Demonstrates how 1D texture arrays are used")]
     public class Texture1DArray : MoltenExample
     {
         ContentLoadHandle _hMaterial;

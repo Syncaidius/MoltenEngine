@@ -5,6 +5,7 @@ using Molten.Input;
 using Molten.Net;
 using Molten.UI;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Molten.Examples
 {
@@ -102,9 +103,20 @@ namespace Molten.Examples
             List<Type> eTypes = ReflectionHelper.FindType<MoltenExample>();
             foreach(Type t in eTypes)
             {
+                ExampleAttribute att = t.GetCustomAttribute<ExampleAttribute>();
                 UIExampleListItem item = _lstExamples.Children.Add<UIExampleListItem>(new Rectangle(0, 0, 10, 25));
                 item.ExampleType = t;
-                item.Text = t.Name;
+
+                if (att != null)
+                {
+                    item.Text = att.Title;
+                    item.Description = att.Description;
+                }
+                else
+                {
+                    item.Text = t.Name;
+                    item.Description = "[No Description]";
+                }
             }
         }
 
@@ -132,11 +144,15 @@ namespace Molten.Examples
             lblExamples.Text = "Available examples:";
 
             _lstExamples = cp.Children.Add<UIListView>(new Rectangle(5, 30, 285, 600));
+            _lstExamples.SelectionChanged += _lstExamples_SelectionChanged;
+
             _btnCloseAll = UI.Children.Add<UIButton>(new Rectangle(25, 650, 130, 25));
             _btnCloseAll.Text = "Close All";
+            _btnCloseAll.IsEnabled = false;
 
             _btnStart = UI.Children.Add<UIButton>(new Rectangle(165, 650, 100, 25));
             _btnStart.Text = "Start";
+            _btnStart.IsEnabled = false;
 
             _chkNativeWindow = UI.Children.Add<UICheckBox>(new Rectangle(5, 690, 200, 25));
             _chkNativeWindow.Text = "Open in Native Window";
@@ -149,6 +165,11 @@ namespace Molten.Examples
             Gamepad.OnConnectionStatusChanged += Gamepad_OnConnectionStatusChanged;
 
             UpdateUIlayout(ui);
+        }
+
+        private void _lstExamples_SelectionChanged(UIListViewItem element)
+        {
+            _btnStart.IsEnabled = element != null;
         }
 
         private void Gamepad_OnConnectionStatusChanged(InputDevice device, bool isConnected)

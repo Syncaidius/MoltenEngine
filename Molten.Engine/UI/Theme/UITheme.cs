@@ -163,6 +163,8 @@ namespace Molten.UI
         public void ApplyStyle(UIElement element)
         {
             UIStyle style = null;
+            
+            // TODO support derivative types. e.g. UIExampleListItem derives from UIListViewItem
             UIElement e = element;
             Type elementType = element.GetType();
 

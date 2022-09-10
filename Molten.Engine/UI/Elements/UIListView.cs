@@ -1,4 +1,5 @@
-﻿using Molten.Graphics;
+﻿using System.Xml.Linq;
+using Molten.Graphics;
 
 namespace Molten.UI
 {
@@ -40,14 +41,30 @@ namespace Molten.UI
 
         private void Item_Pressed(UIElement element, ScenePointerTracker tracker)
         {
-            UIListViewItem item = element as UIListViewItem;
-            if (element != _selectedItem)
-            {
-                if(_selectedItem != null)
-                    _selectedItem.IsSelected = false;
+            SelectedItem = element as UIListViewItem;
+        }
 
-                item.IsSelected = true;
-                _selectedItem = item;
+        /// <summary>
+        /// Gets or sets the selected <see cref="UIListViewItem"/> for the current <see cref="UIListView"/>. 
+        /// <para>Setting <see cref="SelectedItem"/> to null will clear the selection of the current <see cref="UIListView"/>.</para>
+        /// </summary>
+        public UIListViewItem SelectedItem
+        {
+            get => _selectedItem;
+            set
+            {
+                if(_selectedItem != value)
+                {
+                    if (value.ParentElement != this)
+                        throw new Exception("The provided list view item does not belong to the current list-view");
+
+                    if (_selectedItem != null)
+                        _selectedItem.IsSelected = false;
+
+                    value.IsSelected = true;
+                    _selectedItem = value;
+                    SelectionChanged?.Invoke(_selectedItem);
+                }
             }
         }
     }

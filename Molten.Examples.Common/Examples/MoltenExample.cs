@@ -12,6 +12,7 @@ namespace Molten.Examples
 {
     public abstract class MoltenExample
     {
+
         public event ObjectHandler<MoltenExample> Closed;
 
         ContentLoadBatch _loader;

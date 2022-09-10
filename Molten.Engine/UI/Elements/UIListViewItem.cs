@@ -91,7 +91,7 @@ namespace Molten.UI
         public bool IsSelected
         {
             get => _selected;
-            set
+            internal set
             {
                 if(_selected != value)
                 {

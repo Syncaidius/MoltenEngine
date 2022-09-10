@@ -2,7 +2,8 @@
   "Molten.UI.UIWindow/Molten.UI.UIButton/Molten.UI.UILabel": {
     "Color": {
       "Default": "255 255 255 255",
-      "Pressed": "255 255 0 255"
+      "Pressed": "255 255 0 255",
+      "Disabled": "180 0 70 255"
     },
     "VerticalAlign": "Center",
     "HorizontalAlign": "Center",
@@ -21,17 +22,30 @@
   "Molten.UI.UIButton": {
     "FillColor": {
       "Default": "0 109 155 255",
-      "Pressed": "122 209 255 255"
+      "Pressed": "122 209 255 255",
+      "Disabled": "70 70 70 255"
     },
     "BorderColor": {
       "Default": "52 189 235 255",
       "Hovered": "122 209 255 255",
-      "Pressed": "122 209 255 255"
+      "Pressed": "122 209 255 255",
+      "Disabled": "100 100 100 255"
     },
     "VerticalAlign": "Center",
     "HorizontalAlign": "Center",
     "FontName": "Arial",
     "CornerRadius": "0 0 0 0"
+  },
+
+  "Molten.UI.UIButton/Molten.UI.UILabel": {
+    "Color": {
+      "Default": "255 255 255 255",
+      "Pressed": "255 255 0 255",
+      "Disabled": "180 180 180 255"
+    },
+    "VerticalAlign": "Center",
+    "HorizontalAlign": "Center",
+    "FontName": "Arial"
   },
 
   "Molten.UI.UIWindow": {
@@ -60,6 +74,13 @@
     }
   },
 
+  "Molten.UI.UIListViewItem": {
+    "FillColor": {
+      "Hovered": "180 0 200 255",
+      "Active": "200 200 200 255"
+    }
+  },
+
   "Molten.UI.UIListView/Molten.UI.UIListViewItem/Molten.UI.UILabel": {
     "VerticalAlign": "Center",
     "HorizontalAlign": "Center",
@@ -67,12 +88,6 @@
       "Default": "255 255 255 255",
       "Pressed": "255 255 0 255",
       "Hovered": "180 180 0 255"
-    }
-  },
-
-  "Molten.UI.UIListViewItem": {
-    "FillColor": {
-      "Active": "200 200 200 255"
     }
   }
 }
