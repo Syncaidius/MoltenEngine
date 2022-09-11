@@ -153,6 +153,7 @@ namespace Molten.Examples
             _btnStart = UI.Children.Add<UIButton>(new Rectangle(165, 650, 100, 25));
             _btnStart.Text = "Start";
             _btnStart.IsEnabled = false;
+            _btnStart.Released += _btnStart_Released;
 
             _chkNativeWindow = UI.Children.Add<UICheckBox>(new Rectangle(5, 690, 200, 25));
             _chkNativeWindow.Text = "Open in Native Window";
@@ -165,6 +166,20 @@ namespace Molten.Examples
             Gamepad.OnConnectionStatusChanged += Gamepad_OnConnectionStatusChanged;
 
             UpdateUIlayout(ui);
+        }
+
+        private void _btnStart_Released(UIElement element, ScenePointerTracker tracker)
+        {
+            if (_lstExamples.SelectedItem == null)
+                return;
+
+            UIExampleListItem selected = _lstExamples.SelectedItem as UIExampleListItem;
+            MoltenExample example = Activator.CreateInstance(selected.ExampleType) as MoltenExample;
+
+            IRenderSurface2D surface = Engine.Renderer.Resources.CreateSurface(800,600);
+            example.Initialize(Engine, surface, Log);
+
+            _activeExamples.Add(example);
         }
 
         private void _lstExamples_SelectionChanged(UIListViewItem element)
@@ -262,6 +277,8 @@ namespace Molten.Examples
                 Exit();
 
             OnGamepadInput(time);
+
+            _activeExamples.For(0, 1, (index, example) => example.Update(Time));
         }
 
         protected virtual void OnDrawSprites(SpriteBatcher sb)
@@ -269,6 +286,13 @@ namespace Molten.Examples
             if (SampleFont == null)
                 return;
 
+            Rectangle dest = new Rectangle(400, 100, 400, 300);
+            RectStyle style = RectStyle.Default;
+            _activeExamples.For(0, 1, (index, example) =>
+            {
+                sb.Draw(dest, ref style, example.Surface);
+                dest.X += dest.Width;
+            });
         }
 
         public SpriteFont SampleFont { get; private set; }

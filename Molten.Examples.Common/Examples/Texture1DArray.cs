@@ -31,7 +31,7 @@ namespace Molten.Examples
             }
 
             IMaterial mat = _hMaterial.Get<IMaterial>();
-            ITexture texture = _hTexture.Get<ITexture2D>();
+            ITexture texture = _hTexture.Get<ITexture>();
 
             mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;

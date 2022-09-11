@@ -17,6 +17,7 @@ namespace Molten.UI
         internal UIStyle Child { get; }
 
         internal Dictionary<MemberInfo, UIStyleValue> Properties { get; } = new Dictionary<MemberInfo, UIStyleValue>();
+
         internal Dictionary<string, MemberInfo> PropertiesByName { get; } = new Dictionary<string, MemberInfo>();
 
         internal UIStyle(UIStyle child)

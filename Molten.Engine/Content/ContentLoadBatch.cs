@@ -36,6 +36,14 @@ namespace Molten
             if (Status == ContentLoadBatchStatus.Dispatched)
                 throw new InvalidOperationException("ContentLoadBatch has not yet completed the previous Dispatch()");
 
+            if (Status == ContentLoadBatchStatus.NotDispatched &&
+                _loadedCount == _handles.Count)
+            {
+                Status = ContentLoadBatchStatus.Completed;
+                OnCompleted?.Invoke(this);
+                return;
+            }
+
             _loadedCount = 0;
 
             _handles.For(0, 1, (index, handle) =>

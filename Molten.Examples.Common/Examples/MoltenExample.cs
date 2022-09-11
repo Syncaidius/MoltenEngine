@@ -32,7 +32,13 @@ namespace Molten.Examples
             OnInitialize(engine);
 
             MainScene = new Scene($"Example_{GetType().Name}", engine);
-            MainScene.BackgroundColor = new Color(0x333333);
+            MainScene.BackgroundColor = new Color()
+            {
+                R = (byte)Rng.Next(0,256),
+                G = (byte)Rng.Next(0, 256),
+                B = (byte)Rng.Next(0, 256),
+                A = 255,
+            };//new Color(0x333333);
             _spriteLayer = MainScene.AddLayer("sprite", true);
             _uiLayer = MainScene.AddLayer("ui", true);
             _uiLayer.BringToFront();
@@ -49,6 +55,9 @@ namespace Molten.Examples
             UI.Root.IsScrollingEnabled = false;
             UI.Camera = Camera2D;
 
+            TestMesh = GetTestCubeMesh();
+            SpawnPlayer();
+
             _loader = engine.Content.GetLoadBatch();
             OnLoadContent(_loader);
             _loader.OnCompleted += _loader_OnCompleted;
@@ -63,8 +72,8 @@ namespace Molten.Examples
 
         private void _loader_OnCompleted(ContentLoadBatch loader)
         {
-            SpawnPlayer();
-            TestMesh = GetTestCubeMesh();
+            // TODO hide loading screen
+
             SpawnParentChild(TestMesh, Vector3F.Zero, out _parent, out _child);
         }
 
@@ -80,7 +89,6 @@ namespace Molten.Examples
             //SceneCamera.MultiSampleLevel = AntiAliasLevel.X8;
             MainScene.AddObject(Player);
         }
-
 
         protected virtual IMesh GetTestCubeMesh()
         {
@@ -130,7 +138,9 @@ namespace Molten.Examples
                 return;
             }
 
-            RotateParentChild(_parent, _child, time);
+            if (_child != null)
+                RotateParentChild(_parent, _child, time);
+
             OnUpdate(time);
         }
 
