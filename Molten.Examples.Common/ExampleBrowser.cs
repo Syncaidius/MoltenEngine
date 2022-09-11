@@ -176,20 +176,39 @@ namespace Molten.Examples
             UIExampleListItem selected = _lstExamples.SelectedItem as UIExampleListItem;
             MoltenExample example = Activator.CreateInstance(selected.ExampleType) as MoltenExample;
 
-            IRenderSurface2D surface = Engine.Renderer.Resources.CreateSurface(800,600);
-            example.Initialize(Engine, surface, Log);
-
-            UIWindow window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
+            if (_chkNativeWindow.IsChecked)
             {
-                window.Title = selected.Text;
-                window.Closing += (element, args) =>
+                INativeSurface surface = Engine.Renderer.Resources.CreateFormSurface(selected.Text, selected.Text.Replace(" ", ""));
+                Engine.Renderer.OutputSurfaces.Add(surface);
+                surface.OnClose += (nativeSurface) =>
                 {
                     example.Close();
                     _activeExamples.Remove(example);
+                    Engine.Renderer.OutputSurfaces.Remove(surface);
                 };
 
-                UITexture windowTex = window.Children.Add<UITexture>(new Rectangle(0, 0, 800, 600));
-                windowTex.Texture = surface;
+                example.Initialize(Engine, surface, Log);
+
+                surface.Mode = WindowMode.Windowed;
+                surface.Visible = true;
+            }
+            else
+            {
+                IRenderSurface2D surface = Engine.Renderer.Resources.CreateSurface(800, 600);
+                example.Initialize(Engine, surface, Log);
+
+                UIWindow window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
+                {
+                    window.Title = selected.Text;
+                    window.Closing += (element, args) =>
+                    {
+                        example.Close();
+                        _activeExamples.Remove(example);
+                    };
+
+                    UITexture windowTex = window.Children.Add<UITexture>(new Rectangle(0, 0, 800, 600));
+                    windowTex.Texture = surface;
+                }
             }
 
             _activeExamples.Add(example);
