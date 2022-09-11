@@ -153,7 +153,7 @@ namespace Molten.Examples
             _btnStart = UI.Children.Add<UIButton>(new Rectangle(165, 650, 100, 25));
             _btnStart.Text = "Start";
             _btnStart.IsEnabled = false;
-            _btnStart.Released += _btnStart_Released;
+            _btnStart.Released += BtnStart_StartExample;
 
             _chkNativeWindow = UI.Children.Add<UICheckBox>(new Rectangle(5, 690, 200, 25));
             _chkNativeWindow.Text = "Open in Native Window";
@@ -168,7 +168,7 @@ namespace Molten.Examples
             UpdateUIlayout(ui);
         }
 
-        private void _btnStart_Released(UIElement element, ScenePointerTracker tracker)
+        private void BtnStart_StartExample(UIElement element, ScenePointerTracker tracker)
         {
             if (_lstExamples.SelectedItem == null)
                 return;
@@ -179,7 +179,20 @@ namespace Molten.Examples
             IRenderSurface2D surface = Engine.Renderer.Resources.CreateSurface(800,600);
             example.Initialize(Engine, surface, Log);
 
+            UIWindow window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
+            {
+                window.Title = selected.Text;
+                window.Closing += Window_Closing;
+                UITexture windowTex = window.Children.Add<UITexture>(new Rectangle(0, 0, 800, 600));
+                windowTex.Texture = surface;
+            }
+
             _activeExamples.Add(example);
+        }
+
+        private void Window_Closing(UIWindow element, UICancelEventArgs args)
+        {
+            throw new NotImplementedException();
         }
 
         private void _lstExamples_SelectionChanged(UIListViewItem element)
@@ -286,13 +299,13 @@ namespace Molten.Examples
             if (SampleFont == null)
                 return;
 
-            Rectangle dest = new Rectangle(400, 100, 400, 300);
+            /*Rectangle dest = new Rectangle(400, 100, 400, 300);
             RectStyle style = RectStyle.Default;
             _activeExamples.For(0, 1, (index, example) =>
             {
                 sb.Draw(dest, ref style, example.Surface);
                 dest.X += dest.Width;
-            });
+            });*/
         }
 
         public SpriteFont SampleFont { get; private set; }
