@@ -14,28 +14,27 @@ namespace Molten.UI
 
         class StateChange
         {
+            public event UIElementCancelHandler<UIWindow> Starting;
+
+            public event UIElementHandler<UIWindow> Completed;
+
             public Rectangle TargetBounds;
             public StateCallback CustomCallback;
 
             public UIWindowState StartState;
             public UIWindowState EndState;
 
-            public UIElementCancelHandler<UIWindow> StartEvent;
             public Func<bool> CheckMethod;
 
-            public UIElementHandler<UIWindow> Event;
             public Action CompletionMethod;
             public UIElementLayer NewParentLayer;
 
             public StateChange(UIWindowState startState,
-                UIElementCancelHandler<UIWindow> startEvent,
                 Func<bool> startCheckMethod,
                 UIWindowState endState,
                 StateCallback callback)
             {
                 StartState = startState;
-                StartEvent = startEvent;
-                Event = null;
                 CheckMethod = startCheckMethod;
                 EndState = endState;
                 CompletionMethod = null;
@@ -43,57 +42,120 @@ namespace Molten.UI
                 CustomCallback = callback;
             }
 
-            public StateChange(UIWindowState startState, UIElementHandler<UIWindow> sEvent, Action windowMethod, StateCallback callback)
+            public StateChange(UIWindowState startState, Action windowMethod, StateCallback callback)
             {
                 StartState = startState;
-                StartEvent = null;
-                Event = sEvent;
                 CheckMethod = null;
                 EndState = startState;
                 CompletionMethod = windowMethod;
                 CustomCallback = callback;
+            }
+
+            /// <summary>
+            /// Invokes a <see cref="UIElementCancelHandler{T}"/> event, one subscriber at a time, using a <see cref="UICancelEventArgs"/> instance to check for a cancellation.
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="handler">The <see cref="UIElementCancelHandler{T}"/> event to be invoked.</param>
+            /// <param name="element">The element to invoke the event upon.</param>
+            /// <returns></returns>
+            public UICancelEventArgs InvokeStartingEvent<T>(T element)
+                where T : UIElement
+            {
+                UICancelEventArgs args = new UICancelEventArgs();
+
+                // Iterate over Starting event subscribers to check if any of them want to block the state change.
+                if (Starting != null)
+                {
+                    Delegate[] handlers = Starting.GetInvocationList();
+
+                    foreach (UIElementCancelHandler<T> sub in handlers)
+                    {
+                        sub(element, args);
+                        if (args.Cancel)
+                            break;
+                    }
+                }
+
+                return args;
+            }
+
+            public void InvokeCompletion(UIWindow element)
+            {
+                Completed?.Invoke(element);
             }
         }
 
         /// <summary>
         /// Invoked when <see cref="Maximize(bool)"/> was called on the current <see cref="UIWindow"/>. The opening can be cancelled by any subscriber to this event.
         /// </summary>
-        public event UIElementCancelHandler<UIWindow> Maximizing;
+        public event UIElementCancelHandler<UIWindow> Maximizing
+        {
+            add => _changes[UIWindowState.Maximizing].Starting += value;
+            remove => _changes[UIWindowState.Maximizing].Starting -= value;
+        }
 
         /// <summary>
         /// Invoked when <see cref="Minimize(bool)"/> was called on the current <see cref="UIWindow"/>. The opening can be cancelled by any subscriber to this event.
         /// </summary>
-        public event UIElementCancelHandler<UIWindow> Minimizing;
+        public event UIElementCancelHandler<UIWindow> Minimizing
+        {
+            add => _changes[UIWindowState.Minimizing].Starting += value;
+            remove => _changes[UIWindowState.Minimizing].Starting -= value;
+        }
 
         /// <summary>
         /// Invoked when <see cref="Open(bool, UIElement)"/> was called on the current <see cref="UIWindow"/>. The opening can be cancelled by any subscriber to this event.
         /// </summary>
-        public event UIElementCancelHandler<UIWindow> Opening;
+        public event UIElementCancelHandler<UIWindow> Opening
+        {
+            add => _changes[UIWindowState.Opening].Starting += value;
+            remove => _changes[UIWindowState.Opening].Starting -= value;
+        }
 
         /// <summary>
         /// Invoked when <see cref="Close(bool)"/> was called on the current <see cref="UIWindow"/>. The closure can be cancelled by any subscriber to this event.
         /// </summary>
-        public event UIElementCancelHandler<UIWindow> Closing;
+        public event UIElementCancelHandler<UIWindow> Closing
+        {
+            add => _changes[UIWindowState.Closing].Starting += value;
+            remove => _changes[UIWindowState.Closing].Starting -= value;
+        }
 
         /// <summary>
         /// Invoked when the current <see cref="UIWindow"/> has finished closing.
         /// </summary>
-        public event UIElementHandler<UIWindow> Closed;
+        public event UIElementHandler<UIWindow> Closed
+        {
+            add => _changes[UIWindowState.Closed].Completed += value;
+            remove => _changes[UIWindowState.Closed].Completed -= value;
+        }
 
         /// <summary>
         /// Invoked when the current <see cref="UIWindow"/> has finished opening.
         /// </summary>
-        public event UIElementHandler<UIWindow> Opened;
+        public event UIElementHandler<UIWindow> Opened
+        {
+            add => _changes[UIWindowState.Open].Completed += value;
+            remove => _changes[UIWindowState.Open].Completed -= value;
+        }
 
         /// <summary>
         /// Invoked when the current <see cref="UIWindow"/> has finished minimizing.
         /// </summary>
-        public event UIElementHandler<UIWindow> Minimized;
+        public event UIElementHandler<UIWindow> Minimized
+        {
+            add => _changes[UIWindowState.Minimized].Completed += value;
+            remove => _changes[UIWindowState.Minimized].Completed -= value;
+        }
 
         /// <summary>
         /// Invoked when the current <see cref="UIWindow"/> has finished maximizing.
         /// </summary>
-        public event UIElementHandler<UIWindow> Maximized;
+        public event UIElementHandler<UIWindow> Maximized
+        {
+            add => _changes[UIWindowState.Maximized].Completed += value;
+            remove => _changes[UIWindowState.Maximized].Completed -= value;
+        }
 
         UIPanel _titleBar;
         UIPanel _panel;
@@ -130,7 +192,7 @@ namespace Molten.UI
 
             _changes = new Dictionary<UIWindowState, StateChange>()
             { 
-                [UIWindowState.Opening] = new StateChange(UIWindowState.Opening, Opening, OnOpening, UIWindowState.Open, (window) =>
+                [UIWindowState.Opening] = new StateChange(UIWindowState.Opening, OnOpening, UIWindowState.Open, (window) =>
                 {
                     Children.IsEnabled = false;
                     IsVisible = true;
@@ -138,7 +200,7 @@ namespace Molten.UI
                     Interpolate(_lerpBounds, _defaultBounds, false);
                 }),
 
-                [UIWindowState.Open] = new StateChange(UIWindowState.Open, Opened, OnOpened, (window) =>
+                [UIWindowState.Open] = new StateChange(UIWindowState.Open, OnOpened, (window) =>
                 {
                     Children.IsEnabled = true;
                     IsVisible = true;
@@ -147,27 +209,27 @@ namespace Molten.UI
                     // TODO set maximize icon to 'maximize'.
                 }),
 
-                [UIWindowState.Closing] = new StateChange(UIWindowState.Closing, Closing, OnClosing, UIWindowState.Closed, (window) =>
+                [UIWindowState.Closing] = new StateChange(UIWindowState.Closing, OnClosing, UIWindowState.Closed, (window) =>
                 {
                     Interpolate(_lerpBounds, _closeBounds, false);
                     IsVisible = true;
                     Children.IsEnabled = false;
                 }),
 
-                [UIWindowState.Closed] = new StateChange(UIWindowState.Closed, Closed, OnClosed, (window) =>
+                [UIWindowState.Closed] = new StateChange(UIWindowState.Closed, OnClosed, (window) =>
                 {
                     Children.IsEnabled = false;
                     IsVisible = false;
                     Interpolate(_lerpBounds, _closeBounds, true);
                 }),
 
-                [UIWindowState.Minimizing] = new StateChange(UIWindowState.Minimizing, Minimizing, OnMinimizing, UIWindowState.Minimized, (window) =>
+                [UIWindowState.Minimizing] = new StateChange(UIWindowState.Minimizing, OnMinimizing, UIWindowState.Minimized, (window) =>
                 {
                     Interpolate(_lerpBounds, _minimizeBounds, false);
                     Children.IsEnabled = false;
                 }),
 
-                [UIWindowState.Minimized] = new StateChange(UIWindowState.Minimized, Minimized, OnMinimized, (window) =>
+                [UIWindowState.Minimized] = new StateChange(UIWindowState.Minimized, OnMinimized, (window) =>
                 {
                     Children.IsEnabled = false;
                     _btnMinimize.IsVisible = false;
@@ -175,14 +237,14 @@ namespace Molten.UI
                     // Set maximize icon to 'restore'
                 }),
 
-                [UIWindowState.Maximizing] = new StateChange(UIWindowState.Maximizing, Maximizing, OnMaximizing, UIWindowState.Maximized, (window) =>
+                [UIWindowState.Maximizing] = new StateChange(UIWindowState.Maximizing, OnMaximizing, UIWindowState.Maximized, (window) =>
                 {
                     Interpolate(_lerpBounds, _maximizeBounds, false);
                     _btnMinimize.IsVisible = true;
                     Children.IsEnabled = false;
                 }),
 
-                [UIWindowState.Maximized] = new StateChange(UIWindowState.Maximized, Maximized, OnMaximized, (window) =>
+                [UIWindowState.Maximized] = new StateChange(UIWindowState.Maximized, OnMaximized, (window) =>
                 {
                     Children.IsEnabled = true;
                     _btnMinimize.IsVisible = true;
@@ -402,14 +464,14 @@ namespace Molten.UI
             if (WindowState == _curChange.StartState || WindowState == _curChange.EndState)
                 return;
 
-            UICancelEventArgs args = InvokeCancelableHandler(_curChange.StartEvent, this);
+            UICancelEventArgs args = _curChange.InvokeStartingEvent(this);
             if (_curChange.CheckMethod?.Invoke() == false || args.Cancel)
                 return;
 
             _curChange.CustomCallback?.Invoke(this);
             WindowState = _curChange.StartState;
 
-            _curChange.Event?.Invoke(this);
+            _curChange.InvokeCompletion(this);
 
             if (_curChange.NewParentLayer != null)
                 ParentLayer = _curChange.NewParentLayer;

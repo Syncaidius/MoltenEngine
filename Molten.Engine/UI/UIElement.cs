@@ -234,34 +234,6 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Invokes a <see cref="UIElementCancelHandler{T}"/> event, one subscriber at a time, using a <see cref="UICancelEventArgs"/> instance to check for a cancellation.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="handler">The <see cref="UIElementCancelHandler{T}"/> event to be invoked.</param>
-        /// <param name="element">The element to invoke the event upon.</param>
-        /// <returns></returns>
-        protected static UICancelEventArgs InvokeCancelableHandler<T>(UIElementCancelHandler<T> handler, T element)
-            where T : UIElement
-        {
-            UICancelEventArgs args = new UICancelEventArgs();
-
-            // Iterate over Closing event subscribers to check if any of them want to block the closure.
-            if (handler != null)
-            {
-                Delegate[] handlers = handler.GetInvocationList();
-
-                foreach (UIElementCancelHandler<T> sub in handlers)
-                {
-                    sub(element, args);
-                    if (args.Cancel)
-                        break;
-                }
-            }
-
-            return args;
-        }
-
-        /// <summary>
         /// Checks if the current <see cref="UIElement"/> contains the given <see cref="Vector2F"/>. This does not test any child <see cref="UIElement"/> objects.
         /// </summary>
         /// <param name="point"></param>

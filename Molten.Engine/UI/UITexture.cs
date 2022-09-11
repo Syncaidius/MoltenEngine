@@ -12,7 +12,7 @@ namespace Molten.UI
         ITexture2D _texture;
         RectStyle _style = RectStyle.Default;
         Rectangle _texBounds;
-        UITextureFillType _fillType;
+        UIFillType _fillType;
 
         private void AlignTexture()
         {
@@ -21,14 +21,14 @@ namespace Molten.UI
 
             switch (_fillType)
             {
-                case UITextureFillType.Stretch:
+                case UIFillType.Stretch:
                     _texBounds = GlobalBounds;
                     break;
 
-                case UITextureFillType.Center:
+                case UIFillType.Center:
                     Rectangle gb = GlobalBounds;
-                    int w = Math.Min(gb.Width, (int)_texture.Width);
-                    int h = Math.Min(gb.Height, (int)_texture.Height);
+                    int w =  (int)_texture.Width;
+                    int h = (int)_texture.Height;
 
                     _texBounds = new Rectangle()
                     {
@@ -69,7 +69,7 @@ namespace Molten.UI
 
         public uint ArraySlice { get; set; }
 
-        public UITextureFillType FillType
+        public UIFillType FillType
         {
             get => _fillType;
             set
@@ -80,14 +80,6 @@ namespace Molten.UI
                     AlignTexture();
                 }
             }
-        }
-
-
-        public enum UITextureFillType
-        {
-            Stretch = 0,
-
-            Center = 1,
         }
     }
 }

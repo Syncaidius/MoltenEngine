@@ -182,17 +182,17 @@ namespace Molten.Examples
             UIWindow window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
             {
                 window.Title = selected.Text;
-                window.Closing += Window_Closing;
+                window.Closing += (element, args) =>
+                {
+                    example.Close();
+                    _activeExamples.Remove(example);
+                };
+
                 UITexture windowTex = window.Children.Add<UITexture>(new Rectangle(0, 0, 800, 600));
                 windowTex.Texture = surface;
             }
 
             _activeExamples.Add(example);
-        }
-
-        private void Window_Closing(UIWindow element, UICancelEventArgs args)
-        {
-            throw new NotImplementedException();
         }
 
         private void _lstExamples_SelectionChanged(UIListViewItem element)
