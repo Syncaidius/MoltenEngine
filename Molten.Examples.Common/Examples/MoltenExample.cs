@@ -44,6 +44,10 @@ namespace Molten.Examples
             _uiLayer.BringToFront();
             UI = _uiLayer.AddObjectWithComponent<UIManagerComponent>();
 
+            SampleSpriteRenderComponent spriteCom = _uiLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
+            spriteCom.RenderCallback = DrawSprites;
+            spriteCom.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
+
             // Use the same camera for both the sprite and UI scenes.
             Camera2D = MainScene.AddObjectWithComponent<CameraComponent>(_uiLayer);
             Camera2D.Mode = RenderCameraMode.Orthographic;
@@ -68,6 +72,7 @@ namespace Molten.Examples
         {
             // TODO unload assets stored in _loader
             Closed?.Invoke(this);
+            IsLoaded = false;
         }
 
         private void _loader_OnCompleted(ContentLoadBatch loader)
@@ -75,6 +80,7 @@ namespace Molten.Examples
             // TODO hide loading screen
 
             SpawnParentChild(TestMesh, Vector3F.Zero, out _parent, out _child);
+            IsLoaded = true;
         }
 
         private void SpawnPlayer()
@@ -144,6 +150,16 @@ namespace Molten.Examples
             OnUpdate(time);
         }
 
+        protected void DrawSprites(SpriteBatcher sb)
+        {
+            if (!IsLoaded)
+                return;
+
+            OnDrawSprites(sb);
+        }
+
+        protected virtual void OnDrawSprites(SpriteBatcher sb) { }
+
         protected virtual void OnInitialize(Engine engine) { }
 
         protected virtual void OnLoadContent(ContentLoadBatch loader) { }
@@ -187,5 +203,7 @@ namespace Molten.Examples
         public IRenderSurface2D Surface { get; private set; }
 
         protected Logger Log { get; private set; }
+
+        public bool IsLoaded { get; private set; }
     }
 }

@@ -48,7 +48,10 @@ namespace Molten
 
             _handles.For(0, 1, (index, handle) =>
             {
-                if(handle.Status != ContentHandleStatus.Processing)
+                if (handle.Asset != null)
+                    _loadedCount++;
+
+                if (handle.Status != ContentHandleStatus.Processing)
                     handle.Dispatch();
             });
         }

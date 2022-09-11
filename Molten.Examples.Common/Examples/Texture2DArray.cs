@@ -1,24 +1,27 @@
-﻿using Molten.Graphics;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Molten.Graphics;
 
-namespace Molten.Samples
+namespace Molten.Examples
 {
-    public class SceneTexture2DArrayTest : SampleGame
+    [Example("Texture Arrays - 2D", "Demonstrates how 2D texture arrays are used")]
+    public class Texture2DArray : MoltenExample
     {
         ContentLoadHandle _hMaterial;
         ContentLoadHandle _hTexture;
 
-        public override string Description => "A simple test of texture arrays via a material shared between two parented objects.";
-
-        public SceneTexture2DArrayTest() : base("2D Texture Array") { }
-
         protected override void OnLoadContent(ContentLoadBatch loader)
         {
+            base.OnLoadContent(loader);
+
             _hMaterial = loader.Load<IMaterial>("assets/BasicTextureArray2D.mfx");
             _hTexture = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
             {
                 PartCount = 3,
             });
-
             loader.OnCompleted += Loader_OnCompleted;
         }
 
@@ -26,13 +29,14 @@ namespace Molten.Samples
         {
             if (!_hMaterial.HasAsset())
             {
-                Exit();
+                Close();
                 return;
             }
 
             IMaterial mat = _hMaterial.Get<IMaterial>();
-            ITexture2D tex = _hTexture.Get<ITexture2D>();
-            mat.SetDefaultResource(tex, 0);
+            ITexture2D texture = _hTexture.Get<ITexture2D>();
+
+            mat.SetDefaultResource(texture, 0);
             TestMesh.Material = mat;
         }
 

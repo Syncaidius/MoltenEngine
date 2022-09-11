@@ -1,8 +1,14 @@
-﻿using Molten.Graphics;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Molten.Graphics;
 
-namespace Molten.Samples
+namespace Molten.Examples
 {
-    public class DeferredRenderingSample : SampleGame
+    [Example("Deferred Rendering", "[WIP] Showcases Molten's deferred rendering capabilities")]
+    public class DeferredRendering : MoltenExample
     {
         class ParentChildPair
         {
@@ -17,16 +23,15 @@ namespace Molten.Samples
         ContentLoadHandle _hTexMetalNormal;
         ContentLoadHandle _hTexMetalEmissive;
         ContentLoadHandle _hTexSkybox;
-        public override string Description => "A test/sample for deferred rendering";
 
         List<ParentChildPair> _pairs;
         IMesh<GBufferVertex> _mesh;
         IMesh<GBufferVertex> _floorMesh;
 
-        public DeferredRenderingSample() : base("Deferred Rendering") { }
-
         protected override void OnLoadContent(ContentLoadBatch loader)
         {
+            base.OnLoadContent(loader);
+
             _hTex = loader.Load<ITexture2D>("assets/dds_test.dds");
             _hTexNormal = loader.Load<ITexture2D>("assets/dds_test_n.dds");
             _hTexEmissive = loader.Load<ITexture2D>("assets/dds_test_e.dds");
@@ -48,6 +53,8 @@ namespace Molten.Samples
             ITexture2D emssiveMap = _hTexEmissive.Get<ITexture2D>();
             _mesh.SetResource(emssiveMap, 2);
 
+            SetupFloor(Vector3F.Zero, 30);
+
             diffuseMap = _hTexMetal.Get<ITexture2D>();
             _floorMesh.SetResource(diffuseMap, 0);
 
@@ -58,6 +65,14 @@ namespace Molten.Samples
             _floorMesh.SetResource(emssiveMap, 2);
 
             MainScene.SkyboxTeture = _hTexSkybox.Get<ITextureCube>();
+
+            Player.Transform.LocalPosition = new Vector3F(0, 3, -8);
+            Player.Transform.LocalRotationX = 15;
+
+            SpawnParentChildren(5, new Vector3F(0, 2.5f, 0), 10);
+            SetupLightObjects(Vector3F.Zero);
+
+            SceneCamera.Flags = RenderCameraFlags.Deferred;
         }
 
         protected override void OnInitialize(Engine engine)
@@ -67,15 +82,7 @@ namespace Molten.Samples
             _pairs = new List<ParentChildPair>();
             _mesh = MeshHelper.Cube(engine.Renderer);
 
-            Player.Transform.LocalPosition = new Vector3F(0, 3, -8);
-            Player.Transform.LocalRotationX = 15;
 
-            SpawnParentChildren(5, new Vector3F(0,2.5f,0), 10);
-
-            SetupLightObjects(Vector3F.Zero);
-            SetupFloor(Vector3F.Zero, 30);
-
-            SceneCamera.Flags = RenderCameraFlags.Deferred;
         }
 
         private void SpawnParentChildren(int count, Vector3F origin, float outerRadius)
@@ -88,7 +95,7 @@ namespace Molten.Samples
             float angleIncrement = 360f / count;
 
             // Spawn more around the center pair
-            for(int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 pair = new ParentChildPair();
                 float angRad = angle * MathHelper.DegToRad;
@@ -126,7 +133,7 @@ namespace Molten.Samples
             float angInc = MathHelper.DegreesToRadians(360.0f / numLights);
             float angle = 0;
 
-            for(int i = 0; i < numLights; i++)
+            for (int i = 0; i < numLights; i++)
             {
                 Vector3F pos = origin + new Vector3F()
                 {
@@ -151,10 +158,10 @@ namespace Molten.Samples
 
         protected override void OnUpdate(Timing time)
         {
+            base.OnUpdate(time);
+
             foreach (ParentChildPair pair in _pairs)
                 RotateParentChild(pair.Parent, pair.Child, time);
-
-            base.OnUpdate(time);
         }
     }
 }
