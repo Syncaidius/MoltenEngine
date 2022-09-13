@@ -51,9 +51,13 @@ namespace Molten.UI
         {
             base.OnRender(sb);
 
-            sb.Draw(_texBounds, ref _style, _texture, null, ArraySlice, 0);
+            if(_texture != null)
+                sb.Draw(_texBounds, ref _style, _texture, null, ArraySlice, 0);
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="ITexture2D"/> to be rendered in the current <see cref="UITexture"/>
+        /// </summary>
         public ITexture2D Texture
         {
             get => _texture;
@@ -67,8 +71,14 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the texture array slice to be rendered in the current <see cref="UITexture"/>.
+        /// </summary>
         public uint ArraySlice { get; set; }
 
+        /// <summary>
+        /// Gets or sets the texture fill type.
+        /// </summary>
         public UIFillType FillType
         {
             get => _fillType;
