@@ -14,10 +14,10 @@ namespace Molten.UI
         /// <summary>
         /// The object will be stretched to fit the bounds of its parent.
         /// </summary>
-        Stretch = 0,
+        Fit = 0,
 
         /// <summary>
-        /// The object will be centered at the middle of its parent.
+        /// The object will be centered at the middle of its parent, without being stretched or deformed to fit
         /// </summary>
         Center = 1,
     }

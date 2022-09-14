@@ -163,6 +163,7 @@ namespace Molten.UI
         UIButton _btnMinimize;
         UIButton _btnMaximize;
         UILabel _title;
+        UISprite _icon;
         int _titleBarHeight;
         int _iconSpacing = 5;
         List<UIButton> _titleBarButtons;
@@ -261,6 +262,7 @@ namespace Molten.UI
             _panel = BaseElements.Add<UIPanel>();
             _title = BaseElements.Add<UILabel>();
             _title.VerticalAlign = UIVerticalAlignment.Center;
+            _icon = BaseElements.Add<UISprite>();
 
             _btnClose = AddTitleButton("X");
             _btnClose.Pressed += _btnClose_Pressed;
@@ -336,11 +338,12 @@ namespace Molten.UI
             base.OnPreUpdateLayerBounds();
 
             Rectangle gb = GlobalBounds;
-            int iconSize = TitleBarHeight;
+            int iconSize = TitleBarHeight - _iconSpacing;
             int iconWithSpacing = iconSize + (_iconSpacing * 2);
 
             _titleBar.LocalBounds = new Rectangle(0, 0, gb.Width, TitleBarHeight);
             _panel.LocalBounds = new Rectangle(0, TitleBarHeight, gb.Width, gb.Height - TitleBarHeight);
+            _icon.LocalBounds = new Rectangle(_iconSpacing, _iconSpacing, iconSize, iconSize);
             _title.LocalBounds = new Rectangle(iconWithSpacing, 0, gb.Width, TitleBarHeight);
 
             int bX = gb.Width;
@@ -607,10 +610,20 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets the rate at which the current <see cref="UIWindow"/> open/close animation will run. The minimum speed is 0.05f;
         /// </summary>
+        [UIThemeMember]
         public float AnimationSpeed
         {
             get => _expandRate;
             set => Math.Max(0.05f, _expandRate);
+        }
+
+        /// <summary>
+        /// Gets or sets the icon sprite of the current <see cref="UIWindow"/>.
+        /// </summary>
+        public Sprite Icon
+        {
+            get => _icon.Sprite;
+            set => _icon.Sprite = value;
         }
     }
 }

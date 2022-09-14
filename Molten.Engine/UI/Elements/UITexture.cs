@@ -21,7 +21,7 @@ namespace Molten.UI
 
             switch (_fillType)
             {
-                case UIFillType.Stretch:
+                case UIFillType.Fit:
                     _texBounds = GlobalBounds;
                     break;
 
@@ -74,11 +74,13 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets the texture array slice to be rendered in the current <see cref="UITexture"/>.
         /// </summary>
+        [UIThemeMember]
         public uint ArraySlice { get; set; }
 
         /// <summary>
         /// Gets or sets the texture fill type.
         /// </summary>
+        [UIThemeMember]
         public UIFillType FillType
         {
             get => _fillType;

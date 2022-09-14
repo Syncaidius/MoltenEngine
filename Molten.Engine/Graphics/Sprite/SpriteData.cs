@@ -11,7 +11,23 @@ namespace Molten.Graphics
     public class SpriteData
     {
         RectangleF _source;
-        RectStyle _style;
+        RectStyle _style = RectStyle.Default;
+
+        public SpriteData()
+        {
+
+        }
+
+        public SpriteData(ITexture2D texture, float arraySlice = 0) :
+            this(texture, new RectangleF(0, 0, texture.Width, texture.Height), arraySlice)
+        { }
+
+        public SpriteData(ITexture2D texture, RectangleF sourceBounds, float arraySlice = 0)
+        {
+            Texture = texture;
+            Source = sourceBounds;
+            ArraySlice = arraySlice;
+        }
 
         public ITexture2D Texture { get; set; }
 

@@ -27,6 +27,8 @@ namespace Molten.Examples
         UIButton _btnStart;
         UICheckBox _chkNativeWindow;
 
+        Sprite _windowIcon;
+
         ThreadedList<MoltenExample> _activeExamples;
 
         public ExampleBrowser(string title) : base(title)
@@ -79,9 +81,14 @@ namespace Molten.Examples
                 Engine.Renderer.Overlay.Font = SampleFont;
             });
 
-            _loader.Deserialize<UITheme>("assets/test_theme.json", (theme, isReload) =>
+            _loader.Deserialize<UITheme>("assets/test_theme.json", (theme, isReload) => UI.Root.Theme = theme);
+
+            _loader.Load<ITexture2D>("assets/logo_64.png", (tex, isReload) =>
             {
-                UI.Root.Theme = theme;
+                SpriteData sd = new SpriteData(tex);
+                _windowIcon = new Sprite();
+                _windowIcon.Data = sd;
+                _windowIcon.Origin = new Vector2F(1f);
             });
 
             _loader.OnCompleted += OnBaseContentLoaded;
@@ -200,6 +207,7 @@ namespace Molten.Examples
                 UIWindow window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
                 {
                     window.Title = selected.Text;
+                    window.Icon = _windowIcon;
                     window.Closing += (element, args) =>
                     {
                         example.Close();
