@@ -17,21 +17,19 @@ namespace Molten.Examples
 
         ContentLoadBatch _loader;
 
-        SceneLayer _spriteLayer;
-        SceneLayer _uiLayer;
-
         SceneObject _parent;
         SceneObject _child;
+        Foundation _foundation;
 
-        public void Initialize(Engine engine, IRenderSurface2D surface, Logger log)
+        public void Initialize(Foundation foundation, SpriteFont font, IRenderSurface2D surface, Logger log)
         {
-            Engine = engine;
+            _foundation = foundation;
+            Engine = foundation.Engine;
             Surface = surface;
+            Font = font;
             Log = log;
 
-            OnInitialize(engine);
-
-            MainScene = new Scene($"Example_{GetType().Name}", engine);
+            MainScene = new Scene($"Example_{GetType().Name}", Engine);
             MainScene.BackgroundColor = new Color()
             {
                 R = (byte)Rng.Next(0,256),
@@ -39,17 +37,17 @@ namespace Molten.Examples
                 B = (byte)Rng.Next(0, 256),
                 A = 255,
             };//new Color(0x333333);
-            _spriteLayer = MainScene.AddLayer("sprite", true);
-            _uiLayer = MainScene.AddLayer("ui", true);
-            _uiLayer.BringToFront();
-            UI = _uiLayer.AddObjectWithComponent<UIManagerComponent>();
+            SpriteLayer = MainScene.AddLayer("sprite", true);
+            UILayer = MainScene.AddLayer("ui", true);
+            UILayer.BringToFront();
+            UI = UILayer.AddObjectWithComponent<UIManagerComponent>();
 
-            SampleSpriteRenderComponent spriteCom = _uiLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
+            SampleSpriteRenderComponent spriteCom = UILayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             spriteCom.RenderCallback = DrawSprites;
             spriteCom.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
 
             // Use the same camera for both the sprite and UI scenes.
-            Camera2D = MainScene.AddObjectWithComponent<CameraComponent>(_uiLayer);
+            Camera2D = MainScene.AddObjectWithComponent<CameraComponent>(UILayer);
             Camera2D.Mode = RenderCameraMode.Orthographic;
             Camera2D.OrderDepth = 1;
             Camera2D.MaxDrawDistance = 1.0f;
@@ -62,7 +60,9 @@ namespace Molten.Examples
             TestMesh = GetTestCubeMesh();
             SpawnPlayer();
 
-            _loader = engine.Content.GetLoadBatch();
+            OnInitialize(Engine);
+
+            _loader = Engine.Content.GetLoadBatch();
             OnLoadContent(_loader);
             _loader.OnCompleted += _loader_OnCompleted;
             _loader.Dispatch();
@@ -166,7 +166,7 @@ namespace Molten.Examples
 
         protected virtual void OnUpdate(Timing time) { }
 
-        public SpriteFont SampleFont { get; private set; }
+        public SpriteFont Font { get; private set; }
 
         /// <summary>Gets a random number generator. Used for various samples.</summary>
         public Random Rng { get; private set; } = new Random();
@@ -205,5 +205,11 @@ namespace Molten.Examples
         protected Logger Log { get; private set; }
 
         public bool IsLoaded { get; private set; }
+
+        protected KeyboardDevice Keyboard => _foundation.Keyboard;
+
+        protected MouseDevice Mouse => _foundation.Mouse;
+
+        protected GamepadDevice Gamepad => _foundation.Gamepad;
     }
 }

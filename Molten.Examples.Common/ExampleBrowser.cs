@@ -18,6 +18,7 @@ namespace Molten.Examples
         Scene _scene;
         CameraComponent _cam2D;
         ContentLoadBatch _loader;
+        SpriteFont _font;
 
         UILabel _txtDebug;
         UILabel _txtMovement;
@@ -77,8 +78,8 @@ namespace Molten.Examples
             _loader = Engine.Content.GetLoadBatch();
             _loader.LoadFont("assets/BroshK.ttf", (font, isReload) =>
             {
-                SampleFont = font;
-                Engine.Renderer.Overlay.Font = SampleFont;
+                _font = font;
+                Engine.Renderer.Overlay.Font = _font;
             });
 
             _loader.Deserialize<UITheme>("assets/test_theme.json", (theme, isReload) => UI.Root.Theme = theme);
@@ -108,6 +109,16 @@ namespace Molten.Examples
         private void DetectExamples()
         {
             List<Type> eTypes = ReflectionHelper.FindType<MoltenExample>();
+
+            // Sort examples alphabetically, by title.
+            eTypes.Sort((a, b) =>
+            {
+                ExampleAttribute attA = a.GetCustomAttribute<ExampleAttribute>();
+                ExampleAttribute attB = b.GetCustomAttribute<ExampleAttribute>();
+                return StringComparer.CurrentCulture.Compare(attA.Title, attB.Title);
+            });
+
+            // Add examples to the browser list.
             foreach(Type t in eTypes)
             {
                 ExampleAttribute att = t.GetCustomAttribute<ExampleAttribute>();
@@ -194,7 +205,7 @@ namespace Molten.Examples
                     Engine.Renderer.OutputSurfaces.Remove(surface);
                 };
 
-                example.Initialize(Engine, surface, Log);
+                example.Initialize(this, _font, surface, Log);
 
                 surface.Mode = WindowMode.Windowed;
                 surface.Visible = true;
@@ -202,7 +213,7 @@ namespace Molten.Examples
             else
             {
                 IRenderSurface2D surface = Engine.Renderer.Resources.CreateSurface(800, 600);
-                example.Initialize(Engine, surface, Log);
+                example.Initialize(this, _font, surface, Log);
 
                 UIWindow window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
                 {
@@ -323,7 +334,7 @@ namespace Molten.Examples
 
         protected virtual void OnDrawSprites(SpriteBatcher sb)
         {
-            if (SampleFont == null)
+            if (_font == null)
                 return;
 
             /*Rectangle dest = new Rectangle(400, 100, 400, 300);
@@ -334,8 +345,6 @@ namespace Molten.Examples
                 dest.X += dest.Width;
             });*/
         }
-
-        public SpriteFont SampleFont { get; private set; }
 
         /// <summary>Gets a random number generator. Used for various samples.</summary>
         public Random Rng { get; private set; } = new Random();

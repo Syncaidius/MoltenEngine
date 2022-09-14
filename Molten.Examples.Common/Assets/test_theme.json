@@ -83,7 +83,7 @@
 
   "Molten.UI.UIListView/Molten.UI.UIListViewItem/Molten.UI.UILabel": {
     "VerticalAlign": "Center",
-    "HorizontalAlign": "Center",
+    "HorizontalAlign": "Left",
     "Color": {
       "Default": "255 255 255 255",
       "Pressed": "255 255 0 255",
