@@ -1,5 +1,9 @@
-﻿![Molten Engine](Images/logo_light_transparent.png)
-| Build Status  | Github | Azure  |
+![Molten Engine](Images/logo_light_transparent.png)
+Molten started as spare-time engine project, which I eventually intend to use to develop my own games without relying on other engines. Hopefully you'll find a use for it too!
+
+While parts of this project will inevitably be a classic case of re-inventing the wheel, I'm treating it as a chance to gain more experience in the area of game engine development. 
+# Build Status
+| Platform  | Github | Azure  |
 | :------------ | :----  | :----  |
 | Windows       | [![Build Windows](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml) | [![Build Status](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/MoltenEngine-.NET%20Desktop-CI)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=2)   |
 | Android       | [![Build Android](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml) |  |
@@ -9,11 +13,7 @@
 
 [ ![GitHub](https://img.shields.io/github/license/Syncaidius/MoltenEngine)](LICENSE)  [![GitHub last commit](https://img.shields.io/github/last-commit/Syncaidius/MoltenEngine)](https://github.com/Syncaidius/MoltenEngine/commits/)
 
-Molten started as spare-time engine project, which I eventually intend to use to develop my own games without relying on other engines. Hopefully you'll find a use for it too!
-
-While parts of this project will inevitably be a classic case of re-inventing the wheel, I'm treating it as a chance to gain more experience in the area of game engine development. 
-
-# Current Status
+# Core Feature Status
 See the following table for the per-platform support and status of each feature.
 
 ✔️ Functional/Complete\
@@ -45,7 +45,7 @@ Blank - Not Started\
 | Project templates          |            |          |        |      |     |
 
 
-# Renderer Feature Support
+# Renderer Feature Status
 See the following table for the per-renderer support and status of each feature.
 
 ✔️ Functional/Complete\
