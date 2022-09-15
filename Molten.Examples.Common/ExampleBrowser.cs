@@ -222,8 +222,18 @@ namespace Molten.Examples
                     window.Closing += (element, args) =>
                     {
                         example.Close();
-
                         _activeExamples.Remove(example);
+                        example.MainScene.Dispose();
+                    };
+                    window.Minimized += (element) =>
+                    {
+                        example.MainScene.IsVisible = false;
+                        example.MainScene.IsEnabled = false;
+                    };
+                    window.Opened += (element) =>
+                    {
+                        example.MainScene.IsVisible = true;
+                        example.MainScene.IsEnabled = true;
                     };
 
                     UITexture windowTex = window.Children.Add<UITexture>(new Rectangle(0, 0, 800, 600));
