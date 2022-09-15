@@ -81,8 +81,6 @@ namespace Molten.Examples
 
             _pairs = new List<ParentChildPair>();
             _mesh = MeshHelper.Cube(engine.Renderer);
-
-
         }
 
         private void SpawnParentChildren(int count, Vector3F origin, float outerRadius)

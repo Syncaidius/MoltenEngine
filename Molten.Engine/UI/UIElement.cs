@@ -71,6 +71,16 @@ namespace Molten.UI
         /// </summary>
         public event UIManagerChangedHandler ManagerChanged;
 
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> is focused.
+        /// </summary>
+        public event UIElementHandler Focused;
+
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> is unfocused.
+        /// </summary>
+        public event UIElementHandler Unfocused;
+
         List<UIElementLayer> _layers;
         UIManagerComponent _manager;
         UIElementLayer _parentLayer;
@@ -81,6 +91,7 @@ namespace Molten.UI
         Rectangle _renderBounds;
         Rectangle _offsetRenderBounds;
         Vector2F _renderOffset;
+        bool _isFocused;
 
         public UIElement()
         {
@@ -241,6 +252,23 @@ namespace Molten.UI
         public bool Contains(Vector2F point)
         {
             return _globalBounds.Contains(point);
+        }
+
+        /// <summary>
+        /// Switches focus to the current <see cref="UIElement"/>.
+        /// </summary>
+        public void Focus()
+        {
+            Manager.FocusedElement = this;
+        }
+
+        /// <summary>
+        /// Unfocuses the current <see cref="UIElement"/> if focused.
+        /// </summary>
+        public void Unfocus()
+        {
+            if (Manager.FocusedElement == this)
+                Manager.FocusedElement = null;
         }
 
         /// <summary>
@@ -458,6 +486,10 @@ namespace Molten.UI
         /// <param name="time">An instance of <see cref="Timing"/>.</param>
         protected virtual void OnUpdate(Timing time) { }
 
+        protected virtual void OnFocused() { }
+
+        protected virtual void OnUnfocused() { }
+
         internal void Render(SpriteBatcher sb)
         {
             if (!IsVisible)
@@ -669,5 +701,31 @@ namespace Molten.UI
         /// Gets the <see cref="UIWindow"/> that contains the current <see cref="UIElement"/>.
         /// </summary>
         public UIWindow ParentWindow { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets whether or not the current <see cref="UIElement"/> is focused.
+        /// </summary>
+        public bool IsFocused
+        {
+            get => _isFocused;
+            set
+            {
+                if(_isFocused != value)
+                {
+                    _isFocused = value;
+
+                    if (_isFocused)
+                    {
+                        OnFocused();
+                        Focused?.Invoke(this);
+                    }
+                    else
+                    {
+                        OnUnfocused();
+                        Unfocused?.Invoke(this);
+                    }
+                }
+            }
+        }
     }
 }

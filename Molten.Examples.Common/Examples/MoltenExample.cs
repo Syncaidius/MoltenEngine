@@ -20,6 +20,7 @@ namespace Molten.Examples
         SceneObject _parent;
         SceneObject _child;
         Foundation _foundation;
+        UITexture _uiSurface;
 
         public void Initialize(Foundation foundation, SpriteFont font, IRenderSurface2D surface, Logger log)
         {
@@ -137,6 +138,8 @@ namespace Molten.Examples
 
         public void Update(Timing time)
         {
+            CameraController.AcceptInput = IsFocused;
+
             // Don't update until the base content is loaded.
             if (_loader.Status != ContentLoadBatchStatus.Completed)
             {
@@ -205,6 +208,8 @@ namespace Molten.Examples
         protected Logger Log { get; private set; }
 
         public bool IsLoaded { get; private set; }
+
+        public bool IsFocused { get; set; }
 
         protected KeyboardDevice Keyboard => _foundation.Keyboard;
 

@@ -9,6 +9,8 @@ namespace Molten.UI
     /// </summary>
     public sealed class UIManagerComponent : SpriteRenderComponent, IPointerReceiver
     {
+        public event ObjectHandler<UIElement> FocusedChanged;
+
         class UITracker
         {
             public UIElement Pressed;
@@ -26,6 +28,7 @@ namespace Molten.UI
         }
 
         CameraComponent _camera;
+        UIElement _focused;
         UIContainer _root;
         Dictionary<ScenePointerTracker, UITracker> _trackers;
 
@@ -126,13 +129,14 @@ namespace Molten.UI
         {
             UpdateTracker(tracker, (uiTracker) =>
             {
-                if (tracker.Button == PointerButton.Left)
+                if (uiTracker.Pressed == null)
                 {
-                    if (uiTracker.Pressed == null)
+                    uiTracker.Pressed = _root.Pick(tracker.Position);
+
+                    if (uiTracker.Pressed != null)
                     {
-                        uiTracker.Pressed = _root.Pick(tracker.Position);
-                        if (uiTracker.Pressed != null)
-                            uiTracker.Pressed.OnPressed(tracker);
+                        uiTracker.Pressed.Focus();
+                        uiTracker.Pressed.OnPressed(tracker);
                     }
                 }
             });
@@ -237,10 +241,36 @@ namespace Molten.UI
         public string Tooltip => Name;
 
         /// <summary>
-        /// The current <see cref="UIElement"/> being hovered over by a pointing device (e.g. mouse or stylus).
+        /// Gets the current <see cref="UIElement"/> being hovered over by a pointing device (e.g. mouse or stylus).
         /// </summary>
         public UIElement HoverElement { get; private set; }
 
+        /// <summary>
+        /// Gets the currently-focused <see cref="UIElement"/>.
+        /// </summary>
+        public UIElement FocusedElement
+        {
+            get => _focused;
+            set
+            {
+                if(_focused != value)
+                {
+                    if (_focused != null)
+                        _focused.IsFocused = false;
+
+                    _focused = value;
+
+                    if (_focused != null)
+                        _focused.IsFocused = true;
+
+                    FocusedChanged?.Invoke(_focused);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Camera"/> which provides a <see cref="IRenderSurface2D"/> to draw the UI to.
+        /// </summary>
         public CameraComponent Camera
         {
             get { return _camera; }

@@ -222,10 +222,13 @@ namespace Molten.Examples
                     window.Closing += (element, args) =>
                     {
                         example.Close();
+
                         _activeExamples.Remove(example);
                     };
 
                     UITexture windowTex = window.Children.Add<UITexture>(new Rectangle(0, 0, 800, 600));
+                    windowTex.Focused += (e) => example.IsFocused = true;
+                    windowTex.Unfocused += (e) => example.IsFocused = false;
                     windowTex.Texture = surface;
                 }
             }
@@ -337,13 +340,8 @@ namespace Molten.Examples
             if (_font == null)
                 return;
 
-            /*Rectangle dest = new Rectangle(400, 100, 400, 300);
-            RectStyle style = RectStyle.Default;
-            _activeExamples.For(0, 1, (index, example) =>
-            {
-                sb.Draw(dest, ref style, example.Surface);
-                dest.X += dest.Width;
-            });*/
+            Vector2F pos = new Vector2F(300, 100);
+            sb.DrawString(_font, $"Focused Element: {UI.FocusedElement?.Name ?? "<None>"}", pos, Color.White);
         }
 
         /// <summary>Gets a random number generator. Used for various samples.</summary>

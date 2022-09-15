@@ -37,8 +37,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Engine", "Molten.Eng
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Graphics.DX11", "Molten.Graphics.DX11\Molten.Graphics.DX11.csproj", "{D58134DD-2CA1-4417-8880-00A3F27DFDB5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Examples.Windows", "Molten.Examples.Windows\Molten.Examples.Windows.csproj", "{43998435-5C15-4269-92C3-D68A948B26C7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{F1558767-164F-4FAF-A49A-F3E7E28D267C}"
 	ProjectSection(SolutionItems) = preProject
 		Libraries\Windows\dxcompiler.dll = Libraries\Windows\dxcompiler.dll
@@ -60,9 +58,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{6E72C37A-1919-
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Audio.OpenAL", "Molten.Audio.OpenAL\Molten.Audio.OpenAL.csproj", "{0476DF39-B5A9-42B4-86E8-F7BB50832FA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Examples.Common", "Molten.Examples.Common\Molten.Examples.Common.csproj", "{BCD4DD20-054B-477D-A38D-FB7662C8C504}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Examples.Common", "Molten.Examples.Common\Molten.Examples.Common.csproj", "{BCD4DD20-054B-477D-A38D-FB7662C8C504}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Examples.Desktop.Windows", "Molten.Examples.Desktop.Windows\Molten.Examples.Desktop.Windows.csproj", "{6A5C9194-584A-4605-9E00-DB245188431B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Examples.Desktop.Windows", "Molten.Examples.Desktop.Windows\Molten.Examples.Desktop.Windows.csproj", "{6A5C9194-584A-4605-9E00-DB245188431B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -216,26 +214,6 @@ Global
 		{D58134DD-2CA1-4417-8880-00A3F27DFDB5}.Release|x64.Build.0 = Release|Any CPU
 		{D58134DD-2CA1-4417-8880-00A3F27DFDB5}.Release|x86.ActiveCfg = Release|Any CPU
 		{D58134DD-2CA1-4417-8880-00A3F27DFDB5}.Release|x86.Build.0 = Release|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Debug|x64.ActiveCfg = Debug|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Debug|x86.ActiveCfg = Debug|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Debug|x86.Build.0 = Debug|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Release|x64.ActiveCfg = Release|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Release|x86.ActiveCfg = Release|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Android_Release|x86.Build.0 = Release|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Debug|x64.Build.0 = Debug|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Debug|x86.Build.0 = Debug|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Release|x64.ActiveCfg = Release|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Release|x64.Build.0 = Release|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Release|x86.ActiveCfg = Release|Any CPU
-		{43998435-5C15-4269-92C3-D68A948B26C7}.Release|x86.Build.0 = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|x64.ActiveCfg = Debug|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|x86.ActiveCfg = Debug|Any CPU
@@ -418,7 +396,6 @@ Global
 		{B2086B80-7DC3-41D8-BAE4-7359FB04BC3A} = {0DBE30A6-8BCF-4916-AB5B-335ED3A3CD2B}
 		{DAB04699-0FDA-44F0-A5FD-FD9128D5CA0D} = {08C33000-FBC9-4CF3-999C-B660E5241453}
 		{D58134DD-2CA1-4417-8880-00A3F27DFDB5} = {0DBE30A6-8BCF-4916-AB5B-335ED3A3CD2B}
-		{43998435-5C15-4269-92C3-D68A948B26C7} = {940AA3BE-1CDB-4EFC-B811-6FA4D0562AB3}
 		{F1558767-164F-4FAF-A49A-F3E7E28D267C} = {940AA3BE-1CDB-4EFC-B811-6FA4D0562AB3}
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD} = {0DBE30A6-8BCF-4916-AB5B-335ED3A3CD2B}
 		{B2F153C0-D823-4ADE-8376-ACA8657E2323} = {7BD8F3B9-15EB-4FEF-B51E-083E34D62675}
