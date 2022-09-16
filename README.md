@@ -100,6 +100,3 @@ A special thanks to each of these great libraries, without which Molten wouldn't
   * [SharpDX](https://github.com/sharpdx/SharpDX) - Source for some Molten.Math types
   * [Magick.NET](https://github.com/dlemstra/Magick.NET) - Extensive image library for .NET
   * [JSON.NET](https://www.newtonsoft.com/json) - JSON serialization
-
-# Licensing
-[MIT](LICENSE) - You can do what you want with Molten. Fork it, chop it up and consume it for dinner. You get the idea!
