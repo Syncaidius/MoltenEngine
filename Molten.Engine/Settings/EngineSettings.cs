@@ -21,6 +21,21 @@ namespace Molten
             Network = new NetworkSettings();
             Audio = new AudioSettings();
             UI = new UISettings();
+
+
+            // Add third-party JSON converters.
+            JsonConverters = new List<JsonConverter>()
+            {
+                new StringEnumConverter(),
+            };
+
+            // Detect Molten's JSON converters and add them.
+            IEnumerable<Type> jcTypes = ReflectionHelper.FindType<JsonConverter>(this.GetType().Assembly);
+            foreach (Type t in jcTypes)
+            {
+                JsonConverter jc = Activator.CreateInstance(t) as JsonConverter;
+                JsonConverters.Add(jc);
+            }
         }
 
         /// <summary>
@@ -147,13 +162,8 @@ namespace Molten
         /// <summary>
         /// Gets a list of <see cref="JsonConverter"/> instances that will be to added every new instantiation of <see cref="ContentManager"/>.
         /// </summary>
-        public List<JsonConverter> JsonConverters { get; private set; } = new List<JsonConverter>()
-        {
-            new SettingValueConverter(),
-            new StringEnumConverter(),
-            new ValueTypeConverter(),
-            new UIThemeConverter(),
-        };
+        public List<JsonConverter> JsonConverters { get; }
+
 
         /// <summary>Gets or sets the product name.</summary>
         public string ProductName { get; set; } = "Molten Game";
