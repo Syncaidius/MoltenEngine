@@ -64,7 +64,7 @@ namespace Molten.Examples
                 return;
             }
 
-            LoadFontFile("BroshK.ttf");
+            LoadFontFile("FiraSans-Regular.ttf");
 
             IMaterial mat = _hMaterial.Get<IMaterial>();
             ITexture2D texture = _hTexture.Get<ITexture2D>();

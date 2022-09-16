@@ -76,7 +76,7 @@ namespace Molten.Examples
                 Engine.Input.Camera = _cam2D;
 
             _loader = Engine.Content.GetLoadBatch();
-            _loader.LoadFont("assets/BroshK.ttf", (font, isReload) =>
+            _loader.LoadFont("assets/FiraSans-Bold.ttf", (font, isReload) =>
             {
                 _font = font;
                 Engine.Renderer.Overlay.Font = _font;

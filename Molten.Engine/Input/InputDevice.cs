@@ -35,8 +35,14 @@ namespace Molten.Input
         /// </summary>
         public event MoltenEventHandler<InputDevice> OnDisconnected;
 
+        /// <summary>
+        /// Invoked when the device is (re)enabled.
+        /// </summary>
         public event MoltenEventHandler<InputDevice> OnEnabled;
 
+        /// <summary>
+        /// Invoked when the device is disabled.
+        /// </summary>
         public event MoltenEventHandler<InputDevice> OnDisabled;
 
         /// <summary>
@@ -47,6 +53,9 @@ namespace Molten.Input
         /// <summary>Gets the name of the device.</summary>
         public abstract string DeviceName { get; }
 
+        /// <summary>
+        /// Gets the buffer size, in samples, for storing unprocessed device states.
+        /// </summary>
         public abstract int BufferSize { get; protected set; }
 
         /// <summary>
@@ -158,7 +167,7 @@ namespace Molten.Input
         /// <summary>
         /// Invoked during device initialization to allow the device to initialize and define it's feature-set.
         /// </summary>
-        /// <param name="features"></param>
+        /// <param name="service">The <see cref="InputService"/> that is initializing the current <see cref="InputDevice"/>.</param>
         /// <returns>A list of detected <see cref="InputDeviceFeature"/> objects.</returns>
         protected virtual List<InputDeviceFeature> OnInitialize(InputService service)
         {
@@ -231,7 +240,6 @@ namespace Molten.Input
         /// Retrieves a device feature of the specified type, or null if the feature is unsupported. If a device contains more than one of
         /// the specified <see cref="InputDeviceFeature"/> type, the first one will be returned, based on the order they were detected by the device.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="nameFilter">If provided, only features of the specified type with a name/description fully 
         /// or partially-matching the gien name filter will be returned.</param>
         /// <param name="filterCaseSensitive">If true, the name filter will also consider casing.</param>
@@ -383,7 +391,7 @@ namespace Molten.Input
         /// Retrieves the state of the given state ID. 
         /// </summary>
         /// <param name="setID">The state set in which the state exists</param>
-        /// <param name="stateID">The state ID. For example, a mouse button, key or touch-point ID.</param>
+        /// <param name="state">The button or key to be retrieved.</param>
         /// <returns></returns>
         public S GetState(T state, int setID = 0)
         {
@@ -476,7 +484,7 @@ namespace Molten.Input
         protected abstract int TranslateStateID(T idValue);
 
         /// <summary>Returns true if the specified input is pressed.</summary>
-        /// <param name="value">The input (e.g. button or key) to check.</param>
+        /// <param name="state">The input state to check.</param>
         /// <returns>Returns true if the input is down.</returns>
         protected abstract bool GetIsDown(ref S state);
 
