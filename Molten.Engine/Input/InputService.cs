@@ -233,11 +233,6 @@ namespace Molten.Input
         public abstract IInputNavigation Navigation { get; }
 
         /// <summary>
-        /// Gets the <see cref="Logger"/> bound to the current <see cref="InputService"/> instance.
-        /// </summary>
-        public Logger Log { get; private set; }
-
-        /// <summary>
         /// Gets the input update/frame ID. 
         /// This is usually equal to the number of times <see cref="InputService.Update(Timing)"/> has been called.
         /// </summary>
