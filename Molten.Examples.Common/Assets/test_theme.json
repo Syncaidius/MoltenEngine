@@ -76,7 +76,7 @@
 
   "Molten.UI.UIListViewItem": {
     "FillColor": {
-      "Hovered": "180 0 200 255",
+      "Hovered": "180 255 200 255",
       "Active": "200 200 200 255"
     }
   },

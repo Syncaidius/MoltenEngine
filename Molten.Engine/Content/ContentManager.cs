@@ -45,12 +45,13 @@ namespace Molten
         /// <param name="log">A logger to output content information.</param>
         /// <param name="engine">The engine instance to which the content manager will be bound.</param>
         /// <param name="workerThreads">The number of worker threads that will be used to fulfil content requests.</param>
+        /// <param name="hotReloadEnabled">If true, hot-reload is enabled upon instantiation.</param>
         internal ContentManager(Logger log, Engine engine, int workerThreads, bool hotReloadEnabled)
         {
             string exePath = Assembly.GetEntryAssembly().Location;
             ExecutablePath = new FileInfo(exePath);
 
-            _hotReloadEnabled = true;
+            _hotReloadEnabled = hotReloadEnabled;
             _defaultProcessors = new Dictionary<Type, IContentProcessor>();
             _watchers = new ConcurrentDictionary<string, ContentWatcher>();
 
