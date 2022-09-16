@@ -21,6 +21,9 @@ namespace Molten
 
         LogFileWriter _logWriter;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="EngineService"/>.
+        /// </summary>
         public EngineService()
         {
             Log = Logger.Get();
@@ -30,6 +33,11 @@ namespace Molten
             Log.AddOutput(_logWriter);
         }
 
+        /// <summary>
+        /// Initializes the current <see cref="EngineService"/>.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="parentLog"></param>
         public void Initialize(EngineSettings settings, Logger parentLog)
         {
             Settings = settings;
@@ -108,6 +116,9 @@ namespace Molten
             }
         }
 
+        /// <summary>
+        /// Stops the current <see cref="EngineService"/>.
+        /// </summary>
         public void Stop()
         {
             OnStop();
@@ -132,6 +143,10 @@ namespace Molten
         /// </summary>
         protected virtual void OnServiceDisposing() { }
 
+        /// <summary>
+        /// Updates the current <see cref="EngineService"/>.
+        /// </summary>
+        /// <param name="time"></param>
         public void Update(Timing time)
         {
             // TODO track update time taken.
@@ -155,6 +170,9 @@ namespace Molten
         /// </summary>
         protected abstract void OnStop();
 
+        /// <summary>
+        /// Gets the state of the current <see cref="EngineService"/>.
+        /// </summary>
         public EngineServiceState State { get; protected set; }
 
         /// <summary>
@@ -168,6 +186,9 @@ namespace Molten
         /// </summary>
         public ThreadingMode ThreadMode { get; protected set; }
 
+        /// <summary>
+        /// Gets the current instance of engine settings. This will be the same instance that was passed in when the engine was instantiated.
+        /// </summary>
         public EngineSettings Settings { get; private set; }
 
         /// <summary>

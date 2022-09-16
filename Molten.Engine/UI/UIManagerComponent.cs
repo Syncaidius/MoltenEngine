@@ -288,7 +288,7 @@ namespace Molten.UI
 
                     if (_camera != null)
                     {
-                        UpdateRootBounds(_camera, _camera.OutputSurface);
+                        UpdateRootBounds(_camera, _camera.Surface);
                         _camera.OnSurfaceChanged += UpdateRootBounds;
                         _camera.OnSurfaceResized += UpdateRootBounds;
                     }

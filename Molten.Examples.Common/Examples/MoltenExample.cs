@@ -52,7 +52,7 @@ namespace Molten.Examples
             Camera2D.Mode = RenderCameraMode.Orthographic;
             Camera2D.OrderDepth = 1;
             Camera2D.MaxDrawDistance = 1.0f;
-            Camera2D.OutputSurface = Surface;
+            Camera2D.Surface = Surface;
             Camera2D.LayerMask = SceneLayerMask.Layer0;
 
             UI.Root.IsScrollingEnabled = false;
@@ -91,7 +91,7 @@ namespace Molten.Examples
             SceneCamera = Player.Components.Add<CameraComponent>();
             CameraController = Player.Components.Add<SampleCameraController>();
             SceneCamera.LayerMask = SceneLayerMask.Layer1 | SceneLayerMask.Layer2;
-            SceneCamera.OutputSurface = Surface;
+            SceneCamera.Surface = Surface;
             SceneCamera.MaxDrawDistance = 300;
             //SceneCamera.MultiSampleLevel = AntiAliasLevel.X8;
             MainScene.AddObject(Player);

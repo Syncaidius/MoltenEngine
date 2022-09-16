@@ -11,6 +11,6 @@ namespace Molten.Input
     {
         event InputCameraSurfaceHandler OnSurfaceChanged;
 
-        IRenderSurface2D OutputSurface { get; }
+        IRenderSurface2D Surface { get; }
     }
 }

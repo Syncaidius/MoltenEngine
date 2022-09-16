@@ -3,7 +3,7 @@ using Molten.Input;
 
 namespace Molten
 {
-    /// <summary>An implementation of <see cref="IInputCamera"/> which provides a left-handed projection matrix based on it's <see cref="IInputCamera.OutputSurface"/>.</summary>
+    /// <summary>An implementation of <see cref="IInputCamera"/> which provides a left-handed projection matrix based on it's <see cref="IInputCamera.Surface"/>.</summary>
     public class CameraComponent : SceneComponent, IInputCamera
     {
         RenderCamera _camera;
@@ -138,7 +138,7 @@ namespace Molten
         public Matrix4F ViewProjection => _camera.ViewProjection;
 
         /// <summary>Gets or sets the <see cref="IRenderSurface2D"/> that the camera's view should be rendered out to.</summary>
-        public IRenderSurface2D OutputSurface
+        public IRenderSurface2D Surface
         {
             get => _camera.Surface;
             set => _camera.Surface = value;

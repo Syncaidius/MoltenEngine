@@ -299,13 +299,13 @@ namespace Molten.Examples
                 Vector2F counterSize = Font.MeasureString(strCounter);
                 Vector2F counterPos = new Vector2F()
                 {
-                    X = (SceneCamera.OutputSurface.Width / 2) - (counterSize.X / 2),
-                    Y = SceneCamera.OutputSurface.Height - 120,
+                    X = (SceneCamera.Surface.Width / 2) - (counterSize.X / 2),
+                    Y = SceneCamera.Surface.Height - 120,
                 };
 
                 sb.DrawString(Font, strCounter, counterPos, Color.White);
                 counterPos.Y += counterSize.Y + 5;
-                counterPos.X = (SceneCamera.OutputSurface.Width / 2) - (Font.MeasureString(strInstructions).X / 2);
+                counterPos.X = (SceneCamera.Surface.Width / 2) - (Font.MeasureString(strInstructions).X / 2);
                 sb.DrawString(Font, strInstructions, counterPos, Color.White);
             };
         }

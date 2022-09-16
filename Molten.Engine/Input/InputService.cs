@@ -17,7 +17,7 @@ namespace Molten.Input
                 if (_activeCamera != value)
                 {
                     _activeCamera = value;
-                    BindSurface(value?.OutputSurface);
+                    BindSurface(value?.Surface);
                 }
             }
         }
@@ -30,8 +30,7 @@ namespace Molten.Input
         List<InputDevice> _devices;
 
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
-        /// <param name="settings">The <see cref="InputSettings"/> that was provided when the engine was instanciated.</param>
-        /// <param name="log">A logger.</param>
+        /// <param name="settings">The initial engine settings provided on startup.</param>
         protected override void OnInitialize(EngineSettings settings)
         {
             _gamepadsByIndex = new Dictionary<int, GamepadDevice>();
@@ -93,7 +92,6 @@ namespace Molten.Input
         /// <summary>
         /// Gets the default gamepad handler for the current input library.
         /// </summary>
-        /// <param name="surface">The window surface the handler will be bound to.</param>
         /// <param name="index">The gamepad player index.</param>
         /// <param name="subtype">The sub-type of gamepad/controller to request. 
         /// Depending on implementation, the returned device may not always match the requested sub-type.</param>
@@ -112,7 +110,6 @@ namespace Molten.Input
 
         /// <summary>Gets a new or existing instance of an input handler for the specified <see cref="INativeSurface"/>.</summary>
         /// <typeparam name="T">The type of handler to retrieve.</typeparam>
-        /// <param name="surface">The surface for which to bind and return an input handler.</param>
         /// <returns>An input handler of the specified type.</returns>
         public T GetCustomDevice<T>() where T : InputDevice, new()
         {
@@ -204,24 +201,34 @@ namespace Molten.Input
             _byType.Clear();
         }
 
+        /// <summary>
+        /// Invoked when the current <see cref="InputService"/> is required to bind to a new <see cref="INativeSurface"/>.
+        /// </summary>
+        /// <param name="surface"></param>
         protected abstract void OnBindSurface(INativeSurface surface);
 
+        /// <summary>
+        /// Invoked when a gamepad for a specific player index is requested.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="subtype"></param>
+        /// <returns></returns>
         protected abstract GamepadDevice OnGetGamepad(int index, GamepadSubType subtype);
 
         /// <summary>
-        /// Gets the default mouse handler for the current <see cref="IInputManager"/>.
+        /// Gets the default mouse handler for the current <see cref="InputService"/>.
         /// </summary>
         /// <returns></returns>
         public abstract MouseDevice GetMouse();
 
         /// <summary>
-        /// Gets the default keyboard device handler for the current <see cref="IInputManager"/>.
+        /// Gets the default keyboard device handler for the current <see cref="InputService"/>.
         /// </summary>
         /// <returns></returns>
         public abstract KeyboardDevice GetKeyboard();
 
         /// <summary>
-        /// Gets the default touch device handler for the current <see cref="IInputManager"/>.
+        /// Gets the default touch device handler for the current <see cref="InputService"/>.
         /// </summary>
         /// <returns></returns>
         public abstract TouchDevice GetTouch();
@@ -230,11 +237,14 @@ namespace Molten.Input
         /// <summary>Gets the implementation of <see cref="IClipboard"/> bound to the current input manager.</summary>
         public abstract IClipboard Clipboard { get; }
 
+        /// <summary>
+        /// Gets navigational input controls, if any.
+        /// </summary>
         public abstract IInputNavigation Navigation { get; }
 
         /// <summary>
         /// Gets the input update/frame ID. 
-        /// This is usually equal to the number of times <see cref="InputService.Update(Timing)"/> has been called.
+        /// This is usually equal to the number of times <see cref="EngineService.Update(Timing)"/> has been called on the current <see cref="InputService"/>.
         /// </summary>
         public uint UpdateID { get; private set; }
     }

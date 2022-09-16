@@ -57,7 +57,7 @@ namespace Molten.Input
             return settings.PointerBufferSize;
         }
 
-        /// <summary>Positions the mouse cursor at the center of the currently-bound <see cref="IInputCamera.OutputSurface"/>.</summary>
+        /// <summary>Positions the mouse cursor at the center of the currently-bound <see cref="IInputCamera.Surface"/>.</summary>
         public void Center()
         {
             if (_surface == null)

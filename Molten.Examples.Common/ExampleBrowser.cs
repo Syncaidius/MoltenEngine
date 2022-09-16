@@ -63,7 +63,7 @@ namespace Molten.Examples
             _cam2D.Mode = RenderCameraMode.Orthographic;
             _cam2D.OrderDepth = 1;
             _cam2D.MaxDrawDistance = 1.0f;
-            _cam2D.OutputSurface = Window;
+            _cam2D.Surface = Window;
             _cam2D.LayerMask = SceneLayerMask.Layer0;
 
             UI.Root.IsScrollingEnabled = false;
