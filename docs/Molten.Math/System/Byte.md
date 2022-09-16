@@ -1,3 +1,0 @@
-﻿  
-# .System.Byte
-{{MISSING SUMMARY}}

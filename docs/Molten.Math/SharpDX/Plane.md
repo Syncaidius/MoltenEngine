@@ -1,3 +1,0 @@
-﻿  
-# .SharpDX.Plane
-{{MISSING SUMMARY}}

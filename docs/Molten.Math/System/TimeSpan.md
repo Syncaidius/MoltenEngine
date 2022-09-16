@@ -1,3 +1,0 @@
-﻿  
-# .System.TimeSpan
-{{MISSING SUMMARY}}

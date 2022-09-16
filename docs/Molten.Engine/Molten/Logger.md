@@ -1,3 +1,0 @@
-﻿  
-# .Molten.Logger
-{{MISSING SUMMARY}}

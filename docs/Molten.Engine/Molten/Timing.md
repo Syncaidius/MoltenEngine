@@ -1,3 +1,0 @@
-﻿  
-# .Molten.Timing
-{{MISSING SUMMARY}}

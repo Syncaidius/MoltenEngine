@@ -1,3 +1,0 @@
-﻿  
-# .Molten.EnhancedBinaryReader
-{{MISSING SUMMARY}}

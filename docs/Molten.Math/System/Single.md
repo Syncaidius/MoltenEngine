@@ -1,3 +1,0 @@
-﻿  
-# .System.Single
-{{MISSING SUMMARY}}

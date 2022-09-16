@@ -1,3 +1,0 @@
-﻿  
-# .System.DateTime
-{{MISSING SUMMARY}}
