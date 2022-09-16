@@ -12,6 +12,7 @@ namespace Molten
     public class EngineSettings : SettingBank
     {
         List<EngineService> _startupServices;
+
         public EngineSettings()
         {
             _startupServices = new List<EngineService>();
@@ -78,7 +79,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Load settings from the file located at the path defined in <see cref="Path"/>
+        /// Load settings from the file located at the path defined in <see cref="Path"/>.
         /// </summary>
         public void Load()
         {
@@ -101,6 +102,9 @@ namespace Molten
             JsonConvert.PopulateObject(json, this, jsonSettings);
         }
 
+        /// <summary>
+        /// Saves the current <see cref="EngineSettings"/> to file as serialized JSON.
+        /// </summary>
         public void Save()
         {
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings() { Formatting = Formatting.Indented };
@@ -116,22 +120,25 @@ namespace Molten
             }
         }
 
-        /// <summary>Gets the graphics settings bank.</summary>
+        /// <summary>Gets the graphics settings.</summary>
         [DataMember]
         public GraphicsSettings Graphics { get; }
 
         /// <summary>
-        /// Gets the input settings bank.
+        /// Gets the input settings.
         /// </summary>
         [DataMember]
         public InputSettings Input { get; }
 
         /// <summary>
-        /// Gets the network settings bank.
+        /// Gets the network settings.
         /// </summary>
         [DataMember]
         public NetworkSettings Network { get; }
 
+        /// <summary>
+        /// Gets the audio settings.
+        /// </summary>
         [DataMember]
         public AudioSettings Audio { get; }
 

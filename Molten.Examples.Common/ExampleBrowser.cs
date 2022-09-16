@@ -4,6 +4,7 @@ using Molten.Graphics;
 using Molten.Input;
 using Molten.Net;
 using Molten.UI;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -14,6 +15,13 @@ namespace Molten.Examples
         where I : InputService, new ()
         where A : AudioService, new()
     {
+        class ExampleBindings
+        {
+            public UIWindow Window;
+
+            public INativeSurface NativeWindow;
+        }
+
         bool _baseContentLoaded;
         Scene _scene;
         CameraComponent _cam2D;
@@ -30,11 +38,13 @@ namespace Molten.Examples
 
         Sprite _windowIcon;
 
-        ThreadedList<MoltenExample> _activeExamples;
+        ConcurrentDictionary<MoltenExample, ExampleBindings> _exampleBindings;
+        ThreadedList<MoltenExample> _examples;
 
         public ExampleBrowser(string title) : base(title)
         {
-            _activeExamples = new ThreadedList<MoltenExample>();
+            _exampleBindings = new ConcurrentDictionary<MoltenExample, ExampleBindings>();
+            _examples = new ThreadedList<MoltenExample>();
         }
 
         protected override void OnStart(EngineSettings settings)
@@ -167,6 +177,7 @@ namespace Molten.Examples
             _btnCloseAll = UI.Children.Add<UIButton>(new Rectangle(25, 650, 130, 25));
             _btnCloseAll.Text = "Close All";
             _btnCloseAll.IsEnabled = false;
+            _btnCloseAll.Released += _btnCloseAll_Released;
 
             _btnStart = UI.Children.Add<UIButton>(new Rectangle(165, 650, 100, 25));
             _btnStart.Text = "Start";
@@ -186,6 +197,18 @@ namespace Molten.Examples
             UpdateUIlayout(ui);
         }
 
+        private void _btnCloseAll_Released(UIElement element, ScenePointerTracker tracker)
+        {
+            List<ExampleBindings> bindings = _exampleBindings.Values.ToList();
+            foreach(ExampleBindings b in bindings)
+            {
+                b.Window?.Close();
+                //b.NativeWindow?.Close();
+            }
+
+            _btnCloseAll.IsEnabled = false;
+        }
+
         private void BtnStart_StartExample(UIElement element, ScenePointerTracker tracker)
         {
             if (_lstExamples.SelectedItem == null)
@@ -193,57 +216,67 @@ namespace Molten.Examples
 
             UIExampleListItem selected = _lstExamples.SelectedItem as UIExampleListItem;
             MoltenExample example = Activator.CreateInstance(selected.ExampleType) as MoltenExample;
+            ExampleBindings binding = new ExampleBindings();
 
             if (_chkNativeWindow.IsChecked)
             {
-                INativeSurface surface = Engine.Renderer.Resources.CreateFormSurface(selected.Text, selected.Text.Replace(" ", ""));
-                Engine.Renderer.OutputSurfaces.Add(surface);
-                surface.OnClose += (nativeSurface) =>
+                binding.NativeWindow = Engine.Renderer.Resources.CreateFormSurface(selected.Text, selected.Text.Replace(" ", ""));
+                Engine.Renderer.OutputSurfaces.Add(binding.NativeWindow);
+                binding.NativeWindow.OnClose += (nativeSurface) =>
                 {
                     example.Close();
-                    _activeExamples.Remove(example);
-                    Engine.Renderer.OutputSurfaces.Remove(surface);
+                    if (_exampleBindings.TryRemove(example, out ExampleBindings binding))
+                    {
+                        _examples.Remove(example);
+                        Engine.Renderer.OutputSurfaces.Remove(binding.NativeWindow);
+                        example.MainScene.Dispose();
+                    }
                 };
 
-                example.Initialize(this, _font, surface, Log);
+                example.Initialize(this, _font, binding.NativeWindow, Log);
 
-                surface.Mode = WindowMode.Windowed;
-                surface.Visible = true;
+                binding.NativeWindow.Mode = WindowMode.Windowed;
+                binding.NativeWindow.Visible = true;
             }
             else
             {
                 IRenderSurface2D surface = Engine.Renderer.Resources.CreateSurface(800, 600);
                 example.Initialize(this, _font, surface, Log);
 
-                UIWindow window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
+                binding.Window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
                 {
-                    window.Title = selected.Text;
-                    window.Icon = _windowIcon;
-                    window.Closing += (element, args) =>
+                    binding.Window.Title = selected.Text;
+                    binding.Window.Icon = _windowIcon;
+                    binding.Window.Closing += (element, args) =>
                     {
                         example.Close();
-                        _activeExamples.Remove(example);
-                        example.MainScene.Dispose();
+                        if (_exampleBindings.TryRemove(example, out ExampleBindings binding))
+                        {
+                            _examples.Remove(example);
+                            example.MainScene.Dispose();
+                        }
                     };
-                    window.Minimized += (element) =>
+                    binding.Window.Minimized += (element) =>
                     {
                         example.MainScene.IsVisible = false;
                         example.MainScene.IsEnabled = false;
                     };
-                    window.Opened += (element) =>
+                    binding.Window.Opened += (element) =>
                     {
                         example.MainScene.IsVisible = true;
                         example.MainScene.IsEnabled = true;
                     };
 
-                    UITexture windowTex = window.Children.Add<UITexture>(new Rectangle(0, 0, 800, 600));
+                    UITexture windowTex = binding.Window.Children.Add<UITexture>(new Rectangle(0, 0, 800, 600));
                     windowTex.Focused += (e) => example.IsFocused = true;
                     windowTex.Unfocused += (e) => example.IsFocused = false;
                     windowTex.Texture = surface;
                 }
             }
 
-            _activeExamples.Add(example);
+            _exampleBindings.TryAdd(example, binding);
+            _examples.Add(example);
+            _btnCloseAll.IsEnabled = true;
         }
 
         private void _lstExamples_SelectionChanged(UIListViewItem element)
@@ -342,7 +375,7 @@ namespace Molten.Examples
 
             OnGamepadInput(time);
 
-            _activeExamples.For(0, 1, (index, example) => example.Update(Time));
+            _examples.For(0, 1, (index, example) => example.Update(Time));
         }
 
         protected virtual void OnDrawSprites(SpriteBatcher sb)
