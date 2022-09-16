@@ -20,8 +20,8 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build Debug
-      run: dotnet build -a|--arch x64 --configuration Debug --no-restore
+      run: dotnet build /p:Platform="x64" --configuration Debug --no-restore
     - name: Build Release
-      run: dotnet build -a|--arch x64 --configuration Release --no-restore
+      run: dotnet build /p:Platform="x64" --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
