@@ -81,11 +81,17 @@ namespace Molten.UI
         /// </summary>
         public event UIElementHandler Unfocused;
 
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> with and/or height has changed.
+        /// </summary>
+        public event UIElementHandler Resized;
+
         List<UIElementLayer> _layers;
         UIManagerComponent _manager;
         UIElementLayer _parentLayer;
         UITheme _theme;
         UIElementState _state;
+        Vector2I _prevSize;
         Rectangle _localBounds;
         Rectangle _globalBounds;
         Rectangle _renderBounds;
@@ -93,6 +99,9 @@ namespace Molten.UI
         Vector2F _renderOffset;
         bool _isFocused;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="UIElement"/>.
+        /// </summary>
         public UIElement()
         {
             _layers = new List<UIElementLayer>();
@@ -157,6 +166,11 @@ namespace Molten.UI
             UpdateBounds();
         }
 
+        /// <summary>
+        /// Invoked to update bounds and positional information for the current <see cref="UIElement"/>.
+        /// </summary>
+        /// <param name="parentBounds">The bounds used to represent a parent <see cref="UIElement"/>, if any. 
+        /// <para>If null, the actually <see cref="ParentElement"/> will be used, if any.</para></param>
         protected void UpdateBounds(Rectangle? parentBounds = null)
         {
             if (parentBounds == null && _parentLayer != null)
@@ -207,6 +221,13 @@ namespace Molten.UI
             }
 
             OnUpdateBounds();
+
+            if (_localBounds.Width != _prevSize.X || _localBounds.Height != _prevSize.Y)
+            {
+                _prevSize.X = _localBounds.Width;
+                _prevSize.Y = _localBounds.Height;
+                Resized?.Invoke(this);
+            }
         }
 
         /// <summary>
