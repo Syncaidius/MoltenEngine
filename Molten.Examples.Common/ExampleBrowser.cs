@@ -247,6 +247,13 @@ namespace Molten.Examples
                 {
                     binding.Window.Title = selected.Text;
                     binding.Window.Icon = _windowIcon;
+
+                    UITexture windowTex = binding.Window.Children.Add<UITexture>(new Rectangle(0, 0, 800, 600));
+                    windowTex.Focused += (e) => example.IsFocused = true;
+                    windowTex.Unfocused += (e) => example.IsFocused = false;
+                    windowTex.Texture = surface;
+
+
                     binding.Window.Closing += (element, args) =>
                     {
                         example.Close();
@@ -256,21 +263,24 @@ namespace Molten.Examples
                             example.MainScene.Dispose();
                         }
                     };
+
                     binding.Window.Minimized += (element) =>
                     {
                         example.MainScene.IsVisible = false;
                         example.MainScene.IsEnabled = false;
                     };
+
                     binding.Window.Opened += (element) =>
                     {
                         example.MainScene.IsVisible = true;
                         example.MainScene.IsEnabled = true;
                     };
 
-                    UITexture windowTex = binding.Window.Children.Add<UITexture>(new Rectangle(0, 0, 800, 600));
-                    windowTex.Focused += (e) => example.IsFocused = true;
-                    windowTex.Unfocused += (e) => example.IsFocused = false;
-                    windowTex.Texture = surface;
+                    binding.Window.Resized += (element) =>
+                    {
+                        surface.Resize((uint)binding.Window.RenderBounds.Width, (uint)binding.Window.RenderBounds.Height);
+                        windowTex.LocalBounds = new Rectangle(0,0, binding.Window.Width, binding.Window.Height);
+                    };
                 }
             }
 

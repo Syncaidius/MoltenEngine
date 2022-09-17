@@ -66,11 +66,6 @@ namespace Molten.Graphics
             };
         }
 
-        protected void RaiseResizeEvent()
-        {
-            OnResize?.Invoke(this);
-        }
-
         private void ValidateFlagCombination()
         {
             // Validate RT mip-maps
@@ -163,6 +158,7 @@ namespace Molten.Graphics
                     UAV.Create(_native);
                 }
 
+                Version++;
                 OnCreate?.Invoke(this);
             }
             else

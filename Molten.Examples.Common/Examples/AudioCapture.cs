@@ -174,7 +174,7 @@ namespace Molten.Examples
         {
             base.OnDrawSprites(sb);
 
-            if (!Engine.Audio.IsDisposed)
+            if (!Engine.Audio.IsDisposed && _lblSamples != null)
             {
                 int samples = Engine.Audio.Input.GetAvailableSamples();
                 _lblSamples.Text = $"Captured Samples Available: {samples}";

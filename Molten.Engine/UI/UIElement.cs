@@ -550,6 +550,26 @@ namespace Molten.UI
         }
 
         /// <summary>
+        /// Gets the X of <see cref="LocalBounds"/> for the current <see cref="UIElement"/>.
+        /// </summary>
+        public int X => _localBounds.X;
+
+        /// <summary>
+        /// Gets the Y of <see cref="LocalBounds"/> for the current <see cref="UIElement"/>.
+        /// </summary>
+        public int Y => _localBounds.Y;
+
+        /// <summary>
+        /// Gets the width of <see cref="LocalBounds"/> for the current <see cref="UIElement"/>.
+        /// </summary>
+        public int Width => _localBounds.Width;
+
+        /// <summary>
+        /// Gets the height of <see cref="LocalBounds"/> for the current <see cref="UIElement"/>.
+        /// </summary>
+        public int Height => _localBounds.Height;
+
+        /// <summary>
         /// Gets the global bounds, relative to the <see cref="UIManagerComponent"/> that is drawing the current <see cref="UIElement"/>.
         /// <para>Global bounds are the area in which input is accepted and from which <see cref="RenderBounds"/> is calculated, based on padding, borders and other properties.</para>
         /// </summary>
