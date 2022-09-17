@@ -22,7 +22,7 @@ namespace Molten.Graphics
 
         public event TextureHandler OnPreResize;
 
-        public event TextureHandler OnPostResize;
+        public event TextureHandler OnResize;
 
 
         public View TargetView { get; private set; }

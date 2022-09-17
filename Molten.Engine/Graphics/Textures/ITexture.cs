@@ -11,14 +11,9 @@
     public interface ITexture : IShaderResource
     {
         /// <summary>
-        /// Occurs before the <see cref="ITexture"/> has started resizing. Executed by the renderer thread it is bound to.
-        /// </summary>
-        event TextureHandler OnPreResize;
-
-        /// <summary>
         /// Occurs after the <see cref="ITexture"/> is done resizing. Executed by the renderer thread it is bound to.
         /// </summary>
-        event TextureHandler OnPostResize;
+        event TextureHandler OnResize;
 
         /// <summary>
         /// Gets a new instance of the texture's <see cref="Texture1DProperties"/> properties.

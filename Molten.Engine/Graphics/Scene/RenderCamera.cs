@@ -114,7 +114,7 @@
             _invViewProjection = Matrix4F.Invert(_viewProjection);
         }
 
-        private void _surface_OnPostResize(ITexture texture)
+        private void _surface_OnResize(ITexture texture)
         {
             CalculateProjection();
             OnSurfaceResized?.Invoke(this, texture as IRenderSurface2D);
@@ -165,14 +165,14 @@
                 if (_surface != value)
                 {
                     if (_surface != null)
-                        _surface.OnPostResize -= _surface_OnPostResize;
+                        _surface.OnResize -= _surface_OnResize;
 
                     if (value != null)
                     {
                         if (value.IsMultisampled)
                             throw new InvalidOperationException("A RenderCamera's output surface cannot have anti-aliasing enabled.");
 
-                        value.OnPostResize += _surface_OnPostResize;
+                        value.OnResize += _surface_OnResize;
                     }
 
                     IRenderSurface2D oldSurface = _surface;

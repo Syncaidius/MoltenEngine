@@ -59,7 +59,7 @@ namespace Molten.Examples
             base.OnInitialize(engine);
 
             if (Window != null)
-                Window.OnPostResize += Window_OnPostResize;
+                Window.OnResize += Window_OnResize;
 
             _scene = new Scene("ExampleBrowser", Engine);
             _scene.BackgroundColor = new Color(0x333333);
@@ -289,7 +289,7 @@ namespace Molten.Examples
             UpdateGamepadUI();
         }
 
-        private void Window_OnPostResize(ITexture texture)
+        private void Window_OnResize(ITexture texture)
         {
             if (_baseContentLoaded)
                 UpdateUIlayout(UI);

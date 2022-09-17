@@ -22,14 +22,9 @@ namespace Molten.Graphics
         public event TextureEvent OnCreateFailed;
 
         /// <summary>
-        /// Invokved right before resizing of the texture begins.
-        /// </summary>
-        public event TextureHandler OnPreResize;
-
-        /// <summary>
         /// Invoked after resizing of the texture has completed.
         /// </summary>
-        public event TextureHandler OnPostResize;
+        public event TextureHandler OnResize;
 
         ID3D11Resource* _native;
         RendererDX11 _renderer;
@@ -71,9 +66,9 @@ namespace Molten.Graphics
             };
         }
 
-        protected void RaisePostResizeEvent()
+        protected void RaiseResizeEvent()
         {
-            OnPostResize?.Invoke(this);
+            OnResize?.Invoke(this);
         }
 
         private void ValidateFlagCombination()
@@ -466,7 +461,6 @@ namespace Molten.Graphics
                 DxgiFormat == newFormat)
                 return;
 
-            OnPreResize?.Invoke(this);
             Width = Math.Max(1, newWidth);
             Height = Math.Max(1, newHeight);
             Depth = Math.Max(1, newDepth);
@@ -475,7 +469,7 @@ namespace Molten.Graphics
 
             UpdateDescription(Width, Height, Depth, Math.Max(1, newMipMapCount), Math.Max(1, newArraySize), newFormat);
             CreateTexture(true);
-            OnPostResize?.Invoke(this);
+            OnResize?.Invoke(this);
         }
 
 
