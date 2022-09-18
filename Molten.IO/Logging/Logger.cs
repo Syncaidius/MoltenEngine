@@ -1,16 +1,39 @@
 ﻿using Molten.Collections;
 using System.Diagnostics;
+using System.Drawing;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Molten
 {
     public class Logger : IDisposable
     {
+        public class Entry
+        {
+            public DateTime TimeStamp { get; set; }
+
+            public string TimeStampString { get; set; }
+
+            public string Text { get; set; }
+
+            public LogCategory Category { get; set; }
+
+            public Color Color { get; set; } = Color.White;
+
+            public Entry Previous { get; set; }
+
+            public Entry Next { get; set; }
+
+            public uint LineNumber { get; set; } = 1U;
+        }
+
         List<ILogOutput> _outputs;
-        StringBuilder _errorBuilder;
         static string[] _traceSeparators = { Environment.NewLine };
         static ThreadedList<Logger> _loggers;
 
+        Entry _first;
+        Entry _last;
+        uint _entryCount;
         Interlocker _interlocker;
 
         static Logger()
@@ -20,7 +43,9 @@ namespace Molten
 
         internal Logger()
         {
-            _errorBuilder = new StringBuilder();
+            _first = new Entry();
+            _last = _first;
+
             _outputs = new List<ILogOutput>();
             _interlocker = new Interlocker();
         }
@@ -54,7 +79,7 @@ namespace Molten
 
         public void WriteLine(string value)
         {
-            Log(value, Color.White);
+            WriteLine(value, Color.White);
         }
 
         /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
@@ -62,7 +87,7 @@ namespace Molten
         [Conditional("DEBUG")]
         public void Debug(string value)
         {
-            Log($"[DEBUG] {value}", Color.White);
+            WriteLine($"[DEBUG] {value}", Color.White);
         }
 
         /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
@@ -72,9 +97,9 @@ namespace Molten
         public void Debug(string value, string filename)
         {
             if (string.IsNullOrEmpty(filename))
-                Log($"[DEBUG] {value}", DebugColor);
+                WriteLine($"[DEBUG] {value}", DebugColor, LogCategory.Debug);
             else
-                Log($"[DEBUG] {filename}: {value}", DebugColor);
+                WriteLine($"[DEBUG] {filename}: {value}", DebugColor, LogCategory.Debug);
         }
 
         /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
@@ -83,24 +108,71 @@ namespace Molten
         [Conditional("DEBUG")]
         public void WriteDebugLine(string value, Color color)
         {
-            Log($"[DEBUG] {value}", color);
+            WriteLine($"[DEBUG] {value}", color, LogCategory.Debug);
         }
 
         /// <summary>
         /// Writes a line of text to all of the attached <see cref="ILogOutput"/> instances.
         /// </summary>
-        /// <param name="msg">The message to be written to the logger.</param>
+        /// <param name="text">The message to be written to the logger.</param>
         /// <param name="color">The preferred color that the text should be written in.</param>
-        public void Log(string msg, Color color)
+        /// <param name="category">The category of the logged message.</param>
+        public void WriteLine(string text, Color color, LogCategory category = LogCategory.Message)
         {
+            WriteInternal(text, color, category);
+
             _interlocker.Lock(() =>
             {
                 for (int i = 0; i < _outputs.Count; i++)
-                    _outputs[i].WriteLine(msg, color);
+                    _outputs[i].Write(text, _last);
 #if DEBUG
-                System.Diagnostics.Debug.WriteLine(msg);
+                System.Diagnostics.Debug.WriteLine(text);
+#endif
+
+                // Create the next, entry for a new line.
+                Entry e = new Entry();
+                e.LineNumber = _last.LineNumber + 1;
+                _last.Next = e;
+                e.Previous = _last;
+                _last = e;
+                _entryCount++;
+
+                // Cull oldest log entry if required.
+                if (_entryCount == MaxEntryCount && _first != _last)
+                {
+                    _first = _first.Next;
+                    _first.Previous = null;
+                }
+            });
+        }
+
+        public void Write(string value, LogCategory category = LogCategory.Message)
+        {
+            Write(value, Color.White, category);
+        }
+
+        public void Write(string text, Color color, LogCategory category = LogCategory.Message)
+        {
+            WriteInternal(text, color, category);
+
+            _interlocker.Lock(() =>
+            {
+                for (int i = 0; i < _outputs.Count; i++)
+                    _outputs[i].Write(text, _last);
+
+#if DEBUG
+                System.Diagnostics.Debug.Write(text);
 #endif
             });
+        }
+
+        private void WriteInternal(string text, Color color, LogCategory category)
+        {
+            _last.Text += text;
+            _last.Color = color;
+            _last.Category = category;
+            _last.TimeStamp = DateTime.Now;
+            _last.TimeStampString = _last.TimeStamp.ToLongTimeString();
         }
 
         /// <summary>
@@ -113,6 +185,10 @@ namespace Molten
                 for (int i = 0; i < _outputs.Count; i++)
                     _outputs[i].Clear();
             });
+
+            _first = new Entry();
+            _last = _first;
+            _entryCount = 0;
         }
 
         /// <summary>
@@ -130,45 +206,44 @@ namespace Molten
             string hResult = "   HResult: " + e.HResult;
             string target = "   Target Site: " + e.TargetSite.Name;
 
-            string time = DateTime.Now.ToLongTimeString();
             if (handled)
-                Log("===HANDLED EXCEPTION===", ErrorColor);
+                WriteLine("===HANDLED EXCEPTION===", ErrorColor, LogCategory.Error);
             else
-                Log("===UNHANDLED EXCEPTION===", ErrorColor);
+                WriteLine("===UNHANDLED EXCEPTION===", ErrorColor, LogCategory.Error);
 
-            Log(title, ErrorColor);
-            Log(msg, ErrorColor);
-            Log(source, ErrorColor);
-            Log(hResult, ErrorColor);
-            Log(target, ErrorColor);
+            WriteLine(title, ErrorColor, LogCategory.Error);
+            WriteLine(msg, ErrorColor, LogCategory.Error);
+            WriteLine(source, ErrorColor, LogCategory.Error);
+            WriteLine(hResult, ErrorColor, LogCategory.Error);
+            WriteLine(target, ErrorColor, LogCategory.Error);
 
             if (e.InnerException != null)
             {
                 string inner = "   Inner Exception: " + e.InnerException.GetType().ToString();
-                Log(title, ErrorColor);
+                WriteLine(title, ErrorColor, LogCategory.Error);
             }
 
             // Stack-trace lines.
             for (int i = 0; i < st.Length; i++)
-                Log(st[i], ErrorColor);
+                WriteLine(st[i], ErrorColor, LogCategory.Error);
         }
 
         public void Error(string value)
         {
-            Log($"{ErrorPrefix} {value}", ErrorColor);
+            WriteLine(value, ErrorColor, LogCategory.Error);
         }
 
         public void Error(string value, string filename)
         {
             if (string.IsNullOrWhiteSpace(filename))
-                Log($"{ErrorPrefix}: {value}", ErrorColor);
+                Error(value);
             else
-                Log($"{ErrorPrefix} {filename}: {value}", ErrorColor);
+                WriteLine($"{filename}: {value}", ErrorColor, LogCategory.Error);
         }
 
         public void Warning(string value)
         {
-            Log($"{WarningPrefix} {value}", WarningColor);
+            WriteLine($"{value}", WarningColor, LogCategory.Warning);
         }
 
         public void Warning(string value, string filename)
@@ -176,25 +251,7 @@ namespace Molten
             if (string.IsNullOrEmpty(filename))
                 Warning(value);
             else
-                Log($"{WarningPrefix} {filename}: {value}", WarningColor);
-        }
-
-        public void Write(string value)
-        {
-            Write(value, Color.White);
-        }
-
-        public void Write(string value, Color color)
-        {
-            _interlocker.Lock(() =>
-            {
-                for (int i = 0; i < _outputs.Count; i++)
-                    _outputs[i].Write(value, color);
-
-#if DEBUG
-                System.Diagnostics.Debug.Write(value);
-#endif
-            });
+                WriteLine($"{filename}: {value}", WarningColor, LogCategory.Warning);
         }
 
         /// <summary>
@@ -225,13 +282,24 @@ namespace Molten
         public Color DebugColor { get; set; } = new Color(100, 100, 100, 255);
 
         /// <summary>
-        /// Gets or sets the prefix for errors messages.
+        /// Gets the first <see cref="Entry"/> held by the log.
         /// </summary>
-        public string ErrorPrefix { get; set; } = "[ERROR]";
+        public Entry FirstEntry => _first;
 
         /// <summary>
-        /// Gets or sets the prix for warning messages.
+        /// Gets the last <see cref="Entry"/> held by the log.
         /// </summary>
-        public string WarningPrefix { get; set; } = "[WARNING]";
+        public Entry LastEntry => _last;
+
+        /// <summary>
+        /// Gets the total number of entries logged by the logger so far. <see cref="Clear"/> will reset this value.
+        /// </summary>
+        public uint EntryCount => _entryCount;
+
+        /// <summary>
+        /// Gets or sets the maximum number of <see cref="Entry"/> to maintain in the current <see cref="Logger"/>. 
+        /// <para>Once <see cref="EntryCount"/> hits this number, the oldest log entries will be replaced.</para>
+        /// </summary>
+        public uint MaxEntryCount { get; set; } = 2000;
     }
 }

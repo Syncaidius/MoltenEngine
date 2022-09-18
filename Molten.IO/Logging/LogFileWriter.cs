@@ -24,6 +24,7 @@ namespace Molten
         StreamWriter _writer;
         string _strFormat = "[{0}] {1}";
         bool _disposed;
+        Logger.Entry _lastEntry;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LogFileWriter"/> class.
@@ -49,7 +50,6 @@ namespace Molten
                 case NamingMode.Incremental:
                     while (success == false)
                     {
-
                         try
                         {
                             _stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read, bufferSize);
@@ -99,27 +99,24 @@ namespace Molten
         public void Clear() { }
 
         /// <summary>
-        /// Writes the specified text to the log output and terminates it with a new line..
+        /// Writes the specified text to the log output.
         /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="color">The color.</param>
-        public void WriteLine(string text, Color color)
+        /// <param name="text">The additional text to be written.</param>
+        /// <param name="entry">The entry that was written to.</param>
+        public void Write(string text, Logger.Entry entry)
         {
-            string line = string.Format(_strFormat, DateTime.Now.ToLongTimeString(), text);
-            _writer.WriteLine(line);
+            string line = string.Format(_strFormat, entry.TimeStamp.ToLongTimeString(), text);
+
+            if (_lastEntry != null && _lastEntry != entry)
+                _writer.WriteLine("");
+
+            _writer.Write(line);
+            _lastEntry = entry;
         }
 
         /// <summary>
-        /// Writes the specified text to the log output.
+        /// Gets information about the log file for the current <see cref="LogFileWriter"/>.
         /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="color">The color.</param>
-        public void Write(string text, Color color)
-        {
-            string line = string.Format(_strFormat, DateTime.Now.ToLongTimeString(), text);
-            _writer.Write(line);
-        }
-
         public FileInfo LogFileInfo { get; }
     }
 }

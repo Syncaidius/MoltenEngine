@@ -2,15 +2,10 @@
 {
     public interface ILogOutput : IDisposable
     {
-        /// <summary>Writes the specified text to the log output and terminates it with a new line..</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="color">The color.</param>
-        void WriteLine(string text, Color color);
-
         /// <summary>Writes the specified text to the log output.</summary>
-        /// <param name="text">The text.</param>
-        /// <param name="color">The color.</param>
-        void Write(string text, Color color);
+        /// <param name="text">The text to be added to the current log position.</param>
+        /// <param name="entry">The entry representing the full line of text that has been written so far, including the additional <paramref name="text"/></param>
+        void Write(string text, Logger.Entry entry);
 
         /// <summary>Clears the log output.</summary>
         void Clear();
