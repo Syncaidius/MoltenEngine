@@ -45,11 +45,11 @@ namespace Molten
         /// <typeparam name="T">The type of <see cref="EngineService"/>.</typeparam>
         /// <param name="initCallback">The initialization callback to attach to the service.</param>
         /// <exception cref="Exception"></exception>
-        public void AddService<T>(MoltenEventHandler<EngineService> initCallback = null)
+        public void AddService<T>(string name = null, MoltenEventHandler<EngineService> initCallback = null)
             where T : EngineService, new()
         {
             Type t = typeof(T);
-            AddService(t, initCallback);
+            AddService(t, name, initCallback);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Molten
         /// <param name="serviceType">The type of <see cref="EngineService"/>.</param>
         /// <param name="initCallback">The initialization callback to attach to the service.</param>
         /// <exception cref="Exception"></exception>
-        public void AddService(Type serviceType, MoltenEventHandler<EngineService> initCallback = null)
+        public void AddService(Type serviceType, string name = null, MoltenEventHandler<EngineService> initCallback = null)
         {
             // Check if service is already in startup list.
             
@@ -71,6 +71,7 @@ namespace Molten
             }
 
             EngineService service = Activator.CreateInstance(serviceType) as EngineService;
+            service.Name = name ?? service.Name;
 
             if (initCallback != null)
                 service.OnInitialized += initCallback;

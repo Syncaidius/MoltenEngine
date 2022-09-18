@@ -49,9 +49,9 @@ namespace Molten.Examples
 
         protected override void OnStart(EngineSettings settings)
         {
-            settings.AddService<R>();
-            settings.AddService<I>();
-            settings.AddService<A>();
+            settings.AddService<R>("Renderer");
+            settings.AddService<I>("Input");
+            settings.AddService<A>("Audio");
         }
 
         protected override void OnInitialize(Engine engine)

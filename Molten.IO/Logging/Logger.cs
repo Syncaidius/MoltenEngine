@@ -10,19 +10,19 @@ namespace Molten
     {
         public class Entry
         {
-            public DateTime TimeStamp { get; set; }
+            public DateTime TimeStamp { get; internal set; }
 
-            public string TimeStampString { get; set; }
+            public string TimeStampString { get; internal set; }
 
-            public string Text { get; set; }
+            public string Text { get; internal set; }
 
-            public LogCategory Category { get; set; }
+            public LogCategory Category { get; internal set; }
 
             public Color Color { get; set; } = Color.White;
 
-            public Entry Previous { get; set; }
+            public Entry Previous { get; internal set; }
 
-            public Entry Next { get; set; }
+            public Entry Next { get; internal set; }
 
             public uint LineNumber { get; set; } = 1U;
         }
@@ -135,13 +135,16 @@ namespace Molten
                 _last.Next = e;
                 e.Previous = _last;
                 _last = e;
-                _entryCount++;
 
                 // Cull oldest log entry if required.
                 if (_entryCount == MaxEntryCount && _first != _last)
                 {
                     _first = _first.Next;
                     _first.Previous = null;
+                }
+                else
+                {
+                    _entryCount++;
                 }
             });
         }
