@@ -9,7 +9,7 @@ namespace Molten.Input
         /// Gets or sets the camera through which input is handled. 
         /// If the camera does not have a valid <see cref="INativeSurface"/>, input handling will be skipped.
         /// </summary>
-        public IInputCamera Camera
+        public CameraComponent Camera
         {
             get => _activeCamera;
             set
@@ -23,7 +23,7 @@ namespace Molten.Input
         }
 
         INativeSurface _activeSurface;
-        IInputCamera _activeCamera;
+        CameraComponent _activeCamera;
 
         Dictionary<int, GamepadDevice> _gamepadsByIndex;
         Dictionary<Type, InputDevice> _byType;

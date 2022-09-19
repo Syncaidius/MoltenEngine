@@ -223,7 +223,7 @@ namespace Molten.UI
 
         }
 
-        private void UpdateRootBounds(IInputCamera camera, IRenderSurface2D surface)
+        private void UpdateRootBounds(CameraComponent camera, IRenderSurface2D surface)
         {
             _root.LocalBounds = new Rectangle(0, 0, (int)surface.Width, (int)surface.Height);
         }

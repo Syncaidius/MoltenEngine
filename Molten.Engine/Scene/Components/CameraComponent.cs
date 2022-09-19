@@ -3,17 +3,22 @@ using Molten.Input;
 
 namespace Molten
 {
-    /// <summary>An implementation of <see cref="IInputCamera"/> which provides a left-handed projection matrix based on it's <see cref="IInputCamera.Surface"/>.</summary>
-    public class CameraComponent : SceneComponent, IInputCamera
+    /// <summary>Provides a managed 'eye' through which to render and interact with a <see cref="Scene"/>.</summary>
+    public class CameraComponent : SceneComponent
     {
+        public delegate void InputCameraSurfaceHandler(CameraComponent camera, IRenderSurface2D surface);
+
         RenderCamera _camera;
         bool _inScene = false;
 
         /// <summary>
-        /// Occurs when the output surface has been changed.
+        /// Invoked when the output surface has been changed.
         /// </summary>
         public event InputCameraSurfaceHandler OnSurfaceChanged;
 
+        /// <summary>
+        /// Invoked when the bound <see cref="Surface"/> has been resized.
+        /// </summary>
         public event InputCameraSurfaceHandler OnSurfaceResized;
 
         /// <summary>
@@ -174,6 +179,9 @@ namespace Molten
         /// </summary>
         public Vector3F Position => Object.Transform.GlobalPosition;
 
+        /// <summary>
+        /// Gets or sets the <see cref="RenderCameraFlags"/> for the current <see cref="CameraComponent"/>.
+        /// </summary>
         public RenderCameraFlags Flags
         {
             get => _camera.Flags;
@@ -210,6 +218,9 @@ namespace Molten
             set => _camera.Mode = value;
         }
 
+        /// <summary>
+        /// Gets or sets the multi-sampling level of the current <see cref="CameraComponent"/>.
+        /// </summary>
         public AntiAliasLevel MultiSampleLevel
         {
             get => _camera.MultiSampleLevel;
