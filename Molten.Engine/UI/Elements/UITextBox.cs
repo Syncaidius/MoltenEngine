@@ -6,21 +6,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Molten.Collections;
 using Molten.Graphics;
-using static Molten.UI.UITextBox;
 
 namespace Molten.UI
 {
-    public class UITextBox : UIElement
+    public partial class UITextBox : UIElement
     {
-        public class Line
-        {
-            public Segment First;
-
-            public uint LineNumber;
-
-            public Vector2F LineNumberSize;
-        }
-
         public class Segment
         {
             public SpriteFont Font;
@@ -36,15 +26,19 @@ namespace Molten.UI
             public Color Color = Color.White;
         }
 
+        UIScrollBar _vScroll;
+        UIScrollBar _hScroll;
+
         bool _showLineNumbers;
         bool _isMultiline;
         SpriteFont _defaultFont;
         string _fontName;
-        float _marginWidth = 50;
-        float _marginPadding = 10;
+        int _marginWidth = 50;
+        int _marginPadding = 10;
+        int _scrollbarWidth = 20;
+        int _lineSpacing = 5;
         ThreadedList<Line> _lines;
-        UIElementLayer _textLayer;
-        Vector2F _textPos;
+        Rectangle _textBounds;
 
         Vector2F _lineNumPos;
         Color _lineNumColor = new Color(42, 136, 151, 255);
@@ -53,7 +47,6 @@ namespace Molten.UI
         Color _bgColor = new Color(30, 30, 30, 255);
         Color _marginColor = new Color(60,60,60, 255);
         Color _marginLineColor = Color.White;
-        Color _marginTextColor = Color.SkyBlue;
 
         /* TODO:
          *  - Allow segment to have OnPressed and OnReleased virtual methods to allow custom segment actions/types, such as:
@@ -68,8 +61,11 @@ namespace Molten.UI
             base.OnInitialize(engine, settings); 
             
             _lines = new ThreadedList<Line>();
-
             FontName = settings.DefaultFontName;
+
+            _vScroll = BaseElements.Add<UIScrollBar>();
+            _hScroll = BaseElements.Add<UIScrollBar>();
+            _hScroll.Direction = UIElementFlowDirection.Horizontal;
         }
 
         protected override void OnUpdateBounds()
@@ -77,14 +73,38 @@ namespace Molten.UI
             base.OnUpdateBounds();
 
             Rectangle gb = GlobalBounds;
-            _textPos = (Vector2F)gb.TopLeft;
-            _textPos.X += _marginPadding;
+            _textBounds = gb;
+            _textBounds.Left += _marginPadding;
             _marginPos = new Vector2F(gb.X + _marginWidth, gb.Y);
             _lineNumPos = _marginPos - new Vector2F(_marginPadding, 0);
 
             if (_showLineNumbers)
-                _textPos.X += _marginWidth;
+                _textBounds.Left += _marginWidth;
 
+            CalcScrollBars();
+
+            if (_hScroll.IsVisible)
+            {
+                _textBounds.Bottom -= _scrollbarWidth;
+                _hScroll.LocalBounds = new Rectangle(0, gb.Height - _scrollbarWidth, gb.Width, _scrollbarWidth);
+            }
+
+            if (_vScroll.IsVisible)
+            {
+                _textBounds.Right -= _scrollbarWidth;
+                _vScroll.LocalBounds = new Rectangle(gb.Width - _scrollbarWidth, 0, _scrollbarWidth, gb.Height);
+            }
+        }
+
+        protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
+        {
+            base.OnAdjustRenderBounds(ref renderbounds);
+
+            if (_hScroll.IsVisible)
+                renderbounds.Height -= _scrollbarWidth;
+
+            if (_vScroll.IsVisible)
+                renderbounds.Width -= _scrollbarWidth;
         }
 
         protected override void OnRender(SpriteBatcher sb)
@@ -92,7 +112,8 @@ namespace Molten.UI
             base.OnRender(sb);
 
             Rectangle gb = GlobalBounds;
-            Vector2F p = _textPos;
+            Vector2F tl = (Vector2F)_textBounds.TopLeft;
+            Vector2F p = tl;
             Vector2F numPos = _lineNumPos;
 
             sb.DrawRect(gb, _bgColor, 0, null, 0);
@@ -100,14 +121,14 @@ namespace Molten.UI
             if (_showLineNumbers)
             {
                 sb.DrawRect(new RectangleF(gb.X, gb.Y, _marginWidth, gb.Height), _marginColor, 0, null, 0);
-                sb.DrawLine(_marginPos, _marginPos + new Vector2F(0, gb.Height), _marginLineColor, 1, 1, 0);
+                sb.DrawLine(_marginPos, _marginPos + new Vector2F(0, _textBounds.Height), _marginLineColor, 1, 1, 0);
             }
 
             for (int l = 0; l < _lines.Count; l++)
             {
                 Line line = _lines[l];
                 Segment seg = line.First;
-                p.X = _textPos.X;
+                p.X = tl.X;
 
                 if(_showLineNumbers)
                     sb.DrawString(_defaultFont, line.LineNumber.ToString(), numPos - new Vector2F(line.LineNumberSize.X, 0), _lineNumColor, null, 0);
@@ -124,7 +145,7 @@ namespace Molten.UI
             }
         }
 
-        public void SetText(string text)
+        private void SetText(string text)
         {
             string[] lines = Regex.Split(text, "\r?\n");
             for (int i = 0; i < lines.Length; i++)
@@ -132,16 +153,49 @@ namespace Molten.UI
                 Line line = new Line();
                 line.LineNumber = (uint)i + 1U;
                 line.LineNumberSize = _defaultFont.MeasureString(line.LineNumber.ToString());
-
-                line.First = new Segment()
-                {
-                    Text = lines[i],
-                    Color = Color.White,
-                    Font = _defaultFont,
-                    MeasuredSize = _defaultFont.MeasureString(lines[i]),
-                };
+                line.SetText(_defaultFont, lines[i]);
 
                 _lines.Add(line);
+            }
+
+            CalcScrollBars();
+        }
+
+        private void CalcScrollBars()
+        {
+            Line line;
+            float distH = 0;
+            float distV = 0;
+
+            for(int i = 0; i < _lines.Count; i++)
+            {
+                line = _lines[i];
+                if (line.MeasuredSize.X > _textBounds.Width)
+                    distH = Math.Max(distH, line.MeasuredSize.X - _textBounds.Width);
+
+                distV += line.MeasuredSize.Y + _lineSpacing;
+            }
+
+            // Horizontal scroll bar
+            if(distH > 0)
+            {
+                _hScroll.IsVisible = true;
+                _hScroll.MaxValue = distH + _scrollbarWidth;
+            }
+            else
+            {
+                _hScroll.IsVisible = false;
+            }
+
+            // Virtual scroll bar
+            if(distV > _textBounds.Height)
+            {
+                _vScroll.IsVisible = true;
+                _vScroll.MaxValue = distV + _scrollbarWidth;
+            }
+            else
+            {
+                _vScroll.IsVisible = false;
             }
         }
 
@@ -162,7 +216,7 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets or sets the name of the font for the current <see cref="UILabel"/>. This will attempt to load/retrieve and populate <see cref="Font"/>.
+        /// Gets or sets the name of the default font for the current <see cref="UITextBox"/>. This will attempt to load/retrieve and populate <see cref="Font"/>.
         /// </summary>
         [UIThemeMember]
         public string FontName
@@ -204,6 +258,7 @@ namespace Molten.UI
             set => SetText(value);
         }
 
+        /// <summary>Gets or sets whether or not line-numbers are visible.</summary>
         public bool ShowLineNumbers
         {
             get => _showLineNumbers;
@@ -213,6 +268,19 @@ namespace Molten.UI
                 {
                     _showLineNumbers = value;
                     OnUpdateBounds();
+                }
+            }
+        }
+
+        public int ScrollBarWidth
+        {
+            get => _scrollbarWidth;
+            set
+            {
+                if(_scrollbarWidth != value)
+                {
+                    _scrollbarWidth = value;
+                    UpdateBounds();
                 }
             }
         }
