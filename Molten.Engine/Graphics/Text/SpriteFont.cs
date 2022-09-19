@@ -98,6 +98,9 @@ namespace Molten.Graphics
         /// </summary>
         public FontFile File => _binding.File;
 
+        /// <summary>
+        /// Gets or sets the size of the current <see cref="SpriteFont"/>.
+        /// </summary>
         [JsonProperty]
         public float Size
         {

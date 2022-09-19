@@ -147,6 +147,11 @@ namespace Molten.UI
             return newLayer;
         }
 
+        /// <summary>
+        /// Removes a <see cref="UIElementLayer"/> from the current <see cref="UIElement"/>.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <exception cref="InvalidOperationException"></exception>
         protected void RemoveLayer(UIElementLayer layer)
         {
             if (layer == Children || layer == BaseElements)
@@ -155,6 +160,11 @@ namespace Molten.UI
             _layers.Remove(layer);
         }
 
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> needs to be initialized.
+        /// </summary>
+        /// <param name="engine">The engine instance from which the initialization call is being performed.</param>
+        /// <param name="settings">The UI settings instance that was provided to the <paramref name="engine"/> during its instantiation.</param>
         protected virtual void OnInitialize(Engine engine, UISettings settings)
         {
             Margin.OnChanged += MarginPadding_OnChanged;
