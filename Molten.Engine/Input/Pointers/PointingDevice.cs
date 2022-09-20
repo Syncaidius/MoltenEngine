@@ -93,36 +93,37 @@ namespace Molten.Input
         protected override void ProcessIdleState()
         {
             base.ProcessIdleState();
-
             Delta = Vector2F.Zero;
         }
 
         protected override bool ProcessState(ref PointerState newState, ref PointerState prevState)
         {
-            if (_surface == null)
-                return true;
-
             Delta = Vector2F.Zero;
 
-            // Is the cursor constrained to it's parent control/window?
-            Rectangle sBounds = _surface.Bounds;
-            if (IsConstrained)
-            {
-                if (newState.Position.X < sBounds.X)
-                    newState.Position.X = sBounds.X;
-                if (newState.Position.Y < sBounds.Y)
-                    newState.Position.Y = sBounds.Y;
-                if (newState.Position.X > sBounds.Width)
-                    newState.Position.X = sBounds.Width;
-                if (newState.Position.Y > sBounds.Height)
-                    newState.Position.Y = sBounds.Height;
-            }
+            bool insideControl = false;
 
-            // Check if the cursor has gone outside of the bound control/window 
-            bool insideControl = newState.Position.X >= sBounds.Left &&
-                newState.Position.Y >= sBounds.Top &&
-                newState.Position.X <= sBounds.Right &&
-                newState.Position.Y <= sBounds.Bottom;
+            if (_surface != null)
+            {
+                // Is the cursor constrained to it's parent control/window?
+                Rectangle sBounds = _surface.Bounds;
+                if (IsConstrained)
+                {
+                    if (newState.Position.X < sBounds.X)
+                        newState.Position.X = sBounds.X;
+                    if (newState.Position.Y < sBounds.Y)
+                        newState.Position.Y = sBounds.Y;
+                    if (newState.Position.X > sBounds.Width)
+                        newState.Position.X = sBounds.Width;
+                    if (newState.Position.Y > sBounds.Height)
+                        newState.Position.Y = sBounds.Height;
+                }
+
+                // Check if the cursor has gone outside of the bound control/window 
+                insideControl = newState.Position.X >= sBounds.Left &&
+                    newState.Position.Y >= sBounds.Top &&
+                    newState.Position.X <= sBounds.Right &&
+                    newState.Position.Y <= sBounds.Bottom;
+            }
 
             // Prioritise press/release actions over anything else
             if (newState.UpdateID == prevState.UpdateID)
