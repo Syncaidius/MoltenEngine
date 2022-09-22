@@ -83,7 +83,7 @@ namespace Molten.Examples
             Settings.Input.PointerSensitivity.Apply();
 
             if (engine.Input != null && engine.Input.State == EngineServiceState.Ready)
-                Engine.Input.Camera = _cam2D;
+                Engine.Input.Surface = Window;
 
             _loader = Engine.Content.GetLoadBatch();
             _loader.LoadFont("assets/FiraSans-Bold.ttf", (font, isReload) =>

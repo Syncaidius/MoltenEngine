@@ -5,29 +5,27 @@ namespace Molten.Input
 {
     public abstract class InputService : EngineService
     {
-        /// <summary>
-        /// Gets or sets the camera through which input is handled. 
-        /// If the camera does not have a valid <see cref="INativeSurface"/>, input handling will be skipped.
-        /// </summary>
-        public CameraComponent Camera
-        {
-            get => _activeCamera;
-            set
-            {
-                if (_activeCamera != value)
-                {
-                    _activeCamera = value;
-                    BindSurface(value?.Surface);
-                }
-            }
-        }
-
         INativeSurface _activeSurface;
-        CameraComponent _activeCamera;
 
         Dictionary<int, GamepadDevice> _gamepadsByIndex;
         Dictionary<Type, InputDevice> _byType;
         List<InputDevice> _devices;
+
+        /// <summary>
+        /// Gets or sets the <see cref="INativeSurface"/> through which input is handled. 
+        /// </summary>
+        public INativeSurface Surface
+        {
+            get => _activeSurface;
+            set
+            {
+                if (_activeSurface != value)
+                {
+                    _activeSurface = value;
+                    BindSurface(_activeSurface);
+                }
+            }
+        }
 
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
         /// <param name="settings">The initial engine settings provided on startup.</param>
@@ -38,42 +36,27 @@ namespace Molten.Input
             _devices = new List<InputDevice>();
         }
 
-        private void BindSurface(IRenderSurface2D surface)
+        private void BindSurface(INativeSurface surface)
         {
-            if (surface is INativeSurface window)
+            // Are we already bound to this surface (e.g. via a different camera).
+            if (_activeSurface != surface)
             {
-                // Are we already bound to this surface (e.g. via a different camera).
-                if (_activeSurface != window)
-                {
-                    foreach(InputDevice device in _devices)
-                        device.ClearState();
+                foreach(InputDevice device in _devices)
+                    device.ClearState();
 
-                    if (_activeSurface != null)
-                    {
-                        foreach (InputDevice device in _devices)
-                            device.Unbind(_activeSurface);
-                    }
-
-                    _activeSurface = window;
-
-                    if (_activeSurface != null)
-                    {
-                        foreach (InputDevice device in _devices)
-                            device.Bind(_activeSurface);
-                    }
-                }
-            }
-            else
-            {
-                // if active surface isn't null, we were previously bound to something which was an IWindowSurface.
-                // We know the new surface is not IWindowSurface, so unbind.
                 if (_activeSurface != null)
                 {
                     foreach (InputDevice device in _devices)
                         device.Unbind(_activeSurface);
                 }
 
-                _activeSurface = null;
+                _activeSurface = surface;
+
+                if (_activeSurface != null)
+                {
+                    foreach (InputDevice device in _devices)
+                        device.Bind(_activeSurface);
+                }
             }
 
             OnBindSurface(_activeSurface);
