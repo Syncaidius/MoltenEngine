@@ -54,9 +54,10 @@ namespace Molten.Examples
             Camera2D.MaxDrawDistance = 1.0f;
             Camera2D.Surface = Surface;
             Camera2D.LayerMask = SceneLayerMask.Layer0;
+            Camera2D.OnSurfaceChanged += UpdateUIRootBounds;
+            Camera2D.OnSurfaceResized += UpdateUIRootBounds;
 
             UI.Root.IsScrollingEnabled = false;
-            UI.Camera = Camera2D;
 
             TestMesh = GetTestCubeMesh();
             SpawnPlayer();
@@ -67,6 +68,10 @@ namespace Molten.Examples
             OnLoadContent(_loader);
             _loader.OnCompleted += _loader_OnCompleted;
             _loader.Dispatch();
+        }
+        private void UpdateUIRootBounds(CameraComponent camera, IRenderSurface2D surface)
+        {
+            UI.Root.LocalBounds = new Rectangle(0, 0, (int)surface.Width, (int)surface.Height);
         }
 
         public void Close()
@@ -82,6 +87,7 @@ namespace Molten.Examples
 
             SpawnParentChild(TestMesh, Vector3F.Zero, out _parent, out _child);
             IsLoaded = true;
+            UpdateUIRootBounds(Camera2D, Camera2D.Surface);
         }
 
         private void SpawnPlayer()

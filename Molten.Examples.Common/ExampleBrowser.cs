@@ -77,7 +77,8 @@ namespace Molten.Examples
             _cam2D.LayerMask = SceneLayerMask.Layer0;
 
             UI.Root.IsScrollingEnabled = false;
-            UI.Camera = _cam2D;
+            _cam2D.OnSurfaceChanged += UpdateUIRootBounds;
+            _cam2D.OnSurfaceResized += UpdateUIRootBounds;
 
             Settings.Input.PointerSensitivity.Value = 0.75f;
             Settings.Input.PointerSensitivity.Apply();
@@ -106,6 +107,11 @@ namespace Molten.Examples
             _loader.Dispatch();
         }
 
+        private void UpdateUIRootBounds(CameraComponent camera, IRenderSurface2D surface)
+        {
+            UI.Root.LocalBounds = new Rectangle(0, 0, (int)surface.Width, (int)surface.Height);
+        }
+
         private void OnBaseContentLoaded(ContentLoadBatch content)
         {
             SampleSpriteRenderComponent com = UILayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
@@ -113,7 +119,8 @@ namespace Molten.Examples
             com.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
             BuildUI(UI);
             DetectExamples();
-            _baseContentLoaded = true;
+            _baseContentLoaded = true; 
+            UpdateUIRootBounds(_cam2D, _cam2D.Surface);
         }
 
         private void DetectExamples()

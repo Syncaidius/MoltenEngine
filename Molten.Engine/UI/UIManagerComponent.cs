@@ -27,7 +27,6 @@ namespace Molten.UI
             }
         }
 
-        CameraComponent _camera;
         UIElement _focused;
         UIContainer _root;
         Dictionary<ScenePointerTracker, UITracker> _trackers;
@@ -223,11 +222,6 @@ namespace Molten.UI
 
         }
 
-        private void UpdateRootBounds(CameraComponent camera, IRenderSurface2D surface)
-        {
-            _root.LocalBounds = new Rectangle(0, 0, (int)surface.Width, (int)surface.Height);
-        }
-
         /// <summary>
         /// Gets all of the child <see cref="UIElement"/> attached to <see cref="Root"/>. This is an alias propety for <see cref="Root"/>.Children.
         /// </summary>
@@ -264,34 +258,6 @@ namespace Molten.UI
                         _focused.IsFocused = true;
 
                     FocusedChanged?.Invoke(_focused);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="Camera"/> which provides a <see cref="IRenderSurface2D"/> to draw the UI to.
-        /// </summary>
-        public CameraComponent Camera
-        {
-            get { return _camera; }
-            set
-            {
-                if(_camera != value)
-                {
-                    if (_camera != null)
-                    {
-                        _camera.OnSurfaceChanged -= UpdateRootBounds;
-                        _camera.OnSurfaceResized -= UpdateRootBounds;
-                    }
-
-                    _camera = value;
-
-                    if (_camera != null)
-                    {
-                        UpdateRootBounds(_camera, _camera.Surface);
-                        _camera.OnSurfaceChanged += UpdateRootBounds;
-                        _camera.OnSurfaceResized += UpdateRootBounds;
-                    }
                 }
             }
         }
