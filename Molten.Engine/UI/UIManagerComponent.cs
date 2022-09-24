@@ -7,33 +7,22 @@ namespace Molten.UI
     /// <summary>
     /// A <see cref="SceneComponent"/> used for updating and rendering a UI system into a <see cref="Scene"/>.
     /// </summary>
-    public sealed class UIManagerComponent : SpriteRenderComponent, IPointerReceiver
+    public sealed class UIManagerComponent : SpriteRenderComponent, IPickable
     {
+        public event SceneInputEventHandler<PointerButton> OnObjectFocused;
+        public event SceneInputEventHandler<PointerButton> OnObjectUnfocused;
+
         public event ObjectHandler<UIElement> FocusedChanged;
-
-        class UITracker
-        {
-            public UIElement Pressed;
-
-            public UIElement Held;
-
-            public UIElement Dragging;
-
-            public void Reset()
-            {
-                Pressed = null;
-                Held = null;
-                Dragging = null;
-            }
-        }
+        Dictionary<ulong, List<UIPointerTracker>> _trackers;
+        PointerButton[] _pButtons;
 
         UIElement _focused;
         UIContainer _root;
-        Dictionary<ScenePointerTracker, UITracker> _trackers;
 
         public UIManagerComponent()
         {
-            _trackers = new Dictionary<ScenePointerTracker, UITracker>();
+            _pButtons = ReflectionHelper.GetEnumValues<PointerButton>();
+            _trackers = new Dictionary<ulong, List<UIPointerTracker>>();
         }
 
         protected override void OnInitialize(SceneObject obj)
@@ -46,17 +35,6 @@ namespace Molten.UI
                 Manager = this,
             };
             Children = _root.Children;
-        }
-
-        private void UpdateTracker(ScenePointerTracker pTracker, Action<UITracker> callback)
-        {
-            if (!_trackers.TryGetValue(pTracker, out UITracker uiTracker))
-            {
-                uiTracker = new UITracker();
-                _trackers.Add(pTracker, uiTracker);
-            }
-
-            callback.Invoke(uiTracker);
         }
 
         protected override void OnDispose()
@@ -72,6 +50,14 @@ namespace Molten.UI
         public override void OnUpdate(Timing time)
         {
             base.OnUpdate(time);
+
+            // Update all pointer trackers
+            foreach (KeyValuePair<ulong, List<UIPointerTracker>> kv in _trackers)
+            {
+                for (int j = 0; j < kv.Value.Count; j++)
+                    kv.Value[j].Update(this, time);
+            }
+
             _root.Update(time);
         }
 
@@ -80,105 +66,168 @@ namespace Molten.UI
             _root.Render(sb);
         }
 
+        public bool Pick(PointingDevice pDevice, Timing time)
+        {
+            if (pDevice == null)
+                return false;
+
+            if (pDevice.IsConnected && pDevice.IsEnabled)
+                TrackPointingDevice(pDevice);
+
+            Vector2F pos = pDevice.Position;
+            HoveredElement = _root.Pick(pos);
+
+            if (pDevice is MouseDevice mouse)
+            {
+                UIElement prevHover = HoveredElement;
+                Vector2F localPos;
+
+                // Trigger on-leave of previous hover element.
+                if (HoveredElement != prevHover)
+                    prevHover?.OnLeave(pos);
+
+                // Update currently-hovered element
+                if (HoveredElement != null)
+                {
+                    localPos = pos - (Vector2F)HoveredElement.GlobalBounds.TopLeft;
+                    if (prevHover != HoveredElement)
+                        HoveredElement.OnEnter(pos);
+
+                    HoveredElement.OnHover(localPos, pos);
+                }
+
+                // Handle scroll wheel event
+                if (mouse.ScrollWheel.Delta != 0)
+                {
+                    // TODO pass mouse.ScrollWheel values to UIElement.OnScroll;
+                }
+            }
+
+            return HoveredElement != null;
+        }
+
+
+        private void TrackPointingDevice(PointingDevice device)
+        {
+            if (_trackers.ContainsKey(device.EOID))
+                return;
+
+            if (device.IsDisposed || !device.IsConnected || !device.IsEnabled)
+                return;
+
+            List<UIPointerTracker> trackers = new List<UIPointerTracker>();
+            _trackers.Add(device.EOID, trackers);
+
+            device.OnDisposing += Device_OnDisposing;
+
+            for (int setID = 0; setID < device.StateSetCount; setID++)
+            {
+                foreach (PointerButton button in _pButtons)
+                {
+                    if (button == PointerButton.None)
+                        continue;
+
+                    trackers.Add(new UIPointerTracker(device, setID, button));
+                }
+            }
+        }
+
+        private void UntrackPointingDevice(PointingDevice device)
+        {
+            if (_trackers.TryGetValue(device.EOID, out List<UIPointerTracker> trackers))
+            {
+                foreach (UIPointerTracker tracker in trackers)
+                    tracker.Clear();
+
+                _trackers.Remove(device.EOID);
+            }
+        }
+
+        private void Device_OnDisposing(EngineObject o)
+        {
+            UntrackPointingDevice(o as PointingDevice);
+        }
+
         public bool Contains(Vector2F point)
         {
             return _root.Pick(point) != null;
         }
 
-        public void PointerDrag(ScenePointerTracker tracker)
+        public void PointerDrag(UIPointerTracker tracker)
         {
-            UpdateTracker(tracker, (uiTracker) =>
+            if (tracker.Pressed != null)
             {
-                if (uiTracker.Pressed != null)
+                if (tracker.Dragging == null)
                 {
-                    if (uiTracker.Dragging == null)
+                    if (tracker.Pressed.Contains(tracker.Position))
                     {
-                        if (uiTracker.Pressed.Contains(tracker.Position))
-                        {
-                            uiTracker.Dragging = uiTracker.Pressed;
+                        tracker.Dragging = tracker.Pressed;
 
-                            // TODO perform start of drag-drop if element allows being drag-dropped
-                        }
-                    }
-
-                    uiTracker.Dragging?.OnDragged(tracker);
-                }
-            });
-        }
-
-        public void PointerHeld(ScenePointerTracker tracker)
-        {
-            UpdateTracker(tracker, (uiTracker) =>
-            {
-                if(tracker.Button == PointerButton.Left)
-                {
-                    if(uiTracker.Pressed != null)
-                    {
-                        if(uiTracker.Held == null && uiTracker.Pressed.Contains(tracker.Position))
-                        {
-                            uiTracker.Held = uiTracker.Pressed;
-                            uiTracker.Held.OnHeld(tracker);
-                        }
+                        // TODO perform start of drag-drop if element allows being drag-dropped
                     }
                 }
-            });
+
+                tracker.Dragging?.OnDragged(tracker);
+            }
         }
 
-        public void PointerPressed(ScenePointerTracker tracker)
+        public void PointerHeld(UIPointerTracker tracker)
         {
-            UpdateTracker(tracker, (uiTracker) =>
+            if (tracker.Button == PointerButton.Left)
             {
-                if (uiTracker.Pressed == null)
+                if (tracker.Pressed != null)
                 {
-                    uiTracker.Pressed = _root.Pick(tracker.Position);
-
-                    if (uiTracker.Pressed != null)
+                    if (tracker.Held == null && tracker.Pressed.Contains(tracker.Position))
                     {
-                        uiTracker.Pressed.Focus();
-                        uiTracker.Pressed.OnPressed(tracker);
+                        tracker.Held = tracker.Pressed;
+                        tracker.Held.OnHeld(tracker);
                     }
                 }
-            });
+            }
         }
 
-        public void PointerReleasedOutside(ScenePointerTracker tracker)
+        public void PointerPressed(UIPointerTracker tracker)
         {
-            UpdateTracker(tracker, (uiTracker) =>
+            if (tracker.Pressed == null)
             {
-                if (tracker.Button == PointerButton.Left)
+                tracker.Pressed = _root.Pick(tracker.Position);
+
+                if (tracker.Pressed != null)
                 {
-                    uiTracker.Pressed?.OnReleased(tracker, true);
-                    uiTracker.Reset();
+                    tracker.Pressed.Focus();
+                    tracker.Pressed.OnPressed(tracker);
                 }
-            });
+            }
         }
 
-        public void PointerReleased(ScenePointerTracker tracker, bool wasDragged)
+        public void PointerReleasedOutside(UIPointerTracker tracker)
         {
-            UpdateTracker(tracker, (uiTracker) =>
+            if (tracker.Button == PointerButton.Left)
             {
-                if (tracker.Button == PointerButton.Left)
+                tracker.Pressed?.OnReleased(tracker, true);
+                tracker.Reset();
+            }
+        }
+
+        public void PointerReleased(UIPointerTracker tracker, bool wasDragged)
+        {
+            if (tracker.Button == PointerButton.Left)
+            {
+                if (tracker.Pressed != null)
                 {
-                    if (uiTracker.Pressed != null)
+                    bool inside = tracker.Pressed.Contains(tracker.Position);
+                    tracker.Pressed.OnReleased(tracker, !inside);
+
+                    if (tracker.Dragging != null)
                     {
-                        bool inside = uiTracker.Pressed.Contains(tracker.Position);
-                        uiTracker.Pressed.OnReleased(tracker, !inside);
-
-                        if(uiTracker.Dragging != null)
-                        {
-                            // TODO perform drop action of drag-drop, if element allows being drag-dropped and target can receive drag-drop actions.
-                        }
-
-                        uiTracker.Reset();
+                        // TODO perform drop action of drag-drop, if element allows being drag-dropped and target can receive drag-drop actions.
                     }
+
+                    tracker.Reset();
                 }
-            });
+            }
         }
 
-        public void PointerScroll(InputScrollWheel wheel)
-        {
-
-        }
 
         public void PointerEnter(Vector2F pos)
         {
@@ -188,28 +237,6 @@ namespace Molten.UI
         public void PointerLeave(Vector2F pos)
         {
 
-        }
-
-        public void PointerHover(Vector2F pos)
-        {
-            UIElement prevHover = HoverElement; 
-            Vector2F localPos;
-
-            HoverElement = _root.Pick(pos);
-
-            // Trigger on-leave of previous hover element.
-            if (HoverElement != prevHover)
-                prevHover?.OnLeave(pos);
-
-            // Update currently-hovered element
-            if (HoverElement != null)
-            {
-                localPos = pos - (Vector2F)HoverElement.GlobalBounds.TopLeft;
-                if (prevHover != HoverElement)
-                    HoverElement.OnEnter(pos);
-
-                HoverElement.OnHover(localPos, pos);
-            }
         }
 
         public void PointerFocus()
@@ -237,7 +264,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets the current <see cref="UIElement"/> being hovered over by a pointing device (e.g. mouse or stylus).
         /// </summary>
-        public UIElement HoverElement { get; private set; }
+        public UIElement HoveredElement { get; private set; }
 
         /// <summary>
         /// Gets the currently-focused <see cref="UIElement"/>.
@@ -247,7 +274,7 @@ namespace Molten.UI
             get => _focused;
             set
             {
-                if(_focused != value)
+                if (_focused != value)
                 {
                     if (_focused != null)
                         _focused.IsFocused = false;

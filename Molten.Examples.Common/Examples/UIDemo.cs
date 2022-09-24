@@ -512,32 +512,32 @@ namespace Molten
         }
 
 
-        private void _button1_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _button1_Pressed(UIElement element, UIPointerTracker tracker)
         {
             _graphSet.Plot(Rng.Next(10, 450));
         }
 
-        private void _button2_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _button2_Pressed(UIElement element, UIPointerTracker tracker)
         {
             _graphSet2.Plot(Rng.Next(100, 300));
         }
 
-        private void _button3_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _button3_Pressed(UIElement element, UIPointerTracker tracker)
         {
             _window1.Close(_cbImmediate.IsChecked);
         }
 
-        private void _button4_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _button4_Pressed(UIElement element, UIPointerTracker tracker)
         {
             _window1.Open(_cbImmediate.IsChecked);
         }
 
-        private void _button5_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _button5_Pressed(UIElement element, UIPointerTracker tracker)
         {
             _window1.Minimize(_cbImmediate.IsChecked);
         }
 
-        private void _button6_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _button6_Pressed(UIElement element, UIPointerTracker tracker)
         {
             _window1.Maximize(_cbImmediate.IsChecked);
         }
@@ -571,7 +571,7 @@ namespace Molten
         {
             base.OnDrawSprites(sb);
 
-            string text = $"Hovered UI Element: {(UI.HoverElement != null ? UI.HoverElement.Name : "None")}";
+            string text = $"Hovered UI Element: {(UI.HoveredElement != null ? UI.HoveredElement.Name : "None")}";
             Vector2F tSize = Font.MeasureString(text);
             Vector2F pos = new Vector2F()
             {

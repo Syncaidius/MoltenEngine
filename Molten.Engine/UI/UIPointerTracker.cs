@@ -1,17 +1,31 @@
 ﻿using Molten.Input;
+using Molten.UI;
 
 namespace Molten
 {
-    public class ScenePointerTracker
+    public class UIPointerTracker
     {
         float _dragThreshold = 10; // Pixels
-        IPointerReceiver _pressedObj = null;
+        UIElement _pressedElement = null;
         Vector2F _dragDistance;
         Vector2F _delta;
         Vector2I _iDelta;
         Vector2F _curPos;
         Vector2F _dragDefecit;
         bool _inputDragged = false;
+
+        public UIElement Pressed;
+
+        public UIElement Held;
+
+        public UIElement Dragging;
+
+        public void Reset()
+        {
+            Pressed = null;
+            Held = null;
+            Dragging = null;
+        }
 
 
         /// <summary>
@@ -20,17 +34,17 @@ namespace Molten
         public int SetID { get; }
 
         /// <summary>
-        /// Gets the button being tracked by the current <see cref="ScenePointerTracker"/>.
+        /// Gets the button being tracked by the current <see cref="UIPointerTracker"/>.
         /// </summary>
         public PointerButton Button { get; }
 
         /// <summary>
-        /// Gets the pointing device that the current <see cref="ScenePointerTracker"/> is tracking.
+        /// Gets the pointing device that the current <see cref="UIPointerTracker"/> is tracking.
         /// </summary>
         public PointingDevice Device { get; }
 
         /// <summary>
-        /// Gets whether or not the current <see cref="ScenePointerTracker"/> has been disabled.
+        /// Gets whether or not the current <see cref="UIPointerTracker"/> has been disabled.
         /// </summary>
         public bool IsDisabled { get; private set; }
 
@@ -56,7 +70,7 @@ namespace Molten
         /// </summary>
         /// <param name="setID">The button set ID, or finger ID.</param>
         /// <param name="button">The button to track.</param>
-        internal ScenePointerTracker(PointingDevice pDevice, int setID, PointerButton button)
+        internal UIPointerTracker(PointingDevice pDevice, int setID, PointerButton button)
         {
             Device = pDevice;
             SetID = setID;
@@ -64,7 +78,7 @@ namespace Molten
             _curPos = pDevice.Position;
         }
 
-        internal void Update(SceneManager manager, Timing time)
+        internal void Update(UIManagerComponent manager, Timing time)
         {
             _delta = Device.Position - _curPos;
             _curPos = Device.Position;
@@ -82,22 +96,22 @@ namespace Molten
             if (Device.IsDown(Button, SetID))
             {
                 // Check if we're starting a new click 
-                if (_pressedObj == null)
+                if (_pressedElement == null)
                 {
                     // Store the component as being dragged
-                    _pressedObj = manager.Hovered;
+                    _pressedElement = manager.HoveredElement;
 
-                    if (_pressedObj != null)
+                    if (_pressedElement != null)
                     {
                         // Check if focused control needs unfocusing.
-                        if (manager.Focused != _pressedObj && manager.Focused != null)
+                        if (manager.FocusedElement != _pressedElement && manager.FocusedElement != null)
                         {
-                            if (manager.Focused.Contains(_curPos) == false)
-                                manager.Unfocus();
+                            if (manager.FocusedElement.Contains(_curPos) == false)
+                                manager.FocusedElement.Unfocus();
                         }
 
                         // Trigger press-start event
-                        _pressedObj.PointerPressed(this);
+                        _pressedElement.OnPressed(this);
                     }
 
                     _inputDragged = false;
@@ -112,21 +126,18 @@ namespace Molten
                     if (distDragged >= _dragThreshold)
                     {
                         _inputDragged = true;
-                        _pressedObj.PointerDrag(this);
+                        _pressedElement.OnDragged(this);
                     }
                 }
             }
             else
             {
                 // Check if the tap was released outside or inside of the component
-                if (_pressedObj != null)
+                if (_pressedElement != null)
                 {
-                    if (_pressedObj.Contains(_curPos) == true)
-                        _pressedObj.PointerReleased(this, _inputDragged);
-                    else
-                        _pressedObj.PointerReleasedOutside(this);
-
-                    _pressedObj = null;
+                    bool contains = _pressedElement.Contains(_curPos);
+                    _pressedElement.OnReleased(this, !contains);
+                    _pressedElement = null;
                 }
 
                 _inputDragged = false;
@@ -134,16 +145,16 @@ namespace Molten
         }
 
         /// <summary>
-        /// Clears tracker state and calls the appropriate <see cref="IPointerReceiver"/> callbacks to correctly release state.
+        /// Clears tracker state and calls the appropriate <see cref="UIElement"/> callbacks to correctly release state.
         /// </summary>
         internal void Clear()
         {
             IsDisabled = true;
 
-            if (_pressedObj != null)
+            if (_pressedElement != null)
             {
-                _pressedObj.PointerReleased(this, false);
-                _pressedObj = null;
+                _pressedElement.OnReleased(this, false);
+                _pressedElement = null;
             }
         }
     }

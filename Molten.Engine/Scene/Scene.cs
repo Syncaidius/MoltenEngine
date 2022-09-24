@@ -10,7 +10,6 @@ namespace Molten
     {
         internal SceneRenderData RenderData;
         internal List<SceneLayer> Layers;
-
     
         SceneLayer _defaultLayer;
 
@@ -181,27 +180,6 @@ namespace Molten
             change.Object = obj;
             change.Layer = layer;
             Engine.Scenes.QueueChange(this, change);
-        }
-
-        /// <summary>
-        /// Picks a <see cref="IPointerReceiver"/> out of the scene based on the provided cursor position.
-        /// </summary>
-        /// <param name="screenPos">The screen/surface position, as 2D coordinates.</param>
-        /// <returns></returns>
-        public IPointerReceiver PickObject(Vector2F screenPos)
-        {
-            SceneLayer layer = null;
-            for (int i = Layers.Count - 1; i >= 0; i--)
-            {
-                layer = Layers[i];
-                for (int j = layer.PointerReceivers.Count - 1; j >= 0; j--)
-                {
-                    if (layer.PointerReceivers[j].Contains(screenPos))
-                        return layer.PointerReceivers[j];
-                }
-            }
-
-            return null;
         }
 
         /// <summary>

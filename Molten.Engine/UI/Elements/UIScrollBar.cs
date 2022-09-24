@@ -58,12 +58,12 @@ namespace Molten.UI
             _btnIncrease.Pressed += _btnIncrease_Pressed;
         }
 
-        private void _btnIncrease_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _btnIncrease_Pressed(UIElement element, UIPointerTracker tracker)
         {
             Value += _increment;
         }
 
-        private void _btnDecrease_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _btnDecrease_Pressed(UIElement element, UIPointerTracker tracker)
         {
             Value -= _increment;
         }
@@ -82,7 +82,7 @@ namespace Molten.UI
             UpdateBarBounds();
         }
 
-        public override void OnPressed(ScenePointerTracker tracker)
+        public override void OnPressed(UIPointerTracker tracker)
         {
             base.OnPressed(tracker);
 
@@ -109,7 +109,7 @@ namespace Molten.UI
             }
         }
 
-        public override void OnDragged(ScenePointerTracker tracker)
+        public override void OnDragged(UIPointerTracker tracker)
         {
             base.OnDragged(tracker);
 
@@ -122,7 +122,7 @@ namespace Molten.UI
             }
         }
 
-        public override void OnReleased(ScenePointerTracker tracker, bool releasedOutside)
+        public override void OnReleased(UIPointerTracker tracker, bool releasedOutside)
         {
             base.OnReleased(tracker, releasedOutside);
             _barPressed = false;

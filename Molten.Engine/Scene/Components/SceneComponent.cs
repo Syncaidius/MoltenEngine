@@ -13,8 +13,8 @@
         }
         internal void RegisterOnLayer()
         {
-            if (this is IPointerReceiver ca)
-                Object.Layer.PointerReceivers.Add(ca);
+            if (this is IPickable p)
+                Object.Layer.Pickables.Add(p);
 
             if (this is IInputHandler ih)
                 Object.Layer.InputHandlers.Add(ih);
@@ -22,8 +22,8 @@
 
         internal void UnregisterFromLayer()
         {
-            if (this is IPointerReceiver ca)
-                Object.Layer.PointerReceivers.Remove(ca);
+            if (this is IPickable p)
+                Object.Layer.Pickables.Remove(p);
 
             if (this is IInputHandler ih)
                 Object.Layer.InputHandlers.Remove(ih);

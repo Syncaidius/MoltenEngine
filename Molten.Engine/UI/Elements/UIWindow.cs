@@ -277,7 +277,7 @@ namespace Molten.UI
             Title = Name;
         }
 
-        private void _btnMaximize_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _btnMaximize_Pressed(UIElement element, UIPointerTracker tracker)
         {
             if (WindowState == UIWindowState.Open)
                 StartState(UIWindowState.Maximizing);
@@ -285,7 +285,7 @@ namespace Molten.UI
                 StartState(UIWindowState.Opening);
         }
 
-        private void _btnMinimize_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _btnMinimize_Pressed(UIElement element, UIPointerTracker tracker)
         {
             Minimize();
         }
@@ -302,7 +302,7 @@ namespace Molten.UI
             _titleBar.BorderThickness.Apply(BorderThickness);
         }
 
-        private void _btnClose_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _btnClose_Pressed(UIElement element, UIPointerTracker tracker)
         {
             Close(false);
         }
@@ -391,13 +391,13 @@ namespace Molten.UI
             renderbounds.Inflate(-BorderThickness.Left, -(BorderThickness.Top + _titleBarHeight), -BorderThickness.Right, -BorderThickness.Bottom);
         }
 
-        public override void OnPressed(ScenePointerTracker tracker)
+        public override void OnPressed(UIPointerTracker tracker)
         {
             base.OnPressed(tracker);
             BringToFront();
         }
 
-        public override void OnDragged(ScenePointerTracker tracker)
+        public override void OnDragged(UIPointerTracker tracker)
         {
             base.OnDragged(tracker);
 

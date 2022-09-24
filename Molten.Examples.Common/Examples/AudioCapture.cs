@@ -128,19 +128,19 @@ namespace Molten.Examples
             _instance.IsLooping = _chkLoopSound.IsChecked;
         }
 
-        private void _btnPlay_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void _btnPlay_Pressed(UIElement element, UIPointerTracker tracker)
         {
             _source.CommitBuffer(_buffer);
             _instance.Stop();
             _instance.Play();
         }
 
-        private void btnStart_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void btnStart_Pressed(UIElement element, UIPointerTracker tracker)
         {
             Engine.Audio.Input?.StartCapture();
         }
 
-        private void btnStop_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void btnStop_Pressed(UIElement element, UIPointerTracker tracker)
         {
             Engine.Audio.Input?.StopCapture();
         }

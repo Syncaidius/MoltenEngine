@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace Molten.UI
 {
-    public delegate void UIElementPointerHandler(UIElement element, ScenePointerTracker tracker);
+    public delegate void UIElementPointerHandler(UIElement element, UIPointerTracker tracker);
 
     public delegate void UIElementHandler(UIElement element);
 
@@ -12,7 +12,7 @@ namespace Molten.UI
 
     public delegate void UIElementPositionHandler(UIElement element, Vector2F localPos, Vector2F globalPos);
 
-    public delegate void UIElementDeltaPositionHandler(UIElement element, ScenePointerTracker tracker, Vector2F localPos, Vector2F globalPos, Vector2I delta);
+    public delegate void UIElementDeltaPositionHandler(UIElement element, UIPointerTracker tracker, Vector2F localPos, Vector2F globalPos, Vector2I delta);
 
     public delegate void UIElementCancelHandler<T>(T element, UICancelEventArgs args) where T : UIElement;
 
@@ -27,22 +27,22 @@ namespace Molten.UI
     public abstract class UIElement : EngineObject
     {
         /// <summary>
-        /// Invoked when the current <see cref="UIElement"/> is pressed by a <see cref="ScenePointerTracker"/>.
+        /// Invoked when the current <see cref="UIElement"/> is pressed by a <see cref="UIPointerTracker"/>.
         /// </summary>
         public event UIElementPointerHandler Pressed;
 
         /// <summary>
-        /// Invoked when the current <see cref="UIElement"/> is held by a <see cref="ScenePointerTracker"/>.
+        /// Invoked when the current <see cref="UIElement"/> is held by a <see cref="UIPointerTracker"/>.
         /// </summary>
         public event UIElementDeltaPositionHandler Held;
 
         /// <summary>
-        /// Invoked when the current <see cref="UIElement"/> is dragged by a <see cref="ScenePointerTracker"/>.
+        /// Invoked when the current <see cref="UIElement"/> is dragged by a <see cref="UIPointerTracker"/>.
         /// </summary>
         public event UIElementDeltaPositionHandler Dragged;
 
         /// <summary>
-        /// Invoked when the current <see cref="UIElement"/> is released by a <see cref="ScenePointerTracker"/>.
+        /// Invoked when the current <see cref="UIElement"/> is released by a <see cref="UIPointerTracker"/>.
         /// </summary>
         public event UIElementPointerHandler Released;
 
@@ -401,7 +401,7 @@ namespace Molten.UI
             Leave?.Invoke(this, localPos, globalPos);
         }
 
-        public virtual void OnPressed(ScenePointerTracker tracker)
+        public virtual void OnPressed(UIPointerTracker tracker)
         {
             if (State == UIElementState.Default || 
                 State != UIElementState.Hovered || 
@@ -413,7 +413,7 @@ namespace Molten.UI
             }
         }
 
-        public virtual void OnHeld(ScenePointerTracker tracker)
+        public virtual void OnHeld(UIPointerTracker tracker)
         {
             if (State == UIElementState.Pressed)
             {
@@ -422,7 +422,7 @@ namespace Molten.UI
             }
         }
 
-        public virtual void OnDragged(ScenePointerTracker tracker)
+        public virtual void OnDragged(UIPointerTracker tracker)
         {
             if (State == UIElementState.Pressed)
             {
@@ -436,7 +436,7 @@ namespace Molten.UI
         /// </summary>
         /// <param name="tracker"></param>
         /// <param name="releasedOutside">The current <see cref="UIElement"/> was released outside of it's bounds.</param>
-        public virtual void OnReleased(ScenePointerTracker tracker, bool releasedOutside)
+        public virtual void OnReleased(UIPointerTracker tracker, bool releasedOutside)
         {
             if (State == UIElementState.Pressed)
             {

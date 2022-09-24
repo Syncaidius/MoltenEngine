@@ -34,12 +34,12 @@ namespace Molten.UI
             base.OnChildRemoved(obj);
         }
 
-        private void Item_Released(UIElement element, ScenePointerTracker tracker)
+        private void Item_Released(UIElement element, UIPointerTracker tracker)
         {
             
         }
 
-        private void Item_Pressed(UIElement element, ScenePointerTracker tracker)
+        private void Item_Pressed(UIElement element, UIPointerTracker tracker)
         {
             SelectedItem = element as UIListViewItem;
         }

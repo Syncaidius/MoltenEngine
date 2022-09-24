@@ -102,6 +102,27 @@ namespace Molten
             _camera.Transform = Object.Transform.Global;
         }
 
+        public IPickable PickObject(PointingDevice pDevice, Timing time)
+        {
+            // TODO Apply/respect LayerMask property
+
+            if (Object != null && Object.Scene != null)
+            {
+                SceneLayer layer = null;
+                for (int i = Object.Scene.Layers.Count - 1; i >= 0; i--)
+                {
+                    layer = Object.Scene.Layers[i];
+                    for (int j = layer.Pickables.Count - 1; j >= 0; j--)
+                    {
+                        if (layer.Pickables[j].Pick(pDevice, time))
+                            return layer.Pickables[j];
+                    }
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>Converts the provided screen position to a globalized 3D world position.</summary>
         /// <param name="location">The screen position.</param>
         /// <returns></returns>

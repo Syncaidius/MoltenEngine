@@ -2,12 +2,17 @@
 
 namespace Molten
 {
+    /// <summary>
+    /// Represents a layer or category of objects within a <see cref="Scene"/>, intended as an aid to order and organize objects.
+    /// </summary>
     public class SceneLayer
     {
         internal LayerRenderData Data { get; set; }
+
         internal List<SceneObject> Objects { get; }
 
-        internal List<IPointerReceiver> PointerReceivers { get; }
+        internal List<IPickable> Pickables { get; }
+
         internal List<IInputHandler> InputHandlers { get; }
 
         /// <summary>
@@ -18,7 +23,7 @@ namespace Molten
         internal SceneLayer()
         {
             Objects = new List<SceneObject>();
-            PointerReceivers = new List<IPointerReceiver>();
+            Pickables = new List<IPickable>();
             InputHandlers = new List<IInputHandler>();
         }
 

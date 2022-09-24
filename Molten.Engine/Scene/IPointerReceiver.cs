@@ -9,15 +9,15 @@ namespace Molten
     {
         bool Contains(Vector2F point);
 
-        void PointerPressed(ScenePointerTracker button);
+        void PointerPressed(UIPointerTracker button);
 
-        void PointerReleasedOutside(ScenePointerTracker button);
+        void PointerReleasedOutside(UIPointerTracker button);
 
-        void PointerReleased(ScenePointerTracker button, bool wasDragged);
+        void PointerReleased(UIPointerTracker button, bool wasDragged);
 
-        void PointerDrag(ScenePointerTracker button);
+        void PointerDrag(UIPointerTracker button);
 
-        void PointerHeld(ScenePointerTracker button);
+        void PointerHeld(UIPointerTracker button);
 
         void PointerScroll(InputScrollWheel wheel);
 
