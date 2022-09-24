@@ -7,7 +7,7 @@ using Molten.Input;
 
 namespace Molten.Examples
 {
-    public class SampleCameraController : SceneComponent, IInputHandler
+    public class SampleCameraController : SceneComponent, IInputReceiver
     {
         public void HandleInput(MouseDevice mouse, TouchDevice touch, KeyboardDevice keyboard, GamepadDevice gamepad, Timing timing)
         {
@@ -63,5 +63,15 @@ namespace Molten.Examples
         public bool AcceptInput { get; set; } = true;
 
         protected override void OnDispose() { }
+
+        public void HandleInput(MouseDevice device, Timing time)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleInput(KeyboardDevice device, Timing time)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

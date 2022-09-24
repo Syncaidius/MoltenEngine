@@ -16,7 +16,7 @@
             if (this is IPickable p)
                 Object.Layer.Pickables.Add(p);
 
-            if (this is IInputHandler ih)
+            if (this is IInputReceiver ih)
                 Object.Layer.InputHandlers.Add(ih);
         }
 
@@ -25,7 +25,7 @@
             if (this is IPickable p)
                 Object.Layer.Pickables.Remove(p);
 
-            if (this is IInputHandler ih)
+            if (this is IInputReceiver ih)
                 Object.Layer.InputHandlers.Remove(ih);
         }
 

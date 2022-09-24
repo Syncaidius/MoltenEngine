@@ -256,7 +256,8 @@ namespace Molten.Examples
                     binding.Window.Icon = _windowIcon;
 
                     UITexture windowTex = binding.Window.Children.Add<UITexture>(new Rectangle(0, 0, 800, 600));
-                    windowTex.Focused += (e) => example.IsFocused = true;
+                    windowTex.Focused += (e) => 
+                    example.IsFocused = true;
                     windowTex.Unfocused += (e) => example.IsFocused = false;
                     windowTex.Texture = surface;
 

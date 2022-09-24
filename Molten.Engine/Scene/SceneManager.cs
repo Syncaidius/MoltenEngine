@@ -39,6 +39,20 @@ namespace Molten
             _scenes.Clear();
         }
 
+        internal void HandleInput(MouseDevice mouse, TouchDevice touch, KeyboardDevice kb, GamepadDevice gamepad, Timing timing)
+        {
+            for (int i = _scenes.Count - 1; i >= 0; i--)
+            {
+                Scene scene = _scenes[i];
+                for (int j = scene.Layers.Count - 1; j >= 0; j--)
+                {
+                    SceneLayer layer = scene.Layers[j];
+                    for (int k = layer.InputHandlers.Count - 1; k >= 0; k--)
+                        layer.InputHandlers[k].HandleInput(mouse, touch, kb, gamepad, timing);
+                }
+            }
+        }
+
         internal void Update(Timing time)
         {
             while (_pendingChanges.TryDequeue(out SceneChange change))

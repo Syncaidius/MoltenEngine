@@ -42,11 +42,6 @@ namespace Molten.UI
 
         }
 
-        public void HandleInput(Vector2F inputPos)
-        {
-            // TODO Handle keyboard input/focusing here.
-        }
-
         public override void OnUpdate(Timing time)
         {
             base.OnUpdate(time);

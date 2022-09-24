@@ -13,7 +13,7 @@ namespace Molten
 
         internal List<IPickable> Pickables { get; }
 
-        internal List<IInputHandler> InputHandlers { get; }
+        internal List<IInputReceiver> InputHandlers { get; }
 
         /// <summary>
         /// Gets the layer's parent scene. This will only change (to null) in the event the layer is removed from it's parent scene.
@@ -24,7 +24,7 @@ namespace Molten
         {
             Objects = new List<SceneObject>();
             Pickables = new List<IPickable>();
-            InputHandlers = new List<IInputHandler>();
+            InputHandlers = new List<IInputReceiver>();
         }
 
         /// <summary>
