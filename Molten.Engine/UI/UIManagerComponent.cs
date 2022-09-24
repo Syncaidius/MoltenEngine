@@ -55,7 +55,7 @@ namespace Molten.UI
             foreach (KeyValuePair<ulong, List<UIPointerTracker>> kv in _trackers)
             {
                 for (int j = 0; j < kv.Value.Count; j++)
-                    kv.Value[j].Update(this, time);
+                    kv.Value[j].Update(time);
             }
 
             _root.Update(time);
@@ -75,35 +75,10 @@ namespace Molten.UI
                 TrackPointingDevice(pDevice);
 
             Vector2F pos = pDevice.Position;
-            HoveredElement = _root.Pick(pos);
+            if(_root.Pick(pos) != null)
+                return true;
 
-            if (pDevice is MouseDevice mouse)
-            {
-                UIElement prevHover = HoveredElement;
-                Vector2F localPos;
-
-                // Trigger on-leave of previous hover element.
-                if (HoveredElement != prevHover)
-                    prevHover?.OnLeave(pos);
-
-                // Update currently-hovered element
-                if (HoveredElement != null)
-                {
-                    localPos = pos - (Vector2F)HoveredElement.GlobalBounds.TopLeft;
-                    if (prevHover != HoveredElement)
-                        HoveredElement.OnEnter(pos);
-
-                    HoveredElement.OnHover(localPos, pos);
-                }
-
-                // Handle scroll wheel event
-                if (mouse.ScrollWheel.Delta != 0)
-                {
-                    // TODO pass mouse.ScrollWheel values to UIElement.OnScroll;
-                }
-            }
-
-            return HoveredElement != null;
+            return false;
         }
 
 
@@ -127,7 +102,7 @@ namespace Molten.UI
                     if (button == PointerButton.None)
                         continue;
 
-                    trackers.Add(new UIPointerTracker(device, setID, button));
+                    trackers.Add(new UIPointerTracker(this, device, setID, button));
                 }
             }
         }
@@ -137,7 +112,7 @@ namespace Molten.UI
             if (_trackers.TryGetValue(device.EOID, out List<UIPointerTracker> trackers))
             {
                 foreach (UIPointerTracker tracker in trackers)
-                    tracker.Clear();
+                    tracker.Release();
 
                 _trackers.Remove(device.EOID);
             }
@@ -174,11 +149,6 @@ namespace Molten.UI
         public UIContainer Root => _root;
 
         public string Tooltip => Name;
-
-        /// <summary>
-        /// Gets the current <see cref="UIElement"/> being hovered over by a pointing device (e.g. mouse or stylus).
-        /// </summary>
-        public UIElement HoveredElement { get; private set; }
 
         /// <summary>
         /// Gets the currently-focused <see cref="UIElement"/>.

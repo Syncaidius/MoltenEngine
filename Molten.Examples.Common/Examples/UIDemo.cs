@@ -571,7 +571,7 @@ namespace Molten
         {
             base.OnDrawSprites(sb);
 
-            string text = $"Hovered UI Element: {(UI.HoveredElement != null ? UI.HoveredElement.Name : "None")}";
+            string text = $"Focused UI Element: {(UI.FocusedElement != null ? UI.FocusedElement.Name : "None")}";
             Vector2F tSize = Font.MeasureString(text);
             Vector2F pos = new Vector2F()
             {

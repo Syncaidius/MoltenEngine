@@ -7,7 +7,6 @@ namespace Molten
     public class UIPointerTracker
     {
         float _dragThreshold = 10; // Pixels
-        UIElement _pressedElement = null;
         Vector2F _dragDistance;
         Vector2F _delta;
         Vector2I _iDelta;
@@ -15,18 +14,11 @@ namespace Molten
         Vector2F _dragDefecit;
         bool _inputDragged = false;
 
-        public UIElement Pressed;
-
-        public UIElement Held;
-
-        public UIElement Dragging;
-
-        public void Reset()
-        {
-            Pressed = null;
-            Held = null;
-            Dragging = null;
-        }
+        UIManagerComponent _manager;
+        UIElement _pressed = null;
+        UIElement _held = null;
+        UIElement _hovered = null;
+        UIElement _dragging = null;
 
 
         /// <summary>
@@ -45,11 +37,6 @@ namespace Molten
         public PointingDevice Device { get; }
 
         /// <summary>
-        /// Gets whether or not the current <see cref="UIPointerTracker"/> has been disabled.
-        /// </summary>
-        public bool IsDisabled { get; private set; }
-
-        /// <summary>
         /// The current position of the tracked pointer.
         /// </summary>
         public Vector2F Position => _curPos;
@@ -59,6 +46,9 @@ namespace Molten
         /// </summary>
         public Vector2F Delta => _delta;
 
+        /// <summary>
+        /// An integer version of <see cref="Delta"/>, rounded down.
+        /// </summary>
         public Vector2I IntegerDelta => _iDelta;
 
         /// <summary>
@@ -69,17 +59,20 @@ namespace Molten
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="setID">The button set ID, or finger ID.</param>
-        /// <param name="button">The button to track.</param>
-        internal UIPointerTracker(PointingDevice pDevice, int setID, PointerButton button)
+        /// <param name="manager"></param>
+        /// <param name="pDevice"></param>
+        /// <param name="setID"></param>
+        /// <param name="button"></param>
+        internal UIPointerTracker(UIManagerComponent manager, PointingDevice pDevice, int setID, PointerButton button)
         {
+            _manager = manager;
             Device = pDevice;
             SetID = setID;
             Button = button;
             _curPos = pDevice.Position;
         }
 
-        internal void Update(UIManagerComponent manager, Timing time)
+        internal void Update(Timing time)
         {
             _delta = Device.Position - _curPos;
             _curPos = Device.Position;
@@ -92,36 +85,70 @@ namespace Molten
 
             _dragDefecit.X -= _iDelta.X;
             _dragDefecit.Y -= _iDelta.Y;
+ 
+            UIElement prevHover = _hovered;
+            Vector2F localPos;
 
-            // Handle clicking and dragging.
+            _hovered = _manager.Root.Pick(_curPos);
+
+            // Trigger on-leave of previous hover element.
+            if (_hovered != prevHover)
+                prevHover?.OnLeave(_curPos);
+
+            // Update currently-hovered element
+            if (_hovered != null)
+            {
+                localPos = _curPos - (Vector2F)_hovered.GlobalBounds.TopLeft;
+                if (prevHover != _hovered)
+                    _hovered.OnEnter(_curPos);
+
+                _hovered.OnHover(localPos, _curPos);
+            }
+
+            if (Device is MouseDevice mouse)
+            {
+                // Handle scroll wheel event
+                if (mouse.ScrollWheel.Delta != 0)
+                {
+                    // TODO pass mouse.ScrollWheel values to UIElement.OnScroll;
+                }
+            }
+
+            switch (Button)
+            {
+                case PointerButton.Left:
+                    HandleLeftClick();
+                    break;
+
+                case PointerButton.Right:
+                    // TODO context menu handling
+                    break;
+
+                case PointerButton.Middle:
+                    // Focus element but don't handle click actions
+                    break;
+            }
+        }
+
+        private void HandleLeftClick()
+        {
+            // Handle mouse-specific actions, such as hovering
+            // Check if we're starting a new click
             if (Device.IsDown(Button, SetID))
             {
-                // Check if we're starting a new click 
-                if (_pressedElement == null)
+                if (_pressed == null)
                 {
-                    // Store the component as being dragged
-                    _pressedElement = manager.HoveredElement;
-
-                    if (_pressedElement != null)
+                    if (_hovered != null)
                     {
+                        _pressed = _hovered;
+
                         // Check if focused control needs unfocusing.
-                        if (manager.FocusedElement != _pressedElement && manager.FocusedElement != null)
-                        {
-                            if (manager.FocusedElement.Contains(_curPos) == false)
-                                manager.FocusedElement.Unfocus();
-                        }
+                        if (_manager.FocusedElement != _pressed)
+                            _manager.FocusedElement?.Unfocus();
 
                         // Trigger press-start event
-                        if (Pressed == null)
-                        {
-                            Pressed = manager.Root.Pick(Position);
-
-                            if (Pressed != null)
-                            {
-                                Pressed.Focus();
-                                Pressed.OnPressed(this);
-                            }
-                        }
+                        _pressed.Focus();
+                        _pressed.OnPressed(this);
                     }
 
                     _inputDragged = false;
@@ -129,72 +156,56 @@ namespace Molten
                 }
                 else
                 {
-                    // Update drag checks
+                    // Update dragging
                     _dragDistance += _delta;
 
                     float distDragged = Math.Abs(_dragDistance.Length());
                     if (distDragged >= _dragThreshold)
                     {
                         _inputDragged = true;
-                        if (Pressed != null)
+                        if (_pressed != null)
                         {
-                            if (Dragging == null)
+                            if (_dragging == null)
                             {
-                                if (Pressed.Contains(Position))
+                                if (_pressed.Contains(Position))
                                 {
-                                    Dragging = Pressed;
+                                    _dragging = _pressed;
 
                                     // TODO perform start of drag-drop if element allows being drag-dropped
                                 }
                             }
 
-                            Dragging?.OnDragged(this);
+                            _dragging?.OnDragged(this);
                         }
                     }
                 }
             }
-            else
+            else // Handle button release
             {
-                if (Button == PointerButton.Left)
-                {
-                    if (Pressed != null)
-                    {
-                        bool inside = Pressed.Contains(Position);
-                        Pressed.OnReleased(this, !inside);
-
-                        if (Dragging != null)
-                        {
-                            // TODO perform drop action of drag-drop, if element allows being drag-dropped and target can receive drag-drop actions.
-                        }
-
-                        Reset();
-                    }
-                }
-
-                // Check if the tap was released outside or inside of the component
-                if (_pressedElement != null)
-                {
-                    bool contains = _pressedElement.Contains(_curPos);
-                    _pressedElement.OnReleased(this, !contains);
-                    _pressedElement = null;
-                }
-
-                _inputDragged = false;
+                Release();
             }
         }
 
         /// <summary>
-        /// Clears tracker state and calls the appropriate <see cref="UIElement"/> callbacks to correctly release state.
+        /// Releases tracker state and calls the appropriate <see cref="UIElement"/> callbacks to correctly release state.
         /// </summary>
-        internal void Clear()
+        internal void Release()
         {
-            IsDisabled = true;
-
-            if (_pressedElement != null)
+            if (_pressed != null)
             {
-                _pressedElement.OnReleased(this, false);
-                _pressedElement = null;
+                bool inside = _pressed.Contains(_curPos);
+                _pressed.OnReleased(this, !inside);
+
+                if (_dragging != null)
+                {
+                    // TODO perform drop action of drag-drop, if element allows being drag-dropped and target can receive drag-drop actions.
+                }
             }
+
+            _pressed = null;
+            _dragging = null;
+            _held = null;
+            _inputDragged = false;
         }
     }
 }
