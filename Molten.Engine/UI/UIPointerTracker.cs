@@ -1,4 +1,5 @@
-﻿using Molten.Input;
+﻿using System.Diagnostics;
+using Molten.Input;
 using Molten.UI;
 
 namespace Molten
@@ -111,7 +112,16 @@ namespace Molten
                         }
 
                         // Trigger press-start event
-                        _pressedElement.OnPressed(this);
+                        if (Pressed == null)
+                        {
+                            Pressed = manager.Root.Pick(Position);
+
+                            if (Pressed != null)
+                            {
+                                Pressed.Focus();
+                                Pressed.OnPressed(this);
+                            }
+                        }
                     }
 
                     _inputDragged = false;
@@ -126,12 +136,41 @@ namespace Molten
                     if (distDragged >= _dragThreshold)
                     {
                         _inputDragged = true;
-                        _pressedElement.OnDragged(this);
+                        if (Pressed != null)
+                        {
+                            if (Dragging == null)
+                            {
+                                if (Pressed.Contains(Position))
+                                {
+                                    Dragging = Pressed;
+
+                                    // TODO perform start of drag-drop if element allows being drag-dropped
+                                }
+                            }
+
+                            Dragging?.OnDragged(this);
+                        }
                     }
                 }
             }
             else
             {
+                if (Button == PointerButton.Left)
+                {
+                    if (Pressed != null)
+                    {
+                        bool inside = Pressed.Contains(Position);
+                        Pressed.OnReleased(this, !inside);
+
+                        if (Dragging != null)
+                        {
+                            // TODO perform drop action of drag-drop, if element allows being drag-dropped and target can receive drag-drop actions.
+                        }
+
+                        Reset();
+                    }
+                }
+
                 // Check if the tap was released outside or inside of the component
                 if (_pressedElement != null)
                 {

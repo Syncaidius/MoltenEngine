@@ -148,30 +148,7 @@ namespace Molten.UI
             UntrackPointingDevice(o as PointingDevice);
         }
 
-        public bool Contains(Vector2F point)
-        {
-            return _root.Pick(point) != null;
-        }
-
-        public void PointerDrag(UIPointerTracker tracker)
-        {
-            if (tracker.Pressed != null)
-            {
-                if (tracker.Dragging == null)
-                {
-                    if (tracker.Pressed.Contains(tracker.Position))
-                    {
-                        tracker.Dragging = tracker.Pressed;
-
-                        // TODO perform start of drag-drop if element allows being drag-dropped
-                    }
-                }
-
-                tracker.Dragging?.OnDragged(tracker);
-            }
-        }
-
-        public void PointerHeld(UIPointerTracker tracker)
+        /*public void PointerHeld(UIPointerTracker tracker)
         {
             if (tracker.Button == PointerButton.Left)
             {
@@ -184,70 +161,7 @@ namespace Molten.UI
                     }
                 }
             }
-        }
-
-        public void PointerPressed(UIPointerTracker tracker)
-        {
-            if (tracker.Pressed == null)
-            {
-                tracker.Pressed = _root.Pick(tracker.Position);
-
-                if (tracker.Pressed != null)
-                {
-                    tracker.Pressed.Focus();
-                    tracker.Pressed.OnPressed(tracker);
-                }
-            }
-        }
-
-        public void PointerReleasedOutside(UIPointerTracker tracker)
-        {
-            if (tracker.Button == PointerButton.Left)
-            {
-                tracker.Pressed?.OnReleased(tracker, true);
-                tracker.Reset();
-            }
-        }
-
-        public void PointerReleased(UIPointerTracker tracker, bool wasDragged)
-        {
-            if (tracker.Button == PointerButton.Left)
-            {
-                if (tracker.Pressed != null)
-                {
-                    bool inside = tracker.Pressed.Contains(tracker.Position);
-                    tracker.Pressed.OnReleased(tracker, !inside);
-
-                    if (tracker.Dragging != null)
-                    {
-                        // TODO perform drop action of drag-drop, if element allows being drag-dropped and target can receive drag-drop actions.
-                    }
-
-                    tracker.Reset();
-                }
-            }
-        }
-
-
-        public void PointerEnter(Vector2F pos)
-        {
-
-        }
-
-        public void PointerLeave(Vector2F pos)
-        {
-
-        }
-
-        public void PointerFocus()
-        {
-
-        }
-
-        public void PointerUnfocus()
-        {
-
-        }
+        }*/
 
         /// <summary>
         /// Gets all of the child <see cref="UIElement"/> attached to <see cref="Root"/>. This is an alias propety for <see cref="Root"/>.Children.
