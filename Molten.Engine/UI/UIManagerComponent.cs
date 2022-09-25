@@ -75,6 +75,8 @@ namespace Molten.UI
                 return false;
 
             Vector2F pos = pDevice.Position;
+            if (InputConstraintBounds.HasValue)
+                pos -= (Vector2F)InputConstraintBounds.Value.TopLeft; ;
 
             if (_root.Pick(pos) != null)
             {
@@ -93,7 +95,7 @@ namespace Molten.UI
             if (_trackers.ContainsKey(device.EOID))
                 return;
 
-            if (device.IsDisposed || !device.IsConnected || !device.IsEnabled)
+            if (device.IsDisposed)
                 return;
 
             // Decide which constraint bounds to use.

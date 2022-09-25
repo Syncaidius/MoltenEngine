@@ -73,15 +73,16 @@ namespace Molten
             Device = pDevice;
             SetID = setID;
             Button = button;
-            _curPos = pDevice.Position;
+            _curPos = pDevice.Position - (Vector2F)inputConstraintBounds.TopLeft;
         }
 
         internal void Update(Timing time, ref Rectangle constraintBounds)
         {
             Time = time;
 
-            _delta = Device.Position - _curPos;
-            _curPos = Device.Position - (Vector2F)constraintBounds.TopLeft;
+            Vector2F relPos = Device.Position - (Vector2F)constraintBounds.TopLeft;
+            _delta = relPos - _curPos;
+            _curPos = relPos;
 
             _dragDefecit.X = _delta.X + _dragDefecit.X;
             _dragDefecit.Y = _delta.Y + _dragDefecit.Y;

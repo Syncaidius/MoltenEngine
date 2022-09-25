@@ -145,8 +145,9 @@ namespace Molten.Examples
 
         public void Update(Timing time)
         {
-            CameraController.AcceptInput = IsFocused;
+            UI.InputConstraintBounds = Window.RenderBounds;
 
+            CameraController.AcceptInput = IsFocused;
             Camera2D.PickObject(Mouse, time);
 
             // Don't update until the base content is loaded.
