@@ -240,18 +240,19 @@ namespace Molten.Examples
                     }
                 };
 
-                example.Initialize(this, _font, binding.NativeWindow, Log);
+                example.Initialize(this, _font, binding.NativeWindow, binding.NativeWindow, Log);
 
                 binding.NativeWindow.Mode = WindowMode.Windowed;
-                binding.NativeWindow.Visible = true;
+                binding.NativeWindow.IsVisible = true;
             }
             else
             {
                 IRenderSurface2D surface = Engine.Renderer.Resources.CreateSurface(800, 600);
-                example.Initialize(this, _font, surface, Log);
 
                 binding.Window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
                 {
+                    example.Initialize(this, _font, binding.Window, surface, Log);
+
                     binding.Window.Title = selected.Text;
                     binding.Window.Icon = _windowIcon;
 
@@ -260,7 +261,6 @@ namespace Molten.Examples
                     example.IsFocused = true;
                     windowTex.Unfocused += (e) => example.IsFocused = false;
                     windowTex.Texture = surface;
-
 
                     binding.Window.Closing += (element, args) =>
                     {

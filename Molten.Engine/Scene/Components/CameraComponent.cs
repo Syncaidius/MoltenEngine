@@ -102,6 +102,10 @@ namespace Molten
             _camera.Transform = Object.Transform.Global;
         }
 
+        /// <summary>Attempts to pick a scene object through the perspective of the current <see cref="CameraComponent"/>.</summary>
+        /// <param name="pDevice">The <see cref="PointingDevice"/> to use for picking.</param>
+        /// <param name="time">A timing instance to use when picking.</param>
+        /// <returns></returns>
         public IPickable PickObject(PointingDevice pDevice, Timing time)
         {
             // TODO Apply/respect LayerMask property

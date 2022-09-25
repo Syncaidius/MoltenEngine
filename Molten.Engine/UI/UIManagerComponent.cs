@@ -48,11 +48,17 @@ namespace Molten.UI
         {
             base.OnUpdate(time);
 
+            Rectangle constraintBounds;
+            if (InputConstraintBounds.HasValue)
+                constraintBounds = InputConstraintBounds.Value;
+            else
+                constraintBounds = _root.GlobalBounds;
+
             // Update all pointer trackers
             foreach (KeyValuePair<ulong, List<UIPointerTracker>> kv in _trackers)
             {
                 for (int j = 0; j < kv.Value.Count; j++)
-                    kv.Value[j].Update(time);
+                    kv.Value[j].Update(time, ref constraintBounds);
             }
 
             _root.Update(time);
@@ -90,6 +96,13 @@ namespace Molten.UI
             if (device.IsDisposed || !device.IsConnected || !device.IsEnabled)
                 return;
 
+            // Decide which constraint bounds to use.
+            Rectangle constraintBounds;
+            if (InputConstraintBounds.HasValue)
+                constraintBounds = InputConstraintBounds.Value;
+            else
+                constraintBounds = _root.GlobalBounds;
+
             List<UIPointerTracker> trackers = new List<UIPointerTracker>();
             _trackers.Add(device.EOID, trackers);
 
@@ -102,7 +115,7 @@ namespace Molten.UI
                     if (button == PointerButton.None)
                         continue;
 
-                    trackers.Add(new UIPointerTracker(this, device, setID, button));
+                    trackers.Add(new UIPointerTracker(this, device, setID, button, ref constraintBounds));
                 }
             }
         }
@@ -172,5 +185,12 @@ namespace Molten.UI
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets the constraint bounds for input. Only accepts input if it is within these bounds. 
+        /// 
+        /// <para>Any positional input data will be relative to the top-left of these bounds.</para>
+        /// </summary>
+        public Rectangle? InputConstraintBounds { get; set; }
     }
 }

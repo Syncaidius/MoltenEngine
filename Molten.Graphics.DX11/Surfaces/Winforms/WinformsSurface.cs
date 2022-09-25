@@ -124,9 +124,9 @@ namespace Molten.Graphics
 
             if (NextFrame())
             {
-                if (Visible != _control.Visible)
+                if (IsVisible != _control.Visible)
                 {
-                    if (Visible)
+                    if (IsVisible)
                     {
                         _control.Show();
                     }
@@ -239,12 +239,12 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the bounds of the window surface.</summary>
-        public Rectangle Bounds => _bounds;
+        public Rectangle RenderBounds => _bounds;
 
         /// <summary>
         /// Gets or sets whether or not the form is visible.
         /// </summary>
-        public bool Visible { get; set; }
+        public bool IsVisible { get; set; }
 
         /// <summary>
         /// [Internal] Gets the control.

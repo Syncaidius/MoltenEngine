@@ -56,13 +56,18 @@ namespace Molten
         public Vector2F DeltaSincePress => _delta;
 
         /// <summary>
+        /// Gets the <see cref="Timing"/> used during the last <see cref="Update(Timing)"/> call.
+        /// </summary>
+        public Timing Time { get; private set; }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="pDevice"></param>
         /// <param name="setID"></param>
         /// <param name="button"></param>
-        internal UIPointerTracker(UIManagerComponent manager, PointingDevice pDevice, int setID, PointerButton button)
+        internal UIPointerTracker(UIManagerComponent manager, PointingDevice pDevice, int setID, PointerButton button, ref Rectangle inputConstraintBounds)
         {
             _manager = manager;
             Device = pDevice;
@@ -71,10 +76,12 @@ namespace Molten
             _curPos = pDevice.Position;
         }
 
-        internal void Update(Timing time)
+        internal void Update(Timing time, ref Rectangle constraintBounds)
         {
+            Time = time;
+
             _delta = Device.Position - _curPos;
-            _curPos = Device.Position;
+            _curPos = Device.Position - (Vector2F)constraintBounds.TopLeft;
 
             _dragDefecit.X = _delta.X + _dragDefecit.X;
             _dragDefecit.Y = _delta.Y + _dragDefecit.Y;

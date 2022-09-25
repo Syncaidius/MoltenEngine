@@ -63,7 +63,7 @@ namespace Molten.Input
             if (_surface == null)
                 return;
 
-            Rectangle winBounds = _surface.Bounds;
+            Rectangle winBounds = _surface.RenderBounds;
             Position = (Vector2F)winBounds.Center;
             OnSetPointerPosition(Position);
         }
@@ -105,7 +105,7 @@ namespace Molten.Input
             if (_surface != null)
             {
                 // Is the cursor constrained to it's parent control/window?
-                Rectangle sBounds = _surface.Bounds;
+                Rectangle sBounds = _surface.RenderBounds;
                 if (IsConstrained)
                 {
                     if (newState.Position.X < sBounds.X)

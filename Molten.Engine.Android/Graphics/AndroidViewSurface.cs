@@ -212,9 +212,9 @@ namespace Molten.Graphics
 
         public IntPtr? WindowHandle => throw new NotImplementedException();
 
-        public Rectangle Bounds => throw new NotImplementedException();
+        public Rectangle RenderBounds => throw new NotImplementedException();
 
-        public bool Visible
+        public bool IsVisible
         {
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();

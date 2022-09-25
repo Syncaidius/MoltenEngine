@@ -5,7 +5,7 @@
     /// <summary>
     /// Represents a custom implementation of a native GUI control-based render surface.
     /// </summary>
-    public interface INativeSurface : ISwapChainSurface
+    public interface INativeSurface : ISwapChainSurface, IWindow
     {
         /// <summary>
         /// Occurs when the underlying native <see cref="Handle"/> has changed. Invoked by the renderer it is bound to.
@@ -32,9 +32,6 @@
         /// <summary>Invoked when the current <see cref="INativeSurface"/> loses focus.</summary>
         event WindowSurfaceHandler OnFocusLost;
 
-        /// <summary>Gets or sets the title of the underlying native control.</summary>
-        string Title { get; set; }
-
         /// <summary>
         /// Gets or sets the internal name of the underlying native control.
         /// </summary>
@@ -60,13 +57,5 @@
         /// Gets the handle of the window or form containing the current <see cref="INativeSurface"/>. This is not neccessarily it's direct parent of ancestor.
         /// </summary>
         IntPtr? WindowHandle { get; }
-
-        /// <summary>Gets the bounds of the window surface.</summary>
-        Rectangle Bounds { get; }
-
-        /// <summary>
-        /// Gets or sets whether or not the underying control is visible.
-        /// </summary>
-        bool Visible { get; set; }
     }
 }

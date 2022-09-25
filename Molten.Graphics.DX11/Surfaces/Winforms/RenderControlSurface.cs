@@ -99,7 +99,7 @@
 
         private void _control_VisibleChanged(object sender, EventArgs e)
         {
-            Visible = Control.Visible;
+            IsVisible = Control.Visible;
         }
 
         private void _control_HandleDestroyed(object sender, EventArgs e)

@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Molten.UI
 {
-    public class UIWindow : UIElement
+    public class UIWindow : UIElement, IWindow
     {
         delegate void StateCallback(UIWindow window);
 

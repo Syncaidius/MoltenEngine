@@ -20,11 +20,11 @@ namespace Molten.Examples
         SceneObject _parent;
         SceneObject _child;
         Foundation _foundation;
-        UITexture _uiSurface;
 
-        public void Initialize(Foundation foundation, SpriteFont font, IRenderSurface2D surface, Logger log)
+        public void Initialize(Foundation foundation, SpriteFont font, IWindow window, IRenderSurface2D surface, Logger log)
         {
             _foundation = foundation;
+            Window = window;
             Engine = foundation.Engine;
             Surface = surface;
             Font = font;
@@ -42,6 +42,7 @@ namespace Molten.Examples
             UILayer = MainScene.AddLayer("ui", true);
             UILayer.BringToFront();
             UI = UILayer.AddObjectWithComponent<UIManagerComponent>();
+            UI.InputConstraintBounds = window.RenderBounds;
 
             SampleSpriteRenderComponent spriteCom = UILayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             spriteCom.RenderCallback = DrawSprites;
@@ -146,6 +147,8 @@ namespace Molten.Examples
         {
             CameraController.AcceptInput = IsFocused;
 
+            Camera2D.PickObject(Mouse, time);
+
             // Don't update until the base content is loaded.
             if (_loader.Status != ContentLoadBatchStatus.Completed)
             {
@@ -222,5 +225,7 @@ namespace Molten.Examples
         protected MouseDevice Mouse => _foundation.Mouse;
 
         protected GamepadDevice Gamepad => _foundation.Gamepad;
+
+        public IWindow Window { get; private set; }
     }
 }
