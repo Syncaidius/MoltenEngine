@@ -10,9 +10,9 @@ namespace Molten
         /// <summary>
         /// Invoked when the pickable is being tested against a screen position.
         /// </summary>
-        /// <param name="point"></param>
+        /// <param name="pDevice"></param>
         /// <returns></returns>
-        bool Pick(PointingDevice point, Timing time);
+        bool Pick(PointingDevice pDevice, Timing time);
 
         /// <summary>
         /// Invoked when the pickable is being tested against a world-based position.

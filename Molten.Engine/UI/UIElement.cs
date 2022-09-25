@@ -10,8 +10,6 @@ namespace Molten.UI
 
     public delegate void UIElementHandler<T>(T element) where T : UIElement;
 
-    public delegate void UIElementPositionHandler(UIElement element, Vector2F localPos, Vector2F globalPos);
-
     public delegate void UIElementDeltaPositionHandler(UIElement element, UIPointerTracker tracker, Vector2F localPos, Vector2F globalPos, Vector2I delta);
 
     public delegate void UIElementCancelHandler<T>(T element, UICancelEventArgs args) where T : UIElement;
@@ -49,17 +47,17 @@ namespace Molten.UI
         /// <summary>
         /// Invoked when a pointer or other form of input enters the bounds of the current <see cref="UIElement"/>.
         /// </summary>
-        public event UIElementPositionHandler Enter;
+        public event UIElementPointerHandler Enter;
 
         /// <summary>
         /// Invoked when a pointer or other form of input leaves the bounds of the current <see cref="UIElement"/>.
         /// </summary>
-        public event UIElementPositionHandler Leave;
+        public event UIElementPointerHandler Leave;
 
         /// <summary>
         /// Invoked when a pointer has hovered over the 
         /// </summary>
-        public event UIElementPositionHandler Hovered;
+        public event UIElementPointerHandler Hovered;
 
         /// <summary>
         /// Invoked when the parent of the current <see cref="UIElement"/> has changed.
@@ -368,37 +366,34 @@ namespace Molten.UI
         /// <summary>
         /// Invoked when a pointer is hovering over the current <see cref="UIElement"/>.
         /// </summary>
-        /// <param name="localPos">The local position of the pointer, relative to the current <see cref="UIElement"/>.</param>
-        /// <param name="globalPos">The global position of the pointer.</param>
-        public virtual void OnHover(Vector2F localPos, Vector2F globalPos)
+        /// <param name="tracker">The <see cref="UIPointerTracker"/> which triggered hovered over the current <see cref="UIElement"/>.</param>
+        public virtual void OnHover(UIPointerTracker tracker)
         {
             if (State == UIElementState.Default)
                 State = UIElementState.Hovered;
 
-            Hovered?.Invoke(this, localPos, globalPos);
+            Hovered?.Invoke(this, tracker);
         }
 
         /// <summary>
         /// Invoked when a pointer enters the current <see cref="UIElement"/>.
         /// </summary>
-        /// <param name="globalPos">The global position of the pointer.</param>
-        public virtual void OnEnter(Vector2F globalPos)
+        /// <param name="tracker">The <see cref="UIPointerTracker"/> which triggered entered the current <see cref="UIElement"/> bounds.</param>
+        public virtual void OnEnter(UIPointerTracker tracker)
         {
-            Vector2F localPos = globalPos - (Vector2F)_globalBounds.TopLeft;
-            Enter?.Invoke(this, localPos, globalPos);
+            Enter?.Invoke(this, tracker);
         }
 
         /// <summary>
         /// Invoked when a pointer leaves the current <see cref="UIElement"/>.
         /// </summary>
-        /// <param name="globalPos">The global position of the pointer.</param>
-        public virtual void OnLeave(Vector2F globalPos)
+        /// <param name="tracker">The <see cref="UIPointerTracker"/> which triggered left the current <see cref="UIElement"/> bounds.</param>
+        public virtual void OnLeave(UIPointerTracker tracker)
         {
             if (State == UIElementState.Hovered)
                 State = UIElementState.Default;
 
-            Vector2F localPos = globalPos - (Vector2F)_globalBounds.TopLeft;
-            Leave?.Invoke(this, localPos, globalPos);
+            Leave?.Invoke(this, tracker);
         }
 
         public virtual void OnPressed(UIPointerTracker tracker)

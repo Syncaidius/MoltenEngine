@@ -12,7 +12,6 @@ namespace Molten
         Vector2I _iDelta;
         Vector2F _curPos;
         Vector2F _dragDefecit;
-        bool _inputDragged = false;
 
         UIManagerComponent _manager;
         UIElement _pressed = null;
@@ -87,22 +86,20 @@ namespace Molten
             _dragDefecit.Y -= _iDelta.Y;
  
             UIElement prevHover = _hovered;
-            Vector2F localPos;
 
             _hovered = _manager.Root.Pick(_curPos);
 
             // Trigger on-leave of previous hover element.
             if (_hovered != prevHover)
-                prevHover?.OnLeave(_curPos);
+                prevHover?.OnLeave(this);
 
             // Update currently-hovered element
             if (_hovered != null)
             {
-                localPos = _curPos - (Vector2F)_hovered.GlobalBounds.TopLeft;
                 if (prevHover != _hovered)
-                    _hovered.OnEnter(_curPos);
+                    _hovered.OnEnter(this);
 
-                _hovered.OnHover(localPos, _curPos);
+                _hovered.OnHover(this);
             }
 
             if (Device is MouseDevice mouse)
@@ -151,7 +148,6 @@ namespace Molten
                         _pressed.OnPressed(this);
                     }
 
-                    _inputDragged = false;
                     _dragDistance = new Vector2F();
                 }
                 else
@@ -162,7 +158,6 @@ namespace Molten
                     float distDragged = Math.Abs(_dragDistance.Length());
                     if (distDragged >= _dragThreshold)
                     {
-                        _inputDragged = true;
                         if (_pressed != null)
                         {
                             if (_dragging == null)
@@ -205,7 +200,6 @@ namespace Molten
             _pressed = null;
             _dragging = null;
             _held = null;
-            _inputDragged = false;
         }
     }
 }

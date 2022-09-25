@@ -10,9 +10,11 @@ namespace Molten.UI
     public sealed class UIManagerComponent : SpriteRenderComponent, IPickable
     {
         public event SceneInputEventHandler<PointerButton> OnObjectFocused;
+
         public event SceneInputEventHandler<PointerButton> OnObjectUnfocused;
 
         public event ObjectHandler<UIElement> FocusedChanged;
+
         Dictionary<ulong, List<UIPointerTracker>> _trackers;
         PointerButton[] _pButtons;
 
@@ -66,12 +68,15 @@ namespace Molten.UI
             if (pDevice == null)
                 return false;
 
-            if (pDevice.IsConnected && pDevice.IsEnabled)
-                TrackPointingDevice(pDevice);
-
             Vector2F pos = pDevice.Position;
-            if(_root.Pick(pos) != null)
+
+            if (_root.Pick(pos) != null)
+            {
+                if (pDevice.IsConnected && pDevice.IsEnabled)
+                    TrackPointingDevice(pDevice);
+
                 return true;
+            }
 
             return false;
         }
