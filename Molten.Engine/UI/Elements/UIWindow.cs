@@ -327,10 +327,7 @@ namespace Molten.UI
 
         protected override bool OnPicked(Vector2F globalPos)
         {
-            if (WindowState == UIWindowState.Minimized)
-                return true;
-            else
-                return !RenderBounds.Contains(globalPos);
+            return true;
         }
 
         protected override void OnPreUpdateLayerBounds()
