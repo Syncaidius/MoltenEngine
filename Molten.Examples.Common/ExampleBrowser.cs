@@ -403,8 +403,15 @@ namespace Molten.Examples
             if (_font == null)
                 return;
 
-            Vector2F pos = new Vector2F(300, 100);
-            sb.DrawString(_font, $"Focused Element: {UI.FocusedElement?.Name ?? "<None>"}", pos, Color.White);
+            string text = $"Focused UI Element: {(UI.FocusedElement != null ? UI.FocusedElement.Name : "None")}";
+            Vector2F tSize = _font.MeasureString(text);
+            Vector2F pos = new Vector2F()
+            {
+                X = (Window.Width / 2) - (tSize.X / 2),
+                Y = 25,
+            };
+
+            sb.DrawString(_font, text, pos, Color.White);
         }
 
         /// <summary>Gets a random number generator. Used for various samples.</summary>

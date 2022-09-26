@@ -148,7 +148,9 @@ namespace Molten.Examples
             UI.InputConstraintBounds = Window.RenderBounds;
 
             CameraController.AcceptInput = IsFocused;
-            Camera2D.PickObject(Mouse, time);
+
+            if(IsFocused)
+                Camera2D.PickObject(Mouse, time);
 
             // Don't update until the base content is loaded.
             if (_loader.Status != ContentLoadBatchStatus.Completed)
