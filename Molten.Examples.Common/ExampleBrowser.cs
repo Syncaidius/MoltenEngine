@@ -286,8 +286,11 @@ namespace Molten.Examples
 
                     binding.Window.Resized += (element) =>
                     {
-                        surface.Resize((uint)binding.Window.RenderBounds.Width, (uint)binding.Window.RenderBounds.Height);
-                        windowTex.LocalBounds = new Rectangle(0,0, binding.Window.Width, binding.Window.Height);
+                        int w = binding.Window.RenderBounds.Width;
+                        int h = binding.Window.RenderBounds.Height;
+
+                        surface.Resize((uint)w, (uint)h);
+                        windowTex.LocalBounds = new Rectangle(0,0, w, h);
                     };
                 }
             }
@@ -403,7 +406,7 @@ namespace Molten.Examples
             if (_font == null)
                 return;
 
-            string text = $"Focused UI Element: {(UI.FocusedElement != null ? UI.FocusedElement.Name : "None")}";
+            /*string text = $"Focused UI Element: {(UI.FocusedElement != null ? UI.FocusedElement.Name : "None")}";
             Vector2F tSize = _font.MeasureString(text);
             Vector2F pos = new Vector2F()
             {
@@ -411,7 +414,7 @@ namespace Molten.Examples
                 Y = 25,
             };
 
-            sb.DrawString(_font, text, pos, Color.White);
+            sb.DrawString(_font, text, pos, Color.White);*/
         }
 
         /// <summary>Gets a random number generator. Used for various samples.</summary>

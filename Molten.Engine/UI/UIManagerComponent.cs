@@ -163,8 +163,6 @@ namespace Molten.UI
         /// </summary>
         public UIContainer Root => _root;
 
-        public string Tooltip => Name;
-
         /// <summary>
         /// Gets the currently-focused <see cref="UIElement"/>.
         /// </summary>
