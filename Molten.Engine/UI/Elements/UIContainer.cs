@@ -36,7 +36,6 @@ namespace Molten.UI
             RenderOffset = new Vector2F(-_hScrollBar.Value, -_vScrollBar.Value);
         }
 
-
         protected override void OnPreUpdateLayerBounds()
         {
             base.OnPreUpdateLayerBounds();
