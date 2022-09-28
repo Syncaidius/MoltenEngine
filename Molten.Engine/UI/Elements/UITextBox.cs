@@ -6,40 +6,23 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Molten.Collections;
 using Molten.Graphics;
-using static Molten.UI.UITextBox;
 
 namespace Molten.UI
 {
     public partial class UITextBox : UIElement
     {
-        public class Segment
-        {
-            public SpriteFont Font;
-
-            public string Text;
-
-            public Vector2F MeasuredSize;
-
-            public Segment Previous;
-
-            public Segment Next;
-
-            public Color Color = Color.White;
-        }
-
         UIScrollBar _vScroll;
         UIScrollBar _hScroll;
-
         
-        bool _isMultiline;
+        ThreadedList<Line> _lines;
         SpriteFont _defaultFont;
+        bool _isMultiline;
         string _fontName;
         int _marginWidth = 50;
         int _marginPadding = 10;
         int _scrollbarWidth = 20;
         int _lineSpacing = 5;
         int _lineHeight = 25;
-        ThreadedList<Line> _lines;
         Rectangle _textBounds;
 
         // Line numbers
@@ -106,6 +89,27 @@ namespace Molten.UI
                 _vScroll.LocalBounds = new Rectangle(gb.Width - _scrollbarWidth, 0, _scrollbarWidth, gb.Height - _scrollbarWidth);
             }
 
+
+            Vector2F tl = (Vector2F)_textBounds.TopLeft;
+            Vector2F p = tl;
+            Line line;
+            for(int i = 0; i < _lines.Count; i++)
+            {
+                line = _lines[i];
+                Segment seg = line.First;
+                p.X = tl.X;
+
+                while (seg != null)
+                {
+                    seg.Bounds.X = p.X;
+                    seg.Bounds.Y = p.Y;
+                    p.X += seg.Bounds.Width;
+                    seg = seg.Next;
+                }
+
+                p.Y += _lineHeight;
+            }
+
             SelectLine(_selectedLine);
         }
 
@@ -127,13 +131,18 @@ namespace Molten.UI
                 return;
 
             Line l = _lines[lineID.Value];
-            Rectangle gb = GlobalBounds;
+            _selectorBounds = GetLineBounds(lineID.Value);
+            
+        }
 
-            _selectorBounds = new RectangleF()
+        private RectangleF GetLineBounds(int lineID)
+        {
+            Rectangle gb = GlobalBounds;
+            return new RectangleF()
             {
                 X = _marginPos.X + 2,
-                Y = gb.Y + 5 + (_lineHeight * lineID.Value),
-                Width = _textBounds.Width,
+                Y = gb.Y + 5 + (_lineHeight * lineID),
+                Width = gb.Width - (_marginWidth + 2 + _scrollbarWidth),
                 Height = _lineHeight
             };
         }
@@ -144,14 +153,7 @@ namespace Molten.UI
 
             // TODO only test the lines that are in view.
 
-            Rectangle gb = GlobalBounds;
-            RectangleF b = new RectangleF()
-            {
-                X = _marginPos.X + 2,
-                Y = gb.Y + 5,
-                Width = _textBounds.Width,
-                Height = _lineHeight
-            };
+            RectangleF b = GetLineBounds(0);
 
             b.Height = 20;
             Line l;
@@ -176,15 +178,12 @@ namespace Molten.UI
 
             Rectangle gb = GlobalBounds;
             Vector2F tl = (Vector2F)_textBounds.TopLeft;
-            Vector2F p = tl;
             Vector2F numPos = _lineNumPos;
 
             sb.DrawRect(gb, _bgColor, 0, null, 0);
 
             if (_selectedLine.HasValue)
-            {
                 sb.DrawRect(_selectorBounds, ref _selectorStyle, 0, null, 0);
-            }
 
             if (_showLineNumbers)
             {
@@ -196,19 +195,16 @@ namespace Molten.UI
             {
                 Line line = _lines[l];
                 Segment seg = line.First;
-                p.X = tl.X;
 
                 if (_showLineNumbers)
                     sb.DrawString(_defaultFont, line.LineNumber.ToString(), numPos - new Vector2F(line.LineNumberSize.X, 0), _lineNumColor, null, 0);
 
                 while (seg != null)
                 {
-                    sb.DrawString(seg.Font, seg.Text, p, seg.Color, null, 0);
-                    p.X += seg.MeasuredSize.X;
+                    seg.Render(sb);
                     seg = seg.Next;
                 }
 
-                p.Y += _lineHeight;
                 numPos.Y += _lineHeight;
             }
         }

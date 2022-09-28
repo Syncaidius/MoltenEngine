@@ -22,15 +22,15 @@ namespace Molten.UI
 
             public void SetText(SpriteFont font, string text)
             {
+                MeasuredSize = font.MeasureString(text);
+
                 First = new Segment()
                 {
                     Text = text,
                     Color = Color.White,
                     Font = font,
-                    MeasuredSize = font.MeasureString(text),
+                    Bounds = new RectangleF(Vector2F.Zero, MeasuredSize),
                 };
-
-                MeasuredSize = First.MeasuredSize;
             }
         }
 
