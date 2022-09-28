@@ -89,5 +89,9 @@
       "Pressed": "255 255 0 255",
       "Hovered": "180 180 0 255"
     }
+  },
+
+  "Molten.UI.UITextBox/Molten.UI.UIScrollBar": {
+    "Corners": "0 0 0 0"
   }
 }

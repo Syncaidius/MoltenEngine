@@ -9,7 +9,7 @@ namespace Molten.UI
         UIElementFlowDirection _direction;
         UIButton _btnDecrease;
         UIButton _btnIncrease;
-        CornerInfo _corners = new CornerInfo(8);
+        CornerInfo _corners = new CornerInfo(0);
 
         Rectangle _bgBounds;
         Rectangle _barBounds;
@@ -36,26 +36,34 @@ namespace Molten.UI
             _btnIncrease.HorizontalAlign = UIHorizonalAlignment.Center;
             _btnIncrease.VerticalAlign = UIVerticalAlignment.Center;
 
-
-            if (Direction == UIElementFlowDirection.Vertical)
-            {
-                _btnDecrease.Text = "^";
-                _btnIncrease.Text = "v";
-
-                _btnDecrease.CornerRadius = new CornerInfo(_corners.TopLeft, _corners.TopRight, 0, 0);
-                _btnIncrease.CornerRadius = new CornerInfo(0, 0, _corners.BottomRight, _corners.BottomLeft);
-            }
-            else
-            {
-                _btnDecrease.Text = "<";
-                _btnIncrease.Text = ">";
-
-                _btnDecrease.CornerRadius = new CornerInfo(_corners.TopLeft, 0, 0, _corners.BottomLeft);
-                _btnIncrease.CornerRadius = new CornerInfo(0, _corners.TopRight, _corners.BottomRight, 0);
-            }
+            RefreshButtons();
 
             _btnDecrease.Pressed += _btnDecrease_Pressed;
             _btnIncrease.Pressed += _btnIncrease_Pressed;
+        }
+
+        private void RefreshButtons()
+        {
+            if (Direction == UIElementFlowDirection.Vertical)
+            {
+                _btnDecrease.CornerRadius = new CornerInfo(_corners.TopLeft, _corners.TopRight, 0, 0);
+                _btnIncrease.CornerRadius = new CornerInfo(0, 0, _corners.BottomRight, _corners.BottomLeft);
+                _btnDecrease.Text = "^";
+                _btnIncrease.Text = "v";
+            }
+            else // Horizontal
+            {
+                _btnDecrease.CornerRadius = new CornerInfo(_corners.TopLeft, 0, 0, _corners.BottomLeft);
+                _btnIncrease.CornerRadius = new CornerInfo(0, _corners.TopRight, _corners.BottomRight, 0);
+                _btnDecrease.Text = "<";
+                _btnIncrease.Text = ">";
+            }
+        }
+
+        protected override void ApplyTheme()
+        {
+            base.ApplyTheme();
+            RefreshButtons();
         }
 
         private void _btnIncrease_Pressed(UIElement element, UIPointerTracker tracker)
@@ -209,7 +217,6 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets the direction of the current <see cref="UIScrollBar"/>.
         /// </summary>
-        [UIThemeMember]
         public UIElementFlowDirection Direction
         {
             get => _direction;
@@ -218,6 +225,7 @@ namespace Molten.UI
                 if (_direction != value)
                 {
                     _direction = value;
+                    RefreshButtons();
                     UpdateBounds();
                 }
             }
@@ -255,6 +263,17 @@ namespace Molten.UI
             {
                 if(_style.BorderThickness.Left != value)
                     _style.BorderThickness = new Thickness(value, 0);
+            }
+        }
+
+        [UIThemeMember]
+        public CornerInfo Corners
+        {
+            get => _corners;
+            set
+            {
+                _corners = value;
+                RefreshButtons();
             }
         }
 

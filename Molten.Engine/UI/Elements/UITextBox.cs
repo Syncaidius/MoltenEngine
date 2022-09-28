@@ -86,13 +86,13 @@ namespace Molten.UI
             if (_hScroll.IsVisible)
             {
                 _textBounds.Bottom -= _scrollbarWidth;
-                _hScroll.LocalBounds = new Rectangle(0, gb.Height - _scrollbarWidth, gb.Width, _scrollbarWidth);
+                _hScroll.LocalBounds = new Rectangle(0, gb.Height - _scrollbarWidth, gb.Width - _scrollbarWidth, _scrollbarWidth);
             }
 
             if (_vScroll.IsVisible)
             {
                 _textBounds.Right -= _scrollbarWidth;
-                _vScroll.LocalBounds = new Rectangle(gb.Width - _scrollbarWidth, 0, _scrollbarWidth, gb.Height);
+                _vScroll.LocalBounds = new Rectangle(gb.Width - _scrollbarWidth, 0, _scrollbarWidth, gb.Height - _scrollbarWidth);
             }
         }
 
