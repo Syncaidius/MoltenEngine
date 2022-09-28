@@ -91,7 +91,7 @@
     }
   },
 
-  "Molten.UI.UITextBox/Molten.UI.UIScrollBar": {
-    "Corners": "0 0 0 0"
+  "Molten.UI.UIListView/Molten.UI.UIListViewItem/Molten.UI.UIScrollBar": {
+    "Corners": "0 8 8 0"
   }
 }
