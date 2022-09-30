@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Graphics;
-using static Molten.UI.UITextBox;
 
 namespace Molten.UI
 {
@@ -20,20 +20,87 @@ namespace Molten.UI
 
             RectangleF _textBounds;
 
+            internal Line(UITextBox textbox)
+            {
+                TextBox = textbox;
+            }
+
             public void SetText(SpriteFont font, string text)
             {
-                Vector2F size = font.MeasureString(text);
+                _textBounds.Width = 0;
+                _textBounds.Height = 0;
 
-                First = new Segment()
+                First = new Segment("", Color.White, font, SegmentType.Text);
+
+                Segment seg = First;
+
+                for (int i = 0; i < text.Length; i++)
                 {
-                    Text = text,
-                    Color = Color.White,
-                    Font = font,
-                    Bounds = new RectangleF(Vector2F.Zero, size),
-                };
+                    char c = text[i];
 
-                _textBounds.Width = size.X;
-                _textBounds.Height = size.Y;
+                    SegmentType charType = ParseRuleCharList(c, seg, font, TextBox.Rules.Whitespace, SegmentType.Whitespace);
+
+                    if(charType == SegmentType.Text)
+                        charType = ParseRuleCharList(c, seg, font, TextBox.Rules.Punctuation, SegmentType.Punctuation);
+
+                    if (seg.Type != charType)
+                        seg = AddNextNode(seg, Color.White, font, charType);
+                    // TODO check rules for any other segmenting operators/symbols (e.g. brackets, math symbols, numbers/words, etc).
+
+                    seg.Text += c;
+                }
+            }
+
+            private SegmentType ParseRuleCharList(char c, Segment seg, SpriteFont font, char[] list, SegmentType type)
+            {
+                SegmentType charType = SegmentType.Text;
+
+                // Check for whitespace character
+                for (int w = 0; w < list.Length; w++)
+                {
+                    // Start new segment
+                    if (c == list[w])
+                    {
+                        if (seg.Type != type)
+                        {
+                            seg = AddNextNode(seg, Color.White, font, type);
+                            seg.Type = type;
+                        }
+
+                        charType = type;
+                        break;
+                    }
+                }
+
+                return charType;
+            }
+
+            private Segment AddNextNode(Segment seg, Color color, SpriteFont font, SegmentType type)
+            {
+                Segment next = new Segment("", Color.White, font, type);
+
+                seg.Bounds = new RectangleF(Vector2F.Zero, font.MeasureString(seg.Text));
+                seg.Next = next;
+                next.Previous = seg;
+
+                _textBounds.Width += seg.Bounds.Width;
+                _textBounds.Height = Math.Max(_textBounds.Height, seg.Bounds.Height);
+
+                return next;
+            }
+
+            public Segment OnPressed(Vector2F position)
+            {
+                Segment seg = First;
+                while(seg != null)
+                {
+                    if (seg.Bounds.Contains(position))
+                        return seg;
+
+                    seg = seg.Next;
+                }
+
+                return null;
             }
 
             private void UpdatePosition()
@@ -58,6 +125,8 @@ namespace Molten.UI
             {
                 return _textBounds.Contains(pos);
             }
+
+            public UITextBox TextBox { get; internal set; }
 
             public Segment First { get; private set; }
 

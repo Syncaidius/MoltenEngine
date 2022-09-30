@@ -6,12 +6,18 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Molten.Collections;
 using Molten.Graphics;
-using static Molten.UI.UITextBox;
 
 namespace Molten.UI
 {
     public partial class UITextBox : UIElement
     {
+        /// <summary>
+        /// Invoked when <see cref="ApplyRules()"/> was called.
+        /// </summary>
+        public event ObjectHandler<UITextBox> OnRulesApplied;
+
+        RuleSet _rules;
+
         UIScrollBar _vScroll;
         UIScrollBar _hScroll;
         
@@ -37,9 +43,12 @@ namespace Molten.UI
         Color _marginColor = new Color(60,60,60, 255);
         Color _marginLineColor = Color.White;
 
-        // Selector
+        // Line Selector
         int? _selectedLine;
+        Segment _selectedSeg;
         RectStyle _selectorStyle = new RectStyle(new Color(60,60,60,200), new Color(160,160,160,255), 2);
+
+        // 
 
         /* TODO:
          *  - Allow segment to have OnPressed and OnReleased virtual methods to allow custom segment actions/types, such as:
@@ -51,8 +60,9 @@ namespace Molten.UI
 
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
-            base.OnInitialize(engine, settings); 
-            
+            base.OnInitialize(engine, settings);
+
+            _rules = new RuleSet(); 
             _lines = new ThreadedList<Line>();
             FontName = settings.DefaultFontName;
 
@@ -69,6 +79,11 @@ namespace Molten.UI
         private void ScrollChanged(UIScrollBar element)
         {
             RenderOffset = new Vector2F(-_hScroll.Value, -_vScroll.Value);
+        }
+
+        public void ApplyRules()
+        {
+            OnRulesApplied?.Invoke(this);
         }
 
         protected override void OnUpdateBounds()
@@ -117,8 +132,6 @@ namespace Molten.UI
 
                 p.Y += _lineHeight;
             }
-
-            SelectLine(_selectedLine);
         }
 
         protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
@@ -130,11 +143,6 @@ namespace Molten.UI
 
             if (_vScroll.IsVisible)
                 renderbounds.Width -= _scrollbarWidth;
-        }
-
-        private void SelectLine(int? lineID)
-        {
-            _selectedLine = lineID;    
         }
 
         public override void OnPressed(UIPointerTracker tracker)
@@ -150,7 +158,8 @@ namespace Molten.UI
 
                 if (line.SelectorBounds.Contains(tracker.Position))
                 {
-                    SelectLine(i);
+                    _selectedLine = i;
+                    _selectedSeg = line.OnPressed(tracker.Position);
                     break;
                 }
             }
@@ -167,6 +176,9 @@ namespace Molten.UI
 
             if (_selectedLine.HasValue)
                 sb.DrawRect(_lines[_selectedLine.Value].SelectorBounds, ref _selectorStyle, 0, null, 0);
+
+            if (_selectedSeg != null)
+                sb.DrawRect(_selectedSeg.Bounds, Color.Red, 0, null, 0);
 
             if (_showLineNumbers)
             {
@@ -197,7 +209,7 @@ namespace Molten.UI
             string[] lines = Regex.Split(text, "\r?\n");
             for (int i = 0; i < lines.Length; i++)
             {
-                Line line = new Line();
+                Line line = new Line(this);
                 line.LineNumber = (uint)i + 1U;
                 line.LineNumberSize = _defaultFont.MeasureString(line.LineNumber.ToString());
                 line.SetText(_defaultFont, lines[i]);
@@ -299,6 +311,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the text for the current <see cref="UITextBox"/>.
+        /// </summary>
         public string Text
         {
             get => "";
@@ -319,6 +334,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the horizontal and vertical scroll-bar width.
+        /// </summary>
         public int ScrollBarWidth
         {
             get => _scrollbarWidth;
@@ -328,6 +346,25 @@ namespace Molten.UI
                 {
                     _scrollbarWidth = value;
                     UpdateBounds();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="RuleSet"/> for the current <see cref="UITextBox"/>.
+        /// </summary>
+        public RuleSet Rules
+        {
+            get => _rules;
+            set
+            {
+                if(_rules != value)
+                {
+                    if (value == null)
+                        throw new NullReferenceException("UITextbox.Rules cannot be set to null.");
+
+                    _rules = value;
+                    ApplyRules();
                 }
             }
         }
