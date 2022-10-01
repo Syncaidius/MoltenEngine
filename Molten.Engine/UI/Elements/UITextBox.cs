@@ -26,11 +26,12 @@ namespace Molten.UI
         bool _isMultiline;
         string _fontName;
         int _marginWidth = 50;
-        int _marginPadding = 10;
+        int _marginPadding = 7;
         int _scrollbarWidth = 20;
         int _lineSpacing = 5;
         int _lineHeight = 25;
         Rectangle _textBounds;
+        Rectangle _textClipBounds;
 
         // Line numbers
         bool _showLineNumbers;
@@ -47,8 +48,6 @@ namespace Molten.UI
         int? _selectedLine;
         Segment _selectedSeg;
         RectStyle _selectorStyle = new RectStyle(new Color(60,60,60,200), new Color(160,160,160,255), 2);
-
-        // 
 
         /* TODO:
          *  - Allow segment to have OnPressed and OnReleased virtual methods to allow custom segment actions/types, such as:
@@ -67,11 +66,11 @@ namespace Molten.UI
             FontName = settings.DefaultFontName;
 
             _vScroll = BaseElements.Add<UIScrollBar>();
-            _vScroll.Increment = 20;
+            _vScroll.Increment = _lineHeight;
             _vScroll.ValueChanged += ScrollChanged;
 
             _hScroll = BaseElements.Add<UIScrollBar>();
-            _hScroll.Increment = 20;
+            _hScroll.Increment = _lineHeight;
             _hScroll.ValueChanged += ScrollChanged;
             _hScroll.Direction = UIElementFlowDirection.Horizontal;
         }
@@ -91,14 +90,18 @@ namespace Molten.UI
             base.OnUpdateBounds();
 
             Rectangle gb = GlobalBounds;
+            _marginPos = new Vector2F(gb.X + _marginWidth, gb.Y);
+
             _textBounds = gb;
             _textBounds.Left += _marginPadding;
             _textBounds.Top += _marginPadding;
-            _marginPos = new Vector2F(gb.X + _marginWidth, gb.Y);
             _lineNumPos = _marginPos - new Vector2F(_marginPadding, -_marginPadding);
 
             if (_showLineNumbers)
                 _textBounds.Left += _marginWidth;
+
+            _textClipBounds = _textBounds;
+            _textBounds += RenderOffset;
 
             CalcScrollBars();
 
@@ -113,7 +116,6 @@ namespace Molten.UI
                 _textBounds.Right -= _scrollbarWidth;
                 _vScroll.LocalBounds = new Rectangle(gb.Width - _scrollbarWidth, 0, _scrollbarWidth, gb.Height - _scrollbarWidth);
             }
-
 
             Vector2F tl = (Vector2F)_textBounds.TopLeft;
             Vector2F p = tl;
@@ -186,22 +188,31 @@ namespace Molten.UI
                 sb.DrawLine(_marginPos, _marginPos + new Vector2F(0, _textBounds.Height), _marginLineColor, 1, 1, 0);
             }
 
+            // Line numbers
             for (int l = 0; l < _lines.Count; l++)
             {
                 Line line = _lines[l];
                 Segment seg = line.First;
-
                 if (_showLineNumbers)
                     sb.DrawString(_defaultFont, line.LineNumber.ToString(), numPos - new Vector2F(line.LineNumberSize.X, 0), _lineNumColor, null, 0);
+
+                numPos.Y += _lineHeight;
+            }
+
+            // Line text/content
+            sb.PushClip(_textClipBounds);
+            for (int l = 0; l < _lines.Count; l++)
+            {
+                Line line = _lines[l];
+                Segment seg = line.First;
 
                 while (seg != null)
                 {
                     seg.Render(sb);
                     seg = seg.Next;
                 }
-
-                numPos.Y += _lineHeight;
             }
+            sb.PopClip();
         }
 
         private void SetText(string text)

@@ -49,6 +49,14 @@ namespace Molten.UI
 
                     seg.Text += c;
                 }
+
+                // Set width of last node
+                seg.Bounds = new RectangleF(Vector2F.Zero, font.MeasureString(seg.Text));
+
+                _textBounds.Width += seg.Bounds.Width;
+                _textBounds.Height = Math.Max(_textBounds.Height, seg.Bounds.Height);
+
+                UpdatePosition();
             }
 
             private SegmentType ParseRuleCharList(char c, Segment seg, SpriteFont font, char[] list, SegmentType type)
