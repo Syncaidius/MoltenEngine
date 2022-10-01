@@ -11,6 +11,59 @@ namespace Molten.UI
 {
     public partial class UITextBox : UIElement
     {
+        internal class Margin
+        {
+            public event ObjectHandler<Margin> BoundsChanged;
+
+            public event ObjectHandler<Margin> PaddingChanged;
+
+            public Rectangle Bounds
+            {
+                get => _bounds;
+                set
+                {
+                    _bounds = value;
+                    _linePos = (Vector2F)_bounds.TopRight;
+                    BoundsChanged?.Invoke(this);
+                }
+            }
+
+            public int Width => _bounds.Width;
+
+            public int Height => _bounds.Height;
+
+            /// <summary>
+            /// Gets the position at which the margin line starts.
+            /// </summary>
+            internal Vector2F DividerPosition => _linePos;
+
+            public int Padding
+            {
+                get => _padding;
+                set
+                {
+                    if(_padding != value)
+                    {
+                        _padding = value;
+                        PaddingChanged?.Invoke(this);
+                    }
+                }
+            }
+
+            public RectStyle MarginStyle = new RectStyle(new Color(60, 60, 60, 255));
+
+            public LineStyle Style = LineStyle.Default;
+
+            Rectangle _bounds = new Rectangle(0, 0, 50, 0);
+            Vector2F _linePos = new Vector2F(50,0);
+            int _padding = 7;
+
+            internal void Render(SpriteBatcher sb)
+            {
+                sb.DrawRect(_bounds, ref MarginStyle, 0, null, 0);
+                sb.DrawLine(_linePos, _linePos + new Vector2F(0, _bounds.Height), ref Style, 0);
+            }
+        }
         /// <summary>
         /// Invoked when <see cref="ApplyRules()"/> was called.
         /// </summary>
@@ -25,24 +78,18 @@ namespace Molten.UI
         SpriteFont _defaultFont;
         bool _isMultiline;
         string _fontName;
-        int _marginWidth = 50;
-        int _marginPadding = 7;
+        Margin _margin;
         int _scrollbarWidth = 20;
         int _lineSpacing = 5;
         int _lineHeight = 25;
         Rectangle _textBounds;
         Rectangle _textClipBounds;
+        Color _bgColor = new Color(30, 30, 30, 255);
 
         // Line numbers
         bool _showLineNumbers;
         Vector2F _lineNumPos;
         Color _lineNumColor = new Color(42, 136, 151, 255);
-
-        // Margin
-        Vector2F _marginPos;
-        Color _bgColor = new Color(30, 30, 30, 255);
-        Color _marginColor = new Color(60,60,60, 255);
-        Color _marginLineColor = Color.White;
 
         // Line Selector
         int? _selectedLine;
@@ -60,6 +107,9 @@ namespace Molten.UI
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
             base.OnInitialize(engine, settings);
+
+            _margin = new Margin();
+            _margin.PaddingChanged += OnMarginPaddingChanged;
 
             _rules = new RuleSet(); 
             _lines = new ThreadedList<Line>();
@@ -85,20 +135,23 @@ namespace Molten.UI
             OnRulesApplied?.Invoke(this);
         }
 
+        private void OnMarginPaddingChanged(Margin obj)
+        {
+            OnUpdateBounds();
+        }
+
         protected override void OnUpdateBounds()
         {
             base.OnUpdateBounds();
 
             Rectangle gb = GlobalBounds;
-            _marginPos = new Vector2F(gb.X + _marginWidth, gb.Y);
+            _margin.Bounds = new Rectangle(gb.X, gb.Y, _margin.Width, gb.Height);
+            _lineNumPos = _margin.DividerPosition - new Vector2F(_margin.Padding, -_margin.Padding);
 
             _textBounds = gb;
-            _textBounds.Left += _marginPadding;
-            _textBounds.Top += _marginPadding;
-            _lineNumPos = _marginPos - new Vector2F(_marginPadding, -_marginPadding);
-
-            if (_showLineNumbers)
-                _textBounds.Left += _marginWidth;
+            _textBounds.Left += _margin.Padding;
+            _textBounds.Top += _margin.Padding;
+            _textBounds.Left += _margin.Width;
 
             _textClipBounds = _textBounds;
             _textBounds += RenderOffset;
@@ -126,9 +179,9 @@ namespace Molten.UI
                 line.Position = p;
                 line.SelectorBounds = new RectangleF()
                 {
-                    X = _marginPos.X + 2,
+                    X = _margin.DividerPosition.X + 2,
                     Y = gb.Y + 5 + (_lineHeight * i),
-                    Width = gb.Width - (_marginWidth + 2 + _scrollbarWidth),
+                    Width = gb.Width - (_margin.Width + 2 + _scrollbarWidth),
                     Height = Math.Max(_lineHeight, line.TextBounds.Height)
                 };
 
@@ -182,11 +235,7 @@ namespace Molten.UI
             if (_selectedSeg != null)
                 sb.DrawRect(_selectedSeg.Bounds, Color.Red, 0, null, 0);
 
-            if (_showLineNumbers)
-            {
-                sb.DrawRect(new RectangleF(gb.X, gb.Y, _marginWidth, gb.Height), _marginColor, 0, null, 0);
-                sb.DrawLine(_marginPos, _marginPos + new Vector2F(0, _textBounds.Height), _marginLineColor, 1, 1, 0);
-            }
+            _margin.Render(sb);
 
             // Line numbers
             for (int l = 0; l < _lines.Count; l++)
