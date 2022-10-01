@@ -12,13 +12,31 @@ namespace Molten.UI
     {
         internal class Line
         {
-            public uint LineNumber;
+            /// <summary>
+            /// Gets or sets the line number of the current <see cref="Line"/>.
+            /// </summary>
+            public uint Number
+            {
+                get => _lineNumber;
+                set
+                {
+                    if(_lineNumber != value)
+                    {
+                        _lineNumber = value;
+                        _lineNumString = value.ToString();
+                    }
+                }
+            }
+
+            public string NumberString => _lineNumString;
 
             public Vector2F LineNumberSize;
 
             public RectangleF SelectorBounds;
 
             RectangleF _textBounds;
+            string _lineNumString;
+            uint _lineNumber;
 
             internal Line(UITextBox textbox)
             {
@@ -45,7 +63,9 @@ namespace Molten.UI
 
                     if (seg.Type != charType)
                         seg = AddNextNode(seg, Color.White, font, charType);
+
                     // TODO check rules for any other segmenting operators/symbols (e.g. brackets, math symbols, numbers/words, etc).
+                    // TODO check if the current segment text is equal to any keywords
 
                     seg.Text += c;
                 }

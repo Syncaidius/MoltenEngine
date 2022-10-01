@@ -238,12 +238,14 @@ namespace Molten.UI
             _margin.Render(sb);
 
             // Line numbers
+            int lastNum = -1;
+
             for (int l = 0; l < _lines.Count; l++)
             {
                 Line line = _lines[l];
                 Segment seg = line.First;
                 if (_showLineNumbers)
-                    sb.DrawString(_defaultFont, line.LineNumber.ToString(), numPos - new Vector2F(line.LineNumberSize.X, 0), _lineNumColor, null, 0);
+                    sb.DrawString(_defaultFont, line.NumberString, numPos - new Vector2F(line.LineNumberSize.X, 0), _lineNumColor, null, 0);
 
                 numPos.Y += _lineHeight;
             }
@@ -270,8 +272,8 @@ namespace Molten.UI
             for (int i = 0; i < lines.Length; i++)
             {
                 Line line = new Line(this);
-                line.LineNumber = (uint)i + 1U;
-                line.LineNumberSize = _defaultFont.MeasureString(line.LineNumber.ToString());
+                line.Number = (uint)i + 1U;
+                line.LineNumberSize = _defaultFont.MeasureString(line.NumberString);
                 line.SetText(_defaultFont, lines[i]);
 
                 _lines.Add(line);
