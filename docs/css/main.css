@@ -6,6 +6,16 @@ body {
     margin: 0px;
 }
 
+body a{
+	color: skyblue;
+	text-decoration: none;
+}
+
+body a:hover{
+	color: white;
+	text-decoration: underline;
+}
+
 .logo {
     width: 600px;
     aspect-ratio: auto;
