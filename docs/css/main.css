@@ -11,6 +11,10 @@ body a{
 	text-decoration: none;
 }
 
+body h2{
+	color: #dc5c0f;
+}
+
 body a:hover{
 	color: white;
 	text-decoration: underline;
