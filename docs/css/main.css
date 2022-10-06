@@ -17,7 +17,6 @@ body h2{
 
 body a:hover{
 	color: white;
-	text-decoration: underline;
 }
 
 .logo {
@@ -37,6 +36,46 @@ body a:hover{
 .sec-content{
 	padding-left:10px;
 	padding-right:10px;
+	margin-top: 20px;
+}
+
+.sec-namespace{
+	margin-left:10px;
+	padding-left: 10px;
+	padding-bottom: 1px;
+	background: linear-gradient(90deg, rgba(68,68,68,1) 24%, rgba(68,68,68,0) 75%);
+}
+
+.sec-namespace-inner{
+	display:none;
+	
+	background: linear-gradient(90deg, rgba(51,51,51,1) 18%, rgba(51,51,51,0) 55%);
+	margin: 0px 10px 10px 10px;
+}
+
+.sec-namespace-obj{
+	margin-left:20px;
+}
+
+.sec-active{
+	display:block;
+}
+
+.namespace-toggle {
+  cursor: pointer;
+  user-select: none; /* Prevent text selection */
+}
+
+/* Create the caret/arrow with a unicode, and style it */
+.namespace-toggle::before {
+  content: "\25B6";
+  color: white;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.namespace-toggle-down::before {
+  transform: rotate(90deg);
 }
 
 body > *{
