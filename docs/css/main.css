@@ -1,3 +1,7 @@
+:root{
+	--main-color: #dc5c0f;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #333333;
@@ -11,34 +15,46 @@ body a{
 	text-decoration: none;
 }
 
-table{
+body h2{
+	color: var(--main-color);
+}
+
+body a:hover{
+	color: var(--main-color);
+}
+
+.logo {
+    width: 360px;
+    aspect-ratio: auto;
+}
+
+.sec-page {
+    width: 100%;
+    margin-top:0px;
+    background-color: #555555;
+}
+
+.sec-page table{
 	border-collapse: collapse;
 }
 
 tr {
-	border: 1px solid #dc5c0f;
+	border: 1px solid var(--main-color);
 }
 
-body h2{
-	color: #dc5c0f;
+.sec-main{
+	display:flex;
+	flex-direction:row;
+	align-content:flex-start;
+	min-height:100%;
 }
 
-body a:hover{
-	color: white;
-}
-
-.logo {
-    width: 600px;
-    aspect-ratio: auto;
-}
-
-.sec-main {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    width: 800px;
-    margin:auto;
-    background-color: #555555;
+.sec-index{
+	padding: 0px 0px 0px 0px;
+	margin-top: auto;
+	border: 2px solid white;
+	display:table;
+	width:300px;
 }
 
 .sec-content{
@@ -89,10 +105,14 @@ body a:hover{
   user-select: none; /* Prevent text selection */
 }
 
+.namespace-toggle:hover{
+	color: var(--main-color);
+}
+
 /* Create the caret/arrow with a unicode, and style it */
 .namespace-toggle::before {
   content: "\25B6";
-  color: #dc5c0f;
+  color: var(--main-color);
   display: inline-block;
   margin-right: 6px;
 }
