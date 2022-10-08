@@ -11,6 +11,14 @@ body a{
 	text-decoration: none;
 }
 
+table{
+	border-collapse: collapse;
+}
+
+tr {
+	border: 1px solid #dc5c0f;
+}
+
 body h2{
 	color: #dc5c0f;
 }
@@ -28,7 +36,7 @@ body a:hover{
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    width: 860px;
+    width: 800px;
     margin:auto;
     background-color: #555555;
 }
@@ -46,15 +54,30 @@ body a:hover{
 	background: linear-gradient(90deg, rgba(68,68,68,1) 24%, rgba(68,68,68,0) 75%);
 }
 
+.sec-namespace-noleft{
+	margin-left:0px;
+}
+
 .sec-namespace-inner{
 	display:none;
 	
 	background: linear-gradient(90deg, rgba(51,51,51,1) 18%, rgba(51,51,51,0) 55%);
-	margin: 0px 10px 10px 10px;
+	margin: 10px 10px 10px 10px;
+}
+
+.sec-namespace-inner table tr img{
+	margin-left:5px;
+	margin-right:5px;
+	width:20px;
+	height:20px;
 }
 
 .sec-namespace-obj{
 	margin-left:20px;
+}
+
+.sec-obj-index{
+	width:100%;
 }
 
 .sec-active{
@@ -69,7 +92,7 @@ body a:hover{
 /* Create the caret/arrow with a unicode, and style it */
 .namespace-toggle::before {
   content: "\25B6";
-  color: white;
+  color: #dc5c0f;
   display: inline-block;
   margin-right: 6px;
 }
@@ -85,4 +108,15 @@ body > *{
 .sec-div {
     min-height: 5px;
     background-color: #777777;
+}
+
+.col-type-icon{
+	width: 30px;
+}
+
+.col-type-name{
+	width: 400px;
+	font-weight:bold;
+	font-size:18px;
+	text-align:left;
 }
