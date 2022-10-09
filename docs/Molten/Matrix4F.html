@@ -1,1 +1,795 @@
-<h4>Molten</hr><h2>Matrix4F</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Matrix4F</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../img/struct.png"/>Molten.<b>Matrix4F</b></span><div>
+		<div class='obj-summary'>
+			<p>
+            Represents a single-precision 4x4 mathematical matrix.
+            </p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Fields</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>M11</td>
+<td>
+            Value at row 1 column 1 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M12</td>
+<td>
+            Value at row 1 column 2 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M13</td>
+<td>
+            Value at row 1 column 3 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M14</td>
+<td>
+            Value at row 1 column 4 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M21</td>
+<td>
+            Value at row 2 column 1 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M22</td>
+<td>
+            Value at row 2 column 2 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M23</td>
+<td>
+            Value at row 2 column 3 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M24</td>
+<td>
+            Value at row 2 column 4 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M31</td>
+<td>
+            Value at row 3 column 1 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M32</td>
+<td>
+            Value at row 3 column 2 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M33</td>
+<td>
+            Value at row 3 column 3 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M34</td>
+<td>
+            Value at row 3 column 4 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M41</td>
+<td>
+            Value at row 4 column 1 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M42</td>
+<td>
+            Value at row 4 column 2 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M43</td>
+<td>
+            Value at row 4 column 3 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>M44</td>
+<td>
+            Value at row 4 column 4 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>SizeInBytes</td>
+<td>
+            The size of the <see cref="T:Molten.Matrix4F" /> type, in bytes.
+            </td>
+</tr>
+<tr>
+   <td>Zero</td>
+<td>
+            A <see cref="T:Molten.Matrix4F" /> with all of its components set to zero.
+            </td>
+</tr>
+<tr>
+   <td>Identity</td>
+<td>
+            The identity <see cref="T:Molten.Matrix4F" />.
+            </td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>GetHashCode</td>
+<td>
+            Returns a hash code for this instance.
+            </td>
+</tr>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LowerTriangularForm</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LowerTriangularForm</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RowEchelonForm</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RowEchelonForm</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ReducedRowEchelonForm</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>BillboardLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>BillboardLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>BillboardRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>BillboardRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OrthoLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OrthoLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OrthoRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OrthoRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OrthoOffCenterLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OrthoOffCenterLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OrthoOffCenterRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OrthoOffCenterRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveFovLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveFovLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveFovRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveFovRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveOffCenterLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveOffCenterLH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveOffCenterRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveOffCenterRH</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationX</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationX</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationY</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationY</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationZ</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationZ</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationAxis</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationAxis</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromQuaternion</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromQuaternion</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromQuaternion</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationYawPitchRoll</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationYawPitchRoll</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>CreateTranslation</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>CreateTranslation</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>CreateTranslation</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>CreateTranslation</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>CreateSkew</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>AffineTransformation</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>AffineTransformation</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>AffineTransformation</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>AffineTransformation</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>AffineTransformation2D</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>AffineTransformation2D</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>AffineTransformation2D</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>AffineTransformation2D</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transformation</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transformation</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transformation2D</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transformation2D</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>Determinant</td>
+<td>
+            Calculates the determinant of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>Invert</td>
+<td>
+            Inverts the matrix.
+            </td>
+</tr>
+<tr>
+   <td>Orthogonalize</td>
+<td>
+            Orthogonalizes the specified matrix.
+            </td>
+</tr>
+<tr>
+   <td>Orthonormalize</td>
+<td>
+            Orthonormalizes the specified matrix.
+            </td>
+</tr>
+<tr>
+   <td>DecomposeQR</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DecomposeLQ</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Decompose</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DecomposeUniformScale</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ExchangeRows</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ExchangeColumns</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToArray</td>
+<td>
+            Creates an array containing the elements of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>Add</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Add</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Divide</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Divide</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Divide</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Divide</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Exponent</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Exponent</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transpose</td>
+<td>
+            Transposes the matrix in-place.
+            </td>
+</tr>
+<tr>
+   <td>Transpose</td>
+<td>
+            Transposes the matrix in-place.
+            </td>
+</tr>
+<tr>
+   <td>Transpose</td>
+<td>
+            Transposes the matrix in-place.
+            </td>
+</tr>
+<tr>
+   <td>TransposeByRef</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transpose</td>
+<td>
+            Transposes the matrix in-place.
+            </td>
+</tr>
+<tr>
+   <td>Invert</td>
+<td>
+            Inverts the matrix.
+            </td>
+</tr>
+<tr>
+   <td>Invert</td>
+<td>
+            Inverts the matrix.
+            </td>
+</tr>
+<tr>
+   <td>Orthogonalize</td>
+<td>
+            Orthogonalizes the specified matrix.
+            </td>
+</tr>
+<tr>
+   <td>Orthogonalize</td>
+<td>
+            Orthogonalizes the specified matrix.
+            </td>
+</tr>
+<tr>
+   <td>Orthonormalize</td>
+<td>
+            Orthonormalizes the specified matrix.
+            </td>
+</tr>
+<tr>
+   <td>Orthonormalize</td>
+<td>
+            Orthonormalizes the specified matrix.
+            </td>
+</tr>
+<tr>
+   <td>UpperTriangularForm</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UpperTriangularForm</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Up</td>
+<td>
+            Gets or sets the up <see cref="T:Molten.Vector3F" /> of the matrix; that is M21, M22, and M23.
+            </td>
+</tr>
+<tr>
+   <td>Down</td>
+<td>
+            Gets or sets the down <see cref="T:Molten.Vector3F" /> of the matrix; that is -M21, -M22, and -M23.
+            </td>
+</tr>
+<tr>
+   <td>Right</td>
+<td>
+            Gets or sets the right <see cref="T:Molten.Vector3F" /> of the matrix; that is M11, M12, and M13.
+            </td>
+</tr>
+<tr>
+   <td>Left</td>
+<td>
+            Gets or sets the left <see cref="T:Molten.Vector3F" /> of the matrix; that is -M11, -M12, and -M13.
+            </td>
+</tr>
+<tr>
+   <td>Forward</td>
+<td>
+            Gets or sets the forward <see cref="T:Molten.Vector3F" /> of the matrix; that is -M31, -M32, and -M33.
+            </td>
+</tr>
+<tr>
+   <td>Backward</td>
+<td>
+            Gets or sets the backward <see cref="T:Molten.Vector3F" /> of the matrix; that is M31, M32, and M33.
+            </td>
+</tr>
+<tr>
+   <td>Row1</td>
+<td>
+            Gets or sets the first row in the matrix; that is M11, M12, M13, and M14.
+            </td>
+</tr>
+<tr>
+   <td>Row2</td>
+<td>
+            Gets or sets the second row in the matrix; that is M21, M22, M23, and M24.
+            </td>
+</tr>
+<tr>
+   <td>Row3</td>
+<td>
+            Gets or sets the third row in the matrix; that is M31, M32, M33, and M34.
+            </td>
+</tr>
+<tr>
+   <td>Row4</td>
+<td>
+            Gets or sets the fourth row in the matrix; that is M41, M42, M43, and M44.
+            </td>
+</tr>
+<tr>
+   <td>Column1</td>
+<td>
+            Gets or sets the first column in the matrix; that is M11, M21, M31, and M41.
+            </td>
+</tr>
+<tr>
+   <td>Column2</td>
+<td>
+            Gets or sets the second column in the matrix; that is M12, M22, M32, and M42.
+            </td>
+</tr>
+<tr>
+   <td>Column3</td>
+<td>
+            Gets or sets the third column in the matrix; that is M13, M23, M33, and M43.
+            </td>
+</tr>
+<tr>
+   <td>Column4</td>
+<td>
+            Gets or sets the fourth column in the matrix; that is M14, M24, M34, and M44.
+            </td>
+</tr>
+<tr>
+   <td>Translation</td>
+<td>
+            Gets or sets the translation of the matrix; that is M41, M42, and M43.
+            </td>
+</tr>
+<tr>
+   <td>ScaleVector</td>
+<td>
+            Gets or sets the scale of the matrix; that is M11, M22, and M33.
+            </td>
+</tr>
+<tr>
+   <td>IsIdentity</td>
+<td>
+            Gets a value indicating whether this instance is an identity matrix.
+            </td>
+</tr>
+<tr>
+   <td>Item</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Item</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
+    </div>
+</body></html>

@@ -1,1 +1,351 @@
-<h4>Molten</hr><h2>MathHelperDP</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.MathHelperDP</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.<b>MathHelperDP</b></span><div>
+		<div class='obj-summary'>
+			<p>
+            Double-precision math helper class
+            </p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Fields</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>BigEpsilon</td>
+<td>
+            Large tolerance value. Defaults to 1e-5D.
+            </td>
+</tr>
+<tr>
+   <td>Epsilon</td>
+<td>
+            Tolerance value. Defaults to 1e-7D.
+            </td>
+</tr>
+<tr>
+   <td>NoVector</td>
+<td>
+            Represents an invalid Vector3.
+            </td>
+</tr>
+<tr>
+   <td>BackVector</td>
+<td>
+            Reference for a vector with dimensions (0,0,1).
+            </td>
+</tr>
+<tr>
+   <td>DownVector</td>
+<td>
+            Reference for a vector with dimensions (0,-1,0).
+            </td>
+</tr>
+<tr>
+   <td>ForwardVector</td>
+<td>
+            Reference for a vector with dimensions (0,0,-1).
+            </td>
+</tr>
+<tr>
+   <td>IdentityOrientation</td>
+<td>
+            Refers to the identity quaternion.
+            </td>
+</tr>
+<tr>
+   <td>LeftVector</td>
+<td>
+            Reference for a vector with dimensions (-1,0,0).
+            </td>
+</tr>
+<tr>
+   <td>RightVector</td>
+<td>
+            Reference for a vector with dimensions (1,0,0).
+            </td>
+</tr>
+<tr>
+   <td>UpVector</td>
+<td>
+            Reference for a vector with dimensions (0,1,0).
+            </td>
+</tr>
+<tr>
+   <td>ZeroMatrix</td>
+<td>
+            Matrix containing zeroes for every element.
+            </td>
+</tr>
+<tr>
+   <td>ZeroVector</td>
+<td>
+            Reference for a vector with dimensions (0,0,0).
+            </td>
+</tr>
+<tr>
+   <td>RigidIdentity</td>
+<td>
+            Refers to the rigid identity transformation.
+            </td>
+</tr>
+<tr>
+   <td>ZeroTolerance</td>
+<td>
+            The value for which all absolute numbers smaller than are considered equal to zero.
+            </td>
+</tr>
+<tr>
+   <td>Pi</td>
+<td>
+            A value specifying the approximation of π which is 180 degrees.
+            </td>
+</tr>
+<tr>
+   <td>TwoPi</td>
+<td>
+            Equvilent to <see cref="F:Molten.MathHelperDP.Tau" />. A value specifying the approximation of 2π which is 360 degrees.
+            </td>
+</tr>
+<tr>
+   <td>Tau</td>
+<td>
+            Equivilent to <see cref="F:Molten.MathHelperDP.TwoPi" />. Represents the number of radians in one turn, specified by the constant, τ
+            </td>
+</tr>
+<tr>
+   <td>PiOverTwo</td>
+<td>
+            A value specifying the approximation of π/2 which is 90 degrees.
+            </td>
+</tr>
+<tr>
+   <td>PiOverFour</td>
+<td>
+            A value specifying the approximation of π/4 which is 45 degrees.
+            </td>
+</tr>
+<tr>
+   <td>DegToRad</td>
+<td>
+            Multiply by this value to convert from degrees to radians.
+            </td>
+</tr>
+<tr>
+   <td>RadToDeg</td>
+<td>
+            Multiply by this value to convert from radians to degrees.
+            </td>
+</tr>
+<tr>
+   <td>GradToRad</td>
+<td>
+            Multiply by this value to convert from gradians to radians.
+            </td>
+</tr>
+<tr>
+   <td>GradToDeg</td>
+<td>
+            Multiply by this value to convert from gradians to degrees.
+            </td>
+</tr>
+<tr>
+   <td>RadToGrad</td>
+<td>
+            Multiply by this value to convert from radians to gradians.
+            </td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>NearEqual</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsZero</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsOne</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>WithinEpsilon</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RevolutionsToDegrees</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RevolutionsToRadians</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RevolutionsToGradians</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DegreesToRevolutions</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DegreesToRadians</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RadiansToRevolutions</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RadiansToGradians</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GradiansToRevolutions</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GradiansToDegrees</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GradiansToRadians</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RadiansToDegrees</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Clamp</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Clamp</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmootherStep</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Mod</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Mod2PI</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Wrap</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>WrapAngle</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Gauss</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RoundToNearest</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetVelocityOfPoint</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetVelocityOfPoint</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Sign</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>NonZeroSign</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>BarycentricCoordinates</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetWinding</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetWindingSign</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Median</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+
+</div>
+
+		</div>
+    </div>
+</body></html>

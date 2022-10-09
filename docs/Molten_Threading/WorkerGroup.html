@@ -1,1 +1,112 @@
-<h4>Molten.Threading</hr><h2>WorkerGroup</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Threading.WorkerGroup</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.Threading.<b>WorkerGroup</b></span><div>
+		<div class='obj-summary'>
+			<p>A group of worker threads that process tasks stored on a shared queue. This is great for chewing through a queue full of one-time tasks which don't need to run
+            inside an engine loop, such as AI pathfinding tasks or AI logic, asset loading, etc.</p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Dispose</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Clear</td>
+<td>Exits all worker threads and empties the task queue.</td>
+</tr>
+<tr>
+   <td>QueueTask</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>QueueCallback</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>QueueTasks</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SetWorkerCount</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>WorkerCount</td>
+<td>Gets the number of threads in the worker group.</td>
+</tr>
+<tr>
+   <td>QueueSize</td>
+<td>
+            Gets the number of tasks in the current <see cref="T:Molten.Threading.WorkerGroup" />'s queue.
+            </td>
+</tr>
+<tr>
+   <td>Name</td>
+<td>
+            Gets the name of the current <see cref="T:Molten.Threading.WorkerGroup" />.
+            </td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>
+            Gets whether or not the current <see cref="T:Molten.Threading.WorkerGroup" /> has been disposed.
+            </td>
+</tr>
+<tr>
+   <td>ThreadApartment</td>
+<td>
+            Gets the <see cref="T:System.Threading.ApartmentState" /> of the group's worker threads.
+            </td>
+</tr>
+<tr>
+   <td>IsPaused</td>
+<td>
+            Gets or sets whether the worker group is paused. If true, the group's workers will not process the group's task queue.
+            </td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
+    </div>
+</body></html>

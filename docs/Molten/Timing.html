@@ -1,1 +1,121 @@
-<h4>Molten</hr><h2>Timing</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Timing</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.<b>Timing</b></span><div>
+		<div class='obj-summary'>
+			<p></p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Start</td>
+<td>Starts the <see cref="T:Molten.Timing" /> instance.</td>
+</tr>
+<tr>
+   <td>Pause</td>
+<td>Stops the <see cref="T:Molten.Timing" /> instance.</td>
+</tr>
+<tr>
+   <td>Reset</td>
+<td>Resets the <see cref="T:Molten.Timing" /> instance.</td>
+</tr>
+<tr>
+   <td>Update</td>
+<td>Runs a timing update. Returns the number of updates needed to advance. If it falls behind, a value of more than 1 will be returned.</td>
+</tr>
+<tr>
+   <td>GetType</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>ElapsedTime</td>
+<td>
+            Gets the time taken to complete the previous frame.
+            </td>
+</tr>
+<tr>
+   <td>TotalTime</td>
+<td>Gets the total elapsed time since the thread or application started.</td>
+</tr>
+<tr>
+   <td>Delta</td>
+<td>
+            Gets the delta time.
+            </td>
+</tr>
+<tr>
+   <td>FrameID</td>
+<td>
+            Gets the current frame.
+            </td>
+</tr>
+<tr>
+   <td>IsFixedTimestep</td>
+<td>Gets or sets whether the timer will maintain a fixed time-step equal to <see cref="P:Molten.Timing.TargetFrameTime" />.</td>
+</tr>
+<tr>
+   <td>TargetFrameTime</td>
+<td>Gets the target frame time.</td>
+</tr>
+<tr>
+   <td>TargetUPS</td>
+<td>
+            Gets or sets the target UPS/FPS.
+            </td>
+</tr>
+<tr>
+   <td>UPS</td>
+<td>Gets the UPS within the snapshot of the last second. This is the same as <see cref="P:Molten.Timing.FPS" /></td>
+</tr>
+<tr>
+   <td>FPS</td>
+<td>Gets the FPS within the snapshot of the last second. This is the same as <see cref="P:Molten.Timing.UPS" /></td>
+</tr>
+<tr>
+   <td>IsRunning</td>
+<td>Gets whether the timing object is running.</td>
+</tr>
+<tr>
+   <td>AccumulatedLag</td>
+<td>Gets the amount of time lag the update cycles have accumulated. Each frame that takes longer than <see cref="P:Molten.Timing.TargetFrameTime" /> will increase lag.</td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
+    </div>
+</body></html>

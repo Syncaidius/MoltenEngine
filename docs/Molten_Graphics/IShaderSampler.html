@@ -1,1 +1,90 @@
-<h4>Molten.Graphics</hr><h2>IShaderSampler</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Graphics.IShaderSampler</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../"/>Molten.Graphics.<b>IShaderSampler</b></span><div>
+		<div class='obj-summary'>
+			<p></p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>AddressU</td>
+<td>Gets or sets the method to use for resolving a U texture coordinate that is outside the 0 to 1 range.</td>
+</tr>
+<tr>
+   <td>AddressV</td>
+<td>Gets or sets the method to use for resolving a V texture coordinate that is outside the 0 to 1 range.</td>
+</tr>
+<tr>
+   <td>AddressW</td>
+<td>Gets or sets the method to use for resolving a W texture coordinate that is outside the 0 to 1 range.</td>
+</tr>
+<tr>
+   <td>BorderColor</td>
+<td>Border color to use if SharpDX.Direct3D11.TextureAddressMode.Border is specified 
+            for AddressU, AddressV, or AddressW. Range must be between 0.0 and 1.0 inclusive.</td>
+</tr>
+<tr>
+   <td>ComparisonFunc</td>
+<td>A function that compares sampled data against existing sampled data. 
+            The function options are listed in SharpDX.Direct3D11.Comparison.</td>
+</tr>
+<tr>
+   <td>FilterMode</td>
+<td>Gets or sets the filtering method to use when sampling a texture (see SharpDX.Direct3D11.Filter).</td>
+</tr>
+<tr>
+   <td>MaxAnisotropy</td>
+<td>Clamping value used if SharpDX.Direct3D11.Filter.Anisotropic or SharpDX.Direct3D11.Filter.ComparisonAnisotropic 
+            is specified in SamplerFilter. Valid values are between 1 and 16.</td>
+</tr>
+<tr>
+   <td>MaxMipMapLod</td>
+<td>Upper end of the mipmap range to clamp access to, where 0 is the largest
+                and most detailed mipmap level and any level higher than that is less detailed.
+                This value must be greater than or equal to MinLOD. To have no upper limit
+                on LOD set this to a large value such as D3D11_FLOAT32_MAX.</td>
+</tr>
+<tr>
+   <td>MinMipMapLod</td>
+<td>Lower end of the mipmap range to clamp access to, where 0 is the largest and most detailed mipmap level 
+            and any level higher than that is less detailed.</td>
+</tr>
+<tr>
+   <td>LodBias</td>
+<td>Gets or sets the offset from the calculated mipmap level. For example, if Direct3D calculates 
+            that a texture should be sampled at mipmap level 3 and MipLODBias is 2, then 
+            the texture will be sampled at mipmap level 5.</td>
+</tr>
+<tr>
+   <td>IsComparisonSampler</td>
+<td>Gets whether or not the sampler a comparison sampler. This is determined by the <see cref="P:Molten.Graphics.IShaderSampler.FilterMode" /> mode.</td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
+    </div>
+</body></html>

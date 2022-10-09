@@ -1,1 +1,184 @@
-<h4>Molten.Graphics</hr><h2>RenderCamera</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Graphics.RenderCamera</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.Graphics.<b>RenderCamera</b></span><div>
+		<div class='obj-summary'>
+			<p></p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Events</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>OnOutputSurfaceChanged</td>
+<td>
+            Invoked when the <see cref="P:Molten.Graphics.RenderCamera.Surface" /> property is changed.
+            </td>
+</tr>
+<tr>
+   <td>OnSurfaceResized</td>
+<td>
+            Invoked when the bound <see cref="T:Molten.Graphics.IRenderSurface2D" /> is resized.
+            </td>
+</tr>
+<tr>
+   <td>OnDisposing</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>HasFlags</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Dispose</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>View</td>
+<td>Gets or sets the camera's view matrix.</td>
+</tr>
+<tr>
+   <td>Transform</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Projection</td>
+<td>Gets the camera's projection matrix. The projection is ignored during rendering if <see cref="P:Molten.Graphics.RenderCamera.Surface" /> is not set.</td>
+</tr>
+<tr>
+   <td>ViewProjection</td>
+<td>Gets the camera's combined view-projection matrix. This is the result of the view matrix multiplied by the projection matrix.</td>
+</tr>
+<tr>
+   <td>InvViewProjection</td>
+<td>
+            Gets the inverse view-projection matrix. This is equal to passing <see cref="P:Molten.Graphics.RenderCamera.ViewProjection" /> through <see cref="M:Molten.Matrix4F.Invert(Molten.Matrix4F)" />.
+            </td>
+</tr>
+<tr>
+   <td>Surface</td>
+<td>Gets or sets the <see cref="T:Molten.Graphics.IRenderSurface2D" /> that the camera's view should be rendered out to.</td>
+</tr>
+<tr>
+   <td>MinDrawDistance</td>
+<td>Gets or sets the minimum draw dinstance. Also known as the near-clip plane. 
+            Anything closer this value will not be drawn.</td>
+</tr>
+<tr>
+   <td>MaxDrawDistance</td>
+<td>Gets or sets the maximum draw distance. Also known as the far-clip plane. 
+            Anything further away than this value will not be drawn.</td>
+</tr>
+<tr>
+   <td>FieldOfView</td>
+<td>
+            Gets or sets the field-of-view. Has no effect on a 2D camera.
+            </td>
+</tr>
+<tr>
+   <td>Position</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Skip</td>
+<td>
+            Gets whether the camera will be skipped during rendering.
+            </td>
+</tr>
+<tr>
+   <td>Flags</td>
+<td>
+            Gets or sets the render flags for the current <see cref="T:Molten.Graphics.RenderCamera" />.
+            </td>
+</tr>
+<tr>
+   <td>LayerMask</td>
+<td>
+            Gets or sets the camera's layer render mask. Each enabled bit ignores a layer with the same ID as the bit's position. 
+            For example, setting bit 0 will skip rendering of layer 0 (the default layer).
+            </td>
+</tr>
+<tr>
+   <td>MultiSampleLevel</td>
+<td>
+            Gets or sets the multi-sample <see cref="T:Molten.Graphics.AntiAliasLevel" /> when rendering a scene with the current <see cref="T:Molten.Graphics.RenderCamera" />.
+            </td>
+</tr>
+<tr>
+   <td>Profiler</td>
+<td>
+            Gets the <see cref="T:Molten.Graphics.RenderProfiler" /> instance bound to the current <see cref="T:Molten.Graphics.RenderCamera" />, which tracks render performance and statistics of the scene rendered by the camera.
+            </td>
+</tr>
+<tr>
+   <td>OrderDepth</td>
+<td>
+            Gets or sets the ordering depth of the current <see cref="T:Molten.Graphics.RenderCamera" />. The default value is 0.
+            Cameras which share the same output surface and order-depth will be rendered in the other they were added to the scene.
+            If you intend to output multiple cameras to the same <see cref="T:Molten.Graphics.IRenderSurface2D" />, it is recommended you change the order depth accordingly.
+            </td>
+</tr>
+<tr>
+   <td>Mode</td>
+<td>
+            Gets or sets the camera's mode.
+            </td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Name</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
+    </div>
+</body></html>

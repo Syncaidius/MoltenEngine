@@ -1,1 +1,75 @@
-<h4>Molten.Graphics</hr><h2>ObjectRenderData</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Graphics.ObjectRenderData</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.Graphics.<b>ObjectRenderData</b></span><div>
+		<div class='obj-summary'>
+			<p>A snapshot of an object's last rendered state.</p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Fields</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>LastTransform</td>
+<td>The transform used during the last render frame.</td>
+</tr>
+<tr>
+   <td>TargetTransform</td>
+<td>The transform we're supposed to be at.</td>
+</tr>
+<tr>
+   <td>RenderTransform</td>
+<td>The current transform after interpolation is applied. This is the one the object will be rendered with for the current frame.</td>
+</tr>
+<tr>
+   <td>DistanceFromCamera</td>
+<td>The distance from the camera, calculated by the renderer using <see cref="F:Molten.Graphics.ObjectRenderData.RenderTransform" />.</td>
+</tr>
+<tr>
+   <td>DepthWriteOverride</td>
+<td>
+            The depth write permissions to use for the object. This overrides any that were set via it's material if set to anything but <see cref="F:Molten.Graphics.GraphicsDepthWritePermission.Enabled" />.
+            </td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>GetType</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+
+</div>
+
+		</div>
+    </div>
+</body></html>

@@ -1,10 +1,11 @@
 :root{
 	--main-color: #dc5c0f;
+	--bg-color: #333333;
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #333333;
+    background-color: var(--bg-color);
     color: white;
     height:100%;
     margin: 0px;
@@ -21,6 +22,10 @@ body h2{
 
 body a:hover{
 	color: var(--main-color);
+}
+
+body > *{
+    flex-shrink:0;
 }
 
 .logo {
@@ -46,21 +51,26 @@ tr {
 	display:flex;
 	flex-direction:row;
 	align-content:flex-start;
-	min-height:100%;
+	height:99vh;
+	padding: 0px 0px 0px 0px;
+	margin:auto;
 }
 
 .sec-index{
 	padding: 0px 0px 0px 0px;
 	margin-top: auto;
 	border: 2px solid white;
-	display:table;
-	width:300px;
+	display:block;
+	width:500px;
+	overflow-y:scroll;
+	height:100%;
 }
 
 .sec-content{
 	padding-left:10px;
 	padding-right:10px;
 	margin-top: 20px;
+	font-size:11px;
 }
 
 .sec-namespace{
@@ -92,12 +102,15 @@ tr {
 	margin-left:20px;
 }
 
-.sec-obj-index{
-	width:100%;
-}
-
 .sec-active{
 	display:block;
+}
+
+#content-target{
+	width:100%;
+	height:100%;
+	margin:auto;
+	background-color: var(--bg-color);
 }
 
 .namespace-toggle {
@@ -106,6 +119,11 @@ tr {
 }
 
 .namespace-toggle:hover{
+	color: var(--main-color);
+}
+
+.doc-page-target:hover{
+	cursor: pointer;
 	color: var(--main-color);
 }
 
@@ -119,10 +137,6 @@ tr {
 
 .namespace-toggle-down::before {
   transform: rotate(90deg);
-}
-
-body > *{
-    flex-shrink:0;
 }
 
 .sec-div {
@@ -139,4 +153,48 @@ body > *{
 	font-weight:bold;
 	font-size:18px;
 	text-align:left;
+}
+
+.obj-title{
+	font-size:18px;
+	font-weight: bold;
+	margin-left:10px;
+}
+
+.obj-title span{
+	vertical-align:top;
+}
+
+.obj-title span b{
+	color: var(--main-color);
+	font-size:20px;
+}
+
+.obj-title img{
+	width: 32px;
+	height: 32px;
+	margin-right:10px;
+}
+
+.obj-summary{
+	background-color: var(--bg-color);
+	font-size:16px;
+	font-weight:normal;
+}
+
+.obj-section{
+	background-color: #333333;
+	font-size: 14px;
+	font-weight:normal;
+}
+
+.obj-section thead th{
+	font-size: 18px;
+	font-weight: bold;
+	text-align:left;
+	color: var(--main-color);
+}
+
+.obj-section-title{
+	width:300px;
 }

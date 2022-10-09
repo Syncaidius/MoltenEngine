@@ -1,1 +1,175 @@
-<h4>Molten.Input</hr><h2>InputDevice</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Input.InputDevice</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.Input.<b>InputDevice</b></span><div>
+		<div class='obj-summary'>
+			<p></p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Events</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>OnConnected</td>
+<td>
+            Invoked when the device is connected.
+            </td>
+</tr>
+<tr>
+   <td>OnDisconnected</td>
+<td>
+            Invoked when the device is disconnected.
+            </td>
+</tr>
+<tr>
+   <td>OnEnabled</td>
+<td>
+            Invoked when the device is (re)enabled.
+            </td>
+</tr>
+<tr>
+   <td>OnDisabled</td>
+<td>
+            Invoked when the device is disabled.
+            </td>
+</tr>
+<tr>
+   <td>OnConnectionStatusChanged</td>
+<td>
+            Invoked when the connection status of the device has changed.
+            </td>
+</tr>
+<tr>
+   <td>OnDisposing</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>ClearState</td>
+<td>
+            Clears the current state of the input handler.
+            </td>
+</tr>
+<tr>
+   <td>OpenControlPanel</td>
+<td>Attempts to open the associated control pane application/software for the device.
+            Does nothing if no control app is available.</td>
+</tr>
+<tr>
+   <td>HasFeature</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetFeature</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetFeatures</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Dispose</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>DeviceName</td>
+<td>Gets the name of the device.</td>
+</tr>
+<tr>
+   <td>BufferSize</td>
+<td>
+            Gets the buffer size, in samples, for storing unprocessed device states.
+            </td>
+</tr>
+<tr>
+   <td>StatesPerSet</td>
+<td>
+            Gets the number of simultaneous states that each state-set can keep track of on the current <see cref="T:Molten.Input.InputDevice" />.
+            </td>
+</tr>
+<tr>
+   <td>Service</td>
+<td>
+            Gets the <see cref="T:Molten.Input.InputService" /> that the current <see cref="T:Molten.Input.InputDevice" /> is bound to.
+            </td>
+</tr>
+<tr>
+   <td>Features</td>
+<td>
+            Gets a list of features bound to the current <see cref="T:Molten.Input.InputDevice" />.
+            </td>
+</tr>
+<tr>
+   <td>IsConnected</td>
+<td>Gets whether or not the current <see cref="T:Molten.Input.InputDevice" /> is connected.</td>
+</tr>
+<tr>
+   <td>IsEnabled</td>
+<td>
+            Gets or sets whether the current <see cref="T:Molten.Input.InputDevice" /> is enabled. 
+            If false, the device will stop receiving and processing input, even if <see cref="P:Molten.Input.InputDevice.IsConnected" /> is still true.
+            <para><see cref="P:Molten.Input.InputDevice.IsEnabled" /> will be false if <see cref="P:Molten.Input.InputDevice.IsConnected" /> is also false, regardless of the internal enabled state.</para></td>
+</tr>
+<tr>
+   <td>StateSetCount</td>
+<td>
+            Gets the number of state sets in the current <see cref="T:Molten.Input.InputDevice" />. E.g. fingers, mouse pointers or multi-part device count.
+            </td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Name</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
+    </div>
+</body></html>

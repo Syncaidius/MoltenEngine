@@ -1,1 +1,247 @@
-<h4>Molten.Input</hr><h2>PointingDevice</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Input.PointingDevice</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.Input.<b>PointingDevice</b></span><div>
+		<div class='obj-summary'>
+			<p></p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Events</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>OnEvent</td>
+<td>
+            Invoked when any type of input event occurs for the current <see cref="!:PointingDevice&lt;T&gt;" />.
+            </td>
+</tr>
+<tr>
+   <td>OnLeaveSurface</td>
+<td>
+            Occurs when the mouse cursor was inside the parent window/control, but just left it.
+            </td>
+</tr>
+<tr>
+   <td>OnEnterSurface</td>
+<td>
+            Occurs when the mouse cursor was outside of the parent window/control, but just entered it.
+            </td>
+</tr>
+<tr>
+   <td>OnMoved</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnHeld</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnHover</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnPressed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnReleased</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnBufferSizeChanged</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnConnected</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnDisconnected</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnEnabled</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnDisabled</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnConnectionStatusChanged</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnDisposing</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Center</td>
+<td>Positions the mouse cursor at the center of the currently-bound <see cref="!:IInputCamera.Surface" />.</td>
+</tr>
+<tr>
+   <td>QueueState</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ClearState</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetState</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsHeld</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsDown</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsTapped</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OpenControlPanel</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>HasFeature</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetFeature</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetFeatures</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Dispose</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Delta</td>
+<td>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</td>
+</tr>
+<tr>
+   <td>Position</td>
+<td>
+            Gets the position of the mouse cursor, relative to the bound <see cref="T:Molten.Graphics.INativeSurface" />.
+            </td>
+</tr>
+<tr>
+   <td>IsConstrained</td>
+<td>Gets or sets whether or not the mouse is contrained to the bounds of the main output.</td>
+</tr>
+<tr>
+   <td>IsInSurface</td>
+<td>
+            Gets whether or not the cursor inside the bounds of the bound <see cref="T:Molten.Graphics.INativeSurface" />.
+            </td>
+</tr>
+<tr>
+   <td>Sensitivity</td>
+<td>
+            Gets the current level of sensitivity affecting the current <see cref="T:Molten.Input.PointingDevice" />.
+            </td>
+</tr>
+<tr>
+   <td>PointerType</td>
+<td>
+            Gets the type of the current <see cref="T:Molten.Input.PointingDevice" />.
+            </td>
+</tr>
+<tr>
+   <td>BufferSize</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>StatesPerSet</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DeviceName</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Service</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Features</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsConnected</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsEnabled</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>StateSetCount</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Name</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
+    </div>
+</body></html>

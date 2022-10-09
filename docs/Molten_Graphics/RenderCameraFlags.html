@@ -1,1 +1,143 @@
-<h4>Molten.Graphics</hr><h2>RenderCameraFlags</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Graphics.RenderCameraFlags</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../"/>Molten.Graphics.<b>RenderCameraFlags</b></span><div>
+		<div class='obj-summary'>
+			<p></p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Fields</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>value__</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>None</td>
+<td>
+            The current camera does not have any special flags.
+            </td>
+</tr>
+<tr>
+   <td>SkipLighting</td>
+<td>
+            Lighting is skipped. This generally results in the scene being fully-lit (also known as full-bright). 
+            This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
+            </td>
+</tr>
+<tr>
+   <td>SkipShadows</td>
+<td>
+            Shadow-casting is skipped. This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
+            </td>
+</tr>
+<tr>
+   <td>SkipGlobalIllumination</td>
+<td>
+            Global-illumination is skipped. This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
+            </td>
+</tr>
+<tr>
+   <td>SkipPostProcessing</td>
+<td>
+            Post-processing is skipped. This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
+            </td>
+</tr>
+<tr>
+   <td>SkipCulling</td>
+<td>
+            The culling stage should be skipped for the current camera. This is useful if everything you intend to render is already in view of the camera.
+            </td>
+</tr>
+<tr>
+   <td>DoNotClear</td>
+<td>
+            When rendering a scene with the current camera, the destination surface will not be cleared before outputting the result.
+            </td>
+</tr>
+<tr>
+   <td>DoNotClearDepth</td>
+<td>
+            Instructs the renderer not to clear it's depth buffer before rendering the current scene over previous scenes, which may share the same output surface.
+            By default, the depth buffer will be cleared every time a scene needs to be rendered to avoid depth conflicts between different scenes.
+            </td>
+</tr>
+<tr>
+   <td>Deferred</td>
+<td>
+            [TEMPORARY] Instructs the renderer to use deferred rendering when when rendering with the current camera.
+            </td>
+</tr>
+<tr>
+   <td>ShowOverlay</td>
+<td>
+            Tells the renderer to draw the overlay on top of the rendered scene.
+            </td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>HasFlag</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>CompareTo</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetTypeCode</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+
+</div>
+
+		</div>
+    </div>
+</body></html>

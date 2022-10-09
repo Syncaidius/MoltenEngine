@@ -1,1 +1,153 @@
-<h4>Molten</hr><h2>Foundation</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Foundation</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.<b>Foundation</b></span><div>
+		<div class='obj-summary'>
+			<p>
+            Provides a foundation on which to build a game or other type of application with Molten engine.
+            </p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Events</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>OnClosing</td>
+<td>
+            Occurs when the game is in the process of closing.
+            </td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Dispose</td>
+<td>
+            Disposes of the foundation and it's underlying <see cref="P:Molten.Foundation.Engine" /> instance.
+            </td>
+</tr>
+<tr>
+   <td>Start</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DispatchToGameThread</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Pause</td>
+<td>
+            Puases the game.
+            </td>
+</tr>
+<tr>
+   <td>Resume</td>
+<td>
+            Resumes the game. Has no effect if the gamge is already running, exiting or exited.
+            </td>
+</tr>
+<tr>
+   <td>Exit</td>
+<td>Signals the game/engine to start the exit procedure. 
+            This will allow the game and engine to shutdown cleanly (i.e whenever they are ready to exit).
+            Does not call <see cref="M:Molten.Foundation.Dispose" /></td>
+</tr>
+<tr>
+   <td>ForceExit</td>
+<td>Forces the game to exit. This will not give the game a chance to 
+            save (to avoid unintended side-effects from forcefully shutting the game/engine down).
+            Does not call <see cref="M:Molten.Foundation.Dispose" /></td>
+</tr>
+<tr>
+   <td>GetType</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Title</td>
+<td>Gets or sets title of the game.</td>
+</tr>
+<tr>
+   <td>Settings</td>
+<td>Gets the game's engine settings.</td>
+</tr>
+<tr>
+   <td>RunState</td>
+<td>Gets the game's current run state.</td>
+</tr>
+<tr>
+   <td>Engine</td>
+<td>Gets the engine instance used by the game.</td>
+</tr>
+<tr>
+   <td>Log</td>
+<td>Gets the game and engine <see cref="T:Molten.Logger" />. It is used to write information into the game's log file.</td>
+</tr>
+<tr>
+   <td>Time</td>
+<td>
+            Gets the <see cref="T:Molten.Timing" /> instance of the engine's main thread.
+            </td>
+</tr>
+<tr>
+   <td>Keyboard</td>
+<td>Gets the <see cref="T:Molten.Input.KeyboardDevice" /> attached to the game's main window.</td>
+</tr>
+<tr>
+   <td>Mouse</td>
+<td>Gets the <see cref="T:Molten.Input.MouseDevice" /> attached to the game's main window.</td>
+</tr>
+<tr>
+   <td>Gamepad</td>
+<td>
+            Gets the primary <see cref="T:Molten.Input.GamepadDevice" /> attached to the game's main window.
+            </td>
+</tr>
+<tr>
+   <td>Window</td>
+<td>Gets the <see cref="T:Molten.Graphics.INativeSurface" /> that the game renders in to.</td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>
+            Gets whether or not the current <see cref="T:Molten.Foundation" /> instance has been disposed.
+            </td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
+    </div>
+</body></html>

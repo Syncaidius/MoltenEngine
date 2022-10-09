@@ -1,1 +1,107 @@
-<h4>Molten.Graphics</hr><h2>SamplerAddressMode</h2>
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Graphics.SamplerAddressMode</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../"/>Molten.Graphics.<b>SamplerAddressMode</b></span><div>
+		<div class='obj-summary'>
+			<p>Identify a technique for resolving texture coordinates that are outside of the boundaries of a texture.</p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Fields</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>value__</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Wrap</td>
+<td>Tile the texture at every (u,v) integer junction. For example, for u values between
+                0 and 3, the texture is repeated three times.</td>
+</tr>
+<tr>
+   <td>Mirror</td>
+<td>Flip the texture at every (u,v) integer junction. For u values between 0 and 
+            1, for example, the texture is addressed normally; between 1 and 2, the texture 
+            is flipped (mirrored); between 2 and 3, the texture is normal again; and so on.</td>
+</tr>
+<tr>
+   <td>Clamp</td>
+<td>Texture coordinates outside the range [0.0, 1.0] are set to the texture color
+                at 0.0 or 1.0, respectively.</td>
+</tr>
+<tr>
+   <td>Border</td>
+<td>Texture coordinates outside the range [0.0, 1.0] are set to the border color 
+            specified in SharpDX.Direct3D11.SamplerStateDescription or HLSL code.</td>
+</tr>
+<tr>
+   <td>MirrorOnce</td>
+<td>Similar to SamplerWrapMode.Mirror and SamplerWrapMode.Clamp. 
+            Takes the absolute value of the texture coordinate (thus, mirroring around 0), and then clamps to the maximum value.</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th>&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Equals</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>HasFlag</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>CompareTo</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetTypeCode</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+
+</div>
+
+		</div>
+    </div>
+</body></html>
