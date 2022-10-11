@@ -6,6 +6,174 @@
 </head>
 <body>
 	<div class="sec-content">  
-		<span class='obj-title'>Molten.Font.<b>FontEmbeddingFlags</b></h2>
+		<div class='obj-title'><span><img src="../"/>Molten.Font.<b>FontEmbeddingFlags</b></span><div>
+		<div class='obj-summary'>
+			<p>
+            Indicates font embedding licensing rights for the font. Embeddable fonts may be stored in a document.
+            </p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Fields</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>BitmapEmbeddingOnly</td>
+<td>
+            Bitmap embedding only: When this bit is set, only bitmaps contained in the font may be embedded. No outline data may be embedded. <para />
+            If there are no bitmaps available in the font, then the font is considered unembeddable and the embedding services will fail. <para />
+            Other embedding restrictions specified in bits 0-3 and 8 also apply.
+            </td>
+</tr>
+<tr>
+   <td>EditableEmbedding</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>InstabllableEmbedding</td>
+<td>
+            Installable Embedding: No fsType bit is set. Thus fsType is zero. Fonts with this setting indicate that they may be embedded and permanently installed on the remote system by an application. <para />
+            The user of the remote system acquires the identical rights, obligations and licenses for that font as the original purchaser of the font, and is subject to the same end-user license agreement, copyright, design patent, and/or trademark as was the original purchaser.
+            </td>
+</tr>
+<tr>
+   <td>NoSubsetting</td>
+<td>
+            No subsetting: When this bit is set, the font may not be subsetted prior to embedding. Other embedding restrictions specified in bits 0-3 and 9 also apply.
+            </td>
+</tr>
+<tr>
+   <td>PreviewPrintEmbedding</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Reserved</td>
+<td>
+            Reserved, must be zero.
+            </td>
+</tr>
+<tr>
+   <td>Reserved10</td>
+<td>
+            Reserved, must be zero.
+            </td>
+</tr>
+<tr>
+   <td>Reserved11</td>
+<td>
+            Reserved, must be zero.
+            </td>
+</tr>
+<tr>
+   <td>Reserved12</td>
+<td>
+            Reserved, must be zero.
+            </td>
+</tr>
+<tr>
+   <td>Reserved14</td>
+<td>
+            Reserved, must be zero.
+            </td>
+</tr>
+<tr>
+   <td>Reserved15</td>
+<td>
+            Reserved, must be zero.
+            </td>
+</tr>
+<tr>
+   <td>Reserved4</td>
+<td>
+            Reserved, must be zero.
+            </td>
+</tr>
+<tr>
+   <td>Reserved5</td>
+<td>
+            Reserved, must be zero.
+            </td>
+</tr>
+<tr>
+   <td>Reserved6</td>
+<td>
+            Reserved, must be zero.
+            </td>
+</tr>
+<tr>
+   <td>Reserved7</td>
+<td>
+            Reserved, must be zero.
+            </td>
+</tr>
+<tr>
+   <td>RestrictedLicenseEmbedding</td>
+<td>
+            Restricted License embedding: Fonts that have **only** this bit set **must not be modified, embedded or exchanged in any manner** without first obtaining permission of the legal owner. <para />
+            CAUTION: For Restricted License embedding to take effect, it must be the only level of embedding selected.
+            </td>
+</tr>
+<tr>
+   <td>value__</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>CompareTo(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetTypeCode()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>HasFlag(Enum)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString(String, IFormatProvider)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString(String)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString(IFormatProvider)</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+
+</div>
+
+		</div>
     </div>
 </body></html>

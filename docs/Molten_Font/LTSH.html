@@ -6,6 +6,71 @@
 </head>
 <body>
 	<div class="sec-content">  
-		<span class='obj-title'>Molten.Font.<b>LTSH</b></h2>
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.Font.<b>LTSH</b></span><div>
+		<div class='obj-summary'>
+			<p>LTSH - Linear Threshold Table. <para />
+            The LTSH table relates to OpenType™ fonts containing TrueType outlines. <para />
+            There are noticeable improvements to fonts on the screen when instructions are carefully applied to the sidebearings. The gain in readability is offset by the necessity for the OS to grid fit the glyphs in order to find the actual advance width for the glyphs (since instructions may be moving the sidebearing points). <para />
+            The TrueType outline format already has two mechanisms to side step the speed issues: the 'hdmx' table, where precomputed advance widths may be saved for selected ppem sizes, and the 'vdmx' table, where precomputed vertical advance widths may be saved for selected ppem sizes. The 'LTSH' table (Linear ThreSHold) is a second, complementary method.
+            See: https://docs.microsoft.com/en-us/typography/opentype/spec/ltsh </p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Dependencies</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Header</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Version</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>YPels</td>
+<td>
+            Gets the vertical pel height at which the glyph can be assumed to scale linearly. Stored on a per-glyph basis. <para />
+            Note that glyphs which do not have instructions on their sidebearings should have yPels = 1; i.e., always scales linearly.
+            </td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
     </div>
 </body></html>

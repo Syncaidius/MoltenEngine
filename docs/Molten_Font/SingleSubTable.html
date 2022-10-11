@@ -6,6 +6,86 @@
 </head>
 <body>
 	<div class="sec-content">  
-		<span class='obj-title'>Molten.Font.<b>SingleSubTable</b></h2>
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.Font.<b>SingleSubTable</b></span><div>
+		<div class='obj-summary'>
+			<p>
+            GSUB - Single Substitution table.<para />
+            Format 1 calculates the indices of the output glyphs, which are not explicitly defined in the subtable. 
+            To calculate an output glyph index, Format 1 adds a constant delta value to the input glyph index. 
+            For the substitutions to occur properly, the glyph indices in the input and output ranges must be in the same order. 
+            This format does not use the Coverage index that is returned from the Coverage table.<para />
+            See: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#11-single-substitution-format-1
+            </p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Coverage</td>
+<td>
+            Gets a <see cref="T:Molten.Font.CoverageTable" /> containing a list of glyphIDs to be substituted.
+            </td>
+</tr>
+<tr>
+   <td>DeltaGlyphID</td>
+<td>
+            Gets the delta value added to the original glyph ID to get substitute glyph ID.
+            </td>
+</tr>
+<tr>
+   <td>Format</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Header</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Parent</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SubstitudeGlyphIDs</td>
+<td>
+            Gets an array of substitute glyph IDs — ordered by Coverage index. <para />
+            Only present if <see cref="!:Format" /> is 2.
+            </td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
     </div>
 </body></html>

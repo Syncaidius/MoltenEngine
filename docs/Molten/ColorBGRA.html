@@ -19,8 +19,14 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>A</td>
+<td>
+            The alpha component of the color.
+            </td>
+</tr>
 <tr>
    <td>B</td>
 <td>
@@ -39,245 +45,239 @@
             The red component of the color.
             </td>
 </tr>
-<tr>
-   <td>A</td>
-<td>
-            The alpha component of the color.
-            </td>
-</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>ToBgra</td>
-<td>
-            Converts the color into a packed integer.
-            </td>
+   <td>Add(ColorBGRA&, ColorBGRA&, ColorBGRA&)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToRgba</td>
-<td>
-            Converts the color into a packed integer.
-            </td>
+   <td>Add(ColorBGRA, ColorBGRA)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToVector3</td>
-<td>
-            Converts the color into a three component vector.
-            </td>
+   <td>AdjustContrast(ColorBGRA&, Single, ColorBGRA&)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToColor3</td>
-<td>
-            Converts the color into a three component color.
-            </td>
+   <td>AdjustContrast(ColorBGRA, Single)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToVector4</td>
-<td>
-            Converts the color into a four component vector.
-            </td>
+   <td>AdjustSaturation(ColorBGRA&, Single, ColorBGRA&)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToArray</td>
-<td>
-            Creates an array containing the elements of the color.
-            </td>
+   <td>AdjustSaturation(ColorBGRA, Single)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetBrightness</td>
+   <td>Clamp(ColorBGRA&, ColorBGRA&, ColorBGRA&, ColorBGRA&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Clamp(ColorBGRA, ColorBGRA, ColorBGRA)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(ColorBGRA&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(ColorBGRA)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromBgra(Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromBgra(UInt32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromRgba(Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromRgba(UInt32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetBrightness()</td>
 <td>
             Gets the brightness.
             </td>
 </tr>
 <tr>
-   <td>GetHue</td>
-<td>
-            Gets the hue.
-            </td>
-</tr>
-<tr>
-   <td>GetSaturation</td>
-<td>
-            Gets the saturation.
-            </td>
-</tr>
-<tr>
-   <td>FromBgra</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromBgra</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromRgba</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromRgba</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Add</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Add</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Subtract</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Subtract</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Modulate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Modulate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scale</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scale</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Negate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Negate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustContrast</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustContrast</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustSaturation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustSaturation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Premultiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Premultiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>
             Returns a hash code for this instance.
             </td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>GetHue()</td>
+<td>
+            Gets the hue.
+            </td>
+</tr>
+<tr>
+   <td>GetSaturation()</td>
+<td>
+            Gets the saturation.
+            </td>
+</tr>
+<tr>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Lerp(ColorBGRA&, ColorBGRA&, Single, ColorBGRA&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Lerp(ColorBGRA, ColorBGRA, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>Max(ColorBGRA&, ColorBGRA&, ColorBGRA&)</td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Max(ColorBGRA, ColorBGRA)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Min(ColorBGRA&, ColorBGRA&, ColorBGRA&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Min(ColorBGRA, ColorBGRA)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Modulate(ColorBGRA&, ColorBGRA&, ColorBGRA&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Modulate(ColorBGRA, ColorBGRA)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(ColorBGRA&, ColorBGRA&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(ColorBGRA)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Premultiply(ColorBGRA&, ColorBGRA&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Premultiply(ColorBGRA)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scale(ColorBGRA&, Single, ColorBGRA&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scale(ColorBGRA, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(ColorBGRA&, ColorBGRA&, Single, ColorBGRA&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(ColorBGRA, ColorBGRA, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(ColorBGRA&, ColorBGRA&, ColorBGRA&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(ColorBGRA, ColorBGRA)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToArray()</td>
+<td>
+            Creates an array containing the elements of the color.
+            </td>
+</tr>
+<tr>
+   <td>ToBgra()</td>
+<td>
+            Converts the color into a packed integer.
+            </td>
+</tr>
+<tr>
+   <td>ToColor3()</td>
+<td>
+            Converts the color into a three component color.
+            </td>
+</tr>
+<tr>
+   <td>ToRgba()</td>
+<td>
+            Converts the color into a packed integer.
+            </td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String, IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToVector3()</td>
+<td>
+            Converts the color into a three component vector.
+            </td>
+</tr>
+<tr>
+   <td>ToVector4()</td>
+<td>
+            Converts the color into a four component vector.
+            </td>
 </tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>Item</td>

@@ -19,8 +19,14 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>Identity</td>
+<td>
+            Gets the identity matrix.
+            </td>
+</tr>
 <tr>
    <td>M11</td>
 <td>
@@ -57,253 +63,247 @@
             Element (3,2)
             </td>
 </tr>
-<tr>
-   <td>Identity</td>
-<td>
-            Gets the identity matrix.
-            </td>
-</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Equals</td>
+   <td>Add(Matrix3x2F&, Matrix3x2F&, Matrix3x2F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Add(Matrix3x2F, Matrix3x2F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToArray</td>
-<td>
-            Creates an array containing the elements of the matrix.
-            </td>
-</tr>
-<tr>
-   <td>Transpose</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transpose</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Add</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Add</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Subtract</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Subtract</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Negate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Negate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Determinant</td>
+   <td>Determinant()</td>
 <td>
             Calculates the determinant of this matrix.
             </td>
 </tr>
 <tr>
-   <td>Rotation</td>
+   <td>Divide(Matrix3x2F&, Single, Matrix3x2F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Rotation</td>
+   <td>Divide(Matrix3x2F&, Matrix3x2F&, Matrix3x2F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Rotation</td>
+   <td>Equals(Matrix3x2F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Rotation</td>
+   <td>Equals(Matrix3x2F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transformation</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transformation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Translation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Translation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Translation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Translation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>TransformPoint</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>TransformPoint</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Invert</td>
-<td>
-            Calculates the inverse of this matrix instance.
-            </td>
-</tr>
-<tr>
-   <td>Invert</td>
-<td>
-            Calculates the inverse of this matrix instance.
-            </td>
-</tr>
-<tr>
-   <td>Skew</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Skew</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Invert</td>
-<td>
-            Calculates the inverse of this matrix instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>
             Returns a hash code for this instance.
             </td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Invert()</td>
+<td>
+            Calculates the inverse of this matrix instance.
+            </td>
+</tr>
+<tr>
+   <td>Invert(Matrix3x2F)</td>
+<td>
+            Calculates the inverse of this matrix instance.
+            </td>
+</tr>
+<tr>
+   <td>Invert(Matrix3x2F&, Matrix3x2F&)</td>
+<td>
+            Calculates the inverse of this matrix instance.
+            </td>
+</tr>
+<tr>
+   <td>Lerp(Matrix3x2F&, Matrix3x2F&, Single, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp(Matrix3x2F, Matrix3x2F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix3x2F&, Single, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix3x2F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix3x2F&, Matrix3x2F&, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix3x2F, Matrix3x2F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(Matrix3x2F&, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(Matrix3x2F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Rotation(Single, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Rotation(Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Rotation(Single, Vector2F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Rotation(Single, Vector2F, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Vector2F&, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Vector2F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single, Single, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single, Single, Vector2F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single, Single, Vector2F&, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Skew(Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Skew(Single, Single, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Matrix3x2F&, Matrix3x2F&, Single, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Matrix3x2F, Matrix3x2F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Matrix3x2F&, Matrix3x2F&, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Matrix3x2F, Matrix3x2F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToArray()</td>
+<td>
+            Creates an array containing the elements of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String, IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>Transformation(Single, Single, Single, Single, Single, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transformation(Single, Single, Single, Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>TransformPoint(Matrix3x2F, Vector2F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>TransformPoint(Matrix3x2F&, Vector2F&, Vector2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Translation(Vector2F&, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Translation(Vector2F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Translation(Single, Single, Matrix3x2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Translation(Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transpose(Matrix2x3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transpose(Matrix3x2F&, Matrix2x3F&)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -311,8 +311,34 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>Column1</td>
+<td>
+            Gets or sets the first column in the matrix; that is M11, M21, and M31.
+            </td>
+</tr>
+<tr>
+   <td>Column2</td>
+<td>
+            Gets or sets the second column in the matrix; that is M12, M22, and M32.
+            </td>
+</tr>
+<tr>
+   <td>IsIdentity</td>
+<td>
+            Gets a value indicating whether this instance is an identity matrix.
+            </td>
+</tr>
+<tr>
+   <td>Item</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Item</td>
+<td>&nbsp;</td>
+</tr>
 <tr>
    <td>Row1</td>
 <td>
@@ -332,15 +358,9 @@
             </td>
 </tr>
 <tr>
-   <td>Column1</td>
+   <td>ScaleVector</td>
 <td>
-            Gets or sets the first column in the matrix; that is M11, M21, and M31.
-            </td>
-</tr>
-<tr>
-   <td>Column2</td>
-<td>
-            Gets or sets the second column in the matrix; that is M12, M22, and M32.
+            Gets or sets the scale of the matrix; that is M11 and M22.
             </td>
 </tr>
 <tr>
@@ -348,26 +368,6 @@
 <td>
             Gets or sets the translation of the matrix; that is M31 and M32.
             </td>
-</tr>
-<tr>
-   <td>ScaleVector</td>
-<td>
-            Gets or sets the scale of the matrix; that is M11 and M22.
-            </td>
-</tr>
-<tr>
-   <td>IsIdentity</td>
-<td>
-            Gets a value indicating whether this instance is an identity matrix.
-            </td>
-</tr>
-<tr>
-   <td>Item</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Item</td>
-<td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
 </div>

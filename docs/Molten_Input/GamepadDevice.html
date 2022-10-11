@@ -14,7 +14,7 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>OnBufferSizeChanged</td>
@@ -25,11 +25,7 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnDisconnected</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OnEnabled</td>
+   <td>OnConnectionStatusChanged</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -37,11 +33,15 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnConnectionStatusChanged</td>
+   <td>OnDisconnected</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td>OnDisposing</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnEnabled</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -52,66 +52,66 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>QueueState</td>
+   <td>ClearState()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ClearState</td>
+   <td>Dispose()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetState</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>IsHeld</td>
+   <td>GetFeature(String, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>IsDown</td>
+   <td>GetFeatures(String, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>IsTapped</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OpenControlPanel</td>
+   <td>GetState(GamepadButtons, Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>HasFeature</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetFeature</td>
+   <td>HasFeature(String, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetFeatures</td>
+   <td>IsDown(GamepadButtons, Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>IsHeld(GamepadButtons, Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dispose</td>
+   <td>IsTapped(GamepadButtons, Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>OpenControlPanel()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>QueueState(GamepadButtonState)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -119,26 +119,44 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>VibrationLeft</td>
-<td>Gets or sets the vibration level of the left force-feedback motor.</td>
+   <td>BufferSize</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>VibrationRight</td>
-<td>Gets or sets the vibration level of the right force-feedback motor.</td>
+   <td>DeviceName</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Features</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Index</td>
+<td>Gets the index of the gamepad.</td>
+</tr>
+<tr>
+   <td>IsConnected</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsEnabled</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>LeftStick</td>
 <td>
             Gets the X and Y axis values of the left thumbstick.
-            </td>
-</tr>
-<tr>
-   <td>RightStick</td>
-<td>
-            Gets the X and Y axis values of the right thumbstick.
             </td>
 </tr>
 <tr>
@@ -148,10 +166,32 @@
             </td>
 </tr>
 <tr>
+   <td>Name</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RightStick</td>
+<td>
+            Gets the X and Y axis values of the right thumbstick.
+            </td>
+</tr>
+<tr>
    <td>RightTrigger</td>
 <td>
             Gets the gamepad's right trigger.
             </td>
+</tr>
+<tr>
+   <td>Service</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>StateSetCount</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>StatesPerSet</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>SubType</td>
@@ -160,52 +200,12 @@
             </td>
 </tr>
 <tr>
-   <td>Index</td>
-<td>Gets the index of the gamepad.</td>
+   <td>VibrationLeft</td>
+<td>Gets or sets the vibration level of the left force-feedback motor.</td>
 </tr>
 <tr>
-   <td>BufferSize</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>StatesPerSet</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DeviceName</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Service</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Features</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>IsConnected</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>IsEnabled</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>StateSetCount</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>EOID</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Name</td>
-<td>&nbsp;</td>
+   <td>VibrationRight</td>
+<td>Gets or sets the vibration level of the right force-feedback motor.</td>
 </tr>
 </tbody></table><br/>
 </div>

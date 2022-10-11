@@ -20,26 +20,8 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>Left</td>
-<td>
-            The left.
-            </td>
-</tr>
-<tr>
-   <td>Top</td>
-<td>
-            The top.
-            </td>
-</tr>
-<tr>
-   <td>Right</td>
-<td>
-            The right.
-            </td>
-</tr>
 <tr>
    <td>Bottom</td>
 <td>
@@ -52,119 +34,137 @@
             An empty rectangle.
             </td>
 </tr>
+<tr>
+   <td>Left</td>
+<td>
+            The left.
+            </td>
+</tr>
+<tr>
+   <td>Right</td>
+<td>
+            The right.
+            </td>
+</tr>
+<tr>
+   <td>Top</td>
+<td>
+            The top.
+            </td>
+</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Area</td>
+   <td>Area()</td>
 <td>
             Returns the area of the rectangle based on its width and height.
             </td>
 </tr>
 <tr>
-   <td>Encapsulate</td>
+   <td>Contains(Int32, Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Encapsulate</td>
+   <td>Contains(Rectangle)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Encapsulate</td>
+   <td>Contains(Rectangle&, Boolean&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Inflate</td>
+   <td>Contains(Single, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Inflate</td>
+   <td>Contains(Vector2F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Inflate</td>
+   <td>Contains(Vector2I)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Contains</td>
+   <td>Encapsulate(Vector2F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Contains</td>
+   <td>Encapsulate(Vector2I)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Contains</td>
+   <td>Encapsulate(Rectangle)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Contains</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Contains</td>
+   <td>Equals(Rectangle&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Contains</td>
+   <td>Equals(Rectangle)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersect</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersect</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Union</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Union</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>
             Returns a hash code for this instance.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Lerp</td>
+   <td>Inflate(Int32, Int32, Int32, Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>Inflate(Int32, Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Inflate(Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersect(Rectangle, Rectangle)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersect(Rectangle&, Rectangle&, Rectangle&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersects(Rectangle)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersects(Rectangle&, Boolean&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp(Rectangle, Rectangle, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Union(Rectangle, Rectangle)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Union(Rectangle&, Rectangle&, Rectangle&)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -172,24 +172,25 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>X</td>
+   <td>BottomLeft</td>
 <td>
-            Gets or sets the X position.
+            Gets or sets the position of the bottom-left corner of the rectangle. Setting this will move the rectangle without resizing.
             </td>
 </tr>
 <tr>
-   <td>Y</td>
+   <td>BottomRight</td>
 <td>
-            Gets or sets the Y position.
+            Gets or sets the position of the bottom-right corner of the rectangle. Setting this will move the rectangle without resizing.
             </td>
 </tr>
 <tr>
-   <td>Width</td>
+   <td>Center</td>
 <td>
-            Gets or sets the width.
+            Gets or sets the Point that specifies the center of the rectangle. ,para/&gt;
+            Setting this will move the rectangle without resizing, so that it is centered at the specified position.
             </td>
 </tr>
 <tr>
@@ -202,13 +203,6 @@
    <td>IsEmpty</td>
 <td>
             Gets a value that indicates whether the rectangle is empty.
-            </td>
-</tr>
-<tr>
-   <td>Center</td>
-<td>
-            Gets or sets the Point that specifies the center of the rectangle. ,para/&gt;
-            Setting this will move the rectangle without resizing, so that it is centered at the specified position.
             </td>
 </tr>
 <tr>
@@ -230,15 +224,21 @@
             </td>
 </tr>
 <tr>
-   <td>BottomLeft</td>
+   <td>Width</td>
 <td>
-            Gets or sets the position of the bottom-left corner of the rectangle. Setting this will move the rectangle without resizing.
+            Gets or sets the width.
             </td>
 </tr>
 <tr>
-   <td>BottomRight</td>
+   <td>X</td>
 <td>
-            Gets or sets the position of the bottom-right corner of the rectangle. Setting this will move the rectangle without resizing.
+            Gets or sets the X position.
+            </td>
+</tr>
+<tr>
+   <td>Y</td>
+<td>
+            Gets or sets the Y position.
             </td>
 </tr>
 </tbody></table><br/>

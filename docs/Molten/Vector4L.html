@@ -17,31 +17,19 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>X</td>
-<td>The X component.</td>
-</tr>
-<tr>
-   <td>Y</td>
-<td>The Y component.</td>
-</tr>
-<tr>
-   <td>Z</td>
-<td>The Z component.</td>
-</tr>
-<tr>
-   <td>W</td>
-<td>The W component.</td>
+   <td>One</td>
+<td>A Vector4L with every component set to 1L.</td>
 </tr>
 <tr>
    <td>SizeInBytes</td>
 <td>The size of <see cref="T:Molten.Vector4L" />, in bytes.</td>
 </tr>
 <tr>
-   <td>One</td>
-<td>A Vector4L with every component set to 1L.</td>
+   <td>UnitW</td>
+<td>The W unit <see cref="T:Molten.Vector4L" />.</td>
 </tr>
 <tr>
    <td>UnitX</td>
@@ -56,8 +44,20 @@
 <td>The Z unit <see cref="T:Molten.Vector4L" />.</td>
 </tr>
 <tr>
-   <td>UnitW</td>
-<td>The W unit <see cref="T:Molten.Vector4L" />.</td>
+   <td>W</td>
+<td>The W component.</td>
+</tr>
+<tr>
+   <td>X</td>
+<td>The X component.</td>
+</tr>
+<tr>
+   <td>Y</td>
+<td>The Y component.</td>
+</tr>
+<tr>
+   <td>Z</td>
+<td>The Z component.</td>
 </tr>
 <tr>
    <td>Zero</td>
@@ -68,258 +68,258 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Equals</td>
+   <td>Add(Vector4L&, Vector4L&, Vector4L&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Add(Vector4L&, Int64, Vector4L&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Barycentric(Vector4L&, Vector4L&, Vector4L&, Int64, Int64)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>CatmullRom(Vector4L&, Vector4L&, Vector4L&, Vector4L&, Int64)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>CatmullRom(Vector4L, Vector4L, Vector4L, Vector4L, Int64)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Clamp(Int64, Int64)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Clamp(Vector4L, Vector4L)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Clamp(Vector4L, Int64, Int64)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Clamp(Vector4L&, Vector4L&, Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Clamp(Vector4L, Vector4L, Vector4L)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Distance(Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Distance(Vector4L, Vector4L)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DistanceSquared(Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DistanceSquared(Vector4L, Vector4L)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Divide(Vector4L&, Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Divide(Vector4L&, Int64, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Dot(Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Dot(Vector4L, Vector4L)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Vector4L)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
 <td>
             Returns a hash code for this instance.
             </td>
 </tr>
 <tr>
-   <td>Length</td>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Hermite(Vector4L&, Vector4L&, Vector4L&, Vector4L&, Int64)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Hermite(Vector4L, Vector4L, Vector4L, Vector4L, Int64)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Length()</td>
 <td>
             Calculates the length of the vector.
             </td>
 </tr>
 <tr>
-   <td>LengthSquared</td>
+   <td>LengthSquared()</td>
 <td>
             Calculates the squared length of the vector.
             </td>
 </tr>
 <tr>
-   <td>ToArray</td>
+   <td>Lerp(Vector4L&, Vector4L&, Double, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp(Vector4L, Vector4L, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp(Vector4L&, Vector4L&, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Max(Vector4L&, Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Max(Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Max(Vector4L, Vector4L)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Min(Vector4L&, Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Min(Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Min(Vector4L, Vector4L)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Vector4L&, Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Vector4L&, Int64, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>NearEqual(Vector4L, Vector4L, Vector4L)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>NearEqual(Vector4L&, Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate()</td>
+<td>
+            Reverses the direction of the current <see cref="T:Molten.Vector4L" />.
+            </td>
+</tr>
+<tr>
+   <td>Negate(Vector4L&, Vector4L&)</td>
+<td>
+            Reverses the direction of the current <see cref="T:Molten.Vector4L" />.
+            </td>
+</tr>
+<tr>
+   <td>Orthogonalize(Vector4L[], Vector4L[])</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Pow(Vector4L, Int64)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Reflect(Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Vector4L&, Vector4L&, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Vector4L, Vector4L, Int64)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Vector4L&, Vector4L&, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Vector4L&, Int64, Vector4L&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Swizzle(Vector4L, Int32, Int32, Int32, Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Swizzle(Vector4L, UInt32, UInt32, UInt32, UInt32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToArray()</td>
 <td>
             Creates an array containing the elements of the current <see cref="T:Molten.Vector4L" />.
             </td>
 </tr>
 <tr>
-   <td>Negate</td>
-<td>
-            Reverses the direction of the current <see cref="T:Molten.Vector4L" />.
-            </td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToString</td>
+   <td>ToString(String)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector4L" />.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(IFormatProvider)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector4L" />.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString()</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector4L" />.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(String, IFormatProvider)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector4L" />.
             </td>
-</tr>
-<tr>
-   <td>Add</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Add</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Subtract</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Subtract</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Negate</td>
-<td>
-            Reverses the direction of the current <see cref="T:Molten.Vector4L" />.
-            </td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>NearEqual</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>NearEqual</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Orthogonalize</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Swizzle</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Swizzle</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Distance</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Distance</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Pow</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Dot</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Dot</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Hermite</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Hermite</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Barycentric</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DistanceSquared</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DistanceSquared</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>CatmullRom</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>CatmullRom</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Reflect</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetType</td>
-<td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>IsZero</td>

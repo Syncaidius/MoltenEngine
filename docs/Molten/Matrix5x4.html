@@ -19,8 +19,14 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>Identity</td>
+<td>
+            The identity <see cref="T:Molten.Matrix5x4" />.
+            </td>
+</tr>
 <tr>
    <td>M11</td>
 <td>
@@ -153,151 +159,145 @@
             A <see cref="T:Molten.Matrix5x4" /> with all of its components set to zero.
             </td>
 </tr>
-<tr>
-   <td>Identity</td>
-<td>
-            The identity <see cref="T:Molten.Matrix5x4" />.
-            </td>
-</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Add</td>
+   <td>Add(Matrix5x4&, Matrix5x4&, Matrix5x4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>Add(Matrix5x4, Matrix5x4)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Divide(Matrix5x4&, Single, Matrix5x4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Equals(Matrix5x4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Multiply</td>
+   <td>Equals(Matrix5x4)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Divide</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Negate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Negate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Translation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Translation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Translation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Translation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>
             Returns a hash code for this instance.
             </td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Lerp(Matrix5x4&, Matrix5x4&, Single, Matrix5x4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Lerp(Matrix5x4, Matrix5x4, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>Multiply(Matrix5x4&, Single, Matrix5x4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(Matrix5x4&, Matrix5x4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(Matrix5x4)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Vector4F&, Matrix5x4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Vector4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single, Single, Single, Single, Matrix5x4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single, Single, Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single, Matrix5x4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Matrix5x4&, Matrix5x4&, Single, Matrix5x4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Matrix5x4, Matrix5x4, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Matrix5x4&, Matrix5x4&, Matrix5x4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Matrix5x4, Matrix5x4)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String, IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>Translation(Vector4F&, Matrix5x4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Translation(Vector4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Translation(Single, Single, Single, Single, Matrix5x4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Translation(Single, Single, Single, Single)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -305,8 +305,22 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>IsIdentity</td>
+<td>
+            Gets a value indicating whether this instance is an identity Matrix5x4.
+            </td>
+</tr>
+<tr>
+   <td>Item</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Item</td>
+<td>&nbsp;</td>
+</tr>
 <tr>
    <td>Row1</td>
 <td>
@@ -338,30 +352,16 @@
             </td>
 </tr>
 <tr>
-   <td>TranslationVector</td>
-<td>
-            Gets or sets the translation of the Matrix5x4; that is M41, M42, and M43.
-            </td>
-</tr>
-<tr>
    <td>ScaleVector</td>
 <td>
             Gets or sets the scale of the Matrix5x4; that is M11, M22, and M33.
             </td>
 </tr>
 <tr>
-   <td>IsIdentity</td>
+   <td>TranslationVector</td>
 <td>
-            Gets a value indicating whether this instance is an identity Matrix5x4.
+            Gets or sets the translation of the Matrix5x4; that is M41, M42, and M43.
             </td>
-</tr>
-<tr>
-   <td>Item</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Item</td>
-<td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
 </div>

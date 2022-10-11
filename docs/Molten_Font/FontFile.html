@@ -6,6 +6,136 @@
 </head>
 <body>
 	<div class="sec-content">  
-		<span class='obj-title'>Molten.Font.<b>FontFile</b></h2>
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.Font.<b>FontFile</b></span><div>
+		<div class='obj-summary'>
+			<p>A loaded version of a font file.</p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Build()</td>
+<td>
+            (Re)Builds the font based on it's set of available tables. <para />
+            You can drop any tables you do not want the font to be built with via <see cref="P:Molten.Font.FontFile.Tables" />.<para />
+            If the font has been built previously, calling this again will cause the font to be rebuilt from the tables present in <see cref="P:Molten.Font.FontFile.Tables" />.
+            </td>
+</tr>
+<tr>
+   <td>CalculateScaleToPixel(Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetGlyph(Char)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetGlyphByIndex(Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetGlyphIndex(Char)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetMetrics(Char)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetMetricsByIndex(Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetSystemFontPath(String)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>HasFlag(FontFlags)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>ContainerBounds</td>
+<td>
+            Gets the bounds in which all glyph's individual bounds are restricted to.
+            </td>
+</tr>
+<tr>
+   <td>Flags</td>
+<td>
+            Gets a flags value containing information about the current <see cref="T:Molten.Font.FontFile" />.
+            </td>
+</tr>
+<tr>
+   <td>GlyphCount</td>
+<td>
+            Gets the number of glyphs in the font.
+            </td>
+</tr>
+<tr>
+   <td>Header</td>
+<td>
+            Gets the <see cref="T:Molten.Font.FontFile" /> header table which contains metric information about the font's overall structure, such as the units-per-em.
+            </td>
+</tr>
+<tr>
+   <td>HorizonalHeader</td>
+<td>
+            Gets the font's horizontal header (hhea) information.
+            </td>
+</tr>
+<tr>
+   <td>Info</td>
+<td>
+            Gets the <see cref="T:Molten.Font.FontInfo" /> bound to the current <see cref="T:Molten.Font.FontFile" />. Contains basic details such as the font name, description, copyright and designer name.
+            </td>
+</tr>
+<tr>
+   <td>MaximumProfile</td>
+<td>
+            Gets the maximum profile information for the current <see cref="T:Molten.Font.FontFile" />.<para />
+            See: https://docs.microsoft.com/en-us/typography/opentype/spec/maxp
+            </td>
+</tr>
+<tr>
+   <td>Tables</td>
+<td>Gets the font's table list, which can be used to access any loaded tables, or the headers of tables that were not supported.<para />
+            You can also use the table list to drop loaded tables. This may be useful if you wish to reduce the font's footprint after it has been built.</td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
     </div>
 </body></html>

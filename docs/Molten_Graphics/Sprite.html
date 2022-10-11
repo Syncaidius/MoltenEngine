@@ -14,7 +14,7 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>OnDataChanged</td>
@@ -28,22 +28,22 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>GetType</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -51,12 +51,29 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>Data</td>
 <td>
             Gets or sets the <see cref="T:Molten.Graphics.SpriteData" /> source used by the current <see cref="T:Molten.Graphics.Sprite" />. This contains texture and style information.
+            </td>
+</tr>
+<tr>
+   <td>Height</td>
+<td>
+            Gets the height of the current <see cref="T:Molten.Graphics.Sprite" /></td>
+</tr>
+<tr>
+   <td>Material</td>
+<td>
+            Gets or sets the <see cref="T:Molten.Graphics.IMaterial" /> to use when drawing the current <see cref="T:Molten.Graphics.Sprite" />.
+            </td>
+</tr>
+<tr>
+   <td>Origin</td>
+<td>
+            Gets the origin of the current <see cref="T:Molten.Graphics.Sprite" />, between 0.0f and 1.0f along each axis. 0,0 is the top-left corner of the spirte. 1,1 is the bottom-right.
             </td>
 </tr>
 <tr>
@@ -78,15 +95,15 @@
             </td>
 </tr>
 <tr>
-   <td>Origin</td>
+   <td>ScaledHeight</td>
 <td>
-            Gets the origin of the current <see cref="T:Molten.Graphics.Sprite" />, between 0.0f and 1.0f along each axis. 0,0 is the top-left corner of the spirte. 1,1 is the bottom-right.
+            Gets the height of the current <see cref="T:Molten.Graphics.Sprite" /> after <see cref="P:Molten.Graphics.Sprite.Scale" /> is applied.
             </td>
 </tr>
 <tr>
-   <td>Material</td>
+   <td>ScaledWidth</td>
 <td>
-            Gets or sets the <see cref="T:Molten.Graphics.IMaterial" /> to use when drawing the current <see cref="T:Molten.Graphics.Sprite" />.
+            Gets the width of the current <see cref="T:Molten.Graphics.Sprite" /> after <see cref="P:Molten.Graphics.Sprite.Scale" /> is applied.
             </td>
 </tr>
 <tr>
@@ -99,23 +116,6 @@
    <td>Width</td>
 <td>
             Gets the width of the current <see cref="T:Molten.Graphics.Sprite" />.
-            </td>
-</tr>
-<tr>
-   <td>Height</td>
-<td>
-            Gets the height of the current <see cref="T:Molten.Graphics.Sprite" /></td>
-</tr>
-<tr>
-   <td>ScaledWidth</td>
-<td>
-            Gets the width of the current <see cref="T:Molten.Graphics.Sprite" /> after <see cref="P:Molten.Graphics.Sprite.Scale" /> is applied.
-            </td>
-</tr>
-<tr>
-   <td>ScaledHeight</td>
-<td>
-            Gets the height of the current <see cref="T:Molten.Graphics.Sprite" /> after <see cref="P:Molten.Graphics.Sprite.Scale" /> is applied.
             </td>
 </tr>
 </tbody></table><br/>

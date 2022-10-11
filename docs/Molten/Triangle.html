@@ -17,12 +17,8 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>Points</td>
-<td>&nbsp;</td>
-</tr>
 <tr>
    <td>ConstrainedEdge</td>
 <td>&nbsp;</td>
@@ -31,159 +27,163 @@
    <td>DelaunayEdge</td>
 <td>&nbsp;</td>
 </tr>
+<tr>
+   <td>Points</td>
+<td>&nbsp;</td>
+</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>GetNeighbor</td>
+   <td>Clear()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Contains</td>
+   <td>ClearDelaunayEdges()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Contains</td>
+   <td>ClearNeighbor(Triangle)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Contains</td>
+   <td>ClearNeighbors()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>IsInterior</td>
+   <td>Contains(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>IsInterior</td>
+   <td>Contains(Edge)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>MarkNeighbor</td>
+   <td>Contains(TriPoint, TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>MarkNeighbor</td>
+   <td>EdgeIndex(TriPoint, TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Clear</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ClearNeighbor</td>
+   <td>GetConstrainedEdgeCCW(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ClearNeighbors</td>
+   <td>GetConstrainedEdgeCW(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ClearDelaunayEdges</td>
+   <td>GetDelaunayEdgeCCW(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OppositePoint</td>
+   <td>GetDelaunayEdgeCW(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Legalize</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Legalize</td>
+   <td>GetNeighbor(Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Index</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>EdgeIndex</td>
+   <td>Index(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>MarkConstrainedEdge</td>
+   <td>IsInterior()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>MarkConstrainedEdge</td>
+   <td>IsInterior(Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>MarkConstrainedEdge</td>
+   <td>Legalize(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>PointCW</td>
+   <td>Legalize(TriPoint, TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>PointCCW</td>
+   <td>MarkConstrainedEdge(Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>NeighborCW</td>
+   <td>MarkConstrainedEdge(Edge)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>NeighborCCW</td>
+   <td>MarkConstrainedEdge(TriPoint, TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetConstrainedEdgeCCW</td>
+   <td>MarkNeighbor(TriPoint, TriPoint, Triangle)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetConstrainedEdgeCW</td>
+   <td>MarkNeighbor(Triangle)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetConstrainedEdgeCCW</td>
+   <td>NeighborAcross(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetConstrainedEdgeCW</td>
+   <td>NeighborCCW(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetDelaunayEdgeCCW</td>
+   <td>NeighborCW(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetDelaunayEdgeCW</td>
+   <td>OppositePoint(Triangle, TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetDelunayEdgeCCW</td>
+   <td>PointCCW(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetDelunayEdgeCW</td>
+   <td>PointCW(TriPoint)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>NeighborAcross</td>
+   <td>SetConstrainedEdgeCCW(TriPoint, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>SetConstrainedEdgeCW(TriPoint, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>SetDelunayEdgeCCW(TriPoint, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>SetDelunayEdgeCW(TriPoint, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>

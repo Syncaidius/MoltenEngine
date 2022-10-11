@@ -19,8 +19,14 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>Identity</td>
+<td>
+            The identity <see cref="T:Molten.Matrix3F" />.
+            </td>
+</tr>
 <tr>
    <td>M11</td>
 <td>
@@ -87,445 +93,439 @@
             A <see cref="T:Molten.Matrix3F" /> with all of its components set to zero.
             </td>
 </tr>
-<tr>
-   <td>Identity</td>
-<td>
-            The identity <see cref="T:Molten.Matrix3F" />.
-            </td>
-</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>CreateScale</td>
+   <td>AdaptiveDeterminant(Int32&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateScale</td>
+   <td>AdaptiveInvert(Matrix3D&, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateScale</td>
+   <td>Add(Matrix3D&, Matrix3D&, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateScale</td>
+   <td>Add(Matrix3D, Matrix3D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateScale</td>
+   <td>AdjugateTranspose(Matrix3D&, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateScale</td>
+   <td>AdjugateTranspose(Matrix3D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationX</td>
+   <td>BillboardLH(Vector3D&, Vector3D&, Vector3D&, Vector3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationX</td>
+   <td>BillboardLH(Vector3D, Vector3D, Vector3D, Vector3D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationY</td>
+   <td>BillboardRH(Vector3D&, Vector3D&, Vector3D&, Vector3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationY</td>
+   <td>BillboardRH(Vector3D, Vector3D, Vector3D, Vector3D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationZ</td>
+   <td>CreateOuterProduct(Vector3D&, Vector3D&, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationZ</td>
+   <td>CreateScale(Vector3D&, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationAxis</td>
+   <td>CreateScale(Vector3D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationAxis</td>
+   <td>CreateScale(Double, Double, Double, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>FromQuaternion</td>
+   <td>CreateScale(Double, Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>FromQuaternion</td>
+   <td>CreateScale(Double, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationYawPitchRoll</td>
+   <td>CreateScale(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>MultiplyTransposed</td>
+   <td>CrossProduct(Vector3D&, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>MultiplyByTransposed</td>
+   <td>Decompose(Vector3D&, QuaternionD&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AdaptiveInvert</td>
+   <td>DecomposeLQ(Matrix3D&, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AdaptiveDeterminant</td>
+   <td>DecomposeQR(Matrix3D&, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>To4x4</td>
+   <td>DecomposeUniformScale(Double&, QuaternionD&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>To4x4</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>From4x4</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>From4x4</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
-<td>
-            Returns a hash code for this instance.
-            </td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Determinant</td>
+   <td>Determinant()</td>
 <td>
             Calculates the determinant of the Matrix3x3.
             </td>
 </tr>
 <tr>
-   <td>AdjugateTranspose</td>
+   <td>Divide(Matrix3D&, Double, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AdjugateTranspose</td>
+   <td>Divide(Matrix3D, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Invert</td>
+   <td>Divide(Matrix3D&, Matrix3D&, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Divide(Matrix3D, Matrix3D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Matrix3D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Matrix3D&, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ExchangeColumns(Int32, Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ExchangeRows(Int32, Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Exponent(Matrix3D&, Int32, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Exponent(Matrix3D, Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>From4x4(Matrix4D&, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>From4x4(Matrix4D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromQuaternion(QuaternionD&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromQuaternion(QuaternionD)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>
+            Returns a hash code for this instance.
+            </td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Invert()</td>
 <td>
             Inverts the Matrix3x3.
             </td>
 </tr>
 <tr>
-   <td>Orthogonalize</td>
+   <td>Invert(Matrix3D&, Matrix3D&)</td>
+<td>
+            Inverts the Matrix3x3.
+            </td>
+</tr>
+<tr>
+   <td>Invert(Matrix3D)</td>
+<td>
+            Inverts the Matrix3x3.
+            </td>
+</tr>
+<tr>
+   <td>Lerp(Matrix3D&, Matrix3D&, Double, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp(Matrix3D, Matrix3D, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtLH(Vector3D&, Vector3D&, Vector3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtLH(Vector3D, Vector3D, Vector3D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtRH(Vector3D&, Vector3D&, Vector3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtRH(Vector3D, Vector3D, Vector3D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LowerTriangularForm(Matrix3D&, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LowerTriangularForm(Matrix3D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix3D&, Double, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix3D, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix3D&, Matrix3D&, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix3D, Matrix3D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>MultiplyByTransposed(Matrix3D&, Matrix3D&, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>MultiplyTransposed(Matrix3D&, Matrix3D&, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(Matrix3D&, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(Matrix3D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Orthogonalize()</td>
 <td>
             Orthogonalizes the specified Matrix3x3.
             </td>
 </tr>
 <tr>
-   <td>Orthonormalize</td>
+   <td>Orthogonalize(Matrix3D&, Matrix3D&)</td>
+<td>
+            Orthogonalizes the specified Matrix3x3.
+            </td>
+</tr>
+<tr>
+   <td>Orthogonalize(Matrix3D)</td>
+<td>
+            Orthogonalizes the specified Matrix3x3.
+            </td>
+</tr>
+<tr>
+   <td>Orthonormalize()</td>
 <td>
             Orthonormalizes the specified Matrix3x3.
             </td>
 </tr>
 <tr>
-   <td>DecomposeQR</td>
+   <td>Orthonormalize(Matrix3D&, Matrix3D&)</td>
+<td>
+            Orthonormalizes the specified Matrix3x3.
+            </td>
+</tr>
+<tr>
+   <td>Orthonormalize(Matrix3D)</td>
+<td>
+            Orthonormalizes the specified Matrix3x3.
+            </td>
+</tr>
+<tr>
+   <td>RotationAxis(Vector3D&, Double, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>DecomposeLQ</td>
+   <td>RotationAxis(Vector3D, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Decompose</td>
+   <td>RotationX(Double, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>DecomposeUniformScale</td>
+   <td>RotationX(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ExchangeRows</td>
+   <td>RotationY(Double, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ExchangeColumns</td>
+   <td>RotationY(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToArray</td>
+   <td>RotationYawPitchRoll(Double, Double, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationZ(Double, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationZ(Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RowEchelonForm(Matrix3D&, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RowEchelonForm(Matrix3D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Matrix3D&, Matrix3D&, Double, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Matrix3D, Matrix3D, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Matrix3D&, Matrix3D&, Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Matrix3D, Matrix3D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>To4x4(Matrix3D&, Matrix4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>To4x4(Matrix3D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToArray()</td>
 <td>
             Creates an array containing the elements of the Matrix3x3.
             </td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>ToString()</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String, IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>TransformTranspose(Vector3D&, Matrix3D&, Vector3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>TransformTranspose(Vector3D, Matrix3D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Subtract</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>CrossProduct</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>CreateOuterProduct</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Exponent</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Exponent</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Negate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Negate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transpose</td>
+   <td>Transpose()</td>
 <td>
             Transposes the Matrix3x3.
             </td>
 </tr>
 <tr>
-   <td>Transpose</td>
+   <td>Transpose(Matrix3D&)</td>
 <td>
             Transposes the Matrix3x3.
             </td>
 </tr>
 <tr>
-   <td>Transpose</td>
+   <td>Transpose(Matrix3D&, Matrix3D&)</td>
 <td>
             Transposes the Matrix3x3.
             </td>
 </tr>
 <tr>
-   <td>TransposeBy</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>TransformTranspose</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>TransformTranspose</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transpose</td>
+   <td>Transpose(Matrix3D)</td>
 <td>
             Transposes the Matrix3x3.
             </td>
 </tr>
 <tr>
-   <td>Invert</td>
-<td>
-            Inverts the Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td>Invert</td>
-<td>
-            Inverts the Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td>Orthogonalize</td>
-<td>
-            Orthogonalizes the specified Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td>Orthogonalize</td>
-<td>
-            Orthogonalizes the specified Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td>Orthonormalize</td>
-<td>
-            Orthonormalizes the specified Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td>Orthonormalize</td>
-<td>
-            Orthonormalizes the specified Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td>UpperTriangularForm</td>
+   <td>TransposeBy(Matrix3D&, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>UpperTriangularForm</td>
+   <td>UpperTriangularForm(Matrix3D&, Matrix3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>LowerTriangularForm</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LowerTriangularForm</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RowEchelonForm</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RowEchelonForm</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BillboardLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BillboardLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BillboardRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BillboardRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LookAtLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LookAtLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LookAtRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LookAtRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetType</td>
+   <td>UpperTriangularForm(Matrix3D)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -533,24 +533,12 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Row1</td>
+   <td>Backward</td>
 <td>
-            Gets or sets the first row in the Matrix3x3; that is M11, M12, M13
-            </td>
-</tr>
-<tr>
-   <td>Row2</td>
-<td>
-            Gets or sets the second row in the Matrix3x3; that is M21, M22, M23
-            </td>
-</tr>
-<tr>
-   <td>Row3</td>
-<td>
-            Gets or sets the third row in the Matrix3x3; that is M31, M32, M33
+            Gets or sets the backward vector of the matrix.
             </td>
 </tr>
 <tr>
@@ -572,9 +560,15 @@
             </td>
 </tr>
 <tr>
-   <td>ScaleVector</td>
+   <td>Down</td>
 <td>
-            Gets or sets the scale of the Matrix3x3; that is M11, M22, and M33.
+            Gets or sets the down vector of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>Forward</td>
+<td>
+            Gets or sets the forward vector of the matrix.
             </td>
 </tr>
 <tr>
@@ -592,24 +586,6 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Backward</td>
-<td>
-            Gets or sets the backward vector of the matrix.
-            </td>
-</tr>
-<tr>
-   <td>Down</td>
-<td>
-            Gets or sets the down vector of the matrix.
-            </td>
-</tr>
-<tr>
-   <td>Forward</td>
-<td>
-            Gets or sets the forward vector of the matrix.
-            </td>
-</tr>
-<tr>
    <td>Left</td>
 <td>
             Gets or sets the left vector of the matrix.
@@ -619,6 +595,30 @@
    <td>Right</td>
 <td>
             Gets or sets the right vector of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>Row1</td>
+<td>
+            Gets or sets the first row in the Matrix3x3; that is M11, M12, M13
+            </td>
+</tr>
+<tr>
+   <td>Row2</td>
+<td>
+            Gets or sets the second row in the Matrix3x3; that is M21, M22, M23
+            </td>
+</tr>
+<tr>
+   <td>Row3</td>
+<td>
+            Gets or sets the third row in the Matrix3x3; that is M31, M32, M33
+            </td>
+</tr>
+<tr>
+   <td>ScaleVector</td>
+<td>
+            Gets or sets the scale of the Matrix3x3; that is M11, M22, and M33.
             </td>
 </tr>
 <tr>

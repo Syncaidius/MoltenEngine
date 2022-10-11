@@ -17,7 +17,7 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>OnBoundValueChanged</td>
@@ -30,28 +30,28 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Bind</td>
+   <td>Bind()</td>
 <td>
             Binds the <see cref="P:Molten.BindableValue`1.Value" /> to become the <see cref="P:Molten.BindableValue`1.BoundValue" />.
             </td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -59,18 +59,18 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>Value</td>
-<td>
-            The pending, un-bound value. This will become the <see cref="P:Molten.BindableValue`1.BoundValue" /> if <see cref="M:Molten.BindableValue`1.Bind" /> is called.
-            </td>
-</tr>
 <tr>
    <td>BoundValue</td>
 <td>
             The currently bound value. This changes after a call to <see cref="M:Molten.BindableValue`1.Bind" />.
+            </td>
+</tr>
+<tr>
+   <td>Value</td>
+<td>
+            The pending, un-bound value. This will become the <see cref="P:Molten.BindableValue`1.BoundValue" /> if <see cref="M:Molten.BindableValue`1.Bind" /> is called.
             </td>
 </tr>
 </tbody></table><br/>

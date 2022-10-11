@@ -17,8 +17,30 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>Identity</td>
+<td>
+            The identity <see cref="T:Molten.QuaternionD" /> (0, 0, 0, 1).
+            </td>
+</tr>
+<tr>
+   <td>One</td>
+<td>
+            A <see cref="T:Molten.QuaternionD" /> with all of its components set to one.
+            </td>
+</tr>
+<tr>
+   <td>SizeInBytes</td>
+<td>
+            The size of the <see cref="T:Molten.QuaternionD" /> type, in bytes.
+            </td>
+</tr>
+<tr>
+   <td>W</td>
+<td>The W component of the QuaternionD.</td>
+</tr>
 <tr>
    <td>X</td>
 <td>The X component of the QuaternionD.</td>
@@ -32,31 +54,9 @@
 <td>The Z component of the QuaternionD.</td>
 </tr>
 <tr>
-   <td>W</td>
-<td>The W component of the QuaternionD.</td>
-</tr>
-<tr>
-   <td>SizeInBytes</td>
-<td>
-            The size of the <see cref="T:Molten.QuaternionD" /> type, in bytes.
-            </td>
-</tr>
-<tr>
    <td>Zero</td>
 <td>
             A <see cref="T:Molten.QuaternionD" /> with all of its components set to zero.
-            </td>
-</tr>
-<tr>
-   <td>One</td>
-<td>
-            A <see cref="T:Molten.QuaternionD" /> with all of its components set to one.
-            </td>
-</tr>
-<tr>
-   <td>Identity</td>
-<td>
-            The identity <see cref="T:Molten.QuaternionD" /> (0, 0, 0, 1).
             </td>
 </tr>
 </tbody></table><br/>
@@ -64,247 +64,241 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Conjugate</td>
-<td>
-            Conjugates the <see cref="T:Molten.QuaternionD" /> X,Y and Z components. W component is not changed.
-            </td>
-</tr>
-<tr>
-   <td>Abs</td>
+   <td>Abs()</td>
 <td>
             Conjugates the <see cref="T:Molten.QuaternionD" />.
             </td>
 </tr>
 <tr>
-   <td>LengthSquared</td>
+   <td>Barycentric(QuaternionD&, QuaternionD&, QuaternionD&, Double, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Barycentric(QuaternionD, QuaternionD, QuaternionD, Double, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>BillboardLH(Vector3D&, Vector3D&, Vector3D&, Vector3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>BillboardRH(Vector3D&, Vector3D&, Vector3D&, Vector3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Concatenate(QuaternionD&, QuaternionD&, QuaternionD&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Concatenate(QuaternionD&, QuaternionD&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Conjugate()</td>
 <td>
-            Calculates the squared length of the <see cref="T:Molten.QuaternionD" />.
+            Conjugates the <see cref="T:Molten.QuaternionD" /> X,Y and Z components. W component is not changed.
             </td>
 </tr>
 <tr>
-   <td>ToArray</td>
+   <td>Conjugate(QuaternionD&)</td>
 <td>
-            Creates an array containing the elements of the <see cref="T:Molten.QuaternionD" />.
+            Conjugates the <see cref="T:Molten.QuaternionD" /> X,Y and Z components. W component is not changed.
             </td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>Conjugate(QuaternionD&, QuaternionD&)</td>
+<td>
+            Conjugates the <see cref="T:Molten.QuaternionD" /> X,Y and Z components. W component is not changed.
+            </td>
+</tr>
+<tr>
+   <td>Conjugate(QuaternionD)</td>
+<td>
+            Conjugates the <see cref="T:Molten.QuaternionD" /> X,Y and Z components. W component is not changed.
+            </td>
+</tr>
+<tr>
+   <td>Dot(QuaternionF&, QuaternionF&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Dot(QuaternionD, QuaternionD)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(QuaternionD&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(QuaternionD)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Exponential(QuaternionD&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Exponential(QuaternionD)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromAxisAngle(Vector3D, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromAxisAngle(Vector3D&, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromRotationMatrix(Matrix4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromRotationMatrix(Matrix3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetAngleFromQuaternion(QuaternionD&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetAxisAngle(QuaternionD&, Vector3D&, Double&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
 <td>
             Returns a hash code for this instance.
             </td>
 </tr>
 <tr>
-   <td>GetQuaternionBetweenNormalizedVectors</td>
+   <td>GetQuaternionBetweenNormalizedVectors(Vector3D&, Vector3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Normalize</td>
-<td>
-            Converts the <see cref="T:Molten.QuaternionD" /> into a unit quaternion.
-            </td>
+   <td>GetType()</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Length</td>
-<td>
-            Calculates the length of the QuaternionD.
-            </td>
-</tr>
-<tr>
-   <td>Invert</td>
+   <td>Invert()</td>
 <td>
             Conjugates and renormalizes the QuaternionD.
             </td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Length()</td>
+<td>
+            Calculates the length of the QuaternionD.
+            </td>
+</tr>
+<tr>
+   <td>LengthSquared()</td>
+<td>
+            Calculates the squared length of the <see cref="T:Molten.QuaternionD" />.
+            </td>
+</tr>
+<tr>
+   <td>Lerp(QuaternionD&, QuaternionD&, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Logarithm(QuaternionD&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Logarithm(QuaternionD)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>LookAtLH(Vector3D&, Vector3D&, Vector3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtRH(Vector3D&, Vector3D&, Vector3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Normalize()</td>
+<td>
+            Converts the <see cref="T:Molten.QuaternionD" /> into a unit quaternion.
+            </td>
+</tr>
+<tr>
+   <td>RotationLookAtLH(Vector3D, Vector3D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationLookAtLH(Vector3D&, Vector3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationLookAtRH(Vector3D&, Vector3D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationYawPitchRoll(Double, Double, Double, QuaternionD&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationYawPitchRoll(Double, Double, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Slerp(QuaternionD&, QuaternionD&, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Squad(QuaternionD&, QuaternionD&, QuaternionD&, QuaternionD&, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SquadSetup(QuaternionD&, QuaternionD&, QuaternionD&, QuaternionD&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToArray()</td>
+<td>
+            Creates an array containing the elements of the <see cref="T:Molten.QuaternionD" />.
+            </td>
+</tr>
+<tr>
+   <td>ToString()</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this instance.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(String)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this instance.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(IFormatProvider)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this instance.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(String, IFormatProvider)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this instance.
             </td>
-</tr>
-<tr>
-   <td>Concatenate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Concatenate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetAngleFromQuaternion</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Logarithm</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Logarithm</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetAxisAngle</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SquadSetup</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Squad</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Slerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RotationYawPitchRoll</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RotationYawPitchRoll</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromRotationMatrix</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromRotationMatrix</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Dot</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Dot</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Exponential</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Exponential</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Barycentric</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Barycentric</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Conjugate</td>
-<td>
-            Conjugates the <see cref="T:Molten.QuaternionD" /> X,Y and Z components. W component is not changed.
-            </td>
-</tr>
-<tr>
-   <td>Conjugate</td>
-<td>
-            Conjugates the <see cref="T:Molten.QuaternionD" /> X,Y and Z components. W component is not changed.
-            </td>
-</tr>
-<tr>
-   <td>Conjugate</td>
-<td>
-            Conjugates the <see cref="T:Molten.QuaternionD" /> X,Y and Z components. W component is not changed.
-            </td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromAxisAngle</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromAxisAngle</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LookAtLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RotationLookAtLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RotationLookAtLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LookAtRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RotationLookAtRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BillboardLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BillboardRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetType</td>
-<td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>IsNormalized</td>
-<td>
-            Gets a value indicting whether this  <see cref="T:Molten.QuaternionD" /> is normalized.
-            </td>
-</tr>
 <tr>
    <td>Angle</td>
 <td>
@@ -321,6 +315,12 @@
    <td>IsIdentity</td>
 <td>
             Gets a value indicating whether this instance is equivalent to the identity QuaternionD.
+            </td>
+</tr>
+<tr>
+   <td>IsNormalized</td>
+<td>
+            Gets a value indicting whether this  <see cref="T:Molten.QuaternionD" /> is normalized.
             </td>
 </tr>
 <tr>

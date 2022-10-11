@@ -17,31 +17,19 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>X</td>
-<td>The X component.</td>
-</tr>
-<tr>
-   <td>Y</td>
-<td>The Y component.</td>
-</tr>
-<tr>
-   <td>Z</td>
-<td>The Z component.</td>
-</tr>
-<tr>
-   <td>W</td>
-<td>The W component.</td>
+   <td>One</td>
+<td>A Vector4D with every component set to 1D.</td>
 </tr>
 <tr>
    <td>SizeInBytes</td>
 <td>The size of <see cref="T:Molten.Vector4D" />, in bytes.</td>
 </tr>
 <tr>
-   <td>One</td>
-<td>A Vector4D with every component set to 1D.</td>
+   <td>UnitW</td>
+<td>The W unit <see cref="T:Molten.Vector4D" />.</td>
 </tr>
 <tr>
    <td>UnitX</td>
@@ -56,8 +44,20 @@
 <td>The Z unit <see cref="T:Molten.Vector4D" />.</td>
 </tr>
 <tr>
-   <td>UnitW</td>
-<td>The W unit <see cref="T:Molten.Vector4D" />.</td>
+   <td>W</td>
+<td>The W component.</td>
+</tr>
+<tr>
+   <td>X</td>
+<td>The X component.</td>
+</tr>
+<tr>
+   <td>Y</td>
+<td>The Y component.</td>
+</tr>
+<tr>
+   <td>Z</td>
+<td>The Z component.</td>
 </tr>
 <tr>
    <td>Zero</td>
@@ -68,333 +68,339 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Orthonormalize</td>
+   <td>Add(Vector4D&, Vector4D&, Vector4D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Normalize</td>
+   <td>Add(Vector4D&, Double, Vector4D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetNormalized</td>
+   <td>Barycentric(Vector4D&, Vector4D&, Vector4D&, Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Normalize</td>
+   <td>CatmullRom(Vector4D&, Vector4D&, Vector4D&, Vector4D&, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Saturate</td>
-<td>
-            Saturates this instance in the range [0,1]
-            </td>
+   <td>CatmullRom(Vector4D, Vector4D, Vector4D, Vector4D, Double)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Floor</td>
-<td>Rounds all components down to the nearest unit.</td>
-</tr>
-<tr>
-   <td>Ceiling</td>
+   <td>Ceiling()</td>
 <td>Rounds all components up to the nearest unit.</td>
 </tr>
 <tr>
-   <td>Truncate</td>
-<td>Truncate each near-zero component of the current vector towards zero.</td>
-</tr>
-<tr>
-   <td>Pow</td>
+   <td>Clamp(Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Truncate</td>
-<td>Truncate each near-zero component of the current vector towards zero.</td>
-</tr>
-<tr>
-   <td>Transform</td>
+   <td>Clamp(Vector4D, Vector4D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Clamp(Vector4D, Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Clamp(Vector4D&, Vector4D&, Vector4D&, Vector4D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Clamp(Vector4D, Vector4D, Vector4D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Distance(Vector4D&, Vector4D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Distance(Vector4D, Vector4D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>DistanceSquared(Vector4D&, Vector4D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>DistanceSquared(Vector4D, Vector4D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Divide(Vector4D&, Vector4D&, Vector4D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Divide(Vector4D&, Double, Vector4D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Dot(Vector4D&, Vector4D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>Dot(Vector4D, Vector4D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Vector4D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Floor()</td>
+<td>Rounds all components down to the nearest unit.</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
 <td>
             Returns a hash code for this instance.
             </td>
 </tr>
 <tr>
-   <td>Length</td>
+   <td>GetNormalized(Boolean)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Hermite(Vector4D&, Vector4D&, Vector4D&, Vector4D&, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Hermite(Vector4D, Vector4D, Vector4D, Vector4D, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Length()</td>
 <td>
             Calculates the length of the vector.
             </td>
 </tr>
 <tr>
-   <td>LengthSquared</td>
+   <td>LengthSquared()</td>
 <td>
             Calculates the squared length of the vector.
             </td>
 </tr>
 <tr>
-   <td>ToArray</td>
+   <td>Lerp(Vector4D&, Vector4D&, Double, Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp(Vector4D, Vector4D, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp(Vector4D&, Vector4D&, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Max(Vector4D&, Vector4D&, Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Max(Vector4D&, Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Max(Vector4D, Vector4D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Min(Vector4D&, Vector4D&, Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Min(Vector4D&, Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Min(Vector4D, Vector4D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Vector4D&, Vector4D&, Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Vector4D&, Double, Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>NearEqual(Vector4D, Vector4D, Vector4D)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>NearEqual(Vector4D&, Vector4D&, Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate()</td>
+<td>
+            Reverses the direction of the current <see cref="T:Molten.Vector4D" />.
+            </td>
+</tr>
+<tr>
+   <td>Negate(Vector4D&, Vector4D&)</td>
+<td>
+            Reverses the direction of the current <see cref="T:Molten.Vector4D" />.
+            </td>
+</tr>
+<tr>
+   <td>Normalize(Vector4D, Boolean)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Normalize(Boolean)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Orthogonalize(Vector4D[], Vector4D[])</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Orthonormalize(Vector4D[], Vector4D[])</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Pow(Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Pow(Vector4D, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Reflect(Vector4D&, Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Saturate()</td>
+<td>
+            Saturates this instance in the range [0,1]
+            </td>
+</tr>
+<tr>
+   <td>SmoothStep(Vector4D&, Vector4D&, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Vector4D, Vector4D, Double)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Vector4D&, Vector4D&, Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Vector4D&, Double, Vector4D&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Swizzle(Vector4D, Int32, Int32, Int32, Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Swizzle(Vector4D, UInt32, UInt32, UInt32, UInt32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToArray()</td>
 <td>
             Creates an array containing the elements of the current <see cref="T:Molten.Vector4D" />.
             </td>
 </tr>
 <tr>
-   <td>Negate</td>
-<td>
-            Reverses the direction of the current <see cref="T:Molten.Vector4D" />.
-            </td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToString</td>
+   <td>ToString(String)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector4D" />.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(IFormatProvider)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector4D" />.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString()</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector4D" />.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(String, IFormatProvider)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector4D" />.
             </td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>Transform(Vector4D&, QuaternionD&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>Transform(Vector4D, QuaternionD)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Transform(Vector4D[], QuaternionD&, Vector4D[])</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Transform(Vector4D&, Matrix4D&, Vector4D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Negate</td>
-<td>
-            Reverses the direction of the current <see cref="T:Molten.Vector4D" />.
-            </td>
-</tr>
-<tr>
-   <td>Divide</td>
+   <td>Transform(Vector4D, Matrix4D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Divide</td>
+   <td>Transform(Vector4D&, Matrix5x4&, Vector4D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Multiply</td>
+   <td>Transform(Vector4D, Matrix5x4)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Multiply</td>
+   <td>Transform(Vector4D[], Matrix4D&, Vector4D[])</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>NearEqual</td>
-<td>&nbsp;</td>
+   <td>Truncate()</td>
+<td>Truncate each near-zero component of the current vector towards zero.</td>
 </tr>
 <tr>
-   <td>NearEqual</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Orthogonalize</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Swizzle</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Swizzle</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Distance</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Distance</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Pow</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Dot</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Dot</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Hermite</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Hermite</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Barycentric</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DistanceSquared</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DistanceSquared</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>CatmullRom</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>CatmullRom</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Reflect</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetType</td>
-<td>&nbsp;</td>
+   <td>Truncate(Vector4D)</td>
+<td>Truncate each near-zero component of the current vector towards zero.</td>
 </tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>IsNormalized</td>
+<td>
+            Gets a value indicting whether this instance is normalized.
+            </td>
+</tr>
 <tr>
    <td>IsZero</td>
 <td>
@@ -404,12 +410,6 @@
 <tr>
    <td>Item</td>
 <td>&nbsp;</td>
-</tr>
-<tr>
-   <td>IsNormalized</td>
-<td>
-            Gets a value indicting whether this instance is normalized.
-            </td>
 </tr>
 </tbody></table><br/>
 </div>

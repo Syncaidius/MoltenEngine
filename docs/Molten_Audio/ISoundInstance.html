@@ -22,30 +22,30 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Play</td>
+   <td>Pause()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Pause</td>
+   <td>Play()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Stop</td>
+   <td>QueueSource(ISoundSource)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetSource</td>
+   <td>QueueSources(ISoundSource[])</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>QueueSource</td>
+   <td>SetSource(ISoundSource)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>QueueSources</td>
+   <td>Stop()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -53,12 +53,12 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Source</td>
+   <td>IsLooping</td>
 <td>
-            Gets the <see cref="T:Molten.Audio.ISoundSource" /> that is being played through the current <see cref="T:Molten.Audio.ISoundInstance" />.
+            Gets or sets whether or not the current <see cref="T:Molten.Audio.ISoundInstance" /> shound loop.
             </td>
 </tr>
 <tr>
@@ -68,15 +68,15 @@
             </td>
 </tr>
 <tr>
-   <td>State</td>
+   <td>Source</td>
 <td>
-            Gets the state of the current <see cref="T:Molten.Audio.ISoundInstance" />.
+            Gets the <see cref="T:Molten.Audio.ISoundSource" /> that is being played through the current <see cref="T:Molten.Audio.ISoundInstance" />.
             </td>
 </tr>
 <tr>
-   <td>IsLooping</td>
+   <td>State</td>
 <td>
-            Gets or sets whether or not the current <see cref="T:Molten.Audio.ISoundInstance" /> shound loop.
+            Gets the state of the current <see cref="T:Molten.Audio.ISoundInstance" />.
             </td>
 </tr>
 </tbody></table><br/>

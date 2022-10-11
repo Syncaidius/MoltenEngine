@@ -19,8 +19,14 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>Identity</td>
+<td>
+            The identity <see cref="T:Molten.Matrix4F" />.
+            </td>
+</tr>
 <tr>
    <td>M11</td>
 <td>
@@ -129,545 +135,539 @@
             A <see cref="T:Molten.Matrix4F" /> with all of its components set to zero.
             </td>
 </tr>
-<tr>
-   <td>Identity</td>
-<td>
-            The identity <see cref="T:Molten.Matrix4F" />.
-            </td>
-</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>GetHashCode</td>
-<td>
-            Returns a hash code for this instance.
-            </td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LowerTriangularForm</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LowerTriangularForm</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RowEchelonForm</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RowEchelonForm</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ReducedRowEchelonForm</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BillboardLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BillboardLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BillboardRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BillboardRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LookAtLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LookAtLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LookAtRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>LookAtRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OrthoLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OrthoLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OrthoRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OrthoRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OrthoOffCenterLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OrthoOffCenterLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OrthoOffCenterRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OrthoOffCenterRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveFovLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveFovLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveFovRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveFovRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveOffCenterLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveOffCenterLH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveOffCenterRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>PerspectiveOffCenterRH</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Scaling</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RotationX</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RotationX</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RotationY</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RotationY</td>
+   <td>Add(Matrix4F&, Matrix4F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationZ</td>
+   <td>Add(Matrix4F, Matrix4F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationZ</td>
+   <td>AffineTransformation(Single, QuaternionF&, Vector3F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationAxis</td>
+   <td>AffineTransformation(Single, QuaternionF, Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationAxis</td>
+   <td>AffineTransformation(Single, Vector3F&, QuaternionF&, Vector3F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>FromQuaternion</td>
+   <td>AffineTransformation(Single, Vector3F, QuaternionF, Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>FromQuaternion</td>
+   <td>AffineTransformation2D(Single, Single, Vector2F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>FromQuaternion</td>
+   <td>AffineTransformation2D(Single, Single, Vector2F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationYawPitchRoll</td>
+   <td>AffineTransformation2D(Single, Vector2F&, Single, Vector2F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RotationYawPitchRoll</td>
+   <td>AffineTransformation2D(Single, Vector2F, Single, Vector2F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateTranslation</td>
+   <td>BillboardLH(Vector3F&, Vector3F&, Vector3F&, Vector3F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateTranslation</td>
+   <td>BillboardLH(Vector3F, Vector3F, Vector3F, Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateTranslation</td>
+   <td>BillboardRH(Vector3F&, Vector3F&, Vector3F&, Vector3F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateTranslation</td>
+   <td>BillboardRH(Vector3F, Vector3F, Vector3F, Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateSkew</td>
+   <td>CreateSkew(Single, Vector3F&, Vector3F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AffineTransformation</td>
+   <td>CreateTranslation(Vector3F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AffineTransformation</td>
+   <td>CreateTranslation(Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AffineTransformation</td>
+   <td>CreateTranslation(Single, Single, Single, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AffineTransformation</td>
+   <td>CreateTranslation(Single, Single, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AffineTransformation2D</td>
+   <td>Decompose(Vector3F&, QuaternionF&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AffineTransformation2D</td>
+   <td>DecomposeLQ(Matrix4F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AffineTransformation2D</td>
+   <td>DecomposeQR(Matrix4F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AffineTransformation2D</td>
+   <td>DecomposeUniformScale(Single&, QuaternionF&, Vector3F&)</td>
 <td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transformation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transformation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transformation2D</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transformation2D</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
 </tr>
 <tr>
-   <td>Determinant</td>
+   <td>Determinant()</td>
 <td>
             Calculates the determinant of the matrix.
             </td>
 </tr>
 <tr>
-   <td>Invert</td>
+   <td>Divide(Matrix4F&, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Divide(Matrix4F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Divide(Matrix4F&, Matrix4F&, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Divide(Matrix4F, Matrix4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Matrix4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ExchangeColumns(Int32, Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ExchangeRows(Int32, Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Exponent(Matrix4F&, Int32, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Exponent(Matrix4F, Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromQuaternion(QuaternionF&, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromQuaternion(QuaternionF)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromQuaternion(QuaternionF&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>
+            Returns a hash code for this instance.
+            </td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Invert()</td>
 <td>
             Inverts the matrix.
             </td>
 </tr>
 <tr>
-   <td>Orthogonalize</td>
+   <td>Invert(Matrix4F&, Matrix4F&)</td>
+<td>
+            Inverts the matrix.
+            </td>
+</tr>
+<tr>
+   <td>Invert(Matrix4F)</td>
+<td>
+            Inverts the matrix.
+            </td>
+</tr>
+<tr>
+   <td>Lerp(Matrix4F&, Matrix4F&, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp(Matrix4F, Matrix4F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtLH(Vector3F&, Vector3F&, Vector3F&, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtLH(Vector3F, Vector3F, Vector3F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtRH(Vector3F&, Vector3F&, Vector3F&, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookAtRH(Vector3F, Vector3F, Vector3F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LowerTriangularForm(Matrix4F&, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LowerTriangularForm(Matrix4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix4F&, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix4F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix4F&, Matrix4F&, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix4F, Matrix4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(Matrix4F&, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(Matrix4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Orthogonalize()</td>
 <td>
             Orthogonalizes the specified matrix.
             </td>
 </tr>
 <tr>
-   <td>Orthonormalize</td>
+   <td>Orthogonalize(Matrix4F&, Matrix4F&)</td>
+<td>
+            Orthogonalizes the specified matrix.
+            </td>
+</tr>
+<tr>
+   <td>Orthogonalize(Matrix4F)</td>
+<td>
+            Orthogonalizes the specified matrix.
+            </td>
+</tr>
+<tr>
+   <td>OrthoLH(Single, Single, Single, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OrthoLH(Single, Single, Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Orthonormalize()</td>
 <td>
             Orthonormalizes the specified matrix.
             </td>
 </tr>
 <tr>
-   <td>DecomposeQR</td>
+   <td>Orthonormalize(Matrix4F&, Matrix4F&)</td>
+<td>
+            Orthonormalizes the specified matrix.
+            </td>
+</tr>
+<tr>
+   <td>Orthonormalize(Matrix4F)</td>
+<td>
+            Orthonormalizes the specified matrix.
+            </td>
+</tr>
+<tr>
+   <td>OrthoOffCenterLH(Single, Single, Single, Single, Single, Single, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>DecomposeLQ</td>
+   <td>OrthoOffCenterLH(Single, Single, Single, Single, Single, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Decompose</td>
+   <td>OrthoOffCenterRH(Single, Single, Single, Single, Single, Single, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>DecomposeUniformScale</td>
+   <td>OrthoOffCenterRH(Single, Single, Single, Single, Single, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ExchangeRows</td>
+   <td>OrthoRH(Single, Single, Single, Single, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ExchangeColumns</td>
+   <td>OrthoRH(Single, Single, Single, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToArray</td>
+   <td>PerspectiveFovLH(Single, Single, Single, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveFovLH(Single, Single, Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveFovRH(Single, Single, Single, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveFovRH(Single, Single, Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveLH(Single, Single, Single, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveLH(Single, Single, Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveOffCenterLH(Single, Single, Single, Single, Single, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveOffCenterLH(Single, Single, Single, Single, Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveOffCenterRH(Single, Single, Single, Single, Single, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveOffCenterRH(Single, Single, Single, Single, Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveRH(Single, Single, Single, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PerspectiveRH(Single, Single, Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ReducedRowEchelonForm(Matrix4F&, Vector4F&, Matrix4F&, Vector4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationAxis(Vector3F&, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationAxis(Vector3F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationX(Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationX(Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationY(Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationY(Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationYawPitchRoll(Single, Single, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationYawPitchRoll(Single, Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationZ(Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RotationZ(Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RowEchelonForm(Matrix4F&, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RowEchelonForm(Matrix4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Vector3F&, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Vector3F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single, Single, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single, Single, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scaling(Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Matrix4F&, Matrix4F&, Single, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Matrix4F, Matrix4F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Matrix4F&, Matrix4F&, Matrix4F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Matrix4F, Matrix4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToArray()</td>
 <td>
             Creates an array containing the elements of the matrix.
             </td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>ToString()</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String, IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>Transformation(Vector3F&, QuaternionF&, Vector3F&, Vector3F&, QuaternionF&, Vector3F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>Transformation(Vector3F, QuaternionF, Vector3F, Vector3F, QuaternionF, Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Transformation2D(Vector2F&, Single, Vector2F&, Vector2F&, Single, Vector2F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Transformation2D(Vector2F, Single, Vector2F, Vector2F, Single, Vector2F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Divide</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Exponent</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Exponent</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Negate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Negate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transpose</td>
+   <td>Transpose()</td>
 <td>
             Transposes the matrix in-place.
             </td>
 </tr>
 <tr>
-   <td>Transpose</td>
+   <td>Transpose(Matrix4F&)</td>
 <td>
             Transposes the matrix in-place.
             </td>
 </tr>
 <tr>
-   <td>Transpose</td>
+   <td>Transpose(Matrix4F&, Matrix4F&)</td>
 <td>
             Transposes the matrix in-place.
             </td>
 </tr>
 <tr>
-   <td>TransposeByRef</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transpose</td>
+   <td>Transpose(Matrix4F)</td>
 <td>
             Transposes the matrix in-place.
             </td>
 </tr>
 <tr>
-   <td>Invert</td>
-<td>
-            Inverts the matrix.
-            </td>
-</tr>
-<tr>
-   <td>Invert</td>
-<td>
-            Inverts the matrix.
-            </td>
-</tr>
-<tr>
-   <td>Orthogonalize</td>
-<td>
-            Orthogonalizes the specified matrix.
-            </td>
-</tr>
-<tr>
-   <td>Orthogonalize</td>
-<td>
-            Orthogonalizes the specified matrix.
-            </td>
-</tr>
-<tr>
-   <td>Orthonormalize</td>
-<td>
-            Orthonormalizes the specified matrix.
-            </td>
-</tr>
-<tr>
-   <td>Orthonormalize</td>
-<td>
-            Orthonormalizes the specified matrix.
-            </td>
-</tr>
-<tr>
-   <td>UpperTriangularForm</td>
+   <td>TransposeByRef(Matrix4F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>UpperTriangularForm</td>
+   <td>UpperTriangularForm(Matrix4F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>UpperTriangularForm(Matrix4F)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -675,66 +675,12 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>Up</td>
-<td>
-            Gets or sets the up <see cref="T:Molten.Vector3F" /> of the matrix; that is M21, M22, and M23.
-            </td>
-</tr>
-<tr>
-   <td>Down</td>
-<td>
-            Gets or sets the down <see cref="T:Molten.Vector3F" /> of the matrix; that is -M21, -M22, and -M23.
-            </td>
-</tr>
-<tr>
-   <td>Right</td>
-<td>
-            Gets or sets the right <see cref="T:Molten.Vector3F" /> of the matrix; that is M11, M12, and M13.
-            </td>
-</tr>
-<tr>
-   <td>Left</td>
-<td>
-            Gets or sets the left <see cref="T:Molten.Vector3F" /> of the matrix; that is -M11, -M12, and -M13.
-            </td>
-</tr>
-<tr>
-   <td>Forward</td>
-<td>
-            Gets or sets the forward <see cref="T:Molten.Vector3F" /> of the matrix; that is -M31, -M32, and -M33.
-            </td>
-</tr>
 <tr>
    <td>Backward</td>
 <td>
             Gets or sets the backward <see cref="T:Molten.Vector3F" /> of the matrix; that is M31, M32, and M33.
-            </td>
-</tr>
-<tr>
-   <td>Row1</td>
-<td>
-            Gets or sets the first row in the matrix; that is M11, M12, M13, and M14.
-            </td>
-</tr>
-<tr>
-   <td>Row2</td>
-<td>
-            Gets or sets the second row in the matrix; that is M21, M22, M23, and M24.
-            </td>
-</tr>
-<tr>
-   <td>Row3</td>
-<td>
-            Gets or sets the third row in the matrix; that is M31, M32, M33, and M34.
-            </td>
-</tr>
-<tr>
-   <td>Row4</td>
-<td>
-            Gets or sets the fourth row in the matrix; that is M41, M42, M43, and M44.
             </td>
 </tr>
 <tr>
@@ -762,15 +708,15 @@
             </td>
 </tr>
 <tr>
-   <td>Translation</td>
+   <td>Down</td>
 <td>
-            Gets or sets the translation of the matrix; that is M41, M42, and M43.
+            Gets or sets the down <see cref="T:Molten.Vector3F" /> of the matrix; that is -M21, -M22, and -M23.
             </td>
 </tr>
 <tr>
-   <td>ScaleVector</td>
+   <td>Forward</td>
 <td>
-            Gets or sets the scale of the matrix; that is M11, M22, and M33.
+            Gets or sets the forward <see cref="T:Molten.Vector3F" /> of the matrix; that is -M31, -M32, and -M33.
             </td>
 </tr>
 <tr>
@@ -786,6 +732,60 @@
 <tr>
    <td>Item</td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Left</td>
+<td>
+            Gets or sets the left <see cref="T:Molten.Vector3F" /> of the matrix; that is -M11, -M12, and -M13.
+            </td>
+</tr>
+<tr>
+   <td>Right</td>
+<td>
+            Gets or sets the right <see cref="T:Molten.Vector3F" /> of the matrix; that is M11, M12, and M13.
+            </td>
+</tr>
+<tr>
+   <td>Row1</td>
+<td>
+            Gets or sets the first row in the matrix; that is M11, M12, M13, and M14.
+            </td>
+</tr>
+<tr>
+   <td>Row2</td>
+<td>
+            Gets or sets the second row in the matrix; that is M21, M22, M23, and M24.
+            </td>
+</tr>
+<tr>
+   <td>Row3</td>
+<td>
+            Gets or sets the third row in the matrix; that is M31, M32, M33, and M34.
+            </td>
+</tr>
+<tr>
+   <td>Row4</td>
+<td>
+            Gets or sets the fourth row in the matrix; that is M41, M42, M43, and M44.
+            </td>
+</tr>
+<tr>
+   <td>ScaleVector</td>
+<td>
+            Gets or sets the scale of the matrix; that is M11, M22, and M33.
+            </td>
+</tr>
+<tr>
+   <td>Translation</td>
+<td>
+            Gets or sets the translation of the matrix; that is M41, M42, and M43.
+            </td>
+</tr>
+<tr>
+   <td>Up</td>
+<td>
+            Gets or sets the up <see cref="T:Molten.Vector3F" /> of the matrix; that is M21, M22, and M23.
+            </td>
 </tr>
 </tbody></table><br/>
 </div>

@@ -19,42 +19,12 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>R</td>
-<td>
-            The red component of the color.
-            </td>
-</tr>
-<tr>
-   <td>G</td>
-<td>
-            The green component of the color.
-            </td>
-</tr>
-<tr>
-   <td>B</td>
-<td>
-            The blue component of the color.
-            </td>
-</tr>
 <tr>
    <td>A</td>
 <td>
             The alpha component of the color.
-            </td>
-</tr>
-<tr>
-   <td>Zero</td>
-<td>
-            Zero color.
-            </td>
-</tr>
-<tr>
-   <td>Transparent</td>
-<td>
-            Transparent color.
             </td>
 </tr>
 <tr>
@@ -85,6 +55,12 @@
    <td>Azure</td>
 <td>
             Azure color.
+            </td>
+</tr>
+<tr>
+   <td>B</td>
+<td>
+            The blue component of the color.
             </td>
 </tr>
 <tr>
@@ -334,6 +310,12 @@
             </td>
 </tr>
 <tr>
+   <td>G</td>
+<td>
+            The green component of the color.
+            </td>
+</tr>
+<tr>
    <td>Gainsboro</td>
 <td>
             Gainsboro color.
@@ -364,12 +346,6 @@
             </td>
 </tr>
 <tr>
-   <td>Grey</td>
-<td>
-            Grey color.
-            </td>
-</tr>
-<tr>
    <td>Green</td>
 <td>
             Green color.
@@ -379,6 +355,12 @@
    <td>GreenYellow</td>
 <td>
             GreenYellow color.
+            </td>
+</tr>
+<tr>
+   <td>Grey</td>
+<td>
+            Grey color.
             </td>
 </tr>
 <tr>
@@ -742,6 +724,12 @@
             </td>
 </tr>
 <tr>
+   <td>R</td>
+<td>
+            The red component of the color.
+            </td>
+</tr>
+<tr>
    <td>Red</td>
 <td>
             Red color.
@@ -862,6 +850,12 @@
             </td>
 </tr>
 <tr>
+   <td>Transparent</td>
+<td>
+            Transparent color.
+            </td>
+</tr>
+<tr>
    <td>Turquoise</td>
 <td>
             Turquoise color.
@@ -903,294 +897,300 @@
             YellowGreen color.
             </td>
 </tr>
+<tr>
+   <td>Zero</td>
+<td>
+            Zero color.
+            </td>
+</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
-<td>
-            Returns a hash code for this instance.
-            </td>
-</tr>
-<tr>
-   <td>Equals</td>
+   <td>Add(Color&, Color&, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Add(Color, Color)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>AdjustContrast(Color&, Single, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToByte</td>
+   <td>AdjustContrast(Color, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToColorArray</td>
+   <td>AdjustSaturation(Color&, Single, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToByteArray</td>
+   <td>AdjustSaturation(Color, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Swizzle</td>
+   <td>Clamp(Color&, Color&, Color&, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToBgra</td>
-<td>
-            Converts the color into a packed integer.
-            </td>
+   <td>Clamp(Color, Color, Color)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToRgba</td>
-<td>
-            Converts the color into a packed integer.
-            </td>
+   <td>Equals(Color&)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToAbgr</td>
-<td>
-            Converts the color into a packed integer.
-            </td>
+   <td>Equals(Color)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToVector3</td>
-<td>
-            Converts the color into a three component vector.
-            </td>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToColor3</td>
-<td>
-            Converts the color into a three component color.
-            </td>
+   <td>FromAbgr(Int32)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToVector4</td>
-<td>
-            Converts the color into a four component vector.
-            </td>
+   <td>FromAbgr(UInt32)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToArray</td>
-<td>
-            Creates an array containing the elements of the color.
-            </td>
+   <td>FromBgra(Int32)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetBrightness</td>
+   <td>FromBgra(UInt32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromRgba(Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromRgba(UInt32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetBrightness()</td>
 <td>
             Gets the brightness.
             </td>
 </tr>
 <tr>
-   <td>GetHue</td>
+   <td>GetHashCode()</td>
+<td>
+            Returns a hash code for this instance.
+            </td>
+</tr>
+<tr>
+   <td>GetHue()</td>
 <td>
             Gets the hue.
             </td>
 </tr>
 <tr>
-   <td>GetSaturation</td>
+   <td>GetPacked()</td>
+<td>Converts the color into a packed unsigned integer, then returns it.</td>
+</tr>
+<tr>
+   <td>GetSaturation()</td>
 <td>
             Gets the saturation.
             </td>
 </tr>
 <tr>
-   <td>GetPacked</td>
-<td>Converts the color into a packed unsigned integer, then returns it.</td>
-</tr>
-<tr>
-   <td>SetR</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetG</td>
+   <td>Lerp(Color&, Color&, Single, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetB</td>
+   <td>Lerp(Color, Color, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetA</td>
+   <td>Max(Color&, Color&, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>Max(Color, Color)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>Min(Color&, Color&, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Min(Color, Color)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Modulate(Color&, Color&, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Modulate</td>
+   <td>Modulate(Color, Color)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Modulate</td>
+   <td>Negate(Color&, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Scale</td>
+   <td>Negate(Color)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Scale</td>
+   <td>Premultiply(Color&, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Negate</td>
+   <td>Premultiply(Color)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Negate</td>
+   <td>Scale(Color&, Single, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Clamp</td>
+   <td>Scale(Color, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Premultiply</td>
+   <td>SetA(Color, Byte)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Premultiply</td>
+   <td>SetB(Color, Byte)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>FromBgra</td>
+   <td>SetG(Color, Byte)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>FromBgra</td>
+   <td>SetR(Color, Byte)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>FromAbgr</td>
+   <td>SmoothStep(Color&, Color&, Single, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>FromAbgr</td>
+   <td>SmoothStep(Color, Color, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>FromRgba</td>
+   <td>Subtract(Color&, Color&, Color&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>FromRgba</td>
+   <td>Subtract(Color, Color)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Clamp</td>
+   <td>Swizzle(Color, Int32, Int32, Int32, Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Lerp</td>
+   <td>ToAbgr()</td>
+<td>
+            Converts the color into a packed integer.
+            </td>
+</tr>
+<tr>
+   <td>ToArray()</td>
+<td>
+            Creates an array containing the elements of the color.
+            </td>
+</tr>
+<tr>
+   <td>ToBgra()</td>
+<td>
+            Converts the color into a packed integer.
+            </td>
+</tr>
+<tr>
+   <td>ToByte(Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Lerp</td>
+   <td>ToByteArray(Color[])</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
+   <td>ToColor3()</td>
+<td>
+            Converts the color into a three component color.
+            </td>
 </tr>
 <tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustContrast</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustContrast</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustSaturation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustSaturation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToColor4</td>
+   <td>ToColor4()</td>
 <td>
             Convert this instance to a <see cref="T:Molten.Color4" /></td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>ToColorArray(Byte[])</td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToRgba()</td>
+<td>
+            Converts the color into a packed integer.
+            </td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String, IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToVector3()</td>
+<td>
+            Converts the color into a three component vector.
+            </td>
+</tr>
+<tr>
+   <td>ToVector4()</td>
+<td>
+            Converts the color into a four component vector.
+            </td>
 </tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>Item</td>

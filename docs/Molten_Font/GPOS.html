@@ -6,6 +6,81 @@
 </head>
 <body>
 	<div class="sec-content">  
-		<span class='obj-title'>Molten.Font.<b>GPOS</b></h2>
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.Font.<b>GPOS</b></span><div>
+		<div class='obj-summary'>
+			<p>Index-to-location table.<para /><para>The indexToLoc table stores the offsets to the locations of the glyphs in the font, relative to the beginning of the glyphData table. In order to compute the length of the last glyph element, there is an extra entry after the last valid index.</para><para>By definition, index zero points to the "missing character," which is the character that appears if a character is not found in the font. The missing character is commonly represented by a blank box or a space. If the font does not contain an outline for the missing character, then the first and second offsets should have the same value. This also applies to any other characters without an outline, such as the space character. If a glyph has no outline, then loca[n] = loca [n+1]. In the particular case of the last glyph(s), loca[n] will be equal the length of the glyph data ('glyf') table. The offsets must be in ascending order with loca[n] less-or-equal-to loca[n+1].</para>
+            See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos </p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Dependencies</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FeatureList</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FeatureVarTable</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Header</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>LookupTable</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>MajorVersion</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>MinorVersion</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ScriptList</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
     </div>
 </body></html>

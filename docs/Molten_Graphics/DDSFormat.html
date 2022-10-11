@@ -17,17 +17,8 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>value__</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DXT1</td>
-<td>A format based suited to images with little or no alpha channel. Alpha channel is compressed to 1-bit per pixel.
-            This is more useful for things like leaf masks for trees, where the alpha is simply a solid color around main image.</td>
-</tr>
 <tr>
    <td>BC1</td>
 <td>&nbsp;</td>
@@ -35,10 +26,6 @@
 <tr>
    <td>BC1_SRGB</td>
 <td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DXT3</td>
-<td>A format best suited to images with minimal coherent alpha channel data. Alpha channel is compressed to 4-bits per pixel.</td>
 </tr>
 <tr>
    <td>BC2</td>
@@ -49,15 +36,15 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>DXT5</td>
-<td>A format best suited to images with highly coherent alpha channel data.</td>
-</tr>
-<tr>
    <td>BC3</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td>BC3_SRGB</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>BC4S</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -67,7 +54,7 @@
             </td>
 </tr>
 <tr>
-   <td>BC4S</td>
+   <td>BC5S</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -77,11 +64,7 @@
             </td>
 </tr>
 <tr>
-   <td>BC5S</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BC6U</td>
+   <td>BC6HS</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -93,7 +76,7 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>BC6HS</td>
+   <td>BC6U</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -104,51 +87,68 @@
    <td>BC7_SRGB</td>
 <td>&nbsp;</td>
 </tr>
+<tr>
+   <td>DXT1</td>
+<td>A format based suited to images with little or no alpha channel. Alpha channel is compressed to 1-bit per pixel.
+            This is more useful for things like leaf masks for trees, where the alpha is simply a solid color around main image.</td>
+</tr>
+<tr>
+   <td>DXT3</td>
+<td>A format best suited to images with minimal coherent alpha channel data. Alpha channel is compressed to 4-bits per pixel.</td>
+</tr>
+<tr>
+   <td>DXT5</td>
+<td>A format best suited to images with highly coherent alpha channel data.</td>
+</tr>
+<tr>
+   <td>value__</td>
+<td>&nbsp;</td>
+</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Equals</td>
+   <td>CompareTo(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>HasFlag</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CompareTo</td>
+   <td>GetTypeCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>HasFlag(Enum)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(String, IFormatProvider)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetTypeCode</td>
+   <td>ToString(String)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>ToString(IFormatProvider)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>

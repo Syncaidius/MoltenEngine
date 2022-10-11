@@ -19,18 +19,12 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>R</td>
+   <td>A</td>
 <td>
-            The red component of the color.
-            </td>
-</tr>
-<tr>
-   <td>G</td>
-<td>
-            The green component of the color.
+            The alpha component of the color.
             </td>
 </tr>
 <tr>
@@ -40,15 +34,27 @@
             </td>
 </tr>
 <tr>
-   <td>A</td>
-<td>
-            The alpha component of the color.
-            </td>
-</tr>
-<tr>
    <td>Black</td>
 <td>
             The Black color (0, 0, 0, 1).
+            </td>
+</tr>
+<tr>
+   <td>G</td>
+<td>
+            The green component of the color.
+            </td>
+</tr>
+<tr>
+   <td>R</td>
+<td>
+            The red component of the color.
+            </td>
+</tr>
+<tr>
+   <td>Transparent</td>
+<td>
+            The transparent color (0,0,0,0). Identical to <see cref="F:Molten.Color4.Zero" />.
             </td>
 </tr>
 <tr>
@@ -63,257 +69,251 @@
             The transparent color (0,0,0,0). Identical to <see cref="F:Molten.Color4.Transparent" />.
             </td>
 </tr>
-<tr>
-   <td>Transparent</td>
-<td>
-            The transparent color (0,0,0,0). Identical to <see cref="F:Molten.Color4.Zero" />.
-            </td>
-</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>FromFloatPtr</td>
+   <td>Add(Color4&, Color4&, Color4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CopyToPtr</td>
+   <td>Add(Color4, Color4)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToBgra</td>
-<td>
-            Converts the color into a packed integer.
-            </td>
-</tr>
-<tr>
-   <td>ToBgra</td>
-<td>
-            Converts the color into a packed integer.
-            </td>
-</tr>
-<tr>
-   <td>ToRgba</td>
-<td>
-            Converts the color into a packed integer.
-            </td>
-</tr>
-<tr>
-   <td>ToVector3</td>
-<td>
-            Converts the color into a three component vector.
-            </td>
-</tr>
-<tr>
-   <td>ToVector4</td>
-<td>
-            Converts the color into a four component vector.
-            </td>
-</tr>
-<tr>
-   <td>ToArray</td>
-<td>
-            Creates an array containing the elements of the color.
-            </td>
-</tr>
-<tr>
-   <td>Dot</td>
+   <td>AdjustContrast(Color4&, Single, Color4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dot</td>
+   <td>AdjustContrast(Color4, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>AdjustSaturation(Color4&, Single, Color4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>AdjustSaturation(Color4, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Clamp(Color4&, Single, Single, Color4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Clamp(Color4, Single, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Modulate</td>
+   <td>Clamp(Color4&, Color4&, Color4&, Color4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Modulate</td>
+   <td>Clamp(Color4, Color4, Color4)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Scale</td>
+   <td>CopyTo(Single[], Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Scale</td>
+   <td>CopyToPtr(Single*)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Negate</td>
+   <td>Dot(Color4, Color4)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Negate</td>
+   <td>Dot(Color4&, Color4&, Single&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Clamp</td>
+   <td>Equals(Color4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Clamp</td>
+   <td>Equals(Color4)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Clamp</td>
+   <td>Equals(Single[])</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Clamp</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Lerp</td>
+   <td>FromFloatPtr(Single*)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SmoothStep</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustContrast</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustContrast</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustSaturation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>AdjustSaturation</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Premultiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Premultiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>
             Returns a hash code for this instance.
             </td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Lerp(Color4&, Color4&, Single, Color4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Lerp(Color4, Color4, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CopyTo</td>
+   <td>Max(Color4&, Color4&, Color4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Max(Color4, Color4)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Swizzle</td>
+   <td>Min(Color4&, Color4&, Color4&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>Min(Color4, Color4)</td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Modulate(Color4&, Color4&, Color4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Modulate(Color4, Color4)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(Color4&, Color4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(Color4)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Premultiply(Color4&, Color4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Premultiply(Color4)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scale(Color4&, Single, Color4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Scale(Color4, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Color4&, Color4&, Single, Color4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Color4, Color4, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Color4&, Color4&, Color4&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Color4, Color4)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Swizzle(Color4, Int32, Int32, Int32, Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToArray()</td>
+<td>
+            Creates an array containing the elements of the color.
+            </td>
+</tr>
+<tr>
+   <td>ToBgra()</td>
+<td>
+            Converts the color into a packed integer.
+            </td>
+</tr>
+<tr>
+   <td>ToBgra(Byte&, Byte&, Byte&, Byte&)</td>
+<td>
+            Converts the color into a packed integer.
+            </td>
+</tr>
+<tr>
+   <td>ToRgba()</td>
+<td>
+            Converts the color into a packed integer.
+            </td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String, IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToVector3()</td>
+<td>
+            Converts the color into a three component vector.
+            </td>
+</tr>
+<tr>
+   <td>ToVector4()</td>
+<td>
+            Converts the color into a four component vector.
+            </td>
 </tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>Item</td>
+<td>&nbsp;</td>
+</tr>
 <tr>
    <td>SizeOf</td>
 <td>
             The total size of <see cref="T:Molten.Color4" />, in bytes.
             </td>
-</tr>
-<tr>
-   <td>Item</td>
-<td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
 </div>

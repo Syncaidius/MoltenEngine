@@ -17,27 +17,57 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>X</td>
-<td>The X component.</td>
+   <td>BackwardLH</td>
+<td>
+            A unit <see cref="T:Molten.Vector3F" /> designating backward in a left-handed coordinate system (0, 0, -1).
+            </td>
 </tr>
 <tr>
-   <td>Y</td>
-<td>The Y component.</td>
+   <td>BackwardRH</td>
+<td>
+            A unit <see cref="T:Molten.Vector3F" /> designating backward in a right-handed coordinate system (0, 0, 1).
+            </td>
 </tr>
 <tr>
-   <td>Z</td>
-<td>The Z component.</td>
+   <td>Down</td>
+<td>
+            A unit <see cref="T:Molten.Vector3F" /> designating down (0, -1, 0).
+            </td>
 </tr>
 <tr>
-   <td>SizeInBytes</td>
-<td>The size of <see cref="T:Molten.Vector3F" />, in bytes.</td>
+   <td>ForwardLH</td>
+<td>
+            A unit <see cref="T:Molten.Vector3F" /> designating forward in a left-handed coordinate system (0, 0, 1).
+            </td>
+</tr>
+<tr>
+   <td>ForwardRH</td>
+<td>
+            A unit <see cref="T:Molten.Vector3F" /> designating forward in a right-handed coordinate system (0, 0, -1).
+            </td>
+</tr>
+<tr>
+   <td>Left</td>
+<td>
+            A unit <see cref="T:Molten.Vector3F" /> designating left (-1, 0, 0).
+            </td>
 </tr>
 <tr>
    <td>One</td>
 <td>A Vector3F with every component set to 1F.</td>
+</tr>
+<tr>
+   <td>Right</td>
+<td>
+            A unit <see cref="T:Molten.Vector3F" /> designating right (1, 0, 0).
+            </td>
+</tr>
+<tr>
+   <td>SizeInBytes</td>
+<td>The size of <see cref="T:Molten.Vector3F" />, in bytes.</td>
 </tr>
 <tr>
    <td>UnitX</td>
@@ -52,464 +82,434 @@
 <td>The Z unit <see cref="T:Molten.Vector3F" />.</td>
 </tr>
 <tr>
-   <td>Zero</td>
-<td>Represents a zero'd Vector3F.</td>
-</tr>
-<tr>
    <td>Up</td>
 <td>
             A unit <see cref="T:Molten.Vector3F" /> designating up (0, 1, 0).
             </td>
 </tr>
 <tr>
-   <td>Down</td>
-<td>
-            A unit <see cref="T:Molten.Vector3F" /> designating down (0, -1, 0).
-            </td>
+   <td>X</td>
+<td>The X component.</td>
 </tr>
 <tr>
-   <td>Left</td>
-<td>
-            A unit <see cref="T:Molten.Vector3F" /> designating left (-1, 0, 0).
-            </td>
+   <td>Y</td>
+<td>The Y component.</td>
 </tr>
 <tr>
-   <td>Right</td>
-<td>
-            A unit <see cref="T:Molten.Vector3F" /> designating right (1, 0, 0).
-            </td>
+   <td>Z</td>
+<td>The Z component.</td>
 </tr>
 <tr>
-   <td>ForwardRH</td>
-<td>
-            A unit <see cref="T:Molten.Vector3F" /> designating forward in a right-handed coordinate system (0, 0, -1).
-            </td>
-</tr>
-<tr>
-   <td>ForwardLH</td>
-<td>
-            A unit <see cref="T:Molten.Vector3F" /> designating forward in a left-handed coordinate system (0, 0, 1).
-            </td>
-</tr>
-<tr>
-   <td>BackwardRH</td>
-<td>
-            A unit <see cref="T:Molten.Vector3F" /> designating backward in a right-handed coordinate system (0, 0, 1).
-            </td>
-</tr>
-<tr>
-   <td>BackwardLH</td>
-<td>
-            A unit <see cref="T:Molten.Vector3F" /> designating backward in a left-handed coordinate system (0, 0, -1).
-            </td>
+   <td>Zero</td>
+<td>Represents a zero'd Vector3F.</td>
 </tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Orthonormalize</td>
+   <td>Add(Vector3F&, Vector3F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Normalize</td>
+   <td>Add(Vector3F&, Single, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetNormalized</td>
+   <td>Barycentric(Vector3F&, Vector3F&, Vector3F&, Single, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Normalize</td>
+   <td>CatmullRom(Vector3F&, Vector3F&, Vector3F&, Vector3F&, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Saturate</td>
-<td>
-            Saturates this instance in the range [0,1]
-            </td>
+   <td>CatmullRom(Vector3F, Vector3F, Vector3F, Vector3F, Single)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Floor</td>
-<td>Rounds all components down to the nearest unit.</td>
-</tr>
-<tr>
-   <td>Ceiling</td>
+   <td>Ceiling()</td>
 <td>Rounds all components up to the nearest unit.</td>
 </tr>
 <tr>
-   <td>Truncate</td>
-<td>Truncate each near-zero component of the current vector towards zero.</td>
-</tr>
-<tr>
-   <td>Pow</td>
+   <td>Clamp(Single, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Truncate</td>
-<td>Truncate each near-zero component of the current vector towards zero.</td>
-</tr>
-<tr>
-   <td>Project</td>
+   <td>Clamp(Vector3F, Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Project</td>
+   <td>Clamp(Vector3F, Single, Single)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Unproject</td>
+   <td>Clamp(Vector3F&, Vector3F&, Vector3F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Unproject</td>
+   <td>Clamp(Vector3F, Vector3F, Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Cross(Vector3F&, Vector3F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Cross(Vector3F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Cross(Vector3F, Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Distance(Vector3F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Distance(Vector3F, Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>DistanceSquared(Vector3F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>DistanceSquared(Vector3F, Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Divide(Vector3F&, Vector3F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Divide(Vector3F&, Single, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Dot(Vector3F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Transform</td>
+   <td>Dot(Vector3F, Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>TransformX</td>
+   <td>Equals(Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>TransformY</td>
+   <td>Equals(Vector3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>TransformZ</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>TransformCoordinate</td>
-<td>&nbsp;</td>
+   <td>Floor()</td>
+<td>Rounds all components down to the nearest unit.</td>
 </tr>
 <tr>
-   <td>TransformCoordinate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>TransformCoordinate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>TransformCoordinate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>TransformNormal</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>TransformNormal</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>TransformNormal</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>TransformNormal</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Cross</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Cross</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Cross</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>
             Returns a hash code for this instance.
             </td>
 </tr>
 <tr>
-   <td>Length</td>
+   <td>GetNormalized(Boolean)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Hermite(Vector3F&, Vector3F&, Vector3F&, Vector3F&, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Hermite(Vector3F, Vector3F, Vector3F, Vector3F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Length()</td>
 <td>
             Calculates the length of the vector.
             </td>
 </tr>
 <tr>
-   <td>LengthSquared</td>
+   <td>LengthSquared()</td>
 <td>
             Calculates the squared length of the vector.
             </td>
 </tr>
 <tr>
-   <td>ToArray</td>
+   <td>Lerp(Vector3F&, Vector3F&, Single, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp(Vector3F, Vector3F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Lerp(Vector3F&, Vector3F&, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Max(Vector3F&, Vector3F&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Max(Vector3F&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Max(Vector3F, Vector3F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Min(Vector3F&, Vector3F&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Min(Vector3F&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Min(Vector3F, Vector3F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Vector3F&, Vector3F&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Vector3F&, Single, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>NearEqual(Vector3F, Vector3F, Vector3F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>NearEqual(Vector3F&, Vector3F&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate()</td>
+<td>
+            Reverses the direction of the current <see cref="T:Molten.Vector3F" />.
+            </td>
+</tr>
+<tr>
+   <td>Negate(Vector3F&, Vector3F&)</td>
+<td>
+            Reverses the direction of the current <see cref="T:Molten.Vector3F" />.
+            </td>
+</tr>
+<tr>
+   <td>Normalize(Vector3F, Boolean)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Normalize(Boolean)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Orthogonalize(Vector3F[], Vector3F[])</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Orthonormalize(Vector3F[], Vector3F[])</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Pow(Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Pow(Vector3F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Project(Vector3F&, Single, Single, Single, Single, Single, Single, Matrix4F&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Project(Vector3F, Single, Single, Single, Single, Single, Single, Matrix4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Reflect(Vector3F&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Saturate()</td>
+<td>
+            Saturates this instance in the range [0,1]
+            </td>
+</tr>
+<tr>
+   <td>SmoothStep(Vector3F&, Vector3F&, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SmoothStep(Vector3F, Vector3F, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Vector3F&, Vector3F&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Vector3F&, Single, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Swizzle(Vector3F, Int32, Int32, Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Swizzle(Vector3F, UInt32, UInt32, UInt32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToArray()</td>
 <td>
             Creates an array containing the elements of the current <see cref="T:Molten.Vector3F" />.
             </td>
 </tr>
 <tr>
-   <td>Negate</td>
-<td>
-            Reverses the direction of the current <see cref="T:Molten.Vector3F" />.
-            </td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToString</td>
+   <td>ToString(String)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector3F" />.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(IFormatProvider)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector3F" />.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString()</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector3F" />.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(String, IFormatProvider)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this <see cref="T:Molten.Vector3F" />.
             </td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>Transform(Vector3F&, QuaternionF&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>Transform(Vector3F&, QuaternionF&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Transform(Vector3F, QuaternionF)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Subtract</td>
+   <td>Transform(Vector3F[], QuaternionF&, Vector3F[])</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Negate</td>
-<td>
-            Reverses the direction of the current <see cref="T:Molten.Vector3F" />.
-            </td>
-</tr>
-<tr>
-   <td>Divide</td>
+   <td>Transform(Vector3F&, Matrix3F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Divide</td>
+   <td>Transform(Vector3F, Matrix3F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Multiply</td>
+   <td>Transform(Vector3F&, Matrix4F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Multiply</td>
+   <td>Transform(Vector3F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>NearEqual</td>
+   <td>Transform(Vector3F&, Matrix4F&, Vector4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>NearEqual</td>
+   <td>Transform(Vector3F, Matrix4F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SmoothStep</td>
+   <td>Transform(Vector3F[], Matrix4F&, Vector4F[])</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SmoothStep</td>
+   <td>TransformCoordinate(Vector3F&, Matrix4F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Orthogonalize</td>
+   <td>TransformCoordinate(Vector3F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Swizzle</td>
+   <td>TransformCoordinate(Vector3F, Matrix4F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Swizzle</td>
+   <td>TransformCoordinate(Vector3F[], Matrix4F&, Vector3F[])</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Distance</td>
+   <td>TransformNormal(Vector3F&, Matrix4F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Distance</td>
+   <td>TransformNormal(Vector3F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Pow</td>
+   <td>TransformNormal(Vector3F, Matrix4F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dot</td>
+   <td>TransformNormal(Vector3F[], Matrix4F&, Vector3F[])</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dot</td>
+   <td>TransformX(Single, QuaternionF&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Hermite</td>
+   <td>TransformY(Single, QuaternionF&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Hermite</td>
+   <td>TransformZ(Single, QuaternionF&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Barycentric</td>
+   <td>Truncate()</td>
+<td>Truncate each near-zero component of the current vector towards zero.</td>
+</tr>
+<tr>
+   <td>Truncate(Vector3F)</td>
+<td>Truncate each near-zero component of the current vector towards zero.</td>
+</tr>
+<tr>
+   <td>Unproject(Vector3F&, Single, Single, Single, Single, Single, Single, Matrix4F&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Lerp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Min</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Max</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DistanceSquared</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DistanceSquared</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clamp</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>CatmullRom</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>CatmullRom</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Reflect</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetType</td>
+   <td>Unproject(Vector3F, Single, Single, Single, Single, Single, Single, Matrix4F)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -517,8 +517,14 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>IsNormalized</td>
+<td>
+            Gets a value indicting whether this instance is normalized.
+            </td>
+</tr>
 <tr>
    <td>IsZero</td>
 <td>
@@ -528,12 +534,6 @@
 <tr>
    <td>Item</td>
 <td>&nbsp;</td>
-</tr>
-<tr>
-   <td>IsNormalized</td>
-<td>
-            Gets a value indicting whether this instance is normalized.
-            </td>
 </tr>
 </tbody></table><br/>
 </div>

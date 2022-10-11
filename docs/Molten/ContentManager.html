@@ -14,7 +14,7 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>OnDisposing</td>
@@ -28,66 +28,66 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>AddCustomProcessors</td>
+   <td>AddCustomProcessors(IContentProcessor[])</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Unload</td>
+   <td>Deserialize(String, ContentLoadCallbackHandler<T>, JsonSerializerSettings, Boolean, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetLoadBatch</td>
+   <td>Deserialize(Type, String, ContentLoadCallbackHandler<Object>, JsonSerializerSettings, Boolean, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>LoadFont</td>
+   <td>Dispose()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Load</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Load</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Deserialize</td>
+   <td>GetLoadBatch()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Deserialize</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SaveToFile</td>
+   <td>Load(String, ContentLoadCallbackHandler<T>, ContentParameters, Boolean, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SerializeToFile</td>
+   <td>Load(Type, String, ContentLoadCallbackHandler<Object>, ContentParameters, Boolean, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>LoadFont(String, ContentLoadCallbackHandler<SpriteFont>, SpriteFontParameters, Boolean, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dispose</td>
+   <td>SaveToFile(String, Object, Action<FileInfo>, ContentParameters, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>SerializeToFile(String, Object, Action<FileInfo>, JsonSerializerSettings, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>Unload(ContentLoadHandle)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -95,8 +95,12 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
 <tr>
    <td>HotReloadEnabled</td>
 <td>
@@ -105,10 +109,6 @@
 </tr>
 <tr>
    <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>EOID</td>
 <td>&nbsp;</td>
 </tr>
 <tr>

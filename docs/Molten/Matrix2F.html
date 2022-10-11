@@ -19,8 +19,14 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>Identity</td>
+<td>
+            A single-precision Matrix2x2 with values intialized to the identity of a 2 x 2 matrix
+            </td>
+</tr>
 <tr>
    <td>M11</td>
 <td>
@@ -45,116 +51,110 @@
             Value at row 2, column 2 of the matrix.
             </td>
 </tr>
-<tr>
-   <td>Identity</td>
-<td>
-            A single-precision Matrix2x2 with values intialized to the identity of a 2 x 2 matrix
-            </td>
-</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Add</td>
+   <td>Add(Matrix2F&, Matrix2F&, Matrix2F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>Add(Matrix4F&, Matrix2F&, Matrix2F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>Add(Matrix2F&, Matrix4F&, Matrix2F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Add</td>
+   <td>Add(Matrix4F&, Matrix4F&, Matrix2F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateScale</td>
+   <td>CreateScale(Single, Matrix2F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Invert</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Multiply</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Negate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Subtract</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transform</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToArray</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transpose</td>
-<td>
-            Transposes the matrix in-place.
-            </td>
-</tr>
-<tr>
-   <td>Transpose</td>
-<td>
-            Transposes the matrix in-place.
-            </td>
-</tr>
-<tr>
-   <td>Transpose</td>
-<td>
-            Transposes the matrix in-place.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Creates a string representation of the matrix.
-            </td>
-</tr>
-<tr>
-   <td>Determinant</td>
+   <td>Determinant()</td>
 <td>
             Calculates the determinant of the matrix.
             </td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Invert(Matrix2F&, Matrix2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix2F&, Matrix2F&, Matrix2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix2F&, Matrix4F&, Matrix2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix4F&, Matrix2F&, Matrix2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Matrix2x3F&, Matrix3x2F&, Matrix2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Negate(Matrix2F&, Matrix2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Subtract(Matrix2F&, Matrix2F&, Matrix2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToArray()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>
+            Creates a string representation of the matrix.
+            </td>
+</tr>
+<tr>
+   <td>Transform(Vector2F&, Matrix2F&, Vector2F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transpose(Matrix2F&)</td>
+<td>
+            Transposes the matrix in-place.
+            </td>
+</tr>
+<tr>
+   <td>Transpose(Matrix2F&, Matrix2F&)</td>
+<td>
+            Transposes the matrix in-place.
+            </td>
+</tr>
+<tr>
+   <td>Transpose()</td>
+<td>
+            Transposes the matrix in-place.
+            </td>
 </tr>
 </tbody></table><br/>
 </div>

@@ -14,14 +14,10 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>OnInitialized</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OnStarted</td>
+   <td>OnDisposing</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -29,7 +25,11 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnDisposing</td>
+   <td>OnInitialized</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnStarted</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -40,72 +40,72 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>ClearState</td>
+   <td>ClearState()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetGamepad</td>
+   <td>Dispose()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetCustomDevice</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetMouse</td>
-<td>
-            Gets the default mouse handler for the current <see cref="T:Molten.Input.InputService" />.
-            </td>
+   <td>GetCustomDevice()</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetKeyboard</td>
+   <td>GetGamepad(Int32, GamepadSubType)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetKeyboard()</td>
 <td>
             Gets the default keyboard device handler for the current <see cref="T:Molten.Input.InputService" />.
             </td>
 </tr>
 <tr>
-   <td>GetTouch</td>
+   <td>GetMouse()</td>
+<td>
+            Gets the default mouse handler for the current <see cref="T:Molten.Input.InputService" />.
+            </td>
+</tr>
+<tr>
+   <td>GetTouch()</td>
 <td>
             Gets the default touch device handler for the current <see cref="T:Molten.Input.InputService" />.
             </td>
 </tr>
 <tr>
-   <td>Initialize</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Start</td>
+   <td>Initialize(EngineSettings, Logger)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Stop</td>
+   <td>Start(ThreadManager, Logger)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Update</td>
+   <td>Stop()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dispose</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetType</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
+   <td>Update(Timing)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -113,17 +113,27 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>Surface</td>
-<td>
-            Gets or sets the <see cref="T:Molten.Graphics.INativeSurface" /> through which input is handled. 
-            </td>
-</tr>
 <tr>
    <td>Clipboard</td>
 <td>Gets the implementation of <see cref="T:Molten.Input.IClipboard" /> bound to the current input manager.</td>
+</tr>
+<tr>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Log</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Name</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>Navigation</td>
@@ -132,15 +142,18 @@
             </td>
 </tr>
 <tr>
-   <td>UpdateID</td>
-<td>
-            Gets the input update/frame ID. 
-            This is usually equal to the number of times <see cref="M:Molten.EngineService.Update(Molten.Timing)" /> has been called on the current <see cref="T:Molten.Input.InputService" />.
-            </td>
+   <td>Settings</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>State</td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Surface</td>
+<td>
+            Gets or sets the <see cref="T:Molten.Graphics.INativeSurface" /> through which input is handled. 
+            </td>
 </tr>
 <tr>
    <td>Thread</td>
@@ -151,27 +164,14 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Settings</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Log</td>
-<td>&nbsp;</td>
+   <td>UpdateID</td>
+<td>
+            Gets the input update/frame ID. 
+            This is usually equal to the number of times <see cref="M:Molten.EngineService.Update(Molten.Timing)" /> has been called on the current <see cref="T:Molten.Input.InputService" />.
+            </td>
 </tr>
 <tr>
    <td>Version</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>EOID</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Name</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>

@@ -15,7 +15,7 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>OnDisposing</td>
@@ -29,58 +29,58 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>AddLayer</td>
+   <td>AddLayer(String, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RemoveLayer</td>
+   <td>AddObject(SceneObject, SceneLayer)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AddObjectWithComponent</td>
+   <td>AddObjectWithComponent(SceneLayer, ObjectUpdateFlags, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AddObjectWithComponents</td>
+   <td>AddObjectWithComponents(IList<Type>, SceneLayer, ObjectUpdateFlags, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateObject</td>
+   <td>CreateObject(ObjectUpdateFlags, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CreateObject</td>
+   <td>CreateObject(Vector3F, ObjectUpdateFlags, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AddObject</td>
+   <td>Dispose()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RemoveObject</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dispose</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>RemoveLayer(SceneLayer)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>RemoveObject(SceneObject, SceneLayer)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -88,8 +88,36 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>AmbientColor</td>
+<td>
+            Gets or sets the ambient light color of the scene.
+            </td>
+</tr>
+<tr>
+   <td>BackgroundColor</td>
+<td>Gets or sets the background color of the scene.</td>
+</tr>
+<tr>
+   <td>DefaultLayer</td>
+<td>
+            Gets the sccene's default layer. This cannot be removed from the scene.
+            </td>
+</tr>
+<tr>
+   <td>Engine</td>
+<td>Gets the <see cref="P:Molten.Scene.Engine" /> instance that the <see cref="T:Molten.Scene" /> is bound to.</td>
+</tr>
+<tr>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
 <tr>
    <td>IsEnabled</td>
 <td>Gets or sets whether or not the scene is updated.</td>
@@ -99,24 +127,8 @@
 <td>Gets or sets whether the scene is rendered.</td>
 </tr>
 <tr>
-   <td>Engine</td>
-<td>Gets the <see cref="P:Molten.Scene.Engine" /> instance that the <see cref="T:Molten.Scene" /> is bound to.</td>
-</tr>
-<tr>
-   <td>BackgroundColor</td>
-<td>Gets or sets the background color of the scene.</td>
-</tr>
-<tr>
-   <td>AmbientColor</td>
-<td>
-            Gets or sets the ambient light color of the scene.
-            </td>
-</tr>
-<tr>
-   <td>DefaultLayer</td>
-<td>
-            Gets the sccene's default layer. This cannot be removed from the scene.
-            </td>
+   <td>Name</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>Profiler</td>
@@ -129,18 +141,6 @@
 <td>
             Gets or sets the scene's skybox texture.
             </td>
-</tr>
-<tr>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>EOID</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Name</td>
-<td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
 </div>

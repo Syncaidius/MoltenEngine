@@ -17,47 +17,12 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>value__</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>None</td>
+   <td>Deferred</td>
 <td>
-            The current camera does not have any special flags.
-            </td>
-</tr>
-<tr>
-   <td>SkipLighting</td>
-<td>
-            Lighting is skipped. This generally results in the scene being fully-lit (also known as full-bright). 
-            This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
-            </td>
-</tr>
-<tr>
-   <td>SkipShadows</td>
-<td>
-            Shadow-casting is skipped. This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
-            </td>
-</tr>
-<tr>
-   <td>SkipGlobalIllumination</td>
-<td>
-            Global-illumination is skipped. This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
-            </td>
-</tr>
-<tr>
-   <td>SkipPostProcessing</td>
-<td>
-            Post-processing is skipped. This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
-            </td>
-</tr>
-<tr>
-   <td>SkipCulling</td>
-<td>
-            The culling stage should be skipped for the current camera. This is useful if everything you intend to render is already in view of the camera.
+            [TEMPORARY] Instructs the renderer to use deferred rendering when when rendering with the current camera.
             </td>
 </tr>
 <tr>
@@ -74,9 +39,9 @@
             </td>
 </tr>
 <tr>
-   <td>Deferred</td>
+   <td>None</td>
 <td>
-            [TEMPORARY] Instructs the renderer to use deferred rendering when when rendering with the current camera.
+            The current camera does not have any special flags.
             </td>
 </tr>
 <tr>
@@ -85,51 +50,86 @@
             Tells the renderer to draw the overlay on top of the rendered scene.
             </td>
 </tr>
+<tr>
+   <td>SkipCulling</td>
+<td>
+            The culling stage should be skipped for the current camera. This is useful if everything you intend to render is already in view of the camera.
+            </td>
+</tr>
+<tr>
+   <td>SkipGlobalIllumination</td>
+<td>
+            Global-illumination is skipped. This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
+            </td>
+</tr>
+<tr>
+   <td>SkipLighting</td>
+<td>
+            Lighting is skipped. This generally results in the scene being fully-lit (also known as full-bright). 
+            This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
+            </td>
+</tr>
+<tr>
+   <td>SkipPostProcessing</td>
+<td>
+            Post-processing is skipped. This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
+            </td>
+</tr>
+<tr>
+   <td>SkipShadows</td>
+<td>
+            Shadow-casting is skipped. This is useful for scenes displayed in smaller render surfaces (e.g. in-game CCTV) or scene previews.
+            </td>
+</tr>
+<tr>
+   <td>value__</td>
+<td>&nbsp;</td>
+</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Equals</td>
+   <td>CompareTo(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>HasFlag</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CompareTo</td>
+   <td>GetTypeCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>HasFlag(Enum)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(String, IFormatProvider)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetTypeCode</td>
+   <td>ToString(String)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>ToString(IFormatProvider)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>

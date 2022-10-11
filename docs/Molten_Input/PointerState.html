@@ -17,12 +17,16 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Position</td>
+   <td>ActionType</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Button</td>
 <td>
-            Gets the screen position of the touch point.
+            The pointer button.
             </td>
 </tr>
 <tr>
@@ -32,15 +36,21 @@
             </td>
 </tr>
 <tr>
-   <td>Button</td>
+   <td>Empty</td>
 <td>
-            The pointer button.
+            An empty <see cref="T:Molten.Input.PointerState" />.
             </td>
 </tr>
 <tr>
    <td>Orientation</td>
 <td>
             The orientation of the pointer, relative to the default upright orientation of the device.
+            </td>
+</tr>
+<tr>
+   <td>Position</td>
+<td>
+            Gets the screen position of the touch point.
             </td>
 </tr>
 <tr>
@@ -57,37 +67,27 @@
             touch area in relation to the maximum detectable size of the device.
             </td>
 </tr>
-<tr>
-   <td>ActionType</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Empty</td>
-<td>
-            An empty <see cref="T:Molten.Input.PointerState" />.
-            </td>
-</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Equals</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -95,7 +95,7 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>Action</td>
@@ -104,14 +104,14 @@
             </td>
 </tr>
 <tr>
+   <td>PressTimestamp</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
    <td>SetID</td>
 <td>
             The set/finger ID.
             </td>
-</tr>
-<tr>
-   <td>PressTimestamp</td>
-<td>&nbsp;</td>
 </tr>
 <tr>
    <td>UpdateID</td>

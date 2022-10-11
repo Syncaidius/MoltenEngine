@@ -19,18 +19,18 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>Min</td>
-<td>
-            The minimum point of the box.
-            </td>
-</tr>
 <tr>
    <td>Max</td>
 <td>
             The maximum point of the box.
+            </td>
+</tr>
+<tr>
+   <td>Min</td>
+<td>
+            The minimum point of the box.
             </td>
 </tr>
 </tbody></table><br/>
@@ -38,205 +38,205 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>GetCorners</td>
+   <td>Contains(Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Contains(Vector3F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Contains(BoundingBox&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Contains(BoundingBox)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Contains(BoundingSphere&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Contains(BoundingSphere)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Encapsulate(BoundingBox&, BoundingBox&, BoundingBox&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Encapsulate(BoundingBox&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Encapsulate(BoundingBox)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Encapsulate(Vector3F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Encapsulate(Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Encapsulate(BoundingSphere&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Encapsulate(BoundingSphere)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(BoundingBox&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(BoundingBox)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Expand(BoundingBox, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Expand(Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromPoints(Vector3F[], BoundingBox&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromPoints(IList<Vector3F>)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromPoints(Vector3F[])</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromSphere(BoundingSphere&, BoundingBox&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromSphere(BoundingSphere)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromTriangle(Vector3F&, Vector3F&, Vector3F&, BoundingBox&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>FromTriangle(Vector3F&, Vector3F&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetCorners()</td>
 <td>
             Retrieves the eight corners of the bounding box.
             </td>
 </tr>
 <tr>
-   <td>GetCorners</td>
+   <td>GetCorners(Vector3F[])</td>
 <td>
             Retrieves the eight corners of the bounding box.
             </td>
 </tr>
 <tr>
-   <td>FromTriangle</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromTriangle</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Contains</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Contains</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Contains</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Contains</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Contains</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Contains</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromPoints</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromPoints</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Expand</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>SweepExpand</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromPoints</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromSphere</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>FromSphere</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Encapsulate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Merge</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Merge</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>ToString</td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>
             Returns a hash code for this instance.
             </td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Intersects(Ray&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Intersects(Ray&, Single&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Expand</td>
+   <td>Intersects(Ray&, Vector3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Encapsulate</td>
+   <td>Intersects(Plane&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Encapsulate</td>
+   <td>Intersects(BoundingBox&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Encapsulate</td>
+   <td>Intersects(BoundingBox&, Boolean&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Encapsulate</td>
+   <td>Intersects(BoundingBox)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Encapsulate</td>
+   <td>Intersects(BoundingSphere&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Encapsulate</td>
+   <td>Intersects(BoundingSphere&, Boolean&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>Intersects(BoundingSphere)</td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Merge(BoundingBox, BoundingBox)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Merge(BoundingBox&, BoundingBox&, BoundingBox&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SweepExpand(BoundingBox&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td>ToString(String, IFormatProvider)</td>
+<td>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </td>
 </tr>
 </tbody></table><br/>
 </div>

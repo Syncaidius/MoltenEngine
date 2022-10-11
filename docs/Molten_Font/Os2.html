@@ -6,6 +6,248 @@
 </head>
 <body>
 	<div class="sec-content">  
-		<span class='obj-title'>Molten.Font.<b>Os2</b></h2>
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.Font.<b>Os2</b></span><div>
+		<div class='obj-summary'>
+			<p>Index-to-location table.<para /><para>The indexToLoc table stores the offsets to the locations of the glyphs in the font, relative to the beginning of the glyphData table. In order to compute the length of the last glyph element, there is an extra entry after the last valid index.</para><para>By definition, index zero points to the "missing character," which is the character that appears if a character is not found in the font. The missing character is commonly represented by a blank box or a space. If the font does not contain an outline for the missing character, then the first and second offsets should have the same value. This also applies to any other characters without an outline, such as the space character. If a glyph has no outline, then loca[n] = loca [n+1]. In the particular case of the last glyph(s), loca[n] will be equal the length of the glyph data ('glyf') table. The offsets must be in ascending order with loca[n] less-or-equal-to loca[n+1].</para>
+            See: https://docs.microsoft.com/en-us/typography/opentype/spec/head </p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>AchVendID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Dependencies</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>EmbeddingFlags</td>
+<td>
+            Gets the flags indicating the font's embedding licensing rights. Embeddable fonts may be stored in a document. 
+            </td>
+</tr>
+<tr>
+   <td>Header</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Panose</td>
+<td>
+            Gets values used to describe the visual characteristics of a given typeface. <para />
+            These characteristics are then used to associate the font with other fonts of similar appearance having different names. <para />
+            The variables for each digit are listed at: https://docs.microsoft.com/en-us/typography/opentype/spec/os2#panose. <para />
+            The Panose values are fully described in the Panose “greybook” reference, currently owned by Monotype Imaging.
+            </td>
+</tr>
+<tr>
+   <td>SCapHeight</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SelectionFlags</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SFamilyClass</td>
+<td>
+            Gets the classification of font-family design.
+            </td>
+</tr>
+<tr>
+   <td>STypoAscender</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>STypoDescender</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>STypoLineGap</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SxHeight</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UlCodePageRange1</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UlCodePageRange2</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UlUnicodeRange1</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UlUnicodeRange2</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UlUnicodeRange3</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UlUnicodeRange4</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UsBreakChar</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UsDefaultChar</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UsFirstCharIndex</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UsLastCharIndex</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UsLowerOpticalPointSize</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UsMaxContext</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UsUpperOpticalPointSize</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UsWeightClass</td>
+<td>
+            Gets a value indicating the visual weight (degree of blackness or thickness of strokes) of the characters in the font. Values from 1 to 1000 are valid.
+            </td>
+</tr>
+<tr>
+   <td>UsWinAscent</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>UsWinDescent</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Version</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>WidthClass</td>
+<td>
+            Gets the flags indicating a relative change from the normal aspect ratio (width to height ratio) as specified by a font designer for the glyphs in a font.
+            </td>
+</tr>
+<tr>
+   <td>XAverageCharWidth</td>
+<td>
+            Gets the Average Character Width parameter specifies the arithmetic average of the escapement (width) of all non-zero width glyphs in the font. 
+            </td>
+</tr>
+<tr>
+   <td>YStrikeoutPosition</td>
+<td>
+            Gets the position of the top of the strikeout stroke relative to the baseline in font design units.
+            </td>
+</tr>
+<tr>
+   <td>YStrikeoutSize</td>
+<td>
+            Gets the width of the strikeout stroke in font design units.
+            </td>
+</tr>
+<tr>
+   <td>YSubscriptXOffset</td>
+<td>
+            Gets the recommended horizontal offset in font design untis for subscripts for this font.
+            </td>
+</tr>
+<tr>
+   <td>YSubscriptXSize</td>
+<td>
+            Gets the recommended horizontal size in font design units for subscripts for this font.
+            </td>
+</tr>
+<tr>
+   <td>YSubscriptYOffset</td>
+<td>
+            Gets the recommended vertical offset in font design units from the baseline for subscripts for this font.
+            </td>
+</tr>
+<tr>
+   <td>YSubscriptYSize</td>
+<td>
+            Gets the recommended vertical size in font design units for subscripts for this font.
+            </td>
+</tr>
+<tr>
+   <td>YSuperscriptXOffset</td>
+<td>
+            Gets the recommended horizontal offset in font design units for superscripts for this font.
+            </td>
+</tr>
+<tr>
+   <td>YSuperscriptXSize</td>
+<td>
+            Gets the recommended horizontal size in font design units for superscripts for this font.
+            </td>
+</tr>
+<tr>
+   <td>YSuperscriptYOffset</td>
+<td>
+            Gets the recommended vertical offset in font design units from the baseline for superscripts for this font.
+            </td>
+</tr>
+<tr>
+   <td>YSuperscriptYSize</td>
+<td>
+            Gets the recommended vertical size in font design units for superscripts for this font.
+            </td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
     </div>
 </body></html>

@@ -16,22 +16,22 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>OnObjectFocused</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OnObjectUnfocused</td>
-<td>&nbsp;</td>
-</tr>
 <tr>
    <td>FocusedChanged</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td>OnDisposing</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnObjectFocused</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnObjectUnfocused</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -42,34 +42,34 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>OnUpdate</td>
+   <td>Dispose()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Pick</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dispose</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>OnUpdate(Timing)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Pick(PointingDevice, Timing)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -77,7 +77,7 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>Children</td>
@@ -86,10 +86,12 @@
             </td>
 </tr>
 <tr>
-   <td>Root</td>
-<td>
-            Gets the root <see cref="T:Molten.UI.UIContainer" />.
-            </td>
+   <td>DepthWriteOverride</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>EOID</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>FocusedElement</td>
@@ -105,15 +107,7 @@
             <para>Any positional input data will be relative to the top-left of these bounds.</para></td>
 </tr>
 <tr>
-   <td>IsVisible</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DepthWriteOverride</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Object</td>
+   <td>IsDisposed</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -125,16 +119,22 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>EOID</td>
+   <td>IsVisible</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td>Name</td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Object</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Root</td>
+<td>
+            Gets the root <see cref="T:Molten.UI.UIContainer" />.
+            </td>
 </tr>
 </tbody></table><br/>
 </div>

@@ -21,46 +21,46 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Dispose</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Clear</td>
+   <td>Clear()</td>
 <td>Exits all worker threads and empties the task queue.</td>
 </tr>
 <tr>
-   <td>QueueTask</td>
+   <td>Dispose()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>QueueCallback</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>QueueTasks</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetWorkerCount</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>QueueCallback(Func<Boolean>)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>QueueTask(WorkerTask)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>QueueTasks(IEnumerable<WorkerTask>)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>SetWorkerCount(Int32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -68,16 +68,18 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>WorkerCount</td>
-<td>Gets the number of threads in the worker group.</td>
+   <td>IsDisposed</td>
+<td>
+            Gets whether or not the current <see cref="T:Molten.Threading.WorkerGroup" /> has been disposed.
+            </td>
 </tr>
 <tr>
-   <td>QueueSize</td>
+   <td>IsPaused</td>
 <td>
-            Gets the number of tasks in the current <see cref="T:Molten.Threading.WorkerGroup" />'s queue.
+            Gets or sets whether the worker group is paused. If true, the group's workers will not process the group's task queue.
             </td>
 </tr>
 <tr>
@@ -87,9 +89,9 @@
             </td>
 </tr>
 <tr>
-   <td>IsDisposed</td>
+   <td>QueueSize</td>
 <td>
-            Gets whether or not the current <see cref="T:Molten.Threading.WorkerGroup" /> has been disposed.
+            Gets the number of tasks in the current <see cref="T:Molten.Threading.WorkerGroup" />'s queue.
             </td>
 </tr>
 <tr>
@@ -99,10 +101,8 @@
             </td>
 </tr>
 <tr>
-   <td>IsPaused</td>
-<td>
-            Gets or sets whether the worker group is paused. If true, the group's workers will not process the group's task queue.
-            </td>
+   <td>WorkerCount</td>
+<td>Gets the number of threads in the worker group.</td>
 </tr>
 </tbody></table><br/>
 </div>

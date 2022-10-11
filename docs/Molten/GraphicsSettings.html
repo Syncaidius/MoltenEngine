@@ -17,13 +17,11 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>MIN_LIGHT_TESS_FACTOR</td>
-<td>
-            The minimum tessellation factor for batched lights.
-            </td>
+   <td>LIGHT_TESS_FACTOR_RANGE</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>MAX_LIGHT_TESS_FACTOR</td>
@@ -32,42 +30,44 @@
             </td>
 </tr>
 <tr>
-   <td>LIGHT_TESS_FACTOR_RANGE</td>
-<td>&nbsp;</td>
+   <td>MIN_LIGHT_TESS_FACTOR</td>
+<td>
+            The minimum tessellation factor for batched lights.
+            </td>
 </tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Log</td>
+   <td>Apply()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Apply</td>
+   <td>Cancel()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Cancel</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Log(Logger, String)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -75,31 +75,31 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>GraphicsAdapterID</td>
-<td>Gets or sets the UID of the <see cref="T:Molten.Graphics.IDisplayAdapter" /> that was last used.</td>
+   <td>BackBufferSize</td>
+<td>Gets or sets the number of back-buffer surfaces. More tend to increase performance, but also consumes more video memory.</td>
 </tr>
 <tr>
    <td>DisplayOutputIds</td>
 <td>Gets or sets the UID of the <see cref="T:Molten.Graphics.IDisplayOutput" /> that was last used on the last used <see cref="P:Molten.GraphicsSettings.GraphicsAdapterID" />.</td>
 </tr>
 <tr>
-   <td>VSync</td>
-<td>Gets or sets wether Vsync is enabled.</td>
+   <td>EnableDebugLayer</td>
+<td>Gets or sets whether to enable a renderer's debug layer, if available.</td>
+</tr>
+<tr>
+   <td>GraphicsAdapterID</td>
+<td>Gets or sets the UID of the <see cref="T:Molten.Graphics.IDisplayAdapter" /> that was last used.</td>
 </tr>
 <tr>
    <td>MSAA</td>
 <td>Gets or sets the multi-sampled anti-aliasing (MSAA) level.</td>
 </tr>
 <tr>
-   <td>BackBufferSize</td>
-<td>Gets or sets the number of back-buffer surfaces. More tend to increase performance, but also consumes more video memory.</td>
-</tr>
-<tr>
-   <td>EnableDebugLayer</td>
-<td>Gets or sets whether to enable a renderer's debug layer, if available.</td>
+   <td>VSync</td>
+<td>Gets or sets wether Vsync is enabled.</td>
 </tr>
 </tbody></table><br/>
 </div>

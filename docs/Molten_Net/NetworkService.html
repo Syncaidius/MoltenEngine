@@ -14,14 +14,10 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>OnInitialized</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OnStarted</td>
+   <td>OnDisposing</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -29,7 +25,11 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnDisposing</td>
+   <td>OnInitialized</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnStarted</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -40,58 +40,58 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>SendMessage</td>
+   <td>Connect(String, Int32, Byte[])</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>TryReadMessage</td>
+   <td>Dispose()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetConnections</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Connect</td>
+   <td>GetConnections()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Initialize</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Start</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Stop</td>
+   <td>Initialize(EngineSettings, Logger)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Update</td>
+   <td>SendMessage(INetworkMessage, IEnumerable<INetworkConnection>)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>Start(ThreadManager, Logger)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dispose</td>
+   <td>Stop()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>TryReadMessage(INetworkMessage&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>Update(Timing)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -99,10 +99,10 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>RecievedMessages</td>
+   <td>EOID</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -110,6 +110,26 @@
 <td>
             Gets the network identifier of the current network service.
             </td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Log</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Name</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RecievedMessages</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Settings</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>State</td>
@@ -124,27 +144,7 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Settings</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Log</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
    <td>Version</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>EOID</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Name</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>

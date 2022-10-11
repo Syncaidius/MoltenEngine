@@ -14,8 +14,18 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>OnDisposing</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnError</td>
+<td>
+            Invoked if an initialization or start-up error occurs.
+            </td>
+</tr>
 <tr>
    <td>OnInitialized</td>
 <td>&nbsp;</td>
@@ -27,16 +37,6 @@
             completed a <see cref="M:Molten.EngineService.Start(Molten.Threading.ThreadManager,Molten.Logger)" /> invocation.
             </td>
 </tr>
-<tr>
-   <td>OnError</td>
-<td>
-            Invoked if an initialization or start-up error occurs.
-            </td>
-</tr>
-<tr>
-   <td>OnDisposing</td>
-<td>&nbsp;</td>
-</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
@@ -45,44 +45,44 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Initialize</td>
+   <td>Dispose()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Start</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Stop</td>
+   <td>GetHashCode()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Initialize(EngineSettings, Logger)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Start(ThreadManager, Logger)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Stop()</td>
 <td>
             Stops the current <see cref="T:Molten.EngineService" />.
             </td>
 </tr>
 <tr>
-   <td>Update</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Dispose</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetType</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
+   <td>Update(Timing)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -90,8 +90,32 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Log</td>
+<td>
+            Gets the log bound to the current <see cref="T:Molten.EngineService" />.
+            </td>
+</tr>
+<tr>
+   <td>Name</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Settings</td>
+<td>
+            Gets the current instance of engine settings. This will be the same instance that was passed in when the engine was instantiated.
+            </td>
+</tr>
 <tr>
    <td>State</td>
 <td>
@@ -112,32 +136,8 @@
             </td>
 </tr>
 <tr>
-   <td>Settings</td>
-<td>
-            Gets the current instance of engine settings. This will be the same instance that was passed in when the engine was instantiated.
-            </td>
-</tr>
-<tr>
-   <td>Log</td>
-<td>
-            Gets the log bound to the current <see cref="T:Molten.EngineService" />.
-            </td>
-</tr>
-<tr>
    <td>Version</td>
 <td>Gets the version of the current service. If not set by the service, all version components will be 0.</td>
-</tr>
-<tr>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>EOID</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Name</td>
-<td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
 </div>

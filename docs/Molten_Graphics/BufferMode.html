@@ -17,27 +17,14 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>value__</td>
-<td>&nbsp;</td>
-</tr>
 <tr>
    <td>Default</td>
 <td>The buffer cannot be written to, or read from by the CPU.
             Once the first set of data has been set, static buffers update their data by recreating the internal buffer. 
             This is an extremely expensive operation.
             To avoid this cost, use a staging buffer to copy data into buffers created with this mode.</td>
-</tr>
-<tr>
-   <td>Immutable</td>
-<td>The buffer cannot be read or written to by the GPU (or written to by the GPU) after creation. Immutable buffers
-            perform faster than all other types on the GPU and provide an opportunity for the GPU drivers to optimize 
-            access/draw/threaded calls.
-            
-            Once the first set of data has been set, immutable buffers update their data by recreating the internal buffer. 
-            This is an extremely expensive operation.</td>
 </tr>
 <tr>
    <td>DynamicDiscard</td>
@@ -51,51 +38,64 @@
             Once the buffer is full, the next map call will discard the buffer on the GPU and point to a new area of VRAM.
             This cycle of filling and discarding ensures dynamic data can always be written.</td>
 </tr>
+<tr>
+   <td>Immutable</td>
+<td>The buffer cannot be read or written to by the GPU (or written to by the GPU) after creation. Immutable buffers
+            perform faster than all other types on the GPU and provide an opportunity for the GPU drivers to optimize 
+            access/draw/threaded calls.
+            
+            Once the first set of data has been set, immutable buffers update their data by recreating the internal buffer. 
+            This is an extremely expensive operation.</td>
+</tr>
+<tr>
+   <td>value__</td>
+<td>&nbsp;</td>
+</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Equals</td>
+   <td>CompareTo(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>HasFlag</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CompareTo</td>
+   <td>GetTypeCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>HasFlag(Enum)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(String, IFormatProvider)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetTypeCode</td>
+   <td>ToString(String)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>ToString(IFormatProvider)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>

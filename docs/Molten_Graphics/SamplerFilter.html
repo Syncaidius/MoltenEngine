@@ -17,11 +17,63 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>value__</td>
-<td>&nbsp;</td>
+   <td>Anisotropic</td>
+<td>Use anisotropic interpolation for minification, magnification, and mip-levelsampling.</td>
+</tr>
+<tr>
+   <td>ComparisonAnisotropic</td>
+<td>Use anisotropic interpolation for minification, magnification, and mip-level sampling. Compare the result to the comparison value.</td>
+</tr>
+<tr>
+   <td>ComparisonMinLinearMagMipPoint</td>
+<td>Use linear interpolation for minification; use point sampling for magnification and mip-level sampling. Compare the result to the comparison value.</td>
+</tr>
+<tr>
+   <td>ComparisonMinLinearMagPointMipLinear</td>
+<td>Use linear interpolation for minification; use point sampling for magnification; use linear interpolation for mip-level sampling. Compare the result to the comparison value.</td>
+</tr>
+<tr>
+   <td>ComparisonMinMagLinearMipPoint</td>
+<td>Use linear interpolation for minification and magnification; use point sampling for mip-level sampling. Compare the result to the comparison value.</td>
+</tr>
+<tr>
+   <td>ComparisonMinMagMipLinear</td>
+<td>Use linear interpolation for minification, magnification, and mip-level sampling. Compare the result to the comparison value.</td>
+</tr>
+<tr>
+   <td>ComparisonMinMagMipPoint</td>
+<td>Use point sampling for minification, magnification, and mip-level sampling. Compare the result to the comparison value.</td>
+</tr>
+<tr>
+   <td>ComparisonMinMagPointMipLinear</td>
+<td>Use point sampling for minification and magnification; use linear interpolation for mip-level sampling. Compare the result to the comparison value.</td>
+</tr>
+<tr>
+   <td>ComparisonMinPointMagLinearMipPoint</td>
+<td>Use point sampling for minification; use linear interpolation for magnification; use point sampling for mip-level sampling. Compare the result to the comparison value.</td>
+</tr>
+<tr>
+   <td>ComparisonMinPointMagMipLinear</td>
+<td>Use point sampling for minification; use linear interpolation for magnification and mip-level sampling. Compare the result to the comparison value.</td>
+</tr>
+<tr>
+   <td>MinLinearMagMipPoint</td>
+<td>Use linear interpolation for minification; use point sampling for magnification and mip-level sampling.</td>
+</tr>
+<tr>
+   <td>MinLinearMagPointMipLinear</td>
+<td>Use linear interpolation for minification; use point sampling for magnification; use linear interpolation for mip-level sampling.</td>
+</tr>
+<tr>
+   <td>MinMagLinearMipPoint</td>
+<td>Use linear interpolation for minification and magnification; use point sampling for mip-level sampling.</td>
+</tr>
+<tr>
+   <td>MinMagMipLinear</td>
+<td>Use linear interpolation for minification, magnification, and mip-level sampling.</td>
 </tr>
 <tr>
    <td>MinMagMipPoint</td>
@@ -41,106 +93,54 @@
 <td>Use point sampling for minification; use linear interpolation for magnification and mip-level sampling. </td>
 </tr>
 <tr>
-   <td>MinLinearMagMipPoint</td>
-<td>Use linear interpolation for minification; use point sampling for magnification and mip-level sampling.</td>
-</tr>
-<tr>
-   <td>MinLinearMagPointMipLinear</td>
-<td>Use linear interpolation for minification; use point sampling for magnification; use linear interpolation for mip-level sampling.</td>
-</tr>
-<tr>
-   <td>MinMagLinearMipPoint</td>
-<td>Use linear interpolation for minification and magnification; use point sampling for mip-level sampling.</td>
-</tr>
-<tr>
-   <td>MinMagMipLinear</td>
-<td>Use linear interpolation for minification, magnification, and mip-level sampling.</td>
-</tr>
-<tr>
-   <td>Anisotropic</td>
-<td>Use anisotropic interpolation for minification, magnification, and mip-levelsampling.</td>
-</tr>
-<tr>
-   <td>ComparisonMinMagMipPoint</td>
-<td>Use point sampling for minification, magnification, and mip-level sampling. Compare the result to the comparison value.</td>
-</tr>
-<tr>
-   <td>ComparisonMinMagPointMipLinear</td>
-<td>Use point sampling for minification and magnification; use linear interpolation for mip-level sampling. Compare the result to the comparison value.</td>
-</tr>
-<tr>
-   <td>ComparisonMinPointMagLinearMipPoint</td>
-<td>Use point sampling for minification; use linear interpolation for magnification; use point sampling for mip-level sampling. Compare the result to the comparison value.</td>
-</tr>
-<tr>
-   <td>ComparisonMinPointMagMipLinear</td>
-<td>Use point sampling for minification; use linear interpolation for magnification and mip-level sampling. Compare the result to the comparison value.</td>
-</tr>
-<tr>
-   <td>ComparisonMinLinearMagMipPoint</td>
-<td>Use linear interpolation for minification; use point sampling for magnification and mip-level sampling. Compare the result to the comparison value.</td>
-</tr>
-<tr>
-   <td>ComparisonMinLinearMagPointMipLinear</td>
-<td>Use linear interpolation for minification; use point sampling for magnification; use linear interpolation for mip-level sampling. Compare the result to the comparison value.</td>
-</tr>
-<tr>
-   <td>ComparisonMinMagLinearMipPoint</td>
-<td>Use linear interpolation for minification and magnification; use point sampling for mip-level sampling. Compare the result to the comparison value.</td>
-</tr>
-<tr>
-   <td>ComparisonMinMagMipLinear</td>
-<td>Use linear interpolation for minification, magnification, and mip-level sampling. Compare the result to the comparison value.</td>
-</tr>
-<tr>
-   <td>ComparisonAnisotropic</td>
-<td>Use anisotropic interpolation for minification, magnification, and mip-level sampling. Compare the result to the comparison value.</td>
+   <td>value__</td>
+<td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Equals</td>
+   <td>CompareTo(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>HasFlag</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CompareTo</td>
+   <td>GetTypeCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>HasFlag(Enum)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(String, IFormatProvider)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetTypeCode</td>
+   <td>ToString(String)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>ToString(IFormatProvider)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>

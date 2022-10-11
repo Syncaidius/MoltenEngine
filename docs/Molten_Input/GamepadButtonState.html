@@ -17,12 +17,18 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>Button</td>
 <td>
             Gets the game pad button associated with the current <see cref="T:Molten.Input.GamepadButtonState" />.
+            </td>
+</tr>
+<tr>
+   <td>HeldTime</td>
+<td>
+            Gets the amount of time that the <see cref="T:Molten.Input.GamepadButtons" /> has been held.
             </td>
 </tr>
 <tr>
@@ -32,33 +38,27 @@
             This may always be 1.0f if the device button is not pressure-sensitive.
             </td>
 </tr>
-<tr>
-   <td>HeldTime</td>
-<td>
-            Gets the amount of time that the <see cref="T:Molten.Input.GamepadButtons" /> has been held.
-            </td>
-</tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Equals</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -66,12 +66,8 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>SetID</td>
-<td>&nbsp;</td>
-</tr>
 <tr>
    <td>Action</td>
 <td>
@@ -83,6 +79,10 @@
 <td>
             Gets the UTC time at which the button was last pressed.
             </td>
+</tr>
+<tr>
+   <td>SetID</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>UpdateID</td>

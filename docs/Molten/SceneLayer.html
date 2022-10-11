@@ -22,62 +22,62 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>AddObjectWithComponent</td>
+   <td>AddObject(SceneObject)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AddObjectWithComponents</td>
+   <td>AddObjectWithComponent(ObjectUpdateFlags, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AddObject</td>
+   <td>AddObjectWithComponents(IList<Type>, ObjectUpdateFlags, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RemoveObject</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BringToFront</td>
+   <td>BringToFront()</td>
 <td>
             Brings the scene layer to the front, on top of all the parent scene's other layers.
             </td>
 </tr>
 <tr>
-   <td>SendToBack</td>
-<td>
-            Sends the current layer to the back, on behind of all the parent scene's other layers.
-            </td>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>PushForward</td>
-<td>
-            Brings the current layer forward by one layer, essentially swapping it's position/order with the layer in front of it.
-            </td>
+   <td>GetHashCode()</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>PushBackward</td>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PushBackward()</td>
 <td>
             Sends the current layer backward by one layer, essentially swapping it's position/order with the layer behind it.
             </td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>PushForward()</td>
+<td>
+            Brings the current layer forward by one layer, essentially swapping it's position/order with the layer in front of it.
+            </td>
+</tr>
+<tr>
+   <td>RemoveObject(SceneObject)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
-<td>&nbsp;</td>
+   <td>SendToBack()</td>
+<td>
+            Sends the current layer to the back, on behind of all the parent scene's other layers.
+            </td>
 </tr>
 <tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -85,18 +85,18 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>ParentScene</td>
-<td>
-            Gets the layer's parent scene. This will only change (to null) in the event the layer is removed from it's parent scene.
-            </td>
-</tr>
 <tr>
    <td>IgnoreRaycastHit</td>
 <td>
             Gets or sets whether objects in the current <see cref="T:Molten.SceneLayer" /> ignore raycast hits checks. The default value is false.
+            </td>
+</tr>
+<tr>
+   <td>LayerID</td>
+<td>
+            Gets the ID of the layer.
             </td>
 </tr>
 <tr>
@@ -106,9 +106,9 @@
             </td>
 </tr>
 <tr>
-   <td>LayerID</td>
+   <td>ParentScene</td>
 <td>
-            Gets the ID of the layer.
+            Gets the layer's parent scene. This will only change (to null) in the event the layer is removed from it's parent scene.
             </td>
 </tr>
 </tbody></table><br/>

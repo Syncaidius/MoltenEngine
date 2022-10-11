@@ -14,7 +14,7 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>OnResize</td>
@@ -30,60 +30,60 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Get1DProperties</td>
+   <td>CopyTo(ITexture)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>CopyTo(UInt32, UInt32, ITexture, UInt32, UInt32)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GenerateMipMaps()</td>
+<td>Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="F:Molten.Graphics.TextureFlags.AllowMipMapGeneration" />.</td>
+</tr>
+<tr>
+   <td>Get1DProperties()</td>
 <td>
             Gets a new instance of the texture's <see cref="T:Molten.Graphics.Texture1DProperties" /> properties.
             </td>
 </tr>
 <tr>
-   <td>Resize</td>
+   <td>GetData(ITexture, Action<TextureData>)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Resize</td>
+   <td>GetData(ITexture, UInt32, UInt32, Action<TextureSlice>)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GenerateMipMaps</td>
-<td>Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="F:Molten.Graphics.TextureFlags.AllowMipMapGeneration" />.</td>
-</tr>
-<tr>
-   <td>CopyTo</td>
+   <td>HasFlags(TextureFlags)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>CopyTo</td>
+   <td>Resize(UInt32, UInt32, GraphicsFormat)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetData</td>
+   <td>Resize(UInt32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetData</td>
+   <td>SetData(TextureData, UInt32, UInt32, UInt32, UInt32, UInt32, UInt32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetData</td>
+   <td>SetData(UInt32, T[], UInt32, UInt32, UInt32, UInt32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SetData</td>
+   <td>SetData(TextureSlice, UInt32, UInt32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetData</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetData</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>HasFlags</td>
+   <td>SetData(RectangleUI, T[], UInt32, UInt32, UInt32)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -91,37 +91,23 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Flags</td>
-<td>Gets the flags that were passed in when the texture was created.</td>
+   <td>ArraySize</td>
+<td>Gets the number of array slices in the texture.</td>
 </tr>
 <tr>
    <td>DataFormat</td>
 <td>Gets the format of the texture.</td>
 </tr>
 <tr>
+   <td>Flags</td>
+<td>Gets the flags that were passed in when the texture was created.</td>
+</tr>
+<tr>
    <td>IsBlockCompressed</td>
 <td>Gets whether or not the texture is using a supported block-compressed format.</td>
-</tr>
-<tr>
-   <td>Width</td>
-<td>Gets the width of the texture.</td>
-</tr>
-<tr>
-   <td>MipMapCount</td>
-<td>Gets the number of mip map levels in the texture.</td>
-</tr>
-<tr>
-   <td>ArraySize</td>
-<td>Gets the number of array slices in the texture.</td>
-</tr>
-<tr>
-   <td>MultiSampleLevel</td>
-<td>
-            Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
-            </td>
 </tr>
 <tr>
    <td>IsMultisampled</td>
@@ -130,10 +116,24 @@
             </td>
 </tr>
 <tr>
+   <td>MipMapCount</td>
+<td>Gets the number of mip map levels in the texture.</td>
+</tr>
+<tr>
+   <td>MultiSampleLevel</td>
+<td>
+            Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
+            </td>
+</tr>
+<tr>
    <td>Renderer</td>
 <td>
             Gets the renderer that the texture is bound to.
             </td>
+</tr>
+<tr>
+   <td>Width</td>
+<td>Gets the width of the texture.</td>
 </tr>
 </tbody></table><br/>
 </div>

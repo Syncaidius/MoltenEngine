@@ -20,22 +20,22 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>GetType</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -43,12 +43,38 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>ChildNodes</td>
+<td>
+            Gets a list of child nodes bound to the current <see cref="T:Molten.Graphics.ShaderHeaderNode" />. These were nodes which had their own child values/nodes.
+            </td>
+</tr>
+<tr>
+   <td>ChildValues</td>
+<td>
+            Gets a list of child values that were bound to the header node
+            </td>
+</tr>
+<tr>
+   <td>Conditions</td>
+<td>&nbsp;</td>
+</tr>
 <tr>
    <td>Name</td>
 <td>
             The original name of the node.
+            </td>
+</tr>
+<tr>
+   <td>OriginalNode</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SlotID</td>
+<td>
+            The index or slot that the node refers to for a shader element.
             </td>
 </tr>
 <tr>
@@ -58,36 +84,10 @@
             </td>
 </tr>
 <tr>
-   <td>SlotID</td>
-<td>
-            The index or slot that the node refers to for a shader element.
-            </td>
-</tr>
-<tr>
    <td>ValueType</td>
 <td>
             Gets the type of value held in <see cref="P:Molten.Graphics.ShaderHeaderNode.Value" />.
             </td>
-</tr>
-<tr>
-   <td>Conditions</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ChildValues</td>
-<td>
-            Gets a list of child values that were bound to the header node
-            </td>
-</tr>
-<tr>
-   <td>ChildNodes</td>
-<td>
-            Gets a list of child nodes bound to the current <see cref="T:Molten.Graphics.ShaderHeaderNode" />. These were nodes which had their own child values/nodes.
-            </td>
-</tr>
-<tr>
-   <td>OriginalNode</td>
-<td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
 </div>

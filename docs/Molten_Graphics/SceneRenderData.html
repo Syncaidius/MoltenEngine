@@ -16,13 +16,11 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>OnPreRender</td>
-<td>
-            Occurs just before the scene is about to be rendered.
-            </td>
+   <td>OnDisposing</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>OnPostRender</td>
@@ -31,20 +29,22 @@
             </td>
 </tr>
 <tr>
-   <td>OnDisposing</td>
-<td>&nbsp;</td>
+   <td>OnPreRender</td>
+<td>
+            Occurs just before the scene is about to be rendered.
+            </td>
 </tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>IsVisible</td>
+   <td>AmbientLightColor</td>
 <td>
-            If true, the scene will be rendered.
+            The ambient light color.
             </td>
 </tr>
 <tr>
@@ -54,9 +54,9 @@
             </td>
 </tr>
 <tr>
-   <td>AmbientLightColor</td>
+   <td>IsVisible</td>
 <td>
-            The ambient light color.
+            If true, the scene will be rendered.
             </td>
 </tr>
 <tr>
@@ -68,66 +68,66 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>CreateLayerData</td>
+   <td>AddLayer(LayerRenderData)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AddLayer</td>
+   <td>AddObject(RenderCamera)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RemoveLayer</td>
+   <td>AddObject(IRenderable, ObjectRenderData, LayerRenderData)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ReorderLayer</td>
+   <td>CreateLayerData(String)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AddObject</td>
+   <td>Dispose()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RemoveObject</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AddObject</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RemoveObject</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>PreRenderInvoke</td>
+   <td>PostRenderInvoke(RenderService)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>PostRenderInvoke</td>
+   <td>PreRenderInvoke(RenderService)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>RemoveLayer(LayerRenderData)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dispose</td>
+   <td>RemoveObject(RenderCamera)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>RemoveObject(IRenderable, ObjectRenderData, LayerRenderData)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>ReorderLayer(LayerRenderData, ReorderMode)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -135,10 +135,10 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>PointLights</td>
+   <td>Cameras</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -146,7 +146,19 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Cameras</td>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Name</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>PointLights</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -158,18 +170,6 @@
 <td>
             Gets or sets the skybox cube-map texture.
             </td>
-</tr>
-<tr>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>EOID</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Name</td>
-<td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
 </div>

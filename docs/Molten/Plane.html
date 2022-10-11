@@ -19,18 +19,18 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>Normal</td>
-<td>
-            The normal vector of the plane.
-            </td>
-</tr>
 <tr>
    <td>D</td>
 <td>
             The distance of the plane along its normal from the origin.
+            </td>
+</tr>
+<tr>
+   <td>Normal</td>
+<td>
+            The normal vector of the plane.
             </td>
 </tr>
 </tbody></table><br/>
@@ -38,213 +38,213 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Normalize</td>
+   <td>Dot(Plane&, Vector4F&, Single&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Dot(Plane, Vector4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DotCoordinate(Plane&, Vector3F&, Single&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DotCoordinate(Plane, Vector3F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DotCoordinate(Vector3F&, Single&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DotNormal(Plane&, Vector3F&, Single&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>DotNormal(Plane, Vector3F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Plane&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Plane)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>
+            Returns a hash code for this instance.
+            </td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersects(Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersects(Ray&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersects(Ray&, Single&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersects(Ray&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersects(Plane&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersects(Plane&, Ray&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersects(Vector3F&, Vector3F&, Vector3F&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersects(BoundingBox&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Intersects(BoundingSphere&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Plane&, Single, Plane&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Multiply(Plane, Single)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Normalize()</td>
 <td>
             Changes the coefficients of the normal vector of the plane to make it of unit length.
             </td>
 </tr>
 <tr>
-   <td>ToArray</td>
+   <td>Normalize(Plane&, Plane&)</td>
 <td>
-            Creates an array containing the elements of the plane.
+            Changes the coefficients of the normal vector of the plane to make it of unit length.
             </td>
 </tr>
 <tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
+   <td>Normalize(Plane)</td>
+<td>
+            Changes the coefficients of the normal vector of the plane to make it of unit length.
+            </td>
 </tr>
 <tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Intersects</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Reflection</td>
+   <td>Reflection(Matrix4F&)</td>
 <td>
             Builds a matrix that can be used to reflect vectors about a plane.
             </td>
 </tr>
 <tr>
-   <td>Reflection</td>
+   <td>Reflection()</td>
 <td>
             Builds a matrix that can be used to reflect vectors about a plane.
             </td>
 </tr>
 <tr>
-   <td>Shadow</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Shadow</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Reflection</td>
+   <td>Reflection(Matrix3F&)</td>
 <td>
             Builds a matrix that can be used to reflect vectors about a plane.
             </td>
 </tr>
 <tr>
-   <td>Reflection3x3</td>
+   <td>Reflection3x3()</td>
 <td>
             Builds a Matrix3x3 that can be used to reflect vectors about a plane for which the reflection occurs. 
             This plane is assumed to be normalized
             </td>
 </tr>
 <tr>
-   <td>Shadow</td>
+   <td>Shadow(Vector4F&, Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Shadow</td>
+   <td>Shadow(Vector4F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Multiply</td>
+   <td>Shadow(Vector4F&, Plane&, Matrix3F&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Multiply</td>
+   <td>Shadow(Vector4F, Plane)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dot</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Dot</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DotCoordinate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DotCoordinate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DotCoordinate</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DotNormal</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>DotNormal</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Normalize</td>
+   <td>ToArray()</td>
 <td>
-            Changes the coefficients of the normal vector of the plane to make it of unit length.
+            Creates an array containing the elements of the plane.
             </td>
 </tr>
 <tr>
-   <td>Normalize</td>
-<td>
-            Changes the coefficients of the normal vector of the plane to make it of unit length.
-            </td>
-</tr>
-<tr>
-   <td>Transform</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transform</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transform</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transform</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transform</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Transform</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ToString</td>
+   <td>ToString()</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this instance.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(String)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this instance.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(IFormatProvider)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this instance.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString(String, IFormatProvider)</td>
 <td>
             Returns a <see cref="T:System.String" /> that represents this instance.
             </td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
-<td>
-            Returns a hash code for this instance.
-            </td>
-</tr>
-<tr>
-   <td>Equals</td>
+   <td>Transform(Plane&, QuaternionF&, Plane&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Transform(Plane, QuaternionF)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Transform(Plane[], QuaternionF&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>Transform(Plane&, Matrix4F&, Plane&)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transform(Plane, Matrix4F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Transform(Plane[], Matrix4F&)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -252,7 +252,7 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>Item</td>

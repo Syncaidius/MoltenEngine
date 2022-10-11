@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/main.css">
+    
+    <title>Molten Engine - Molten.Logger</title>
+</head>
+<body>
+	<div class="sec-content">  
+		<div class='obj-title'><span><img src="../img/class.png"/>Molten.<b>Logger</b></span><div>
+		<div class='obj-summary'>
+			<p></p>
+		</div>
+		<div class="sec-object">
+			<div class="obj-section">
+
+</div>
+<div class="obj-section">
+
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Methods</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>AddOutput(ILogOutput)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Clear()</td>
+<td>
+            Clears the logger and all of it's attached <see cref="T:Molten.ILogOutput" /> instances.
+            </td>
+</tr>
+<tr>
+   <td>Debug(String)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Debug(String, String)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Dispose()</td>
+<td>
+            Disposes the logger and all of it's attached <see cref="T:Molten.ILogOutput" />.
+            </td>
+</tr>
+<tr>
+   <td>DisposeAll()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Error(Exception, Boolean)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Error(String)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Error(String, String)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Get()</td>
+<td>Gets a new instance of <see cref="T:Molten.Logger" />. All logs will be closed if <see cref="M:Molten.Logger.DisposeAll" /> is called.</td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RemoveOutput(ILogOutput)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ToString()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Warning(String)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Warning(String, String)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Write(String, LogCategory)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Write(String, Color, LogCategory)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>WriteDebugLine(String, Color)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>WriteLine(String)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>WriteLine(String, Color, LogCategory)</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><br/>
+</div>
+<div class="obj-section">
+<table><thead><tr>
+   <th class="obj-section-title">Properties</th>
+   <th class="obj-section-desc">&nbsp</th>
+</tr></thead><tbody>
+<tr>
+   <td>DebugColor</td>
+<td>
+            Gets or sets the color for debug messages.
+            </td>
+</tr>
+<tr>
+   <td>EntryCount</td>
+<td>
+            Gets the total number of entries logged by the logger so far. <see cref="M:Molten.Logger.Clear" /> will reset this value.
+            </td>
+</tr>
+<tr>
+   <td>ErrorColor</td>
+<td>
+            Gets or sets he default color of errors when calling <see cref="M:Molten.Logger.Error(System.Exception,System.Boolean)" /> or <see cref="M:Molten.Logger.Error(System.String)" />.
+            </td>
+</tr>
+<tr>
+   <td>FirstEntry</td>
+<td>
+            Gets the first <see cref="T:Molten.Logger.Entry" /> held by the log.
+            </td>
+</tr>
+<tr>
+   <td>LastEntry</td>
+<td>
+            Gets the last <see cref="T:Molten.Logger.Entry" /> held by the log.
+            </td>
+</tr>
+<tr>
+   <td>MaxEntryCount</td>
+<td>
+            Gets or sets the maximum number of <see cref="T:Molten.Logger.Entry" /> to maintain in the current <see cref="T:Molten.Logger" />. 
+            <para>Once <see cref="P:Molten.Logger.EntryCount" /> hits this number, the oldest log entries will be replaced.</para></td>
+</tr>
+<tr>
+   <td>WarningColor</td>
+<td>
+            Gets or sets the color for warning messages.
+            </td>
+</tr>
+</tbody></table><br/>
+</div>
+
+		</div>
+    </div>
+</body></html>

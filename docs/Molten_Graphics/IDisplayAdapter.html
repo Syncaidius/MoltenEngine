@@ -14,7 +14,7 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>OnOutputActivated</td>
@@ -32,30 +32,30 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>GetAttachedOutputs</td>
+   <td>AddActiveOutput(IDisplayOutput)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetActiveOutputs</td>
+   <td>GetActiveOutputs(List<IDisplayOutput>)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetOutput</td>
+   <td>GetAttachedOutputs(List<IDisplayOutput>)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>AddActiveOutput</td>
+   <td>GetOutput(Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RemoveActiveOutput</td>
+   <td>RemoveActiveOutput(IDisplayOutput)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RemoveAllActiveOutputs</td>
+   <td>RemoveAllActiveOutputs()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -63,39 +63,39 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Name</td>
-<td>Gets the name of the adapter.</td>
+   <td>DedicatedSystemMemory</td>
+<td>Gets the amount of system memory dedicated to the adapter, in megabytes.</td>
 </tr>
 <tr>
    <td>DedicatedVideoMemory</td>
 <td>Gets the amount of dedicated video memory, in megabytes.</td>
 </tr>
 <tr>
-   <td>DedicatedSystemMemory</td>
-<td>Gets the amount of system memory dedicated to the adapter, in megabytes.</td>
-</tr>
-<tr>
-   <td>SharedSystemMemory</td>
-<td>Gets the amount of system memory that is being shared with the adapter, in megabytes.</td>
-</tr>
-<tr>
    <td>ID</td>
 <td>Gets the listing ID of the <see cref="T:Molten.Graphics.IDisplayAdapter" />.</td>
 </tr>
 <tr>
-   <td>Vendor</td>
-<td>The hardware vendor.</td>
+   <td>Manager</td>
+<td>Gets the <see cref="T:Molten.Graphics.IDisplayManager" /> that spawned the adapter.</td>
+</tr>
+<tr>
+   <td>Name</td>
+<td>Gets the name of the adapter.</td>
 </tr>
 <tr>
    <td>OutputCount</td>
 <td>Gets the number of <see cref="T:Molten.Graphics.IDisplayOutput" /> connected to the current <see cref="T:Molten.Graphics.IDisplayAdapter" />.</td>
 </tr>
 <tr>
-   <td>Manager</td>
-<td>Gets the <see cref="T:Molten.Graphics.IDisplayManager" /> that spawned the adapter.</td>
+   <td>SharedSystemMemory</td>
+<td>Gets the amount of system memory that is being shared with the adapter, in megabytes.</td>
+</tr>
+<tr>
+   <td>Vendor</td>
+<td>The hardware vendor.</td>
 </tr>
 </tbody></table><br/>
 </div>

@@ -16,30 +16,12 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td>Pressed</td>
-<td>
-            Invoked when the current <see cref="T:Molten.UI.UIElement" /> is pressed by a <see cref="T:Molten.UIPointerTracker" />.
-            </td>
-</tr>
-<tr>
-   <td>Held</td>
-<td>
-            Invoked when the current <see cref="T:Molten.UI.UIElement" /> is held by a <see cref="T:Molten.UIPointerTracker" />.
-            </td>
-</tr>
 <tr>
    <td>Dragged</td>
 <td>
             Invoked when the current <see cref="T:Molten.UI.UIElement" /> is dragged by a <see cref="T:Molten.UIPointerTracker" />.
-            </td>
-</tr>
-<tr>
-   <td>Released</td>
-<td>
-            Invoked when the current <see cref="T:Molten.UI.UIElement" /> is released by a <see cref="T:Molten.UIPointerTracker" />.
             </td>
 </tr>
 <tr>
@@ -49,9 +31,15 @@
             </td>
 </tr>
 <tr>
-   <td>Leave</td>
+   <td>Focused</td>
 <td>
-            Invoked when a pointer or other form of input leaves the bounds of the current <see cref="T:Molten.UI.UIElement" />.
+            Invoked when the current <see cref="T:Molten.UI.UIElement" /> is focused.
+            </td>
+</tr>
+<tr>
+   <td>Held</td>
+<td>
+            Invoked when the current <see cref="T:Molten.UI.UIElement" /> is held by a <see cref="T:Molten.UIPointerTracker" />.
             </td>
 </tr>
 <tr>
@@ -61,9 +49,9 @@
             </td>
 </tr>
 <tr>
-   <td>ParentChanged</td>
+   <td>Leave</td>
 <td>
-            Invoked when the parent of the current <see cref="T:Molten.UI.UIElement" /> has changed.
+            Invoked when a pointer or other form of input leaves the bounds of the current <see cref="T:Molten.UI.UIElement" />.
             </td>
 </tr>
 <tr>
@@ -73,15 +61,25 @@
             </td>
 </tr>
 <tr>
-   <td>Focused</td>
+   <td>OnDisposing</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ParentChanged</td>
 <td>
-            Invoked when the current <see cref="T:Molten.UI.UIElement" /> is focused.
+            Invoked when the parent of the current <see cref="T:Molten.UI.UIElement" /> has changed.
             </td>
 </tr>
 <tr>
-   <td>Unfocused</td>
+   <td>Pressed</td>
 <td>
-            Invoked when the current <see cref="T:Molten.UI.UIElement" /> is unfocused.
+            Invoked when the current <see cref="T:Molten.UI.UIElement" /> is pressed by a <see cref="T:Molten.UIPointerTracker" />.
+            </td>
+</tr>
+<tr>
+   <td>Released</td>
+<td>
+            Invoked when the current <see cref="T:Molten.UI.UIElement" /> is released by a <see cref="T:Molten.UIPointerTracker" />.
             </td>
 </tr>
 <tr>
@@ -91,8 +89,10 @@
             </td>
 </tr>
 <tr>
-   <td>OnDisposing</td>
-<td>&nbsp;</td>
+   <td>Unfocused</td>
+<td>
+            Invoked when the current <see cref="T:Molten.UI.UIElement" /> is unfocused.
+            </td>
 </tr>
 </tbody></table><br/>
 </div>
@@ -102,103 +102,225 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Contains</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Focus</td>
-<td>
-            Switches focus to the current <see cref="T:Molten.UI.UIElement" />.
-            </td>
-</tr>
-<tr>
-   <td>Unfocus</td>
-<td>
-            Unfocuses the current <see cref="T:Molten.UI.UIElement" /> if focused.
-            </td>
-</tr>
-<tr>
-   <td>Pick</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>HasInputRules</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OnHover</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OnEnter</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OnLeave</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OnPressed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OnHeld</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OnDragged</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OnReleased</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>BringToFront</td>
+   <td>BringToFront()</td>
 <td>
             Sends the current <see cref="T:Molten.UI.UIElement" /> to the front of it's parents child stack, so it will be drawn on top of all other children.
             </td>
 </tr>
 <tr>
-   <td>SendToBack</td>
+   <td>Contains(Vector2F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Dispose()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Equals(Object)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Focus()</td>
+<td>
+            Switches focus to the current <see cref="T:Molten.UI.UIElement" />.
+            </td>
+</tr>
+<tr>
+   <td>GetHashCode()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GetType()</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>HasInputRules(UIInputRuleFlags)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnDragged(UIPointerTracker)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnEnter(UIPointerTracker)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnHeld(UIPointerTracker)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnHover(UIPointerTracker)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnLeave(UIPointerTracker)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnPressed(UIPointerTracker)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OnReleased(UIPointerTracker, Boolean)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Pick(Vector2F)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>SendToBack()</td>
 <td>
             Sends the current <see cref="T:Molten.UI.UIElement" /> to the back of it's parents child stack, so it will be drawn underneath all other children.
             </td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dispose</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetType</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Equals</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GetHashCode</td>
-<td>&nbsp;</td>
+   <td>Unfocus()</td>
+<td>
+            Unfocuses the current <see cref="T:Molten.UI.UIElement" /> if focused.
+            </td>
 </tr>
 </tbody></table><br/>
 </div>
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>Anchor</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Children</td>
+<td>
+            Gets a read-only list of child components attached to the current <see cref="T:Molten.UI.UIElement" />.
+            </td>
+</tr>
+<tr>
+   <td>Engine</td>
+<td>
+            Gets the <see cref="P:Molten.UI.UIElement.Engine" /> instance that the current <see cref="T:Molten.UI.UIElement" /> is bound to.
+            </td>
+</tr>
+<tr>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GlobalBounds</td>
+<td>
+            Gets the global bounds, relative to the <see cref="T:Molten.UI.UIManagerComponent" /> that is drawing the current <see cref="T:Molten.UI.UIElement" />.
+            <para>Global bounds are the area in which input is accepted and from which <see cref="P:Molten.UI.UIElement.RenderBounds" /> is calculated, based on padding, borders and other properties.</para></td>
+</tr>
+<tr>
+   <td>Height</td>
+<td>
+            Gets the height of <see cref="P:Molten.UI.UIElement.LocalBounds" /> for the current <see cref="T:Molten.UI.UIElement" />.
+            </td>
+</tr>
+<tr>
+   <td>InputRules</td>
+<td>
+            Gets or sets the input rules for the current <see cref="T:Molten.UI.UIElement" />.
+            </td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsEnabled</td>
+<td>
+            Gets or sets whether the current <see cref="T:Molten.UI.UIElement" /> is enabled.
+            </td>
+</tr>
+<tr>
+   <td>IsFocused</td>
+<td>
+            Gets or sets whether or not the current <see cref="T:Molten.UI.UIElement" /> is focused.
+            </td>
+</tr>
+<tr>
+   <td>IsVisible</td>
+<td>
+            Gets or sets whether the current <see cref="T:Molten.UI.UIElement" /> is visible.
+            </td>
+</tr>
 <tr>
    <td>LocalBounds</td>
 <td>
             Gets or sets the local bounds of the current <see cref="T:Molten.UI.UIElement" />.
+            </td>
+</tr>
+<tr>
+   <td>Margin</td>
+<td>
+            Gets the margin of the current <see cref="T:Molten.UI.UIElement" />. This spacing directly affects the <see cref="!:BorderBounds" />.
+            </td>
+</tr>
+<tr>
+   <td>Name</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OffsetRenderBounds</td>
+<td>
+            Gets the <see cref="P:Molten.UI.UIElement.RenderBounds" /> with <see cref="P:Molten.UI.UIElement.RenderOffset" /> applied to it.
+            </td>
+</tr>
+<tr>
+   <td>Padding</td>
+<td>
+            Gets the padding of the current <see cref="T:Molten.UI.UIElement" />. This is the spacing between the <see cref="P:Molten.UI.UIElement.Margin" /> and <see cref="P:Molten.UI.UIElement.RenderBounds" />.
+            </td>
+</tr>
+<tr>
+   <td>ParentElement</td>
+<td>
+            Gets the parent of the current <see cref="T:Molten.UI.UIElement" />.
+            </td>
+</tr>
+<tr>
+   <td>ParentLayer</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ParentWindow</td>
+<td>
+            Gets the <see cref="T:Molten.UI.UIWindow" /> that contains the current <see cref="T:Molten.UI.UIElement" />.
+            </td>
+</tr>
+<tr>
+   <td>RenderBounds</td>
+<td>
+            Gets the bounds in which child components should be drawn.
+            </td>
+</tr>
+<tr>
+   <td>State</td>
+<td>
+            Gets the <see cref="T:Molten.UI.UIElementState" /> of the current <see cref="T:Molten.UI.UIElement" />.
+            </td>
+</tr>
+<tr>
+   <td>Theme</td>
+<td>
+            Gets or sets the <see cref="T:Molten.UI.UITheme" /> that should be applied to the current <see cref="T:Molten.UI.UIElement" />. Themes provide a set of default appearance values and configuration.
+            </td>
+</tr>
+<tr>
+   <td>Width</td>
+<td>
+            Gets the width of <see cref="P:Molten.UI.UIElement.LocalBounds" /> for the current <see cref="T:Molten.UI.UIElement" />.
             </td>
 </tr>
 <tr>
@@ -212,128 +334,6 @@
 <td>
             Gets the Y of <see cref="P:Molten.UI.UIElement.LocalBounds" /> for the current <see cref="T:Molten.UI.UIElement" />.
             </td>
-</tr>
-<tr>
-   <td>Width</td>
-<td>
-            Gets the width of <see cref="P:Molten.UI.UIElement.LocalBounds" /> for the current <see cref="T:Molten.UI.UIElement" />.
-            </td>
-</tr>
-<tr>
-   <td>Height</td>
-<td>
-            Gets the height of <see cref="P:Molten.UI.UIElement.LocalBounds" /> for the current <see cref="T:Molten.UI.UIElement" />.
-            </td>
-</tr>
-<tr>
-   <td>GlobalBounds</td>
-<td>
-            Gets the global bounds, relative to the <see cref="T:Molten.UI.UIManagerComponent" /> that is drawing the current <see cref="T:Molten.UI.UIElement" />.
-            <para>Global bounds are the area in which input is accepted and from which <see cref="P:Molten.UI.UIElement.RenderBounds" /> is calculated, based on padding, borders and other properties.</para></td>
-</tr>
-<tr>
-   <td>RenderBounds</td>
-<td>
-            Gets the bounds in which child components should be drawn.
-            </td>
-</tr>
-<tr>
-   <td>OffsetRenderBounds</td>
-<td>
-            Gets the <see cref="P:Molten.UI.UIElement.RenderBounds" /> with <see cref="P:Molten.UI.UIElement.RenderOffset" /> applied to it.
-            </td>
-</tr>
-<tr>
-   <td>IsVisible</td>
-<td>
-            Gets or sets whether the current <see cref="T:Molten.UI.UIElement" /> is visible.
-            </td>
-</tr>
-<tr>
-   <td>IsEnabled</td>
-<td>
-            Gets or sets whether the current <see cref="T:Molten.UI.UIElement" /> is enabled.
-            </td>
-</tr>
-<tr>
-   <td>Children</td>
-<td>
-            Gets a read-only list of child components attached to the current <see cref="T:Molten.UI.UIElement" />.
-            </td>
-</tr>
-<tr>
-   <td>ParentLayer</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ParentElement</td>
-<td>
-            Gets the parent of the current <see cref="T:Molten.UI.UIElement" />.
-            </td>
-</tr>
-<tr>
-   <td>Engine</td>
-<td>
-            Gets the <see cref="P:Molten.UI.UIElement.Engine" /> instance that the current <see cref="T:Molten.UI.UIElement" /> is bound to.
-            </td>
-</tr>
-<tr>
-   <td>Theme</td>
-<td>
-            Gets or sets the <see cref="T:Molten.UI.UITheme" /> that should be applied to the current <see cref="T:Molten.UI.UIElement" />. Themes provide a set of default appearance values and configuration.
-            </td>
-</tr>
-<tr>
-   <td>State</td>
-<td>
-            Gets the <see cref="T:Molten.UI.UIElementState" /> of the current <see cref="T:Molten.UI.UIElement" />.
-            </td>
-</tr>
-<tr>
-   <td>InputRules</td>
-<td>
-            Gets or sets the input rules for the current <see cref="T:Molten.UI.UIElement" />.
-            </td>
-</tr>
-<tr>
-   <td>Margin</td>
-<td>
-            Gets the margin of the current <see cref="T:Molten.UI.UIElement" />. This spacing directly affects the <see cref="!:BorderBounds" />.
-            </td>
-</tr>
-<tr>
-   <td>Padding</td>
-<td>
-            Gets the padding of the current <see cref="T:Molten.UI.UIElement" />. This is the spacing between the <see cref="P:Molten.UI.UIElement.Margin" /> and <see cref="P:Molten.UI.UIElement.RenderBounds" />.
-            </td>
-</tr>
-<tr>
-   <td>Anchor</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ParentWindow</td>
-<td>
-            Gets the <see cref="T:Molten.UI.UIWindow" /> that contains the current <see cref="T:Molten.UI.UIElement" />.
-            </td>
-</tr>
-<tr>
-   <td>IsFocused</td>
-<td>
-            Gets or sets whether or not the current <see cref="T:Molten.UI.UIElement" /> is focused.
-            </td>
-</tr>
-<tr>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>EOID</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Name</td>
-<td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
 </div>

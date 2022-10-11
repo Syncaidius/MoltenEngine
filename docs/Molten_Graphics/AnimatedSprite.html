@@ -14,7 +14,7 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
    <td>OnDataChanged</td>
@@ -28,38 +28,38 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Play</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Pause</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Stop</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Update</td>
+   <td>Pause()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>Play(Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>Stop()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>Update(Timing)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -67,8 +67,14 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>Animation</td>
+<td>
+            Gets or sets the sprite animation of the current <see cref="T:Molten.Graphics.AnimatedSprite" /> instance.
+            </td>
+</tr>
 <tr>
    <td>AnimationSpeed</td>
 <td>
@@ -76,11 +82,8 @@
             </td>
 </tr>
 <tr>
-   <td>IsLooping</td>
-<td>
-            Gets whether the current <see cref="T:Molten.Graphics.AnimatedSprite" />'s animation restarts from the beginning once it reaches the end, or stops.<para />
-            The default value is true.
-            </td>
+   <td>Data</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>Frame</td>
@@ -90,19 +93,22 @@
             </td>
 </tr>
 <tr>
-   <td>Animation</td>
+   <td>Height</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsLooping</td>
 <td>
-            Gets or sets the sprite animation of the current <see cref="T:Molten.Graphics.AnimatedSprite" /> instance.
+            Gets whether the current <see cref="T:Molten.Graphics.AnimatedSprite" />'s animation restarts from the beginning once it reaches the end, or stops.<para />
+            The default value is true.
             </td>
 </tr>
 <tr>
-   <td>State</td>
-<td>
-            Gets the current animation state of the sprite.
-            </td>
+   <td>Material</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Data</td>
+   <td>Origin</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -118,23 +124,7 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Origin</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Material</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>TargetSurfaceSlice</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Width</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Height</td>
+   <td>ScaledHeight</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -142,7 +132,17 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ScaledHeight</td>
+   <td>State</td>
+<td>
+            Gets the current animation state of the sprite.
+            </td>
+</tr>
+<tr>
+   <td>TargetSurfaceSlice</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Width</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>

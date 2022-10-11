@@ -19,8 +19,14 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Fields</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td>BackVector</td>
+<td>
+            Reference for a vector with dimensions (0,0,1).
+            </td>
+</tr>
 <tr>
    <td>BigEpsilon</td>
 <td>
@@ -28,21 +34,9 @@
             </td>
 </tr>
 <tr>
-   <td>Epsilon</td>
+   <td>DegToRad</td>
 <td>
-            Tolerance value. Defaults to 1e-7D.
-            </td>
-</tr>
-<tr>
-   <td>NoVector</td>
-<td>
-            Represents an invalid Vector3.
-            </td>
-</tr>
-<tr>
-   <td>BackVector</td>
-<td>
-            Reference for a vector with dimensions (0,0,1).
+            Multiply by this value to convert from degrees to radians.
             </td>
 </tr>
 <tr>
@@ -52,9 +46,27 @@
             </td>
 </tr>
 <tr>
+   <td>Epsilon</td>
+<td>
+            Tolerance value. Defaults to 1e-7D.
+            </td>
+</tr>
+<tr>
    <td>ForwardVector</td>
 <td>
             Reference for a vector with dimensions (0,0,-1).
+            </td>
+</tr>
+<tr>
+   <td>GradToDeg</td>
+<td>
+            Multiply by this value to convert from gradians to degrees.
+            </td>
+</tr>
+<tr>
+   <td>GradToRad</td>
+<td>
+            Multiply by this value to convert from gradians to radians.
             </td>
 </tr>
 <tr>
@@ -70,9 +82,63 @@
             </td>
 </tr>
 <tr>
+   <td>NoVector</td>
+<td>
+            Represents an invalid Vector3.
+            </td>
+</tr>
+<tr>
+   <td>Pi</td>
+<td>
+            A value specifying the approximation of π which is 180 degrees.
+            </td>
+</tr>
+<tr>
+   <td>PiOverFour</td>
+<td>
+            A value specifying the approximation of π/4 which is 45 degrees.
+            </td>
+</tr>
+<tr>
+   <td>PiOverTwo</td>
+<td>
+            A value specifying the approximation of π/2 which is 90 degrees.
+            </td>
+</tr>
+<tr>
+   <td>RadToDeg</td>
+<td>
+            Multiply by this value to convert from radians to degrees.
+            </td>
+</tr>
+<tr>
+   <td>RadToGrad</td>
+<td>
+            Multiply by this value to convert from radians to gradians.
+            </td>
+</tr>
+<tr>
    <td>RightVector</td>
 <td>
             Reference for a vector with dimensions (1,0,0).
+            </td>
+</tr>
+<tr>
+   <td>RigidIdentity</td>
+<td>
+            Refers to the rigid identity transformation.
+            </td>
+</tr>
+<tr>
+   <td>Tau</td>
+<td>
+            Equivilent to <see cref="F:Molten.MathHelperDP.TwoPi" />. Represents the number of radians in one turn, specified by the constant, τ
+            </td>
+</tr>
+<tr>
+   <td>TwoPi</td>
+<td>
+            Equvilent to <see cref="F:Molten.MathHelperDP.Tau" />. A value specifying the approximation of 2π which is 360 degrees.
             </td>
 </tr>
 <tr>
@@ -88,81 +154,15 @@
             </td>
 </tr>
 <tr>
-   <td>ZeroVector</td>
-<td>
-            Reference for a vector with dimensions (0,0,0).
-            </td>
-</tr>
-<tr>
-   <td>RigidIdentity</td>
-<td>
-            Refers to the rigid identity transformation.
-            </td>
-</tr>
-<tr>
    <td>ZeroTolerance</td>
 <td>
             The value for which all absolute numbers smaller than are considered equal to zero.
             </td>
 </tr>
 <tr>
-   <td>Pi</td>
+   <td>ZeroVector</td>
 <td>
-            A value specifying the approximation of π which is 180 degrees.
-            </td>
-</tr>
-<tr>
-   <td>TwoPi</td>
-<td>
-            Equvilent to <see cref="F:Molten.MathHelperDP.Tau" />. A value specifying the approximation of 2π which is 360 degrees.
-            </td>
-</tr>
-<tr>
-   <td>Tau</td>
-<td>
-            Equivilent to <see cref="F:Molten.MathHelperDP.TwoPi" />. Represents the number of radians in one turn, specified by the constant, τ
-            </td>
-</tr>
-<tr>
-   <td>PiOverTwo</td>
-<td>
-            A value specifying the approximation of π/2 which is 90 degrees.
-            </td>
-</tr>
-<tr>
-   <td>PiOverFour</td>
-<td>
-            A value specifying the approximation of π/4 which is 45 degrees.
-            </td>
-</tr>
-<tr>
-   <td>DegToRad</td>
-<td>
-            Multiply by this value to convert from degrees to radians.
-            </td>
-</tr>
-<tr>
-   <td>RadToDeg</td>
-<td>
-            Multiply by this value to convert from radians to degrees.
-            </td>
-</tr>
-<tr>
-   <td>GradToRad</td>
-<td>
-            Multiply by this value to convert from gradians to radians.
-            </td>
-</tr>
-<tr>
-   <td>GradToDeg</td>
-<td>
-            Multiply by this value to convert from gradians to degrees.
-            </td>
-</tr>
-<tr>
-   <td>RadToGrad</td>
-<td>
-            Multiply by this value to convert from radians to gradians.
+            Reference for a vector with dimensions (0,0,0).
             </td>
 </tr>
 </tbody></table><br/>
@@ -170,174 +170,174 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>NearEqual</td>
+   <td>BarycentricCoordinates(Vector3D&, Vector3D&, Vector3D&, Vector3D&, Double&, Double&, Double&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>IsZero</td>
+   <td>Clamp(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>IsOne</td>
+   <td>Clamp(Double, Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>WithinEpsilon</td>
+   <td>DegreesToRadians(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RevolutionsToDegrees</td>
+   <td>DegreesToRevolutions(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RevolutionsToRadians</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RevolutionsToGradians</td>
+   <td>Gauss(Double, Double, Double, Double, Double, Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>DegreesToRevolutions</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>DegreesToRadians</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RadiansToRevolutions</td>
+   <td>GetVelocityOfPoint(Vector3D&, Vector3D&, Vector3D&, Vector3D&, Vector3D&)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RadiansToGradians</td>
+   <td>GetVelocityOfPoint(Vector3D, Vector3D, Vector3D, Vector3D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GradiansToRevolutions</td>
+   <td>GetWinding(Vector2D, Vector2D, Vector2D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GradiansToDegrees</td>
+   <td>GetWindingSign(Vector2D, Vector2D, Vector2D)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GradiansToRadians</td>
+   <td>GradiansToDegrees(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RadiansToDegrees</td>
+   <td>GradiansToRadians(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Clamp</td>
+   <td>GradiansToRevolutions(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Clamp</td>
+   <td>IsOne(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Lerp</td>
+   <td>IsZero(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Lerp</td>
+   <td>Lerp(Double, Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Lerp</td>
+   <td>Lerp(Int32, Int32, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Lerp</td>
+   <td>Lerp(UInt32, UInt32, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Lerp</td>
+   <td>Lerp(Int64, Int64, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SmoothStep</td>
+   <td>Lerp(UInt64, UInt64, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SmootherStep</td>
+   <td>Median(Double, Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Mod</td>
+   <td>Mod(Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Mod2PI</td>
+   <td>Mod2PI(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Wrap</td>
+   <td>NearEqual(Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>WrapAngle</td>
+   <td>NonZeroSign(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Gauss</td>
+   <td>RadiansToDegrees(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>RoundToNearest</td>
+   <td>RadiansToGradians(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetVelocityOfPoint</td>
+   <td>RadiansToRevolutions(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetVelocityOfPoint</td>
+   <td>RevolutionsToDegrees(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Sign</td>
+   <td>RevolutionsToGradians(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>NonZeroSign</td>
+   <td>RevolutionsToRadians(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>BarycentricCoordinates</td>
+   <td>RoundToNearest(Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetWinding</td>
+   <td>Sign(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetWindingSign</td>
+   <td>SmootherStep(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Median</td>
+   <td>SmoothStep(Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>WithinEpsilon(Double, Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>Wrap(Double, Double, Double)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>WrapAngle(Double)</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>

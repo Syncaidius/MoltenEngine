@@ -14,26 +14,10 @@
 			<div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Events</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>ValueChanged</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Pressed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Held</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
    <td>Dragged</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Released</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -41,7 +25,11 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Leave</td>
+   <td>Focused</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Held</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -49,7 +37,7 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ParentChanged</td>
+   <td>Leave</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -57,11 +45,19 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Focused</td>
+   <td>OnDisposing</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Unfocused</td>
+   <td>ParentChanged</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Pressed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Released</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -69,7 +65,11 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnDisposing</td>
+   <td>Unfocused</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ValueChanged</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -80,86 +80,86 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Methods</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Set</td>
+   <td>BringToFront()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnPressed</td>
+   <td>Contains(Vector2F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnDragged</td>
+   <td>Dispose()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnReleased</td>
+   <td>Equals(Object)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Contains</td>
+   <td>Focus()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Focus</td>
+   <td>GetHashCode()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Unfocus</td>
+   <td>GetType()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Pick</td>
+   <td>HasInputRules(UIInputRuleFlags)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>HasInputRules</td>
+   <td>OnDragged(UIPointerTracker)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnHover</td>
+   <td>OnEnter(UIPointerTracker)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnEnter</td>
+   <td>OnHeld(UIPointerTracker)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnLeave</td>
+   <td>OnHover(UIPointerTracker)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>OnHeld</td>
+   <td>OnLeave(UIPointerTracker)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>BringToFront</td>
+   <td>OnPressed(UIPointerTracker)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>SendToBack</td>
+   <td>OnReleased(UIPointerTracker, Boolean)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>ToString</td>
+   <td>Pick(Vector2F)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Dispose</td>
+   <td>SendToBack()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetType</td>
+   <td>Set(Int32, Int32, Int32)</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Equals</td>
+   <td>ToString()</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>GetHashCode</td>
+   <td>Unfocus()</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
@@ -167,13 +167,11 @@
 <div class="obj-section">
 <table><thead><tr>
    <th class="obj-section-title">Properties</th>
-   <th>&nbsp</th>
+   <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
 <tr>
-   <td>Direction</td>
-<td>
-            Gets or sets the direction of the current <see cref="T:Molten.UI.UIScrollBar" />.
-            </td>
+   <td>Anchor</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>BackgroundColor</td>
@@ -188,26 +186,34 @@
 <td>&nbsp;</td>
 </tr>
 <tr>
+   <td>Children</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
    <td>Corners</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-   <td>MinValue</td>
+   <td>Direction</td>
 <td>
-            Gets or sets the minimum value represented by the current <see cref="T:Molten.UI.UIScrollBar" />.
+            Gets or sets the direction of the current <see cref="T:Molten.UI.UIScrollBar" />.
             </td>
 </tr>
 <tr>
-   <td>MaxValue</td>
-<td>
-            Gets or sets the maximum value represented by the current <see cref="T:Molten.UI.UIScrollBar" />.
-            </td>
+   <td>Engine</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
-   <td>Value</td>
-<td>
-            Gets or sets the value of the current <see cref="T:Molten.UI.UIScrollBar" />. The value will automatically be clamped between <see cref="P:Molten.UI.UIScrollBar.MinValue" /> to <see cref="P:Molten.UI.UIScrollBar.MaxValue" />.
-            </td>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>GlobalBounds</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Height</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td>Increment</td>
@@ -216,7 +222,89 @@
             </td>
 </tr>
 <tr>
+   <td>InputRules</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsEnabled</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsFocused</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>IsVisible</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
    <td>LocalBounds</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Margin</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>MaxValue</td>
+<td>
+            Gets or sets the maximum value represented by the current <see cref="T:Molten.UI.UIScrollBar" />.
+            </td>
+</tr>
+<tr>
+   <td>MinValue</td>
+<td>
+            Gets or sets the minimum value represented by the current <see cref="T:Molten.UI.UIScrollBar" />.
+            </td>
+</tr>
+<tr>
+   <td>Name</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>OffsetRenderBounds</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Padding</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ParentElement</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ParentLayer</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>ParentWindow</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>RenderBounds</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>State</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Theme</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td>Value</td>
+<td>
+            Gets or sets the value of the current <see cref="T:Molten.UI.UIScrollBar" />. The value will automatically be clamped between <see cref="P:Molten.UI.UIScrollBar.MinValue" /> to <see cref="P:Molten.UI.UIScrollBar.MaxValue" />.
+            </td>
+</tr>
+<tr>
+   <td>Width</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -225,94 +313,6 @@
 </tr>
 <tr>
    <td>Y</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Width</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Height</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>GlobalBounds</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>RenderBounds</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>OffsetRenderBounds</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>IsVisible</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>IsEnabled</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Children</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ParentLayer</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ParentElement</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Engine</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Theme</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>State</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>InputRules</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Margin</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Padding</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Anchor</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>ParentWindow</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>IsFocused</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>EOID</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td>Name</td>
 <td>&nbsp;</td>
 </tr>
 </tbody></table><br/>
