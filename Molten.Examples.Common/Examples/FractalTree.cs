@@ -28,7 +28,7 @@ namespace Molten.Examples
 
             public List<FractalBranch> Branches { get; } = new List<FractalBranch>();
 
-            public void Branch(int branchCount, float scale, float arcRadians)
+            public void Branch(Random rng, int branchCount, float scale, float arcRadians)
             {
                 if (Branches.Count > 0)
                     return;
@@ -39,7 +39,7 @@ namespace Molten.Examples
                 // ang will be the mid-point of our new arc
                 float ang = MathF.Atan2(-dir.Y, dir.X);
                 ang += arcRadians / 2;
-                float angInc = arcRadians / (branchCount - 1);
+                float angInc = arcRadians;
 
                 for(int i = 0; i < branchCount; i++)
                 {
@@ -50,7 +50,7 @@ namespace Molten.Examples
                         Y = MathF.Cos(ang)
                     };
 
-                    Branches.Add(new FractalBranch(End, bDir, Length * scale));
+                    Branches.Add(new FractalBranch(End, bDir, (int)(Length * rng.NextDouble())));
                 }
             }
 
@@ -70,15 +70,15 @@ namespace Molten.Examples
             loader.OnCompleted += Loader_OnCompleted;
         }
 
-        private void SpawnFractalTree(FractalBranch branch, int branchCount, int maxDepth, int depth = 0, float arc = MathF.PI / 4)
+        private void SpawnFractalTree(FractalBranch branch, int branchCount, int maxDepth, int depth = 0, float arc = MathF.PI / 4, float scale = 0.80f)
         {
             if (depth == maxDepth)
                 return;
 
-            branch.Branch(branchCount, 0.80f, arc);
+            branch.Branch(Rng, branchCount, scale, arc);
 
             foreach (FractalBranch b in branch.Branches)
-                SpawnFractalTree(b, branchCount, maxDepth, depth + 1, arc);
+                SpawnFractalTree(b, branchCount, maxDepth, depth + 1, arc, scale);
         }
 
         private void Loader_OnCompleted(ContentLoadBatch loader)
