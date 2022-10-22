@@ -8,7 +8,7 @@
 	<div class="sec-content">  
 		<div class='obj-title'><span><img src="../img/class.png" title="class" alt"class icon"/>Molten.Graphics.<b>RenderCamera</b></span><div>
 		<div class='obj-summary'>
-			<p></p>
+			<p>&nbsp;</p>
 		</div>
 		<div class="sec-object">
 			<div class="obj-section">
@@ -34,22 +34,22 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnDisposing</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
    <td>OnOutputSurfaceChanged</td>
 <td>
-            Invoked when the <see cref="P:Molten.Graphics.RenderCamera.Surface" /> property is changed.
+            Invoked when the <a href="">Surface</a> property is changed.
             </td>
 </tr>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
    <td>OnSurfaceResized</td>
 <td>
-            Invoked when the bound <see cref="T:Molten.Graphics.IRenderSurface2D" /> is resized.
+            Invoked when the bound <a href="">IRenderSurface2D</a> is resized.
             </td>
+</tr>
+<tr>
+   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
+   <td>OnDisposing</td>
+<td>&nbsp;</td>
 </tr>
 
 </tbody></table><br/>
@@ -66,7 +66,22 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>HasFlags<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderCameraFlags</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Dispose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -77,21 +92,6 @@
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>HasFlags<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderCameraFlags</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -106,8 +106,47 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>EOID</td>
+   <td>View</td>
+<td>Gets or sets the camera's view matrix.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Transform</td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Projection</td>
+<td>Gets the camera's projection matrix. The projection is ignored during rendering if <a href="">Surface</a> is not set.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>ViewProjection</td>
+<td>Gets the camera's combined view-projection matrix. This is the result of the view matrix multiplied by the projection matrix.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>InvViewProjection</td>
+<td>
+            Gets the inverse view-projection matrix. This is equal to passing <a href="">ViewProjection</a> through .
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Surface</td>
+<td>Gets or sets the <a href="">IRenderSurface2D</a> that the camera's view should be rendered out to.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>MinDrawDistance</td>
+<td>Gets or sets the minimum draw dinstance. Also known as the near-clip plane. 
+            Anything closer this value will not be drawn.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>MaxDrawDistance</td>
+<td>Gets or sets the maximum draw distance. Also known as the far-clip plane. 
+            Anything further away than this value will not be drawn.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -118,22 +157,22 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Position</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Skip</td>
+<td>
+            Gets whether the camera will be skipped during rendering.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Flags</td>
 <td>
-            Gets or sets the render flags for the current <see cref="T:Molten.Graphics.RenderCamera" />.
+            Gets or sets the render flags for the current <a href="">RenderCamera</a>.
             </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>InvViewProjection</td>
-<td>
-            Gets the inverse view-projection matrix. This is equal to passing <see cref="P:Molten.Graphics.RenderCamera.ViewProjection" /> through <see cref="M:Molten.Matrix4F.Invert(Molten.Matrix4F)" />.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -145,15 +184,26 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>MaxDrawDistance</td>
-<td>Gets or sets the maximum draw distance. Also known as the far-clip plane. 
-            Anything further away than this value will not be drawn.</td>
+   <td>MultiSampleLevel</td>
+<td>
+            Gets or sets the multi-sample <a href="">AntiAliasLevel</a> when rendering a scene with the current <a href="">RenderCamera</a>.
+            </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>MinDrawDistance</td>
-<td>Gets or sets the minimum draw dinstance. Also known as the near-clip plane. 
-            Anything closer this value will not be drawn.</td>
+   <td>Profiler</td>
+<td>
+            Gets the <a href="">RenderProfiler</a> instance bound to the current <a href="">RenderCamera</a>, which tracks render performance and statistics of the scene rendered by the camera.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>OrderDepth</td>
+<td>
+            Gets or sets the ordering depth of the current <a href="">RenderCamera</a>. The default value is 0.
+            Cameras which share the same output surface and order-depth will be rendered in the other they were added to the scene.
+            If you intend to output multiple cameras to the same <a href="">IRenderSurface2D</a>, it is recommended you change the order depth accordingly.
+            </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -164,68 +214,18 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>MultiSampleLevel</td>
-<td>
-            Gets or sets the multi-sample <see cref="T:Molten.Graphics.AntiAliasLevel" /> when rendering a scene with the current <see cref="T:Molten.Graphics.RenderCamera" />.
-            </td>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>EOID</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Name</td>
 <td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>OrderDepth</td>
-<td>
-            Gets or sets the ordering depth of the current <see cref="T:Molten.Graphics.RenderCamera" />. The default value is 0.
-            Cameras which share the same output surface and order-depth will be rendered in the other they were added to the scene.
-            If you intend to output multiple cameras to the same <see cref="T:Molten.Graphics.IRenderSurface2D" />, it is recommended you change the order depth accordingly.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Position</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Profiler</td>
-<td>
-            Gets the <see cref="T:Molten.Graphics.RenderProfiler" /> instance bound to the current <see cref="T:Molten.Graphics.RenderCamera" />, which tracks render performance and statistics of the scene rendered by the camera.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Projection</td>
-<td>Gets the camera's projection matrix. The projection is ignored during rendering if <see cref="P:Molten.Graphics.RenderCamera.Surface" /> is not set.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Skip</td>
-<td>
-            Gets whether the camera will be skipped during rendering.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Surface</td>
-<td>Gets or sets the <see cref="T:Molten.Graphics.IRenderSurface2D" /> that the camera's view should be rendered out to.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Transform</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>View</td>
-<td>Gets or sets the camera's view matrix.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>ViewProjection</td>
-<td>Gets the camera's combined view-projection matrix. This is the result of the view matrix multiplied by the projection matrix.</td>
 </tr>
 
 </tbody></table><br/>
@@ -234,4 +234,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

@@ -11,8 +11,8 @@
 			<p>
             A PosRule table also contains a count of the positioning operations to be performed on the input glyph sequence (posCount) and an array of PosLookupRecords (posLookupRecords). 
             Each record specifies a position in the input glyph sequence and a LookupList index to the positioning lookup to be applied there. 
-            The array should list records in design order, or the order the lookups should be applied to the entire glyph sequence.<para />
-            See for PosRuleTable: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#context-positioning-subtable-format-1-simple-glyph-contexts <para />
+            The array should list records in design order, or the order the lookups should be applied to the entire glyph sequence.
+            See for PosRuleTable: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#context-positioning-subtable-format-1-simple-glyph-contexts 
             See for SubRuleTable: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#51-context-substitution-format-1-simple-glyph-contexts
             </p>
 		</div>
@@ -34,22 +34,22 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -64,14 +64,16 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Header</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>InputSequence</td>
 <td>
             Gets an array of input glyph IDs — starting with the second glyph.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Records</td>
+<td>
+            Gets an array of positioning lookups, in design order.
             </td>
 </tr>
 <tr>
@@ -81,10 +83,8 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Records</td>
-<td>
-            Gets an array of positioning lookups, in design order.
-            </td>
+   <td>Header</td>
+<td>&nbsp;</td>
 </tr>
 
 </tbody></table><br/>
@@ -93,4 +93,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

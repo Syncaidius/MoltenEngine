@@ -28,29 +28,7 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Dispose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Attempts to safely shutdown the engine before disposing of the current instance.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>GetService<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -77,7 +55,29 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Dispose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Attempts to safely shutdown the engine before disposing of the current instance.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -92,54 +92,25 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Audio</td>
-<td>
-            Gets the main <see cref="T:Molten.Audio.AudioService" /> attached to the current <see cref="T:Molten.Engine" /> instance.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Content</td>
-<td>
-            Gets the main content manager bound to the current engine instance. <para />
-            It is recommended that you use this to load assets that are unlikely to be unloaded throughout the lifetime of the current session. 
-            You should use separate <see cref="T:Molten.ContentManager" /> instances for level-specific or short-lifespan content. 
-            Disposing of a <see cref="T:Molten.ContentManager" /> instance will unload all of the content that was loaded by it.<para /></td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Current</td>
 <td>Gets the current instance of the engine. There can only be one active per application.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Input</td>
-<td>Gets the <see cref="T:Molten.Input.InputService" /> attached to the current <see cref="T:Molten.Engine" /> instance.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsDisposed</td>
-<td>
-            Gets whether or not the current <see cref="T:Molten.Engine" /> instance has been disposed.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>MainThread</td>
-<td>
-            Gets the main <see cref="T:Molten.Threading.EngineThread" /> of the current <see cref="T:Molten.Engine" /> instance.
-            Core/game update logic is usually done on this thread.
-            </td>
+   <td>Renderer</td>
+<td>Gets the main <a href="">RenderService</a> attached to the current <a href="">Engine</a> instance.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Net</td>
-<td>Gets the main <see cref="T:Molten.Net.NetworkService" /> attached to the current <see cref="T:Molten.Engine" /> instance.</td>
+<td>Gets the main <a href="">NetworkService</a> attached to the current <a href="">Engine</a> instance.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Renderer</td>
-<td>Gets the main <see cref="T:Molten.Graphics.RenderService" /> attached to the current <see cref="T:Molten.Engine" /> instance.</td>
+   <td>Audio</td>
+<td>
+            Gets the main <a href="">AudioService</a> attached to the current <a href="">Engine</a> instance.
+            </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -151,6 +122,35 @@
    <td>Threading</td>
 <td>Gets the thread manager bound to the engine.</td>
 </tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>MainThread</td>
+<td>
+            Gets the main <a href="">EngineThread</a> of the current <a href="">Engine</a> instance.
+            Core/game update logic is usually done on this thread.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Content</td>
+<td>
+            Gets the main content manager bound to the current engine instance. 
+            It is recommended that you use this to load assets that are unlikely to be unloaded throughout the lifetime of the current session. 
+            You should use separate <a href="">ContentManager</a> instances for level-specific or short-lifespan content. 
+            Disposing of a ContentManager instance will unload all of the content that was loaded by it.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Input</td>
+<td>Gets the <a href="">InputService</a> attached to the current <a href="">Engine</a> instance.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>IsDisposed</td>
+<td>
+            Gets whether or not the current <a href="">Engine</a> instance has been disposed.
+            </td>
+</tr>
 
 </tbody></table><br/>
 
@@ -158,4 +158,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

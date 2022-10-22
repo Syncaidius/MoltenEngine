@@ -8,7 +8,7 @@
 	<div class="sec-content">  
 		<div class='obj-title'><span><img src="../img/class.png" title="class" alt"class icon"/>Molten.Input.<b>InputAnalogStick</b></span><div>
 		<div class='obj-summary'>
-			<p></p>
+			<p>&nbsp;</p>
 		</div>
 		<div class="sec-object">
 			<div class="obj-section">
@@ -45,12 +45,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>SetValues<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -60,12 +55,17 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>SetValues<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -80,11 +80,8 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Deadzone</td>
-<td>
-            Gets or sets the stick deadzone as a percentage of the stick's total value range along each axis. 
-            The lower this value is set, the more sensitive the stick should be. 
-            However, setting it too low may cause the stick to become sensitive to unwanted movement. <para /></td>
+   <td>Name</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -93,14 +90,9 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Name</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>RawValue</td>
 <td>
-            Gets a <see cref="T:Molten.Vector2F" /> containing the raw value for each stick axis.
+            Gets a <a href="">Vector2F</a> containing the raw value for each stick axis.
             </td>
 </tr>
 <tr>
@@ -121,7 +113,7 @@
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Value</td>
 <td>
-            Gets a <see cref="T:Molten.Vector2F" /> containing the percentage value for each stick axis. The deadzone is taken into account when calculating this value.
+            Gets a <a href="">Vector2F</a> containing the percentage value for each stick axis. The deadzone is taken into account when calculating this value.
             </td>
 </tr>
 <tr>
@@ -138,6 +130,14 @@
             Gets the percentage value for the stick's Y axis.
             </td>
 </tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Deadzone</td>
+<td>
+            Gets or sets the stick deadzone as a percentage of the stick's total value range along each axis. 
+            The lower this value is set, the more sensitive the stick should be. 
+            However, setting it too low may cause the stick to become sensitive to unwanted movement. </td>
+</tr>
 
 </tbody></table><br/>
 
@@ -145,4 +145,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

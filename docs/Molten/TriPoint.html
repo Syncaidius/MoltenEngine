@@ -8,7 +8,7 @@
 	<div class="sec-content">  
 		<div class='obj-title'><span><img src="../img/class.png" title="class" alt"class icon"/>Molten.<b>TriPoint</b></span><div>
 		<div class='obj-summary'>
-			<p></p>
+			<p>&nbsp;</p>
 		</div>
 		<div class="sec-object">
 			<div class="obj-section">
@@ -47,18 +47,6 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>EdgeList</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Empty</td>
-<td>
-            An empty <see cref="T:Molten.TriPoint" /> with <see cref="F:Molten.TriPoint.EdgeList" /> uninitialized (null).
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>X</td>
 <td>&nbsp;</td>
 </tr>
@@ -66,6 +54,18 @@
    <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>Y</td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>EdgeList</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>Empty</td>
+<td>
+            An empty <a href="">TriPoint</a> with <a href="">EdgeList</a> uninitialized (null).
+            </td>
 </tr>
 
 </tbody></table><br/>
@@ -79,7 +79,53 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>set_zero<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Set<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetNegated<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Negate this point and return a new instance of it.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Add<i class="obj-parenthesis">(</i><i class="obj-parameter">TriPoint</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Subtract<i class="obj-parenthesis">(</i><i class="obj-parameter">TriPoint</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Multiply<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Length<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Get the length of this point (the norm).
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Normalize<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Convert this point into a unit point (normalizes it). Returns the Length.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Dot<i class="obj-parenthesis">(</i><i class="obj-parameter">TriPoint</i>, <i class="obj-parameter">TriPoint</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -99,7 +145,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Dot<i class="obj-parenthesis">(</i><i class="obj-parameter">TriPoint</i>, <i class="obj-parameter">TriPoint</i><i class="obj-parenthesis">)</i></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -119,58 +165,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetNegated<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Negate this point and return a new instance of it.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Length<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Get the length of this point (the norm).
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Multiply<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Normalize<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Convert this point into a unit point (normalizes it). Returns the Length.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Set<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>set_zero<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Subtract<i class="obj-parenthesis">(</i><i class="obj-parameter">TriPoint</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -183,4 +183,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

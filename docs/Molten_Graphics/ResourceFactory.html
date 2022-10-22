@@ -54,12 +54,12 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CompileShaders<i class="obj-parenthesis">(</i><i class="obj-parameter">String&</i>, <i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
+   <td>CreateSurface<i class="obj-parenthesis">(</i><i class="obj-parameter">Texture2DProperties</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CreateControlSurface<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i>, <i class="obj-parameter">String</i>, <i class="obj-parameter">UInt32</i><i class="obj-parenthesis">)</i></td>
+   <td>CreateSurface<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">GraphicsFormat</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">AntiAliasLevel</i>, <i class="obj-parameter">TextureFlags</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -74,37 +74,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CreateIndexedMesh<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">VertexTopology</i>, <i class="obj-parameter">Boolean</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CreateIndexedMesh<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">VertexTopology</i>, <i class="obj-parameter">IndexBufferFormat</i>, <i class="obj-parameter">Boolean</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CreateMesh<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">VertexTopology</i>, <i class="obj-parameter">Boolean</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CreateMesh<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">VertexTopology</i>, <i class="obj-parameter">Boolean</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CreateSpriteRenderer<i class="obj-parenthesis">(</i><i class="obj-parameter">Action<SpriteBatcher></i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CreateSurface<i class="obj-parenthesis">(</i><i class="obj-parameter">Texture2DProperties</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CreateSurface<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">GraphicsFormat</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">AntiAliasLevel</i>, <i class="obj-parameter">TextureFlags</i><i class="obj-parenthesis">)</i></td>
+   <td>CreateControlSurface<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i>, <i class="obj-parameter">String</i>, <i class="obj-parameter">UInt32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -149,31 +119,6 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Dispose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>LoadEmbeddedShader<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i>, <i class="obj-parameter">String</i>, <i class="obj-parameter">Assembly</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>ResolveTexture<i class="obj-parenthesis">(</i><i class="obj-parameter">ITexture</i>, <i class="obj-parameter">ITexture</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
@@ -184,7 +129,62 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CreateSpriteRenderer<i class="obj-parenthesis">(</i><i class="obj-parameter">Action<SpriteBatcher></i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CreateMesh<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">VertexTopology</i>, <i class="obj-parameter">Boolean</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CreateIndexedMesh<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">VertexTopology</i>, <i class="obj-parameter">Boolean</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CreateMesh<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">VertexTopology</i>, <i class="obj-parameter">Boolean</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CreateIndexedMesh<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">VertexTopology</i>, <i class="obj-parameter">IndexBufferFormat</i>, <i class="obj-parameter">Boolean</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>LoadEmbeddedShader<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i>, <i class="obj-parameter">String</i>, <i class="obj-parameter">Assembly</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CompileShaders<i class="obj-parenthesis">(</i><i class="obj-parameter">String&</i>, <i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Dispose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -199,12 +199,12 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>EOID</td>
+   <td>IsDisposed</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsDisposed</td>
+   <td>EOID</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -219,4 +219,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

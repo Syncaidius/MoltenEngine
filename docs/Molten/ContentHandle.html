@@ -42,29 +42,19 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Dispatch<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>
-            Dispatches the current <see cref="T:Molten.ContentHandle" /> to it's parent <see cref="T:Molten.ContentManager" /> for processing.
+            Dispatches the current <a href="">ContentHandle</a> to it's parent <a href="">ContentManager</a> for processing.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Get<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>LogMessage<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -74,27 +64,37 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>LogError<i class="obj-parenthesis">(</i><i class="obj-parameter">Exception</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>LogMessage<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>LogWarning<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>LogError<i class="obj-parenthesis">(</i><i class="obj-parameter">Exception</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Get<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Wait<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -109,25 +109,27 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>ContentType</td>
-<td>&nbsp;</td>
+   <td>Status</td>
+<td>
+            The status of the current <a href="">ContentHandle</a>.
+            </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>HandleType</td>
+   <td>Manager</td>
+<td>
+            The <a href="">ContentManager</a> that the currnet <a href="">ContentHandle</a> is bound to.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>ContentType</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Info</td>
 <td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Manager</td>
-<td>
-            The <see cref="T:Molten.ContentManager" /> that the currnet <see cref="T:Molten.ContentHandle" /> is bound to.
-            </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -138,10 +140,8 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Status</td>
-<td>
-            The status of the current <see cref="T:Molten.ContentHandle" />.
-            </td>
+   <td>HandleType</td>
+<td>&nbsp;</td>
 </tr>
 
 </tbody></table><br/>
@@ -150,4 +150,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

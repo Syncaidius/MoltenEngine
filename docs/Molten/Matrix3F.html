@@ -49,13 +49,6 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Identity</td>
-<td>
-            The identity <see cref="T:Molten.Matrix3F" />.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>M11</td>
 <td>
             Value at row 1 column 1 of the Matrix3x3.
@@ -121,14 +114,21 @@
    <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>SizeInBytes</td>
 <td>
-            The size of the <see cref="T:Molten.Matrix3F" /> type, in bytes.
+            The size of the <a href="">Matrix3F</a> type, in bytes.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>Zero</td>
 <td>
-            A <see cref="T:Molten.Matrix3F" /> with all of its components set to zero.
+            A <a href="">Matrix3F</a> with all of its components set to zero.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>Identity</td>
+<td>
+            The identity <a href="">Matrix3F</a>.
             </td>
 </tr>
 
@@ -141,61 +141,6 @@
    <th class="obj-section-title">Methods</th>
    <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>AdaptiveDeterminant<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>AdaptiveInvert<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Add<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Add<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>AdjugateTranspose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>AdjugateTranspose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>BillboardLH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>BillboardLH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>BillboardRH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>BillboardRH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CreateOuterProduct<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>CreateScale<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
@@ -228,55 +173,132 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CrossProduct<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>RotationX<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Decompose<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">QuaternionF&</i><i class="obj-parenthesis">)</i></td>
+   <td>RotationX<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>DecomposeLQ<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>RotationY<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>DecomposeQR<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>RotationY<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>DecomposeUniformScale<i class="obj-parenthesis">(</i><i class="obj-parameter">Single&</i>, <i class="obj-parameter">QuaternionF&</i><i class="obj-parenthesis">)</i></td>
+   <td>RotationZ<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Determinant<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>RotationZ<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RotationAxis<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RotationAxis<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>FromQuaternion<i class="obj-parenthesis">(</i><i class="obj-parameter">QuaternionF&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>FromQuaternion<i class="obj-parenthesis">(</i><i class="obj-parameter">QuaternionF</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RotationYawPitchRoll<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RotationYawPitchRoll<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>MultiplyTransposed<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>MultiplyByTransposed<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>AdaptiveInvert<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>AdaptiveDeterminant<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>To4x4<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix4F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>To4x4<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>From4x4<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix4F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>From4x4<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix4F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>
-            Calculates the determinant of the Matrix3x3.
+            Returns a  that represents this instance.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Divide<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Divide<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">IFormatProvider</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Divide<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i>, <i class="obj-parameter">IFormatProvider</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Divide<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Returns a hash code for this instance.
+            </td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
@@ -300,54 +322,19 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ExchangeColumns<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ExchangeRows<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Exponent<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Int32</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Exponent<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>From4x4<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix4F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>From4x4<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix4F</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>FromQuaternion<i class="obj-parenthesis">(</i><i class="obj-parameter">QuaternionF&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>FromQuaternion<i class="obj-parenthesis">(</i><i class="obj-parameter">QuaternionF</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>Determinant<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>
-            Returns a hash code for this instance.
+            Calculates the determinant of the Matrix3x3.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>AdjugateTranspose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>AdjugateTranspose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -359,56 +346,73 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Invert<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>Orthogonalize<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>
-            Inverts the Matrix3x3.
+            Orthogonalizes the specified Matrix3x3.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Invert<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+   <td>Orthonormalize<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>
-            Inverts the Matrix3x3.
+            Orthonormalizes the specified Matrix3x3.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Lerp<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>DecomposeQR<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Lerp<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+   <td>DecomposeLQ<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>LookAtLH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>Decompose<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">QuaternionF&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>LookAtLH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i><i class="obj-parenthesis">)</i></td>
+   <td>DecomposeUniformScale<i class="obj-parenthesis">(</i><i class="obj-parameter">Single&</i>, <i class="obj-parameter">QuaternionF&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>LookAtRH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>ExchangeRows<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>LookAtRH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i><i class="obj-parenthesis">)</i></td>
+   <td>ExchangeColumns<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>LowerTriangularForm<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>ToArray<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Creates an array containing the elements of the Matrix3x3.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Add<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>LowerTriangularForm<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+   <td>Add<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Subtract<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Subtract<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -433,12 +437,42 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>MultiplyByTransposed<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>Divide<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>MultiplyTransposed<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>Divide<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Divide<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Divide<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CrossProduct<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CreateOuterProduct<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Exponent<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Int32</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Exponent<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -453,104 +487,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Orthogonalize<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Orthogonalizes the specified Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Orthogonalize<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Orthogonalizes the specified Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Orthogonalize<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Orthogonalizes the specified Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Orthonormalize<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Orthonormalizes the specified Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Orthonormalize<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Orthonormalizes the specified Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Orthonormalize<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Orthonormalizes the specified Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RotationAxis<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>Lerp<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RotationAxis<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RotationX<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RotationX<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RotationY<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RotationY<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RotationYawPitchRoll<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RotationYawPitchRoll<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RotationZ<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RotationZ<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RowEchelonForm<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RowEchelonForm<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+   <td>Lerp<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -565,58 +507,25 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Subtract<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Transposes the Matrix3x3.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Subtract<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i>, <i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>To4x4<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix4F&</i><i class="obj-parenthesis">)</i></td>
+   <td>TransposeBy<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>To4x4<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToArray<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Creates an array containing the elements of the Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">IFormatProvider</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i>, <i class="obj-parameter">IFormatProvider</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
@@ -630,35 +539,37 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Transposes the Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Transposes the Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Transposes the Matrix3x3.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Transposes the Matrix3x3.
-            </td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>TransposeBy<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>Invert<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Invert<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Orthogonalize<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Orthogonalize<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Orthonormalize<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Orthonormalize<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -669,6 +580,71 @@
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>UpperTriangularForm<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>LowerTriangularForm<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>LowerTriangularForm<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RowEchelonForm<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F&</i>, <i class="obj-parameter">Matrix3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RowEchelonForm<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>BillboardLH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>BillboardLH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>BillboardRH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>BillboardRH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>LookAtLH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>LookAtLH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>LookAtRH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>LookAtRH<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -683,9 +659,23 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Backward</td>
+   <td>Row1</td>
 <td>
-            Gets or sets the backward vector of the matrix.
+            Gets or sets the first row in the Matrix3x3; that is M11, M12, M13
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Row2</td>
+<td>
+            Gets or sets the second row in the Matrix3x3; that is M21, M22, M23
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Row3</td>
+<td>
+            Gets or sets the third row in the Matrix3x3; that is M31, M32, M33
             </td>
 </tr>
 <tr>
@@ -711,16 +701,9 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Down</td>
+   <td>ScaleVector</td>
 <td>
-            Gets or sets the down vector of the matrix.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Forward</td>
-<td>
-            Gets or sets the forward vector of the matrix.
+            Gets or sets the scale of the Matrix3x3; that is M11, M22, and M33.
             </td>
 </tr>
 <tr>
@@ -742,6 +725,27 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Backward</td>
+<td>
+            Gets or sets the backward vector of the matrix.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Down</td>
+<td>
+            Gets or sets the down vector of the matrix.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Forward</td>
+<td>
+            Gets or sets the forward vector of the matrix.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Left</td>
 <td>
             Gets or sets the left vector of the matrix.
@@ -752,34 +756,6 @@
    <td>Right</td>
 <td>
             Gets or sets the right vector of the matrix.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Row1</td>
-<td>
-            Gets or sets the first row in the Matrix3x3; that is M11, M12, M13
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Row2</td>
-<td>
-            Gets or sets the second row in the Matrix3x3; that is M21, M22, M23
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Row3</td>
-<td>
-            Gets or sets the third row in the Matrix3x3; that is M31, M32, M33
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>ScaleVector</td>
-<td>
-            Gets or sets the scale of the Matrix3x3; that is M11, M22, and M33.
             </td>
 </tr>
 <tr>
@@ -796,4 +772,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

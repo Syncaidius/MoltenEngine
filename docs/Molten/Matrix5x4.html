@@ -49,13 +49,6 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Identity</td>
-<td>
-            The identity <see cref="T:Molten.Matrix5x4" />.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>M11</td>
 <td>
             Value at row 1 column 1 of the Matrix5x4.
@@ -198,14 +191,21 @@
    <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>SizeInBytes</td>
 <td>
-            The size of the <see cref="T:Molten.Matrix5x4" /> type, in bytes.
+            The size of the <a href="">Matrix5x4</a> type, in bytes.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>Zero</td>
 <td>
-            A <see cref="T:Molten.Matrix5x4" /> with all of its components set to zero.
+            A <a href="">Matrix5x4</a> with all of its components set to zero.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>Identity</td>
+<td>
+            The identity <a href="">Matrix5x4</a>.
             </td>
 </tr>
 
@@ -230,34 +230,32 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Subtract<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Subtract<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4</i>, <i class="obj-parameter">Matrix5x4</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Multiply<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Divide<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
+   <td>Negate<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Returns a hash code for this instance.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>Negate<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -272,17 +270,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Multiply<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
+   <td>SmoothStep<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Negate<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Negate<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4</i><i class="obj-parenthesis">)</i></td>
+   <td>SmoothStep<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4</i>, <i class="obj-parameter">Matrix5x4</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -317,54 +310,6 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>SmoothStep<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>SmoothStep<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4</i>, <i class="obj-parameter">Matrix5x4</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Subtract<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Matrix5x4&</i>, <i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Subtract<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4</i>, <i class="obj-parameter">Matrix5x4</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">IFormatProvider</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i>, <i class="obj-parameter">IFormatProvider</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Translation<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector4F&</i>, <i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
@@ -383,6 +328,55 @@
    <td>Translation<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Returns a  that represents this instance.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">IFormatProvider</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i>, <i class="obj-parameter">IFormatProvider</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Returns a hash code for this instance.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix5x4</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
 
 </tbody></table><br/>
 
@@ -393,23 +387,6 @@
    <th class="obj-section-title">Properties</th>
    <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsIdentity</td>
-<td>
-            Gets a value indicating whether this instance is an identity Matrix5x4.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Item</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Item</td>
-<td>&nbsp;</td>
-</tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Row1</td>
@@ -447,6 +424,13 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>TranslationVector</td>
+<td>
+            Gets or sets the translation of the Matrix5x4; that is M41, M42, and M43.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>ScaleVector</td>
 <td>
             Gets or sets the scale of the Matrix5x4; that is M11, M22, and M33.
@@ -454,10 +438,20 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>TranslationVector</td>
+   <td>IsIdentity</td>
 <td>
-            Gets or sets the translation of the Matrix5x4; that is M41, M42, and M43.
+            Gets a value indicating whether this instance is an identity Matrix5x4.
             </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Item</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Item</td>
+<td>&nbsp;</td>
 </tr>
 
 </tbody></table><br/>
@@ -466,4 +460,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

@@ -24,8 +24,10 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnDisposing</td>
-<td>&nbsp;</td>
+   <td>OnPreRender</td>
+<td>
+            Occurs just before the scene is about to be rendered.
+            </td>
 </tr>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
@@ -36,10 +38,8 @@
 </tr>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnPreRender</td>
-<td>
-            Occurs just before the scene is about to be rendered.
-            </td>
+   <td>OnDisposing</td>
+<td>&nbsp;</td>
 </tr>
 
 </tbody></table><br/>
@@ -53,9 +53,9 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>AmbientLightColor</td>
+   <td>IsVisible</td>
 <td>
-            The ambient light color.
+            If true, the scene will be rendered.
             </td>
 </tr>
 <tr>
@@ -67,9 +67,9 @@
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>IsVisible</td>
+   <td>AmbientLightColor</td>
 <td>
-            If true, the scene will be rendered.
+            The ambient light color.
             </td>
 </tr>
 <tr>
@@ -89,7 +89,22 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CreateLayerData<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>AddLayer<i class="obj-parenthesis">(</i><i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RemoveLayer<i class="obj-parenthesis">(</i><i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ReorderLayer<i class="obj-parenthesis">(</i><i class="obj-parameter">LayerRenderData</i>, <i class="obj-parameter">ReorderMode</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -99,17 +114,42 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RemoveObject<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderCamera</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>AddObject<i class="obj-parenthesis">(</i><i class="obj-parameter">IRenderable</i>, <i class="obj-parameter">ObjectRenderData</i>, <i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CreateLayerData<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
+   <td>RemoveObject<i class="obj-parenthesis">(</i><i class="obj-parameter">IRenderable</i>, <i class="obj-parameter">ObjectRenderData</i>, <i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>PreRenderInvoke<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderService</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>PostRenderInvoke<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderService</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Dispose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -120,46 +160,6 @@
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>PostRenderInvoke<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderService</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>PreRenderInvoke<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderService</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RemoveLayer<i class="obj-parenthesis">(</i><i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RemoveObject<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderCamera</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RemoveObject<i class="obj-parenthesis">(</i><i class="obj-parameter">IRenderable</i>, <i class="obj-parameter">ObjectRenderData</i>, <i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ReorderLayer<i class="obj-parenthesis">(</i><i class="obj-parameter">LayerRenderData</i>, <i class="obj-parameter">ReorderMode</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -174,7 +174,7 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Cameras</td>
+   <td>PointLights</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -184,22 +184,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>EOID</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Name</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>PointLights</td>
+   <td>Cameras</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -214,6 +199,21 @@
             Gets or sets the skybox cube-map texture.
             </td>
 </tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Name</td>
+<td>&nbsp;</td>
+</tr>
 
 </tbody></table><br/>
 
@@ -221,4 +221,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

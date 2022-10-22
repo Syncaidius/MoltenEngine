@@ -8,7 +8,7 @@
 	<div class="sec-content">  
 		<div class='obj-title'><span><img src="../" title="interface" alt"interface icon"/>Molten.Audio.<b>IAudioInput</b></span><div>
 		<div class='obj-summary'>
-			<p></p>
+			<p>&nbsp;</p>
 		</div>
 		<div class="sec-object">
 			<div class="obj-section">
@@ -28,10 +28,13 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetAvailableSamples<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Returns the number of captured samples available to read from the current <see cref="T:Molten.Audio.IAudioInput" />.
-            </td>
+   <td>StartCapture<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>StopCapture<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
@@ -40,13 +43,10 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>StartCapture<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>StopCapture<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
+   <td>GetAvailableSamples<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Returns the number of captured samples available to read from the current <a href="">IAudioInput</a>.
+            </td>
 </tr>
 
 </tbody></table><br/>
@@ -60,30 +60,30 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>BufferSize</td>
+   <td>Frequency</td>
 <td>
-            Gets the capture-buffer size of the current <see cref="T:Molten.Audio.IAudioInput" />.
+            Gets or sets frequency at which the current <a href="">IAudioInput</a> will capture audio.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Format</td>
 <td>
-            Gets or sets the format in which the current <see cref="T:Molten.Audio.IAudioInput" /> will capture audio.
+            Gets or sets the format in which the current <a href="">IAudioInput</a> will capture audio.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Frequency</td>
+   <td>BufferSize</td>
 <td>
-            Gets or sets frequency at which the current <see cref="T:Molten.Audio.IAudioInput" /> will capture audio.
+            Gets the capture-buffer size of the current <a href="">IAudioInput</a>.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>IsCapturing</td>
 <td>
-            Gets whether or not the current <see cref="T:Molten.Audio.IAudioInput" /> is recording/capturing audio.
+            Gets whether or not the current <a href="">IAudioInput</a> is recording/capturing audio.
             </td>
 </tr>
 
@@ -93,4 +93,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

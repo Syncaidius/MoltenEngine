@@ -30,12 +30,22 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Play<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Pause<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Play<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>Stop<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>SetSource<i class="obj-parenthesis">(</i><i class="obj-parameter">ISoundSource</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -46,16 +56,6 @@
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>QueueSources<i class="obj-parenthesis">(</i><i class="obj-parameter">ISoundSource[]</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>SetSource<i class="obj-parenthesis">(</i><i class="obj-parameter">ISoundSource</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Stop<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -70,30 +70,30 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsLooping</td>
+   <td>Source</td>
 <td>
-            Gets or sets whether or not the current <see cref="T:Molten.Audio.ISoundInstance" /> shound loop.
+            Gets the <a href="">ISoundSource</a> that is being played through the current <a href="">ISoundInstance</a>.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>QueuedSourceCount</td>
 <td>
-            Gets the number of queued <see cref="T:Molten.Audio.ISoundSource" /> on the current <see cref="T:Molten.Audio.ISoundInstance" />.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Source</td>
-<td>
-            Gets the <see cref="T:Molten.Audio.ISoundSource" /> that is being played through the current <see cref="T:Molten.Audio.ISoundInstance" />.
+            Gets the number of queued <a href="">ISoundSource</a> on the current <a href="">ISoundInstance</a>.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>State</td>
 <td>
-            Gets the state of the current <see cref="T:Molten.Audio.ISoundInstance" />.
+            Gets the state of the current <a href="">ISoundInstance</a>.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>IsLooping</td>
+<td>
+            Gets or sets whether or not the current <a href="">ISoundInstance</a> shound loop.
             </td>
 </tr>
 
@@ -103,4 +103,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

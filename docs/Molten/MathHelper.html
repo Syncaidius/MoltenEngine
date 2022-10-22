@@ -27,30 +27,9 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>BackVector</td>
-<td>
-            Reference for a vector with dimensions (0,0,1).
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>BigEpsilon</td>
 <td>
             Large tolerance value. Defaults to 1e-5f.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>DegToRad</td>
-<td>
-            Multiply by this value to convert from degrees to radians.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>DownVector</td>
-<td>
-            Reference for a vector with dimensions (0,-1,0).
             </td>
 </tr>
 <tr>
@@ -62,23 +41,30 @@
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>NoVector</td>
+<td>
+            Represents an invalid Vector3.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>BackVector</td>
+<td>
+            Reference for a vector with dimensions (0,0,1).
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>DownVector</td>
+<td>
+            Reference for a vector with dimensions (0,-1,0).
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>ForwardVector</td>
 <td>
             Reference for a vector with dimensions (0,0,-1).
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>GradToDeg</td>
-<td>
-            Multiply by this value to convert from gradians to degrees.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>GradToRad</td>
-<td>
-            Multiply by this value to convert from gradians to radians.
             </td>
 </tr>
 <tr>
@@ -97,79 +83,9 @@
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>NoVector</td>
-<td>
-            Represents an invalid Vector3.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Pi</td>
-<td>
-            A value specifying the approximation of π which is 180 degrees.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>PiHalf</td>
-<td>
-            A value specifying the approximation of half-π which is 90 degrees.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>PiOverFour</td>
-<td>
-            A value specifying the approximation of π/4 which is 45 degrees.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>PiOverTwo</td>
-<td>
-            A value specifying the approximation of π/2 which is 90 degrees.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>RadToDeg</td>
-<td>
-            Multiply by this value to convert from radians to degrees.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>RadToGrad</td>
-<td>
-            Multiply by this value to convert from radians to gradians.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>RightVector</td>
 <td>
             Reference for a vector with dimensions (1,0,0).
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>RigidIdentity</td>
-<td>
-            Refers to the rigid identity transformation.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Tau</td>
-<td>
-            Equivilent to <see cref="F:Molten.MathHelper.TwoPi" />. Represents the number of radians in one turn, specified by the constant, τ
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>TwoPi</td>
-<td>
-            Equvilent to <see cref="F:Molten.MathHelper.Tau" />. A value specifying the approximation of 2π which is 360 degrees.
             </td>
 </tr>
 <tr>
@@ -188,6 +104,20 @@
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>ZeroVector</td>
+<td>
+            Reference for a vector with dimensions (0,0,0).
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>RigidIdentity</td>
+<td>
+            Refers to the rigid identity transformation.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>ZeroTolerance</td>
 <td>
             The value for which all absolute numbers smaller than are considered equal to zero.
@@ -195,9 +125,79 @@
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>ZeroVector</td>
+   <td>PiHalf</td>
 <td>
-            Reference for a vector with dimensions (0,0,0).
+            A value specifying the approximation of half-π which is 90 degrees.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>Pi</td>
+<td>
+            A value specifying the approximation of π which is 180 degrees.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>TwoPi</td>
+<td>
+            Equvilent to <a href="">Tau</a>. A value specifying the approximation of 2π which is 360 degrees.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>Tau</td>
+<td>
+            Equivilent to <a href="">TwoPi</a>. Represents the number of radians in one turn, specified by the constant, τ
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>PiOverTwo</td>
+<td>
+            A value specifying the approximation of π/2 which is 90 degrees.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>PiOverFour</td>
+<td>
+            A value specifying the approximation of π/4 which is 45 degrees.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>DegToRad</td>
+<td>
+            Multiply by this value to convert from degrees to radians.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>RadToDeg</td>
+<td>
+            Multiply by this value to convert from radians to degrees.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>GradToRad</td>
+<td>
+            Multiply by this value to convert from gradians to radians.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>GradToDeg</td>
+<td>
+            Multiply by this value to convert from gradians to degrees.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>RadToGrad</td>
+<td>
+            Multiply by this value to convert from radians to gradians.
             </td>
 </tr>
 
@@ -212,7 +212,77 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>BarycentricCoordinates<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Single&</i>, <i class="obj-parameter">Single&</i>, <i class="obj-parameter">Single&</i><i class="obj-parenthesis">)</i></td>
+   <td>NearEqual<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>IsZero<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>IsOne<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>WithinEpsilon<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RevolutionsToDegrees<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RevolutionsToRadians<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RevolutionsToGradians<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>DegreesToRevolutions<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>DegreesToRadians<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RadiansToRevolutions<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RadiansToGradians<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GradiansToRevolutions<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GradiansToDegrees<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GradiansToRadians<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RadiansToDegrees<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -233,101 +303,6 @@
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Clamp<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>DegreesToRadians<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>DegreesToRevolutions<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Gauss<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetVelocityOfPoint<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetVelocityOfPoint<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetWinding<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2F</i>, <i class="obj-parameter">Vector2F</i>, <i class="obj-parameter">Vector2F</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetWindingSign<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2F</i>, <i class="obj-parameter">Vector2F</i>, <i class="obj-parameter">Vector2F</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GradiansToDegrees<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GradiansToRadians<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GradiansToRevolutions<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>IsOne<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>IsPowerOfTwo<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt64</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>IsPowerOfTwo<i class="obj-parenthesis">(</i><i class="obj-parameter">Int64</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>IsPowerOfTwo<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>IsPowerOfTwo<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>IsZero<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -357,17 +332,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Max<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32[]</i><i class="obj-parenthesis">)</i></td>
+   <td>SmoothStep<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Median<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Min<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32[]</i><i class="obj-parenthesis">)</i></td>
+   <td>SmootherStep<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -382,57 +352,57 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>NearEqual<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+   <td>Wrap<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>NonZeroSign<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+   <td>Wrap<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>NonZeroSign<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
+   <td>WrapAngle<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>NonZeroSign<i class="obj-parenthesis">(</i><i class="obj-parameter">Int64</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RadiansToDegrees<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RadiansToGradians<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RadiansToRevolutions<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RevolutionsToDegrees<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RevolutionsToGradians<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RevolutionsToRadians<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+   <td>Gauss<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>RoundToNearest<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetVelocityOfPoint<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetVelocityOfPoint<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">Vector3F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>IsPowerOfTwo<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt64</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>IsPowerOfTwo<i class="obj-parenthesis">(</i><i class="obj-parameter">Int64</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>IsPowerOfTwo<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>IsPowerOfTwo<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -452,12 +422,52 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>SmootherStep<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+   <td>NonZeroSign<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>SmoothStep<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+   <td>NonZeroSign<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>NonZeroSign<i class="obj-parenthesis">(</i><i class="obj-parameter">Int64</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>BarycentricCoordinates<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">Single&</i>, <i class="obj-parameter">Single&</i>, <i class="obj-parameter">Single&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetWinding<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2F</i>, <i class="obj-parameter">Vector2F</i>, <i class="obj-parameter">Vector2F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetWindingSign<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2F</i>, <i class="obj-parameter">Vector2F</i>, <i class="obj-parameter">Vector2F</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Max<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32[]</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Min<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32[]</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Median<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -467,22 +477,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>WithinEpsilon<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Wrap<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32</i>, <i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Wrap<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i>, <i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>WrapAngle<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -495,4 +495,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

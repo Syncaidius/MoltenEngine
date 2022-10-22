@@ -74,16 +74,16 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>LinearTransform</td>
+   <td>Translation</td>
 <td>
-            Linear transform in the affine transform.
+             Translation in the affine transform.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Translation</td>
+   <td>LinearTransform</td>
 <td>
-             Translation in the affine transform.
+            Linear transform in the affine transform.
             </td>
 </tr>
 
@@ -96,6 +96,36 @@
    <th class="obj-section-title">Methods</th>
    <th class="obj-section-desc">&nbsp</th>
 </tr></thead><tbody>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Transform<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>TransformInverse<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Invert<i class="obj-parenthesis">(</i><i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">AffineTransform&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Multiply<i class="obj-parenthesis">(</i><i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">AffineTransform&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Multiply<i class="obj-parenthesis">(</i><i class="obj-parameter">RigidTransform&</i>, <i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">AffineTransform&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Transform<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">AffineTransform</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>CreateFromRigidTransform<i class="obj-parenthesis">(</i><i class="obj-parameter">RigidTransform&</i>, <i class="obj-parameter">AffineTransform&</i><i class="obj-parenthesis">)</i></td>
@@ -118,42 +148,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Invert<i class="obj-parenthesis">(</i><i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">AffineTransform&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Multiply<i class="obj-parenthesis">(</i><i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">AffineTransform&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Multiply<i class="obj-parenthesis">(</i><i class="obj-parameter">RigidTransform&</i>, <i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">AffineTransform&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Transform<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Transform<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F</i>, <i class="obj-parameter">AffineTransform</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>TransformInverse<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector3F&</i>, <i class="obj-parameter">AffineTransform&</i>, <i class="obj-parameter">Vector3F&</i><i class="obj-parenthesis">)</i></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -168,18 +168,18 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Identity</td>
-<td>
-             Gets the identity affine transform.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Matrix</td>
 <td>
              Gets or sets the 4x4 matrix representation of the affine transform.
              The linear transform is the upper left 3x3 part of the 4x4 matrix.
              The translation is included in the matrix's Translation property.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Identity</td>
+<td>
+             Gets the identity affine transform.
             </td>
 </tr>
 
@@ -189,4 +189,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

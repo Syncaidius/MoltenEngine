@@ -24,7 +24,7 @@
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
    <td>OnResize</td>
 <td>
-            Occurs after the <see cref="T:Molten.Graphics.ITexture" /> is done resizing. Executed by the renderer thread it is bound to.
+            Occurs after the <a href="">ITexture</a> is done resizing. Executed by the renderer thread it is bound to.
             </td>
 </tr>
 
@@ -42,40 +42,10 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CopyTo<i class="obj-parenthesis">(</i><i class="obj-parameter">ITexture</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CopyTo<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">ITexture</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GenerateMipMaps<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="F:Molten.Graphics.TextureFlags.AllowMipMapGeneration" />.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Get1DProperties<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>
-            Gets a new instance of the texture's <see cref="T:Molten.Graphics.Texture1DProperties" /> properties.
+            Gets a new instance of the texture's <a href="">Texture1DProperties</a> properties.
             </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetData<i class="obj-parenthesis">(</i><i class="obj-parameter">ITexture</i>, <i class="obj-parameter">Action<TextureData></i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetData<i class="obj-parenthesis">(</i><i class="obj-parameter">ITexture</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">Action<TextureSlice></i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>HasFlags<i class="obj-parenthesis">(</i><i class="obj-parameter">TextureFlags</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
@@ -85,6 +55,21 @@
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Resize<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GenerateMipMaps<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>Generates any missing mip-maps for a texture, so long as it's creation flags included <a href="">AllowMipMapGeneration</a>.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CopyTo<i class="obj-parenthesis">(</i><i class="obj-parameter">ITexture</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CopyTo<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">ITexture</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -107,6 +92,21 @@
    <td>SetData<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleUI</i>, <i class="obj-parameter">T[]</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetData<i class="obj-parenthesis">(</i><i class="obj-parameter">ITexture</i>, <i class="obj-parameter">Action<TextureData></i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetData<i class="obj-parenthesis">(</i><i class="obj-parameter">ITexture</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">Action<TextureSlice></i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>HasFlags<i class="obj-parenthesis">(</i><i class="obj-parameter">TextureFlags</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
 
 </tbody></table><br/>
 
@@ -119,8 +119,8 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>ArraySize</td>
-<td>Gets the number of array slices in the texture.</td>
+   <td>Flags</td>
+<td>Gets the flags that were passed in when the texture was created.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -129,25 +129,23 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Flags</td>
-<td>Gets the flags that were passed in when the texture was created.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>IsBlockCompressed</td>
 <td>Gets whether or not the texture is using a supported block-compressed format.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsMultisampled</td>
-<td>
-            Gets whether or not the texture is multisampled. This is true if <see cref="!:SampleCount" /> is greater than 1.
-            </td>
+   <td>Width</td>
+<td>Gets the width of the texture.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>MipMapCount</td>
 <td>Gets the number of mip map levels in the texture.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>ArraySize</td>
+<td>Gets the number of array slices in the texture.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -158,15 +156,17 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Renderer</td>
+   <td>IsMultisampled</td>
 <td>
-            Gets the renderer that the texture is bound to.
+            Gets whether or not the texture is multisampled. This is true if <b class="obj-invalid" title="Invalid object name">SampleCount</b> is greater than 1.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Width</td>
-<td>Gets the width of the texture.</td>
+   <td>Renderer</td>
+<td>
+            Gets the renderer that the texture is bound to.
+            </td>
 </tr>
 
 </tbody></table><br/>
@@ -175,4 +175,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

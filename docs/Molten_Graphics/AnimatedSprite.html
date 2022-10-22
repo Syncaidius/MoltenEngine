@@ -8,7 +8,7 @@
 	<div class="sec-content">  
 		<div class='obj-title'><span><img src="../img/class.png" title="class" alt"class icon"/>Molten.Graphics.<b>AnimatedSprite</b></span><div>
 		<div class='obj-summary'>
-			<p></p>
+			<p>&nbsp;</p>
 		</div>
 		<div class="sec-object">
 			<div class="obj-section">
@@ -57,17 +57,7 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>Play<i class="obj-parenthesis">(</i><i class="obj-parameter">Boolean</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -77,12 +67,17 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Play<i class="obj-parenthesis">(</i><i class="obj-parameter">Boolean</i><i class="obj-parenthesis">)</i></td>
+   <td>Stop<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Stop<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>Update<i class="obj-parenthesis">(</i><i class="obj-parameter">Timing</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -92,7 +87,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Update<i class="obj-parenthesis">(</i><i class="obj-parameter">Timing</i><i class="obj-parenthesis">)</i></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -107,52 +107,44 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Animation</td>
-<td>
-            Gets or sets the sprite animation of the current <see cref="T:Molten.Graphics.AnimatedSprite" /> instance.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>AnimationSpeed</td>
 <td>
-            Gets or sets the sprite animation of the current <see cref="T:Molten.Graphics.AnimatedSprite" /> instance.
+            Gets or sets the sprite animation of the current <a href="">AnimatedSprite</a> instance.
             </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Data</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Frame</td>
-<td>
-            Gets or sets the frame number/ID of the current <see cref="T:Molten.Graphics.AnimatedSprite" /> instance. <para />
-            The value will be constrained to a number between 0 and the maximum number of frames in <see cref="P:Molten.Graphics.AnimatedSprite.Animation" />, or 0 if no animation is set.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Height</td>
-<td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>IsLooping</td>
 <td>
-            Gets whether the current <see cref="T:Molten.Graphics.AnimatedSprite" />'s animation restarts from the beginning once it reaches the end, or stops.<para />
+            Gets whether the current <a href="">AnimatedSprite</a>'s animation restarts from the beginning once it reaches the end, or stops.
             The default value is true.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Material</td>
-<td>&nbsp;</td>
+   <td>Frame</td>
+<td>
+            Gets or sets the frame number/ID of the current <a href="">AnimatedSprite</a> instance. 
+            The value will be constrained to a number between 0 and the maximum number of frames in <a href="">Animation</a>, or 0 if no animation is set.
+            </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Origin</td>
+   <td>Animation</td>
+<td>
+            Gets or sets the sprite animation of the current <a href="">AnimatedSprite</a> instance.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>State</td>
+<td>
+            Gets the current animation state of the sprite.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Data</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -172,20 +164,13 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>ScaledHeight</td>
+   <td>Origin</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>ScaledWidth</td>
+   <td>Material</td>
 <td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>State</td>
-<td>
-            Gets the current animation state of the sprite.
-            </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -197,6 +182,21 @@
    <td>Width</td>
 <td>&nbsp;</td>
 </tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Height</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>ScaledWidth</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>ScaledHeight</td>
+<td>&nbsp;</td>
+</tr>
 
 </tbody></table><br/>
 
@@ -204,4 +204,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

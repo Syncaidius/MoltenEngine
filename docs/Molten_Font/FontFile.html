@@ -28,31 +28,21 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetSystemFontPath<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Build<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>
-            (Re)Builds the font based on it's set of available tables. <para />
-            You can drop any tables you do not want the font to be built with via <see cref="P:Molten.Font.FontFile.Tables" />.<para />
-            If the font has been built previously, calling this again will cause the font to be rebuilt from the tables present in <see cref="P:Molten.Font.FontFile.Tables" />.
+            (Re)Builds the font based on it's set of available tables. 
+            You can drop any tables you do not want the font to be built with via <a href="">Tables</a>.
+            If the font has been built previously, calling this again will cause the font to be rebuilt from the tables present in Tables.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CalculateScaleToPixel<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>GetGlyph<i class="obj-parenthesis">(</i><i class="obj-parameter">Char</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetGlyphByIndex<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -62,7 +52,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>GetGlyphByIndex<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -77,12 +67,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetSystemFontPath<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>CalculateScaleToPixel<i class="obj-parenthesis">(</i><i class="obj-parameter">Single</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -92,7 +77,22 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -107,16 +107,22 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>ContainerBounds</td>
-<td>
-            Gets the bounds in which all glyph's individual bounds are restricted to.
-            </td>
+   <td>Tables</td>
+<td>Gets the font's table list, which can be used to access any loaded tables, or the headers of tables that were not supported.
+            You can also use the table list to drop loaded tables. This may be useful if you wish to reduce the font's footprint after it has been built.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Flags</td>
 <td>
-            Gets a flags value containing information about the current <see cref="T:Molten.Font.FontFile" />.
+            Gets a flags value containing information about the current <a href="">FontFile</a>.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Info</td>
+<td>
+            Gets the <a href="">FontInfo</a> bound to the current <a href="">FontFile</a>. Contains basic details such as the font name, description, copyright and designer name.
             </td>
 </tr>
 <tr>
@@ -128,9 +134,17 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>MaximumProfile</td>
+<td>
+            Gets the maximum profile information for the current <a href="">FontFile</a>.
+            See: https://docs.microsoft.com/en-us/typography/opentype/spec/maxp
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Header</td>
 <td>
-            Gets the <see cref="T:Molten.Font.FontFile" /> header table which contains metric information about the font's overall structure, such as the units-per-em.
+            Gets the <a href="">FontFile</a> header table which contains metric information about the font's overall structure, such as the units-per-em.
             </td>
 </tr>
 <tr>
@@ -142,24 +156,10 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Info</td>
+   <td>ContainerBounds</td>
 <td>
-            Gets the <see cref="T:Molten.Font.FontInfo" /> bound to the current <see cref="T:Molten.Font.FontFile" />. Contains basic details such as the font name, description, copyright and designer name.
+            Gets the bounds in which all glyph's individual bounds are restricted to.
             </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>MaximumProfile</td>
-<td>
-            Gets the maximum profile information for the current <see cref="T:Molten.Font.FontFile" />.<para />
-            See: https://docs.microsoft.com/en-us/typography/opentype/spec/maxp
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Tables</td>
-<td>Gets the font's table list, which can be used to access any loaded tables, or the headers of tables that were not supported.<para />
-            You can also use the table list to drop loaded tables. This may be useful if you wish to reduce the font's footprint after it has been built.</td>
 </tr>
 
 </tbody></table><br/>
@@ -168,4 +168,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

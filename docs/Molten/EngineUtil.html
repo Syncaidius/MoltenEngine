@@ -35,12 +35,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Alloc<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>AllocAligned<i class="obj-parenthesis">(</i><i class="obj-parameter">UIntPtr</i>, <i class="obj-parameter">UIntPtr</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>AllocAligned<i class="obj-parenthesis">(</i><i class="obj-parameter">UIntPtr</i>, <i class="obj-parameter">UIntPtr</i><i class="obj-parenthesis">)</i></td>
+   <td>Alloc<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -55,16 +55,6 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>AllocAlignedArray<i class="obj-parenthesis">(</i><i class="obj-parameter">UIntPtr</i>, <i class="obj-parameter">UIntPtr</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>AllocAlignedPtrArray<i class="obj-parenthesis">(</i><i class="obj-parameter">UIntPtr</i>, <i class="obj-parameter">UIntPtr</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>AllocArray<i class="obj-parenthesis">(</i><i class="obj-parameter">UIntPtr</i>, <i class="obj-parameter">UIntPtr</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
@@ -75,17 +65,22 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ResizeArray<i class="obj-parenthesis">(</i><i class="obj-parameter">T*&</i>, <i class="obj-parameter">UIntPtr</i>, <i class="obj-parameter">UIntPtr</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>AllocAlignedArray<i class="obj-parenthesis">(</i><i class="obj-parameter">UIntPtr</i>, <i class="obj-parameter">UIntPtr</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>AllocPtrArray<i class="obj-parenthesis">(</i><i class="obj-parameter">UIntPtr</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ArrayResize<i class="obj-parenthesis">(</i><i class="obj-parameter">T[]&</i>, <i class="obj-parameter">Int64</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+   <td>AllocAlignedPtrArray<i class="obj-parenthesis">(</i><i class="obj-parameter">UIntPtr</i>, <i class="obj-parameter">UIntPtr</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -100,11 +95,6 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>FreeAll<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>FreePtrArray<i class="obj-parenthesis">(</i><i class="obj-parameter">T**&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
@@ -115,12 +105,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>FreeAll<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -135,7 +120,17 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ResizeArray<i class="obj-parenthesis">(</i><i class="obj-parameter">T*&</i>, <i class="obj-parameter">UIntPtr</i>, <i class="obj-parameter">UIntPtr</i><i class="obj-parenthesis">)</i></td>
+   <td>ArrayResize<i class="obj-parenthesis">(</i><i class="obj-parameter">T[]&</i>, <i class="obj-parameter">Int64</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>TryParseEnum<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i>, <i class="obj-parameter">T&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -145,7 +140,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>TryParseEnum<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i>, <i class="obj-parameter">T&</i><i class="obj-parenthesis">)</i></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -158,4 +158,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

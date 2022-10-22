@@ -9,7 +9,7 @@
 		<div class='obj-title'><span><img src="../img/struct.png" title="struct" alt"struct icon"/>Molten.DoublePrecision.<b>RectangleD</b></span><div>
 		<div class='obj-summary'>
 			<p>
-            Double-precision version of <see cref="T:Molten.DoublePrecision.RectangleD" />.
+            Double-precision version of <a href="">RectangleD</a>.
             </p>
 		</div>
 		<div class="sec-object">
@@ -39,6 +39,27 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>Left</td>
+<td>
+            The left.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>Top</td>
+<td>
+            The top.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>Right</td>
+<td>
+            The right.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>Bottom</td>
 <td>
             The bottom.
@@ -58,27 +79,6 @@
             An infinite rectangle. See remarks.
             </td>
 </tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Left</td>
-<td>
-            The left.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Right</td>
-<td>
-            The right.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Top</td>
-<td>
-            The top.
-            </td>
-</tr>
 
 </tbody></table><br/>
 
@@ -95,6 +95,36 @@
 <td>
             Returns the area of the rectangle based on its width and height.
             </td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Encapsulate<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2D</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Encapsulate<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Offset<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2I</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Offset<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2D</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Offset<i class="obj-parenthesis">(</i><i class="obj-parameter">Double</i>, <i class="obj-parameter">Double</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Inflate<i class="obj-parenthesis">(</i><i class="obj-parameter">Double</i>, <i class="obj-parameter">Double</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
@@ -133,12 +163,32 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Encapsulate<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2D</i><i class="obj-parenthesis">)</i></td>
+   <td>Intersects<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Encapsulate<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD</i><i class="obj-parenthesis">)</i></td>
+   <td>Intersects<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD&</i>, <i class="obj-parameter">Boolean&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Intersect<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD</i>, <i class="obj-parameter">RectangleD</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Intersect<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD&</i>, <i class="obj-parameter">RectangleD&</i>, <i class="obj-parameter">RectangleD&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Union<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD</i>, <i class="obj-parameter">RectangleD</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Union<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD&</i>, <i class="obj-parameter">RectangleD&</i>, <i class="obj-parameter">RectangleD&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -165,32 +215,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Inflate<i class="obj-parenthesis">(</i><i class="obj-parameter">Double</i>, <i class="obj-parameter">Double</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Intersect<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD</i>, <i class="obj-parameter">RectangleD</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Intersect<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD&</i>, <i class="obj-parameter">RectangleD&</i>, <i class="obj-parameter">RectangleD&</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Intersects<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Intersects<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD&</i>, <i class="obj-parameter">Boolean&</i><i class="obj-parenthesis">)</i></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -200,32 +225,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Offset<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2I</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Offset<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2D</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Offset<i class="obj-parenthesis">(</i><i class="obj-parameter">Double</i>, <i class="obj-parameter">Double</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Union<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD</i>, <i class="obj-parameter">RectangleD</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Union<i class="obj-parenthesis">(</i><i class="obj-parameter">RectangleD&</i>, <i class="obj-parameter">RectangleD&</i>, <i class="obj-parameter">RectangleD&</i><i class="obj-parenthesis">)</i></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -240,23 +240,23 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>BottomLeft</td>
+   <td>X</td>
 <td>
-            Gets the position of the bottom-left corner of the rectangle.
+            Gets or sets the X position.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>BottomRight</td>
+   <td>Y</td>
 <td>
-            Gets the position of the bottom-right corner of the rectangle.
+            Gets or sets the Y position.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Center</td>
+   <td>Width</td>
 <td>
-            Gets the Point that specifies the center of the rectangle.
+            Gets or sets the width.
             </td>
 </tr>
 <tr>
@@ -268,16 +268,23 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsEmpty</td>
+   <td>Location</td>
 <td>
-            Gets a value that indicates whether the rectangle is empty.
+            Gets or sets the location.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Location</td>
+   <td>Center</td>
 <td>
-            Gets or sets the location.
+            Gets the Point that specifies the center of the rectangle.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>IsEmpty</td>
+<td>
+            Gets a value that indicates whether the rectangle is empty.
             </td>
 </tr>
 <tr>
@@ -303,23 +310,16 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Width</td>
+   <td>BottomLeft</td>
 <td>
-            Gets or sets the width.
+            Gets the position of the bottom-left corner of the rectangle.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>X</td>
+   <td>BottomRight</td>
 <td>
-            Gets or sets the X position.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Y</td>
-<td>
-            Gets or sets the Y position.
+            Gets the position of the bottom-right corner of the rectangle.
             </td>
 </tr>
 
@@ -329,4 +329,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

@@ -8,7 +8,7 @@
 	<div class="sec-content">  
 		<div class='obj-title'><span><img src="../img/class.png" title="class" alt"class icon"/>Molten.<b>SceneObject</b></span><div>
 		<div class='obj-summary'>
-			<p></p>
+			<p>&nbsp;</p>
 		</div>
 		<div class="sec-object">
 			<div class="obj-section">
@@ -22,15 +22,20 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
+   <td>OnVisibilityChanged</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
+   <td>OnUpdateFlagsChanged</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
    <td>OnAddedToScene</td>
 <td>
             Invoked when the object is added to a scene.
             </td>
-</tr>
-<tr>
-   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnDisposing</td>
-<td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
@@ -41,12 +46,7 @@
 </tr>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnUpdateFlagsChanged</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnVisibilityChanged</td>
+   <td>OnDisposing</td>
 <td>&nbsp;</td>
 </tr>
 
@@ -64,7 +64,17 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Dispose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -75,16 +85,6 @@
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -99,61 +99,13 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Children</td>
-<td>Gets a collection containing all of the child <see cref="T:Molten.SceneObject" /> instances attached to the current <see cref="T:Molten.SceneObject" />.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Components</td>
-<td>
-            Gets a collection containing all of the <see cref="T:Molten.SceneComponent" /> objects attached to the current <see cref="T:Molten.SceneObject" />.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Engine</td>
-<td>
-            Gets the <see cref="P:Molten.SceneObject.Engine" /> instance that the scene object is bound to.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>EOID</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsEnabled</td>
-<td>
-            Gets or sets whether or not the current object should be updated.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>IsVisible</td>
-<td>Gets or sets whether the object is rendered. The object will still be updated if <see cref="P:Molten.SceneObject.UpdateFlags" /> is true.</td>
+<td>Gets or sets whether the object is rendered. The object will still be updated if <a href="">UpdateFlags</a> is true.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Layer</td>
-<td>
-            Gets the scene layer that the object is part of.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Name</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Parent</td>
-<td>Gets the object's parent <see cref="T:Molten.SceneObject" />, if any. Value is null if the current object has no parent.</td>
+   <td>UpdateFlags</td>
+<td>Gets or sets how the object will be updated. The default set flags are: <a href="">Self</a> and <a href="">Children</a></td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -164,15 +116,63 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Transform</td>
+   <td>Layer</td>
 <td>
-            Gets the object's <see cref="T:Molten.SceneObjectTransform" />, which contains information about its position, rotation and scale and various helper properties.
+            Gets the scene layer that the object is part of.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>UpdateFlags</td>
-<td>Gets or sets how the object will be updated. The default set flags are: <see cref="F:Molten.Graphics.ObjectUpdateFlags.Self" /> and <see cref="F:Molten.Graphics.ObjectUpdateFlags.Children" /></td>
+   <td>Transform</td>
+<td>
+            Gets the object's <a href="">SceneObjectTransform</a>, which contains information about its position, rotation and scale and various helper properties.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Children</td>
+<td>Gets a collection containing all of the child <a href="">SceneObject</a> instances attached to the current SceneObject.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Components</td>
+<td>
+            Gets a collection containing all of the <a href="">SceneComponent</a> objects attached to the current <a href="">SceneObject</a>.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Parent</td>
+<td>Gets the object's parent <a href="">SceneObject</a>, if any. Value is null if the current object has no parent.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Engine</td>
+<td>
+            Gets the <a href="">Engine</a> instance that the scene object is bound to.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>IsEnabled</td>
+<td>
+            Gets or sets whether or not the current object should be updated.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Name</td>
+<td>&nbsp;</td>
 </tr>
 
 </tbody></table><br/>
@@ -181,4 +181,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

@@ -8,7 +8,7 @@
 	<div class="sec-content">  
 		<div class='obj-title'><span><img src="../" title="interface" alt"interface icon"/>Molten.Graphics.<b>IDisplayAdapter</b></span><div>
 		<div class='obj-summary'>
-			<p></p>
+			<p>&nbsp;</p>
 		</div>
 		<div class="sec-object">
 			<div class="obj-section">
@@ -23,12 +23,12 @@
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
    <td>OnOutputActivated</td>
-<td>Occurs when a connected <see cref="T:Molten.Graphics.IDisplayOutput" /> is activated on the current <see cref="T:Molten.Graphics.IDisplayAdapter" />.</td>
+<td>Occurs when a connected <a href="">IDisplayOutput</a> is activated on the current <a href="">IDisplayAdapter</a>.</td>
 </tr>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
    <td>OnOutputDeactivated</td>
-<td>Occurs when a connected <see cref="T:Molten.Graphics.IDisplayOutput" /> is deactivated on the current <see cref="T:Molten.Graphics.IDisplayAdapter" />.</td>
+<td>Occurs when a connected <a href="">IDisplayOutput</a> is deactivated on the current <a href="">IDisplayAdapter</a>.</td>
 </tr>
 
 </tbody></table><br/>
@@ -45,7 +45,7 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>AddActiveOutput<i class="obj-parenthesis">(</i><i class="obj-parameter">IDisplayOutput</i><i class="obj-parenthesis">)</i></td>
+   <td>GetAttachedOutputs<i class="obj-parenthesis">(</i><i class="obj-parameter">List<IDisplayOutput></i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -55,12 +55,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetAttachedOutputs<i class="obj-parenthesis">(</i><i class="obj-parameter">List<IDisplayOutput></i><i class="obj-parenthesis">)</i></td>
+   <td>GetOutput<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetOutput<i class="obj-parenthesis">(</i><i class="obj-parameter">Int32</i><i class="obj-parenthesis">)</i></td>
+   <td>AddActiveOutput<i class="obj-parenthesis">(</i><i class="obj-parameter">IDisplayOutput</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -85,8 +85,8 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>DedicatedSystemMemory</td>
-<td>Gets the amount of system memory dedicated to the adapter, in megabytes.</td>
+   <td>Name</td>
+<td>Gets the name of the adapter.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -95,23 +95,8 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>ID</td>
-<td>Gets the listing ID of the <see cref="T:Molten.Graphics.IDisplayAdapter" />.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Manager</td>
-<td>Gets the <see cref="T:Molten.Graphics.IDisplayManager" /> that spawned the adapter.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Name</td>
-<td>Gets the name of the adapter.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>OutputCount</td>
-<td>Gets the number of <see cref="T:Molten.Graphics.IDisplayOutput" /> connected to the current <see cref="T:Molten.Graphics.IDisplayAdapter" />.</td>
+   <td>DedicatedSystemMemory</td>
+<td>Gets the amount of system memory dedicated to the adapter, in megabytes.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
@@ -120,8 +105,23 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>ID</td>
+<td>Gets the listing ID of the <a href="">IDisplayAdapter</a>.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Vendor</td>
 <td>The hardware vendor.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>OutputCount</td>
+<td>Gets the number of <a href="">IDisplayOutput</a> connected to the current <a href="">IDisplayAdapter</a>.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Manager</td>
+<td>Gets the <a href="">IDisplayManager</a> that spawned the adapter.</td>
 </tr>
 
 </tbody></table><br/>
@@ -130,4 +130,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

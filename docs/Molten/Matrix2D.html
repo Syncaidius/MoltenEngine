@@ -39,13 +39,6 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Identity</td>
-<td>
-            A single-precision Matrix2x2 with values intialized to the identity of a 2 x 2 matrix
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>M11</td>
 <td>
             Value at row 1, column 1 of the matrix.
@@ -70,6 +63,13 @@
    <td>M22</td>
 <td>
             Value at row 2, column 2 of the matrix.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>Identity</td>
+<td>
+            A single-precision Matrix2x2 with values intialized to the identity of a 2 x 2 matrix
             </td>
 </tr>
 
@@ -109,28 +109,6 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Determinant<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Calculates the determinant of the matrix.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Invert<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix2D&</i>, <i class="obj-parameter">Matrix2D&</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
@@ -166,8 +144,30 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Transform<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2D&</i>, <i class="obj-parameter">Matrix2D&</i>, <i class="obj-parameter">Vector2D&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>ToArray<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix2D&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix2D&</i>, <i class="obj-parameter">Matrix2D&</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Transposes the matrix in-place.
+            </td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
@@ -178,29 +178,25 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Transform<i class="obj-parenthesis">(</i><i class="obj-parameter">Vector2D&</i>, <i class="obj-parameter">Matrix2D&</i>, <i class="obj-parameter">Vector2D&</i><i class="obj-parenthesis">)</i></td>
+   <td>Determinant<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>
+            Calculates the determinant of the matrix.
+            </td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix2D&</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Transposes the matrix in-place.
-            </td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parameter">Matrix2D&</i>, <i class="obj-parameter">Matrix2D&</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Transposes the matrix in-place.
-            </td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Transpose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>
-            Transposes the matrix in-place.
-            </td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
 </tr>
 
 </tbody></table><br/>
@@ -212,4 +208,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

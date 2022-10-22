@@ -8,7 +8,7 @@
 	<div class="sec-content">  
 		<div class='obj-title'><span><img src="../img/class.png" title="class" alt"class icon"/>Molten.Graphics.<b>SceneRenderData&lt;R&gt;</b></span><div>
 		<div class='obj-summary'>
-			<p></p>
+			<p>&nbsp;</p>
 		</div>
 		<div class="sec-object">
 			<div class="obj-section">
@@ -34,7 +34,7 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnDisposing</td>
+   <td>OnPreRender</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -44,7 +44,7 @@
 </tr>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnPreRender</td>
+   <td>OnDisposing</td>
 <td>&nbsp;</td>
 </tr>
 
@@ -59,7 +59,7 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>AmbientLightColor</td>
+   <td>IsVisible</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -69,7 +69,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>IsVisible</td>
+   <td>AmbientLightColor</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -89,7 +89,7 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>AddLayer<i class="obj-parenthesis">(</i><i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
+   <td>CreateLayerData<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -99,17 +99,57 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RemoveObject<i class="obj-parenthesis">(</i><i class="obj-parameter">IRenderable</i>, <i class="obj-parameter">ObjectRenderData</i>, <i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>AddLayer<i class="obj-parenthesis">(</i><i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>RemoveLayer<i class="obj-parenthesis">(</i><i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ReorderLayer<i class="obj-parenthesis">(</i><i class="obj-parameter">LayerRenderData</i>, <i class="obj-parameter">ReorderMode</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>AddObject<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderCamera</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CreateLayerData<i class="obj-parenthesis">(</i><i class="obj-parameter">String</i><i class="obj-parenthesis">)</i></td>
+   <td>RemoveObject<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderCamera</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>PreRenderInvoke<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderService</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>PostRenderInvoke<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderService</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Dispose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -120,46 +160,6 @@
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>PostRenderInvoke<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderService</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>PreRenderInvoke<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderService</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RemoveLayer<i class="obj-parenthesis">(</i><i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RemoveObject<i class="obj-parenthesis">(</i><i class="obj-parameter">IRenderable</i>, <i class="obj-parameter">ObjectRenderData</i>, <i class="obj-parameter">LayerRenderData</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>RemoveObject<i class="obj-parenthesis">(</i><i class="obj-parameter">RenderCamera</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ReorderLayer<i class="obj-parenthesis">(</i><i class="obj-parameter">LayerRenderData</i>, <i class="obj-parameter">ReorderMode</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -174,7 +174,7 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Cameras</td>
+   <td>PointLights</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -184,22 +184,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>EOID</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsDisposed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Name</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>PointLights</td>
+   <td>Cameras</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -212,6 +197,21 @@
    <td>SkyboxTexture</td>
 <td>&nbsp;</td>
 </tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>EOID</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Name</td>
+<td>&nbsp;</td>
+</tr>
 
 </tbody></table><br/>
 
@@ -219,4 +219,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

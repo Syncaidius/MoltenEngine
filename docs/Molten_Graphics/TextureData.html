@@ -8,7 +8,7 @@
 	<div class="sec-content">  
 		<div class='obj-title'><span><img src="../img/class.png" title="class" alt"class icon"/>Molten.Graphics.<b>TextureData</b></span><div>
 		<div class='obj-summary'>
-			<p></p>
+			<p>&nbsp;</p>
 		</div>
 		<div class="sec-object">
 			<div class="obj-section">
@@ -42,12 +42,7 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Flags</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>Format</td>
+   <td>MultiSampleLevel</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -57,17 +52,22 @@
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>IsCompressed</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>Levels</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>MultiSampleLevel</td>
+   <td>Format</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>Flags</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>IsCompressed</td>
 <td>&nbsp;</td>
 </tr>
 
@@ -82,8 +82,8 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Clone<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>Creates an exact copy of the texture data and returns the new instance.</td>
+   <td>Decompress<i class="obj-parenthesis">(</i><i class="obj-parameter">Logger</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
@@ -92,27 +92,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Decompress<i class="obj-parenthesis">(</i><i class="obj-parameter">Logger</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>ToRGBA<i class="obj-parenthesis">(</i><i class="obj-parameter">Logger</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>GetLevelID<i class="obj-parenthesis">(</i><i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i>, <i class="obj-parameter">UInt32</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -127,12 +112,27 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToRGBA<i class="obj-parenthesis">(</i><i class="obj-parameter">Logger</i><i class="obj-parenthesis">)</i></td>
+   <td>Clone<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>Creates an exact copy of the texture data and returns the new instance.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -147,7 +147,7 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>ArraySize</td>
+   <td>Width</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -162,7 +162,7 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Width</td>
+   <td>ArraySize</td>
 <td>&nbsp;</td>
 </tr>
 
@@ -172,4 +172,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

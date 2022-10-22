@@ -8,7 +8,7 @@
 	<div class="sec-content">  
 		<div class='obj-title'><span><img src="../" title="interface" alt"interface icon"/>Molten.Graphics.<b>IShaderSampler</b></span><div>
 		<div class='obj-summary'>
-			<p></p>
+			<p>&nbsp;</p>
 		</div>
 		<div class="sec-object">
 			<div class="obj-section">
@@ -63,18 +63,6 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsComparisonSampler</td>
-<td>Gets whether or not the sampler a comparison sampler. This is determined by the <see cref="P:Molten.Graphics.IShaderSampler.FilterMode" /> mode.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>LodBias</td>
-<td>Gets or sets the offset from the calculated mipmap level. For example, if Direct3D calculates 
-            that a texture should be sampled at mipmap level 3 and MipLODBias is 2, then 
-            the texture will be sampled at mipmap level 5.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>MaxAnisotropy</td>
 <td>Clamping value used if SharpDX.Direct3D11.Filter.Anisotropic or SharpDX.Direct3D11.Filter.ComparisonAnisotropic 
             is specified in SamplerFilter. Valid values are between 1 and 16.</td>
@@ -93,6 +81,18 @@
 <td>Lower end of the mipmap range to clamp access to, where 0 is the largest and most detailed mipmap level 
             and any level higher than that is less detailed.</td>
 </tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>LodBias</td>
+<td>Gets or sets the offset from the calculated mipmap level. For example, if Direct3D calculates 
+            that a texture should be sampled at mipmap level 3 and MipLODBias is 2, then 
+            the texture will be sampled at mipmap level 5.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>IsComparisonSampler</td>
+<td>Gets whether or not the sampler a comparison sampler. This is determined by the <a href="">FilterMode</a> mode.</td>
+</tr>
 
 </tbody></table><br/>
 
@@ -100,4 +100,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

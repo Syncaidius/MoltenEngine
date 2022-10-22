@@ -9,7 +9,7 @@
 		<div class='obj-title'><span><img src="../img/struct.png" title="struct" alt"struct icon"/>Molten.Font.<b>RuleLookupRecord</b></span><div>
 		<div class='obj-summary'>
 			<p>
-            See for SubLookupRecord: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#substitution-lookup-record <para />
+            See for SubLookupRecord: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#substitution-lookup-record 
             See for PosLookupRecord: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#position-lookup-record
             </p>
 		</div>
@@ -28,16 +28,16 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>LookupListIndex</td>
+   <td>SequenceIndex</td>
 <td>
-            Gets a lookup to apply to that position — zero-based index.
+            Gets an index to the current glyph sequence — first glyph = 0.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>SequenceIndex</td>
+   <td>LookupListIndex</td>
 <td>
-            Gets an index to the current glyph sequence — first glyph = 0.
+            Gets a lookup to apply to that position — zero-based index.
             </td>
 </tr>
 
@@ -62,12 +62,12 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -80,4 +80,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

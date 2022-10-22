@@ -8,7 +8,7 @@
 	<div class="sec-content">  
 		<div class='obj-title'><span><img src="../" title="enum" alt"enum icon"/>Molten.Graphics.<b>BufferMode</b></span><div>
 		<div class='obj-summary'>
-			<p></p>
+			<p>&nbsp;</p>
 		</div>
 		<div class="sec-object">
 			<div class="obj-section">
@@ -25,25 +25,16 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>value__</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
    <td>Default</td>
 <td>The buffer cannot be written to, or read from by the CPU.
             Once the first set of data has been set, static buffers update their data by recreating the internal buffer. 
             This is an extremely expensive operation.
             To avoid this cost, use a staging buffer to copy data into buffers created with this mode.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>DynamicDiscard</td>
-<td>A dynamic buffer can be written to (but not read from) by the CPU. Useful for data that will change every frame. <para />
-            In this mode, every map call will discard the buffer on the GPU and be pointed to a new area of VRAM.</td>
-</tr>
-<tr>
-   <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>DynamicRing</td>
-<td>A dynamic buffer can be written to (but not read from) by the CPU. Useful for data that will change every frame. <para />
-            In this mode, each map call will be pointed to an uninitialized/unwritten area of buffer memory. 
-            Once the buffer is full, the next map call will discard the buffer on the GPU and point to a new area of VRAM.
-            This cycle of filling and discarding ensures dynamic data can always be written.</td>
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
@@ -57,8 +48,17 @@
 </tr>
 <tr>
    <td><img src="../" title="Field" alt"Field icon"/></td>
-   <td>value__</td>
-<td>&nbsp;</td>
+   <td>DynamicDiscard</td>
+<td>A dynamic buffer can be written to (but not read from) by the CPU. Useful for data that will change every frame. 
+            In this mode, every map call will discard the buffer on the GPU and be pointed to a new area of VRAM.</td>
+</tr>
+<tr>
+   <td><img src="../" title="Field" alt"Field icon"/></td>
+   <td>DynamicRing</td>
+<td>A dynamic buffer can be written to (but not read from) by the CPU. Useful for data that will change every frame. 
+            In this mode, each map call will be pointed to an uninitialized/unwritten area of buffer memory. 
+            Once the buffer is full, the next map call will discard the buffer on the GPU and point to a new area of VRAM.
+            This cycle of filling and discarding ensures dynamic data can always be written.</td>
 </tr>
 
 </tbody></table><br/>
@@ -72,27 +72,7 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>CompareTo<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetTypeCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -102,7 +82,17 @@
 </tr>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>CompareTo<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -120,6 +110,16 @@
    <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parameter">IFormatProvider</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetTypeCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
 
 </tbody></table><br/>
 
@@ -130,4 +130,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

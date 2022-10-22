@@ -9,7 +9,7 @@
 		<div class='obj-title'><span><img src="../img/class.png" title="class" alt"class icon"/>Molten.UI.<b>UIManagerComponent</b></span><div>
 		<div class='obj-summary'>
 			<p>
-            A <see cref="T:Molten.SceneComponent" /> used for updating and rendering a UI system into a <see cref="T:Molten.Scene" />.
+            A <a href="">SceneComponent</a> used for updating and rendering a UI system into a <a href="">Scene</a>.
             </p>
 		</div>
 		<div class="sec-object">
@@ -36,22 +36,22 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>FocusedChanged</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnDisposing</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
    <td>OnObjectFocused</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
    <td>OnObjectUnfocused</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
+   <td>FocusedChanged</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
+   <td>OnDisposing</td>
 <td>&nbsp;</td>
 </tr>
 
@@ -69,26 +69,6 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Dispose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
-   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>OnUpdate<i class="obj-parenthesis">(</i><i class="obj-parameter">Timing</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
@@ -100,6 +80,26 @@
 <tr>
    <td><img src="../" title="Method" alt"Method icon"/></td>
    <td>ToString<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Dispose<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetType<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>Equals<i class="obj-parenthesis">(</i><i class="obj-parameter">Object</i><i class="obj-parenthesis">)</i></td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Method" alt"Method icon"/></td>
+   <td>GetHashCode<i class="obj-parenthesis">(</i><i class="obj-parenthesis">)</i></td>
 <td>&nbsp;</td>
 </tr>
 
@@ -116,24 +116,21 @@
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Children</td>
 <td>
-            Gets all of the child <see cref="T:Molten.UI.UIElement" /> attached to <see cref="P:Molten.UI.UIManagerComponent.Root" />. This is an alias propety for <see cref="P:Molten.UI.UIManagerComponent.Root" />.Children.
+            Gets all of the child <a href="">UIElement</a> attached to <a href="">Root</a>. This is an alias propety for Root.Children.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>DepthWriteOverride</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>EOID</td>
-<td>&nbsp;</td>
+   <td>Root</td>
+<td>
+            Gets the root <a href="">UIContainer</a>.
+            </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>FocusedElement</td>
 <td>
-            Gets the currently-focused <see cref="T:Molten.UI.UIElement" />.
+            Gets the currently-focused <a href="">UIElement</a>.
             </td>
 </tr>
 <tr>
@@ -142,11 +139,21 @@
 <td>
             Gets or sets the constraint bounds for input. Only accepts input if it is within these bounds. 
             
-            <para>Any positional input data will be relative to the top-left of these bounds.</para></td>
+            Any positional input data will be relative to the top-left of these bounds.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsDisposed</td>
+   <td>IsVisible</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>DepthWriteOverride</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>Object</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
@@ -161,25 +168,18 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>IsVisible</td>
+   <td>IsDisposed</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+   <td><img src="../" title="Property" alt"Property icon"/></td>
+   <td>EOID</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>Name</td>
 <td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Object</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-   <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Root</td>
-<td>
-            Gets the root <see cref="T:Molten.UI.UIContainer" />.
-            </td>
 </tr>
 
 </tbody></table><br/>
@@ -188,4 +188,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

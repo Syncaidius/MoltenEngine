@@ -24,42 +24,42 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnClose</td>
-<td>Invoked when the current <see cref="T:Molten.Graphics.INativeSurface" /> has began it's closing process. Invoked by the renderer it is bound to.</td>
-</tr>
-<tr>
-   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnFocusGained</td>
-<td>Invoked when the current <see cref="T:Molten.Graphics.INativeSurface" /> gains focus.</td>
-</tr>
-<tr>
-   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnFocusLost</td>
-<td>Invoked when the current <see cref="T:Molten.Graphics.INativeSurface" /> loses focus.</td>
-</tr>
-<tr>
-   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
    <td>OnHandleChanged</td>
 <td>
-            Occurs when the underlying native <see cref="P:Molten.Graphics.INativeSurface.Handle" /> has changed. Invoked by the renderer it is bound to.
+            Occurs when the underlying native <a href="">Handle</a> has changed. Invoked by the renderer it is bound to.
             </td>
-</tr>
-<tr>
-   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
-   <td>OnMinimize</td>
-<td>Invoked when the current <see cref="T:Molten.Graphics.INativeSurface" /> is minimized. Invoked by the renderer it is bound to.</td>
 </tr>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
    <td>OnParentChanged</td>
 <td>
-            Occurs when the underlying, native control parent has changed. This affects the <see cref="P:Molten.Graphics.INativeSurface.WindowHandle" /> in some situations.
+            Occurs when the underlying, native control parent has changed. This affects the <a href="">WindowHandle</a> in some situations.
             </td>
 </tr>
 <tr>
    <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
+   <td>OnClose</td>
+<td>Invoked when the current <a href="">INativeSurface</a> has began it's closing process. Invoked by the renderer it is bound to.</td>
+</tr>
+<tr>
+   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
+   <td>OnMinimize</td>
+<td>Invoked when the current <a href="">INativeSurface</a> is minimized. Invoked by the renderer it is bound to.</td>
+</tr>
+<tr>
+   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
    <td>OnRestore</td>
-<td>Invoked when the current <see cref="T:Molten.Graphics.INativeSurface" /> is restored. Invoked by the renderer it is bound to.</td>
+<td>Invoked when the current <a href="">INativeSurface</a> is restored. Invoked by the renderer it is bound to.</td>
+</tr>
+<tr>
+   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
+   <td>OnFocusGained</td>
+<td>Invoked when the current <a href="">INativeSurface</a> gains focus.</td>
+</tr>
+<tr>
+   <td><img src="../img/event.png" title="Event" alt"Event icon"/></td>
+   <td>OnFocusLost</td>
+<td>Invoked when the current <a href="">INativeSurface</a> loses focus.</td>
 </tr>
 
 </tbody></table><br/>
@@ -79,14 +79,16 @@
 </tr></thead><tbody>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Handle</td>
-<td>Gets an <see cref="T:System.IntPtr" /> to the handle of the underlying control.</td>
+   <td>Name</td>
+<td>
+            Gets or sets the internal name of the underlying native control.
+            </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>IsFocused</td>
 <td>
-            Gets whether or not the current <see cref="T:Molten.Graphics.INativeSurface" /> is focused.
+            Gets whether or not the current <a href="">INativeSurface</a> is focused.
             </td>
 </tr>
 <tr>
@@ -96,23 +98,21 @@
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
-   <td>Name</td>
-<td>
-            Gets or sets the internal name of the underlying native control.
-            </td>
+   <td>Handle</td>
+<td>Gets an  to the handle of the underlying control.</td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>ParentHandle</td>
 <td>
-            Gets the current <see cref="T:Molten.Graphics.INativeSurface" /> parent's control handle. Null if no parent is assigned.
+            Gets the current <a href="">INativeSurface</a> parent's control handle. Null if no parent is assigned.
             </td>
 </tr>
 <tr>
    <td><img src="../" title="Property" alt"Property icon"/></td>
    <td>WindowHandle</td>
 <td>
-            Gets the handle of the window or form containing the current <see cref="T:Molten.Graphics.INativeSurface" />. This is not neccessarily it's direct parent of ancestor.
+            Gets the handle of the window or form containing the current <a href="">INativeSurface</a>. This is not neccessarily it's direct parent of ancestor.
             </td>
 </tr>
 
@@ -122,4 +122,7 @@
 
 		</div>
     </div>
+	<div class="obj-footer">
+		<span>Generated using <a href="https://github.com/Syncaidius/HtmlDocGenerator">Html Doc Generator</a></span>
+	<div>
 </body></html>

@@ -4,11 +4,13 @@
 }
 
 body {
+	display: block;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-color);
     color: white;
     height:100%;
     margin: 0px;
+	min-height:100%;
 }
 
 body a{
@@ -232,4 +234,17 @@ tr {
 .obj-parameter{
 	font-style:normal;
 	color: #CCCCCC;
+}
+
+.obj-footer{
+	display: flex;
+	flex-direction:row;
+	justify-content:space-between;
+	font-size: 16px;
+}
+
+.obj-invalid{
+	color: #FF2222;
+	font-weight:normal;
+	font-style:italic;
 }
