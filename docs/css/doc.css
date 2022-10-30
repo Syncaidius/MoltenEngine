@@ -1,0 +1,305 @@
+﻿:root {
+    --main-color: #dc5c0f;
+    --bg-color: #333333;
+}
+
+body {
+    display: block;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: white;
+    height: 100%;
+    margin: 0px;
+    min-height: 100%;
+}
+
+    body h2 {
+        color: var(--main-color);
+    }
+
+    body > * {
+        flex-shrink: 0;
+    }
+
+.main-body {
+    overflow: hidden;
+}
+
+.logo {
+    width: 360px;
+    aspect-ratio: auto;
+}
+
+.sec-page {
+    width: 100%;
+    margin-top: 20px;
+    margin-left: 20px;
+    display:flex;
+    flex-direction:column;
+}
+
+.sec-page table {
+    border-collapse: collapse;
+}
+
+.sec-main {
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    height: 99vh;
+    padding: 0px 0px 0px 0px;
+    margin: auto;
+}
+
+.sec-index {
+    padding: 0px 0px 0px 0px;
+    margin-top: auto;
+    border: 2px solid white;
+    display: block;
+    width: 500px;
+    overflow-y: scroll;
+    height: 100%;
+}
+
+.sec-content {
+    padding-left: 30px;
+    padding-right: 10%;
+    padding-right: 10px;
+    margin-top: 20px;
+    font-size: 11px;
+    max-width: 55%;
+    min-width: 500px;
+}
+
+.sec-namespace {
+    margin-left: 10px;
+    padding-left: 10px;
+    padding-bottom: 1px;
+}
+
+.sec-namespace-noleft {
+    margin-left: 0px;
+    padding-left: 10px;
+    padding-bottom: 1px;
+}
+
+.sec-namespace-inner {
+    display: none;
+    margin: 10px 10px 0px 10px;
+}
+
+.sec-namespace-inner table tr img {
+    margin-left: 5px;
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+}
+
+.sec-namespace-obj {
+    margin-left: 20px;
+}
+
+.sec-active {
+    display: block;
+}
+
+.sec-object {
+}
+
+    .sec-object img {
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
+    }
+
+#content-target {
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    background-color: var(--bg-color);
+}
+
+.namespace-toggle {
+    cursor: pointer;
+    user-select: none; /* Prevent text selection */
+}
+
+.namespace-toggle:hover {
+    color: var(--main-color);
+}
+
+.doc-invalid {
+    color: #FF2222;
+    font-weight: normal;
+    font-style: italic;
+}
+
+.doc-target:hover {
+    cursor: pointer;
+    color: var(--main-color);
+}
+
+.doc-target a{
+    color: white;
+    vertical-align:top;
+}
+
+.doc-target img{
+    width: 20px;
+}
+
+.page-header{
+    display:flex;
+    flex-direction:column;
+    justify-content:left;
+}
+
+.page-title{
+    font-size:24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+}
+
+.page-title span{
+    vertical-align: middle;
+}
+
+.page-title img{
+    width: 32px;
+    margin-right: 10px;
+}
+
+.page-title b {
+    font-weight: normal;
+    font-size: 24px;
+    color: var(--main-color);
+}
+
+.page-title .doc-target{
+    color: white;
+    text-decoration: none;
+    cursor:pointer;
+}
+
+.page-title .doc-target:hover{
+    text-decoration: underline;
+    text-decoration-color: var(--main-color);
+    text-underline-offset: 6px;
+}
+
+/* Create the caret/arrow with a unicode, and style it */
+.namespace-toggle::before {
+    content: "\25B6";
+    color: var(--main-color);
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.namespace-toggle-down::before {
+    transform: rotate(90deg);
+}
+
+.sec-div {
+    min-height: 5px;
+    background-color: #777777;
+}
+
+.col-type-icon {
+    width: 30px;
+}
+
+.col-type-name {
+    width: 400px;
+    font-weight: bold;
+    font-size: 18px;
+    text-align: left;
+}
+
+.obj-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+    .obj-title span {
+        vertical-align: top;
+    }
+
+        .obj-title span b {
+            color: var(--main-color);
+            font-size: 24px;
+        }
+
+    .obj-title img {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+    }
+
+.obj-summary {
+    background-color: var(--bg-color);
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.obj-section {
+
+    background-color: #333333;
+    font-size: 14px;
+    font-weight: normal;
+    max-width: 800px;
+    margin-top: 25px;
+}
+
+    .obj-section .doc-icon {
+        width: 16px;
+        vertical-align: middle;
+        padding-right: 10px;
+    }
+
+    .obj-section table {
+        min-width: 100%;
+        border-collapse: collapse;
+        border: 1px solid var(--main-color)
+    }
+
+        .obj-section table tr {
+            border-left: 0px;
+            border-right: 0px;
+        }
+
+            .obj-section table tr td {
+                padding: 5px 5px 5px 5px;
+            }
+
+
+    .obj-section thead th {
+        font-size: 18px;
+        font-weight: bold;
+        text-align: left;
+        color: white;
+        background-color: #555555;
+    }
+
+.obj-section-icon {
+    width: 25px;
+}
+
+.obj-section-title {
+    width: 300px;
+}
+
+.obj-section-desc {
+    width: 400px;
+}
+
+.obj-parenthesis {
+    font-style: normal;
+    color: var(--main-color);
+}
+
+.obj-parameter {
+    font-style: normal;
+    color: #CCCCCC;
+}
