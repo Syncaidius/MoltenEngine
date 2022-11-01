@@ -13,6 +13,8 @@ While parts of this project will inevitably be a classic case of re-inventing th
 
 [ ![GitHub](https://img.shields.io/github/license/Syncaidius/MoltenEngine)](LICENSE)  [![GitHub last commit](https://img.shields.io/github/last-commit/Syncaidius/MoltenEngine)](https://github.com/Syncaidius/MoltenEngine/commits/)
 
+Alpha versions of each Molten library can be found on [Nuget.org](https://www.nuget.org/packages?q=molten+Syncaidius)
+
 # Core Feature Status
 See the following table for the per-platform support and status of each feature.
 
