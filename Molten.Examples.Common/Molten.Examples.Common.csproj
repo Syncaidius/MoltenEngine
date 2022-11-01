@@ -6,6 +6,7 @@
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
+    <Authors>James Yarwood</Authors>
   </PropertyGroup>
 
   <ItemGroup>

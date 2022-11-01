@@ -19,7 +19,8 @@
     <PackageTags>DirectX;game engine;cross platform;android;openal;</PackageTags>
     <PackageReleaseNotes>Initial release of Molten Engine.</PackageReleaseNotes>
     <PackageIcon>logo_128.png</PackageIcon>
-    <Version>0.1.0</Version>
+    <Version>0.1.0-alpha</Version>
+    <Company>James Yarwood</Company>
   </PropertyGroup>
 	
   <ItemGroup>
