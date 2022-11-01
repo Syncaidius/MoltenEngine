@@ -6,7 +6,32 @@
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageProjectUrl>https://github.com/Syncaidius/MoltenEngine</PackageProjectUrl>
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Molten.Math</Title>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>0.1.0</FileVersion>
+    <Description>The start of an open-source, cross-platform game engine, written in C#</Description>
+    <Copyright>Copyright © 2022 James Yarwood</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Syncaidius/MoltenEngine</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>DirectX;game engine;cross platform;math;vectors;matrix;matrices;</PackageTags>
+    <PackageReleaseNotes>Initial release of Molten Engine.</PackageReleaseNotes>
+    <PackageIcon>logo_128.png</PackageIcon>
+    <Version>0.1.0</Version>
   </PropertyGroup>
+	
+  <ItemGroup>
+    <None Include="..\Images\logo_128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>$(DefineConstants)TRACE;WINDOWS</DefineConstants>
