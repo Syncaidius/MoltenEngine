@@ -18,7 +18,7 @@
     <PackageTags>DirectX;game engine;cross platform;android;dxc;dx12;</PackageTags>
     <PackageReleaseNotes>Initial release of Molten Engine.</PackageReleaseNotes>
     <PackageIcon>logo_128.png</PackageIcon>
-    <Version>0.1.0</Version>
+    <Version>0.1.0-alpha</Version>
   </PropertyGroup>
 	
   <ItemGroup>
