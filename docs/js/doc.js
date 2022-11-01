@@ -1,198 +1,225 @@
-﻿var objTypes = ["Class", "Struct", "Enum", "Interface"];
-var loaders = {};
+﻿
 
-function populateIndex() {
-    let di = $("#doc-index");
-    di.html("");
+class DocManager {
+    objTypes = ["Class", "Struct", "Enum", "Interface"];
+    loaders = {};
+    data = null;
 
-    let keys = Object.keys(docData.Members);
-    keys = keys.sort(sortStrings);
+    constructor(srcData) {
+        this.data = srcData;
+        this.loaders["Class"] = new ObjectLoader(this);
+        this.loaders["Struct"] = this.loaders["Class"];
+        this.loaders["Interface"] = this.loaders["Class"];
+        this.loaders["Enum"] = this.loaders["Class"];
+        this.loaders["Namespace"] = new NamespaceLoader(this);
+        this.loaders["Method"] = new MethodLoader(this);
+    }
 
-    let treePath = [di];
+    populateIndex() {
+        let thisLoader = this;
+        let keys = Object.keys(this.data.Members);
+        let di = $("#doc-index");
+        let treePath = [di];
 
-    keys.forEach((key, index) => {
-        let memList = docData.Members[key];
-        if (memList.length > 0)
-            buildTreeNode(di, key, "", memList[0], treePath);
-    });
-}
+        di.html("");
+        keys = keys.sort(this.sortStrings);
 
-function buildEndNode(el, title, parentPath, dataNode) {
-    let curPath = `${parentPath}${(parentPath.length > 0 && title ? "." : "")}${title}`;
-    let idName = toIDName(curPath);
-    let targetName = toIDName(title);
+        keys.forEach((key, index) => {
+            let memList = thisLoader.data.Members[key];
+            if (memList.length > 0)
+                thisLoader.buildTreeNode(di, key, "", memList[0], treePath);
+        });
+    }
 
-    let iconHtml = getIcon(dataNode);
-    el.append(` <div id="t-${idName}" class="doc-target" data-target="${parentPath}" data-target-sec="${targetName}">
+    buildEndNode(el, title, parentPath, dataNode) {
+        let thisLoader = this;
+        let curPath = `${parentPath}${(parentPath.length > 0 && title ? "." : "")}${title}`;
+        let idName = this.toIDName(curPath);
+        let targetName = this.toIDName(title);
+
+        let iconHtml = this.getIcon(dataNode);
+        el.append(` <div id="t-${idName}" class="doc-target" data-target="${parentPath}" data-target-sec="${targetName}">
                     ${iconHtml}
                     <a>${title}</a>
                 </div>`);
 
-    let target = $(`#t-${idName}`);
-    target.on("click", function (e) {
-        let nodePath = target.data("target");
-        let node = getNode(nodePath);
-        let loader = loaders[node.DocType];
-        if (loader == null)
-            return;
+        let target = $(`#t-${idName}`);
+        target.on("click", function (e) {
+            let nodePath = target.data("target");
+            let node = thisLoader.getNode(nodePath);
+            let loader = thisLoader.loaders[node.DocType];
+            if (loader == null)
+                return;
 
-        let pTitle = getPathTitle(nodePath);
-        loader.load("main-page", pTitle, node, nodePath);
-    });
-}
+            let pTitle = thisLoader.getPathTitle(nodePath);
+            loader.load("main-page", pTitle, node, nodePath);
+        });
+    }
 
-function buildTreeNode(el, title, parentPath, dataNode, treePath, empty = false) {
-    let curPath = `${parentPath}${(parentPath.length > 0 && title ? "." : "")}${title}`;
-    if (dataNode.DocType == "Namespace")
-        title = curPath;
+    buildTreeNode(el, title, parentPath, dataNode, treePath, empty = false) {
+        let curPath = `${parentPath}${(parentPath.length > 0 && title ? "." : "")}${title}`;
+        if (dataNode.DocType == "Namespace")
+            title = curPath;
 
-    let idName = toIDName(curPath);
-    el.append(`<div id="i-${idName}" class="sec-namespace${(treePath.length > 1 ? "-noleft" : "")}">
-                    <span class="namespace-toggle\" data-target="${curPath}">${title}</span><br/>
+        let idName = this.toIDName(curPath);
+        let dataTarget = empty == true ? "" : `data-target="${curPath}"`;
+        el.append(`<div id="i-${idName}" class="sec-namespace${(treePath.length > 1 ? "-noleft" : "")}">
+                    <span class="namespace-toggle\" ${dataTarget}>${title}</span><br/>
                     <div id="in-${idName}" class="sec-namespace-inner"></div>
                 </div>`);
 
-    let elInner = $(`#in-${idName}`);
+        let elInner = $(`#in-${idName}`);
 
-    if (!dataNode.Members || empty == true)
+        if (!dataNode.Members || empty == true)
+            return elInner;
+
+        let thisLoader = this;
+        let keys = Object.keys(dataNode.Members);
+        let nextTreePath = [...treePath, elInner];
+
+        keys = keys.sort(this.sortStrings);
+        keys.forEach((mName, index) => {
+            let memberArray = dataNode.Members[mName];
+            if (memberArray.length == 0)
+                return;
+
+            // We're building an index tree, so we only need to know about the first entry of each member, to avoid duplicate index listings.
+            let memberNode = memberArray[0];
+            let memType = memberNode.DocType;
+
+            switch (memType) {
+                case "Namespace":
+                    let resetTreePath = [nextTreePath[0]]; // Go back to root of path
+                    thisLoader.buildTreeNode(nextTreePath[0], mName, curPath, memberNode, resetTreePath);
+                    break;
+
+                case "Struct":
+                case "Interface":
+                case "Class":
+                case "Enum":
+                    let categoryName = thisLoader.toPlural(memType);
+                    thisLoader.buildCategorizedNode(elInner, categoryName, mName, curPath, memberNode, nextTreePath);
+                    break;
+
+                case "Field":
+                case "Property":
+                case "Event":
+                case "Constructor":
+                case "Method":
+                    let endName = thisLoader.toPlural(memType);
+                    thisLoader.buildCategorizedNode(elInner, endName, mName, curPath, memberNode, nextTreePath, true);
+                    break;
+            }
+        });
+
         return elInner;
+    }
 
-    let keys = Object.keys(dataNode.Members);
-    let nextTreePath = [...treePath, elInner];
+    buildCategorizedNode(elParent, category, title, parentPath, dataNode, treePath, isEnd = false) {
+        elParent.categories = elParent.categories || {};
 
-    keys = keys.sort(sortStrings);
-    keys.forEach((mName, index) => {
-        let memberArray = dataNode.Members[mName];
-        if (memberArray.length == 0)
+        if (elParent.categories[category] == null)
+            elParent.categories[category] = this.buildTreeNode(elParent, category, parentPath, dataNode, treePath, true);
+
+        let elInner = elParent.categories[category];
+        let nextTreePath = [...treePath, elInner];
+        let curPath = `${parentPath}${(parentPath.length > 0 && category ? "." : "")}${category}`;
+
+        if (isEnd == true)
+            this.buildEndNode(elInner, title, parentPath, dataNode, nextTreePath);
+        else
+            this.buildTreeNode(elInner, title, parentPath, dataNode, nextTreePath);
+    }
+
+    toPlural(word) {
+        if (word.length == 0)
+            return word;
+
+        let last = word[word.length - 1].toLowerCase();
+        switch (last) {
+            case 'y':
+                return word.substring(0, word.length - 1) + "ies";
+
+            case 'h':
+            case 's':
+            case 'x':
+            case 'z':
+                return word.substring(0, word.length) + "es";
+        }
+
+        return word + "s";
+    }
+
+    toIDName(str) {
+        return str.replace(/(\.|>|<|,| )/g, '-');
+    }
+
+    toHtml(str) {
+        return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    getIcon(docNode) {
+        return `<img class="doc-icon" src="docs/img/${docNode.DocType.toLowerCase()}.png" title="${docNode.DocType}"
+/>`;
+    }
+
+    sortStrings(a, b) {
+        if (a > b)
+            return 1;
+
+        if (a < b)
+            return -1;
+
+        return 0;
+    }
+
+    getNode(nodePath) {
+        if (nodePath == null || nodePath.length == 0)
+            return null;
+
+        let parts = nodePath.split(".");
+
+        let node = docData;
+        parts.forEach((p, index) => {
+            let next = node.Members[p];
+
+            if (next != null && next.length > 0)
+                node = next[0];
+        });
+
+        return node;
+    }
+
+    getPathTitle(nodePath) {
+        let parts = nodePath.split(".");
+        return parts.length > 0 ? parts[parts.length - 1] : "[No Title]";
+    }
+
+    loadPage(target) {
+        let nodePath = target.data("target");
+        if (nodePath == null)
             return;
 
-        // We're building an index tree, so we only need to know about the first entry of each member, to avoid duplicate index listings.
-        let memberNode = memberArray[0];
-        let memType = memberNode.DocType;
+        let node = this.getNode(nodePath);
+        let loader = this.loaders[node.DocType];
 
-        switch (memType) {
-            case "Namespace":
-                let resetTreePath = [nextTreePath[0]]; // Go back to root of path
-                buildTreeNode(nextTreePath[0], mName, curPath, memberNode, resetTreePath);
-                break;
-
-            case "Struct":
-            case "Interface":
-            case "Class":
-            case "Enum":
-                let categoryName = toPlural(memType);
-                buildCategorizedNode(elInner, categoryName, mName, curPath, memberNode, nextTreePath);
-                break;
-
-            case "Field":
-            case "Property":
-            case "Event":
-            case "Constructor":
-            case "Method":
-                let endName = toPlural(memType);
-                buildCategorizedNode(elInner, endName, mName, curPath, memberNode, nextTreePath, true);
-                break;
+        if (loader == null) {
+            console.log(`No loader for path "${nodePath}"`);
+            return;
         }
-    });
 
-    return elInner;
-}
-
-function buildCategorizedNode(elParent, category, title, parentPath, dataNode, treePath, isEnd = false) {
-    elParent.categories = elParent.categories || {};
-
-    if (elParent.categories[category] == null)
-        elParent.categories[category] = buildTreeNode(elParent, category, parentPath, dataNode, treePath, true);
-
-    let elInner = elParent.categories[category];
-    let nextTreePath = [...treePath, elInner];
-    let curPath = `${parentPath}${(parentPath.length > 0 && category ? "." : "")}${category}`;
-
-    if (isEnd == true)
-        buildEndNode(elInner, title, parentPath, dataNode, nextTreePath);
-    else
-        buildTreeNode(elInner, title, parentPath, dataNode, nextTreePath);
-}
-
-function toPlural(word) {
-    if (word.length == 0)
-        return word;
-
-    let last = word[word.length - 1].toLowerCase();
-    switch (last) {
-        case 'y':
-            return word.substring(0, word.length - 1) + "ies";
-
-        case 'h':
-        case 's':
-        case 'x':
-        case 'z':
-            return word.substring(0, word.length) + "es";
+        let pTitle = this.getPathTitle(nodePath);
+        loader.load("main-page", pTitle, node, nodePath);
     }
 
-    return word + "s";
-}
+    registerDocTargets(parent) {
+        let thisLoader = this;
 
-function toIDName(str) {
-    return str.replace(/(\.|>|<|,| )/g, '-');
-}
-
-function toHtml(str) {
-    return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function getIcon(docNode) {
-    return `<img class="doc-icon" src="docs/img/${docNode.DocType.toLowerCase()}.png" title="${docNode.DocType}"
-/>`;
-}
-
-function sortStrings(a, b) {
-    if (a > b)
-        return 1;
-
-    if (a < b)
-        return -1;
-
-    return 0;
-}
-
-function getNode(nodePath) {
-    let parts = nodePath.split(".");
-
-    let node = docData;
-    parts.forEach((p, index) => {
-        let next = node.Members[p];
-
-        if (next != null && next.length > 0)
-            node = next[0];
-    });
-
-    return node;
-}
-
-function getPathTitle(nodePath) {
-    let parts = nodePath.split(".");
-    return parts.length > 0 ? parts[parts.length - 1] : "[No Title]";
-}
-
-function loadPage(target) {
-    let nodePath = target.data("target");
-    let node = getNode(nodePath);
-    let loader = loaders[node.DocType];
-    if (loader == null) {
-        console.log(`No loader for path "${nodePath}"`);
-        return;
+        parent.find(".doc-target").on("click", function (e) {
+            let target = $(e.target);
+            thisLoader.loadPage(target);
+        });
     }
-
-    let pTitle = getPathTitle(nodePath);
-    loader.load("main-page", pTitle, node, nodePath);
-}
-
-function registerDocTargets(parent) {
-    parent.find(".doc-target").on("click", function (e) {
-        let target = $(e.target);
-        loadPage(target);
-    });
 }
 
 $(document).ready(function () {
@@ -200,13 +227,9 @@ $(document).ready(function () {
     $('#doc-title').html(docData.Name);
     $('#doc-intro').html(docData.Intro);
 
-    loaders["Class"] = new ObjectLoader();
-    loaders["Struct"] = loaders["Class"];
-    loaders["Interface"] = loaders["Class"];
-    loaders["Enum"] = loaders["Class"];
-    loaders["Namespace"] = new NamespaceLoader();
+    let manager = new DocManager(docData);
 
-    populateIndex();
+    manager.populateIndex();
 
     let toggler = document.getElementsByClassName("namespace-toggle");
     let i;
@@ -218,7 +241,7 @@ $(document).ready(function () {
                 this.classList.toggle("namespace-toggle-down");
 
                 let target = $(this);
-                loadPage(target);
+                manager.loadPage(target);
             }
         });
     }

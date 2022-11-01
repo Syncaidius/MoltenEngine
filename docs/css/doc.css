@@ -1,6 +1,11 @@
 ﻿:root {
     --main-color: #dc5c0f;
+    --main-highlight: #fe7e2f;
     --bg-color: #333333;
+    --bg2-color: #444444;
+    --border-color: #555555;
+    --grey-color: #999999;
+    --grey-light-color: #DDDDDD;
 }
 
 body {
@@ -11,11 +16,8 @@ body {
     height: 100%;
     margin: 0px;
     min-height: 100%;
+    overflow: hidden;
 }
-
-    body h2 {
-        color: var(--main-color);
-    }
 
     body > * {
         flex-shrink: 0;
@@ -30,13 +32,53 @@ body {
     aspect-ratio: auto;
 }
 
+.url{
+    color: var(--main-color);
+    text-decoration: none;
+}
+
+.url:hover{
+    color: var(--main-highlight);
+}
+
+.scrollable {
+    overflow: scroll;
+    scrollbar-color: var(--grey-color) var(--main-color);
+}
+
+    .scrollable::-webkit-scrollbar {
+        color: var(--bg2-color);
+        background-color: var(--bg-color);
+        width: 8px;
+        height:8px;
+    }
+
+    .scrollable::-webkit-scrollbar-thumb {
+        background: var(--grey-color);
+        border-radius: 5px;
+    }
+
+        .scrollable::-webkit-scrollbar-thumb:hover {
+            background: var(--main-color);
+        }
+
+    .scrollable::-webkit-scrollbar-corner,
+    .scrollable::-webkit-scrollbar-track {
+        background: var(--bg2-color);
+    }
+
+        
+
 .sec-page {
     width: 100%;
+    min-height: 100%;
+    max-height: 100%;
     margin-top: 20px;
-    margin-left: 20px;
-    display:flex;
-    flex-direction:column;
+    margin-left: 25px;
+    display: flex;
+    flex-direction: column;
 }
+
 
 .sec-page table {
     border-collapse: collapse;
@@ -54,7 +96,6 @@ body {
 .sec-index {
     padding: 0px 0px 0px 0px;
     margin-top: auto;
-    border: 2px solid white;
     display: block;
     width: 500px;
     overflow-y: scroll;
@@ -62,13 +103,8 @@ body {
 }
 
 .sec-content {
-    padding-left: 30px;
-    padding-right: 10%;
-    padding-right: 10px;
-    margin-top: 20px;
-    font-size: 11px;
-    max-width: 55%;
-    min-width: 500px;
+    flex-grow:1;
+    width: 100%;
 }
 
 .sec-namespace {
@@ -139,6 +175,11 @@ body {
     color: var(--main-color);
 }
 
+.doc-parameter {
+    color: #AAAAAA;
+    font-style: italic;
+}
+
 .doc-target a{
     color: white;
     vertical-align:top;
@@ -152,6 +193,7 @@ body {
     display:flex;
     flex-direction:column;
     justify-content:left;
+    margin-bottom:20px;
 }
 
 .page-title{
@@ -183,6 +225,21 @@ body {
 }
 
 .page-title .doc-target:hover{
+    text-decoration: underline;
+    text-decoration-color: var(--main-color);
+    text-underline-offset: 6px;
+}
+
+.page-info {
+    color: var(--grey-color);
+}
+
+.page-info .doc-target{
+    color:var(--grey-light-color);
+}
+
+.page-inherit .doc-target:hover {
+    color: white;
     text-decoration: underline;
     text-decoration-color: var(--main-color);
     text-underline-offset: 6px;
@@ -244,12 +301,14 @@ body {
 }
 
 .obj-section {
-
     background-color: #333333;
     font-size: 14px;
     font-weight: normal;
     max-width: 800px;
     margin-top: 25px;
+    display:flex;
+    flex-direction:column;
+    justify-content: start left;
 }
 
     .obj-section .doc-icon {
@@ -261,7 +320,15 @@ body {
     .obj-section table {
         min-width: 100%;
         border-collapse: collapse;
-        border: 1px solid var(--main-color)
+        border: 1px solid var(--border-color)
+    }
+
+    .obj-section table thead{
+        background-color: var(--border-color);
+        font-size: 18px;
+        font-weight: bold;
+        text-align: left;
+        color: white;
     }
 
         .obj-section table tr {
@@ -269,18 +336,13 @@ body {
             border-right: 0px;
         }
 
+        .obj-section table tbody tr:nth-child(2n+1){
+            background-color: var(--bg2-color);
+        }
+
             .obj-section table tr td {
                 padding: 5px 5px 5px 5px;
             }
-
-
-    .obj-section thead th {
-        font-size: 18px;
-        font-weight: bold;
-        text-align: left;
-        color: white;
-        background-color: #555555;
-    }
 
 .obj-section-icon {
     width: 25px;
@@ -297,9 +359,4 @@ body {
 .obj-parenthesis {
     font-style: normal;
     color: var(--main-color);
-}
-
-.obj-parameter {
-    font-style: normal;
-    color: #CCCCCC;
 }
