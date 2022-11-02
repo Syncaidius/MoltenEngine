@@ -2,6 +2,8 @@
 Molten started as spare-time engine project, which I eventually intend to use to develop my own games without relying on other engines. Hopefully you'll find a use for it too!
 
 While parts of this project will inevitably be a classic case of re-inventing the wheel, I'm treating it as a chance to gain more experience in the area of game engine development. 
+
+[Documentation on GitHub Pages](https://syncaidius.github.io/MoltenEngine/)
 # Build Status
 | Platform  | Github | Azure  |
 | :------------ | :----  | :----  |
