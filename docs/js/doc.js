@@ -4,6 +4,7 @@ class DocManager {
     objTypes = ["Class", "Struct", "Enum", "Interface"];
     loaders = {};
     data = null;
+    selected = null;
 
     constructor(srcData) {
         this.data = srcData;
@@ -13,6 +14,7 @@ class DocManager {
         this.loaders["Enum"] = this.loaders["Class"];
         this.loaders["Namespace"] = new NamespaceLoader(this);
         this.loaders["Method"] = new MethodLoader(this);
+        this.loaders["Constructor"] = this.loaders["Method"];
     }
 
     populateIndex() {
@@ -38,7 +40,7 @@ class DocManager {
         let targetName = this.toIDName(title);
 
         let iconHtml = this.getIcon(dataNode);
-        el.append(` <div id="t-${idName}" class="doc-target" data-target="${parentPath}" data-target-sec="${targetName}">
+        el.append(` <div id="t-${idName}" class="doc-target" data-target="${parentPath}">
                     ${iconHtml}
                     <a>${title}</a>
                 </div>`);
@@ -64,7 +66,7 @@ class DocManager {
         let idName = this.toIDName(curPath);
         let dataTarget = empty == true ? "" : `data-target="${curPath}"`;
         el.append(`<div id="i-${idName}" class="sec-namespace${(treePath.length > 1 ? "-noleft" : "")}">
-                    <span class="namespace-toggle\" ${dataTarget}>${title}</span><br/>
+                    <span class="index-toggle\" ${dataTarget}>${title}</span><br/>
                     <div id="in-${idName}" class="sec-namespace-inner"></div>
                 </div>`);
 
@@ -173,7 +175,7 @@ class DocManager {
         return 0;
     }
 
-    getNode(nodePath) {
+    getNode(nodePath, nodeIndex = 0) {
         if (nodePath == null || nodePath.length == 0)
             return null;
 
@@ -183,8 +185,9 @@ class DocManager {
         parts.forEach((p, index) => {
             let next = node.Members[p];
 
-            if (next != null && next.length > 0)
-                node = next[0];
+            let nextIndex = index == parts.length - 1 ? nodeIndex : 0;
+            if (next != null && next.length > nextIndex)
+                node = next[nextIndex];
         });
 
         return node;
@@ -197,10 +200,12 @@ class DocManager {
 
     loadPage(target) {
         let nodePath = target.data("target");
+        let pathID = target.data("target-id") || 0;
+
         if (nodePath == null)
             return;
 
-        let node = this.getNode(nodePath);
+        let node = this.getNode(nodePath, pathID);
         let loader = this.loaders[node.DocType];
 
         if (loader == null) {
@@ -231,17 +236,23 @@ $(document).ready(function () {
 
     manager.populateIndex();
 
-    let toggler = document.getElementsByClassName("namespace-toggle");
+    let toggler = document.getElementsByClassName("index-toggle");
     let i;
 
     for (i = 0; i < toggler.length; i++) {
         toggler[i].addEventListener("click", function () {
             {
                 this.parentElement.querySelector(".sec-namespace-inner").classList.toggle("sec-active");
-                this.classList.toggle("namespace-toggle-down");
+                this.classList.toggle("index-toggle-down");
 
                 let target = $(this);
                 manager.loadPage(target);
+
+                if (manager.selected != null)
+                    manager.selected.classList.toggle("index-selected");
+
+                this.classList.toggle("index-selected");
+                manager.selected = this;
             }
         });
     }

@@ -1,11 +1,13 @@
 ﻿:root {
     --main-color: #dc5c0f;
     --main-highlight: #fe7e2f;
+    --main-selected: rgba(145,97,12,1);
     --bg-color: #333333;
     --bg2-color: #444444;
     --border-color: #555555;
     --grey-color: #999999;
     --grey-light-color: #DDDDDD;
+    --keyword-color: #47aedc;
 }
 
 body {
@@ -37,6 +39,28 @@ body {
     text-decoration: none;
 }
 
+.keyword{
+    color: var(--keyword-color);
+    font-weight:normal;
+}
+
+.code{
+
+}
+
+.code .doc-target{
+    color: var(--main-color);
+}
+
+.code .doc-parameter{
+    color: #AAAAAA;
+    font-style: italic;
+}
+
+.code .doc-target:hover{
+    color: var(--main-highlight);
+}
+
 .url:hover{
     color: var(--main-highlight);
 }
@@ -65,9 +89,7 @@ body {
     .scrollable::-webkit-scrollbar-corner,
     .scrollable::-webkit-scrollbar-track {
         background: var(--bg2-color);
-    }
-
-        
+    }     
 
 .sec-page {
     width: 100%;
@@ -155,15 +177,6 @@ body {
     background-color: var(--bg-color);
 }
 
-.namespace-toggle {
-    cursor: pointer;
-    user-select: none; /* Prevent text selection */
-}
-
-.namespace-toggle:hover {
-    color: var(--main-color);
-}
-
 .doc-invalid {
     color: #FF2222;
     font-weight: normal;
@@ -238,6 +251,10 @@ body {
     color:var(--grey-light-color);
 }
 
+.page-inherit .keyword{
+    font-style: normal;
+}
+
 .page-inherit .doc-target:hover {
     color: white;
     text-decoration: underline;
@@ -245,17 +262,31 @@ body {
     text-underline-offset: 6px;
 }
 
+.index-toggle {
+    cursor: pointer;
+    user-select: none; /* Prevent text selection */
+    width: 80%;
+    display:inline-block;
+}
+    .index-toggle:hover {
+        color: var(--main-color);
+    }
+
 /* Create the caret/arrow with a unicode, and style it */
-.namespace-toggle::before {
+.index-toggle::before {
     content: "\25B6";
     color: var(--main-color);
     display: inline-block;
     margin-right: 6px;
 }
 
-.namespace-toggle-down::before {
+.index-toggle-down::before {
     transform: rotate(90deg);
 }
+
+.index-selected {
+    background: linear-gradient(90deg, var(--main-selected) 0%, rgba(51,51,51,0) 100%);
+}   
 
 .sec-div {
     min-height: 5px;
@@ -304,7 +335,7 @@ body {
     background-color: #333333;
     font-size: 14px;
     font-weight: normal;
-    max-width: 800px;
+    max-width: 850px;
     margin-top: 25px;
     display:flex;
     flex-direction:column;
