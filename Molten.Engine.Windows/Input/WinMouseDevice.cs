@@ -240,7 +240,8 @@ namespace Molten.Input
 
         private int ParseWheelDelta(uint wParam)
         {
-            return (int)(wParam & 0xFFFF0000U) >> 16;
+            // Divide by the Windows baseline scroll delta to give us more realistic deltas.
+            return ((int)(wParam & 0xFFFF0000U) >> 16) / WHEEL_DELTA;
         }
 
         private PointerButton TranslateButton(WinMouseButtonFlags btn)
