@@ -30,8 +30,6 @@ namespace Molten.Input
                 case InputAction.VerticalScroll:
                     ScrollWheel.Move((int)newState.Delta.Y);
                     OnVScroll?.Invoke(this, newState);
-
-                    Console.WriteLine($"Mouse wheel delta: {newState.Delta.Y}");
                     break;
 
                 case InputAction.HorizontalScroll:
