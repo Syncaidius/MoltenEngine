@@ -204,7 +204,7 @@ namespace Molten.UI
         public override bool OnScrollWheel(InputScrollWheel wheel)
         {
             base.OnScrollWheel(wheel);
-            _vScroll.Value += wheel.Delta;
+            _vScroll.Value -= wheel.Delta * _vScroll.Increment;
             return true;
         }
 
