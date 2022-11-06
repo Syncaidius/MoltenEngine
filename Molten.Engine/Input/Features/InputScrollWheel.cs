@@ -13,15 +13,13 @@
         /// </summary>
         public int Delta { get; private set; }
 
-        public int Increment { get; set; } = 120;
-
         public int _prevPosition;
 
         public InputScrollWheel(string name, string desc = "Scroll Wheel") : base(name, desc) { }
 
         public void Move(int delta)
         {
-            Position += Increment * (delta > 0 ? 1 : delta < 1 ? -1 : 0);
+            Position += delta;
         }
 
         public override void ClearState()
