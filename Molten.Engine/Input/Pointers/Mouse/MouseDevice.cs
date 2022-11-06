@@ -23,18 +23,24 @@ namespace Molten.Input
 
         protected override bool ProcessState(ref PointerState newState, ref PointerState prevState)
         {
-            bool result =  base.ProcessState(ref newState, ref prevState);
+            bool result = false;
 
             switch (newState.Action)
             {
                 case InputAction.VerticalScroll:
-                    ScrollWheel.SetValues((int)newState.Delta.Y);
+                    ScrollWheel.Move((int)newState.Delta.Y);
                     OnVScroll?.Invoke(this, newState);
+
+                    Console.WriteLine($"Mouse wheel delta: {newState.Delta.Y}");
                     break;
 
                 case InputAction.HorizontalScroll:
-                    ScrollWheel.SetValues((int)newState.Delta.X);
+                    HScrollWheel.Move((int)newState.Delta.X);
                     OnHScroll?.Invoke(this, newState);
+                    break;
+
+                default:
+                    result = base.ProcessState(ref newState, ref prevState);
                     break;
             }
 

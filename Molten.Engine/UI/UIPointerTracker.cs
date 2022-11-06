@@ -110,15 +110,6 @@ namespace Molten
                 _hovered.OnHover(this);
             }
 
-            if (Device is MouseDevice mouse)
-            {
-                // Handle scroll wheel event
-                if (mouse.ScrollWheel.Delta != 0)
-                {
-                    // TODO pass mouse.ScrollWheel values to UIElement.OnScroll;
-                }
-            }
-
             switch (Button)
             {
                 case PointerButton.Left:

@@ -2,10 +2,6 @@
 {
     public class InputAnalogStick : InputDeviceFeature
     {
-        public override string Name { get; }
-
-        public override string Description { get; }
-
         /// <summary>
         /// Gets a <see cref="Vector2F"/> containing the raw value for each stick axis.
         /// </summary>
@@ -60,10 +56,9 @@
         Vector2F _deadzone = new Vector2F(0.5f);
         int _maxValue;
 
-        public InputAnalogStick(string name, int maxValue, string desc = "Analog Stick")
+        public InputAnalogStick(string name, int maxValue, string desc = "Analog Stick") :
+            base(name, desc)
         {
-            Name = name;
-            Description = desc;
             _maxValue = maxValue;
         }
 

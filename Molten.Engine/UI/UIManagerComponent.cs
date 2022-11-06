@@ -76,12 +76,31 @@ namespace Molten.UI
 
             Vector2F pos = pDevice.Position;
             if (InputConstraintBounds.HasValue)
-                pos -= (Vector2F)InputConstraintBounds.Value.TopLeft; ;
+                pos -= (Vector2F)InputConstraintBounds.Value.TopLeft;
 
-            if (_root.Pick(pos) != null)
+            UIElement picked = _root.Pick(pos);
+            if (picked != null)
             {
                 if (pDevice.IsConnected && pDevice.IsEnabled)
                     TrackPointingDevice(pDevice);
+
+                if (pDevice is MouseDevice mouse)
+                {
+                    // Handle scroll wheel event
+                    if (mouse.ScrollWheel.Delta != 0)
+                    {
+                        // If the current element did not respond to scrolling, go to it's parent.
+                        // Repeat this until a parent element responds to scrolling, or we reach the top of the UI tree.
+                        UIElement scrolled = picked;
+                        while(scrolled != null)
+                        {
+                            if (scrolled.OnScrollWheel(mouse.ScrollWheel))
+                                break;
+
+                            scrolled = scrolled.ParentElement;
+                        }
+                    }
+                }
 
                 return true;
             }

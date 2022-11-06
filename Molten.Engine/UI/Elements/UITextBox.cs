@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Molten.Collections;
 using Molten.Graphics;
+using Molten.Input;
 
 namespace Molten.UI
 {
@@ -198,6 +199,13 @@ namespace Molten.UI
 
             if (_vScroll.IsVisible)
                 renderbounds.Width -= _scrollbarWidth;
+        }
+
+        public override bool OnScrollWheel(InputScrollWheel wheel)
+        {
+            base.OnScrollWheel(wheel);
+            _vScroll.Value += wheel.Delta;
+            return true;
         }
 
         public override void OnPressed(UIPointerTracker tracker)

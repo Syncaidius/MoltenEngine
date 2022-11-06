@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using Molten.Input;
 using System.Runtime.Serialization;
 using System.Xml.Linq;
 
@@ -11,6 +12,8 @@ namespace Molten.UI
     public delegate void UIElementHandler<T>(T element) where T : UIElement;
 
     public delegate void UIElementDeltaPositionHandler(UIElement element, UIPointerTracker tracker, Vector2F localPos, Vector2F globalPos, Vector2I delta);
+
+    public delegate void UIElementScrollWheelHandler(UIElement element, InputScrollWheel wheel);
 
     public delegate void UIElementCancelHandler<T>(T element, UICancelEventArgs args) where T : UIElement;
 
@@ -83,6 +86,8 @@ namespace Molten.UI
         /// Invoked when the current <see cref="UIElement"/> with and/or height has changed.
         /// </summary>
         public event UIElementHandler Resized;
+
+        public event UIElementScrollWheelHandler Scrolled;
 
         List<UIElementLayer> _layers;
         UIManagerComponent _manager;
@@ -424,6 +429,12 @@ namespace Molten.UI
                 Vector2F localPos = tracker.Position - (Vector2F)_globalBounds.TopLeft;
                 Dragged?.Invoke(this, tracker, localPos, tracker.Position, tracker.IntegerDelta);
             }
+        }
+
+        public virtual bool OnScrollWheel(InputScrollWheel wheel)
+        {
+            Scrolled?.Invoke(this, wheel);
+            return false;
         }
 
         /// <summary>

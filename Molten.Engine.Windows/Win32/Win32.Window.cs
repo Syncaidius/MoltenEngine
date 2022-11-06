@@ -2,7 +2,7 @@
 
 namespace Molten.Windows32
 {
-    public delegate void WndProcCallbackHandler(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam);
+    public delegate void WndProcCallbackHandler(IntPtr windowHandle, WndProcMessageType msgType, uint wParam, int lParam);
 
     public static partial class Win32
     {        
@@ -143,7 +143,7 @@ namespace Molten.Windows32
 
             IntPtr returnCode = CallWindowProc(_wndProc, hWnd, msg, wParam, lParam);
             WndProcMessageType msgType = (WndProcMessageType)msg;
-            int wp = (int)((long)wParam & int.MaxValue);
+            uint wp = (uint)((long)wParam & uint.MaxValue);
 
             int lp = IntPtr.Size == 8 ?
                 (int)(lParam.ToInt64() & int.MaxValue) :

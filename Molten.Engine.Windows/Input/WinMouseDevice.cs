@@ -68,7 +68,7 @@ namespace Molten.Input
             return features;
         }
 
-        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam)
+        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, uint wParam, int lParam)
         {
             if (!IsEnabled)
                 return;
@@ -167,9 +167,7 @@ namespace Molten.Input
         /// <summary>
         /// Parses a message representing a mouse cursor action with coordinates attached to it.
         /// </summary>
-        /// <param name="state">The <see cref="MouseButtonState"/> to update.</param>
         /// <param name="btn">The button that triggered the message.</param>
-        /// <param name="down">True if the button was pressed down. False if the button was released.</param>
         /// <param name="action">The action performed</param>
         /// <param name="aType">The type of action.</param>
         /// <param name="wParam">The WndProc wParam value.</param>
@@ -178,7 +176,7 @@ namespace Molten.Input
             WinMouseButtonFlags btn,
             InputAction action,
             InputActionType aType,
-            int wParam,
+            uint wParam,
             int lParam)
         {
             WinMouseButtonFlags btns = (WinMouseButtonFlags)(wParam & 0xFFFFFFFF);
@@ -226,7 +224,7 @@ namespace Molten.Input
             QueueState(state);
         }
 
-        private WinMouseButtonFlags ParseXButton(int wParam)
+        private WinMouseButtonFlags ParseXButton(uint wParam)
         {
             WinWParamXButton xb = (WinWParamXButton)((wParam >> 16) & 0xFFFFFFFF);
             switch (xb)
@@ -240,9 +238,9 @@ namespace Molten.Input
             }
         }
 
-        private int ParseWheelDelta(int wParam)
+        private int ParseWheelDelta(uint wParam)
         {
-            return (int)((wParam >> 16) & 0xFFFFFFFF);
+            return (int)(wParam & 0xFFFF0000U) >> 16;
         }
 
         private PointerButton TranslateButton(WinMouseButtonFlags btn)
@@ -269,7 +267,6 @@ namespace Molten.Input
 
                 case WinMouseButtonFlags.MK_XBUTTON2:
                     return PointerButton.XButton2;
-
             }
         }
 

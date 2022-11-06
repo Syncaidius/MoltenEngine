@@ -2,10 +2,6 @@
 {
     public class InputScrollWheel : InputDeviceFeature
     {
-        public override string Name { get; }
-
-        public override string Description { get; }
-
         /// <summary>
         /// Gets the current position of the wheel.
         /// </summary>
@@ -17,16 +13,15 @@
         /// </summary>
         public int Delta { get; private set; }
 
-        public InputScrollWheel(string name, string desc = "Scroll Wheel")
-        {
-            Name = name;
-            Description = desc;
-        }
+        public int Increment { get; set; } = 120;
 
-        public void SetValues(int delta)
+        public int _prevPosition;
+
+        public InputScrollWheel(string name, string desc = "Scroll Wheel") : base(name, desc) { }
+
+        public void Move(int delta)
         {
-            Position += delta;
-            Delta = delta;
+            Position += Increment * (delta > 0 ? 1 : delta < 1 ? -1 : 0);
         }
 
         public override void ClearState()
@@ -35,6 +30,10 @@
             Delta = 0;
         }
 
-        protected override void OnUpdate(Timing time) { }
+        protected override void OnUpdate(Timing time)
+        {
+            Delta = Position - _prevPosition;
+            _prevPosition = Position;
+        }
     }
 }

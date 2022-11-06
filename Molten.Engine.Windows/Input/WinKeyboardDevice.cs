@@ -35,7 +35,7 @@ namespace Molten.Input
             return features;
         }
 
-        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam)
+        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, uint wParam, int lParam)
         {
             if (!IsEnabled)
                 return;

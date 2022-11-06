@@ -2,10 +2,6 @@
 {
     public class InputAnalogTrigger : InputDeviceFeature
     {
-        public override string Name { get; }
-
-        public override string Description { get; }
-
         /// <summary>
         /// Gets the raw value of the trigger. This may differ depending on the device being used.
         /// </summary>
@@ -26,10 +22,9 @@
         float _value;
         float _deadzone;
 
-        public InputAnalogTrigger(string name, int maxValue, string desc = "Analog Trigger")
+        public InputAnalogTrigger(string name, int maxValue, string desc = "Analog Trigger") :
+            base(name, desc)
         {
-            Name = name;
-            Description = desc;
             _maxValue = maxValue;
             _deadzone = 0;
         }

@@ -12,14 +12,9 @@
         /// </summary>
         public float MaxValue { get; }
 
-        public override string Name { get; }
-
-        public override string Description { get; }
-
-        public InputVibration(string name, float maxValue, string desc = "Vibrator")
+        public InputVibration(string name, float maxValue, string desc = "Vibrator") :
+            base(name, desc)
         {
-            Name = name;
-            Description = desc;
             MaxValue = maxValue;
         }
         protected override void OnUpdate(Timing time) { }

@@ -2,9 +2,15 @@
 {
     public abstract class InputDeviceFeature
     {
-        public abstract string Name { get; }
+        public string Name { get; }
 
-        public abstract string Description { get; }
+        public string Description { get; }
+
+        public InputDeviceFeature(string name, string desc)
+        {
+            Name = name;
+            Description = desc;
+        }
 
         internal void Update(Timing time)
         {
