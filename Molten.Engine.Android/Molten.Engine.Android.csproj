@@ -1,10 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0-android</TargetFramework>
+    <TargetFramework>net7.0-android</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <SupportedOSPlatformVersion>29.0</SupportedOSPlatformVersion>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageProjectUrl>https://github.com/Syncaidius/MoltenEngine</PackageProjectUrl>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -21,6 +20,7 @@
     <PackageIcon>logo_128.png</PackageIcon>
     <Version>0.2.0</Version>
     <Company>James Yarwood</Company>
+    <SupportedOSPlatformVersion>31.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 	
   <ItemGroup>
