@@ -14,7 +14,7 @@ namespace Molten.UI
         /// The border line thickness
         /// </summary>
         [UIThemeMember]
-        public UISpacing BorderThickness { get; } = new UISpacing(2);
+        public UIPadding BorderThickness { get; } = new UIPadding(2);
 
         /// <summary>
         /// The fill/inner color of the current <see cref="UIPanel"/>.
@@ -36,7 +36,7 @@ namespace Molten.UI
             InputRules = UIInputRuleFlags.Children;
         }
 
-        private void BorderThickness_OnChanged()
+        private void BorderThickness_OnChanged(UIPadding value)
         {
             UpdateBounds();
         }

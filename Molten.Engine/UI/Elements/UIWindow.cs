@@ -290,7 +290,7 @@ namespace Molten.UI
             Minimize();
         }
 
-        private void BorderThickness_OnChanged()
+        private void BorderThickness_OnChanged(UIPadding value)
         {
             ApplyBorderThickness();
             UpdateBounds();
@@ -597,7 +597,7 @@ namespace Molten.UI
         /// Gets or sets the border thickness of the current <see cref="UIWindow"/>.
         /// </summary>
         [UIThemeMember]
-        public UISpacing BorderThickness { get; } = new UISpacing(2);
+        public UIPadding BorderThickness { get; } = new UIPadding(2);
 
         /// <summary>
         /// Gets the <see cref="UIWindowState"/> of the current <see cref="UIWindow"/>.

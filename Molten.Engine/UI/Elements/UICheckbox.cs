@@ -20,7 +20,7 @@ namespace Molten.UI
         /// The border line thickness
         /// </summary>
         [UIThemeMember]
-        public UISpacing BorderThickness { get; } = new UISpacing(2);
+        public UIPadding BorderThickness { get; } = new UIPadding(2);
 
         /// <summary>
         /// The fill/inner color of the box area for the current <see cref="UICheckBox"/>.
@@ -78,7 +78,7 @@ namespace Molten.UI
             InputRules = UIInputRuleFlags.Self | UIInputRuleFlags.Children;
         }
 
-        private void BorderThickness_OnChanged()
+        private void BorderThickness_OnChanged(UIPadding value)
         {
             UpdateBounds();
         }

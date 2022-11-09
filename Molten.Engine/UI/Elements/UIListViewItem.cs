@@ -38,7 +38,7 @@ namespace Molten.UI
                 State = UIElementState.Active;
         }
 
-        private void BorderThickness_OnChanged()
+        private void BorderThickness_OnChanged(UIPadding value)
         {
             UpdateBounds();
         }
@@ -62,7 +62,7 @@ namespace Molten.UI
         /// Gets or sets the border thickness of the current <see cref="UIListViewItem"/>.
         /// </summary>
         [UIThemeMember]
-        public UISpacing BorderThickness { get; } = new UISpacing(2);
+        public UIPadding BorderThickness { get; } = new UIPadding(2);
 
         /// <summary>
         /// Gets or sets the border color of the current <see cref="UIListViewItem"/>.

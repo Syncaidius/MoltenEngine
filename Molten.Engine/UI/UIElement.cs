@@ -170,11 +170,16 @@ namespace Molten.UI
         /// <param name="settings">The UI settings instance that was provided to the <paramref name="engine"/> during its instantiation.</param>
         protected virtual void OnInitialize(Engine engine, UISettings settings)
         {
-            Margin.OnChanged += MarginPadding_OnChanged;
-            Padding.OnChanged += MarginPadding_OnChanged;
+            Margin.OnChanged += Margin_OnChanged;
+            Padding.OnChanged += Padding_OnChanged;
         }
 
-        private void MarginPadding_OnChanged()
+        private void Margin_OnChanged(UIMargin margin, UIMargin.Side side)
+        {
+            UpdateBounds();
+        }
+
+        private void Padding_OnChanged(UIPadding value)
         {
             UpdateBounds();
         }
@@ -654,6 +659,9 @@ namespace Molten.UI
         /// </summary>
         protected UIElementLayer BaseElements { get; }
 
+        /// <summary>
+        /// Gets the parent <see cref="UIElementLayer"/> for the current <see cref="UIElement"/>, or null if no value is set. 
+        /// </summary>
         public UIElementLayer ParentLayer
         {
             get => _parentLayer;
@@ -743,16 +751,13 @@ namespace Molten.UI
         /// Gets the margin of the current <see cref="UIElement"/>. This spacing directly affects the <see cref="BorderBounds"/>.
         /// </summary>
         [DataMember]
-        public UISpacing Margin { get; } = new UISpacing();
+        public UIMargin Margin { get; } = new UIMargin();
 
         /// <summary>
         /// Gets the padding of the current <see cref="UIElement"/>. This is the spacing between the <see cref="Margin"/> and <see cref="RenderBounds"/>.
         /// </summary>
         [DataMember]
-        public UISpacing Padding { get; } = new UISpacing();
-
-        [DataMember]
-        public UIAnchorFlags Anchor { get; set; }
+        public UIPadding Padding { get; } = new UIPadding();
 
         /// <summary>
         /// Gets the <see cref="UIWindow"/> that contains the current <see cref="UIElement"/>.

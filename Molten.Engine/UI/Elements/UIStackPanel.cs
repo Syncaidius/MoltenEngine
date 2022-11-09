@@ -30,7 +30,7 @@ namespace Molten.UI
             BorderThickness.OnChanged += BorderThickness_OnChanged;
         }
 
-        private void BorderThickness_OnChanged()
+        private void BorderThickness_OnChanged(UIPadding value)
         {
             _panel.BorderThickness.Apply(BorderThickness);
         }
@@ -177,7 +177,7 @@ namespace Molten.UI
         /// Gets or sets the border thickness of the current <see cref="UIWindow"/>.
         /// </summary>
         [UIThemeMember]
-        public UISpacing BorderThickness { get; } = new UISpacing(2);
+        public UIPadding BorderThickness { get; } = new UIPadding(2);
 
         /// <summary>
         /// Gets or sets the flow direction of the stack panel.
