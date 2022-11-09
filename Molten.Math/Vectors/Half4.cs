@@ -80,10 +80,10 @@ namespace Molten
         /// <param name="w">The W component.</param>
         public Half4(float x, float y, float z, float w)
         {
-            this.X = new Half(x);
-            this.Y = new Half(y);
-            this.Z = new Half(z);
-            this.W = new Half(w);
+            this.X = (Half)x;
+            this.Y = (Half)y;
+            this.Z = (Half)z;
+            this.W = (Half)w;
         }
 
         /// <summary>
@@ -95,10 +95,10 @@ namespace Molten
         /// <param name="w">The W component.</param>
         public Half4(ushort x, ushort y, ushort z, ushort w)
         {
-            this.X = new Half(x);
-            this.Y = new Half(y);
-            this.Z = new Half(z);
-            this.W = new Half(w);
+            this.X = (Half)x;
+            this.Y = (Half)y;
+            this.Z = (Half)z;
+            this.W = (Half)w;
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Molten
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Vector4F(Half4 value)
         {
-            return new Vector4F(value.X, value.Y, value.Z, value.W);
+            return new Vector4F((float)value.X, (float)value.Y, (float)value.Z, (float)value.W);
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace Molten
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Vector3F(Half4 value)
         {
-            return new Vector3F(value.X, value.Y, value.Z);
+            return new Vector3F((float)value.X, (float)value.Y, (float)value.Z);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace Molten
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Vector2F(Half4 value)
         {
-            return new Vector2F(value.X, value.Y);
+            return new Vector2F((float)value.X, (float)value.Y);
         }
         
         /// <summary>

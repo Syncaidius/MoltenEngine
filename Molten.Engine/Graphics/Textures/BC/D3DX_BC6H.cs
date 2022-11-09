@@ -486,9 +486,9 @@ namespace Molten.Graphics.Textures
 
 
                     Half[] rgb = fc.ToF16(bSigned);
-                    pOut[i].R = rgb[0]; // XMConvertHalfToFloat(rgb[0]);
-                    pOut[i].G = rgb[1];
-                    pOut[i].B = rgb[2];
+                    pOut[i].R = (float)rgb[0]; // XMConvertHalfToFloat(rgb[0]);
+                    pOut[i].G = (float)rgb[1];
+                    pOut[i].B = (float)rgb[2];
                     pOut[i].A = 1.0f;
                 }
             }

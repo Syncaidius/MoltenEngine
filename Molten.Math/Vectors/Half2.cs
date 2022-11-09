@@ -62,8 +62,8 @@ namespace Molten
         /// <param name="y">The Y component.</param>
         public Half2(float x, float y)
         {
-            this.X = new Half(x);
-            this.Y = new Half(y);
+            X = (Half)x;
+            Y = (Half)y;
         }
 
         /// <summary>
@@ -73,8 +73,8 @@ namespace Molten
         /// <param name="y">The Y component.</param>
         public Half2(ushort x, ushort y)
         {
-            this.X = new Half(x);
-            this.Y = new Half(y);
+            X = (Half)x;
+            Y = (Half)y;
         }
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace Molten
         /// <param name="value">The value to set for both the X and Y components.</param>
         public Half2(Half value)
         {
-            this.X = value;
-            this.Y = value;
+            X = value;
+            Y = value;
         }
 
         /// <summary>
@@ -93,8 +93,8 @@ namespace Molten
         /// <param name="value">Value to initialize X and Y components with.</param>
         public Half2(float value)
         {
-            this.X = new Half(value);
-            this.Y = new Half(value);
+            X = (Half)value;
+            Y = X;
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Molten
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Vector2F(Half2 value)
         {
-            return new Vector2F(value.X, value.Y);
+            return new Vector2F((float)value.X, (float)value.Y);
         }
         
         /// <summary>
