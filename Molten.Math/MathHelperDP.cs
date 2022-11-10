@@ -15,27 +15,27 @@ namespace Molten
         /// <summary>
         /// A value specifying the approximation of π which is 180 degrees.
         /// </summary>
-        public const double Pi = Math.PI;
+        public const double Pi = double.Pi;
 
         /// <summary>
         /// Equvilent to <see cref="Tau"/>. A value specifying the approximation of 2π which is 360 degrees.
         /// </summary>
-        public const double TwoPi = Math.Tau;
+        public const double TwoPi = double.Tau;
 
         /// <summary>
         /// Equivilent to <see cref="TwoPi"/>. Represents the number of radians in one turn, specified by the constant, τ
         /// </summary>
-        public const double Tau = Math.Tau;
+        public const double Tau = double.Tau;
 
         /// <summary>
         /// A value specifying the approximation of π/2 which is 90 degrees.
         /// </summary>
-        public const double PiOverTwo = (Math.PI / 2);
+        public const double PiOverTwo = double.Pi / 2;
 
         /// <summary>
         /// A value specifying the approximation of π/4 which is 45 degrees.
         /// </summary>
-        public const double PiOverFour = (Math.PI / 4);
+        public const double PiOverFour = (double.Pi / 4);
 
         /// <summary>
         /// Multiply by this value to convert from degrees to radians.
