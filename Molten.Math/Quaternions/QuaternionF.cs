@@ -1,4 +1,4 @@
-
+﻿
 
 
 
@@ -72,7 +72,7 @@ namespace Molten
                 if (MathHelper.IsZero(length))
                     return 0.0F;
 
-                return (float)(2.0 * Math.Acos(MathHelper.Clamp(W, -1F, 1F)));
+                return (float)(2.0 * Math.Acos(float.Clamp(W, -1F, 1F)));
             }
         }
 
@@ -557,7 +557,7 @@ namespace Molten
             if (lengthSquared > 1e-14f)
             {
                 axis = axis / (float)Math.Sqrt(lengthSquared);
-                angle = 2 * (float)Math.Acos(MathHelper.Clamp(qw, -1, 1));
+                angle = 2 * (float)Math.Acos(float.Clamp(qw, -1, 1));
             }
             else
             {

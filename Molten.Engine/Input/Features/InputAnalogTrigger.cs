@@ -31,7 +31,7 @@
 
         public void SetValue(float newValue)
         {
-            _rawValue = MathHelper.Clamp(newValue, -_maxValue, _maxValue);
+            _rawValue = float.Clamp(newValue, -_maxValue, _maxValue);
 
             double dead = _maxValue * _deadzone;
             double finalRange = _maxValue - dead;

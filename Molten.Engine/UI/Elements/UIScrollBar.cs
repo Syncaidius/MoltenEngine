@@ -321,7 +321,7 @@ namespace Molten.UI
             get => _value;
             set
             {
-                value = MathHelper.Clamp(value, _minValue, _maxValue);
+                value = float.Clamp(value, _minValue, _maxValue);
 
                 if (_value != value)
                 {

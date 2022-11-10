@@ -314,42 +314,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Clamps the specified float value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="min">The min.</param>
-        /// <param name="max">The max.</param>
-        /// <returns>The result of clamping a value between min and max</returns>
-        public static float Clamp(float value, float min, float max)
-        {
-            return value < min ? min : value > max ? max : value;
-        }
-
-        /// <summary>
-        /// Clamps the specified integer value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="min">The min.</param>
-        /// <param name="max">The max.</param>
-        /// <returns>The result of clamping a value between min and max</returns>
-        public static int Clamp(int value, int min, int max)
-        {
-            return value < min ? min : value > max ? max : value;
-        }
-
-        /// <summary>
-        /// Clamps the specified unsigned integer value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="min">The min.</param>
-        /// <param name="max">The max.</param>
-        /// <returns>The result of clamping a value between min and max</returns>
-        public static uint Clamp(uint value, uint min, uint max)
-        {
-            return value < min ? min : value > max ? max : value;
-        }
-
-        /// <summary>
         /// Interpolates between two values using a linear function by a given amount.
         /// </summary>
         /// <remarks>

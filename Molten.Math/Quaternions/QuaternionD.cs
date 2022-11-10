@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -67,7 +67,7 @@ namespace Molten
                 if (MathHelperDP.IsZero(length))
                     return 0.0D;
 
-                return (2.0 * Math.Acos(MathHelperDP.Clamp(W, -1D, 1D)));
+                return (2.0 * Math.Acos(double.Clamp(W, -1D, 1D)));
             }
         }
 
@@ -552,7 +552,7 @@ namespace Molten
             if (lengthSquared > 1e-14f)
             {
                 axis = axis / Math.Sqrt(lengthSquared);
-                angle = 2 * Math.Acos(MathHelperDP.Clamp(qw, -1, 1));
+                angle = 2 * Math.Acos(double.Clamp(qw, -1, 1));
             }
             else
             {

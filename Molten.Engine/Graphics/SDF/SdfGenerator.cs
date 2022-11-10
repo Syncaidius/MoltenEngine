@@ -176,7 +176,7 @@ namespace Molten.Graphics.SDF
             float* end = data + ((bitmap.Width * bitmap.Height) * CHANNELS_PER_PIXEL);
 
             for (float* p = data; p < end; ++p)
-                *p = MathHelper.Clamp(256f * *p, 0, 255f);
+                *p = float.Clamp(256f * *p, 0, 255f);
         }
     }
 }

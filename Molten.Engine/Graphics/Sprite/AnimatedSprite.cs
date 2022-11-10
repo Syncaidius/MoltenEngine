@@ -108,7 +108,7 @@
             {
                 if (_animation != null)
                 {
-                    _frame = MathHelper.Clamp(value, 0, _animation.Frames.Count - 1);
+                    _frame = int.Clamp(value, 0, _animation.Frames.Count - 1);
                     GetCurrentFrame();
                 }
                 else

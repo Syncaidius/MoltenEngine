@@ -260,18 +260,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Clamps the specified float value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="min">The min.</param>
-        /// <param name="max">The max.</param>
-        /// <returns>The result of clamping a value between min and max</returns>
-        public static double Clamp(double value, double min, double max)
-        {
-            return value < min ? min : value > max ? max : value;
-        }
-
-        /// <summary>
         /// Interpolates between two values using a linear function by a given amount.
         /// </summary>
         /// <remarks>

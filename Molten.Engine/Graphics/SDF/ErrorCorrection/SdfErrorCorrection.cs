@@ -476,10 +476,10 @@ namespace Molten.Graphics.SDF
             double lr = pos.X - l;
             double bt = pos.Y - b;
 
-            l = MathHelper.Clamp(l, 0, (int)bitmap.Width - 1);
-            r = MathHelper.Clamp(r, 0, (int)bitmap.Width - 1);
-            b = MathHelper.Clamp(b, 0, (int)bitmap.Height - 1);
-            t = MathHelper.Clamp(t, 0, (int)bitmap.Height - 1);
+            l = int.Clamp(l, 0, (int)bitmap.Width - 1);
+            r = int.Clamp(r, 0, (int)bitmap.Width - 1);
+            b = int.Clamp(b, 0, (int)bitmap.Height - 1);
+            t = int.Clamp(t, 0, (int)bitmap.Height - 1);
 
             for (int i = 0; i < 3; ++i)
             {

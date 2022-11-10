@@ -44,8 +44,8 @@
             {
                 _deadzone = new Vector2F()
                 {
-                    X = MathHelper.Clamp(value.X, 0, 1.0f),
-                    Y = MathHelper.Clamp(value.Y, 0, 1.0f),
+                    X = float.Clamp(value.X, 0, 1.0f),
+                    Y = float.Clamp(value.Y, 0, 1.0f),
                 };
             }
         }
@@ -70,8 +70,8 @@
 
         public void SetValues(int xValue, int yValue)
         {
-            _rawValue.X = MathHelper.Clamp(xValue, -_maxValue, _maxValue);
-            _rawValue.Y = MathHelper.Clamp(yValue, -_maxValue, _maxValue);
+            _rawValue.X = int.Clamp(xValue, -_maxValue, _maxValue);
+            _rawValue.Y = int.Clamp(yValue, -_maxValue, _maxValue);
 
             double deadX = _maxValue * _deadzone.X;
             double deadY = _maxValue * _deadzone.Y;

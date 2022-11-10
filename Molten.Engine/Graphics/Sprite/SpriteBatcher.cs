@@ -102,10 +102,10 @@ namespace Molten.Graphics
             {
                 Rectangle cur = ClipStack[_curClipID];
 
-                bounds.X = MathHelper.Clamp(bounds.X, cur.X, cur.Right);
-                bounds.Y = MathHelper.Clamp(bounds.Y, cur.Y, cur.Bottom);
-                bounds.Right = MathHelper.Clamp(bounds.Right, cur.X, cur.Right);
-                bounds.Bottom = MathHelper.Clamp(bounds.Bottom, cur.Y, cur.Bottom);
+                bounds.X = int.Clamp(bounds.X, cur.X, cur.Right);
+                bounds.Y = int.Clamp(bounds.Y, cur.Y, cur.Bottom);
+                bounds.Right = int.Clamp(bounds.Right, cur.X, cur.Right);
+                bounds.Bottom = int.Clamp(bounds.Bottom, cur.Y, cur.Bottom);
             }
 
             if (bounds.Width > 0 && bounds.Height > 0)

@@ -74,7 +74,7 @@ namespace Molten.Graphics.Overlays
         public int Current
         {
             get => _current;
-            set => _current = MathHelper.Clamp(value, 0, Math.Max(0, _overlays.Count - 1));
+            set => _current = int.Clamp(value, 0, Math.Max(0, _overlays.Count - 1));
         }
 
         /// <summary>
