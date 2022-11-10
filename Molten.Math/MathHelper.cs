@@ -578,39 +578,6 @@ namespace Molten
             return toReturn;
         }
 
-
-        /// <summary>Returns true if the specified value is to the power of two.</summary>
-        /// <param name="val">The value.</param>
-        /// <returns></returns>
-        public static bool IsPowerOfTwo(ulong val)
-        {
-            return (val != 0) && ((val & (val - 1)) == 0);
-        }
-
-        /// <summary>Returns true if the specified value is to the power of two.</summary>
-        /// <param name="val">The value.</param>
-        /// <returns></returns>
-        public static bool IsPowerOfTwo(long val)
-        {
-            return (val != 0) && ((val & (val - 1)) == 0);
-        }
-
-        /// <summary>Returns true if the specified value is to the power of two.</summary>
-        /// <param name="val">The value.</param>
-        /// <returns></returns>
-        public static bool IsPowerOfTwo(uint val)
-        {
-            return (val != 0) && ((val & (val - 1)) == 0);
-        }
-
-        /// <summary>Returns true if the specified value is to the power of two.</summary>
-        /// <param name="val">The value.</param>
-        /// <returns></returns>
-        public static bool IsPowerOfTwo(int val)
-        {
-            return (val != 0) && ((val & (val - 1)) == 0);
-        }
-
         /// <summary>
         ///  Returns 1 for non-negative values and -1 for negative values.
         /// </summary>

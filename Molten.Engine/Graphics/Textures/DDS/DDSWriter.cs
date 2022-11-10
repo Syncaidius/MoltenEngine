@@ -13,7 +13,7 @@ namespace Molten.Graphics.Textures
 
         public unsafe override void WriteData(Stream stream, TextureData data, Logger log, string filename = null)
         {
-            if (!MathHelper.IsPowerOfTwo(data.Width) || !MathHelper.IsPowerOfTwo(data.Height))
+            if (!uint.IsPow2(data.Width) || !uint.IsPow2(data.Height))
             {
                 log.Error("Cannot save DDS file: Width and height must be power-of-two.", filename);
                 return;
