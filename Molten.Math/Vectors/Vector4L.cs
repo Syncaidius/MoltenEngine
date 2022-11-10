@@ -732,46 +732,6 @@ namespace Molten
         }
 
 		/// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Vector4L"/> vector.</param>
-        /// <param name="tangent1">First source tangent <see cref="Vector4L"/> vector.</param>
-        /// <param name="value2">Second source position <see cref="Vector4L"/> vector.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Vector4L"/> vector.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static Vector4L Hermite(ref Vector4L value1, ref Vector4L tangent1, ref Vector4L value2, ref Vector4L tangent2, long amount)
-        {
-            double squared = amount * amount;
-            double cubed = amount * squared;
-            double part1 = ((2.0D * cubed) - (3.0D * squared)) + 1.0D;
-            double part2 = (-2.0D * cubed) + (3.0D * squared);
-            double part3 = (cubed - (2.0D * squared)) + amount;
-            double part4 = cubed - squared;
-
-			return new Vector4L()
-			{
-				X = (long)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
-				Y = (long)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
-				Z = (long)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
-				W = (long)((((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4)),
-			};
-        }
-
-        /// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Vector4L"/>.</param>
-        /// <param name="tangent1">First source tangent <see cref="Vector4L"/>.</param>
-        /// <param name="value2">Second source position <see cref="Vector4L"/>.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Vector4L"/>.</param>
-        /// <param name="amount">Weighting factor.</param>
-        /// <returns>The result of the Hermite spline interpolation.</returns>
-        public static Vector4L Hermite(Vector4L value1, Vector4L tangent1, Vector4L value2, Vector4L tangent2, long amount)
-        {
-            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
-        }
-
-		/// <summary>
         /// Returns a <see cref="Vector4L"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
         /// <param name="value1">A <see cref="Vector4L"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
@@ -1018,58 +978,6 @@ namespace Molten
 				Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z,
 				W = value.W < min.W ? min.W : value.W > max.W ? max.W : value.W,
 			};
-        }
-
-        /// <summary>
-        /// Performs a Catmull-Rom interpolation using the specified positions.
-        /// </summary>
-        /// <param name="value1">The first position in the interpolation.</param>
-        /// <param name="value2">The second position in the interpolation.</param>
-        /// <param name="value3">The third position in the interpolation.</param>
-        /// <param name="value4">The fourth position in the interpolation.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static Vector4L CatmullRom(ref Vector4L value1, ref Vector4L value2, ref Vector4L value3, ref Vector4L value4, long amount)
-        {
-            double squared = amount * amount;
-            double cubed = amount * squared;
-
-            return new Vector4L()
-            {
-				X = (long)(0.5D * ((((2D * value2.X) + 
-                ((-value1.X + value3.X) * amount)) + 
-                (((((2D * value1.X) - (5D * value2.X)) + (4D * value3.X)) - value4.X) * squared)) +
-                ((((-value1.X + (3D * value2.X)) - (3D * value3.X)) + value4.X) * cubed))),
-
-				Y = (long)(0.5D * ((((2D * value2.Y) + 
-                ((-value1.Y + value3.Y) * amount)) + 
-                (((((2D * value1.Y) - (5D * value2.Y)) + (4D * value3.Y)) - value4.Y) * squared)) +
-                ((((-value1.Y + (3D * value2.Y)) - (3D * value3.Y)) + value4.Y) * cubed))),
-
-				Z = (long)(0.5D * ((((2D * value2.Z) + 
-                ((-value1.Z + value3.Z) * amount)) + 
-                (((((2D * value1.Z) - (5D * value2.Z)) + (4D * value3.Z)) - value4.Z) * squared)) +
-                ((((-value1.Z + (3D * value2.Z)) - (3D * value3.Z)) + value4.Z) * cubed))),
-
-				W = (long)(0.5D * ((((2D * value2.W) + 
-                ((-value1.W + value3.W) * amount)) + 
-                (((((2D * value1.W) - (5D * value2.W)) + (4D * value3.W)) - value4.W) * squared)) +
-                ((((-value1.W + (3D * value2.W)) - (3D * value3.W)) + value4.W) * cubed))),
-
-            };
-        }
-
-        /// <summary>
-        /// Performs a Catmull-Rom interpolation using the specified positions.
-        /// </summary>
-        /// <param name="value1">The first position in the interpolation.</param>
-        /// <param name="value2">The second position in the interpolation.</param>
-        /// <param name="value3">The third position in the interpolation.</param>
-        /// <param name="value4">The fourth position in the interpolation.</param>
-        /// <param name="amount">Weighting factor.</param>
-        /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
-        public static Vector4L CatmullRom(Vector4L value1, Vector4L value2, Vector4L value3, Vector4L value4, long amount)
-        {
-            return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
         }
 
         /// <summary>

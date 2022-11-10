@@ -661,44 +661,6 @@ namespace Molten
         }
 
 		/// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="SByte2"/> vector.</param>
-        /// <param name="tangent1">First source tangent <see cref="SByte2"/> vector.</param>
-        /// <param name="value2">Second source position <see cref="SByte2"/> vector.</param>
-        /// <param name="tangent2">Second source tangent <see cref="SByte2"/> vector.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static SByte2 Hermite(ref SByte2 value1, ref SByte2 tangent1, ref SByte2 value2, ref SByte2 tangent2, sbyte amount)
-        {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
-            float part2 = (-2.0F * cubed) + (3.0F * squared);
-            float part3 = (cubed - (2.0F * squared)) + amount;
-            float part4 = cubed - squared;
-
-			return new SByte2()
-			{
-				X = (sbyte)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
-				Y = (sbyte)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
-			};
-        }
-
-        /// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="SByte2"/>.</param>
-        /// <param name="tangent1">First source tangent <see cref="SByte2"/>.</param>
-        /// <param name="value2">Second source position <see cref="SByte2"/>.</param>
-        /// <param name="tangent2">Second source tangent <see cref="SByte2"/>.</param>
-        /// <param name="amount">Weighting factor.</param>
-        /// <returns>The result of the Hermite spline interpolation.</returns>
-        public static SByte2 Hermite(SByte2 value1, SByte2 tangent1, SByte2 value2, SByte2 tangent2, sbyte amount)
-        {
-            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
-        }
-
-		/// <summary>
         /// Returns a <see cref="SByte2"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
         /// <param name="value1">A <see cref="SByte2"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>
@@ -919,48 +881,6 @@ namespace Molten
 				X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X,
 				Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y,
 			};
-        }
-
-        /// <summary>
-        /// Performs a Catmull-Rom interpolation using the specified positions.
-        /// </summary>
-        /// <param name="value1">The first position in the interpolation.</param>
-        /// <param name="value2">The second position in the interpolation.</param>
-        /// <param name="value3">The third position in the interpolation.</param>
-        /// <param name="value4">The fourth position in the interpolation.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static SByte2 CatmullRom(ref SByte2 value1, ref SByte2 value2, ref SByte2 value3, ref SByte2 value4, sbyte amount)
-        {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-
-            return new SByte2()
-            {
-				X = (sbyte)(0.5F * ((((2F * value2.X) + 
-                ((-value1.X + value3.X) * amount)) + 
-                (((((2F * value1.X) - (5F * value2.X)) + (4F * value3.X)) - value4.X) * squared)) +
-                ((((-value1.X + (3F * value2.X)) - (3F * value3.X)) + value4.X) * cubed))),
-
-				Y = (sbyte)(0.5F * ((((2F * value2.Y) + 
-                ((-value1.Y + value3.Y) * amount)) + 
-                (((((2F * value1.Y) - (5F * value2.Y)) + (4F * value3.Y)) - value4.Y) * squared)) +
-                ((((-value1.Y + (3F * value2.Y)) - (3F * value3.Y)) + value4.Y) * cubed))),
-
-            };
-        }
-
-        /// <summary>
-        /// Performs a Catmull-Rom interpolation using the specified positions.
-        /// </summary>
-        /// <param name="value1">The first position in the interpolation.</param>
-        /// <param name="value2">The second position in the interpolation.</param>
-        /// <param name="value3">The third position in the interpolation.</param>
-        /// <param name="value4">The fourth position in the interpolation.</param>
-        /// <param name="amount">Weighting factor.</param>
-        /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
-        public static SByte2 CatmullRom(SByte2 value1, SByte2 value2, SByte2 value3, SByte2 value4, sbyte amount)
-        {
-            return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
         }
 
         /// <summary>

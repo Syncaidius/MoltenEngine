@@ -700,46 +700,6 @@ namespace Molten
         }
 
 		/// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Byte4"/> vector.</param>
-        /// <param name="tangent1">First source tangent <see cref="Byte4"/> vector.</param>
-        /// <param name="value2">Second source position <see cref="Byte4"/> vector.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Byte4"/> vector.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static Byte4 Hermite(ref Byte4 value1, ref Byte4 tangent1, ref Byte4 value2, ref Byte4 tangent2, byte amount)
-        {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
-            float part2 = (-2.0F * cubed) + (3.0F * squared);
-            float part3 = (cubed - (2.0F * squared)) + amount;
-            float part4 = cubed - squared;
-
-			return new Byte4()
-			{
-				X = (byte)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
-				Y = (byte)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
-				Z = (byte)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
-				W = (byte)((((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4)),
-			};
-        }
-
-        /// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Byte4"/>.</param>
-        /// <param name="tangent1">First source tangent <see cref="Byte4"/>.</param>
-        /// <param name="value2">Second source position <see cref="Byte4"/>.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Byte4"/>.</param>
-        /// <param name="amount">Weighting factor.</param>
-        /// <returns>The result of the Hermite spline interpolation.</returns>
-        public static Byte4 Hermite(Byte4 value1, Byte4 tangent1, Byte4 value2, Byte4 tangent2, byte amount)
-        {
-            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
-        }
-
-		/// <summary>
         /// Returns a <see cref="Byte4"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
         /// <param name="value1">A <see cref="Byte4"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
@@ -987,7 +947,6 @@ namespace Molten
 				W = value.W < min.W ? min.W : value.W > max.W ? max.W : value.W,
 			};
         }
-
 
         /// <summary>
         /// Returns the reflection of a vector off a surface that has the specified normal. 

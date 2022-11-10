@@ -628,44 +628,6 @@ namespace Molten
         }
 
 		/// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Vector2UI"/> vector.</param>
-        /// <param name="tangent1">First source tangent <see cref="Vector2UI"/> vector.</param>
-        /// <param name="value2">Second source position <see cref="Vector2UI"/> vector.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Vector2UI"/> vector.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static Vector2UI Hermite(ref Vector2UI value1, ref Vector2UI tangent1, ref Vector2UI value2, ref Vector2UI tangent2, uint amount)
-        {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
-            float part2 = (-2.0F * cubed) + (3.0F * squared);
-            float part3 = (cubed - (2.0F * squared)) + amount;
-            float part4 = cubed - squared;
-
-			return new Vector2UI()
-			{
-				X = (uint)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
-				Y = (uint)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
-			};
-        }
-
-        /// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Vector2UI"/>.</param>
-        /// <param name="tangent1">First source tangent <see cref="Vector2UI"/>.</param>
-        /// <param name="value2">Second source position <see cref="Vector2UI"/>.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Vector2UI"/>.</param>
-        /// <param name="amount">Weighting factor.</param>
-        /// <returns>The result of the Hermite spline interpolation.</returns>
-        public static Vector2UI Hermite(Vector2UI value1, Vector2UI tangent1, Vector2UI value2, Vector2UI tangent2, uint amount)
-        {
-            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
-        }
-
-		/// <summary>
         /// Returns a <see cref="Vector2UI"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
         /// <param name="value1">A <see cref="Vector2UI"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>
@@ -887,7 +849,6 @@ namespace Molten
 				Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y,
 			};
         }
-
 
         /// <summary>
         /// Returns the reflection of a vector off a surface that has the specified normal. 

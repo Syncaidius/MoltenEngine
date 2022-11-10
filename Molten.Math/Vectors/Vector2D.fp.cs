@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System;
 
 namespace Molten
@@ -151,6 +151,86 @@ namespace Molten
         {
 			X = Math.Pow(X, power);
 			Y = Math.Pow(Y, power);
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static Vector2D CatmullRom(ref Vector2D value1, ref Vector2D value2, ref Vector2D value3, ref Vector2D value4, double amount)
+        {
+            double squared = amount * amount;
+            double cubed = amount * squared;
+
+            return new Vector2D()
+            {
+				X = (0.5D * ((((2D * value2.X) + 
+                ((-value1.X + value3.X) * amount)) + 
+                (((((2D * value1.X) - (5D * value2.X)) + (4D * value3.X)) - value4.X) * squared)) +
+                ((((-value1.X + (3D * value2.X)) - (3D * value3.X)) + value4.X) * cubed))),
+
+				Y = (0.5D * ((((2D * value2.Y) + 
+                ((-value1.Y + value3.Y) * amount)) + 
+                (((((2D * value1.Y) - (5D * value2.Y)) + (4D * value3.Y)) - value4.Y) * squared)) +
+                ((((-value1.Y + (3D * value2.Y)) - (3D * value3.Y)) + value4.Y) * cubed))),
+
+            };
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
+        public static Vector2D CatmullRom(Vector2D value1, Vector2D value2, Vector2D value3, Vector2D value4, double amount)
+        {
+            return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
+        }
+
+        		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector2D"/> vector.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector2D"/> vector.</param>
+        /// <param name="value2">Second source position <see cref="Vector2D"/> vector.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector2D"/> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static Vector2D Hermite(ref Vector2D value1, ref Vector2D tangent1, ref Vector2D value2, ref Vector2D tangent2, double amount)
+        {
+            double squared = amount * amount;
+            double cubed = amount * squared;
+            double part1 = ((2.0D * cubed) - (3.0D * squared)) + 1.0D;
+            double part2 = (-2.0D * cubed) + (3.0D * squared);
+            double part3 = (cubed - (2.0D * squared)) + amount;
+            double part4 = cubed - squared;
+
+			return new Vector2D()
+			{
+				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
+				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
+			};
+        }
+
+        /// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector2D"/>.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector2D"/>.</param>
+        /// <param name="value2">Second source position <see cref="Vector2D"/>.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector2D"/>.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>The result of the Hermite spline interpolation.</returns>
+        public static Vector2D Hermite(Vector2D value1, Vector2D tangent1, Vector2D value2, Vector2D tangent2, double amount)
+        {
+            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
         }
 
 #region Static Methods

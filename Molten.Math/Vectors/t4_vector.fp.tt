@@ -23,8 +23,8 @@ foreach(TypeData d in _def)
 
 	foreach(int size in _vectorSizes)
 	{
-		string fullName = $"{d.Name}{size}{d.Postfix}";
-		string fn = $"{fullName}.fp";
+		string fName = $"{d.Name}{size}{d.Postfix}";
+		string fn = $"{fName}.fp";
 		string fpCast = d.DT == "float" ? "(float)" : "";
 		string mathHelper = d.FP == "double" ? "MathHelperDP" : "MathHelper";
 		string intCast = d.DT == "float" ? "(int)" : (d.DT == "double" ? "(long)" : "$(${d.DT}");
@@ -36,7 +36,7 @@ using System;
 namespace Molten
 {
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
-	public partial struct <#=fullName#>
+	public partial struct <#=fName#>
 	{
     	/// <summary>
         /// Gets a value indicting whether this instance is normalized.
@@ -62,7 +62,7 @@ namespace Molten
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Orthonormalize(<#=fullName#>[] destination, params <#=fullName#>[] source)
+        public static void Orthonormalize(<#=fName#>[] destination, params <#=fName#>[] source)
         {
             //Uses the modified Gram-Schmidt process.
             //Because we are making unit vectors, we can optimize the math for orthogonalization
@@ -82,7 +82,7 @@ namespace Molten
 
             for (int i = 0; i < source.Length; ++i)
             {
-                <#=fullName#> newvector = source[i];
+                <#=fName#> newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
                     newvector -= Dot(destination[r], newvector) * destination[r];
@@ -93,11 +93,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Converts the <#=See(fullName)#> into a unit vector.
+        /// Converts the <#=See(fName)#> into a unit vector.
         /// </summary>
-        /// <param name="value">The <#=See(fullName)#> to normalize.</param>
-        /// <returns>The normalized <#=See(fullName)#>.</returns>
-        public static <#=fullName#> Normalize(<#=fullName#> value, bool allowZero = false)
+        /// <param name="value">The <#=See(fName)#> to normalize.</param>
+        /// <returns>The normalized <#=See(fName)#>.</returns>
+        public static <#=fName#> Normalize(<#=fName#> value, bool allowZero = false)
         {
             value.Normalize(allowZero);
             return value;
@@ -106,13 +106,13 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public <#=fullName#> GetNormalized(bool allowZero = false)
+        public <#=fName#> GetNormalized(bool allowZero = false)
         {
             <#=d.FP#> length = Length();
             if (!<#=mathHelper#>.IsZero(length))
             {
                 <#=d.FP#> inverse = 1.0<#=d.FPL#> / length;
-                return new <#=fullName#>()
+                return new <#=fName#>()
                 {
 <#
 		    for(int p = 0; p < size; p++)
@@ -126,7 +126,7 @@ namespace Molten
             }
             else
             {
-                return new <#=fullName#>()
+                return new <#=fName#>()
                 {
 <#
 		for(int p = 0; p < size; p++)
@@ -239,13 +239,110 @@ namespace Molten
 #>
         }
 
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static <#=fName#> CatmullRom(ref <#=fName#> value1, ref <#=fName#> value2, ref <#=fName#> value3, ref <#=fName#> value4, <#=d.DT#> amount)
+        {
+            <#=d.FP#> squared = amount * amount;
+            <#=d.FP#> cubed = amount * squared;
+
+            return new <#=fName#>()
+            {
+<#
+				for(int p = 0; p < size; p++)
+				{
+#>
+				<#=pMapUpper[p]#> = <#=fpCast#>(0.5<#=d.FPL#> * ((((2<#=d.FPL#> * value2.<#=pMapUpper[p]#>) + 
+                ((-value1.<#=pMapUpper[p]#> + value3.<#=pMapUpper[p]#>) * amount)) + 
+                (((((2<#=d.FPL#> * value1.<#=pMapUpper[p]#>) - (5<#=d.FPL#> * value2.<#=pMapUpper[p]#>)) + (4<#=d.FPL#> * value3.<#=pMapUpper[p]#>)) - value4.<#=pMapUpper[p]#>) * squared)) +
+                ((((-value1.<#=pMapUpper[p]#> + (3<#=d.FPL#> * value2.<#=pMapUpper[p]#>)) - (3<#=d.FPL#> * value3.<#=pMapUpper[p]#>)) + value4.<#=pMapUpper[p]#>) * cubed))),
+
+<#
+			    }
+#>
+            };
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
+        public static <#=fName#> CatmullRom(<#=fName#> value1, <#=fName#> value2, <#=fName#> value3, <#=fName#> value4, <#=d.DT#> amount)
+        {
+            return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
+        }
+
+        		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <#=See(fName)#> vector.</param>
+        /// <param name="tangent1">First source tangent <#=See(fName)#> vector.</param>
+        /// <param name="value2">Second source position <#=See(fName)#> vector.</param>
+        /// <param name="tangent2">Second source tangent <#=See(fName)#> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static <#=fName#> Hermite(ref <#=fName#> value1, ref <#=fName#> tangent1, ref <#=fName#> value2, ref <#=fName#> tangent2, <#=d.DT#> amount)
+        {
+            <#=d.FP#> squared = amount * amount;
+            <#=d.FP#> cubed = amount * squared;
+            <#=d.FP#> part1 = ((2.0<#=d.FPL#> * cubed) - (3.0<#=d.FPL#> * squared)) + 1.0<#=d.FPL#>;
+            <#=d.FP#> part2 = (-2.0<#=d.FPL#> * cubed) + (3.0<#=d.FPL#> * squared);
+            <#=d.FP#> part3 = (cubed - (2.0<#=d.FPL#> * squared)) + amount;
+            <#=d.FP#> part4 = cubed - squared;
+
+			return new <#=fName#>()
+			{
+<#
+		for(int p = 0; p < size; p++)
+		{
+			if(d.DT == d.FP)
+			{
+#>
+				<#=pMapUpper[p]#> = (((value1.<#=pMapUpper[p]#> * part1) + (value2.<#=pMapUpper[p]#> * part2)) + (tangent1.<#=pMapUpper[p]#> * part3)) + (tangent2.<#=pMapUpper[p]#> * part4),
+<#
+			}
+			else
+			{
+#>
+				<#=pMapUpper[p]#> = <#=fpCast#>((((value1.<#=pMapUpper[p]#> * part1) + (value2.<#=pMapUpper[p]#> * part2)) + (tangent1.<#=pMapUpper[p]#> * part3)) + (tangent2.<#=pMapUpper[p]#> * part4)),
+<#
+			}
+		}
+#>
+			};
+        }
+
+        /// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <#=See(fName)#>.</param>
+        /// <param name="tangent1">First source tangent <#=See(fName)#>.</param>
+        /// <param name="value2">Second source position <#=See(fName)#>.</param>
+        /// <param name="tangent2">Second source tangent <#=See(fName)#>.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>The result of the Hermite spline interpolation.</returns>
+        public static <#=fName#> Hermite(<#=fName#> value1, <#=fName#> tangent1, <#=fName#> value2, <#=fName#> tangent2, <#=d.DT#> amount)
+        {
+            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
+        }
+
 #region Static Methods
 		/// <summary>Truncate each near-zero component of a vector towards zero.</summary>
-        /// <param name="value">The <#=fullName#> to be truncated.</param>
+        /// <param name="value">The <#=fName#> to be truncated.</param>
         /// <returns></returns>
-        public static <#=fullName#> Truncate(<#=fullName#> value)
+        public static <#=fName#> Truncate(<#=fName#> value)
         {
-            return new <#=fullName#>()
+            return new <#=fName#>()
             {
 <#
 		for(int p = 0; p < size; p++)

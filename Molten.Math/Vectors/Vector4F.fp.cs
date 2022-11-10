@@ -171,6 +171,98 @@ namespace Molten
 			W = (float)Math.Pow(W, power);
         }
 
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static Vector4F CatmullRom(ref Vector4F value1, ref Vector4F value2, ref Vector4F value3, ref Vector4F value4, float amount)
+        {
+            float squared = amount * amount;
+            float cubed = amount * squared;
+
+            return new Vector4F()
+            {
+				X = (float)(0.5F * ((((2F * value2.X) + 
+                ((-value1.X + value3.X) * amount)) + 
+                (((((2F * value1.X) - (5F * value2.X)) + (4F * value3.X)) - value4.X) * squared)) +
+                ((((-value1.X + (3F * value2.X)) - (3F * value3.X)) + value4.X) * cubed))),
+
+				Y = (float)(0.5F * ((((2F * value2.Y) + 
+                ((-value1.Y + value3.Y) * amount)) + 
+                (((((2F * value1.Y) - (5F * value2.Y)) + (4F * value3.Y)) - value4.Y) * squared)) +
+                ((((-value1.Y + (3F * value2.Y)) - (3F * value3.Y)) + value4.Y) * cubed))),
+
+				Z = (float)(0.5F * ((((2F * value2.Z) + 
+                ((-value1.Z + value3.Z) * amount)) + 
+                (((((2F * value1.Z) - (5F * value2.Z)) + (4F * value3.Z)) - value4.Z) * squared)) +
+                ((((-value1.Z + (3F * value2.Z)) - (3F * value3.Z)) + value4.Z) * cubed))),
+
+				W = (float)(0.5F * ((((2F * value2.W) + 
+                ((-value1.W + value3.W) * amount)) + 
+                (((((2F * value1.W) - (5F * value2.W)) + (4F * value3.W)) - value4.W) * squared)) +
+                ((((-value1.W + (3F * value2.W)) - (3F * value3.W)) + value4.W) * cubed))),
+
+            };
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
+        public static Vector4F CatmullRom(Vector4F value1, Vector4F value2, Vector4F value3, Vector4F value4, float amount)
+        {
+            return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
+        }
+
+        		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector4F"/> vector.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector4F"/> vector.</param>
+        /// <param name="value2">Second source position <see cref="Vector4F"/> vector.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector4F"/> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static Vector4F Hermite(ref Vector4F value1, ref Vector4F tangent1, ref Vector4F value2, ref Vector4F tangent2, float amount)
+        {
+            float squared = amount * amount;
+            float cubed = amount * squared;
+            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
+            float part2 = (-2.0F * cubed) + (3.0F * squared);
+            float part3 = (cubed - (2.0F * squared)) + amount;
+            float part4 = cubed - squared;
+
+			return new Vector4F()
+			{
+				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
+				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
+				Z = (((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4),
+				W = (((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4),
+			};
+        }
+
+        /// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector4F"/>.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector4F"/>.</param>
+        /// <param name="value2">Second source position <see cref="Vector4F"/>.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector4F"/>.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>The result of the Hermite spline interpolation.</returns>
+        public static Vector4F Hermite(Vector4F value1, Vector4F tangent1, Vector4F value2, Vector4F tangent2, float amount)
+        {
+            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
+        }
+
 #region Static Methods
 		/// <summary>Truncate each near-zero component of a vector towards zero.</summary>
         /// <param name="value">The Vector4F to be truncated.</param>

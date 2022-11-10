@@ -700,46 +700,6 @@ namespace Molten
         }
 
 		/// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Vector4UI"/> vector.</param>
-        /// <param name="tangent1">First source tangent <see cref="Vector4UI"/> vector.</param>
-        /// <param name="value2">Second source position <see cref="Vector4UI"/> vector.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Vector4UI"/> vector.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static Vector4UI Hermite(ref Vector4UI value1, ref Vector4UI tangent1, ref Vector4UI value2, ref Vector4UI tangent2, uint amount)
-        {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
-            float part2 = (-2.0F * cubed) + (3.0F * squared);
-            float part3 = (cubed - (2.0F * squared)) + amount;
-            float part4 = cubed - squared;
-
-			return new Vector4UI()
-			{
-				X = (uint)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
-				Y = (uint)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
-				Z = (uint)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
-				W = (uint)((((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4)),
-			};
-        }
-
-        /// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Vector4UI"/>.</param>
-        /// <param name="tangent1">First source tangent <see cref="Vector4UI"/>.</param>
-        /// <param name="value2">Second source position <see cref="Vector4UI"/>.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Vector4UI"/>.</param>
-        /// <param name="amount">Weighting factor.</param>
-        /// <returns>The result of the Hermite spline interpolation.</returns>
-        public static Vector4UI Hermite(Vector4UI value1, Vector4UI tangent1, Vector4UI value2, Vector4UI tangent2, uint amount)
-        {
-            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
-        }
-
-		/// <summary>
         /// Returns a <see cref="Vector4UI"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
         /// <param name="value1">A <see cref="Vector4UI"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
@@ -987,7 +947,6 @@ namespace Molten
 				W = value.W < min.W ? min.W : value.W > max.W ? max.W : value.W,
 			};
         }
-
 
         /// <summary>
         /// Returns the reflection of a vector off a surface that has the specified normal. 
