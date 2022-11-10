@@ -46,6 +46,7 @@
 * THE SOFTWARE.
 */
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Molten
@@ -123,61 +124,6 @@ namespace Molten
         /// Tolerance value. Defaults to 1e-7f.
         /// </summary>
         public static float Epsilon = 1E-7f;
-
-        /// <summary>
-        /// Represents an invalid Vector3.
-        /// </summary>
-        public static readonly Vector3F NoVector = new Vector3F(-float.MaxValue, -float.MaxValue, -float.MaxValue);
-
-        /// <summary>
-        /// Reference for a vector with dimensions (0,0,1).
-        /// </summary>
-        public static Vector3F BackVector = Vector3F.BackwardLH;
-
-        /// <summary>
-        /// Reference for a vector with dimensions (0,-1,0).
-        /// </summary>
-        public static Vector3F DownVector = Vector3F.Down;
-
-        /// <summary>
-        /// Reference for a vector with dimensions (0,0,-1).
-        /// </summary>
-        public static Vector3F ForwardVector = Vector3F.ForwardLH;
-
-        /// <summary>
-        /// Refers to the identity quaternion.
-        /// </summary>
-        public static QuaternionF IdentityOrientation = QuaternionF.Identity;
-
-        /// <summary>
-        /// Reference for a vector with dimensions (-1,0,0).
-        /// </summary>
-        public static Vector3F LeftVector = Vector3F.Left;
-
-        /// <summary>
-        /// Reference for a vector with dimensions (1,0,0).
-        /// </summary>
-        public static Vector3F RightVector = Vector3F.Right;
-
-        /// <summary>
-        /// Reference for a vector with dimensions (0,1,0).
-        /// </summary>
-        public static Vector3F UpVector = Vector3F.Up;
-
-        /// <summary>
-        /// Matrix containing zeroes for every element.
-        /// </summary>
-        public static Matrix4F ZeroMatrix = new Matrix4F(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-        /// <summary>
-        /// Reference for a vector with dimensions (0,0,0).
-        /// </summary>
-        public static Vector3F ZeroVector = Vector3F.Zero;
-
-        /// <summary>
-        /// Refers to the rigid identity transformation.
-        /// </summary>
-        public static RigidTransform RigidIdentity = RigidTransform.Identity;
 
         /// <summary>
         /// Checks if a and b are almost equals, taking into account the magnitude of floating point numbers (unlike <see cref="WithinEpsilon"/> method). See Remarks.

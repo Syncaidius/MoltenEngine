@@ -70,61 +70,6 @@ namespace Molten
         /// Tolerance value. Defaults to 1e-7D.
         /// </summary>
         public static double Epsilon = 1E-7D;
-
-        /// <summary>
-        /// Represents an invalid Vector3.
-        /// </summary>
-        public static readonly Vector3D NoVector = new Vector3D(-double.MaxValue, -double.MaxValue, -double.MaxValue);
-
-        /// <summary>
-        /// Reference for a vector with dimensions (0,0,1).
-        /// </summary>
-        public static Vector3D BackVector = Vector3D.BackwardLH;
-
-        /// <summary>
-        /// Reference for a vector with dimensions (0,-1,0).
-        /// </summary>
-        public static Vector3D DownVector = Vector3D.Down;
-
-        /// <summary>
-        /// Reference for a vector with dimensions (0,0,-1).
-        /// </summary>
-        public static Vector3D ForwardVector = Vector3D.ForwardLH;
-
-        /// <summary>
-        /// Refers to the identity quaternion.
-        /// </summary>
-        public static QuaternionF IdentityOrientation = QuaternionF.Identity;
-
-        /// <summary>
-        /// Reference for a vector with dimensions (-1,0,0).
-        /// </summary>
-        public static Vector3D LeftVector = Vector3D.Left;
-
-        /// <summary>
-        /// Reference for a vector with dimensions (1,0,0).
-        /// </summary>
-        public static Vector3D RightVector = Vector3D.Right;
-
-        /// <summary>
-        /// Reference for a vector with dimensions (0,1,0).
-        /// </summary>
-        public static Vector3D UpVector = Vector3D.Up;
-
-        /// <summary>
-        /// Matrix containing zeroes for every element.
-        /// </summary>
-        public static Matrix4D ZeroMatrix = new Matrix4D(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-        /// <summary>
-        /// Reference for a vector with dimensions (0,0,0).
-        /// </summary>
-        public static Vector3D ZeroVector = Vector3D.Zero;
-
-        /// <summary>
-        /// Refers to the rigid identity transformation.
-        /// </summary>
-        public static RigidTransform RigidIdentity = RigidTransform.Identity;
         
         /// <summary>
         /// Checks if a and b are almost equals, taking into account the magnitude of floating point numbers (unlike <see cref="WithinEpsilon"/> method). See Remarks.
