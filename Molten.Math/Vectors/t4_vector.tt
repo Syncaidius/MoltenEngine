@@ -1310,6 +1310,18 @@ namespace Molten
         }
 #endregion
 
+#region Tuples
+        public static implicit operator (<#=GetConstructorArgs(d.DT, pMap, size)#>)(<#=fName#> val)
+        {
+            return (<#for(int p = 0; p < size; p++){#><#=(p > 0 ? ", " : "")#>val.<#=pMapUpper[p]#><#}#>);
+        }
+
+        public static implicit operator <#=fName#>((<#=GetConstructorArgs(d.DT, pMap, size)#>) val)
+        {
+            return new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=(p > 0 ? ", " : "")#>val.<#=pMap[p]#><#}#>);
+        }
+#endregion
+
 #region Indexers
 		/// <summary>
         /// Gets or sets the component at the specified index.

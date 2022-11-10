@@ -1010,6 +1010,18 @@ namespace Molten
         }
 #endregion
 
+#region Tuples
+        public static implicit operator (byte x, byte y, byte z, byte w)(Byte4 val)
+        {
+            return (val.X, val.Y, val.Z, val.W);
+        }
+
+        public static implicit operator Byte4((byte x, byte y, byte z, byte w) val)
+        {
+            return new Byte4(val.x, val.y, val.z, val.w);
+        }
+#endregion
+
 #region Indexers
 		/// <summary>
         /// Gets or sets the component at the specified index.

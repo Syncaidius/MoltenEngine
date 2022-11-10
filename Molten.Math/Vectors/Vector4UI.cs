@@ -1010,6 +1010,18 @@ namespace Molten
         }
 #endregion
 
+#region Tuples
+        public static implicit operator (uint x, uint y, uint z, uint w)(Vector4UI val)
+        {
+            return (val.X, val.Y, val.Z, val.W);
+        }
+
+        public static implicit operator Vector4UI((uint x, uint y, uint z, uint w) val)
+        {
+            return new Vector4UI(val.x, val.y, val.z, val.w);
+        }
+#endregion
+
 #region Indexers
 		/// <summary>
         /// Gets or sets the component at the specified index.

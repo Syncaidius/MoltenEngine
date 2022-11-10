@@ -908,6 +908,18 @@ namespace Molten
         }
 #endregion
 
+#region Tuples
+        public static implicit operator (uint x, uint y)(Vector2UI val)
+        {
+            return (val.X, val.Y);
+        }
+
+        public static implicit operator Vector2UI((uint x, uint y) val)
+        {
+            return new Vector2UI(val.x, val.y);
+        }
+#endregion
+
 #region Indexers
 		/// <summary>
         /// Gets or sets the component at the specified index.

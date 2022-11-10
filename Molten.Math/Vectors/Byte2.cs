@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -905,6 +905,18 @@ namespace Molten
 				X = (byte)(vector.X - ((2.0F * dot) * normal.X)),
 				Y = (byte)(vector.Y - ((2.0F * dot) * normal.Y)),
             };
+        }
+#endregion
+
+#region Tuples
+        public static implicit operator (byte x, byte y)(Byte2 val)
+        {
+            return (val.X, val.Y);
+        }
+
+        public static implicit operator Byte2((byte x, byte y) val)
+        {
+            return new Byte2(val.x, val.y);
         }
 #endregion
 

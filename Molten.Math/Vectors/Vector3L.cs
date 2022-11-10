@@ -1035,6 +1035,18 @@ namespace Molten
         }
 #endregion
 
+#region Tuples
+        public static implicit operator (long x, long y, long z)(Vector3L val)
+        {
+            return (val.X, val.Y, val.Z);
+        }
+
+        public static implicit operator Vector3L((long x, long y, long z) val)
+        {
+            return new Vector3L(val.x, val.y, val.z);
+        }
+#endregion
+
 #region Indexers
 		/// <summary>
         /// Gets or sets the component at the specified index.
