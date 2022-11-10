@@ -502,16 +502,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns 1 for positive values, -1 for negative values, and 0 for zero.
-        /// </summary>
-        /// <param name="val">The value</param>
-        /// <returns></returns>
-        public static int Sign(double val)
-        {
-            return (val == 0) ? 0 : (val > 0) ? 1 : -1;
-        }
-
-        /// <summary>
         ///  Returns 1 for non-negative values and -1 for negative values.
         /// </summary>
         /// <param name="value">The value</param>

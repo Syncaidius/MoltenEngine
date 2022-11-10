@@ -85,7 +85,7 @@ namespace Molten
                         prev = cur;
                     }
                 }
-                return MathHelperDP.Sign(total);
+                return double.Sign(total);
             }
 
             public ContainmentType Contains(Contour other, int edgeResolution = 3)

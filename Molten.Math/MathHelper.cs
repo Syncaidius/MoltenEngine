@@ -612,42 +612,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns 1 for positive values, -1 for negative values, and 0 for zero.
-        /// </summary>
-        /// <param name="val">The value</param>
-        /// <returns></returns>
-        public static int Sign(float val)
-        {
-            return (val == 0) ? 0 : (val > 0) ? 1 : -1;
-        }
-
-        /// <summary>
-        /// Returns 1 for positive values, -1 for negative values, and 0 for zero.
-        /// </summary>
-        /// <param name="val">The value</param>
-        /// <returns></returns>
-        public static int Sign(int val)
-        {
-            return (val == 0) ? 0 : (val > 0) ? 1 : -1;
-        }
-
-        /// <summary>
-        /// Returns 1 for positive values, -1 for negative values, and 0 for zero.
-        /// </summary>
-        /// <param name="val">The value</param>
-        /// <returns></returns>
-        public static int Sign(long val)
-        {
-            return (val == 0) ? 0 : (val > 0) ? 1 : -1;
-        }
-
-        /// <summary>
         ///  Returns 1 for non-negative values and -1 for negative values.
         /// </summary>
         /// <param name="value">The value</param>
-        public static int NonZeroSign(float vaue)
+        public static int NonZeroSign(float value)
         {
-            return 2 * ((vaue > 0) ? 1 : 0) - 1;
+            return 2 * ((value > 0) ? 1 : 0) - 1;
         }
 
         /// <summary>
