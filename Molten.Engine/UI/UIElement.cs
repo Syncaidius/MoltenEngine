@@ -96,6 +96,7 @@ namespace Molten.UI
         UIElementState _state;
         Vector2I _prevSize;
         Rectangle _localBounds;
+        Rectangle _outerBounds;
         Rectangle _globalBounds;
         Rectangle _renderBounds;
         Rectangle _offsetRenderBounds;
@@ -214,6 +215,8 @@ namespace Molten.UI
             {
                 _globalBounds = LocalBounds;
             }
+
+            Margin.Apply(ref _globalBounds, parentBounds);
 
             _renderBounds = _globalBounds;
             _renderBounds.Inflate(-Padding.Left, -Padding.Top, -Padding.Right, -Padding.Bottom);
@@ -595,6 +598,11 @@ namespace Molten.UI
         /// <para>Global bounds are the area in which input is accepted and from which <see cref="RenderBounds"/> is calculated, based on padding, borders and other properties.</para>
         /// </summary>
         public Rectangle GlobalBounds => _globalBounds;
+
+        /// <summary>
+        /// Gets <see cref="GlobalBounds"/> with <see cref="Margin"/> applied to it.
+        /// </summary>
+        public Rectangle OuterBounds => _outerBounds;
 
         /// <summary>
         /// Gets the bounds in which child components should be drawn.

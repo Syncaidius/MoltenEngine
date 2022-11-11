@@ -164,6 +164,7 @@ namespace Molten.Examples
                 _window4.Title = "Textbox Test";
                 _textbox = _window4.Children.Add<UITextBox>(new Rectangle(0, 0, 850, 670));
                 _textbox.ShowLineNumbers = true;
+                _textbox.Margin.FitToParent();
                 _textbox.Text = @"using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
