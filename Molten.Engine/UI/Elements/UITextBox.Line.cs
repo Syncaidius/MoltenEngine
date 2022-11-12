@@ -12,32 +12,6 @@ namespace Molten.UI
     {
         internal class Line
         {
-            /// <summary>
-            /// Gets or sets the line number of the current <see cref="Line"/>.
-            /// </summary>
-            public uint Number
-            {
-                get => _lineNumber;
-                set
-                {
-                    if(_lineNumber != value)
-                    {
-                        _lineNumber = value;
-                        _lineNumString = value.ToString();
-                    }
-                }
-            }
-
-            public string NumberString => _lineNumString;
-
-            public Vector2F LineNumberSize;
-
-            public RectangleF SelectorBounds;
-
-            RectangleF _textBounds;
-            string _lineNumString;
-            uint _lineNumber;
-
             internal Line(UITextBox textbox)
             {
                 TextBox = textbox;
@@ -45,8 +19,8 @@ namespace Molten.UI
 
             public void SetText(SpriteFont font, string text)
             {
-                _textBounds.Width = 0;
-                _textBounds.Height = 0;
+                Width = 0;
+                Height = 0;
 
                 First = new Segment("", Color.White, font, SegmentType.Text);
 
@@ -70,13 +44,10 @@ namespace Molten.UI
                     seg.Text += c;
                 }
 
-                // Set width of last node
-                seg.Bounds = new RectangleF(Vector2F.Zero, font.MeasureString(seg.Text));
-
-                _textBounds.Width += seg.Bounds.Width;
-                _textBounds.Height = Math.Max(_textBounds.Height, seg.Bounds.Height);
-
-                UpdatePosition();
+                // Set width of last node, then add it to total width and height.
+                seg.Size = font.MeasureString(seg.Text);
+                Width += seg.Size.X;
+                Height = Math.Max(Height, (int)Math.Ceiling(seg.Size.Y));
             }
 
             private SegmentType ParseRuleCharList(char c, Segment seg, SpriteFont font, char[] list, SegmentType type)
@@ -107,12 +78,12 @@ namespace Molten.UI
             {
                 Segment next = new Segment("", Color.White, font, type);
 
-                seg.Bounds = new RectangleF(Vector2F.Zero, font.MeasureString(seg.Text));
+                seg.Size = font.MeasureString(seg.Text);
                 seg.Next = next;
                 next.Previous = seg;
 
-                _textBounds.Width += seg.Bounds.Width;
-                _textBounds.Height = Math.Max(_textBounds.Height, seg.Bounds.Height);
+                Width += seg.Size.X;
+                Height = Math.Max(Height, (int)Math.Ceiling(seg.Size.Y));
 
                 return next;
             }
@@ -131,46 +102,13 @@ namespace Molten.UI
                 return null;
             }
 
-            private void UpdatePosition()
-            {
-                if (First == null)
-                    return;
+            public float Width { get; private set; }
 
-                Segment seg = First;
-                Vector2F p = _textBounds.TopLeft;
-
-                while (seg != null)
-                {
-                    seg.Bounds.X = p.X;
-                    seg.Bounds.Y = p.Y;
-
-                    p.X += seg.Bounds.Width;
-                    seg = seg.Next;
-                }
-            }
-
-            public bool Contains(Vector2F pos)
-            {
-                return _textBounds.Contains(pos);
-            }
+            public int Height { get; private set; }
 
             public UITextBox TextBox { get; internal set; }
 
             public Segment First { get; private set; }
-
-            public RectangleF TextBounds => _textBounds;
-
-            public Vector2F Position
-            {
-                get => _textBounds.TopLeft;
-                set
-                {
-                    _textBounds.X = value.X;
-                    _textBounds.Y = value.Y;
-                    UpdatePosition();
-                }
-            }
         }
-
     }
 }

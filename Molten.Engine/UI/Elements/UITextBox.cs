@@ -12,11 +12,11 @@ namespace Molten.UI
 {
     public partial class UITextBox : UIElement
     {
-        internal class Margin
+        internal class LineMargin
         {
-            public event ObjectHandler<Margin> BoundsChanged;
+            public event ObjectHandler<LineMargin> BoundsChanged;
 
-            public event ObjectHandler<Margin> PaddingChanged;
+            public event ObjectHandler<LineMargin> PaddingChanged;
 
             public Rectangle Bounds
             {
@@ -79,7 +79,7 @@ namespace Molten.UI
         SpriteFont _defaultFont;
         bool _isMultiline;
         string _fontName;
-        Margin _margin;
+        LineMargin _margin;
         int _scrollbarWidth = 20;
         int _lineSpacing = 5;
         int _lineHeight = 25;
@@ -102,14 +102,13 @@ namespace Molten.UI
          *      - Open a URL
          *      - Open an in-game menu.
          *      - An item link e.g. Path of Exile chat items
-         * 
          */
 
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
             base.OnInitialize(engine, settings);
 
-            _margin = new Margin();
+            _margin = new LineMargin();
             _margin.PaddingChanged += OnMarginPaddingChanged;
 
             _rules = new RuleSet(); 
@@ -136,7 +135,7 @@ namespace Molten.UI
             OnRulesApplied?.Invoke(this);
         }
 
-        private void OnMarginPaddingChanged(Margin obj)
+        private void OnMarginPaddingChanged(LineMargin obj)
         {
             OnUpdateBounds();
         }
@@ -280,8 +279,6 @@ namespace Molten.UI
             for (int i = 0; i < lines.Length; i++)
             {
                 Line line = new Line(this);
-                line.Number = (uint)i + 1U;
-                line.LineNumberSize = _defaultFont.MeasureString(line.NumberString);
                 line.SetText(_defaultFont, lines[i]);
 
                 _lines.Add(line);

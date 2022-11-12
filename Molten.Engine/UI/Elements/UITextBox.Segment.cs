@@ -22,7 +22,7 @@ namespace Molten.UI
 
             public Color Color = Color.White;
 
-            public RectangleF Bounds;
+            public Vector2F Size;
 
             public SegmentType Type;
 
@@ -34,17 +34,15 @@ namespace Molten.UI
                 Color = color;
                 Font = font;
                 Type = type;
-                Vector2F size = font.MeasureString(text);
-                Bounds.X = size.X;
-                Bounds.Y = size.Y;
+                Size = font.MeasureString(text);
             }
 
-            public virtual void Render(SpriteBatcher sb)
+            public virtual void Render(SpriteBatcher sb, ref RectangleF bounds)
             {
                 if (string.IsNullOrWhiteSpace(Text) || Color.A == 0)
                     return;
 
-                sb.DrawString(Font, Text, Bounds.TopLeft, Color, null, 0);
+                sb.DrawString(Font, Text, bounds.TopLeft, Color, null, 0);
             }
         }
 
