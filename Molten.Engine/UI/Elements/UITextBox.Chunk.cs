@@ -13,7 +13,14 @@ namespace Molten.UI
     {
         const int CHUNK_CAPACITY = 128;
 
-        private class Chunk
+        internal struct ChunkPickResult
+        {
+            internal Line Line;
+
+            internal Segment Segment;
+        }
+
+        internal class Chunk
         {
             internal ThreadedList<Line> Lines = new ThreadedList<Line>(CHUNK_CAPACITY);
             int _width;
@@ -159,22 +166,21 @@ namespace Molten.UI
                 Next.Previous = this;
             }
 
-            internal (Line line, Segment seg, RectangleF segBounds, Rectangle lineBounds) Pick(Vector2I pos, ref Rectangle bounds)
+            internal void Pick(Vector2I pos, ref Rectangle bounds, out ChunkPickResult result)
             {
                 Rectangle lBounds = bounds;
 
                 if (bounds.Contains(pos))
                 {
-                    Line l = null;
-                    for(int i = Lines.Count - 1; i >= 0; i--)
+                    Line line = null;
+                    for (int i = 0; i < Lines.Count; i++)
                     {
-                        l = Lines[i];
-                        lBounds.Height = l.Height;
-                        lBounds.Y += l.Height;
+                        line = Lines[i];
+                        lBounds.Height = line.Height;
 
                         if (lBounds.Contains(pos))
                         {
-                            Segment seg = l.First;
+                            Segment seg = line.First;
                             RectangleF segBounds = lBounds;
 
                             while(seg != null)
@@ -187,39 +193,20 @@ namespace Molten.UI
                                 seg = seg.Next;
                             }
 
-                            return (l, seg, segBounds, lBounds);
+                            result = new ChunkPickResult()
+                            {
+                                Line = line,
+                                Segment = seg
+                            };
+
+                            return;
                         }
+
+                        lBounds.Y += line.Height;
                     }
                 }
 
-                return (null, null, RectangleF.Empty, Rectangle.Empty);
-            }
-
-            public void Render(SpriteBatcher sb, ref Rectangle bounds)
-            {
-                RectangleF rBounds = bounds;
-                Line line = null;
-                Segment seg = null;
-
-                for(int i = 0; i < Lines.Count; i++)
-                {
-                    line = Lines[i];
-                    seg = line.First;
-
-                    while(seg != null)
-                    {
-                        rBounds.Width = seg.Size.X;
-                        rBounds.Height = seg.Size.Y;
-
-                        seg.Render(sb, line.Parent, ref rBounds);
-
-                        rBounds.X += seg.Size.X;
-                        seg = seg.Next;
-                    }
-
-                    rBounds.X = bounds.X;
-                    rBounds.Y += line.Height;
-                }
+                result = new ChunkPickResult();
             }
 
             internal Chunk Previous { get; set; }

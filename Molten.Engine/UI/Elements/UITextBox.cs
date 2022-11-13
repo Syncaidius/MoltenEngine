@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Molten.Collections;
 using Molten.Graphics;
 using Molten.Input;
-using static Molten.UI.UITextBox;
 
 namespace Molten.UI
 {
@@ -66,6 +65,24 @@ namespace Molten.UI
                 sb.DrawLine(_linePos, _linePos + new Vector2F(0, _bounds.Height), ref Style, 0);
             }
         }
+
+        internal class Selector<T> where T : class
+        {
+            public RectStyle Style;
+
+            public T Selected;
+
+            public Selector(Color fillColor, Color borderColor, float borderThickness)
+            {
+                Style = new RectStyle(fillColor, borderColor, borderThickness);
+            }
+
+            public Selector(Color color, float borderThickness)
+            {
+                Style = new RectStyle(color, color, borderThickness);
+            }
+        }
+
         /// <summary>
         /// Invoked when <see cref="ApplyRules()"/> was called.
         /// </summary>
@@ -96,11 +113,8 @@ namespace Molten.UI
 
         // Line Selector
         Chunk _selectedChunk;
-        Line _selectedLine;
-        Segment _selectedSeg;
-        Rectangle _selectedLineBounds;
-        RectangleF _selectedSegBounds;
-        RectStyle _selectorStyle = new RectStyle(new Color(60,60,60,200), new Color(160,160,160,255), 2);
+        Selector<Segment> _segSelector = new Selector<Segment>(new Color(130, 130, 220, 255), 2); 
+        Selector<Line> _lineSelector = new Selector<Line>(new Color(60,60,60,200), new Color(160,160,160,255), 2);
 
         /* TODO:
          *  - Allow segment to have OnPressed and OnReleased virtual methods to allow custom segment actions/types, such as:
@@ -200,7 +214,7 @@ namespace Molten.UI
         {
             base.OnPressed(tracker);
 
-            (Line line, Segment seg, RectangleF segBounds, Rectangle lineBounds) result;
+            ChunkPickResult result;
 
             Chunk chunk = _firstChunk;
 
@@ -210,15 +224,13 @@ namespace Molten.UI
             while (chunk != null)
             {
                 cBounds.Height = chunk.Height;
+                chunk.Pick(pos, ref cBounds, out result);
 
-                result = chunk.Pick(pos, ref cBounds);
-                if (result.line != null)
+                if (result.Line != null)
                 {
                     _selectedChunk = chunk;
-                    _selectedLine = result.line;
-                    _selectedSeg = result.seg;
-                    _selectedSegBounds = result.segBounds;
-                    _selectedLineBounds = result.lineBounds;
+                    _segSelector.Selected = result.Segment;
+                    _lineSelector.Selected = result.Line;
                     break;
                 }
 
@@ -235,12 +247,6 @@ namespace Molten.UI
 
             sb.DrawRect(gb, _bgColor, 0, null, 0);
 
-            if (_selectedLine != null)
-                sb.DrawRect(_selectedLineBounds, ref _selectorStyle, 0, null, 0);
-
-            if (_selectedSeg != null)
-                sb.DrawRect(_selectedSegBounds, Color.Red, 0, null, 0);
-
             _margin.Render(sb);
 
             sb.PushClip(_textClipBounds);
@@ -251,7 +257,41 @@ namespace Molten.UI
                 cBounds.Height = chunk.Height;
 
                 if (_textClipBounds.Intersects(cBounds) || _textClipBounds.Contains(cBounds))
-                    chunk.Render(sb, ref cBounds);
+                {
+                    RectangleF segBounds = cBounds;
+                    RectangleF lineBounds = cBounds;
+                    Line line = null;
+                    Segment seg = null;
+
+                    for (int i = 0; i < chunk.Lines.Count; i++)
+                    {
+                        line = chunk.Lines[i];
+                        seg = line.First;
+
+                        lineBounds.Height = line.Height;
+
+                        if (line == _lineSelector.Selected)
+                            sb.DrawRect(lineBounds, ref _lineSelector.Style);
+
+                        while (seg != null)
+                        {
+                            segBounds.Width = seg.Size.X;
+                            segBounds.Height = seg.Size.Y;
+
+                            if (seg == _segSelector.Selected)
+                                sb.Draw(segBounds, ref _segSelector.Style);
+
+                            seg.Render(sb, line.Parent, ref segBounds);
+
+                            segBounds.X += seg.Size.X;
+                            seg = seg.Next;
+                        }
+
+                        segBounds.X = cBounds.X;
+                        segBounds.Y += line.Height;
+                        lineBounds.Y += line.Height;
+                    }
+                }
 
                 cBounds.Y += chunk.Height;
                 chunk = chunk.Next;
@@ -306,7 +346,6 @@ namespace Molten.UI
 
         private void CalcScrollBars()
         {
-            Line line;
             float distH = 0;
             float distV = 0;
 
