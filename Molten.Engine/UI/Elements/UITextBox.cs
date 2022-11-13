@@ -98,6 +98,8 @@ namespace Molten.UI
         Chunk _selectedChunk;
         Line _selectedLine;
         Segment _selectedSeg;
+        Rectangle _selectedLineBounds;
+        RectangleF _selectedSegBounds;
         RectStyle _selectorStyle = new RectStyle(new Color(60,60,60,200), new Color(160,160,160,255), 2);
 
         /* TODO:
@@ -174,26 +176,6 @@ namespace Molten.UI
                 _textBounds.Right -= _scrollbarWidth;
                 _vScroll.LocalBounds = new Rectangle(gb.Width - _scrollbarWidth, 0, _scrollbarWidth, gb.Height - _scrollbarWidth);
             }
-
-            Chunk chunk = _firstChunk;
-
-            /*Vector2F tl = (Vector2F)_textBounds.TopLeft;
-            Vector2F p = tl;
-            Line line;
-            for (int i = 0; i < _lines.Count; i++)
-            {
-                line = _lines[i];
-                line.Position = p;
-                line.SelectorBounds = new RectangleF()
-                {
-                    X = _margin.DividerPosition.X + 2,
-                    Y = gb.Y + 5 + (_lineHeight * i),
-                    Width = gb.Width - (_margin.Width + 2 + _scrollbarWidth),
-                    Height = Math.Max(_lineHeight, line.TextBounds.Height)
-                };
-
-                p.Y += _lineHeight;
-            }*/
         }
 
         protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
@@ -218,7 +200,7 @@ namespace Molten.UI
         {
             base.OnPressed(tracker);
 
-            (Line line, Segment seg) result;
+            (Line line, Segment seg, RectangleF segBounds, Rectangle lineBounds) result;
 
             Chunk chunk = _firstChunk;
 
@@ -235,24 +217,14 @@ namespace Molten.UI
                     _selectedChunk = chunk;
                     _selectedLine = result.line;
                     _selectedSeg = result.seg;
+                    _selectedSegBounds = result.segBounds;
+                    _selectedLineBounds = result.lineBounds;
                     break;
                 }
 
                 cBounds.Y += chunk.Height;
                 chunk = chunk.Next;
             }
-
-            /*for (int i = 0; i < _lines.Count; i++)
-            {
-                line = _lines[i];
-
-                if (line.SelectorBounds.Contains(tracker.Position))
-                {
-                    _selectedLine = i;
-                    _selectedSeg = line.OnPressed(tracker.Position);
-                    break;
-                }
-            }*/
         }
 
         protected override void OnRender(SpriteBatcher sb)
@@ -263,11 +235,11 @@ namespace Molten.UI
 
             sb.DrawRect(gb, _bgColor, 0, null, 0);
 
-            //if (_selectedLine.HasValue)
-            //    sb.DrawRect(_lines[_selectedLine.Value].SelectorBounds, ref _selectorStyle, 0, null, 0);
+            if (_selectedLine != null)
+                sb.DrawRect(_selectedLineBounds, ref _selectorStyle, 0, null, 0);
 
-            //if (_selectedSeg != null)
-            //    sb.DrawRect(_selectedSeg.Bounds, Color.Red, 0, null, 0);
+            if (_selectedSeg != null)
+                sb.DrawRect(_selectedSegBounds, Color.Red, 0, null, 0);
 
             _margin.Render(sb);
 
@@ -326,7 +298,7 @@ namespace Molten.UI
                 Line line = new Line(this);
                 line.SetText(DefaultFont, lines[i]);
 
-                _lastChunk.AppendLine(line);
+                _lastChunk = _lastChunk.AppendLine(line);
             }
 
             CalcScrollBars();

@@ -159,9 +159,9 @@ namespace Molten.UI
                 Next.Previous = this;
             }
 
-            internal (Line line, Segment seg) Pick(Vector2I pos, ref Rectangle bounds)
+            internal (Line line, Segment seg, RectangleF segBounds, Rectangle lineBounds) Pick(Vector2I pos, ref Rectangle bounds)
             {
-                Rectangle lBounds = new Rectangle(bounds.X, bounds.Y, bounds.Width, 0);
+                Rectangle lBounds = bounds;
 
                 if (bounds.Contains(pos))
                 {
@@ -175,24 +175,24 @@ namespace Molten.UI
                         if (lBounds.Contains(pos))
                         {
                             Segment seg = l.First;
-                            RectangleF secBounds = lBounds;
+                            RectangleF segBounds = lBounds;
 
                             while(seg != null)
                             {
-                                secBounds.Width = seg.Size.X;
-                                if (secBounds.Contains(pos))
+                                segBounds.Width = seg.Size.X;
+                                if (segBounds.Contains(pos))
                                     break;
 
-                                secBounds.X += seg.Size.X;
+                                segBounds.X += seg.Size.X;
                                 seg = seg.Next;
                             }
 
-                            return (l, seg);
+                            return (l, seg, segBounds, lBounds);
                         }
                     }
                 }
 
-                return (null, null);
+                return (null, null, RectangleF.Empty, Rectangle.Empty);
             }
 
             public void Render(SpriteBatcher sb, ref Rectangle bounds)
