@@ -12,6 +12,9 @@ namespace Molten.UI
     {
         public class Segment
         {
+            /// <summary>
+            /// The font of the current <see cref="Segment"/>. If null, the parent <see cref="UITextBox.DefaultFont"/> will be used.
+            /// </summary>
             public SpriteFont Font;
 
             public string Text = "";
@@ -37,12 +40,12 @@ namespace Molten.UI
                 Size = font.MeasureString(text);
             }
 
-            public virtual void Render(SpriteBatcher sb, ref RectangleF bounds)
+            public virtual void Render(SpriteBatcher sb, UITextBox owner, ref RectangleF bounds)
             {
                 if (string.IsNullOrWhiteSpace(Text) || Color.A == 0)
                     return;
 
-                sb.DrawString(Font, Text, bounds.TopLeft, Color, null, 0);
+                sb.DrawString(Font ?? owner.DefaultFont, Text, bounds.TopLeft, Color, null, 0);
             }
         }
 

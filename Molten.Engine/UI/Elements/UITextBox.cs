@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Molten.Collections;
 using Molten.Graphics;
 using Molten.Input;
+using static Molten.UI.UITextBox;
 
 namespace Molten.UI
 {
@@ -74,9 +75,10 @@ namespace Molten.UI
 
         UIScrollBar _vScroll;
         UIScrollBar _hScroll;
-        
-        ThreadedList<Line> _lines;
-        SpriteFont _defaultFont;
+
+        Chunk _firstChunk;
+        Chunk _lastChunk;
+
         bool _isMultiline;
         string _fontName;
         LineMargin _margin;
@@ -90,10 +92,11 @@ namespace Molten.UI
         // Line numbers
         bool _showLineNumbers;
         Vector2F _lineNumPos;
-        Color _lineNumColor = new Color(42, 136, 151, 255);
+        Color _lineNumColor = new Color(52, 156, 181, 255);
 
         // Line Selector
-        int? _selectedLine;
+        Chunk _selectedChunk;
+        Line _selectedLine;
         Segment _selectedSeg;
         RectStyle _selectorStyle = new RectStyle(new Color(60,60,60,200), new Color(160,160,160,255), 2);
 
@@ -111,8 +114,10 @@ namespace Molten.UI
             _margin = new LineMargin();
             _margin.PaddingChanged += OnMarginPaddingChanged;
 
-            _rules = new RuleSet(); 
-            _lines = new ThreadedList<Line>();
+            _rules = new RuleSet();
+            _firstChunk = new Chunk(1);
+            _lastChunk = _firstChunk;
+
             FontName = settings.DefaultFontName;
 
             _vScroll = BaseElements.Add<UIScrollBar>();
@@ -170,7 +175,9 @@ namespace Molten.UI
                 _vScroll.LocalBounds = new Rectangle(gb.Width - _scrollbarWidth, 0, _scrollbarWidth, gb.Height - _scrollbarWidth);
             }
 
-            Vector2F tl = (Vector2F)_textBounds.TopLeft;
+            Chunk chunk = _firstChunk;
+
+            /*Vector2F tl = (Vector2F)_textBounds.TopLeft;
             Vector2F p = tl;
             Line line;
             for (int i = 0; i < _lines.Count; i++)
@@ -186,7 +193,7 @@ namespace Molten.UI
                 };
 
                 p.Y += _lineHeight;
-            }
+            }*/
         }
 
         protected override void OnAdjustRenderBounds(ref Rectangle renderbounds)
@@ -211,10 +218,31 @@ namespace Molten.UI
         {
             base.OnPressed(tracker);
 
-            // TODO only test the lines that are in view.
-            Line line;
+            (Line line, Segment seg) result;
 
-            for (int i = 0; i < _lines.Count; i++)
+            Chunk chunk = _firstChunk;
+
+            Rectangle cBounds = _textBounds;
+            Vector2I pos = (Vector2I)tracker.Position;
+
+            while (chunk != null)
+            {
+                cBounds.Height = chunk.Height;
+
+                result = chunk.Pick(pos, ref cBounds);
+                if (result.line != null)
+                {
+                    _selectedChunk = chunk;
+                    _selectedLine = result.line;
+                    _selectedSeg = result.seg;
+                    break;
+                }
+
+                cBounds.Y += chunk.Height;
+                chunk = chunk.Next;
+            }
+
+            /*for (int i = 0; i < _lines.Count; i++)
             {
                 line = _lines[i];
 
@@ -224,7 +252,7 @@ namespace Molten.UI
                     _selectedSeg = line.OnPressed(tracker.Position);
                     break;
                 }
-            }
+            }*/
         }
 
         protected override void OnRender(SpriteBatcher sb)
@@ -232,45 +260,62 @@ namespace Molten.UI
             base.OnRender(sb);
 
             Rectangle gb = GlobalBounds;
-            Vector2F numPos = _lineNumPos;
 
             sb.DrawRect(gb, _bgColor, 0, null, 0);
 
-            if (_selectedLine.HasValue)
-                sb.DrawRect(_lines[_selectedLine.Value].SelectorBounds, ref _selectorStyle, 0, null, 0);
+            //if (_selectedLine.HasValue)
+            //    sb.DrawRect(_lines[_selectedLine.Value].SelectorBounds, ref _selectorStyle, 0, null, 0);
 
-            if (_selectedSeg != null)
-                sb.DrawRect(_selectedSeg.Bounds, Color.Red, 0, null, 0);
+            //if (_selectedSeg != null)
+            //    sb.DrawRect(_selectedSeg.Bounds, Color.Red, 0, null, 0);
 
             _margin.Render(sb);
 
-            // Line numbers
-            int lastNum = -1;
-
-            for (int l = 0; l < _lines.Count; l++)
-            {
-                Line line = _lines[l];
-                Segment seg = line.First;
-                if (_showLineNumbers)
-                    sb.DrawString(_defaultFont, line.NumberString, numPos - new Vector2F(line.LineNumberSize.X, 0), _lineNumColor, null, 0);
-
-                numPos.Y += _lineHeight;
-            }
-
-            // Line text/content
             sb.PushClip(_textClipBounds);
-            for (int l = 0; l < _lines.Count; l++)
+            Chunk chunk = _firstChunk;
+            Rectangle cBounds = _textBounds;
+            while(chunk != null)
             {
-                Line line = _lines[l];
-                Segment seg = line.First;
+                cBounds.Height = chunk.Height;
 
-                while (seg != null)
-                {
-                    seg.Render(sb);
-                    seg = seg.Next;
-                }
+                if (_textClipBounds.Intersects(cBounds) || _textClipBounds.Contains(cBounds))
+                    chunk.Render(sb, ref cBounds);
+
+                cBounds.Y += chunk.Height;
+                chunk = chunk.Next;
             }
             sb.PopClip();
+
+            if (_showLineNumbers)
+            {
+                chunk = _firstChunk;
+                cBounds = _textBounds;
+                
+                while (chunk != null)
+                {
+                    cBounds.Height = chunk.Height;
+
+                    if (_textClipBounds.Intersects(cBounds) || _textClipBounds.Contains(cBounds))
+                    {
+                        Vector2F numPos = _lineNumPos;
+                        numPos.Y = cBounds.Y;
+
+                        for (int i = 0; i < chunk.Lines.UnsafeCount; i++)
+                        {
+                            int lineNum = chunk.StartLineNumber + i;
+                            string numString = lineNum.ToString(); // TODO cache line numbers in Chunk.
+                            Vector2F numSize = DefaultFont.MeasureString(numString);
+                            numSize.Y = chunk.Lines[i].Height;
+
+                            sb.DrawString(DefaultFont, numString, numPos - new Vector2F(numSize.X, 0), _lineNumColor, null, 0);
+                            numPos.Y += numSize.Y; 
+                        }
+                    }
+
+                    cBounds.Y += chunk.Height;
+                    chunk = chunk.Next;
+                }
+            }
         }
 
         private void SetText(string text)
@@ -279,9 +324,9 @@ namespace Molten.UI
             for (int i = 0; i < lines.Length; i++)
             {
                 Line line = new Line(this);
-                line.SetText(_defaultFont, lines[i]);
+                line.SetText(DefaultFont, lines[i]);
 
-                _lines.Add(line);
+                _lastChunk.AppendLine(line);
             }
 
             CalcScrollBars();
@@ -293,13 +338,13 @@ namespace Molten.UI
             float distH = 0;
             float distV = 0;
 
-            for(int i = 0; i < _lines.Count; i++)
+            Chunk chunk = _firstChunk;
+            while(chunk != null)
             {
-                line = _lines[i];
-                if (line.TextBounds.Width > _textBounds.Width)
-                    distH = Math.Max(distH, line.TextBounds.Width - _textBounds.Width);
+                distH = Math.Max(distH, chunk.Width - _textBounds.Width);
 
-                distV += line.TextBounds.Height + _lineSpacing;
+                distV += chunk.Height;
+                chunk = chunk.Next;
             }
 
             // Horizontal scroll bar
@@ -341,6 +386,10 @@ namespace Molten.UI
             }
         }
 
+        internal SpriteFont DefaultFont { get; private set; }
+
+        internal int DefaultLineHeight { get; private set; }
+
         /// <summary>
         /// Gets or sets the name of the default font for the current <see cref="UITextBox"/>. This will attempt to load/retrieve and populate <see cref="Font"/>.
         /// </summary>
@@ -358,16 +407,8 @@ namespace Molten.UI
                     {
                         Engine.Content.LoadFont(_fontName, (font, isReload) =>
                         {
-                            _defaultFont = font;
-                            for(int i = 0; i < _lines.Count; i++)
-                            {
-                                Segment seg = _lines[i].First;
-                                while(seg != null)
-                                {
-                                    seg.Font = font;
-                                    seg = seg.Next;
-                                }
-                            }
+                            DefaultFont = font;
+                            DefaultLineHeight = (int)Math.Ceiling(DefaultFont.MeasureString(" ").Y);
                         },
                         new SpriteFontParameters()
                         {

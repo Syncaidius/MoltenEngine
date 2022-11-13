@@ -11,62 +11,91 @@ namespace Molten.UI
 {
     public partial class UITextBox
     {
-        const int CHUNK_CAPACITY = 512;
+        const int CHUNK_CAPACITY = 128;
 
         private class Chunk
         {
-            ThreadedList<Line> _lines = new ThreadedList<Line>(CHUNK_CAPACITY);
-            Rectangle _bounds;
+            internal ThreadedList<Line> Lines = new ThreadedList<Line>(CHUNK_CAPACITY);
+            int _width;
+            int _height;
+            int _startLineNumber;
 
-            internal void AppendLine(Line line)
+            public Chunk(int firstLineNumber)
             {
-                if(_lines.Count < CHUNK_CAPACITY)
+                _startLineNumber = firstLineNumber;
+            }
+
+            private void FastAppendLine(Line line)
+            {
+                Lines.Add(line);
+                _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
+                _height += line.Height; 
+
+                if (Next != null)
+                    Next.StartLineNumber++;
+            }
+
+            private void FastInsertLine(Line line, int index)
+            {
+                Lines.Insert(index, line);
+                _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
+                _height += line.Height;
+
+                if (Next != null)
+                    Next.StartLineNumber++;
+            }
+
+            internal Chunk AppendLine(Line line)
+            {
+                if(Lines.Count < CHUNK_CAPACITY)
                 {
-                    _lines.Add(line);
-                    if (Next != null)
-                        Next.StartLineNumber++;
+                    FastAppendLine(line);
                 }
                 else
                 {
                     if (Next == null || Next.Capacity == 0)
-                        AddNext();
+                        NewNext();
 
-                    // Directly insert line to avoid duplicated checks
-                    Next._lines.Insert(0, line);
+                    Next.FastInsertLine(line, 0);
+                    return Next;
                 }
+
+                return this;
             }
 
-            internal void InsertLine(Line line, int index)
+            internal Chunk InsertLine(Line line, int index)
             {
-                if (_lines.Count < CHUNK_CAPACITY)
+                if (Lines.Count < CHUNK_CAPACITY)
                 {
-                    _lines.Insert(index, line);
-                    if (Next != null)
-                        Next.StartLineNumber++;
+                    FastInsertLine(line, index);
                 }
                 else
                 {
                     if (index == 0)
                     {
                         if (Previous == null || Previous.Capacity == 0)
-                            AddPrevious();
+                            NewPrevious();
 
-                        Previous._lines.Append(line);
+                        Previous.FastAppendLine(line);
+                        return Previous;
                     }
                     else if (index == CHUNK_CAPACITY - 1)
                     {
                         if (Next == null || Next.Capacity == 0)
-                            AddNext();
+                            NewNext();
 
                         // Directly insert line to avoid duplicated checks
-                        Next._lines.Insert(0, line);
+                        Next.FastInsertLine(line, 0);
+                        return Next;
                     }
                     else
                     {
                         Split(index);
-                        _lines.Add(line);
+                        FastAppendLine(line);
                     }
                 }
+
+                return this;
             }
 
             /// <summary>
@@ -75,17 +104,34 @@ namespace Molten.UI
             /// <param name="splitIndex">All lines at and beyond the current index are cut off into a new chunk, added after the current one.</param>
             private void Split(int splitIndex)
             {
-                int nextCount = _lines.Count - splitIndex;
-                if (Next == null || Next.Capacity == 0)
-                    AddNext();
+                int nextCount = Lines.Count - splitIndex;
+                if (Next == null || Next.Capacity < nextCount)
+                    NewNext();
 
-                Next._lines.AddRange(_lines, splitIndex, nextCount);
-                _lines.RemoveRange(splitIndex, nextCount);
+                Next.Lines.AddRange(Lines, splitIndex, nextCount);
+                Lines.RemoveRange(splitIndex, nextCount);
+
+                CalculateSize();
+                Next.CalculateSize();
             }
 
-            private void AddPrevious()
+            internal void CalculateSize()
             {
-                Chunk prev = new Chunk();
+                _width = 0;
+                _height = 0;
+                Line line = null;
+
+                for (int i = Lines.Count - 1; i >= 0; i--)
+                {
+                    line = Lines[i];
+                    _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
+                    _height += line.Height;
+                }
+            }
+
+            private void NewPrevious()
+            {
+                Chunk prev = new Chunk(StartLineNumber-1);
 
                 if (Previous != null)
                 {
@@ -97,9 +143,9 @@ namespace Molten.UI
                 Previous.Next = this;
             }
 
-            private void AddNext()
+            private void NewNext()
             {
-                Chunk next = new Chunk();
+                Chunk next = new Chunk(StartLineNumber + Lines.Count);
 
                 // Update the current "Next".
                 if (Next != null)
@@ -113,36 +159,51 @@ namespace Molten.UI
                 Next.Previous = this;
             }
 
-            public Line Pick(Vector2I pos)
+            internal (Line line, Segment seg) Pick(Vector2I pos, ref Rectangle bounds)
             {
-                Rectangle lBounds = new Rectangle(_bounds.X, _bounds.Y, _bounds.Width, 0);
+                Rectangle lBounds = new Rectangle(bounds.X, bounds.Y, bounds.Width, 0);
 
-                if (_bounds.Contains(pos))
+                if (bounds.Contains(pos))
                 {
                     Line l = null;
-                    for(int i = _lines.Count - 1; i >= 0; i--)
+                    for(int i = Lines.Count - 1; i >= 0; i--)
                     {
-                        l = _lines[i];
+                        l = Lines[i];
                         lBounds.Height = l.Height;
                         lBounds.Y += l.Height;
 
                         if (lBounds.Contains(pos))
-                            return l;
+                        {
+                            Segment seg = l.First;
+                            RectangleF secBounds = lBounds;
+
+                            while(seg != null)
+                            {
+                                secBounds.Width = seg.Size.X;
+                                if (secBounds.Contains(pos))
+                                    break;
+
+                                secBounds.X += seg.Size.X;
+                                seg = seg.Next;
+                            }
+
+                            return (l, seg);
+                        }
                     }
                 }
 
-                return null;
+                return (null, null);
             }
 
-            public void Render(SpriteBatcher sb)
+            public void Render(SpriteBatcher sb, ref Rectangle bounds)
             {
-                RectangleF rBounds = _bounds;
+                RectangleF rBounds = bounds;
                 Line line = null;
                 Segment seg = null;
 
-                for (int i = _lines.Count - 1; i >= 0; i--)
+                for(int i = 0; i < Lines.Count; i++)
                 {
-                    line = _lines[i];
+                    line = Lines[i];
                     seg = line.First;
 
                     while(seg != null)
@@ -150,13 +211,13 @@ namespace Molten.UI
                         rBounds.Width = seg.Size.X;
                         rBounds.Height = seg.Size.Y;
 
-                        seg.Render(sb, ref rBounds);
+                        seg.Render(sb, line.Parent, ref rBounds);
 
                         rBounds.X += seg.Size.X;
                         seg = seg.Next;
                     }
 
-                    rBounds.X = _bounds.X;
+                    rBounds.X = bounds.X;
                     rBounds.Y += line.Height;
                 }
             }
@@ -165,27 +226,25 @@ namespace Molten.UI
             
             internal Chunk Next { get; set; }
 
-            public int StartLineNumber { get; set; }
-
-            public int EndLineNumber => StartLineNumber + _lines.Count;
-
-            public int Capacity => CHUNK_CAPACITY - _lines.Count;
-
-            public int Width
+            internal int StartLineNumber
             {
-                get => _bounds.Width;
-                set => _bounds.Width = value; // TODO update word-wrapping
-            }
-
-            public Vector2I Position
-            {
-                get => _bounds.TopLeft;
+                get => _startLineNumber;
                 set
                 {
-                    _bounds.Left = value.X;
-                    _bounds.Top = value.Y;
+                    if(_startLineNumber != value)
+                    {
+                        _startLineNumber = value;
+                        if (Next != null)
+                            Next.StartLineNumber = StartLineNumber + Lines.Count;
+                    }
                 }
             }
+
+            public int Capacity => CHUNK_CAPACITY - Lines.Count;
+
+            public int Width => _width;
+
+            public int Height => _height;
         }
     }
 }

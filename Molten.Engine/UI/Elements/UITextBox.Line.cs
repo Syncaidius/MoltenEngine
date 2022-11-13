@@ -12,17 +12,27 @@ namespace Molten.UI
     {
         internal class Line
         {
+            int _height;
+
             internal Line(UITextBox textbox)
             {
-                TextBox = textbox;
+                Parent = textbox;
             }
 
             public void SetText(SpriteFont font, string text)
             {
-                Width = 0;
-                Height = 0;
+                // TODO reuse Segment instances from a pool;
 
-                First = new Segment("", Color.White, font, SegmentType.Text);
+                Width = 0;
+                _height = 0;
+                HasText = true;
+                First = new Segment("", Color.White, font, SegmentType.Text); 
+
+                if(string.IsNullOrWhiteSpace(text))
+                {
+                    HasText = false;
+                    return;
+                }    
 
                 Segment seg = First;
 
@@ -30,10 +40,10 @@ namespace Molten.UI
                 {
                     char c = text[i];
 
-                    SegmentType charType = ParseRuleCharList(c, seg, font, TextBox.Rules.Whitespace, SegmentType.Whitespace);
+                    SegmentType charType = ParseRuleCharList(c, seg, font, Parent.Rules.Whitespace, SegmentType.Whitespace);
 
                     if(charType == SegmentType.Text)
-                        charType = ParseRuleCharList(c, seg, font, TextBox.Rules.Punctuation, SegmentType.Punctuation);
+                        charType = ParseRuleCharList(c, seg, font, Parent.Rules.Punctuation, SegmentType.Punctuation);
 
                     if (seg.Type != charType)
                         seg = AddNextNode(seg, Color.White, font, charType);
@@ -47,7 +57,7 @@ namespace Molten.UI
                 // Set width of last node, then add it to total width and height.
                 seg.Size = font.MeasureString(seg.Text);
                 Width += seg.Size.X;
-                Height = Math.Max(Height, (int)Math.Ceiling(seg.Size.Y));
+                _height = Math.Max(_height, (int)Math.Ceiling(seg.Size.Y));
             }
 
             private SegmentType ParseRuleCharList(char c, Segment seg, SpriteFont font, char[] list, SegmentType type)
@@ -83,32 +93,20 @@ namespace Molten.UI
                 next.Previous = seg;
 
                 Width += seg.Size.X;
-                Height = Math.Max(Height, (int)Math.Ceiling(seg.Size.Y));
+                _height = Math.Max(_height, (int)Math.Ceiling(seg.Size.Y));
 
                 return next;
             }
 
-            public Segment OnPressed(Vector2F position)
-            {
-                Segment seg = First;
-                while(seg != null)
-                {
-                    if (seg.Bounds.Contains(position))
-                        return seg;
-
-                    seg = seg.Next;
-                }
-
-                return null;
-            }
-
             public float Width { get; private set; }
 
-            public int Height { get; private set; }
+            public int Height => HasText ? _height : Parent.DefaultLineHeight;
 
-            public UITextBox TextBox { get; internal set; }
+            public UITextBox Parent { get; internal set; }
 
             public Segment First { get; private set; }
+
+            public bool HasText { get; private set; }
         }
     }
 }
