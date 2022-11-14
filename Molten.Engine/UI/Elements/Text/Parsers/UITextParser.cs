@@ -14,81 +14,80 @@ namespace Molten.UI
     public abstract class UITextParser
     {
         /// <summary>
-        /// Gets or sets a list of characters that are considered whitespace
+        /// Invoked when the parser should populate the provided <see cref="UITextElement"/>.
         /// </summary>
-        public char[] Whitespace { get; protected set; } = { ' ', '\t' };
-
-        /// <summary>
-        /// Gets or sets a list of characters that are considered punctuation.
-        /// </summary>
-        public char[] Punctuation { get; protected set; } = { '.', ',', ':', ';', '\'', '"' };
-
-        public string[] NewLineCharacters { get; protected set; } =  { Environment.NewLine, "\r", "\n" };
-
+        /// <param name="element">The <see cref="UITextElement"/> to be populated with parsed text.</param>
+        /// <param name="text">The text to be parsed.</param>
         public abstract void ParseText(UITextElement element, string text);
     }
 
     public class UIDefaultTextParser : UITextParser
     {
+        /// <summary>
+        /// Gets or sets a list of characters that are considered whitespace
+        /// </summary>
+        static readonly char[] _whitespace = { ' ', '\t' };
+
+        /// <summary>
+        /// Gets or sets a list of characters that are considered punctuation.
+        /// </summary>
+        static readonly char[] _punctuation = { '.', ',', ':', ';', '\'', '"' };
+
+        static readonly string[] _newLineChars = { Environment.NewLine, "\r", "\n" };
+
+        /// <inheritdoc/>
         public override void ParseText(UITextElement element, string text)
         {
-            if (!element.IsMultiLine)
+            string[] lines = Regex.Split(text, "\r?\n");
+
+            for (int i = 0; i < lines.Length; i++)
             {
-                for (int i = 0; i < NewLineCharacters.Length; i++)
-                    text = text.Replace(NewLineCharacters[i], "");
-            }
-            else
-            {
-                string[] lines = Regex.Split(text, "\r?\n");
-                for (int i = 0; i < lines.Length; i++)
+                UITextLine line = element.NewLine();
+                string segText = "";
+
+                for (int t = 0; t < text.Length; t++)
                 {
-                    UITextLine line = new UITextLine(element);
+                    char c = text[t];
+                    UITextSegment segSeparate = ParseRuleCharList(element, c, element.DefaultFont, _whitespace, UITextSegmentType.Whitespace);
 
-                    for (int t = 0; t < text.Length; t++)
+                    if (segSeparate == null)
+                        segSeparate = ParseRuleCharList(element, c, element.DefaultFont, _punctuation, UITextSegmentType.Punctuation);
+
+                    if (segSeparate != null)
                     {
-                        char c = text[t];
-
-                        UITextSegmentType charType = ParseRuleCharList(c, seg, font, Parent.Rules.Whitespace, UITextSegmentType.Whitespace);
-
-                        if (charType == UITextSegmentType.Text)
-                            charType = ParseRuleCharList(c, seg, font, Parent.Rules.Punctuation, UITextSegmentType.Punctuation);
-
-                        if (seg.Type != charType)
-                            seg = InsertSegment(seg, Color.White, font, charType);
-
-                        // TODO check rules for any other segmenting operators/symbols (e.g. brackets, math symbols, numbers/words, etc).
-                        // TODO check if the current segment text is equal to any keywords
-
-                        seg.Text += c;
+                        UITextSegment seg = new UITextSegment(segText, Color.White, element.DefaultFont, UITextSegmentType.Text);
+                        line.AppendSegment(seg);
+                        line.AppendSegment(segSeparate);
+                        segText = "";
                     }
-
-                    element.AppendLine(line);
+                    else
+                    {
+                        segText += c;
+                    }
                 }
+
+                // Append the remaining text.
+                if(segText.Length > 0)
+                {
+                    UITextSegment seg = new UITextSegment(segText, Color.White, element.DefaultFont, UITextSegmentType.Text);
+                    line.AppendSegment(seg);
+                }
+
+                element.AppendLine(line);
             }
         }
 
-        private UITextSegmentType ParseRuleCharList(UITextElement element, char c, UITextSegment seg, SpriteFont font, char[] list, UITextSegmentType type)
+        private UITextSegment ParseRuleCharList(UITextElement element, char c, SpriteFont font, char[] list, UITextSegmentType type)
         {
-            UITextSegmentType charType = UITextSegmentType.Text;
-
             // Check for whitespace character
             for (int w = 0; w < list.Length; w++)
             {
                 // Start new segment
                 if (c == list[w])
-                {
-                    if (seg.Type != type)
-                    {
-                        seg = InsertSegment(seg, Color.White, font, type);
-                        seg.Type = type;
-                    }
-
-                    charType = type;
-                    break;
-                }
+                    return new UITextSegment(c.ToString(), Color.White, font, type);
             }
 
-            return charType;
+            return null;
         }
     }
 }

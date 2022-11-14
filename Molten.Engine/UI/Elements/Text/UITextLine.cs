@@ -30,6 +30,13 @@ namespace Molten.UI
             Last = First;
         }
 
+        public UITextSegment NewSegment(string text, Color color, SpriteFont font, UITextSegmentType type)
+        {
+            UITextSegment segment = new UITextSegment(text, color, font, type);
+            AppendSegment(segment);
+            return segment;
+        }
+
         public void AppendSegment(UITextSegment seg)
         {
             if (seg != null)
@@ -38,13 +45,9 @@ namespace Molten.UI
                 {
                     Last.Next = seg;
                     seg.Previous = Last;
-                    Last = seg;
-                }
-                else
-                {
-                    Last = seg;
                 }
 
+                Last = seg;
                 Width += seg.Size.X;
                 _height = Math.Max(_height, (int)Math.Ceiling(seg.Size.Y));
             }

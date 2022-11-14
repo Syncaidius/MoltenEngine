@@ -22,7 +22,7 @@ namespace Molten.UI
             _parser = settings.DefaultTextParser ?? new UIDefaultTextParser();
         }
 
-        public abstract UITextSegment NewLine();
+        public abstract UITextLine NewLine();
 
         public abstract void AppendLine(UITextLine line);
 
