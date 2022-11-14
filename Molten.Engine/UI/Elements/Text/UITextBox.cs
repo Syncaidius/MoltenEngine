@@ -10,7 +10,7 @@ using Molten.Input;
 
 namespace Molten.UI
 {
-    public partial class UITextBox : UIElement
+    public partial class UITextBox : UITextElement
     {
         internal class LineMargin
         {
@@ -83,13 +83,6 @@ namespace Molten.UI
             }
         }
 
-        /// <summary>
-        /// Invoked when <see cref="ApplyRules()"/> was called.
-        /// </summary>
-        public event ObjectHandler<UITextBox> OnRulesApplied;
-
-        RuleSet _rules;
-
         UIScrollBar _vScroll;
         UIScrollBar _hScroll;
 
@@ -97,7 +90,6 @@ namespace Molten.UI
         Chunk _lastChunk;
 
         bool _isMultiline;
-        string _fontName;
         LineMargin _margin;
         int _scrollbarWidth = 20;
         int _lineSpacing = 5;
@@ -112,9 +104,8 @@ namespace Molten.UI
         Color _lineNumColor = new Color(52, 156, 181, 255);
 
         // Line Selector
-        Chunk _selectedChunk;
-        Selector<Segment> _segSelector = new Selector<Segment>(new Color(130, 130, 220, 255), 2); 
-        Selector<Line> _lineSelector = new Selector<Line>(new Color(60,60,60,200), new Color(160,160,160,255), 2);
+        Selector<UITextSegment> _segSelector = new Selector<UITextSegment>(new Color(130, 130, 220, 255), 2); 
+        Selector<UITextLine> _lineSelector = new Selector<UITextLine>(new Color(60,60,60,200), new Color(160,160,160,255), 2);
 
         /* TODO:
          *  - Allow segment to have OnPressed and OnReleased virtual methods to allow custom segment actions/types, such as:
@@ -130,11 +121,8 @@ namespace Molten.UI
             _margin = new LineMargin();
             _margin.PaddingChanged += OnMarginPaddingChanged;
 
-            _rules = new RuleSet();
             _firstChunk = new Chunk(1);
-            _lastChunk = _firstChunk;
-
-            FontName = settings.DefaultFontName;
+            _lastChunk = _firstChunk;            
 
             _vScroll = BaseElements.Add<UIScrollBar>();
             _vScroll.Increment = _lineHeight;
@@ -149,11 +137,6 @@ namespace Molten.UI
         private void ScrollChanged(UIScrollBar element)
         {
             RenderOffset = new Vector2F(-_hScroll.Value, -_vScroll.Value);
-        }
-
-        public void ApplyRules()
-        {
-            OnRulesApplied?.Invoke(this);
         }
 
         private void OnMarginPaddingChanged(LineMargin obj)
@@ -228,7 +211,6 @@ namespace Molten.UI
 
                 if (result.Line != null)
                 {
-                    _selectedChunk = chunk;
                     _segSelector.Selected = result.Segment;
                     _lineSelector.Selected = result.Line;
                     break;
@@ -260,8 +242,8 @@ namespace Molten.UI
                 {
                     RectangleF segBounds = cBounds;
                     RectangleF lineBounds = cBounds;
-                    Line line = null;
-                    Segment seg = null;
+                    UITextLine line = null;
+                    UITextSegment seg = null;
 
                     for (int i = 0; i < chunk.Lines.Count; i++)
                     {
@@ -330,21 +312,7 @@ namespace Molten.UI
             }
         }
 
-        private void SetText(string text)
-        {
-            string[] lines = Regex.Split(text, "\r?\n");
-            for (int i = 0; i < lines.Length; i++)
-            {
-                Line line = new Line(this);
-                line.SetText(DefaultFont, lines[i]);
-
-                _lastChunk = _lastChunk.AppendLine(line);
-            }
-
-            CalcScrollBars();
-        }
-
-        private void CalcScrollBars()
+        public void CalcScrollBars()
         {
             float distH = 0;
             float distV = 0;
@@ -381,64 +349,6 @@ namespace Molten.UI
             }
         }
 
-        /// <summary>
-        /// Gets or sets whether the current <see cref="UITextBox"/> is a multi-line textbox. If false, any line breaks will be substituted with spaces.
-        /// </summary>
-        public bool IsMultiLine
-        {
-            get => _isMultiline;
-            set
-            {
-                if(_isMultiline != value)
-                {
-                    _isMultiline = value;
-                    OnUpdateBounds();
-                }
-            }
-        }
-
-        internal SpriteFont DefaultFont { get; private set; }
-
-        internal int DefaultLineHeight { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the name of the default font for the current <see cref="UITextBox"/>. This will attempt to load/retrieve and populate <see cref="Font"/>.
-        /// </summary>
-        [UIThemeMember]
-        public string FontName
-        {
-            get => _fontName;
-            set
-            {
-                value = (value ?? string.Empty).ToLower();
-                if (_fontName != value)
-                {
-                    _fontName = value;
-                    if (!string.IsNullOrWhiteSpace(_fontName))
-                    {
-                        Engine.Content.LoadFont(_fontName, (font, isReload) =>
-                        {
-                            DefaultFont = font;
-                            DefaultLineHeight = (int)Math.Ceiling(DefaultFont.MeasureString(" ").Y);
-                        },
-                        new SpriteFontParameters()
-                        {
-                            FontSize = 16,
-                        });
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the text for the current <see cref="UITextBox"/>.
-        /// </summary>
-        public string Text
-        {
-            get => "";
-            set => SetText(value);
-        }
-
         /// <summary>Gets or sets whether or not line-numbers are visible.</summary>
         public bool ShowLineNumbers
         {
@@ -469,23 +379,7 @@ namespace Molten.UI
             }
         }
 
-        /// <summary>
-        /// Gets or sets the <see cref="RuleSet"/> for the current <see cref="UITextBox"/>.
-        /// </summary>
-        public RuleSet Rules
-        {
-            get => _rules;
-            set
-            {
-                if(_rules != value)
-                {
-                    if (value == null)
-                        throw new NullReferenceException("UITextbox.Rules cannot be set to null.");
-
-                    _rules = value;
-                    ApplyRules();
-                }
-            }
-        }
+        /// <inheritdoc/>
+        public override bool IsMultiLine { get; } = true;
     }
 }

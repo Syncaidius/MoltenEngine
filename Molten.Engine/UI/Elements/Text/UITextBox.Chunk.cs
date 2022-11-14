@@ -15,14 +15,14 @@ namespace Molten.UI
 
         internal struct ChunkPickResult
         {
-            internal Line Line;
+            internal UITextLine Line;
 
-            internal Segment Segment;
+            internal UITextSegment Segment;
         }
 
         internal class Chunk
         {
-            internal ThreadedList<Line> Lines = new ThreadedList<Line>(CHUNK_CAPACITY);
+            internal ThreadedList<UITextLine> Lines = new ThreadedList<UITextLine>(CHUNK_CAPACITY);
             int _width;
             int _height;
             int _startLineNumber;
@@ -32,7 +32,7 @@ namespace Molten.UI
                 _startLineNumber = firstLineNumber;
             }
 
-            private void FastAppendLine(Line line)
+            private void FastAppendLine(UITextLine line)
             {
                 Lines.Add(line);
                 _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
@@ -42,7 +42,7 @@ namespace Molten.UI
                     Next.StartLineNumber++;
             }
 
-            private void FastInsertLine(Line line, int index)
+            private void FastInsertLine(UITextLine line, int index)
             {
                 Lines.Insert(index, line);
                 _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
@@ -52,7 +52,7 @@ namespace Molten.UI
                     Next.StartLineNumber++;
             }
 
-            internal Chunk AppendLine(Line line)
+            internal Chunk AppendLine(UITextLine line)
             {
                 if(Lines.Count < CHUNK_CAPACITY)
                 {
@@ -70,7 +70,7 @@ namespace Molten.UI
                 return this;
             }
 
-            internal Chunk InsertLine(Line line, int index)
+            internal Chunk InsertLine(UITextLine line, int index)
             {
                 if (Lines.Count < CHUNK_CAPACITY)
                 {
@@ -126,7 +126,7 @@ namespace Molten.UI
             {
                 _width = 0;
                 _height = 0;
-                Line line = null;
+                UITextLine line = null;
 
                 for (int i = Lines.Count - 1; i >= 0; i--)
                 {
@@ -172,7 +172,7 @@ namespace Molten.UI
 
                 if (bounds.Contains(pos))
                 {
-                    Line line = null;
+                    UITextLine line = null;
                     for (int i = 0; i < Lines.Count; i++)
                     {
                         line = Lines[i];
@@ -180,7 +180,7 @@ namespace Molten.UI
 
                         if (lBounds.Contains(pos))
                         {
-                            Segment seg = line.First;
+                            UITextSegment seg = line.First;
                             RectangleF segBounds = lBounds;
 
                             while(seg != null)

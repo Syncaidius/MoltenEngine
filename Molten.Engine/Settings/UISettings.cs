@@ -28,7 +28,12 @@ namespace Molten
         /// Gets the default font that should be used for text rendering.
         /// </summary>
         [DataMember]
-        public SettingValue<string> DefaultFontName { get; }        
+        public SettingValue<string> DefaultFontName { get; }
+
+        /// <summary>
+        /// Gets or sets the default <see cref="UITextParser"/> for <see cref="UITextElement"/>-based elements.
+        /// </summary>
+        public UITextParser DefaultTextParser { get; set; } = new UIDefaultTextParser();
        
     }
 }
