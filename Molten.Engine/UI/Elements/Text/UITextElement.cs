@@ -59,11 +59,17 @@ namespace Molten.UI
         public abstract string GetText();
 
         /// <summary>
+        /// Forces the current <see cref="UITextElement"/> to recalculate any peripherial values, such as scrollbars or effects.
+        /// </summary>
+        public abstract void Recalculate();
+
+        /// <summary>
         /// Sets the text of the current <see cref="UITextElement"/>. The string will be parsed by the <see cref="UITextParser"/> at <see cref="Parser"/>.
         /// </summary>
         /// <param name="text"></param>
         public void SetText(string text)
         {
+            Clear();
             _parser.ParseText(this, text);
         }
 

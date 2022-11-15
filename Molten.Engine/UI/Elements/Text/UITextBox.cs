@@ -122,9 +122,6 @@ namespace Molten.UI
             _margin = new LineMargin();
             _margin.PaddingChanged += OnMarginPaddingChanged;
 
-            _firstChunk = new Chunk(1);
-            _lastChunk = _firstChunk;            
-
             _vScroll = BaseElements.Add<UIScrollBar>();
             _vScroll.Increment = _lineHeight;
             _vScroll.ValueChanged += ScrollChanged;
@@ -133,6 +130,8 @@ namespace Molten.UI
             _hScroll.Increment = _lineHeight;
             _hScroll.ValueChanged += ScrollChanged;
             _hScroll.Direction = UIElementFlowDirection.Horizontal;
+
+            Clear();
         }
 
         private void ScrollChanged(UIScrollBar element)
@@ -145,6 +144,7 @@ namespace Molten.UI
             OnUpdateBounds();
         }
 
+        /// <inheritdoc/>
         public override UITextLine NewLine()
         {
             UITextLine line = new UITextLine(this);
@@ -152,14 +152,50 @@ namespace Molten.UI
             return line;
         }
 
+        /// <inheritdoc/>
+        public override void Clear()
+        {
+            _firstChunk = new Chunk(1);
+            _lastChunk = _firstChunk;
+            Recalculate();
+        }
+
+        /// <inheritdoc/>
         public override void AppendLine(UITextLine line)
         {
             _lastChunk = _lastChunk.AppendLine(line);
         }
 
+        /// <inheritdoc/>
         public override void AppendSegment(UITextSegment segment)
         {
             _lastChunk.LastLine.AppendSegment(segment);
+        }
+
+        /// <inheritdoc/>
+        public override void InsertLine(UITextLine line, UITextLine insertAfter)
+        {
+            _lastChunk.InsertLine(line, insertAfter);
+        }
+
+        /// <inheritdoc/>
+        public override string GetText()
+        {
+            StringBuilder sb = new StringBuilder();
+            Chunk chunk = _firstChunk;
+            while(chunk != null)
+            {
+                UITextLine line = chunk.FirstLine;
+                while(line != null)
+                {
+                    line.GetText(sb);
+                    line = line.Next;
+                }
+
+                chunk = chunk.Next;
+            }
+
+            return sb.ToString();
         }
 
         /// <inheritdoc/>
@@ -179,7 +215,7 @@ namespace Molten.UI
             _textClipBounds = _textBounds;
             _textBounds += RenderOffset;
 
-            CalcScrollBars();
+            Recalculate();
 
             if (_hScroll.IsVisible)
             {
@@ -266,7 +302,7 @@ namespace Molten.UI
 
                     while(line != null)
                     { 
-                        seg = line.First;
+                        seg = line.FirstSegment;
 
                         lineBounds.Height = line.Height;
 
@@ -313,7 +349,7 @@ namespace Molten.UI
                         Vector2F numPos = _lineNumPos;
                         numPos.Y = cBounds.Y;
                         UITextLine line = chunk.FirstLine;
-                        int lineNum = 0;
+                        int lineNum = chunk.StartLineNumber;
 
                         while(line != null)
                         {
@@ -334,7 +370,7 @@ namespace Molten.UI
             }
         }
 
-        public void CalcScrollBars()
+        public override void Recalculate()
         {
             float distH = 0;
             float distV = 0;

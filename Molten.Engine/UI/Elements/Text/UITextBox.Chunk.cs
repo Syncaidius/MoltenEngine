@@ -33,9 +33,18 @@ namespace Molten.UI
 
             private void FastAppendLine(UITextLine line)
             {
-                LastLine.Next = line;
-                line.Previous = LastLine;
-                LastLine = line;
+                if (LastLine != null)
+                {
+                    LastLine.Next = line;
+                    line.Previous = LastLine;
+                    LastLine = line;
+                }
+                else
+                {
+                    // If there's no last line, there's also no first line. Set both.
+                    LastLine = line;
+                    FirstLine = line;
+                }
 
                 LineCount++;
                 _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
@@ -45,17 +54,30 @@ namespace Molten.UI
                     Next.StartLineNumber++;
             }
 
-            private void FastInsertLine(UITextLine line, UITextLine lineBefore)
+            private void FastInsertLine(UITextLine line, UITextLine insertAfter)
             {
-                if (lineBefore != null)
+                if (insertAfter != null)
                 {
-                    lineBefore.Next = line;
-                    line.Previous = lineBefore;
+                    insertAfter.Next = line;
+                    line.Previous = insertAfter;
 
-                    if (lineBefore == LastLine)
+                    if (insertAfter == LastLine)
                         LastLine = line;
-                    else if(lineBefore == FirstLine)
-                        FirstLine = line;
+                }
+                else
+                {
+                    if (FirstLine != null)
+                    {
+                        FirstLine.Previous = line;
+                        line.Next = FirstLine;
+                    }
+                    else
+                    {
+                        // If there's no first line, there's also no last line. Set it.
+                        LastLine = line;
+                    }
+
+                    FirstLine = line;
                 }
 
                 LineCount++;
@@ -66,7 +88,7 @@ namespace Molten.UI
                     Next.StartLineNumber++;
             }
 
-            public Chunk AppendLine(UITextLine line)
+            internal Chunk AppendLine(UITextLine line)
             {
                 if(LineCount < CHUNK_CAPACITY)
                 {
@@ -84,15 +106,15 @@ namespace Molten.UI
                 return this;
             }
 
-            public Chunk InsertLine(UITextLine line, UITextLine lineBefore)
+            internal Chunk InsertLine(UITextLine line, UITextLine insertAfter)
             {
                 if (LineCount < CHUNK_CAPACITY)
                 {
-                    FastInsertLine(line, lineBefore);
+                    FastInsertLine(line, insertAfter);
                 }
                 else
                 {
-                    if (lineBefore == FirstLine)
+                    if (insertAfter == FirstLine)
                     {
                         if (Previous == null || Previous.Capacity == 0)
                             NewPrevious();
@@ -100,18 +122,18 @@ namespace Molten.UI
                         Previous.FastAppendLine(line);
                         return Previous;
                     }
-                    else if (lineBefore == LastLine)
+                    else if (insertAfter == LastLine)
                     {
                         if (Next == null || Next.Capacity == 0)
                             NewNext();
 
                         // Directly insert line to avoid duplicated checks
-                        Next.FastInsertLine(line, lineBefore);
+                        Next.FastInsertLine(line, insertAfter);
                         return Next;
                     }
                     else
                     {
-                        Split(lineBefore);
+                        Split(insertAfter);
                         FastAppendLine(line);
                     }
                 }
@@ -204,7 +226,7 @@ namespace Molten.UI
 
                         if (lBounds.Contains(pos))
                         {
-                            UITextSegment seg = line.First;
+                            UITextSegment seg = line.FirstSegment;
                             RectangleF segBounds = lBounds;
 
                             while(seg != null)

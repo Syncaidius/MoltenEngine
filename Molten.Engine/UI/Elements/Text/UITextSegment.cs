@@ -39,7 +39,7 @@ namespace Molten.UI
 
         private void Measure()
         {
-            if (!string.IsNullOrWhiteSpace(_text))
+            if (!string.IsNullOrEmpty(_text))
             {
                 if (Font != null)
                     Size = Font.MeasureString(_text);

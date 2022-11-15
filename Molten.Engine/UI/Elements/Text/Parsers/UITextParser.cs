@@ -18,7 +18,12 @@ namespace Molten.UI
         /// </summary>
         /// <param name="element">The <see cref="UITextElement"/> to be populated with parsed text.</param>
         /// <param name="text">The text to be parsed.</param>
-        public abstract void ParseText(UITextElement element, string text);
+        internal void ParseText(UITextElement element, string text)
+        {
+            OnParseText(element, text);
+        }
+
+        protected abstract void OnParseText(UITextElement element, string text);
     }
 
     public class UIDefaultTextParser : UITextParser
@@ -36,18 +41,20 @@ namespace Molten.UI
         static readonly string[] _newLineChars = { Environment.NewLine, "\r", "\n" };
 
         /// <inheritdoc/>
-        public override void ParseText(UITextElement element, string text)
+        protected override void OnParseText(UITextElement element, string text)
         {
             string[] lines = Regex.Split(text, "\r?\n");
 
             for (int i = 0; i < lines.Length; i++)
             {
+                ref string lineText = ref lines[i];
+
                 UITextLine line = element.NewLine();
                 string segText = "";
 
-                for (int t = 0; t < text.Length; t++)
+                for (int t = 0; t < lineText.Length; t++)
                 {
-                    char c = text[t];
+                    char c = lineText[t];
                     UITextSegment segSeparate = ParseRuleCharList(element, c, element.DefaultFont, _whitespace, UITextSegmentType.Whitespace);
 
                     if (segSeparate == null)
@@ -72,9 +79,9 @@ namespace Molten.UI
                     UITextSegment seg = new UITextSegment(segText, Color.White, element.DefaultFont, UITextSegmentType.Text);
                     line.AppendSegment(seg);
                 }
-
-                element.AppendLine(line);
             }
+
+            element.Recalculate();
         }
 
         private UITextSegment ParseRuleCharList(UITextElement element, char c, SpriteFont font, char[] list, UITextSegmentType type)

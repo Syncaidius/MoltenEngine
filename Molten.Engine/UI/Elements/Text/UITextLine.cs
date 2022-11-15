@@ -26,8 +26,8 @@ namespace Molten.UI
             Width = 0;
             _height = 0;
             HasText = false;
-            First = new UITextSegment("", Color.White, null, UITextSegmentType.Text);
-            Last = First;
+            FirstSegment = new UITextSegment("", Color.White, null, UITextSegmentType.Text);
+            LastSegment = FirstSegment;
         }
 
         public UITextSegment NewSegment(string text, Color color, SpriteFont font, UITextSegmentType type)
@@ -41,13 +41,18 @@ namespace Molten.UI
         {
             if (seg != null)
             {
-                if (Last != null)
+                if (LastSegment != null)
                 {
-                    Last.Next = seg;
-                    seg.Previous = Last;
+                    LastSegment.Next = seg;
+                    seg.Previous = LastSegment;
+                }
+                else
+                {
+                    LastSegment = seg;
+                    FirstSegment = seg;
                 }
 
-                Last = seg;
+                LastSegment = seg;
                 Width += seg.Size.X;
                 _height = Math.Max(_height, (int)Math.Ceiling(seg.Size.Y));
             }
@@ -67,22 +72,68 @@ namespace Molten.UI
             UITextSegment next = new UITextSegment("", Color.White, font, type);
 
             // Do we need to insert before another "next" segment also?
-            if(seg.Next != null)
-            {
-                seg.Next.Previous = next;
-                next.Next = seg.Next;
-            }
-
             if (seg != null)
             {
+                if (seg.Next != null)
+                {
+                    seg.Next.Previous = next;
+                    next.Next = seg.Next;
+                }
+
                 seg.Next = next;
                 next.Previous = seg;
+            }
+            else
+            {
+                if(FirstSegment != null)
+                {
+                    FirstSegment.Previous = seg;
+                    seg.Next = FirstSegment;
+                    FirstSegment = seg;
+                }
+                else
+                {
+                    FirstSegment = seg;
+                    LastSegment = seg;
+                }
             }
 
             Width += seg.Size.X;
             _height = Math.Max(_height, (int)Math.Ceiling(seg.Size.Y));
 
             return next;
+        }
+
+        /// <summary>
+        /// Gets the string of text represented by all <see cref="UITextSegment"/>s of the current <see cref="UITextLine"/>.
+        /// </summary>
+        /// <returns></returns>
+        public string GetText()
+        {
+            string result = "";
+            UITextSegment seg = FirstSegment;
+            while(seg != null)
+            {
+                result += seg.Text;
+                seg = seg.Next;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the string of text represented by all <see cref="UITextSegment"/>s of the current <see cref="UITextLine"/> and appends it to the provided <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="sb">The <see cref="StringBuilder"/> to output the line contents into.</param>
+        /// <returns></returns>
+        public void GetText(StringBuilder sb)
+        {
+            UITextSegment seg = FirstSegment;
+            while (seg != null)
+            {
+                sb.Append(seg.Text);
+                seg = seg.Next;
+            }
         }
 
         /// <summary>
@@ -104,12 +155,12 @@ namespace Molten.UI
         /// <summary>
         /// Gets the first <see cref="UITextSegment"/> on the current <see cref="UITextLine"/>.
         /// </summary>
-        public UITextSegment First { get; private set; }
+        public UITextSegment FirstSegment { get; private set; }
 
         /// <summary>
         /// Gets the last <see cref="UITextSegment"/> on the current <see cref="UITextLine"/>.
         /// </summary>
-        public UITextSegment Last { get; private set; }
+        public UITextSegment LastSegment { get; private set; }
 
         public UITextLine Previous { get; internal set; }
 
