@@ -29,7 +29,7 @@ namespace Molten.UI
             Measure();
         }
 
-        public virtual void Render(SpriteBatcher sb, UITextBox owner, ref RectangleF bounds)
+        public virtual void Render(SpriteBatcher sb, UITextElement owner, ref RectangleF bounds)
         {
             if (string.IsNullOrWhiteSpace(Text) || Color.A == 0)
                 return;

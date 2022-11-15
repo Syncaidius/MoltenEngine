@@ -66,7 +66,7 @@ namespace Molten.UI
                     Next.StartLineNumber++;
             }
 
-            internal Chunk AppendLine(UITextLine line)
+            public Chunk AppendLine(UITextLine line)
             {
                 if(LineCount < CHUNK_CAPACITY)
                 {
@@ -84,7 +84,7 @@ namespace Molten.UI
                 return this;
             }
 
-            internal Chunk InsertLine(UITextLine line, UITextLine lineBefore)
+            public Chunk InsertLine(UITextLine line, UITextLine lineBefore)
             {
                 if (LineCount < CHUNK_CAPACITY)
                 {
@@ -106,7 +106,7 @@ namespace Molten.UI
                             NewNext();
 
                         // Directly insert line to avoid duplicated checks
-                        Next.FastInsertLine(line, 0);
+                        Next.FastInsertLine(line, lineBefore);
                         return Next;
                     }
                     else

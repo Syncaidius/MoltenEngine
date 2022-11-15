@@ -147,7 +147,9 @@ namespace Molten.UI
 
         public override UITextLine NewLine()
         {
-            _lastChunk = _lastChunk.AppendLine(new UITextLine(this));
+            UITextLine line = new UITextLine(this);
+            _lastChunk = _lastChunk.AppendLine(line);
+            return line;
         }
 
         public override void AppendLine(UITextLine line)
@@ -157,7 +159,7 @@ namespace Molten.UI
 
         public override void AppendSegment(UITextSegment segment)
         {
-            _lastChunk = _lastChunk.LastLine.AppendSegment(segment);
+            _lastChunk.LastLine.AppendSegment(segment);
         }
 
         /// <inheritdoc/>
@@ -259,12 +261,11 @@ namespace Molten.UI
                 {
                     RectangleF segBounds = cBounds;
                     RectangleF lineBounds = cBounds;
-                    UITextLine line = null;
+                    UITextLine line = chunk.FirstLine;
                     UITextSegment seg = null;
 
-                    for (int i = 0; i < chunk.Lines.Count; i++)
-                    {
-                        line = chunk.Lines[i];
+                    while(line != null)
+                    { 
                         seg = line.First;
 
                         lineBounds.Height = line.Height;
@@ -289,6 +290,7 @@ namespace Molten.UI
                         segBounds.X = cBounds.X;
                         segBounds.Y += line.Height;
                         lineBounds.Y += line.Height;
+                        line = line.Next;   
                     }
                 }
 
@@ -310,16 +312,19 @@ namespace Molten.UI
                     {
                         Vector2F numPos = _lineNumPos;
                         numPos.Y = cBounds.Y;
+                        UITextLine line = chunk.FirstLine;
+                        int lineNum = 0;
 
-                        for (int i = 0; i < chunk.Lines.UnsafeCount; i++)
+                        while(line != null)
                         {
-                            int lineNum = chunk.StartLineNumber + i;
+                            lineNum++;
                             string numString = lineNum.ToString(); // TODO cache line numbers in Chunk.
                             Vector2F numSize = DefaultFont.MeasureString(numString);
-                            numSize.Y = chunk.Lines[i].Height;
+                            numSize.Y = line.Height;
 
                             sb.DrawString(DefaultFont, numString, numPos - new Vector2F(numSize.X, 0), _lineNumColor, null, 0);
-                            numPos.Y += numSize.Y; 
+                            numPos.Y += numSize.Y;
+                            line = line.Next;
                         }
                     }
 

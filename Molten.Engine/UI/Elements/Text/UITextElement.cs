@@ -22,15 +22,50 @@ namespace Molten.UI
             _parser = settings.DefaultTextParser ?? new UIDefaultTextParser();
         }
 
+        /// <summary>
+        /// Inserts a blank new <see cref="UITextLine"/>.
+        /// </summary>
+        /// <returns></returns>
         public abstract UITextLine NewLine();
 
+        /// <summary>
+        /// Inserts the given <see cref="UITextLine"/> at the end of the current <see cref="UITextElement"/>'s text.
+        /// </summary>
+        /// <param name="line">The line to append to the end.</param>
         public abstract void AppendLine(UITextLine line);
 
+        /// <summary>
+        /// Inserts the given <see cref="UITextSegment"/> to the end of the last <see cref="UITextLine"/>, in the current <see cref="UITextElement"/>.
+        /// </summary>
+        /// <param name="segment">The segment to append to the end.</param>
         public abstract void AppendSegment(UITextSegment segment);
 
-        public abstract void InsertLine(UITextLine line, int lineNumber);
-
+        /// <summary>
+        /// Inserts a <see cref="UITextLine"/> after the specified one.
+        /// </summary>
+        /// <param name="line">The line to be inserted.</param>
+        /// <param name="insertAfter">The line to insert <paramref name="line"/> after.</param>
         public abstract void InsertLine(UITextLine line, UITextLine insertAfter);
+
+        /// <summary>
+        /// Clear all text from the current <see cref="UITextElement"/>.
+        /// </summary>
+        public abstract void Clear();
+
+        /// <summary>
+        /// Retrieves the full text string of the current <see cref="UITextElement"/>.
+        /// </summary>
+        /// <returns></returns>
+        public abstract string GetText();
+
+        /// <summary>
+        /// Sets the text of the current <see cref="UITextElement"/>. The string will be parsed by the <see cref="UITextParser"/> at <see cref="Parser"/>.
+        /// </summary>
+        /// <param name="text"></param>
+        public void SetText(string text)
+        {
+            _parser.ParseText(this, text);
+        }
 
         /// <summary>
         /// Gets or sets the name of the default font for the current <see cref="UITextBox"/>. This will attempt to load/retrieve and populate <see cref="Font"/>.
@@ -82,5 +117,24 @@ namespace Molten.UI
         /// Gets or sets the maximum number of characters that can be entered into the current <see cref="UITextElement"/>.
         /// </summary>
         public ulong MaxCharacters { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the <see cref="UITextParser"/> of the current <see cref="UITextElement"/>.
+        /// </summary>
+        public UITextParser Parser
+        {
+            get => _parser;
+            set
+            {
+                value = value ?? Engine.Settings.UI.DefaultTextParser;
+                if(_parser != value)
+                {
+                    _parser = value;
+                    Clear();
+                    string text = GetText();
+                    _parser.ParseText(this, text);
+                }
+            }
+        }
     }
 }
