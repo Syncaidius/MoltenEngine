@@ -114,6 +114,7 @@ namespace Molten.UI
          *      - An item link e.g. Path of Exile chat items
          */
 
+        /// <inheritdoc/>
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
             base.OnInitialize(engine, settings);
@@ -144,6 +145,22 @@ namespace Molten.UI
             OnUpdateBounds();
         }
 
+        public override UITextLine NewLine()
+        {
+            _lastChunk = _lastChunk.AppendLine(new UITextLine(this));
+        }
+
+        public override void AppendLine(UITextLine line)
+        {
+            _lastChunk = _lastChunk.AppendLine(line);
+        }
+
+        public override void AppendSegment(UITextSegment segment)
+        {
+            _lastChunk = _lastChunk.LastLine.AppendSegment(segment);
+        }
+
+        /// <inheritdoc/>
         protected override void OnUpdateBounds()
         {
             base.OnUpdateBounds();

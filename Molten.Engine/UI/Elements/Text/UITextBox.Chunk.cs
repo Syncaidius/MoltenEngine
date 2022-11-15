@@ -22,7 +22,6 @@ namespace Molten.UI
 
         internal class Chunk
         {
-            internal ThreadedList<UITextLine> Lines = new ThreadedList<UITextLine>(CHUNK_CAPACITY);
             int _width;
             int _height;
             int _startLineNumber;
@@ -34,7 +33,11 @@ namespace Molten.UI
 
             private void FastAppendLine(UITextLine line)
             {
-                Lines.Add(line);
+                LastLine.Next = line;
+                line.Previous = LastLine;
+                LastLine = line;
+
+                LineCount++;
                 _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
                 _height += line.Height; 
 
@@ -42,9 +45,20 @@ namespace Molten.UI
                     Next.StartLineNumber++;
             }
 
-            private void FastInsertLine(UITextLine line, int index)
+            private void FastInsertLine(UITextLine line, UITextLine lineBefore)
             {
-                Lines.Insert(index, line);
+                if (lineBefore != null)
+                {
+                    lineBefore.Next = line;
+                    line.Previous = lineBefore;
+
+                    if (lineBefore == LastLine)
+                        LastLine = line;
+                    else if(lineBefore == FirstLine)
+                        FirstLine = line;
+                }
+
+                LineCount++;
                 _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
                 _height += line.Height;
 
@@ -54,7 +68,7 @@ namespace Molten.UI
 
             internal Chunk AppendLine(UITextLine line)
             {
-                if(Lines.Count < CHUNK_CAPACITY)
+                if(LineCount < CHUNK_CAPACITY)
                 {
                     FastAppendLine(line);
                 }
@@ -63,22 +77,22 @@ namespace Molten.UI
                     if (Next == null || Next.Capacity == 0)
                         NewNext();
 
-                    Next.FastInsertLine(line, 0);
+                    Next.FastInsertLine(line, Next.FirstLine);
                     return Next;
                 }
 
                 return this;
             }
 
-            internal Chunk InsertLine(UITextLine line, int index)
+            internal Chunk InsertLine(UITextLine line, UITextLine lineBefore)
             {
-                if (Lines.Count < CHUNK_CAPACITY)
+                if (LineCount < CHUNK_CAPACITY)
                 {
-                    FastInsertLine(line, index);
+                    FastInsertLine(line, lineBefore);
                 }
                 else
                 {
-                    if (index == 0)
+                    if (lineBefore == FirstLine)
                     {
                         if (Previous == null || Previous.Capacity == 0)
                             NewPrevious();
@@ -86,7 +100,7 @@ namespace Molten.UI
                         Previous.FastAppendLine(line);
                         return Previous;
                     }
-                    else if (index == CHUNK_CAPACITY - 1)
+                    else if (lineBefore == LastLine)
                     {
                         if (Next == null || Next.Capacity == 0)
                             NewNext();
@@ -97,7 +111,7 @@ namespace Molten.UI
                     }
                     else
                     {
-                        Split(index);
+                        Split(lineBefore);
                         FastAppendLine(line);
                     }
                 }
@@ -108,15 +122,26 @@ namespace Molten.UI
             /// <summary>
             /// Splits the current <see cref="Chunk"/>, moving all items from at and beyond the given index, into a new <see cref="Chunk"/>.
             /// </summary>
-            /// <param name="splitIndex">All lines at and beyond the current index are cut off into a new chunk, added after the current one.</param>
-            private void Split(int splitIndex)
+            /// <param name="splitAt">All lines at and beyond the given <see cref="UITextLine"/> are cut off into a new chunk, added after the current one.</param>
+            private void Split(UITextLine splitAt)
             {
-                int nextCount = Lines.Count - splitIndex;
-                if (Next == null || Next.Capacity < nextCount)
+                UITextLine line = splitAt;
+                UITextLine last = splitAt;
+
+                int moveCount = 0;
+                while(line != null)
+                {
+                    moveCount++;
+                    last = line;
+                    line = line.Next;
+                }
+
+                if (Next == null || Next.Capacity < moveCount)
                     NewNext();
 
-                Next.Lines.AddRange(Lines, splitIndex, nextCount);
-                Lines.RemoveRange(splitIndex, nextCount);
+                splitAt.Previous = null;
+                Next.LineCount += moveCount;
+                Next.LastLine = last;
 
                 CalculateSize();
                 Next.CalculateSize();
@@ -126,13 +151,13 @@ namespace Molten.UI
             {
                 _width = 0;
                 _height = 0;
-                UITextLine line = null;
+                UITextLine line = FirstLine;
 
-                for (int i = Lines.Count - 1; i >= 0; i--)
+                while(line != null)
                 {
-                    line = Lines[i];
                     _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
                     _height += line.Height;
+                    line = line.Next;
                 }
             }
 
@@ -152,7 +177,7 @@ namespace Molten.UI
 
             private void NewNext()
             {
-                Chunk next = new Chunk(StartLineNumber + Lines.Count);
+                Chunk next = new Chunk(StartLineNumber + LineCount);
 
                 // Update the current "Next".
                 if (Next != null)
@@ -172,10 +197,9 @@ namespace Molten.UI
 
                 if (bounds.Contains(pos))
                 {
-                    UITextLine line = null;
-                    for (int i = 0; i < Lines.Count; i++)
+                    UITextLine line = FirstLine;
+                    while(line != null)
                     {
-                        line = Lines[i];
                         lBounds.Height = line.Height;
 
                         if (lBounds.Contains(pos))
@@ -203,6 +227,7 @@ namespace Molten.UI
                         }
 
                         lBounds.Y += line.Height;
+                        line = line.Next;
                     }
                 }
 
@@ -213,6 +238,12 @@ namespace Molten.UI
             
             internal Chunk Next { get; set; }
 
+            internal UITextLine FirstLine { get; private set; }
+
+            internal UITextLine LastLine { get; private set; }
+
+            public int LineCount { get; private set; }
+
             internal int StartLineNumber
             {
                 get => _startLineNumber;
@@ -222,12 +253,12 @@ namespace Molten.UI
                     {
                         _startLineNumber = value;
                         if (Next != null)
-                            Next.StartLineNumber = StartLineNumber + Lines.Count;
+                            Next.StartLineNumber = StartLineNumber + LineCount;
                     }
                 }
             }
 
-            public int Capacity => CHUNK_CAPACITY - Lines.Count;
+            public int Capacity => CHUNK_CAPACITY - LineCount;
 
             public int Width => _width;
 

@@ -111,6 +111,10 @@ namespace Molten.UI
         /// </summary>
         public UITextSegment Last { get; private set; }
 
+        public UITextLine Previous { get; internal set; }
+
+        public UITextLine Next { get; internal set; }
+
         /// <summary>
         /// Gets whether or not the current <see cref="UITextLine"/> contains text.
         /// </summary>
