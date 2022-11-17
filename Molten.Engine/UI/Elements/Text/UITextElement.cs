@@ -18,6 +18,8 @@ namespace Molten.UI
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
             base.OnInitialize(engine, settings);
+
+            Caret = new UITextCaret(this);
             DefaultFontName = settings.DefaultFontName;
             _parser = settings.DefaultTextParser ?? new UIDefaultTextParser();
         }
@@ -113,7 +115,6 @@ namespace Molten.UI
         /// </summary>
         public int DefaultLineHeight { get; private set; }
 
-
         /// <summary>
         /// Gets or sets whether the current <see cref="UITextBox"/> is a multi-line textbox. If false, any line breaks will be substituted with spaces.
         /// </summary>
@@ -123,6 +124,11 @@ namespace Molten.UI
         /// Gets or sets the maximum number of characters that can be entered into the current <see cref="UITextElement"/>.
         /// </summary>
         public ulong MaxCharacters { get; set; } = 0;
+
+        /// <summary>
+        /// Gets the <see cref="UITextCaret"/> bound to the current <see cref="UITextElement"/>.
+        /// </summary>
+        public UITextCaret Caret { get; private set; }
 
         /// <summary>
         /// Gets or sets the <see cref="UITextParser"/> of the current <see cref="UITextElement"/>.

@@ -73,6 +73,7 @@ namespace Molten.Examples
             };
             {
                 _lineGraph = _window1.Children.Add<UILineGraph>(new Rectangle(0, 0, 700, 420));
+                _lineGraph.Margin.FitToParent();
                 PlotGraphData(_lineGraph);
             }
 

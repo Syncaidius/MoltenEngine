@@ -66,28 +66,11 @@ namespace Molten.UI
             }
         }
 
-        internal class Selector<T> where T : class
-        {
-            public RectStyle Style;
-
-            public T Selected;
-
-            public Selector(Color fillColor, Color borderColor, float borderThickness)
-            {
-                Style = new RectStyle(fillColor, borderColor, borderThickness);
-            }
-
-            public Selector(Color color, float borderThickness)
-            {
-                Style = new RectStyle(color, color, borderThickness);
-            }
-        }
-
         UIScrollBar _vScroll;
         UIScrollBar _hScroll;
 
-        Chunk _firstChunk;
-        Chunk _lastChunk;
+        UITextChunk _firstChunk;
+        UITextChunk _lastChunk;
 
         bool _isMultiline;
         LineMargin _margin;
@@ -102,10 +85,6 @@ namespace Molten.UI
         bool _showLineNumbers;
         Vector2F _lineNumPos;
         Color _lineNumColor = new Color(52, 156, 181, 255);
-
-        // Line Selector
-        Selector<UITextSegment> _segSelector = new Selector<UITextSegment>(new Color(130, 130, 220, 255), 2); 
-        Selector<UITextLine> _lineSelector = new Selector<UITextLine>(new Color(60,60,60,200), new Color(160,160,160,255), 2);
 
         /* TODO:
          *  - Allow segment to have OnPressed and OnReleased virtual methods to allow custom segment actions/types, such as:
@@ -155,7 +134,7 @@ namespace Molten.UI
         /// <inheritdoc/>
         public override void Clear()
         {
-            _firstChunk = new Chunk(1);
+            _firstChunk = new UITextChunk(1);
             _lastChunk = _firstChunk;
             Recalculate();
         }
@@ -182,7 +161,7 @@ namespace Molten.UI
         public override string GetText()
         {
             StringBuilder sb = new StringBuilder();
-            Chunk chunk = _firstChunk;
+            UITextChunk chunk = _firstChunk;
             while(chunk != null)
             {
                 UITextLine line = chunk.FirstLine;
@@ -252,9 +231,7 @@ namespace Molten.UI
         {
             base.OnPressed(tracker);
 
-            ChunkPickResult result;
-
-            Chunk chunk = _firstChunk;
+            UITextChunk chunk = _firstChunk;
 
             Rectangle cBounds = _textBounds;
             Vector2I pos = (Vector2I)tracker.Position;
@@ -262,14 +239,10 @@ namespace Molten.UI
             while (chunk != null)
             {
                 cBounds.Height = chunk.Height;
-                chunk.Pick(pos, ref cBounds, out result);
+                chunk.Pick(pos, ref cBounds, Caret.Start);
 
-                if (result.Line != null)
-                {
-                    _segSelector.Selected = result.Segment;
-                    _lineSelector.Selected = result.Line;
+                if (Caret.Start.Line != null)
                     break;
-                }
 
                 cBounds.Y += chunk.Height;
                 chunk = chunk.Next;
@@ -287,7 +260,7 @@ namespace Molten.UI
             _margin.Render(sb);
 
             sb.PushClip(_textClipBounds);
-            Chunk chunk = _firstChunk;
+            UITextChunk chunk = _firstChunk;
             Rectangle cBounds = _textBounds;
             while(chunk != null)
             {
@@ -306,16 +279,16 @@ namespace Molten.UI
 
                         lineBounds.Height = line.Height;
 
-                        if (line == _lineSelector.Selected)
-                            sb.DrawRect(lineBounds, ref _lineSelector.Style);
+                        if (line == Caret.Start.Line)
+                            sb.DrawRect(lineBounds, ref Caret.SelectedLineStyle);
 
                         while (seg != null)
                         {
                             segBounds.Width = seg.Size.X;
                             segBounds.Height = seg.Size.Y;
 
-                            if (seg == _segSelector.Selected)
-                                sb.Draw(segBounds, ref _segSelector.Style);
+                            if (seg == Caret.Start.Segment)
+                                sb.Draw(segBounds, ref Caret.SelectedSegmentStyle);
 
                             seg.Render(sb, line.Parent, ref segBounds);
 
@@ -375,7 +348,7 @@ namespace Molten.UI
             float distH = 0;
             float distV = 0;
 
-            Chunk chunk = _firstChunk;
+            UITextChunk chunk = _firstChunk;
             while(chunk != null)
             {
                 distH = Math.Max(distH, chunk.Width - _textBounds.Width);
