@@ -14,13 +14,6 @@ namespace Molten.UI
     {
         const int CHUNK_CAPACITY = 128;
 
-        public struct ChunkPickResult
-        {
-            internal UITextLine Line;
-
-            internal UITextSegment Segment;
-        }
-
         int _width;
         int _height;
         int _startLineNumber;
@@ -218,41 +211,20 @@ namespace Molten.UI
 
             if (bounds.Contains(pos))
             {
+                point.Line = null;
+                point.Segment = null;
+
                 UITextLine line = FirstLine;
                 while (line != null)
                 {
                     lBounds.Height = line.Height;
-
-                    if (lBounds.Contains(pos))
-                    {
-                        UITextSegment seg = line.FirstSegment;
-                        RectangleF segBounds = lBounds;
-
-                        while (seg != null)
-                        {
-                            segBounds.Width = seg.Size.X;
-                            if (segBounds.Contains(pos))
-                                break;
-
-                            segBounds.X += seg.Size.X;
-                            seg = seg.Next;
-                        }
-
-                        point.Line = line;
-                        point.Segment = seg;
-
-                        // TODO Get char index of picked segment, along with width from start of segment. May need a SpriteFont.PickText() helper to calculate this efficiently.
-
-                        return;
-                    }
+                    if (line.Pick(ref lBounds, ref pos, point))
+                        break;                        
 
                     lBounds.Y += line.Height;
                     line = line.Next;
                 }
             }
-
-            point.Line = null;
-            point.Segment = null;
         }
 
         /// <summary>

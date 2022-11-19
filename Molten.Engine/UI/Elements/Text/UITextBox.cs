@@ -12,6 +12,7 @@ namespace Molten.UI
 {
     public partial class UITextBox : UITextElement
     {
+        private delegate void LineRenderCallback(SpriteBatcher sb, ref RectangleF lineBounds, ref RectangleF segBounds, UITextLine line);
         internal class LineMargin
         {
             public event ObjectHandler<LineMargin> BoundsChanged;
@@ -236,13 +237,33 @@ namespace Molten.UI
             Rectangle cBounds = _textBounds;
             Vector2I pos = (Vector2I)tracker.Position;
 
+            // If we've already picked a start and end point, clear caret and start again.
+            if(Caret.End.Line != null)
+                Caret.Clear();
+
             while (chunk != null)
             {
                 cBounds.Height = chunk.Height;
-                chunk.Pick(pos, ref cBounds, Caret.Start);
 
-                if (Caret.Start.Line != null)
-                    break;
+                if (Caret.Start.Line == null)
+                {
+                    Caret.Start.Chunk = chunk;
+                    chunk.Pick(pos, ref cBounds, Caret.Start);
+                    
+                    if (Caret.Start.Line != null)
+                        break;
+                }
+                else
+                {
+                    chunk.Pick(pos, ref cBounds, Caret.End);
+
+                    if (Caret.End.Line != null)
+                    {
+                        Caret.End.Chunk = chunk;
+                        Caret.CalculateSelected();
+                        break;
+                    }
+                }               
 
                 cBounds.Y += chunk.Height;
                 chunk = chunk.Next;
@@ -262,50 +283,10 @@ namespace Molten.UI
             sb.PushClip(_textClipBounds);
             UITextChunk chunk = _firstChunk;
             Rectangle cBounds = _textBounds;
-            while(chunk != null)
-            {
-                cBounds.Height = chunk.Height;
 
-                if (_textClipBounds.Intersects(cBounds) || _textClipBounds.Contains(cBounds))
-                {
-                    RectangleF segBounds = cBounds;
-                    RectangleF lineBounds = cBounds;
-                    UITextLine line = chunk.FirstLine;
-                    UITextSegment seg = null;
+            DrawLines(sb, chunk, cBounds, DrawLineSelection);
+            DrawLines(sb, chunk, cBounds, DrawLineContent);
 
-                    while(line != null)
-                    { 
-                        seg = line.FirstSegment;
-
-                        lineBounds.Height = line.Height;
-
-                        if (line == Caret.Start.Line)
-                            sb.DrawRect(lineBounds, ref Caret.SelectedLineStyle);
-
-                        while (seg != null)
-                        {
-                            segBounds.Width = seg.Size.X;
-                            segBounds.Height = seg.Size.Y;
-
-                            if (seg == Caret.Start.Segment)
-                                sb.Draw(segBounds, ref Caret.SelectedSegmentStyle);
-
-                            seg.Render(sb, line.Parent, ref segBounds);
-
-                            segBounds.X += seg.Size.X;
-                            seg = seg.Next;
-                        }
-
-                        segBounds.X = cBounds.X;
-                        segBounds.Y += line.Height;
-                        lineBounds.Y += line.Height;
-                        line = line.Next;   
-                    }
-                }
-
-                cBounds.Y += chunk.Height;
-                chunk = chunk.Next;
-            }
             sb.PopClip();
 
             if (_showLineNumbers)
@@ -326,7 +307,6 @@ namespace Molten.UI
 
                         while(line != null)
                         {
-                            lineNum++;
                             string numString = lineNum.ToString(); // TODO cache line numbers in Chunk.
                             Vector2F numSize = DefaultFont.MeasureString(numString);
                             numSize.Y = line.Height;
@@ -334,12 +314,74 @@ namespace Molten.UI
                             sb.DrawString(DefaultFont, numString, numPos - new Vector2F(numSize.X, 0), _lineNumColor, null, 0);
                             numPos.Y += numSize.Y;
                             line = line.Next;
+                            lineNum++;
                         }
                     }
 
                     cBounds.Y += chunk.Height;
                     chunk = chunk.Next;
                 }
+            }
+        }
+
+        private void DrawLines(SpriteBatcher sb, UITextChunk chunk, Rectangle cBounds, LineRenderCallback segmentCallback)
+        {
+            while (chunk != null)
+            {
+                cBounds.Height = chunk.Height;
+
+                if (_textClipBounds.Intersects(cBounds) || _textClipBounds.Contains(cBounds))
+                {
+                    RectangleF segBounds = cBounds;
+                    RectangleF lineBounds = cBounds;
+                    UITextLine line = chunk.FirstLine;
+
+                    while (line != null)
+                    {
+                        lineBounds.Height = line.Height;
+                        segmentCallback(sb, ref lineBounds, ref segBounds, line);
+
+                        segBounds.X = cBounds.X;
+                        segBounds.Y += line.Height;
+                        lineBounds.Y += line.Height;
+                        line = line.Next;
+                    }
+                }
+
+                cBounds.Y += chunk.Height;
+                chunk = chunk.Next;
+            }
+        }
+
+        private void DrawLineSelection(SpriteBatcher sb, ref RectangleF lineBounds, ref RectangleF segBounds, UITextLine line)
+        {
+            if (line == Caret.Start.Line && Caret.End.Line == null)
+                sb.DrawRect(lineBounds, ref Caret.SelectedLineStyle);
+
+            UITextSegment seg = line.FirstSegment;
+            while (seg != null)
+            {
+                segBounds.Width = seg.Size.X;
+                segBounds.Height = seg.Size.Y;
+
+                if (seg.IsSelected)
+                    sb.Draw(segBounds, ref Caret.SelectedSegmentStyle);
+
+                segBounds.X += seg.Size.X;
+                seg = seg.Next;
+            }
+        }
+
+        private void DrawLineContent(SpriteBatcher sb, ref RectangleF lineBounds, ref RectangleF segBounds, UITextLine line)
+        {
+            UITextSegment seg = line.FirstSegment;
+            while (seg != null)
+            {
+                segBounds.Width = seg.Size.X;
+                segBounds.Height = seg.Size.Y;
+                seg.Render(sb, line.Parent, ref segBounds);
+                segBounds.X += seg.Size.X;
+                seg = seg.Next;
             }
         }
 

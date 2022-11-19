@@ -78,6 +78,8 @@ namespace Molten.UI
         /// </summary>
         public UITextSegment Next { get; internal set; }
 
+        internal bool IsSelected { get; set; }
+
         /// <summary>
         /// Gets or sets the text of the current <see cref="UITextSegment"/>.
         /// </summary>

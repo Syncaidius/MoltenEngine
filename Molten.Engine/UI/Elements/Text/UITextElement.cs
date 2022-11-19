@@ -72,6 +72,10 @@ namespace Molten.UI
         public void SetText(string text)
         {
             Clear();
+
+            if (MaxLength > 0 && text.Length > MaxLength)
+                text = text.Substring(0, MaxLength);
+
             _parser.ParseText(this, text);
         }
 
@@ -123,7 +127,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets the maximum number of characters that can be entered into the current <see cref="UITextElement"/>.
         /// </summary>
-        public ulong MaxCharacters { get; set; } = 0;
+        public int MaxLength { get; set; } = 0;
 
         /// <summary>
         /// Gets the <see cref="UITextCaret"/> bound to the current <see cref="UITextElement"/>.
