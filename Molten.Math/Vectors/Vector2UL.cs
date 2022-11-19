@@ -96,7 +96,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Vector2UL other)
         {
-            return MathHelperDP.NearEqual(other.X, X) && MathHelperDP.NearEqual(other.Y, Y);
+            return other.X == X && other.Y == Y;
         }
 
         /// <summary>
@@ -142,19 +142,6 @@ namespace Molten
                 hashCode = (hashCode * 397) ^ Y.GetHashCode();
                 return hashCode;
             }
-        }
-
-        /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public ulong Length()
-        {
-            return (ulong)Math.Sqrt((X * X) + (Y * Y));
         }
 
         /// <summary>
@@ -559,55 +546,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector2UL.DistanceSquared(Vector2UL, Vector2UL)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static ulong Distance(ref Vector2UL value1, ref Vector2UL value2)
-        {
-			ulong x = (value1.X - value2.X);
-			ulong y = (value1.Y - value2.Y);
-
-            return (ulong)Math.Sqrt((x * x) + (y * y));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector2UL.DistanceSquared(Vector2UL, Vector2UL)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static ulong Distance(Vector2UL value1, Vector2UL value2)
-        {
-			ulong x = (value1.X - value2.X);
-			ulong y = (value1.Y - value2.Y);
-
-            return (ulong)Math.Sqrt((x * x) + (y * y));
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static Vector2UL Pow(Vector2UL vec, ulong power)
-        {
-            return new Vector2UL()
-            {
-				X = (ulong)Math.Pow(vec.X, power),
-				Y = (ulong)Math.Pow(vec.Y, power),
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <see cref="Vector2UL"/> vectors.
         /// </summary>
         /// <param name="left">First <see cref="Vector2UL"/> source vector</param>
@@ -863,8 +801,8 @@ namespace Molten
 
             return new Vector2UL()
             {
-				X = (ulong)(vector.X - ((2.0D * dot) * normal.X)),
-				Y = (ulong)(vector.Y - ((2.0D * dot) * normal.Y)),
+				X = (ulong)(vector.X - ((2 * dot) * normal.X)),
+				Y = (ulong)(vector.Y - ((2 * dot) * normal.Y)),
             };
         }
 #endregion

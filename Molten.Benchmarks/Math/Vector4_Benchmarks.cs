@@ -8,34 +8,31 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 namespace Molten.Benchmarks
 {
-    public class MathHelper_Benchmarks
+    public class Vector4Benchmarks
     {
         public const int ITERATIONS = 1000;
 
         [Benchmark]
-        public void Vector4_Add()
+        public void Vector4F_Math()
         {
-            Vector4D a, b, result;
+            Vector4F a, b, result;
             for (int i = 0; i < ITERATIONS; i++)
             {
-                a = new Vector4D(i, i, i, i);
-                b = new Vector4D(i + 21, i - 20, i * 4567, i / 23);
+                a = new Vector4F(i * 85640.1f, i * 3560.2f, i * 1230.3f, i * 10.7f);
+                b = new Vector4F(i + 21, i - 20, i * 4567, i / 23);
                 result = a + b;
             }
         }
 
         [Benchmark]
-        public unsafe void Vector4_Add_SIMD()
+        public void Vector4D_Math()
         {
-            Vector4D a = Vector4D.Zero, b = Vector4D.Zero, result = Vector4D.Zero;
-
+            Vector4D a, b, result;
             for (int i = 0; i < ITERATIONS; i++)
             {
-                a = new Vector4D(i, i, i, i);
+                a = new Vector4D(i * 85640.1, i * 3560.2, i * 1230.3, i * 10.7);
                 b = new Vector4D(i + 21, i - 20, i * 4567, i / 23);
-
-                Vector256<double> sseResult = System.Runtime.Intrinsics.X86.Avx2.Add(*(Vector256<double>*)&a, *(Vector256<double>*)&b);
-                result = *(Vector4D*)&sseResult;
+                result = a + b;
             }
         }
     }

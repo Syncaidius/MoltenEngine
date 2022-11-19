@@ -134,7 +134,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Byte4 other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z) && MathHelper.NearEqual(other.W, W);
+            return other.X == X && other.Y == Y && other.Z == Z && other.W == W;
         }
 
         /// <summary>
@@ -182,19 +182,6 @@ namespace Molten
                 hashCode = (hashCode * 397) ^ W.GetHashCode();
                 return hashCode;
             }
-        }
-
-        /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public byte Length()
-        {
-            return (byte)Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -625,61 +612,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Byte4.DistanceSquared(Byte4, Byte4)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static byte Distance(ref Byte4 value1, ref Byte4 value2)
-        {
-			byte x = (byte)(value1.X - value2.X);
-			byte y = (byte)(value1.Y - value2.Y);
-			byte z = (byte)(value1.Z - value2.Z);
-			byte w = (byte)(value1.W - value2.W);
-
-            return (byte)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Byte4.DistanceSquared(Byte4, Byte4)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static byte Distance(Byte4 value1, Byte4 value2)
-        {
-			byte x = (byte)(value1.X - value2.X);
-			byte y = (byte)(value1.Y - value2.Y);
-			byte z = (byte)(value1.Z - value2.Z);
-			byte w = (byte)(value1.W - value2.W);
-
-            return (byte)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static Byte4 Pow(Byte4 vec, byte power)
-        {
-            return new Byte4()
-            {
-				X = (byte)Math.Pow(vec.X, power),
-				Y = (byte)Math.Pow(vec.Y, power),
-				Z = (byte)Math.Pow(vec.Z, power),
-				W = (byte)Math.Pow(vec.W, power),
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <see cref="Byte4"/> vectors.
         /// </summary>
         /// <param name="left">First <see cref="Byte4"/> source vector</param>
@@ -961,10 +893,10 @@ namespace Molten
 
             return new Byte4()
             {
-				X = (byte)(vector.X - ((2.0F * dot) * normal.X)),
-				Y = (byte)(vector.Y - ((2.0F * dot) * normal.Y)),
-				Z = (byte)(vector.Z - ((2.0F * dot) * normal.Z)),
-				W = (byte)(vector.W - ((2.0F * dot) * normal.W)),
+				X = (byte)(vector.X - ((2 * dot) * normal.X)),
+				Y = (byte)(vector.Y - ((2 * dot) * normal.Y)),
+				Z = (byte)(vector.Z - ((2 * dot) * normal.Z)),
+				W = (byte)(vector.W - ((2 * dot) * normal.W)),
             };
         }
 #endregion

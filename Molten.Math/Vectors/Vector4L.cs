@@ -134,7 +134,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Vector4L other)
         {
-            return MathHelperDP.NearEqual(other.X, X) && MathHelperDP.NearEqual(other.Y, Y) && MathHelperDP.NearEqual(other.Z, Z) && MathHelperDP.NearEqual(other.W, W);
+            return other.X == X && other.Y == Y && other.Z == Z && other.W == W;
         }
 
         /// <summary>
@@ -182,19 +182,6 @@ namespace Molten
                 hashCode = (hashCode * 397) ^ W.GetHashCode();
                 return hashCode;
             }
-        }
-
-        /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public long Length()
-        {
-            return (long)Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -657,61 +644,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector4L.DistanceSquared(Vector4L, Vector4L)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static long Distance(ref Vector4L value1, ref Vector4L value2)
-        {
-			long x = (value1.X - value2.X);
-			long y = (value1.Y - value2.Y);
-			long z = (value1.Z - value2.Z);
-			long w = (value1.W - value2.W);
-
-            return (long)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector4L.DistanceSquared(Vector4L, Vector4L)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static long Distance(Vector4L value1, Vector4L value2)
-        {
-			long x = (value1.X - value2.X);
-			long y = (value1.Y - value2.Y);
-			long z = (value1.Z - value2.Z);
-			long w = (value1.W - value2.W);
-
-            return (long)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static Vector4L Pow(Vector4L vec, long power)
-        {
-            return new Vector4L()
-            {
-				X = (long)Math.Pow(vec.X, power),
-				Y = (long)Math.Pow(vec.Y, power),
-				Z = (long)Math.Pow(vec.Z, power),
-				W = (long)Math.Pow(vec.W, power),
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <see cref="Vector4L"/> vectors.
         /// </summary>
         /// <param name="left">First <see cref="Vector4L"/> source vector</param>
@@ -993,10 +925,10 @@ namespace Molten
 
             return new Vector4L()
             {
-				X = (long)(vector.X - ((2.0D * dot) * normal.X)),
-				Y = (long)(vector.Y - ((2.0D * dot) * normal.Y)),
-				Z = (long)(vector.Z - ((2.0D * dot) * normal.Z)),
-				W = (long)(vector.W - ((2.0D * dot) * normal.W)),
+				X = (long)(vector.X - ((2 * dot) * normal.X)),
+				Y = (long)(vector.Y - ((2 * dot) * normal.Y)),
+				Z = (long)(vector.Z - ((2 * dot) * normal.Z)),
+				W = (long)(vector.W - ((2 * dot) * normal.W)),
             };
         }
 #endregion

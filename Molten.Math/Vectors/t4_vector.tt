@@ -21,6 +21,7 @@ foreach(TypeData d in _def)
 		string fn = $"{fName}";
 		string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
 		string mathHelper = d.FP == "double" ? "MathHelperDP" : "MathHelper";
+		string math = d.FP == "float" ? "MathF" : "Math";
         string typeCast = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"({d.DT})" : "";
         string fpToTypeCast = (typeCast.Length > 0) ? typeCast : (d.DT != d.FP ? $"({d.DT})" : "");
         string intType = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"int" : d.DT;
@@ -185,7 +186,20 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref <#=fName#> other)
         {
+<#
+        if(d.IsFPType)
+        {
+#>
             return <#for(int p = 0; p < size; p++){#><#=mathHelper#>.NearEqual(other.<#=pMapUpper[p]#>, <#=pMapUpper[p]#>)<#=(p < (size-1) ? " && " : "")#><#}#>;
+<#
+        }
+        else
+        {
+#>
+            return <#for(int p = 0; p < size; p++){#>other.<#=pMapUpper[p]#> == <#=pMapUpper[p]#><#=(p < (size-1) ? " && " : "")#><#}#>;
+<#
+        }
+#>
         }
 
         /// <summary>
@@ -238,19 +252,6 @@ namespace Molten
 #>
                 return hashCode;
             }
-        }
-
-        /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public <#=d.DT#> Length()
-        {
-            return <#=fpCast#>Math.Sqrt(<#for(int p = 0; p < size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -790,73 +791,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="<#=fName#>.DistanceSquared(<#=fName#>, <#=fName#>)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static <#=d.DT#> Distance(ref <#=fName#> value1, ref <#=fName#> value2)
-        {
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
-			<#=d.DT#> <#=pMap[p]#> = <#=typeCast#>(value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>);
-<#
-		}
-#>
-
-            return <#=fpCast#>Math.Sqrt(<#for(int p = 0; p < size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="<#=fName#>.DistanceSquared(<#=fName#>, <#=fName#>)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static <#=d.DT#> Distance(<#=fName#> value1, <#=fName#> value2)
-        {
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
-			<#=d.DT#> <#=pMap[p]#> = <#=typeCast#>(value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>);
-<#
-		}
-#>
-
-            return <#=fpCast#>Math.Sqrt(<#for(int p = 0; p < size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static <#=fName#> Pow(<#=fName#> vec, <#=d.DT#> power)
-        {
-            return new <#=fName#>()
-            {
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
-				<#=pMapUpper[p]#> = <#=fpCast#>Math.Pow(vec.<#=pMapUpper[p]#>, power),
-<#
-		}
-#>
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <#=See(fName)#> vectors.
         /// </summary>
         /// <param name="left">First <#=See(fName)#> source vector</param>
@@ -1198,7 +1132,7 @@ namespace Molten
 				for(int p = 0; p < size; p++)
 				{
 #>
-				<#=pMapUpper[p]#> = <#=fpToTypeCast#>(vector.<#=pMapUpper[p]#> - ((2.0<#=d.FPL#> * dot) * normal.<#=pMapUpper[p]#>)),
+				<#=pMapUpper[p]#> = <#=fpToTypeCast#>(vector.<#=pMapUpper[p]#> - ((2 * dot) * normal.<#=pMapUpper[p]#>)),
 <#
 			    }
 #>
@@ -1273,6 +1207,7 @@ namespace Molten
 		string castFn = $"{fName}";
 		string castFpCast = dCast.DT == "float" ? "(float)" : (dCast.DT == "double" ? "" : $"({dCast.DT})");
 		string castHelper = dCast.FP == "double" ? "MathHelperDP" : "MathHelper";
+		string castMath = dCast.FP == "float" ? "MathF" : "Math";
         bool sameDT = dCast.DT == d.DT;
         bool sameFP = dCast.IsFPType == d.IsFPType;
         bool sameSign = dCast.Unsigned == d.Unsigned;

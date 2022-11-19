@@ -134,7 +134,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Vector4I other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z) && MathHelper.NearEqual(other.W, W);
+            return other.X == X && other.Y == Y && other.Z == Z && other.W == W;
         }
 
         /// <summary>
@@ -182,19 +182,6 @@ namespace Molten
                 hashCode = (hashCode * 397) ^ W.GetHashCode();
                 return hashCode;
             }
-        }
-
-        /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public int Length()
-        {
-            return (int)Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -657,61 +644,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector4I.DistanceSquared(Vector4I, Vector4I)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static int Distance(ref Vector4I value1, ref Vector4I value2)
-        {
-			int x = (value1.X - value2.X);
-			int y = (value1.Y - value2.Y);
-			int z = (value1.Z - value2.Z);
-			int w = (value1.W - value2.W);
-
-            return (int)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector4I.DistanceSquared(Vector4I, Vector4I)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static int Distance(Vector4I value1, Vector4I value2)
-        {
-			int x = (value1.X - value2.X);
-			int y = (value1.Y - value2.Y);
-			int z = (value1.Z - value2.Z);
-			int w = (value1.W - value2.W);
-
-            return (int)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static Vector4I Pow(Vector4I vec, int power)
-        {
-            return new Vector4I()
-            {
-				X = (int)Math.Pow(vec.X, power),
-				Y = (int)Math.Pow(vec.Y, power),
-				Z = (int)Math.Pow(vec.Z, power),
-				W = (int)Math.Pow(vec.W, power),
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <see cref="Vector4I"/> vectors.
         /// </summary>
         /// <param name="left">First <see cref="Vector4I"/> source vector</param>
@@ -993,10 +925,10 @@ namespace Molten
 
             return new Vector4I()
             {
-				X = (int)(vector.X - ((2.0F * dot) * normal.X)),
-				Y = (int)(vector.Y - ((2.0F * dot) * normal.Y)),
-				Z = (int)(vector.Z - ((2.0F * dot) * normal.Z)),
-				W = (int)(vector.W - ((2.0F * dot) * normal.W)),
+				X = (int)(vector.X - ((2 * dot) * normal.X)),
+				Y = (int)(vector.Y - ((2 * dot) * normal.Y)),
+				Z = (int)(vector.Z - ((2 * dot) * normal.Z)),
+				W = (int)(vector.W - ((2 * dot) * normal.W)),
             };
         }
 #endregion

@@ -114,7 +114,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Byte3 other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z);
+            return other.X == X && other.Y == Y && other.Z == Z;
         }
 
         /// <summary>
@@ -161,19 +161,6 @@ namespace Molten
                 hashCode = (hashCode * 397) ^ Z.GetHashCode();
                 return hashCode;
             }
-        }
-
-        /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public byte Length()
-        {
-            return (byte)Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
         }
 
         /// <summary>
@@ -591,58 +578,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Byte3.DistanceSquared(Byte3, Byte3)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static byte Distance(ref Byte3 value1, ref Byte3 value2)
-        {
-			byte x = (byte)(value1.X - value2.X);
-			byte y = (byte)(value1.Y - value2.Y);
-			byte z = (byte)(value1.Z - value2.Z);
-
-            return (byte)Math.Sqrt((x * x) + (y * y) + (z * z));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Byte3.DistanceSquared(Byte3, Byte3)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static byte Distance(Byte3 value1, Byte3 value2)
-        {
-			byte x = (byte)(value1.X - value2.X);
-			byte y = (byte)(value1.Y - value2.Y);
-			byte z = (byte)(value1.Z - value2.Z);
-
-            return (byte)Math.Sqrt((x * x) + (y * y) + (z * z));
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static Byte3 Pow(Byte3 vec, byte power)
-        {
-            return new Byte3()
-            {
-				X = (byte)Math.Pow(vec.X, power),
-				Y = (byte)Math.Pow(vec.Y, power),
-				Z = (byte)Math.Pow(vec.Z, power),
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <see cref="Byte3"/> vectors.
         /// </summary>
         /// <param name="left">First <see cref="Byte3"/> source vector</param>
@@ -911,9 +846,9 @@ namespace Molten
 
             return new Byte3()
             {
-				X = (byte)(vector.X - ((2.0F * dot) * normal.X)),
-				Y = (byte)(vector.Y - ((2.0F * dot) * normal.Y)),
-				Z = (byte)(vector.Z - ((2.0F * dot) * normal.Z)),
+				X = (byte)(vector.X - ((2 * dot) * normal.X)),
+				Y = (byte)(vector.Y - ((2 * dot) * normal.Y)),
+				Z = (byte)(vector.Z - ((2 * dot) * normal.Z)),
             };
         }
 #endregion

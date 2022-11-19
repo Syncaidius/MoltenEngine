@@ -3,7 +3,7 @@ using BenchmarkDotNet.Running;
 
 namespace Molten.Benchmarks
 {
-    internal class Benchmarks
+    public class Benchmarks
     {
         static void Main(string[] args)
         {

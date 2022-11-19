@@ -134,41 +134,108 @@ namespace Molten
 			W = W < 0F ? 0F : W > 1F ? 1F : W;
         }
 
+        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
+        /// If so this method truncates that value to zero.</summary>
+        /// <param name="power">The power.</param>
+        /// <param name="vec">The vector.</param>
+        public static Vector4F Pow(Vector4F vec, float power)
+        {
+            return new Vector4F()
+            {
+				X = MathF.Pow(vec.X, power),
+				Y = MathF.Pow(vec.Y, power),
+				Z = MathF.Pow(vec.Z, power),
+				W = MathF.Pow(vec.W, power),
+            };
+        }
+
 		/// <summary>Rounds all components down to the nearest unit.</summary>
         public void Floor()
         {
-			X = (float)Math.Floor(X);
-			Y = (float)Math.Floor(Y);
-			Z = (float)Math.Floor(Z);
-			W = (float)Math.Floor(W);
+			X = MathF.Floor(X);
+			Y = MathF.Floor(Y);
+			Z = MathF.Floor(Z);
+			W = MathF.Floor(W);
         }
 
         /// <summary>Rounds all components up to the nearest unit.</summary>
         public void Ceiling()
         {
-			X = (float)Math.Ceiling(X);
-			Y = (float)Math.Ceiling(Y);
-			Z = (float)Math.Ceiling(Z);
-			W = (float)Math.Ceiling(W);
+			X = MathF.Ceiling(X);
+			Y = MathF.Ceiling(Y);
+			Z = MathF.Ceiling(Z);
+			W = MathF.Ceiling(W);
         }
 
 		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
         public void Truncate()
         {
-			X = (Math.Abs(X) - 0.0001F < 0) ? 0 : X;
-			Y = (Math.Abs(Y) - 0.0001F < 0) ? 0 : Y;
-			Z = (Math.Abs(Z) - 0.0001F < 0) ? 0 : Z;
-			W = (Math.Abs(W) - 0.0001F < 0) ? 0 : W;
+			X = (MathF.Abs(X) - 0.0001F < 0) ? 0 : X;
+			Y = (MathF.Abs(Y) - 0.0001F < 0) ? 0 : Y;
+			Z = (MathF.Abs(Z) - 0.0001F < 0) ? 0 : Z;
+			W = (MathF.Abs(W) - 0.0001F < 0) ? 0 : W;
         }
 
 		/// <summary>Updates the component values to the power of the specified value.</summary>
         /// <param name="power"></param>
         public void Pow(float power)
         {
-			X = (float)Math.Pow(X, power);
-			Y = (float)Math.Pow(Y, power);
-			Z = (float)Math.Pow(Z, power);
-			W = (float)Math.Pow(W, power);
+			X = MathF.Pow(X, power);
+			Y = MathF.Pow(Y, power);
+			Z = MathF.Pow(Z, power);
+			W = MathF.Pow(W, power);
+        }
+
+        /// <summary>
+        /// Calculates the length of the vector.
+        /// </summary>
+        /// <returns>The length of the vector.</returns>
+        /// <remarks>
+        /// <see cref="LengthSquared"/> may be preferred when only the relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public float Length()
+        {
+            return MathF.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector4F.DistanceSquared(Vector4F, Vector4F)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static float Distance(ref Vector4F value1, ref Vector4F value2)
+        {
+			float x = value1.X - value2.X;
+			float y = value1.Y - value2.Y;
+			float z = value1.Z - value2.Z;
+			float w = value1.W - value2.W;
+           return MathF.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
+        }
+
+                /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector4F.DistanceSquared(Vector4F, Vector4F)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static float Distance(Vector4F value1, Vector4F value2)
+        {
+			float x = value1.X - value2.X;
+			float y = value1.Y - value2.Y;
+			float z = value1.Z - value2.Z;
+			float w = value1.W - value2.W;
+
+            return MathF.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
         }
 
         /// <summary>
@@ -271,10 +338,10 @@ namespace Molten
         {
             return new Vector4F()
             {
-				X = (Math.Abs(value.X) - 0.0001F < 0) ? 0 : value.X,
-				Y = (Math.Abs(value.Y) - 0.0001F < 0) ? 0 : value.X,
-				Z = (Math.Abs(value.Z) - 0.0001F < 0) ? 0 : value.X,
-				W = (Math.Abs(value.W) - 0.0001F < 0) ? 0 : value.X,
+				X = (MathF.Abs(value.X) - 0.0001F < 0) ? 0 : value.X,
+				Y = (MathF.Abs(value.Y) - 0.0001F < 0) ? 0 : value.X,
+				Z = (MathF.Abs(value.Z) - 0.0001F < 0) ? 0 : value.X,
+				W = (MathF.Abs(value.W) - 0.0001F < 0) ? 0 : value.X,
             };
         }
 #endregion

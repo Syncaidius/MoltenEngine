@@ -129,37 +129,101 @@ namespace Molten
 			Z = Z < 0F ? 0F : Z > 1F ? 1F : Z;
         }
 
+        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
+        /// If so this method truncates that value to zero.</summary>
+        /// <param name="power">The power.</param>
+        /// <param name="vec">The vector.</param>
+        public static Vector3F Pow(Vector3F vec, float power)
+        {
+            return new Vector3F()
+            {
+				X = MathF.Pow(vec.X, power),
+				Y = MathF.Pow(vec.Y, power),
+				Z = MathF.Pow(vec.Z, power),
+            };
+        }
+
 		/// <summary>Rounds all components down to the nearest unit.</summary>
         public void Floor()
         {
-			X = (float)Math.Floor(X);
-			Y = (float)Math.Floor(Y);
-			Z = (float)Math.Floor(Z);
+			X = MathF.Floor(X);
+			Y = MathF.Floor(Y);
+			Z = MathF.Floor(Z);
         }
 
         /// <summary>Rounds all components up to the nearest unit.</summary>
         public void Ceiling()
         {
-			X = (float)Math.Ceiling(X);
-			Y = (float)Math.Ceiling(Y);
-			Z = (float)Math.Ceiling(Z);
+			X = MathF.Ceiling(X);
+			Y = MathF.Ceiling(Y);
+			Z = MathF.Ceiling(Z);
         }
 
 		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
         public void Truncate()
         {
-			X = (Math.Abs(X) - 0.0001F < 0) ? 0 : X;
-			Y = (Math.Abs(Y) - 0.0001F < 0) ? 0 : Y;
-			Z = (Math.Abs(Z) - 0.0001F < 0) ? 0 : Z;
+			X = (MathF.Abs(X) - 0.0001F < 0) ? 0 : X;
+			Y = (MathF.Abs(Y) - 0.0001F < 0) ? 0 : Y;
+			Z = (MathF.Abs(Z) - 0.0001F < 0) ? 0 : Z;
         }
 
 		/// <summary>Updates the component values to the power of the specified value.</summary>
         /// <param name="power"></param>
         public void Pow(float power)
         {
-			X = (float)Math.Pow(X, power);
-			Y = (float)Math.Pow(Y, power);
-			Z = (float)Math.Pow(Z, power);
+			X = MathF.Pow(X, power);
+			Y = MathF.Pow(Y, power);
+			Z = MathF.Pow(Z, power);
+        }
+
+        /// <summary>
+        /// Calculates the length of the vector.
+        /// </summary>
+        /// <returns>The length of the vector.</returns>
+        /// <remarks>
+        /// <see cref="LengthSquared"/> may be preferred when only the relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public float Length()
+        {
+            return MathF.Sqrt((X * X) + (Y * Y) + (Z * Z));
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector3F.DistanceSquared(Vector3F, Vector3F)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static float Distance(ref Vector3F value1, ref Vector3F value2)
+        {
+			float x = value1.X - value2.X;
+			float y = value1.Y - value2.Y;
+			float z = value1.Z - value2.Z;
+           return MathF.Sqrt((x * x) + (y * y) + (z * z));
+        }
+
+                /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector3F.DistanceSquared(Vector3F, Vector3F)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static float Distance(Vector3F value1, Vector3F value2)
+        {
+			float x = value1.X - value2.X;
+			float y = value1.Y - value2.Y;
+			float z = value1.Z - value2.Z;
+
+            return MathF.Sqrt((x * x) + (y * y) + (z * z));
         }
 
         /// <summary>
@@ -256,9 +320,9 @@ namespace Molten
         {
             return new Vector3F()
             {
-				X = (Math.Abs(value.X) - 0.0001F < 0) ? 0 : value.X,
-				Y = (Math.Abs(value.Y) - 0.0001F < 0) ? 0 : value.X,
-				Z = (Math.Abs(value.Z) - 0.0001F < 0) ? 0 : value.X,
+				X = (MathF.Abs(value.X) - 0.0001F < 0) ? 0 : value.X,
+				Y = (MathF.Abs(value.Y) - 0.0001F < 0) ? 0 : value.X,
+				Z = (MathF.Abs(value.Z) - 0.0001F < 0) ? 0 : value.X,
             };
         }
 #endregion

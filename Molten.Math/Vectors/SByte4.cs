@@ -134,7 +134,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref SByte4 other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z) && MathHelper.NearEqual(other.W, W);
+            return other.X == X && other.Y == Y && other.Z == Z && other.W == W;
         }
 
         /// <summary>
@@ -182,19 +182,6 @@ namespace Molten
                 hashCode = (hashCode * 397) ^ W.GetHashCode();
                 return hashCode;
             }
-        }
-
-        /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public sbyte Length()
-        {
-            return (sbyte)Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -657,61 +644,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="SByte4.DistanceSquared(SByte4, SByte4)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static sbyte Distance(ref SByte4 value1, ref SByte4 value2)
-        {
-			sbyte x = (sbyte)(value1.X - value2.X);
-			sbyte y = (sbyte)(value1.Y - value2.Y);
-			sbyte z = (sbyte)(value1.Z - value2.Z);
-			sbyte w = (sbyte)(value1.W - value2.W);
-
-            return (sbyte)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="SByte4.DistanceSquared(SByte4, SByte4)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static sbyte Distance(SByte4 value1, SByte4 value2)
-        {
-			sbyte x = (sbyte)(value1.X - value2.X);
-			sbyte y = (sbyte)(value1.Y - value2.Y);
-			sbyte z = (sbyte)(value1.Z - value2.Z);
-			sbyte w = (sbyte)(value1.W - value2.W);
-
-            return (sbyte)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static SByte4 Pow(SByte4 vec, sbyte power)
-        {
-            return new SByte4()
-            {
-				X = (sbyte)Math.Pow(vec.X, power),
-				Y = (sbyte)Math.Pow(vec.Y, power),
-				Z = (sbyte)Math.Pow(vec.Z, power),
-				W = (sbyte)Math.Pow(vec.W, power),
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <see cref="SByte4"/> vectors.
         /// </summary>
         /// <param name="left">First <see cref="SByte4"/> source vector</param>
@@ -993,10 +925,10 @@ namespace Molten
 
             return new SByte4()
             {
-				X = (sbyte)(vector.X - ((2.0F * dot) * normal.X)),
-				Y = (sbyte)(vector.Y - ((2.0F * dot) * normal.Y)),
-				Z = (sbyte)(vector.Z - ((2.0F * dot) * normal.Z)),
-				W = (sbyte)(vector.W - ((2.0F * dot) * normal.W)),
+				X = (sbyte)(vector.X - ((2 * dot) * normal.X)),
+				Y = (sbyte)(vector.Y - ((2 * dot) * normal.Y)),
+				Z = (sbyte)(vector.Z - ((2 * dot) * normal.Z)),
+				W = (sbyte)(vector.W - ((2 * dot) * normal.W)),
             };
         }
 #endregion

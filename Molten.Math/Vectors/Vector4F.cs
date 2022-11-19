@@ -185,19 +185,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public float Length()
-        {
-            return (float)Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
-        }
-
-        /// <summary>
         /// Calculates the squared length of the vector.
         /// </summary>
         /// <returns>The squared length of the vector.</returns>
@@ -657,61 +644,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector4F.DistanceSquared(Vector4F, Vector4F)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static float Distance(ref Vector4F value1, ref Vector4F value2)
-        {
-			float x = (value1.X - value2.X);
-			float y = (value1.Y - value2.Y);
-			float z = (value1.Z - value2.Z);
-			float w = (value1.W - value2.W);
-
-            return (float)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector4F.DistanceSquared(Vector4F, Vector4F)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static float Distance(Vector4F value1, Vector4F value2)
-        {
-			float x = (value1.X - value2.X);
-			float y = (value1.Y - value2.Y);
-			float z = (value1.Z - value2.Z);
-			float w = (value1.W - value2.W);
-
-            return (float)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static Vector4F Pow(Vector4F vec, float power)
-        {
-            return new Vector4F()
-            {
-				X = (float)Math.Pow(vec.X, power),
-				Y = (float)Math.Pow(vec.Y, power),
-				Z = (float)Math.Pow(vec.Z, power),
-				W = (float)Math.Pow(vec.W, power),
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <see cref="Vector4F"/> vectors.
         /// </summary>
         /// <param name="left">First <see cref="Vector4F"/> source vector</param>
@@ -993,10 +925,10 @@ namespace Molten
 
             return new Vector4F()
             {
-				X = (vector.X - ((2.0F * dot) * normal.X)),
-				Y = (vector.Y - ((2.0F * dot) * normal.Y)),
-				Z = (vector.Z - ((2.0F * dot) * normal.Z)),
-				W = (vector.W - ((2.0F * dot) * normal.W)),
+				X = (vector.X - ((2 * dot) * normal.X)),
+				Y = (vector.Y - ((2 * dot) * normal.Y)),
+				Z = (vector.Z - ((2 * dot) * normal.Z)),
+				W = (vector.W - ((2 * dot) * normal.W)),
             };
         }
 #endregion

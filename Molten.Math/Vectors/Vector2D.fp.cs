@@ -124,6 +124,19 @@ namespace Molten
 			Y = Y < 0D ? 0D : Y > 1D ? 1D : Y;
         }
 
+        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
+        /// If so this method truncates that value to zero.</summary>
+        /// <param name="power">The power.</param>
+        /// <param name="vec">The vector.</param>
+        public static Vector2D Pow(Vector2D vec, double power)
+        {
+            return new Vector2D()
+            {
+				X = Math.Pow(vec.X, power),
+				Y = Math.Pow(vec.Y, power),
+            };
+        }
+
 		/// <summary>Rounds all components down to the nearest unit.</summary>
         public void Floor()
         {
@@ -151,6 +164,54 @@ namespace Molten
         {
 			X = Math.Pow(X, power);
 			Y = Math.Pow(Y, power);
+        }
+
+        /// <summary>
+        /// Calculates the length of the vector.
+        /// </summary>
+        /// <returns>The length of the vector.</returns>
+        /// <remarks>
+        /// <see cref="LengthSquared"/> may be preferred when only the relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public double Length()
+        {
+            return Math.Sqrt((X * X) + (Y * Y));
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector2D.DistanceSquared(Vector2D, Vector2D)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static double Distance(ref Vector2D value1, ref Vector2D value2)
+        {
+			double x = value1.X - value2.X;
+			double y = value1.Y - value2.Y;
+           return Math.Sqrt((x * x) + (y * y));
+        }
+
+                /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector2D.DistanceSquared(Vector2D, Vector2D)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static double Distance(Vector2D value1, Vector2D value2)
+        {
+			double x = value1.X - value2.X;
+			double y = value1.Y - value2.Y;
+
+            return Math.Sqrt((x * x) + (y * y));
         }
 
         /// <summary>

@@ -99,7 +99,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref SByte2 other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y);
+            return other.X == X && other.Y == Y;
         }
 
         /// <summary>
@@ -145,19 +145,6 @@ namespace Molten
                 hashCode = (hashCode * 397) ^ Y.GetHashCode();
                 return hashCode;
             }
-        }
-
-        /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public sbyte Length()
-        {
-            return (sbyte)Math.Sqrt((X * X) + (Y * Y));
         }
 
         /// <summary>
@@ -592,55 +579,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="SByte2.DistanceSquared(SByte2, SByte2)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static sbyte Distance(ref SByte2 value1, ref SByte2 value2)
-        {
-			sbyte x = (sbyte)(value1.X - value2.X);
-			sbyte y = (sbyte)(value1.Y - value2.Y);
-
-            return (sbyte)Math.Sqrt((x * x) + (y * y));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="SByte2.DistanceSquared(SByte2, SByte2)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static sbyte Distance(SByte2 value1, SByte2 value2)
-        {
-			sbyte x = (sbyte)(value1.X - value2.X);
-			sbyte y = (sbyte)(value1.Y - value2.Y);
-
-            return (sbyte)Math.Sqrt((x * x) + (y * y));
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static SByte2 Pow(SByte2 vec, sbyte power)
-        {
-            return new SByte2()
-            {
-				X = (sbyte)Math.Pow(vec.X, power),
-				Y = (sbyte)Math.Pow(vec.Y, power),
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <see cref="SByte2"/> vectors.
         /// </summary>
         /// <param name="left">First <see cref="SByte2"/> source vector</param>
@@ -896,8 +834,8 @@ namespace Molten
 
             return new SByte2()
             {
-				X = (sbyte)(vector.X - ((2.0F * dot) * normal.X)),
-				Y = (sbyte)(vector.Y - ((2.0F * dot) * normal.Y)),
+				X = (sbyte)(vector.X - ((2 * dot) * normal.X)),
+				Y = (sbyte)(vector.Y - ((2 * dot) * normal.Y)),
             };
         }
 #endregion

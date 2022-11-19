@@ -96,7 +96,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Vector2S other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y);
+            return other.X == X && other.Y == Y;
         }
 
         /// <summary>
@@ -142,19 +142,6 @@ namespace Molten
                 hashCode = (hashCode * 397) ^ Y.GetHashCode();
                 return hashCode;
             }
-        }
-
-        /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public short Length()
-        {
-            return (short)Math.Sqrt((X * X) + (Y * Y));
         }
 
         /// <summary>
@@ -589,55 +576,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector2S.DistanceSquared(Vector2S, Vector2S)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static short Distance(ref Vector2S value1, ref Vector2S value2)
-        {
-			short x = (short)(value1.X - value2.X);
-			short y = (short)(value1.Y - value2.Y);
-
-            return (short)Math.Sqrt((x * x) + (y * y));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector2S.DistanceSquared(Vector2S, Vector2S)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static short Distance(Vector2S value1, Vector2S value2)
-        {
-			short x = (short)(value1.X - value2.X);
-			short y = (short)(value1.Y - value2.Y);
-
-            return (short)Math.Sqrt((x * x) + (y * y));
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static Vector2S Pow(Vector2S vec, short power)
-        {
-            return new Vector2S()
-            {
-				X = (short)Math.Pow(vec.X, power),
-				Y = (short)Math.Pow(vec.Y, power),
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <see cref="Vector2S"/> vectors.
         /// </summary>
         /// <param name="left">First <see cref="Vector2S"/> source vector</param>
@@ -893,8 +831,8 @@ namespace Molten
 
             return new Vector2S()
             {
-				X = (short)(vector.X - ((2.0F * dot) * normal.X)),
-				Y = (short)(vector.Y - ((2.0F * dot) * normal.Y)),
+				X = (short)(vector.X - ((2 * dot) * normal.X)),
+				Y = (short)(vector.Y - ((2 * dot) * normal.Y)),
             };
         }
 #endregion

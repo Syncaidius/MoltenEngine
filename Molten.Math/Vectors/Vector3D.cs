@@ -164,19 +164,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public double Length()
-        {
-            return Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
-        }
-
-        /// <summary>
         /// Calculates the squared length of the vector.
         /// </summary>
         /// <returns>The squared length of the vector.</returns>
@@ -622,58 +609,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector3D.DistanceSquared(Vector3D, Vector3D)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static double Distance(ref Vector3D value1, ref Vector3D value2)
-        {
-			double x = (value1.X - value2.X);
-			double y = (value1.Y - value2.Y);
-			double z = (value1.Z - value2.Z);
-
-            return Math.Sqrt((x * x) + (y * y) + (z * z));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector3D.DistanceSquared(Vector3D, Vector3D)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static double Distance(Vector3D value1, Vector3D value2)
-        {
-			double x = (value1.X - value2.X);
-			double y = (value1.Y - value2.Y);
-			double z = (value1.Z - value2.Z);
-
-            return Math.Sqrt((x * x) + (y * y) + (z * z));
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static Vector3D Pow(Vector3D vec, double power)
-        {
-            return new Vector3D()
-            {
-				X = Math.Pow(vec.X, power),
-				Y = Math.Pow(vec.Y, power),
-				Z = Math.Pow(vec.Z, power),
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <see cref="Vector3D"/> vectors.
         /// </summary>
         /// <param name="left">First <see cref="Vector3D"/> source vector</param>
@@ -942,9 +877,9 @@ namespace Molten
 
             return new Vector3D()
             {
-				X = (vector.X - ((2.0D * dot) * normal.X)),
-				Y = (vector.Y - ((2.0D * dot) * normal.Y)),
-				Z = (vector.Z - ((2.0D * dot) * normal.Z)),
+				X = (vector.X - ((2 * dot) * normal.X)),
+				Y = (vector.Y - ((2 * dot) * normal.Y)),
+				Z = (vector.Z - ((2 * dot) * normal.Z)),
             };
         }
 #endregion

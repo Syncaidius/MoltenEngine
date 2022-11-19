@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <StartupObject>Benchmarks.Benchmarks</StartupObject>
+    <StartupObject>Molten.Benchmarks.Benchmarks</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

@@ -27,6 +27,7 @@ foreach(TypeData d in _def)
 		string fn = $"{fName}.fp";
 		string fpCast = d.DT == "float" ? "(float)" : "";
 		string mathHelper = d.FP == "double" ? "MathHelperDP" : "MathHelper";
+		string math = d.FP == "float" ? "MathF" : "Math";
 		string intCast = d.DT == "float" ? "(int)" : (d.DT == "double" ? "(long)" : "$(${d.DT}");
 		string intCastPostfix = d.DT == "float" ? "I" : "L";
 #>
@@ -186,6 +187,25 @@ namespace Molten
 #>
         }
 
+        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
+        /// If so this method truncates that value to zero.</summary>
+        /// <param name="power">The power.</param>
+        /// <param name="vec">The vector.</param>
+        public static <#=fName#> Pow(<#=fName#> vec, <#=d.DT#> power)
+        {
+            return new <#=fName#>()
+            {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				<#=pMapUpper[p]#> = <#=math#>.Pow(vec.<#=pMapUpper[p]#>, power),
+<#
+		}
+#>
+            };
+        }
+
 		/// <summary>Rounds all components down to the nearest unit.</summary>
         public void Floor()
         {
@@ -193,7 +213,7 @@ namespace Molten
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=pMapUpper[p]#> = <#=(d.DT == "float" ? "(float)" : "")#>Math.Floor(<#=pMapUpper[p]#>);
+			<#=pMapUpper[p]#> = <#=math#>.Floor(<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -206,7 +226,7 @@ namespace Molten
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=pMapUpper[p]#> = <#=(d.DT == "float" ? "(float)" : "")#>Math.Ceiling(<#=pMapUpper[p]#>);
+			<#=pMapUpper[p]#> = <#=math#>.Ceiling(<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -219,7 +239,7 @@ namespace Molten
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=pMapUpper[p]#> = (Math.Abs(<#=pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : <#=pMapUpper[p]#>;
+			<#=pMapUpper[p]#> = (<#=math#>.Abs(<#=pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : <#=pMapUpper[p]#>;
 <#
 		}
 #>
@@ -233,10 +253,70 @@ namespace Molten
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=pMapUpper[p]#> = <#=fpCast#>Math.Pow(<#=pMapUpper[p]#>, power);
+			<#=pMapUpper[p]#> = <#=math#>.Pow(<#=pMapUpper[p]#>, power);
 <#
 		}
 #>
+        }
+
+        /// <summary>
+        /// Calculates the length of the vector.
+        /// </summary>
+        /// <returns>The length of the vector.</returns>
+        /// <remarks>
+        /// <see cref="LengthSquared"/> may be preferred when only the relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public <#=d.DT#> Length()
+        {
+            return <#=math#>.Sqrt(<#for(int p = 0; p < size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="<#=fName#>.DistanceSquared(<#=fName#>, <#=fName#>)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static <#=d.DT#> Distance(ref <#=fName#> value1, ref <#=fName#> value2)
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=d.DT#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
+<#
+		}
+#>
+           return <#=math#>.Sqrt(<#for(int p = 0; p < size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+        }
+
+                /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="<#=fName#>.DistanceSquared(<#=fName#>, <#=fName#>)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static <#=d.DT#> Distance(<#=fName#> value1, <#=fName#> value2)
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=d.DT#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
+<#
+		}
+#>
+
+            return <#=math#>.Sqrt(<#for(int p = 0; p < size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -348,7 +428,7 @@ namespace Molten
 		for(int p = 0; p < size; p++)
 		{
 #>
-				<#=pMapUpper[p]#> = (Math.Abs(value.<#=pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : value.X,
+				<#=pMapUpper[p]#> = (<#=math#>.Abs(value.<#=pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : value.X,
 <#
 		}
 #>

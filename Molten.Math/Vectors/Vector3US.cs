@@ -114,7 +114,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Vector3US other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z);
+            return other.X == X && other.Y == Y && other.Z == Z;
         }
 
         /// <summary>
@@ -161,19 +161,6 @@ namespace Molten
                 hashCode = (hashCode * 397) ^ Z.GetHashCode();
                 return hashCode;
             }
-        }
-
-        /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public ushort Length()
-        {
-            return (ushort)Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
         }
 
         /// <summary>
@@ -591,58 +578,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector3US.DistanceSquared(Vector3US, Vector3US)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static ushort Distance(ref Vector3US value1, ref Vector3US value2)
-        {
-			ushort x = (ushort)(value1.X - value2.X);
-			ushort y = (ushort)(value1.Y - value2.Y);
-			ushort z = (ushort)(value1.Z - value2.Z);
-
-            return (ushort)Math.Sqrt((x * x) + (y * y) + (z * z));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector3US.DistanceSquared(Vector3US, Vector3US)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static ushort Distance(Vector3US value1, Vector3US value2)
-        {
-			ushort x = (ushort)(value1.X - value2.X);
-			ushort y = (ushort)(value1.Y - value2.Y);
-			ushort z = (ushort)(value1.Z - value2.Z);
-
-            return (ushort)Math.Sqrt((x * x) + (y * y) + (z * z));
-        }
-
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static Vector3US Pow(Vector3US vec, ushort power)
-        {
-            return new Vector3US()
-            {
-				X = (ushort)Math.Pow(vec.X, power),
-				Y = (ushort)Math.Pow(vec.Y, power),
-				Z = (ushort)Math.Pow(vec.Z, power),
-            };
-        }
-
-        /// <summary>
         /// Calculates the dot product of two <see cref="Vector3US"/> vectors.
         /// </summary>
         /// <param name="left">First <see cref="Vector3US"/> source vector</param>
@@ -911,9 +846,9 @@ namespace Molten
 
             return new Vector3US()
             {
-				X = (ushort)(vector.X - ((2.0F * dot) * normal.X)),
-				Y = (ushort)(vector.Y - ((2.0F * dot) * normal.Y)),
-				Z = (ushort)(vector.Z - ((2.0F * dot) * normal.Z)),
+				X = (ushort)(vector.X - ((2 * dot) * normal.X)),
+				Y = (ushort)(vector.Y - ((2 * dot) * normal.Y)),
+				Z = (ushort)(vector.Z - ((2 * dot) * normal.Z)),
             };
         }
 #endregion
