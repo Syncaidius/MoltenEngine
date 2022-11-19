@@ -99,7 +99,7 @@ namespace Molten
         private int radiansInt;
 
         /// <summary>
-        /// Initializes a new instance of the SharpDX.AngleSingle structure with the
+        /// Initializes a new instance of the <see cref="AngleF"/> structure with the
         /// given unit dependant angle and unit type.
         /// </summary>
         /// <param name="angle">A unit dependant measure of the angle.</param>
@@ -132,7 +132,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Initializes a new instance of the SharpDX.AngleSingle structure using the
+        /// Initializes a new instance of the <see cref="AngleF"/> structure using the
         /// arc length formula (θ = s/r).
         /// </summary>
         /// <param name="arcLength">The measure of the arc.</param>
@@ -144,7 +144,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Wraps this SharpDX.AngleSingle to be in the range [π, -π].
+        /// Wraps this <see cref="AngleF"/> to be in the range [π, -π].
         /// </summary>
         public void Wrap()
         {
@@ -159,7 +159,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Wraps this SharpDX.AngleSingle to be in the range [0, 2π).
+        /// Wraps this <see cref="AngleF"/> to be in the range [0, 2π).
         /// </summary>
         public void WrapPositive()
         {
@@ -172,7 +172,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets or sets the total number of revolutions this SharpDX.AngleSingle represents.
+        /// Gets or sets the total number of revolutions this <see cref="AngleF"/> represents.
         /// </summary>
         public float Revolutions
         {
@@ -181,7 +181,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets or sets the total number of degrees this SharpDX.AngleSingle represents.
+        /// Gets or sets the total number of degrees this <see cref="AngleF"/> represents.
         /// </summary>
         public float Degrees
         {
@@ -190,7 +190,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets or sets the minutes component of the degrees this SharpDX.AngleSingle represents.
+        /// Gets or sets the minutes component of the degrees this <see cref="AngleF"/> represents.
         /// When setting the minutes, if the value is in the range (-60, 60) the whole degrees are
         /// not changed; otherwise, the whole degrees may be changed. Fractional values may set
         /// the seconds component.
@@ -223,7 +223,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets or sets the seconds of the degrees this SharpDX.AngleSingle represents.
+        /// Gets or sets the seconds of the degrees this <see cref="AngleF"/> represents.
         /// When setting the seconds, if the value is in the range (-60, 60) the whole minutes
         /// or whole degrees are not changed; otherwise, the whole minutes or whole degrees
         /// may be changed.
@@ -268,7 +268,7 @@ namespace Molten
         }
         
         /// <summary>
-        /// Gets or sets the total number of radians this SharpDX.AngleSingle represents.
+        /// Gets or sets the total number of radians this <see cref="AngleF"/> represents.
         /// </summary>
         public float Radians
         {
@@ -277,7 +277,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets or sets the total number of milliradians this SharpDX.AngleSingle represents.
+        /// Gets or sets the total number of milliradians this <see cref="AngleF"/> represents.
         /// One milliradian is equal to 1/(2000π).
         /// </summary>
         public float Milliradians
@@ -287,7 +287,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets or sets the total number of gradians this SharpDX.AngleSingle represents.
+        /// Gets or sets the total number of gradians this <see cref="AngleF"/> represents.
         /// </summary>
         public float Gradians
         {
@@ -296,7 +296,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is a right angle (i.e. 90° or π/2).
         /// </summary>
         public bool IsRight
@@ -305,7 +305,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is a straight angle (i.e. 180° or π).
         /// </summary>
         public bool IsStraight
@@ -314,7 +314,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is a full rotation angle (i.e. 360° or 2π).
         /// </summary>
         public bool IsFullRotation
@@ -323,7 +323,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is an oblique angle (i.e. is not 90° or a multiple of 90°).
         /// </summary>
         public bool IsOblique
@@ -332,7 +332,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is an acute angle (i.e. less than 90° but greater than 0°).
         /// </summary>
         public bool IsAcute
@@ -341,7 +341,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is an obtuse angle (i.e. greater than 90° but less than 180°).
         /// </summary>
         public bool IsObtuse
@@ -350,7 +350,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is a reflex angle (i.e. greater than 180° but less than 360°).
         /// </summary>
         public bool IsReflex
@@ -359,7 +359,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a SharpDX.AngleSingle instance that complements this angle (i.e. the two angles add to 90°).
+        /// Gets a <see cref="AngleF"/> instance that complements this angle (i.e. the two angles add to 90°).
         /// </summary>
         public AngleF Complement
         {
@@ -367,7 +367,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a SharpDX.AngleSingle instance that supplements this angle (i.e. the two angles add to 180°).
+        /// Gets a <see cref="AngleF"/> instance that supplements this angle (i.e. the two angles add to 180°).
         /// </summary>
         public AngleF Supplement
         {
@@ -375,10 +375,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Wraps the SharpDX.AngleSingle given in the value argument to be in the range [π, -π].
+        /// Wraps the <see cref="AngleF"/> given in the value argument to be in the range [π, -π].
         /// </summary>
-        /// <param name="value">A SharpDX.AngleSingle to wrap.</param>
-        /// <returns>The SharpDX.AngleSingle that is wrapped.</returns>
+        /// <param name="value">A <see cref="AngleF"/> to wrap.</param>
+        /// <returns>The <see cref="AngleF"/> that is wrapped.</returns>
         public static AngleF Wrap(AngleF value)
         {
             value.Wrap();
@@ -386,10 +386,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Wraps the SharpDX.AngleSingle given in the value argument to be in the range [0, 2π).
+        /// Wraps the <see cref="AngleF"/> given in the value argument to be in the range [0, 2π).
         /// </summary>
-        /// <param name="value">A SharpDX.AngleSingle to wrap.</param>
-        /// <returns>The SharpDX.AngleSingle that is wrapped.</returns>
+        /// <param name="value">A <see cref="AngleF"/> to wrap.</param>
+        /// <returns>The <see cref="AngleF"/> that is wrapped.</returns>
         public static AngleF WrapPositive(AngleF value)
         {
             value.WrapPositive();
@@ -397,11 +397,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Compares two SharpDX.AngleSingle instances and returns the smaller angle.
+        /// Compares two <see cref="AngleF"/> instances and returns the smaller angle.
         /// </summary>
-        /// <param name="left">The first SharpDX.AngleSingle instance to compare.</param>
-        /// <param name="right">The second SharpDX.AngleSingle instance to compare.</param>
-        /// <returns>The smaller of the two given SharpDX.AngleSingle instances.</returns>
+        /// <param name="left">The first <see cref="AngleF"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="AngleF"/> instance to compare.</param>
+        /// <returns>The smaller of the two given <see cref="AngleF"/> instances.</returns>
         public static AngleF Min(AngleF left, AngleF right)
         {
             if (left.radians < right.radians)
@@ -411,11 +411,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Compares two SharpDX.AngleSingle instances and returns the greater angle.
+        /// Compares two <see cref="AngleF"/> instances and returns the greater angle.
         /// </summary>
-        /// <param name="left">The first SharpDX.AngleSingle instance to compare.</param>
-        /// <param name="right">The second SharpDX.AngleSingle instance to compare.</param>
-        /// <returns>The greater of the two given SharpDX.AngleSingle instances.</returns>
+        /// <param name="left">The first <see cref="AngleF"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="AngleF"/> instance to compare.</param>
+        /// <returns>The greater of the two given <see cref="AngleF"/> instances.</returns>
         public static AngleF Max(AngleF left, AngleF right)
         {
             if (left.radians > right.radians)
@@ -425,7 +425,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Adds two SharpDX.AngleSingle objects and returns the result.
+        /// Adds two <see cref="AngleF"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to add.</param>
         /// <param name="right">The second object to add.</param>
@@ -436,7 +436,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Subtracts two SharpDX.AngleSingle objects and returns the result.
+        /// Subtracts two <see cref="AngleF"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to subtract.</param>
         /// <param name="right">The second object to subtract.</param>
@@ -447,7 +447,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Multiplies two SharpDX.AngleSingle objects and returns the result.
+        /// Multiplies two <see cref="AngleF"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to multiply.</param>
         /// <param name="right">The second object to multiply.</param>
@@ -458,7 +458,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Divides two SharpDX.AngleSingle objects and returns the result.
+        /// Divides two <see cref="AngleF"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The numerator object.</param>
         /// <param name="right">The denominator object.</param>
@@ -469,7 +469,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleSingle instance that represents the zero angle (i.e. 0°).
+        /// Gets a new <see cref="AngleF"/> instance that represents the zero angle (i.e. 0°).
         /// </summary>
         public static AngleF ZeroAngle
         {
@@ -477,7 +477,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleSingle instance that represents the right angle (i.e. 90° or π/2).
+        /// Gets a new <see cref="AngleF"/> instance that represents the right angle (i.e. 90° or π/2).
         /// </summary>
         public static AngleF RightAngle
         {
@@ -485,7 +485,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleSingle instance that represents the straight angle (i.e. 180° or π).
+        /// Gets a new <see cref="AngleF"/> instance that represents the straight angle (i.e. 180° or π).
         /// </summary>
         public static AngleF StraightAngle
         {
@@ -493,7 +493,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleSingle instance that represents the full rotation angle (i.e. 360° or 2π).
+        /// Gets a new <see cref="AngleF"/> instance that represents the full rotation angle (i.e. 360° or 2π).
         /// </summary>
         public static AngleF FullRotationAngle
         {
@@ -501,7 +501,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether the values of two SharpDX.Angle
+        /// Returns a System.Boolean that indicates whether the values of two <see cref="AngleF"/>
         /// objects are equal.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
@@ -513,7 +513,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether the values of two SharpDX.Angle
+        /// Returns a System.Boolean that indicates whether the values of two <see cref="AngleF"/>
         /// objects are not equal.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
@@ -525,8 +525,8 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is less than another SharpDX.AngleSingle object.
+        /// Returns a System.Boolean that indicates whether a <see cref="AngleF"/>
+        /// object is less than another <see cref="AngleF"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
@@ -537,8 +537,8 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is greater than another SharpDX.AngleSingle object.
+        /// Returns a System.Boolean that indicates whether a <see cref="AngleF"/>
+        /// object is greater than another <see cref="AngleF"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
@@ -549,8 +549,8 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is less than or equal to another SharpDX.AngleSingle object.
+        /// Returns a System.Boolean that indicates whether a <see cref="AngleF"/>
+        /// object is less than or equal to another <see cref="AngleF"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
@@ -561,8 +561,8 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is greater than or equal to another SharpDX.AngleSingle object.
+        /// Returns a System.Boolean that indicates whether a <see cref="AngleF"/>
+        /// object is greater than or equal to another <see cref="AngleF"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
@@ -573,10 +573,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns the value of the SharpDX.AngleSingle operand. (The sign of
+        /// Returns the value of the <see cref="AngleF"/> operand. (The sign of
         /// the operand is unchanged.)
         /// </summary>
-        /// <param name="value">A SharpDX.AngleSingle object.</param>
+        /// <param name="value">A <see cref="AngleF"/> object.</param>
         /// <returns>The value of the value parameter.</returns>
         public static AngleF operator +(AngleF value)
         {
@@ -584,9 +584,9 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns the the negated value of the SharpDX.AngleSingle operand.
+        /// Returns the the negated value of the <see cref="AngleF"/> operand.
         /// </summary>
-        /// <param name="value">A SharpDX.AngleSingle object.</param>
+        /// <param name="value">A <see cref="AngleF"/> object.</param>
         /// <returns>The negated value of the value parameter.</returns>
         public static AngleF operator -(AngleF value)
         {
@@ -594,7 +594,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Adds two SharpDX.AngleSingle objects and returns the result.
+        /// Adds two <see cref="AngleF"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to add.</param>
         /// <param name="right">The second object to add.</param>
@@ -605,7 +605,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Subtracts two SharpDX.AngleSingle objects and returns the result.
+        /// Subtracts two <see cref="AngleF"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to subtract</param>
         /// <param name="right">The second object to subtract.</param>
@@ -616,7 +616,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Multiplies two SharpDX.AngleSingle objects and returns the result.
+        /// Multiplies two <see cref="AngleF"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to multiply.</param>
         /// <param name="right">The second object to multiply.</param>
@@ -627,7 +627,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Divides two SharpDX.AngleSingle objects and returns the result.
+        /// Divides two <see cref="AngleF"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The numerator object.</param>
         /// <param name="right">The denominator object.</param>
@@ -670,7 +670,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Compares this instance to a second SharpDX.AngleSingle and returns
+        /// Compares this instance to a second <see cref="AngleF"/> and returns
         /// an integer that indicates whether the value of this instance is less than,
         /// equal to, or greater than the value of the specified object.
         /// </summary>
@@ -695,11 +695,11 @@ namespace Molten
 
         /// <summary>
         /// Returns a value that indicates whether the current instance and a specified
-        /// SharpDX.AngleSingle object have the same value.
+        /// <see cref="AngleF"/> object have the same value.
         /// </summary>
         /// <param name="other">The object to compare.</param>
         /// <returns>
-        /// Returns true if this SharpDX.AngleSingle object and another have the same value;
+        /// Returns true if this <see cref="AngleF"/> object and another have the same value;
         /// otherwise, false.
         /// </returns>
         public bool Equals(AngleF other)
@@ -762,7 +762,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a hash code for this SharpDX.AngleSingle instance.
+        /// Returns a hash code for this <see cref="AngleF"/> instance.
         /// </summary>
         /// <returns>A 32-bit signed integer hash code.</returns>
         public override int GetHashCode()
@@ -776,9 +776,9 @@ namespace Molten
         /// </summary>
         /// <param name="obj">The object to compare.</param>
         /// <returns>
-        /// Returns true if the obj parameter is a SharpDX.AngleSingle object or a type
-        /// capable of implicit conversion to a SharpDX.AngleSingle value, and
-        /// its value is equal to the value of the current SharpDX.Angle
+        /// Returns true if the obj parameter is a <see cref="AngleF"/> object or a type
+        /// capable of implicit conversion to a <see cref="AngleF"/> value, and
+        /// its value is equal to the value of the current <see cref="AngleF"/>
         /// object; otherwise, false.
         /// </returns>
         public override bool Equals(object obj)

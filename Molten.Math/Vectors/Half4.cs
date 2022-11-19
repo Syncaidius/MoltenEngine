@@ -57,7 +57,7 @@ namespace Molten
         public Half W;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:SharpDX.Half4" /> structure.
+        /// Initializes a new instance of the <see cref="Half4"/> structure.
         /// </summary>
         /// <param name="x">The X component.</param>
         /// <param name="y">The Y component.</param>
@@ -72,7 +72,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:SharpDX.Half4" /> structure.
+        /// Initializes a new instance of the <see cref="Half4"/> structure.
         /// </summary>
         /// <param name="x">The X component.</param>
         /// <param name="y">The Y component.</param>
@@ -87,7 +87,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:SharpDX.Half4" /> structure.
+        /// Initializes a new instance of the <see cref="Half4"/> structure.
         /// </summary>
         /// <param name="x">The X component.</param>
         /// <param name="y">The Y component.</param>
@@ -102,7 +102,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:SharpDX.Half4" /> structure.
+        /// Initializes a new instance of the <see cref="Half4"/> structure.
         /// </summary>
         /// <param name="value">The value to set for the X, Y, Z, and W components.</param>
         public Half4(Half value)

@@ -49,7 +49,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten.DoublePrecision
+namespace Molten
 {
     /// <summary>
     /// Represents a unit independent angle using a double-precision floating-point
@@ -101,7 +101,7 @@ namespace Molten.DoublePrecision
         private int radiansInt;
 
         /// <summary>
-        /// Initializes a new instance of the SharpDX.AngleDouble structure with the
+        /// Initializes a new instance of the <see cref="AngleD"/> structure with the
         /// given unit dependant angle and unit type.
         /// </summary>
         /// <param name="angle">A unit dependant measure of the angle.</param>
@@ -134,7 +134,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Initializes a new instance of the SharpDX.AngleDouble structure using the
+        /// Initializes a new instance of the <see cref="AngleD"/> structure using the
         /// arc length formula (θ = s/r).
         /// </summary>
         /// <param name="arcLength">The measure of the arc.</param>
@@ -146,7 +146,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Wraps this SharpDX.AngleDouble to be in the range [π, -π].
+        /// Wraps this <see cref="AngleD"/> to be in the range [π, -π].
         /// </summary>
         public void Wrap()
         {
@@ -161,7 +161,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Wraps this SharpDX.AngleDouble to be in the range [0, 2π).
+        /// Wraps this <see cref="AngleD"/> to be in the range [0, 2π).
         /// </summary>
         public void WrapPositive()
         {
@@ -174,7 +174,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets or sets the total number of revolutions this SharpDX.AngleDouble represents.
+        /// Gets or sets the total number of revolutions this <see cref="AngleD"/> represents.
         /// </summary>
         public double Revolutions
         {
@@ -183,7 +183,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets or sets the total number of degrees this SharpDX.AngleDouble represents.
+        /// Gets or sets the total number of degrees this <see cref="AngleD"/> represents.
         /// </summary>
         public double Degrees
         {
@@ -192,7 +192,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets or sets the minutes component of the degrees this SharpDX.AngleDouble represents.
+        /// Gets or sets the minutes component of the degrees this <see cref="AngleD"/> represents.
         /// When setting the minutes, if the value is in the range (-60, 60) the whole degrees are
         /// not changed; otherwise, the whole degrees may be changed. Fractional values may set
         /// the seconds component.
@@ -225,7 +225,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets or sets the seconds of the degrees this SharpDX.AngleDouble represents.
+        /// Gets or sets the seconds of the degrees this <see cref="AngleD"/> represents.
         /// When setting the seconds, if the value is in the range (-60, 60) the whole minutes
         /// or whole degrees are not changed; otherwise, the whole minutes or whole degrees
         /// may be changed.
@@ -270,7 +270,7 @@ namespace Molten.DoublePrecision
         }
         
         /// <summary>
-        /// Gets or sets the total number of radians this SharpDX.AngleDouble represents.
+        /// Gets or sets the total number of radians this <see cref="AngleD"/> represents.
         /// </summary>
         public double Radians
         {
@@ -279,7 +279,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets or sets the total number of milliradians this SharpDX.AngleDouble represents.
+        /// Gets or sets the total number of milliradians this <see cref="AngleD"/> represents.
         /// One milliradian is equal to 1/(2000π).
         /// </summary>
         public double Milliradians
@@ -289,7 +289,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets or sets the total number of gradians this SharpDX.AngleDouble represents.
+        /// Gets or sets the total number of gradians this <see cref="AngleD"/> represents.
         /// </summary>
         public double Gradians
         {
@@ -298,7 +298,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is a right angle (i.e. 90° or π/2).
         /// </summary>
         public bool IsRight
@@ -307,7 +307,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is a straight angle (i.e. 180° or π).
         /// </summary>
         public bool IsStraight
@@ -316,7 +316,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is a full rotation angle (i.e. 360° or 2π).
         /// </summary>
         public bool IsFullRotation
@@ -325,7 +325,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is an oblique angle (i.e. is not 90° or a multiple of 90°).
         /// </summary>
         public bool IsOblique
@@ -334,7 +334,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is an acute angle (i.e. less than 90° but greater than 0°).
         /// </summary>
         public bool IsAcute
@@ -343,7 +343,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is an obtuse angle (i.e. greater than 90° but less than 180°).
         /// </summary>
         public bool IsObtuse
@@ -352,7 +352,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this SharpDX.Angle
+        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is a reflex angle (i.e. greater than 180° but less than 360°).
         /// </summary>
         public bool IsReflex
@@ -361,7 +361,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a SharpDX.AngleDouble instance that complements this angle (i.e. the two angles add to 90°).
+        /// Gets a <see cref="AngleD"/> instance that complements this angle (i.e. the two angles add to 90°).
         /// </summary>
         public AngleD Complement
         {
@@ -369,7 +369,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a SharpDX.AngleDouble instance that supplements this angle (i.e. the two angles add to 180°).
+        /// Gets a <see cref="AngleD"/> instance that supplements this angle (i.e. the two angles add to 180°).
         /// </summary>
         public AngleD Supplement
         {
@@ -377,10 +377,10 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Wraps the SharpDX.AngleDouble given in the value argument to be in the range [π, -π].
+        /// Wraps the <see cref="AngleD"/> given in the value argument to be in the range [π, -π].
         /// </summary>
-        /// <param name="value">A SharpDX.AngleDouble to wrap.</param>
-        /// <returns>The SharpDX.AngleDouble that is wrapped.</returns>
+        /// <param name="value">A <see cref="AngleD"/> to wrap.</param>
+        /// <returns>The <see cref="AngleD"/> that is wrapped.</returns>
         public static AngleD Wrap(AngleD value)
         {
             value.Wrap();
@@ -388,10 +388,10 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Wraps the SharpDX.AngleDouble given in the value argument to be in the range [0, 2π).
+        /// Wraps the <see cref="AngleD"/> given in the value argument to be in the range [0, 2π).
         /// </summary>
-        /// <param name="value">A SharpDX.AngleDouble to wrap.</param>
-        /// <returns>The SharpDX.AngleDouble that is wrapped.</returns>
+        /// <param name="value">A <see cref="AngleD"/> to wrap.</param>
+        /// <returns>The <see cref="AngleD"/> that is wrapped.</returns>
         public static AngleD WrapPositive(AngleD value)
         {
             value.WrapPositive();
@@ -399,11 +399,11 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Compares two SharpDX.AngleDouble instances and returns the smaller angle.
+        /// Compares two <see cref="AngleD"/> instances and returns the smaller angle.
         /// </summary>
-        /// <param name="left">The first SharpDX.AngleDouble instance to compare.</param>
-        /// <param name="right">The second SharpDX.AngleDouble instance to compare.</param>
-        /// <returns>The smaller of the two given SharpDX.AngleDouble instances.</returns>
+        /// <param name="left">The first <see cref="AngleD"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="AngleD"/> instance to compare.</param>
+        /// <returns>The smaller of the two given <see cref="AngleD"/> instances.</returns>
         public static AngleD Min(AngleD left, AngleD right)
         {
             if (left.radians < right.radians)
@@ -413,11 +413,11 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Compares two SharpDX.AngleDouble instances and returns the greater angle.
+        /// Compares two <see cref="AngleD"/> instances and returns the greater angle.
         /// </summary>
-        /// <param name="left">The first SharpDX.AngleDouble instance to compare.</param>
-        /// <param name="right">The second SharpDX.AngleDouble instance to compare.</param>
-        /// <returns>The greater of the two given SharpDX.AngleDouble instances.</returns>
+        /// <param name="left">The first <see cref="AngleD"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="AngleD"/> instance to compare.</param>
+        /// <returns>The greater of the two given <see cref="AngleD"/> instances.</returns>
         public static AngleD Max(AngleD left, AngleD right)
         {
             if (left.radians > right.radians)
@@ -427,7 +427,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Adds two SharpDX.AngleDouble objects and returns the result.
+        /// Adds two <see cref="AngleD"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to add.</param>
         /// <param name="right">The second object to add.</param>
@@ -438,7 +438,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Subtracts two SharpDX.AngleDouble objects and returns the result.
+        /// Subtracts two <see cref="AngleD"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to subtract.</param>
         /// <param name="right">The second object to subtract.</param>
@@ -449,7 +449,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Multiplies two SharpDX.AngleDouble objects and returns the result.
+        /// Multiplies two <see cref="AngleD"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to multiply.</param>
         /// <param name="right">The second object to multiply.</param>
@@ -460,7 +460,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Divides two SharpDX.AngleDouble objects and returns the result.
+        /// Divides two <see cref="AngleD"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The numerator object.</param>
         /// <param name="right">The denominator object.</param>
@@ -471,7 +471,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleDouble instance that represents the zero angle (i.e. 0°).
+        /// Gets a new <see cref="AngleD"/> instance that represents the zero angle (i.e. 0°).
         /// </summary>
         public static AngleD ZeroAngle
         {
@@ -479,7 +479,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleDouble instance that represents the right angle (i.e. 90° or π/2).
+        /// Gets a new <see cref="AngleD"/> instance that represents the right angle (i.e. 90° or π/2).
         /// </summary>
         public static AngleD RightAngle
         {
@@ -487,7 +487,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleDouble instance that represents the straight angle (i.e. 180° or π).
+        /// Gets a new <see cref="AngleD"/> instance that represents the straight angle (i.e. 180° or π).
         /// </summary>
         public static AngleD StraightAngle
         {
@@ -495,7 +495,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleDouble instance that represents the full rotation angle (i.e. 360° or 2π).
+        /// Gets a new <see cref="AngleD"/> instance that represents the full rotation angle (i.e. 360° or 2π).
         /// </summary>
         public static AngleD FullRotationAngle
         {
@@ -503,7 +503,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether the values of two SharpDX.Angle
+        /// Returns a System.Boolean that indicates whether the values of two <see cref="AngleD"/>
         /// objects are equal.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
@@ -515,7 +515,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether the values of two SharpDX.Angle
+        /// Returns a System.Boolean that indicates whether the values of two <see cref="AngleD"/>
         /// objects are not equal.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
@@ -527,8 +527,8 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is less than another SharpDX.AngleDouble object.
+        /// Returns a System.Boolean that indicates whether a <see cref="AngleD"/>
+        /// object is less than another <see cref="AngleD"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
@@ -539,8 +539,8 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is greater than another SharpDX.AngleDouble object.
+        /// Returns a System.Boolean that indicates whether a <see cref="AngleD"/>
+        /// object is greater than another <see cref="AngleD"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
@@ -551,8 +551,8 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is less than or equal to another SharpDX.AngleDouble object.
+        /// Returns a System.Boolean that indicates whether a <see cref="AngleD"/>
+        /// object is less than or equal to another <see cref="AngleD"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
@@ -563,8 +563,8 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is greater than or equal to another SharpDX.AngleDouble object.
+        /// Returns a System.Boolean that indicates whether a <see cref="AngleD"/>
+        /// object is greater than or equal to another <see cref="AngleD"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
@@ -575,10 +575,10 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Returns the value of the SharpDX.AngleDouble operand. (The sign of
+        /// Returns the value of the <see cref="AngleD"/> operand. (The sign of
         /// the operand is unchanged.)
         /// </summary>
-        /// <param name="value">A SharpDX.AngleDouble object.</param>
+        /// <param name="value">A <see cref="AngleD"/> object.</param>
         /// <returns>The value of the value parameter.</returns>
         public static AngleD operator +(AngleD value)
         {
@@ -586,9 +586,9 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Returns the the negated value of the SharpDX.AngleDouble operand.
+        /// Returns the the negated value of the <see cref="AngleD"/> operand.
         /// </summary>
-        /// <param name="value">A SharpDX.AngleDouble object.</param>
+        /// <param name="value">A <see cref="AngleD"/> object.</param>
         /// <returns>The negated value of the value parameter.</returns>
         public static AngleD operator -(AngleD value)
         {
@@ -596,7 +596,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Adds two SharpDX.AngleDouble objects and returns the result.
+        /// Adds two <see cref="AngleD"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to add.</param>
         /// <param name="right">The second object to add.</param>
@@ -607,7 +607,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Subtracts two SharpDX.AngleDouble objects and returns the result.
+        /// Subtracts two <see cref="AngleD"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to subtract</param>
         /// <param name="right">The second object to subtract.</param>
@@ -618,7 +618,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Multiplies two SharpDX.AngleDouble objects and returns the result.
+        /// Multiplies two <see cref="AngleD"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to multiply.</param>
         /// <param name="right">The second object to multiply.</param>
@@ -629,7 +629,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Divides two SharpDX.AngleDouble objects and returns the result.
+        /// Divides two <see cref="AngleD"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The numerator object.</param>
         /// <param name="right">The denominator object.</param>
@@ -672,7 +672,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Compares this instance to a second SharpDX.AngleDouble and returns
+        /// Compares this instance to a second <see cref="AngleD"/> and returns
         /// an integer that indicates whether the value of this instance is less than,
         /// equal to, or greater than the value of the specified object.
         /// </summary>
@@ -697,11 +697,11 @@ namespace Molten.DoublePrecision
 
         /// <summary>
         /// Returns a value that indicates whether the current instance and a specified
-        /// SharpDX.AngleDouble object have the same value.
+        /// <see cref="AngleD"/> object have the same value.
         /// </summary>
         /// <param name="other">The object to compare.</param>
         /// <returns>
-        /// Returns true if this SharpDX.AngleDouble object and another have the same value;
+        /// Returns true if this <see cref="AngleD"/> object and another have the same value;
         /// otherwise, false.
         /// </returns>
         public bool Equals(AngleD other)
@@ -764,7 +764,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Returns a hash code for this SharpDX.AngleDouble instance.
+        /// Returns a hash code for this <see cref="AngleD"/> instance.
         /// </summary>
         /// <returns>A 32-bit signed integer hash code.</returns>
         public override int GetHashCode()
@@ -778,9 +778,9 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="obj">The object to compare.</param>
         /// <returns>
-        /// Returns true if the obj parameter is a SharpDX.AngleDouble object or a type
-        /// capable of implicit conversion to a SharpDX.AngleDouble value, and
-        /// its value is equal to the value of the current SharpDX.Angle
+        /// Returns true if the obj parameter is a <see cref="AngleD"/> object or a type
+        /// capable of implicit conversion to a <see cref="AngleD"/> value, and
+        /// its value is equal to the value of the current <see cref="AngleD"/>
         /// object; otherwise, false.
         /// </returns>
         public override bool Equals(object obj)
