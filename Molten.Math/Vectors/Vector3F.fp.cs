@@ -159,6 +159,15 @@ namespace Molten
 			Z = MathF.Ceiling(Z);
         }
 
+        /// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
+        public void Abs()
+        {
+			X = MathF.Abs(X);
+			Y = MathF.Abs(Y);
+			Z = MathF.Abs(Z);
+        }
+
+
 		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
         public void Truncate()
         {

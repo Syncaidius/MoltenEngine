@@ -232,6 +232,20 @@ namespace Molten
 #>
         }
 
+        /// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
+        public void Abs()
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=pMapUpper[p]#> = <#=math#>.Abs(<#=pMapUpper[p]#>);
+<#
+		}
+#>
+        }
+
+
 		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
         public void Truncate()
         {
