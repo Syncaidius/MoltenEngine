@@ -159,7 +159,7 @@ namespace Molten
 			Z = MathF.Ceiling(Z);
         }
 
-        /// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
+        /// <summary>Removes the sign from each component of the current <see cref="Vector3F"/>.</summary>
         public void Abs()
         {
 			X = MathF.Abs(X);

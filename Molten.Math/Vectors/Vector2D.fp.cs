@@ -151,7 +151,7 @@ namespace Molten
 			Y = Math.Ceiling(Y);
         }
 
-        /// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
+        /// <summary>Removes the sign from each component of the current <see cref="Vector2D"/>.</summary>
         public void Abs()
         {
 			X = Math.Abs(X);
