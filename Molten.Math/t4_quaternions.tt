@@ -14,94 +14,68 @@ List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "quaternion_defs.json");
 string _pMap = "xyzw";
 string _pMapUpper = "XYZW";
 
-foreach(TypeData d in _def)
+GenerateTypes(this.GenerationEnvironment, this.Host, "", "quaternion_defs.json", new int[] {4}, (d, md, defs) =>
 {
-	if(!d.IsFPType)
-	{
-		continue;
-	}
-
-	string fName = $"{d.Name}{d.Postfix}";
     string vectorName = $"Vector3{d.Postfix}";
-	string fn = $"{fName}";
-	string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
-	string mathHelper = d.DT == "double" ? "MathHelperDP" : "MathHelper";
-	string math = d.FP == "float" ? "MathF" : "Math";
-    string subNamespace = "";
-    string subDir = "";
-
-    switch(d.Bits){
-        case 64: 
-            subNamespace = ".DoublePrecision"; 
-            subDir = "/DoublePrecision";
-            break;
-
-        case 128: 
-            subNamespace = ".QuadPrecision"; 
-            subDir = "/QuadPrecision";
-            break;
-
-        default:
-            subDir = "/SinglePrecision";
-            break;
-    }
+    md.Name = $"{d.Name}{d.Postfix}";
 #>
+
 using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten<#=subNamespace#>
+namespace Molten<#=md.SubNamespace#>
 {
-	///<summary>Represents a four dimensional mathematical <#=fName#>.</summary>
+	///<summary>Represents a four dimensional md.Mathematical <#=md.Name#>.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack = <#=d.Pack#>)]
     [Serializable]
-	public partial struct <#=fName#> : IFormattable, IEquatable<<#=fName#>>
+	public partial struct <#=md.Name#> : IFormattable, IEquatable<<#=md.Name#>>
 	{
 		/// <summary>
-        /// The size of the <#=See(fName)#> type, in bytes.
+        /// The size of the <#=See(md.Name)#> type, in bytes.
         /// </summary>
-        public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=fName#>));
+        public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=md.Name#>));
 
 		 /// <summary>
-        /// A <see cref="<#=fName#>"/> with all of its components set to zero.
+        /// A <see cref="<#=md.Name#>"/> with all of its components set to zero.
         /// </summary>
-        public static readonly <#=fName#> Zero = new <#=fName#>();
+        public static readonly <#=md.Name#> Zero = new <#=md.Name#>();
 
         /// <summary>
-        /// A <see cref="<#=fName#>"/> with all of its components set to one.
+        /// A <see cref="<#=md.Name#>"/> with all of its components set to one.
         /// </summary>
-        public static readonly <#=fName#> One = new <#=fName#>(<#=d.One#>, <#=d.One#>, <#=d.One#>, <#=d.One#>);
+        public static readonly <#=md.Name#> One = new <#=md.Name#>(<#=d.One#>, <#=d.One#>, <#=d.One#>, <#=d.One#>);
 
         /// <summary>
-        /// The identity <see cref="<#=fName#>"/> (0, 0, 0, 1).
+        /// The identity <see cref="<#=md.Name#>"/> (0, 0, 0, 1).
         /// </summary>
-        public static readonly <#=fName#> Identity = new <#=fName#>(<#=d.Zero#>, <#=d.Zero#>, <#=d.Zero#>, <#=d.Zero#>);
+        public static readonly <#=md.Name#> Identity = new <#=md.Name#>(<#=d.Zero#>, <#=d.Zero#>, <#=d.Zero#>, <#=d.Zero#>);
 
-		///<summary>The X component of the <#=fName#>.</summary>
+		///<summary>The X component of the <#=md.Name#>.</summary>
         [DataMember]
 		public <#=d.DT#> X;
 
-        ///<summary>The Y component of the <#=fName#>.</summary>
+        ///<summary>The Y component of the <#=md.Name#>.</summary>
         [DataMember]
 		public <#=d.DT#> Y;
 
-        ///<summary>The Z component of the <#=fName#>.</summary>
+        ///<summary>The Z component of the <#=md.Name#>.</summary>
         [DataMember]
 		public <#=d.DT#> Z;
 
-        ///<summary>The W component of the <#=fName#>.</summary>
+        ///<summary>The W component of the <#=md.Name#>.</summary>
         [DataMember]
 		public <#=d.DT#> W;
 
         /// <summary>
-        /// Gets a value indicting whether this  <see cref="<#=fName#>"/> is normalized.
+        /// Gets a value indicting whether this  <see cref="<#=md.Name#>"/> is normalized.
         /// </summary>
-        public bool IsNormalized => <#=mathHelper#>.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
+        public bool IsNormalized => <#=md.MathHelper#>.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
 
         /// <summary>
-        /// Gets the angle of the  <see cref="<#=fName#>"/>.
+        /// Gets the angle of the  <see cref="<#=md.Name#>"/>.
         /// </summary>
         /// <value>The quaternion's angle.</value>
         public <#=d.DT#> Angle
@@ -109,36 +83,36 @@ namespace Molten<#=subNamespace#>
             get
             {
                 <#=d.DT#> length = (X * X) + (Y * Y) + (Z * Z);
-                if (<#=mathHelper#>.IsZero(length))
+                if (<#=md.MathHelper#>.IsZero(length))
                     return 0.0<#=d.FPL#>;
 
-                return 2.0<#=d.FPL#> * <#=math#>.Acos(<#=d.DT#>.Clamp(W, -1<#=d.FPL#>, 1<#=d.FPL#>));
+                return 2.0<#=d.FPL#> * <#=md.Math#>.Acos(<#=d.DT#>.Clamp(W, -1<#=d.FPL#>, 1<#=d.FPL#>));
             }
         }
 
         /// <summary>
-        /// Gets the axis components of the <#=fName#>.
+        /// Gets the axis components of the <#=md.Name#>.
         /// </summary>
-        /// <value>The axis components of the <#=fName#>.</value>
+        /// <value>The axis components of the <#=md.Name#>.</value>
         public Vector3<#=d.Postfix#> Axis
         {
             get
             {
                 <#=d.DT#> length = (X * X) + (Y * Y) + (Z * Z);
-                if (<#=mathHelper#>.IsZero(length))
+                if (<#=md.MathHelper#>.IsZero(length))
                     return Vector3<#=d.Postfix#>.UnitX;
 
-                <#=d.DT#> inv = 1.0<#=d.FPL#>  / <#=math#>.Sqrt(length);
+                <#=d.DT#> inv = 1.0<#=d.FPL#>  / <#=md.Math#>.Sqrt(length);
                 return new Vector3<#=d.Postfix#>(X * inv, Y * inv, Z * inv);
             }
         }
 
 #region Constructors
         /// <summary>
-        /// Initializes a new instance of the <#=See(fName)#> struct.
+        /// Initializes a new instance of the <#=See(md.Name)#> struct.
         /// </summary>
-        /// <param name="value">A <#=fName#> containing the values with which to initialize the components.</param>
-        public <#=fName#>(Vector4<#=d.Postfix#> value)
+        /// <param name="value">A <#=md.Name#> containing the values with which to initialize the components.</param>
+        public <#=md.Name#>(Vector4<#=d.Postfix#> value)
         {
             X = value.X;
             Y = value.Y;
@@ -147,11 +121,11 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Initializes a new instance of the <#=See(fName)#> struct.
+        /// Initializes a new instance of the <#=See(md.Name)#> struct.
         /// </summary>
         /// <param name="value">A vector containing the values with which to initialize the X, Y, and Z components.</param>
-        /// <param name="w">Initial value for the W component of the <#=See(fName)#>.</param>
-        public <#=fName#>(<#=vectorName#> value, <#=d.DT#> w)
+        /// <param name="w">Initial value for the W component of the <#=See(md.Name)#>.</param>
+        public <#=md.Name#>(<#=vectorName#> value, <#=d.DT#> w)
         {
             X = value.X;
             Y = value.Y;
@@ -160,12 +134,12 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Initializes a new instance of the <#=See(fName)#> struct.
+        /// Initializes a new instance of the <#=See(md.Name)#> struct.
         /// </summary>
         /// <param name="value">A vector containing the values with which to initialize the X and Y components.</param>
-        /// <param name="z">Initial value for the Z component of the <#=See(fName)#>.</param>
-        /// <param name="w">Initial value for the W component of the <#=See(fName)#>.</param>
-        public <#=fName#>(Vector2<#=d.Postfix#> value, <#=d.DT#> z, <#=d.DT#> w)
+        /// <param name="z">Initial value for the Z component of the <#=See(md.Name)#>.</param>
+        /// <param name="w">Initial value for the W component of the <#=See(md.Name)#>.</param>
+        public <#=md.Name#>(Vector2<#=d.Postfix#> value, <#=d.DT#> z, <#=d.DT#> w)
         {
             X = value.X;
             Y = value.Y;
@@ -174,13 +148,13 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Initializes a new instance of the <#=See(fName)#> struct.
+        /// Initializes a new instance of the <#=See(md.Name)#> struct.
         /// </summary>
-        /// <param name="x">Initial value for the X component of the <#=See(fName)#>.</param>
-        /// <param name="y">Initial value for the Y component of the <#=See(fName)#>.</param>
-        /// <param name="z">Initial value for the Z component of the <#=See(fName)#>.</param>
-        /// <param name="w">Initial value for the W component of the <#=See(fName)#>.</param>
-        public <#=fName#>(<#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> z, <#=d.DT#> w)
+        /// <param name="x">Initial value for the X component of the <#=See(md.Name)#>.</param>
+        /// <param name="y">Initial value for the Y component of the <#=See(md.Name)#>.</param>
+        /// <param name="z">Initial value for the Z component of the <#=See(md.Name)#>.</param>
+        /// <param name="w">Initial value for the W component of the <#=See(md.Name)#>.</param>
+        public <#=md.Name#>(<#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> z, <#=d.DT#> w)
         {
             X = x;
             Y = y;
@@ -190,17 +164,17 @@ namespace Molten<#=subNamespace#>
 
         
         /// <summary>
-        /// Initializes a new instance of the  <#=See(fName)#> struct.
+        /// Initializes a new instance of the  <#=See(md.Name)#> struct.
         /// </summary>
         /// <param name="values">The values to assign to the X, Y, Z, and W components of the quaternion. This must be an array with four elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-        public <#=fName#>(<#=d.DT#>[] values)
+        public <#=md.Name#>(<#=d.DT#>[] values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
             if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for <#=fName#>.");
+                throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for <#=md.Name#>.");
 
             X = values[0];
             Y = values[1];
@@ -209,9 +183,9 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="<#=fName#>"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
+        /// Initializes a new instance of the <see cref="<#=md.Name#>"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
         /// </summary>
-        public unsafe <#=fName#>(<#=d.DT#>* ptr)
+        public unsafe <#=md.Name#>(<#=d.DT#>* ptr)
 		{
             X = ptr[0];
             Y = ptr[1];
@@ -222,10 +196,10 @@ namespace Molten<#=subNamespace#>
 
 #region Instance Methods
 /// <summary>
-        /// Gets a value indicating whether this instance is equivalent to the identity <#=fName#>.
+        /// Gets a value indicating whether this instance is equivalent to the identity <#=md.Name#>.
         /// </summary>
         /// <value>
-        /// <c>true</c> if this instance is an identity <#=fName#>; otherwise, <c>false</c>.
+        /// <c>true</c> if this instance is an identity <#=md.Name#>; otherwise, <c>false</c>.
         /// </value>
         public bool IsIdentity
         {
@@ -233,7 +207,7 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Conjugates the <#=See(fName)#> X,Y and Z components. W component is not changed.
+        /// Conjugates the <#=See(md.Name)#> X,Y and Z components. W component is not changed.
         /// </summary>
         public void Conjugate()
         {
@@ -243,7 +217,7 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Conjugates the <#=See(fName)#>.
+        /// Conjugates the <#=See(md.Name)#>.
         /// </summary>
         public void Abs()
         {
@@ -254,11 +228,11 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Calculates the squared length of the <#=See(fName)#>.
+        /// Calculates the squared length of the <#=See(md.Name)#>.
         /// </summary>
-        /// <returns>The squared length of the <#=See(fName)#>.</returns>
+        /// <returns>The squared length of the <#=See(md.Name)#>.</returns>
         /// <remarks>
-        /// This method may be preferred to <see cref="<#=fName#>.Length"/> when only a relative length is needed
+        /// This method may be preferred to <see cref="<#=md.Name#>.Length"/> when only a relative length is needed
         /// and speed is of the essence.
         /// </remarks>
         public <#=d.DT#> LengthSquared()
@@ -267,9 +241,9 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Creates an array containing the elements of the <#=See(fName)#>.
+        /// Creates an array containing the elements of the <#=See(md.Name)#>.
         /// </summary>
-        /// <returns>A four-element array containing the components of the <#=See(fName)#>.</returns>
+        /// <returns>A four-element array containing the components of the <#=See(md.Name)#>.</returns>
         public <#=d.DT#>[] ToArray()
         {
             return new <#=d.DT#>[] { X, Y, Z, W };
@@ -299,9 +273,9 @@ namespace Molten<#=subNamespace#>
         /// <param name="v1">First unit-length vector.</param>
         /// <param name="v2">Second unit-length vector.</param>
         /// <param name="q">Quaternion representing the rotation from v1 to v2.</param>
-        public static <#=fName#> GetQuaternionBetweenNormalizedVectors(ref <#=vectorName#> v1, ref <#=vectorName#> v2)
+        public static <#=md.Name#> GetQuaternionBetweenNormalizedVectors(ref <#=vectorName#> v1, ref <#=vectorName#> v2)
         {
-            <#=fName#> q;
+            <#=md.Name#> q;
             <#=d.DT#> dot = <#=vectorName#>.Dot(ref v1, ref v2);
             //For non-normal vectors, the multiplying the axes length squared would be necessary:
             //float w = dot + (float)Math.Sqrt(v1.LengthSquared() * v2.LengthSquared());
@@ -316,16 +290,16 @@ namespace Molten<#=subNamespace#>
                 <#=d.DT#> absY = Math.Abs(v1.Y);
                 <#=d.DT#> absZ = Math.Abs(v1.Z);
                 if (absX < absY && absX < absZ)
-                    q = new <#=fName#>(0, -v1.Z, v1.Y, 0);
+                    q = new <#=md.Name#>(0, -v1.Z, v1.Y, 0);
                 else if (absY < absZ)
-                    q = new <#=fName#>(-v1.Z, 0, v1.X, 0);
+                    q = new <#=md.Name#>(-v1.Z, 0, v1.X, 0);
                 else
-                    q = new <#=fName#>(-v1.Y, v1.X, 0, 0);
+                    q = new <#=md.Name#>(-v1.Y, v1.X, 0, 0);
             }
             else
             {
                 <#=vectorName#> axis = <#=vectorName#>.Cross(ref v1, ref v2);
-                q = new <#=fName#>(axis.X, axis.Y, axis.Z, dot + 1);
+                q = new <#=md.Name#>(axis.X, axis.Y, axis.Z, dot + 1);
             }
             q.Normalize();
 
@@ -333,12 +307,12 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Converts the <#=See(fName)#> into a unit quaternion.
+        /// Converts the <#=See(md.Name)#> into a unit quaternion.
         /// </summary>
         public void Normalize()
         {
             <#=d.DT#> length = Length();
-            if (!<#=mathHelper#>.IsZero(length))
+            if (!<#=md.MathHelper#>.IsZero(length))
             {
                 <#=d.DT#> inverse = 1.0<#=d.FPL#> / length;
                 X *= inverse;
@@ -349,24 +323,24 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Calculates the length of the <#=fName#>.
+        /// Calculates the length of the <#=md.Name#>.
         /// </summary>
-        /// <returns>The length of the <#=fName#>.</returns>
+        /// <returns>The length of the <#=md.Name#>.</returns>
         /// <remarks>
-        /// <see cref="<#=fName#>.LengthSquared"/> may be preferred when only the relative length is needed and speed is of the essence.
+        /// <see cref="<#=md.Name#>.LengthSquared"/> may be preferred when only the relative length is needed and speed is of the essence.
         /// </remarks>
         public <#=d.DT#> Length()
         {
-            return <#=fpCast#>Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
+            return <#=md.FPCast#>Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
-        /// Conjugates and renormalizes the <#=fName#>.
+        /// Conjugates and renormalizes the <#=md.Name#>.
         /// </summary>
         public void Invert()
         {
             <#=d.DT#> lengthSq = LengthSquared();
-            if (!<#=mathHelper#>.IsZero(lengthSq))
+            if (!<#=md.MathHelper#>.IsZero(lengthSq))
             {
                 lengthSq = 1.0<#=d.FPL#> / lengthSq;
 
@@ -378,27 +352,27 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Determines whether the specified <#=See(fName)#> is equal to this instance.
+        /// Determines whether the specified <#=See(md.Name)#> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <#=See(fName)#> to compare with this instance.</param>
+        /// <param name="other">The <#=See(md.Name)#> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <#=See(fName)#> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <#=See(md.Name)#> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref <#=fName#> other)
+        public bool Equals(ref <#=md.Name#> other)
         {
-            return <#=mathHelper#>.NearEqual(other.X, X) && <#=mathHelper#>.NearEqual(other.Y, Y) && <#=mathHelper#>.NearEqual(other.Z, Z) && <#=mathHelper#>.NearEqual(other.W, W);
+            return <#=md.MathHelper#>.NearEqual(other.X, X) && <#=md.MathHelper#>.NearEqual(other.Y, Y) && <#=md.MathHelper#>.NearEqual(other.Z, Z) && <#=md.MathHelper#>.NearEqual(other.W, W);
         }
 
         /// <summary>
-        /// Determines whether the specified <#=See(fName)#> is equal to this instance.
+        /// Determines whether the specified <#=See(md.Name)#> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <#=See(fName)#> to compare with this instance.</param>
+        /// <param name="other">The <#=See(md.Name)#> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <#=See(fName)#> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <#=See(md.Name)#> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(<#=fName#> other)
+        public bool Equals(<#=md.Name#> other)
         {
             return Equals(ref other);
         }
@@ -412,10 +386,10 @@ namespace Molten<#=subNamespace#>
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is <#=fName#>))
+            if (!(value is <#=md.Name#>))
                 return false;
 
-            var strongValue = (<#=fName#>)value;
+            var strongValue = (<#=md.Name#>)value;
             return Equals(ref strongValue);
         }
 #endregion
@@ -480,11 +454,11 @@ namespace Molten<#=subNamespace#>
 
 #region Static Methods
         /// <summary>
-        /// Multiplies two <#=See(fName)#> together in opposite order.
+        /// Multiplies two <#=See(md.Name)#> together in opposite order.
         /// </summary>
-        /// <param name="a">First <#=See(fName)#> to multiply.</param>
-        /// <param name="b">Second <#=See(fName)#> to multiply.</param>
-        public static void Concatenate(ref <#=fName#> a, ref <#=fName#> b, out <#=fName#> result)
+        /// <param name="a">First <#=See(md.Name)#> to multiply.</param>
+        /// <param name="b">Second <#=See(md.Name)#> to multiply.</param>
+        public static void Concatenate(ref <#=md.Name#> a, ref <#=md.Name#> b, out <#=md.Name#> result)
         {
             <#=d.DT#> aX = a.X;
             <#=d.DT#> aY = a.Y;
@@ -502,13 +476,13 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Multiplies two <#=See(fName)#> together in opposite order.
+        /// Multiplies two <#=See(md.Name)#> together in opposite order.
         /// </summary>
-        /// <param name="a">First <#=See(fName)#> to multiply.</param>
-        /// <param name="b">Second <#=See(fName)#> to multiply.</param>
-        public static <#=fName#> Concatenate(ref <#=fName#> a, ref <#=fName#> b)
+        /// <param name="a">First <#=See(md.Name)#> to multiply.</param>
+        /// <param name="b">Second <#=See(md.Name)#> to multiply.</param>
+        public static <#=md.Name#> Concatenate(ref <#=md.Name#> a, ref <#=md.Name#> b)
         {
-            Concatenate(ref a, ref b, out <#=fName#> result);
+            Concatenate(ref a, ref b, out <#=md.Name#> result);
             return result;
         }
 
@@ -517,7 +491,7 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="q">Quaternion to be converted.</param>
         /// <returns>Angle around the axis represented by the quaternion.</returns>
-        public static <#=d.DT#> GetAngleFromQuaternion(ref <#=fName#> q)
+        public static <#=d.DT#> GetAngleFromQuaternion(ref <#=md.Name#> q)
         {
             <#=d.DT#> qw = Math.Abs(q.W);
             if (qw > 1)
@@ -530,16 +504,16 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="value">The quaternion whose logarithm will be calculated.</param>
         /// <param name="result">When the method completes, contains the natural logarithm of the quaternion.</param>
-        public static <#=fName#> Logarithm(ref <#=fName#> value)
+        public static <#=md.Name#> Logarithm(ref <#=md.Name#> value)
         {
-            <#=fName#> result;
+            <#=md.Name#> result;
 
             if (Math.Abs(value.W) < 1.0)
             {
-                <#=d.DT#> angle = <#=fpCast#>Math.Acos(value.W);
-                <#=d.DT#> sin = <#=fpCast#>Math.Sin(angle);
+                <#=d.DT#> angle = <#=md.FPCast#>Math.Acos(value.W);
+                <#=d.DT#> sin = <#=md.FPCast#>Math.Sin(angle);
 
-                if (!<#=mathHelper#>.IsZero(sin))
+                if (!<#=md.MathHelper#>.IsZero(sin))
                 {
                     <#=d.DT#> coeff = angle / sin;
                     result.X = value.X * coeff;
@@ -565,18 +539,18 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="value">The quaternion whose logarithm will be calculated.</param>
         /// <param name="result">When the method completes, contains the natural logarithm of the quaternion.</param>
-        public static <#=fName#> Logarithm(<#=fName#> value)
+        public static <#=md.Name#> Logarithm(<#=md.Name#> value)
         {
             return Logarithm(ref value);
         }
 
         /// <summary>
-        /// Computes the axis angle representation of a normalized <#=See(fName)#>.
+        /// Computes the axis angle representation of a normalized <#=See(md.Name)#>.
         /// </summary>
-        /// <param name="q"><#=See(fName)#> to be converted.</param>
-        /// <param name="axis">Axis represented by the <#=See(fName)#>.</param>
-        /// <param name="angle">Angle around the axis represented by the <#=See(fName)#>.</param>
-        public static void GetAxisAngle(ref <#=fName#> q, out Vector3<#=d.Postfix#> axis, out <#=d.DT#> angle)
+        /// <param name="q"><#=See(md.Name)#> to be converted.</param>
+        /// <param name="axis">Axis represented by the <#=See(md.Name)#>.</param>
+        /// <param name="angle">Angle around the axis represented by the <#=See(md.Name)#>.</param>
+        public static void GetAxisAngle(ref <#=md.Name#> q, out Vector3<#=d.Postfix#> axis, out <#=d.DT#> angle)
         {
             <#=d.DT#> qw = q.W;
             if (qw > 0)
@@ -596,8 +570,8 @@ namespace Molten<#=subNamespace#>
             <#=d.DT#> lengthSquared = axis.LengthSquared();
             if (lengthSquared > 1e-14f)
             {
-                axis = axis / <#=math#>.Sqrt(lengthSquared);
-                angle = 2<#=d.FPL#> * <#=math#>.Acos(<#=d.DT#>.Clamp(qw, -1, 1));
+                axis = axis / <#=md.Math#>.Sqrt(lengthSquared);
+                angle = 2<#=d.FPL#> * <#=md.Math#>.Acos(<#=d.DT#>.Clamp(qw, -1, 1));
             }
             else
             {
@@ -609,22 +583,22 @@ namespace Molten<#=subNamespace#>
         /// <summary>
         /// Sets up control points for spherical quadrangle interpolation.
         /// </summary>
-        /// <param name="value1">First source <#=See(fName)#>.</param>
-        /// <param name="value2">Second source <#=See(fName)#>.</param>
-        /// <param name="value3">Third source <#=See(fName)#>.</param>
-        /// <param name="value4">Fourth source <#=See(fName)#>.</param>
-        /// <returns>An array of three <#=See(fName)#> that represent control points for spherical quadrangle interpolation.</returns>
-        public static <#=fName#>[] SquadSetup(ref <#=fName#> value1, ref <#=fName#> value2, ref <#=fName#> value3, ref <#=fName#> value4)
+        /// <param name="value1">First source <#=See(md.Name)#>.</param>
+        /// <param name="value2">Second source <#=See(md.Name)#>.</param>
+        /// <param name="value3">Third source <#=See(md.Name)#>.</param>
+        /// <param name="value4">Fourth source <#=See(md.Name)#>.</param>
+        /// <returns>An array of three <#=See(md.Name)#> that represent control points for spherical quadrangle interpolation.</returns>
+        public static <#=md.Name#>[] SquadSetup(ref <#=md.Name#> value1, ref <#=md.Name#> value2, ref <#=md.Name#> value3, ref <#=md.Name#> value4)
         {
-            <#=fName#> q0 = (value1 + value2).LengthSquared() < (value1 - value2).LengthSquared() ? -value1 : value1;
-            <#=fName#> q2 = (value2 + value3).LengthSquared() < (value2 - value3).LengthSquared() ? -value3 : value3;
-            <#=fName#> q3 = (value3 + value4).LengthSquared() < (value3 - value4).LengthSquared() ? -value4 : value4;
-            <#=fName#> q1 = value2;
+            <#=md.Name#> q0 = (value1 + value2).LengthSquared() < (value1 - value2).LengthSquared() ? -value1 : value1;
+            <#=md.Name#> q2 = (value2 + value3).LengthSquared() < (value2 - value3).LengthSquared() ? -value3 : value3;
+            <#=md.Name#> q3 = (value3 + value4).LengthSquared() < (value3 - value4).LengthSquared() ? -value4 : value4;
+            <#=md.Name#> q1 = value2;
 
-            <#=fName#> q1Exp = Exponential(ref q1);
-            <#=fName#> q2Exp = Exponential(ref q2);
+            <#=md.Name#> q1Exp = Exponential(ref q1);
+            <#=md.Name#> q2Exp = Exponential(ref q2);
 
-            <#=fName#>[] results = new <#=fName#>[3];
+            <#=md.Name#>[] results = new <#=md.Name#>[3];
             results[0] = q1 * Exponential(-0.25f * (Logarithm(q1Exp * q2) + Logarithm(q1Exp * q0)));
             results[1] = q2 * Exponential(-0.25f * (Logarithm(q2Exp * q3) + Logarithm(q2Exp * q1)));
             results[2] = q2;
@@ -633,49 +607,49 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Interpolates between <#=See(fName)#>, using spherical quadrangle interpolation.
+        /// Interpolates between <#=See(md.Name)#>, using spherical quadrangle interpolation.
         /// </summary>
-        /// <param name="value1">First source <#=See(fName)#>.</param>
-        /// <param name="value2">Second source <#=See(fName)#>.</param>
-        /// <param name="value3">Third source <#=See(fName)#>.</param>
-        /// <param name="value4">Fourth source <#=See(fName)#>.</param>
+        /// <param name="value1">First source <#=See(md.Name)#>.</param>
+        /// <param name="value2">Second source <#=See(md.Name)#>.</param>
+        /// <param name="value3">Third source <#=See(md.Name)#>.</param>
+        /// <param name="value4">Fourth source <#=See(md.Name)#>.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of interpolation.</param>
-        /// <param name="result">When the method completes, contains the spherical quadrangle interpolation of the <#=See(fName)#>.</param>
-        public static <#=fName#> Squad(ref <#=fName#> value1, ref <#=fName#> value2, ref <#=fName#> value3, ref <#=fName#> value4, float amount)
+        /// <param name="result">When the method completes, contains the spherical quadrangle interpolation of the <#=See(md.Name)#>.</param>
+        public static <#=md.Name#> Squad(ref <#=md.Name#> value1, ref <#=md.Name#> value2, ref <#=md.Name#> value3, ref <#=md.Name#> value4, float amount)
         {
-            <#=fName#> start = Slerp(ref value1, ref value4, amount);
-            <#=fName#> end = Slerp(ref value2, ref value3, amount);
+            <#=md.Name#> start = Slerp(ref value1, ref value4, amount);
+            <#=md.Name#> end = Slerp(ref value2, ref value3, amount);
             return Slerp(ref start, ref end, 2.0<#=d.FPL#> * amount * (1.0<#=d.FPL#> - amount));
         }
 
         /// <summary>
-        /// Interpolates between two <#=See(fName)#>, using spherical linear interpolation.
+        /// Interpolates between two <#=See(md.Name)#>, using spherical linear interpolation.
         /// </summary>
-        /// <param name="start">Start <#=See(fName)#>.</param>
-        /// <param name="end">End <#=See(fName)#>.</param>
+        /// <param name="start">Start <#=See(md.Name)#>.</param>
+        /// <param name="end">End <#=See(md.Name)#>.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the spherical linear interpolation of the two <#=See(fName)#>.</param>
-        public static <#=fName#> Slerp(ref <#=fName#> start, ref <#=fName#> end, <#=d.DT#> amount)
+        /// <param name="result">When the method completes, contains the spherical linear interpolation of the two <#=See(md.Name)#>.</param>
+        public static <#=md.Name#> Slerp(ref <#=md.Name#> start, ref <#=md.Name#> end, <#=d.DT#> amount)
         {
             <#=d.DT#> opposite;
             <#=d.DT#> inverse;
             <#=d.DT#> dot = Dot(start, end);
 
-            if (Math.Abs(dot) > 1.0<#=d.FPL#> - <#=mathHelper#>.ZeroTolerance)
+            if (Math.Abs(dot) > 1.0<#=d.FPL#> - <#=md.MathHelper#>.ZeroTolerance)
             {
                 inverse = 1.0<#=d.FPL#> - amount;
                 opposite = amount * Math.Sign(dot);
             }
             else
             {
-                <#=d.DT#> acos = <#=fpCast#>Math.Acos(Math.Abs(dot));
-                <#=d.DT#> invSin = <#=fpCast#>(1.0 / Math.Sin(acos));
+                <#=d.DT#> acos = <#=md.FPCast#>Math.Acos(Math.Abs(dot));
+                <#=d.DT#> invSin = <#=md.FPCast#>(1.0 / Math.Sin(acos));
 
-                inverse = <#=fpCast#>(Math.Sin((1.0<#=d.FPL#> - amount) * acos) * invSin);
-                opposite = <#=fpCast#>(Math.Sin(amount * acos) * invSin * Math.Sign(dot));
+                inverse = <#=md.FPCast#>(Math.Sin((1.0<#=d.FPL#> - amount) * acos) * invSin);
+                opposite = <#=md.FPCast#>(Math.Sin(amount * acos) * invSin * Math.Sign(dot));
             }
 
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
                 X = (inverse * start.X) + (opposite * end.X),
                 Y = (inverse * start.Y) + (opposite * end.Y),
@@ -690,18 +664,18 @@ namespace Molten<#=subNamespace#>
         /// <param name="yaw">The yaw of rotation.</param>
         /// <param name="pitch">The pitch of rotation.</param>
         /// <param name="roll">The roll of rotation.</param>
-        public static void RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll, out <#=fName#> result)
+        public static void RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll, out <#=md.Name#> result)
         {
             <#=d.DT#> halfRoll = roll * 0.5f;
             <#=d.DT#> halfPitch = pitch * 0.5f;
             <#=d.DT#> halfYaw = yaw * 0.5f;
 
-            <#=d.DT#> sinRoll = <#=fpCast#>Math.Sin(halfRoll);
-            <#=d.DT#> cosRoll = <#=fpCast#>Math.Cos(halfRoll);
-            <#=d.DT#> sinPitch = <#=fpCast#>Math.Sin(halfPitch);
-            <#=d.DT#> cosPitch = <#=fpCast#>Math.Cos(halfPitch);
-            <#=d.DT#> sinYaw = <#=fpCast#>Math.Sin(halfYaw);
-            <#=d.DT#> cosYaw = <#=fpCast#>Math.Cos(halfYaw);
+            <#=d.DT#> sinRoll = <#=md.FPCast#>Math.Sin(halfRoll);
+            <#=d.DT#> cosRoll = <#=md.FPCast#>Math.Cos(halfRoll);
+            <#=d.DT#> sinPitch = <#=md.FPCast#>Math.Sin(halfPitch);
+            <#=d.DT#> cosPitch = <#=md.FPCast#>Math.Cos(halfPitch);
+            <#=d.DT#> sinYaw = <#=md.FPCast#>Math.Sin(halfYaw);
+            <#=d.DT#> cosYaw = <#=md.FPCast#>Math.Cos(halfYaw);
 
             result.X = (cosYaw * sinPitch * cosRoll) + (sinYaw * cosPitch * sinRoll);
             result.Y = (sinYaw * cosPitch * cosRoll) - (cosYaw * sinPitch * sinRoll);
@@ -715,20 +689,20 @@ namespace Molten<#=subNamespace#>
         /// <param name="yaw">The yaw of rotation.</param>
         /// <param name="pitch">The pitch of rotation.</param>
         /// <param name="roll">The roll of rotation.</param>
-        public static <#=fName#> RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll)
+        public static <#=md.Name#> RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll)
         {
             <#=d.DT#> halfRoll = roll * 0.5f;
             <#=d.DT#> halfPitch = pitch * 0.5f;
             <#=d.DT#> halfYaw = yaw * 0.5f;
 
-            <#=d.DT#> sinRoll = <#=fpCast#>Math.Sin(halfRoll);
-            <#=d.DT#> cosRoll = <#=fpCast#>Math.Cos(halfRoll);
-            <#=d.DT#> sinPitch = <#=fpCast#>Math.Sin(halfPitch);
-            <#=d.DT#> cosPitch = <#=fpCast#>Math.Cos(halfPitch);
-            <#=d.DT#> sinYaw = <#=fpCast#>Math.Sin(halfYaw);
-            <#=d.DT#> cosYaw = <#=fpCast#>Math.Cos(halfYaw);
+            <#=d.DT#> sinRoll = <#=md.FPCast#>Math.Sin(halfRoll);
+            <#=d.DT#> cosRoll = <#=md.FPCast#>Math.Cos(halfRoll);
+            <#=d.DT#> sinPitch = <#=md.FPCast#>Math.Sin(halfPitch);
+            <#=d.DT#> cosPitch = <#=md.FPCast#>Math.Cos(halfPitch);
+            <#=d.DT#> sinYaw = <#=md.FPCast#>Math.Sin(halfYaw);
+            <#=d.DT#> cosYaw = <#=md.FPCast#>Math.Cos(halfYaw);
 
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
                 X = (cosYaw * sinPitch * cosRoll) + (sinYaw * cosPitch * sinRoll),
                 Y = (sinYaw * cosPitch * cosRoll) - (cosYaw * sinPitch * sinRoll),
@@ -738,19 +712,19 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Creates a <#=See(fName)#> given a rotation matrix.
+        /// Creates a <#=See(md.Name)#> given a rotation matrix.
         /// </summary>
         /// <param name="matrix">The rotation matrix.</param>
-        public static <#=fName#> FromRotationMatrix(ref Matrix4<#=d.Postfix#> matrix)
+        public static <#=md.Name#> FromRotationMatrix(ref Matrix4<#=d.Postfix#> matrix)
         {
             <#=d.DT#> sqrt;
             <#=d.DT#> half;
             <#=d.DT#> scale = matrix.M11 + matrix.M22 + matrix.M33;
-            <#=fName#> result;
+            <#=md.Name#> result;
 
             if (scale > 0.0<#=d.FPL#>)
             {
-                sqrt = <#=fpCast#>Math.Sqrt(scale + 1.0<#=d.FPL#>);
+                sqrt = <#=md.FPCast#>Math.Sqrt(scale + 1.0<#=d.FPL#>);
                 result.W = sqrt * 0.5<#=d.FPL#>;
                 sqrt = 0.5<#=d.FPL#> / sqrt;
 
@@ -760,7 +734,7 @@ namespace Molten<#=subNamespace#>
             }
             else if ((matrix.M11 >= matrix.M22) && (matrix.M11 >= matrix.M33))
             {
-                sqrt = <#=fpCast#>Math.Sqrt(1.0<#=d.FPL#> + matrix.M11 - matrix.M22 - matrix.M33);
+                sqrt = <#=md.FPCast#>Math.Sqrt(1.0<#=d.FPL#> + matrix.M11 - matrix.M22 - matrix.M33);
                 half = 0.5<#=d.FPL#> / sqrt;
 
                 result.X = 0.5<#=d.FPL#> * sqrt;
@@ -770,7 +744,7 @@ namespace Molten<#=subNamespace#>
             }
             else if (matrix.M22 > matrix.M33)
             {
-                sqrt = <#=fpCast#>Math.Sqrt(1.0<#=d.FPL#> + matrix.M22 - matrix.M11 - matrix.M33);
+                sqrt = <#=md.FPCast#>Math.Sqrt(1.0<#=d.FPL#> + matrix.M22 - matrix.M11 - matrix.M33);
                 half = 0.5f / sqrt;
 
                 result.X = (matrix.M21 + matrix.M12) * half;
@@ -780,7 +754,7 @@ namespace Molten<#=subNamespace#>
             }
             else
             {
-                sqrt = <#=fpCast#>Math.Sqrt(1.0<#=d.FPL#>  + matrix.M33 - matrix.M11 - matrix.M22);
+                sqrt = <#=md.FPCast#>Math.Sqrt(1.0<#=d.FPL#>  + matrix.M33 - matrix.M11 - matrix.M22);
                 half = 0.5<#=d.FPL#>  / sqrt;
 
                 result.X = (matrix.M31 + matrix.M13) * half;
@@ -796,16 +770,16 @@ namespace Molten<#=subNamespace#>
         /// Creates a quaternion given a rotation matrix.
         /// </summary>
         /// <param name="matrix">The rotation matrix.</param>
-        public static <#=fName#> FromRotationMatrix(ref Matrix3<#=d.Postfix#> matrix)
+        public static <#=md.Name#> FromRotationMatrix(ref Matrix3<#=d.Postfix#> matrix)
         {
             <#=d.DT#> sqrt;
             <#=d.DT#> half;
             <#=d.DT#> scale = matrix.M11 + matrix.M22 + matrix.M33;
-            <#=fName#> result;
+            <#=md.Name#> result;
 
             if (scale > 0.0f)
             {
-                sqrt = <#=fpCast#>Math.Sqrt(scale + 1.0f);
+                sqrt = <#=md.FPCast#>Math.Sqrt(scale + 1.0f);
                 result.W = sqrt * 0.5<#=d.FPL#>;
                 sqrt = 0.5<#=d.FPL#> / sqrt;
 
@@ -815,7 +789,7 @@ namespace Molten<#=subNamespace#>
             }
             else if ((matrix.M11 >= matrix.M22) && (matrix.M11 >= matrix.M33))
             {
-                sqrt = <#=fpCast#>Math.Sqrt(1.0f + matrix.M11 - matrix.M22 - matrix.M33);
+                sqrt = <#=md.FPCast#>Math.Sqrt(1.0f + matrix.M11 - matrix.M22 - matrix.M33);
                 half = 0.5<#=d.FPL#> / sqrt;
 
                 result.X = 0.5<#=d.FPL#> * sqrt;
@@ -825,7 +799,7 @@ namespace Molten<#=subNamespace#>
             }
             else if (matrix.M22 > matrix.M33)
             {
-                sqrt = <#=fpCast#>Math.Sqrt(1.0f + matrix.M22 - matrix.M11 - matrix.M33);
+                sqrt = <#=md.FPCast#>Math.Sqrt(1.0f + matrix.M22 - matrix.M11 - matrix.M33);
                 half = 0.5<#=d.FPL#> / sqrt;
 
                 result.X = (matrix.M21 + matrix.M12) * half;
@@ -835,7 +809,7 @@ namespace Molten<#=subNamespace#>
             }
             else
             {
-                sqrt = <#=fpCast#>Math.Sqrt(1.0f + matrix.M33 - matrix.M11 - matrix.M22);
+                sqrt = <#=md.FPCast#>Math.Sqrt(1.0f + matrix.M33 - matrix.M11 - matrix.M22);
                 half = 0.5<#=d.FPL#> / sqrt;
 
                 result.X = (matrix.M31 + matrix.M13) * half;
@@ -858,27 +832,27 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Calculates the dot product of two <#=See(fName)#>.
+        /// Calculates the dot product of two <#=See(md.Name)#>.
         /// </summary>
-        /// <param name="left">First source <#=See(fName)#>.</param>
-        /// <param name="right">Second source <#=See(fName)#>.</param>
-        /// <returns>The dot product of the two <#=See(fName)#>.</returns>
-        public static <#=d.DT#> Dot(<#=fName#> left, <#=fName#> right)
+        /// <param name="left">First source <#=See(md.Name)#>.</param>
+        /// <param name="right">Second source <#=See(md.Name)#>.</param>
+        /// <returns>The dot product of the two <#=See(md.Name)#>.</returns>
+        public static <#=d.DT#> Dot(<#=md.Name#> left, <#=md.Name#> right)
         {
             return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
         }
 
         /// <summary>
-        /// Exponentiates a <#=See(fName)#>.
+        /// Exponentiates a <#=See(md.Name)#>.
         /// </summary>
-        /// <param name="value">The <#=See(fName)#> to exponentiate.</param>
-        public static <#=fName#> Exponential(ref <#=fName#> value)
+        /// <param name="value">The <#=See(md.Name)#> to exponentiate.</param>
+        public static <#=md.Name#> Exponential(ref <#=md.Name#> value)
         {
-            <#=d.DT#> angle = <#=fpCast#>Math.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z));
-            <#=d.DT#> sin = <#=fpCast#>Math.Sin(angle);
-            <#=fName#> result;
+            <#=d.DT#> angle = <#=md.FPCast#>Math.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z));
+            <#=d.DT#> sin = <#=md.FPCast#>Math.Sin(angle);
+            <#=md.Name#> result;
 
-            if (!<#=mathHelper#>.IsZero(sin))
+            if (!<#=md.MathHelper#>.IsZero(sin))
             {
                 <#=d.DT#> coeff = sin / angle;
                 result.X = coeff * value.X;
@@ -890,54 +864,54 @@ namespace Molten<#=subNamespace#>
                 result = value;
             }
 
-            result.W = <#=fpCast#>Math.Cos(angle);
+            result.W = <#=md.FPCast#>Math.Cos(angle);
             return result;
         }
 
         /// <summary>
-        /// Exponentiates a <#=See(fName)#>.
+        /// Exponentiates a <#=See(md.Name)#>.
         /// </summary>
-        /// <param name="value">The <#=See(fName)#> to exponentiate.</param>
-        public static <#=fName#> Exponential(<#=fName#> value)
+        /// <param name="value">The <#=See(md.Name)#> to exponentiate.</param>
+        public static <#=md.Name#> Exponential(<#=md.Name#> value)
         {
             return Exponential(ref value);
         }
 
         /// <summary>
-        /// Returns a <#=See(fName)#> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// Returns a <#=See(md.Name)#> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
-        /// <param name="value1">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="value1">A <#=See(md.Name)#> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <#=See(md.Name)#> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <#=See(md.Name)#> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        public static <#=fName#> Barycentric(ref <#=fName#> value1, ref <#=fName#> value2, ref <#=fName#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
+        public static <#=md.Name#> Barycentric(ref <#=md.Name#> value1, ref <#=md.Name#> value2, ref <#=md.Name#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
         {
-            <#=fName#> start = Slerp(ref value1, ref value2, amount1 + amount2);
-            <#=fName#> end = Slerp(ref value1, ref value3, amount1 + amount2);
+            <#=md.Name#> start = Slerp(ref value1, ref value2, amount1 + amount2);
+            <#=md.Name#> end = Slerp(ref value1, ref value3, amount1 + amount2);
             return Slerp(ref start, ref end, amount2 / (amount1 + amount2));
         }
 
         /// <summary>
-        /// Returns a <#=See(fName)#> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// Returns a <#=See(md.Name)#> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
-        /// <param name="value1">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="value1">A <#=See(md.Name)#> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <#=See(md.Name)#> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <#=See(md.Name)#> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        public static <#=fName#> Barycentric(<#=fName#> value1, <#=fName#> value2, <#=fName#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
+        public static <#=md.Name#> Barycentric(<#=md.Name#> value1, <#=md.Name#> value2, <#=md.Name#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
         {
             return Barycentric(ref value1, ref value2, ref value3, amount1, amount2);
         }
 
         /// <summary>
-        /// Computes the conjugate of the <#=See(fName)#> .
+        /// Computes the conjugate of the <#=See(md.Name)#> .
         /// </summary>
-        /// <param name="value"><#=See(fName)#> to conjugate.</param>
-        public static <#=fName#> Conjugate(ref <#=fName#> value)
+        /// <param name="value"><#=See(md.Name)#> to conjugate.</param>
+        public static <#=md.Name#> Conjugate(ref <#=md.Name#> value)
         {
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -947,10 +921,10 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Computes the conjugate of the <#=See(fName)#> .
+        /// Computes the conjugate of the <#=See(md.Name)#> .
         /// </summary>
-        /// <param name="value"><#=See(fName)#> to conjugate.</param>
-        public static void Conjugate(ref <#=fName#> value, out <#=fName#> result)
+        /// <param name="value"><#=See(md.Name)#> to conjugate.</param>
+        public static void Conjugate(ref <#=md.Name#> value, out <#=md.Name#> result)
         {
             result.X = -value.X;
             result.Y = -value.Y;
@@ -959,12 +933,12 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Computes the conjugate of the <#=See(fName)#> .
+        /// Computes the conjugate of the <#=See(md.Name)#> .
         /// </summary>
-        /// <param name="value"><#=See(fName)#> to conjugate.</param>
-        public static <#=fName#> Conjugate(<#=fName#> value)
+        /// <param name="value"><#=See(md.Name)#> to conjugate.</param>
+        public static <#=md.Name#> Conjugate(<#=md.Name#> value)
         {
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -974,20 +948,20 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Performs a linear interpolation between two <#=See(fName)#>.
+        /// Performs a linear interpolation between two <#=See(md.Name)#>.
         /// </summary>
-        /// <param name="start">Start <#=See(fName)#>.</param>
-        /// <param name="end">End <#=See(fName)#>.</param>
+        /// <param name="start">Start <#=See(md.Name)#>.</param>
+        /// <param name="end">End <#=See(md.Name)#>.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <remarks>
         /// This method performs the linear interpolation based on the following formula.
         /// <code>start + (end - start) * amount</code>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static <#=fName#> Lerp(ref <#=fName#> start, ref <#=fName#> end, <#=d.DT#> amount)
+        public static <#=md.Name#> Lerp(ref <#=md.Name#> start, ref <#=md.Name#> end, <#=d.DT#> amount)
         {
             <#=d.DT#> inverse = 1.0<#=d.FPL#> - amount;
-            <#=fName#> result;
+            <#=md.Name#> result;
 
             if (Dot(start, end) >= 0.0<#=d.FPL#>)
             {
@@ -1009,29 +983,29 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Creates a <#=See(fName)#> given a rotation and an axis.
+        /// Creates a <#=See(md.Name)#> given a rotation and an axis.
         /// </summary>
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
-        public static <#=fName#> FromAxisAngle(<#=vectorName#> axis, float angle)
+        public static <#=md.Name#> FromAxisAngle(<#=vectorName#> axis, float angle)
         {
             return FromAxisAngle(ref axis, angle);
         }
 
         /// <summary>
-        /// Creates a <#=See(fName)#> given a rotation and an axis.
+        /// Creates a <#=See(md.Name)#> given a rotation and an axis.
         /// </summary>
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
-        public static <#=fName#> FromAxisAngle(ref <#=vectorName#> axis, float angle)
+        public static <#=md.Name#> FromAxisAngle(ref <#=vectorName#> axis, float angle)
         {
             <#=vectorName#> normalized = axis.GetNormalized();
 
             <#=d.DT#> half = angle * 0.5<#=d.FPL#>;
-            <#=d.DT#> sin = <#=fpCast#>Math.Sin(half);
-            <#=d.DT#> cos = <#=fpCast#>Math.Cos(half);
+            <#=d.DT#> sin = <#=md.FPCast#>Math.Sin(half);
+            <#=d.DT#> cos = <#=md.FPCast#>Math.Cos(half);
 
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
                 X = normalized.X * sin,
                 Y = normalized.Y * sin,
@@ -1041,12 +1015,12 @@ namespace Molten<#=subNamespace#>
         }
 
         /// <summary>
-        /// Creates a left-handed, look-at <#=See(fName)#>.
+        /// Creates a left-handed, look-at <#=See(md.Name)#>.
         /// </summary>
         /// <param name="eye">The position of the viewer's eye.</param>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
-        public static <#=fName#> LookAtLH(ref <#=vectorName#> eye, ref <#=vectorName#> target, ref <#=vectorName#> up)
+        public static <#=md.Name#> LookAtLH(ref <#=vectorName#> eye, ref <#=vectorName#> target, ref <#=vectorName#> up)
         {
             Matrix3<#=d.Postfix#> matrix = Matrix3<#=d.Postfix#>.LookAtLH(ref eye, ref target, ref up);
             return FromRotationMatrix(ref matrix);
@@ -1058,17 +1032,17 @@ namespace Molten<#=subNamespace#>
         /// <param name="forward">The camera's forward direction.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <returns>The created look-at quaternion.</returns>
-        public static <#=fName#> RotationLookAtLH(<#=vectorName#> forward, <#=vectorName#> up)
+        public static <#=md.Name#> RotationLookAtLH(<#=vectorName#> forward, <#=vectorName#> up)
         {
             return RotationLookAtLH(ref forward, ref up);
         }
 
         /// <summary>
-        /// Creates a left-handed, look-at <#=See(fName)#>.
+        /// Creates a left-handed, look-at <#=See(md.Name)#>.
         /// </summary>
         /// <param name="forward">The camera's forward direction.</param>
         /// <param name="up">The camera's up vector.</param>
-        public static <#=fName#>  RotationLookAtLH(ref <#=vectorName#> forward, ref <#=vectorName#> up)
+        public static <#=md.Name#>  RotationLookAtLH(ref <#=vectorName#> forward, ref <#=vectorName#> up)
         {
             <#=vectorName#> eye = <#=vectorName#>.Zero;
             return LookAtLH(ref eye, ref forward, ref up);
@@ -1080,7 +1054,7 @@ namespace Molten<#=subNamespace#>
         /// <param name="eye">The position of the viewer's eye.</param>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
-        public static <#=fName#> LookAtRH(ref <#=vectorName#> eye, ref <#=vectorName#> target, ref <#=vectorName#> up)
+        public static <#=md.Name#> LookAtRH(ref <#=vectorName#> eye, ref <#=vectorName#> target, ref <#=vectorName#> up)
         {
             Matrix3<#=d.Postfix#> matrix = Matrix3<#=d.Postfix#>.LookAtRH(ref eye, ref target, ref up);
             return FromRotationMatrix(ref matrix);
@@ -1091,7 +1065,7 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="forward">The camera's forward direction.</param>
         /// <param name="up">The camera's up vector.</param>
-        public static <#=fName#> RotationLookAtRH(ref <#=vectorName#> forward, ref <#=vectorName#> up)
+        public static <#=md.Name#> RotationLookAtRH(ref <#=vectorName#> forward, ref <#=vectorName#> up)
         {
             <#=vectorName#> eye = <#=vectorName#>.Zero;
             return LookAtRH(ref eye, ref forward, ref up);
@@ -1104,7 +1078,7 @@ namespace Molten<#=subNamespace#>
         /// <param name="cameraPosition">The position of the camera.</param>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
-        public static <#=fName#> BillboardLH(ref <#=vectorName#> objectPosition, ref <#=vectorName#> cameraPosition, ref <#=vectorName#> cameraUpVector, ref <#=vectorName#> cameraForwardVector)
+        public static <#=md.Name#> BillboardLH(ref <#=vectorName#> objectPosition, ref <#=vectorName#> cameraPosition, ref <#=vectorName#> cameraUpVector, ref <#=vectorName#> cameraForwardVector)
         {
             Matrix3<#=d.Postfix#> matrix = Matrix3<#=d.Postfix#>.BillboardLH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector);
             return FromRotationMatrix(ref matrix);
@@ -1117,7 +1091,7 @@ namespace Molten<#=subNamespace#>
         /// <param name="cameraPosition">The position of the camera.</param>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
-        public static <#=fName#> BillboardRH(ref <#=vectorName#> objectPosition, ref <#=vectorName#> cameraPosition, ref <#=vectorName#> cameraUpVector, ref <#=vectorName#> cameraForwardVector)
+        public static <#=md.Name#> BillboardRH(ref <#=vectorName#> objectPosition, ref <#=vectorName#> cameraPosition, ref <#=vectorName#> cameraUpVector, ref <#=vectorName#> cameraForwardVector)
         {
             Matrix3<#=d.Postfix#> matrix = Matrix3<#=d.Postfix#>.BillboardRH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector);
             return FromRotationMatrix(ref matrix);
@@ -1131,9 +1105,9 @@ namespace Molten<#=subNamespace#>
         /// <param name="value">The quaternion to scale.</param>
         /// <param name="scale">The amount by which to scale the quaternion.</param>
         /// <returns>The scaled quaternion.</returns>
-        public static <#=fName#> operator *(<#=d.DT#> scale, <#=fName#> value)
+        public static <#=md.Name#> operator *(<#=d.DT#> scale, <#=md.Name#> value)
         {
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
                 X = value.X * scale,
                 Y = value.Y * scale,
@@ -1148,9 +1122,9 @@ namespace Molten<#=subNamespace#>
         /// <param name="value">The quaternion to scale.</param>
         /// <param name="scale">The amount by which to scale the quaternion.</param>
         /// <returns>The scaled quaternion.</returns>
-        public static <#=fName#> operator *(<#=fName#> value, <#=d.DT#> scale)
+        public static <#=md.Name#> operator *(<#=md.Name#> value, <#=d.DT#> scale)
         {
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
                 X = value.X * scale,
                 Y = value.Y * scale,
@@ -1165,7 +1139,7 @@ namespace Molten<#=subNamespace#>
         /// <param name="left">The first quaternion to multiply.</param>
         /// <param name="right">The second quaternion to multiply.</param>
         /// <returns>The multiplied quaternion.</returns>
-        public static <#=fName#> operator *(<#=fName#> left, <#=fName#> right)
+        public static <#=md.Name#> operator *(<#=md.Name#> left, <#=md.Name#> right)
         {
             <#=d.DT#> lx = left.X;
             <#=d.DT#> ly = left.Y;
@@ -1180,7 +1154,7 @@ namespace Molten<#=subNamespace#>
             <#=d.DT#> c = (lx * ry - ly * rx);
             <#=d.DT#> d = (lx * rx + ly * ry + lz * rz);
 
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
                 X = (lx * rw + rx * lw) + a,
                 Y = (ly * rw + ry * lw) + b,
@@ -1197,9 +1171,9 @@ namespace Molten<#=subNamespace#>
         /// <param name="left">The first quaternion to subtract.</param>
         /// <param name="right">The second quaternion to subtract.</param>
         /// <returns>The difference of the two quaternions.</returns>
-        public static <#=fName#> operator -(<#=fName#> left, <#=fName#> right)
+        public static <#=md.Name#> operator -(<#=md.Name#> left, <#=md.Name#> right)
         {
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
             X = left.X - right.X,
             Y = left.Y - right.Y,
@@ -1213,9 +1187,9 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="value">The quaternion to negate.</param>
         /// <returns>A quaternion facing in the opposite direction.</returns>
-        public static <#=fName#> operator -(<#=fName#> value)
+        public static <#=md.Name#> operator -(<#=md.Name#> value)
         {
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -1229,12 +1203,12 @@ namespace Molten<#=subNamespace#>
         /// <summary>
         /// Divides two quaternions.
         /// </summary>
-        /// <param name="left">The first <#=See(fName)#> to divide.</param>
-        /// <param name="right">The second <#=See(fName)#> to divide.</param>
-        /// <returns>The sum of the two <#=See(fName)#>.</returns>
-        public static <#=fName#> operator /(<#=fName#> left, <#=fName#> right)
+        /// <param name="left">The first <#=See(md.Name)#> to divide.</param>
+        /// <param name="right">The second <#=See(md.Name)#> to divide.</param>
+        /// <returns>The sum of the two <#=See(md.Name)#>.</returns>
+        public static <#=md.Name#> operator /(<#=md.Name#> left, <#=md.Name#> right)
         {
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
                 X = left.X / right.X,
                 Y = left.Y / right.Y,
@@ -1246,12 +1220,12 @@ namespace Molten<#=subNamespace#>
         /// <summary>
         /// Adds two quaternions.
         /// </summary>
-        /// <param name="left">The first <#=See(fName)#> to add.</param>
-        /// <param name="right">The second <#=See(fName)#> to add.</param>
-        /// <returns>The sum of the two <#=See(fName)#>.</returns>
-        public static <#=fName#> operator +(<#=fName#> left, <#=fName#> right)
+        /// <param name="left">The first <#=See(md.Name)#> to add.</param>
+        /// <param name="right">The second <#=See(md.Name)#> to add.</param>
+        /// <returns>The sum of the two <#=See(md.Name)#>.</returns>
+        public static <#=md.Name#> operator +(<#=md.Name#> left, <#=md.Name#> right)
         {
-            return new <#=fName#>()
+            return new <#=md.Name#>()
             {
                 X = left.X + right.X,
                 Y = left.Y + right.Y,
@@ -1269,7 +1243,7 @@ namespace Molten<#=subNamespace#>
         /// <param name="right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(<#=fName#> left, <#=fName#> right)
+        public static bool operator ==(<#=md.Name#> left, <#=md.Name#> right)
         {
             return left.Equals(ref right);
         }
@@ -1281,7 +1255,7 @@ namespace Molten<#=subNamespace#>
         /// <param name="right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(<#=fName#> left, <#=fName#> right)
+        public static bool operator !=(<#=md.Name#> left, <#=md.Name#> right)
         {
             return !left.Equals(ref right);
         }
@@ -1307,7 +1281,7 @@ namespace Molten<#=subNamespace#>
                     case 3: return W;
                 }
 
-                throw new ArgumentOutOfRangeException("index", "Indices for <#=fName#> run from 0 to 3, inclusive.");
+                throw new ArgumentOutOfRangeException("index", "Indices for <#=md.Name#> run from 0 to 3, inclusive.");
             }
 
             set
@@ -1318,7 +1292,7 @@ namespace Molten<#=subNamespace#>
                     case 1: Y = value; break;
                     case 2: Z = value; break;
                     case 3: W = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for <#=fName#> run from 0 to 3, inclusive.");
+                    default: throw new ArgumentOutOfRangeException("index", "Indices for <#=md.Name#> run from 0 to 3, inclusive.");
                 }
             }
         }
@@ -1326,7 +1300,5 @@ namespace Molten<#=subNamespace#>
 	}
 }
 <#
-	SaveFile(outputPath + subDir, fn, this.GenerationEnvironment.ToString());
-	this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
-}
+});
 #>

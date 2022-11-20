@@ -44,7 +44,7 @@ public struct Metadata
 string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
 int[] _vectorSizes = new int[]{2, 3, 4};
 
-public void GenerateTypes(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string definitionFileName, int[] sizes, GenerateTypeCallback callback)
+public void GenerateTypes(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string subFolder, string definitionFileName, int[] sizes, GenerateTypeCallback callback)
 {
     string outputPath = host.ResolvePath("");
     List<TypeData> defs = ReadJsonDef<TypeData>(outputPath, definitionFileName);
@@ -64,31 +64,32 @@ public void GenerateTypes(StringBuilder genEnvironment, ITextTemplatingEngineHos
         switch(d.Bits){
             case 16:
                 md.SubNamespace = ".HalfPrecision"; 
-                md.SubDirectory = "/HalfPrecision/Vectors";
+                md.SubDirectory = $"/HalfPrecision/{subFolder}";
                 break;
 
             case 64: 
                 md.SubNamespace = ".DoublePrecision"; 
-                md.SubDirectory = "/DoublePrecision/Vectors";
+                md.SubDirectory = $"/DoublePrecision/{subFolder}";
                 break;
 
             case 128: 
                 md.SubNamespace = ".QuadPrecision"; 
-                md.SubDirectory = "/QuadPrecision/Vectors";
+                md.SubDirectory = $"/QuadPrecision/{subFolder}";
                 break;
 
             default:
-                md.SubDirectory = "/SinglePrecision/Vectors";
+                md.SubDirectory = $"/SinglePrecision/{subFolder}";
                 break;
         }
 
         foreach(int size in sizes)
         {
             md.Name = $"{d.Name}{size}{d.Postfix}";
-		    md.Filename = $"{md.Name}";
             md.Size = size;
 
             callback(d, md, defs);
+
+		    md.Filename = $"{md.Name}";
 
             SaveFile(outputPath + md.SubDirectory, md.Filename, genEnvironment.ToString());
 		    genEnvironment.Length = 0;
