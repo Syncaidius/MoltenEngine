@@ -9,8 +9,6 @@
 <#@ output extension=".txt" #>
 
 <#
-string outputPath = this.Host.ResolvePath("");
-List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "quaternion_defs.json");
 string _pMap = "xyzw";
 string _pMapUpper = "XYZW";
 
@@ -19,7 +17,6 @@ GenerateTypes(this.GenerationEnvironment, this.Host, "", "quaternion_defs.json",
     string vectorName = $"Vector3{d.Postfix}";
     md.Name = $"{d.Name}{d.Postfix}";
 #>
-
 using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -28,7 +25,7 @@ using System.Runtime.Serialization;
 
 namespace Molten<#=md.SubNamespace#>
 {
-	///<summary>Represents a four dimensional md.Mathematical <#=md.Name#>.</summary>
+	///<summary>Represents a four dimensional mathematical <#=md.Name#>.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack = <#=d.Pack#>)]
     [Serializable]
 	public partial struct <#=md.Name#> : IFormattable, IEquatable<<#=md.Name#>>

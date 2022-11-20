@@ -73,11 +73,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector3.tt</DependentUpon>
     </None>
-    <None Include="t4_vector3.fp.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>t4_vector3.fp.tt</DependentUpon>
-    </None>
   </ItemGroup>
 
   <ItemGroup>

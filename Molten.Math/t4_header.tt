@@ -10,8 +10,9 @@
 
 <#+
 public delegate void GenerateTypeCallback(TypeData d, Metadata md, List<TypeData> defs);
+public delegate bool GenerateTypeFilter(TypeData d, Metadata md);
 
-public struct TypeData
+public class TypeData
 {
     public string Name;     // Name
     public string Postfix;  //Name post-fix
@@ -26,7 +27,7 @@ public struct TypeData
     public int Bits;        // The number of bits in DT
 }
 
-public struct Metadata
+public class Metadata
 {
     public int Size;
 	public string Name;
@@ -44,7 +45,7 @@ public struct Metadata
 string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
 int[] _vectorSizes = new int[]{2, 3, 4};
 
-public void GenerateTypes(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string subFolder, string definitionFileName, int[] sizes, GenerateTypeCallback callback)
+public void GenerateTypes(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string subFolder, string definitionFileName, int[] sizes, GenerateTypeCallback callback, GenerateTypeFilter filter = null)
 {
     string outputPath = host.ResolvePath("");
     List<TypeData> defs = ReadJsonDef<TypeData>(outputPath, definitionFileName);
@@ -84,6 +85,9 @@ public void GenerateTypes(StringBuilder genEnvironment, ITextTemplatingEngineHos
 
         foreach(int size in sizes)
         {
+            if(filter != null && !filter(d, md))
+                continue;
+
             md.Name = $"{d.Name}{size}{d.Postfix}";
             md.Size = size;
 
@@ -113,7 +117,7 @@ public void SaveFile(string folder, string fileName, string content)
     }
 }
 
-public List<T> ReadJsonDef<T>(string folder, string fileName) where T : struct
+public List<T> ReadJsonDef<T>(string folder, string fileName) where T : class
 {
     string json = File.ReadAllText(Path.Combine(folder, fileName.Trim()));
     return JsonConvert.DeserializeObject<List<T>>(json);
