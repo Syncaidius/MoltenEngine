@@ -43,41 +43,42 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Vectors\t4_vector - Copy.fp.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Quaternions\t4_quaternions.cs">
+    <None Include="t4_quaternions.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_quaternions.tt</DependentUpon>
     </None>
-    <None Include="Vectors\t4_vector.cs">
+    <None Include="t4_vector.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector.tt</DependentUpon>
     </None>
-    <None Include="Vectors\t4_vector.fp.cs">
+    <None Include="t4_vector.fp.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector.fp.tt</DependentUpon>
     </None>
-    <None Include="Vectors\t4_vector2.cs">
+    <None Include="t4_vector2.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector2.tt</DependentUpon>
     </None>
-    <None Include="Vectors\t4_vector2.fp.cs">
+    <None Include="t4_vector2.fp.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector2.fp.tt</DependentUpon>
     </None>
-    <None Include="Vectors\t4_vector3.fp.cs">
+    <None Include="t4_vector3.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector3.tt</DependentUpon>
+    </None>
+    <None Include="t4_vector3.fp.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector3.fp.tt</DependentUpon>
     </None>
-    <None Include="Vectors\t4_vector4.fp.cs">
+    <None Include="t4_vector4.fp.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector4.fp.tt</DependentUpon>
@@ -85,7 +86,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Quaternions\t4_quaternions.tt">
+    <None Update="t4_quaternions.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_quaternions.cs</LastGenOutput>
     </None>
@@ -93,36 +94,31 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_header.cs</LastGenOutput>
     </None>
-    <None Update="Vectors\t4_vector.fp.tt">
+    <None Update="t4_vector.fp.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_vector.fp.cs</LastGenOutput>
     </None>
-    <None Update="Vectors\t4_vector.tt">
+    <None Update="t4_vector.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_vector.cs</LastGenOutput>
     </None>
-    <None Update="Vectors\t4_vector2.fp.tt">
+    <None Update="t4_vector2.fp.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_vector2.fp.cs</LastGenOutput>
     </None>
-    <None Update="Vectors\t4_vector2.tt">
+    <None Update="t4_vector2.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_vector2.cs</LastGenOutput>
     </None>
-    <None Update="Vectors\t4_vector3.fp.tt">
+    <None Update="t4_vector3.fp.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_vector3.fp.cs</LastGenOutput>
     </None>
-    <None Update="Vectors\t4_vector3.tt">
+    <None Update="t4_vector3.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>t4_vector3.txt</LastGenOutput>
+      <LastGenOutput>t4_vector3.cs</LastGenOutput>
     </None>
-    <None Update="Vectors\t4_vector3.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>t4_vector3.tt</DependentUpon>
-    </None>
-    <None Update="Vectors\t4_vector4.fp.tt">
+    <None Update="t4_vector4.fp.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_vector4.fp.cs</LastGenOutput>
     </None>
@@ -133,46 +129,55 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Quaternions\t4_quaternions.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>t4_quaternions.tt</DependentUpon>
-    </Compile>
     <Compile Update="t4_header.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_header.tt</DependentUpon>
     </Compile>
-    <Compile Update="Vectors\t4_vector.cs">
+    <Compile Update="t4_quaternions.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_quaternions.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_vector.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector.tt</DependentUpon>
     </Compile>
-    <Compile Update="Vectors\t4_vector.fp.cs">
+    <Compile Update="t4_vector.fp.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector.fp.tt</DependentUpon>
     </Compile>
-    <Compile Update="Vectors\t4_vector2.cs">
+    <Compile Update="t4_vector2.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector2.tt</DependentUpon>
     </Compile>
-    <Compile Update="Vectors\t4_vector2.fp.cs">
+    <Compile Update="t4_vector2.fp.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector2.fp.tt</DependentUpon>
     </Compile>
-    <Compile Update="Vectors\t4_vector3.fp.cs">
+    <Compile Update="t4_vector3.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector3.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_vector3.fp.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector3.fp.tt</DependentUpon>
     </Compile>
-    <Compile Update="Vectors\t4_vector4.fp.cs">
+    <Compile Update="t4_vector4.fp.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector4.fp.tt</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SinglePrecision\Vectors\" />
   </ItemGroup>
 
 </Project>

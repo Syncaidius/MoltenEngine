@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.DoublePrecision;
+
+namespace Molten.Font
 {
     public class Glyph : ICloneable
     {

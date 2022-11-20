@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Molten.HalfPrecision;
 
 namespace Molten.Graphics.Textures
 {

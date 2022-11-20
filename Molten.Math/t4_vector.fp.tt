@@ -1,0 +1,481 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+
+<#@ include file="t4_header.tt" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".txt" #>
+
+<#
+string outputPath = this.Host.ResolvePath("");
+List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
+string pMap = "xyzw";
+string pMapUpper = "XYZW";
+
+foreach(TypeData d in _def)
+{
+	if(!d.IsFPType)
+	{
+		continue;
+	}
+
+	foreach(int size in _vectorSizes)
+	{
+		string fName = $"{d.Name}{size}{d.Postfix}";
+		string fn = $"{fName}.fp";
+		string fpCast = d.DT == "float" ? "(float)" : "";
+		string mathHelper = d.FP == "double" ? "MathHelperDP" : "MathHelper";
+		string math = d.FP == "float" ? "MathF" : "Math";
+		string intCast = d.DT == "float" ? "(int)" : (d.DT == "double" ? "(long)" : "$(${d.DT}");
+		string intCastPostfix = d.DT == "float" ? "I" : "L";
+        string subNamespace = "";
+        string subDir = "";
+
+        switch(d.Bits){
+            case 16:
+                subNamespace = ".HalfPrecision"; 
+                subDir = "/HalfPrecision/Vectors";
+                break;
+
+            case 64: 
+                subNamespace = ".DoublePrecision"; 
+                subDir = "/DoublePrecision/Vectors";
+                break;
+
+            case 128: 
+                subNamespace = ".QuadPrecision"; 
+                subDir = "/QuadPrecision/Vectors";
+                break;
+
+            default:
+                subDir = "/SinglePrecision/Vectors";
+                break;
+        }
+#>
+using System;
+
+namespace Molten<#=subNamespace#>
+{
+	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
+	public partial struct <#=fName#>
+	{
+    	/// <summary>
+        /// Gets a value indicting whether this instance is normalized.
+        /// </summary>
+        public bool IsNormalized
+        {
+            get => <#=mathHelper#>.IsOne(<#for(int p = 0; p < size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+        }
+
+        /// <summary>
+        /// Orthonormalizes a list of vectors.
+        /// </summary>
+        /// <param name="destination">The list of orthonormalized vectors.</param>
+        /// <param name="source">The list of vectors to orthonormalize.</param>
+        /// <remarks>
+        /// <para>Orthonormalization is the process of making all vectors orthogonal to each
+        /// other and making all vectors of unit length. This means that any given vector will
+        /// be orthogonal to any other given vector in the list.</para>
+        /// <para>Because this method uses the modified Gram-Schmidt process, the resulting vectors
+        /// tend to be numerically unstable. The numeric stability decreases according to the vectors
+        /// position in the list so that the first vector is the most stable and the last vector is the
+        /// least stable.</para>
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
+        public static void Orthonormalize(<#=fName#>[] destination, params <#=fName#>[] source)
+        {
+            //Uses the modified Gram-Schmidt process.
+            //Because we are making unit vectors, we can optimize the math for orthogonalization
+            //and simplify the projection operation to remove the division.
+            //q1 = m1 / |m1|
+            //q2 = (m2 - (q1 ⋅ m2) * q1) / |m2 - (q1 ⋅ m2) * q1|
+            //q3 = (m3 - (q1 ⋅ m3) * q1 - (q2 ⋅ m3) * q2) / |m3 - (q1 ⋅ m3) * q1 - (q2 ⋅ m3) * q2|
+            //q4 = (m4 - (q1 ⋅ m4) * q1 - (q2 ⋅ m4) * q2 - (q3 ⋅ m4) * q3) / |m4 - (q1 ⋅ m4) * q1 - (q2 ⋅ m4) * q2 - (q3 ⋅ m4) * q3|
+            //q5 = ...
+
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (destination.Length < source.Length)
+                throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+
+            for (int i = 0; i < source.Length; ++i)
+            {
+                <#=fName#> newvector = source[i];
+
+                for (int r = 0; r < i; ++r)
+                    newvector -= Dot(destination[r], newvector) * destination[r];
+
+                newvector.Normalize();
+                destination[i] = newvector;
+            }
+        }
+
+        /// <summary>
+        /// Converts the <#=See(fName)#> into a unit vector.
+        /// </summary>
+        /// <param name="value">The <#=See(fName)#> to normalize.</param>
+        /// <returns>The normalized <#=See(fName)#>.</returns>
+        public static <#=fName#> Normalize(<#=fName#> value, bool allowZero = false)
+        {
+            value.Normalize(allowZero);
+            return value;
+        }
+
+        /// <summary>
+        /// Returns a normalized unit vector of the original vector.
+        /// </summary>
+        public <#=fName#> GetNormalized(bool allowZero = false)
+        {
+            <#=d.FP#> length = Length();
+            if (!<#=mathHelper#>.IsZero(length))
+            {
+                <#=d.FP#> inverse = 1.0<#=d.FPL#> / length;
+                return new <#=fName#>()
+                {
+<#
+		    for(int p = 0; p < size; p++)
+		    {
+#>
+			        <#=pMapUpper[p]#> = this.<#=pMapUpper[p]#> * inverse,
+<#
+		    }
+#>
+                };
+            }
+            else
+            {
+                return new <#=fName#>()
+                {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+                    <#=pMapUpper[p]#> = <#=(p == 1 ? "allowZero ? 1 : 0" : "0")#>,
+<#
+		}
+#>
+                };
+            }
+        }
+
+        /// <summary>
+        /// Converts the vector into a unit vector.
+        /// </summary>
+        public void Normalize(bool allowZero = false)
+        {
+            <#=d.DT#> length = Length();
+            if (!<#=mathHelper#>.IsZero(length))
+            {
+                <#=d.FP#> inverse = 1.0<#=d.FPL#> / length;
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			    <#=pMapUpper[p]#> = <#=fpCast#>(<#=pMapUpper[p]#> * inverse);
+<#
+		}
+#>
+            }
+            else
+            {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+                <#=pMapUpper[p]#> = <#=(p == 1 ? "allowZero ? 1 : 0" : "0")#>;
+<#
+		}
+#>
+            }
+        }
+
+		/// <summary>
+        /// Saturates this instance in the range [0,1]
+        /// </summary>
+        public void Saturate()
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=pMapUpper[p]#> = <#=pMapUpper[p]#> < <#=d.Zero#> ? <#=d.Zero#> : <#=pMapUpper[p]#> > <#=d.One#> ? <#=d.One#> : <#=pMapUpper[p]#>;
+<#
+		}
+#>
+        }
+
+        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
+        /// If so this method truncates that value to zero.</summary>
+        /// <param name="power">The power.</param>
+        /// <param name="vec">The vector.</param>
+        public static <#=fName#> Pow(<#=fName#> vec, <#=d.DT#> power)
+        {
+            return new <#=fName#>()
+            {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				<#=pMapUpper[p]#> = <#=math#>.Pow(vec.<#=pMapUpper[p]#>, power),
+<#
+		}
+#>
+            };
+        }
+
+		/// <summary>Rounds all components down to the nearest unit.</summary>
+        public void Floor()
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=pMapUpper[p]#> = <#=math#>.Floor(<#=pMapUpper[p]#>);
+<#
+		}
+#>
+        }
+
+        /// <summary>Rounds all components up to the nearest unit.</summary>
+        public void Ceiling()
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=pMapUpper[p]#> = <#=math#>.Ceiling(<#=pMapUpper[p]#>);
+<#
+		}
+#>
+        }
+
+        /// <summary>Removes the sign from each component of the current <see cref="<#=fName#>"/>.</summary>
+        public void Abs()
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=pMapUpper[p]#> = <#=math#>.Abs(<#=pMapUpper[p]#>);
+<#
+		}
+#>
+        }
+
+
+		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
+        public void Truncate()
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=pMapUpper[p]#> = (<#=math#>.Abs(<#=pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : <#=pMapUpper[p]#>;
+<#
+		}
+#>
+        }
+
+		/// <summary>Updates the component values to the power of the specified value.</summary>
+        /// <param name="power"></param>
+        public void Pow(<#=d.DT#> power)
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=pMapUpper[p]#> = <#=math#>.Pow(<#=pMapUpper[p]#>, power);
+<#
+		}
+#>
+        }
+
+        /// <summary>
+        /// Calculates the length of the vector.
+        /// </summary>
+        /// <returns>The length of the vector.</returns>
+        /// <remarks>
+        /// <see cref="LengthSquared"/> may be preferred when only the relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public <#=d.DT#> Length()
+        {
+            return <#=math#>.Sqrt(<#for(int p = 0; p < size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="<#=fName#>.DistanceSquared(<#=fName#>, <#=fName#>)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static <#=d.DT#> Distance(ref <#=fName#> value1, ref <#=fName#> value2)
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=d.DT#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
+<#
+		}
+#>
+           return <#=math#>.Sqrt(<#for(int p = 0; p < size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+        }
+
+                /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="<#=fName#>.DistanceSquared(<#=fName#>, <#=fName#>)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static <#=d.DT#> Distance(<#=fName#> value1, <#=fName#> value2)
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=d.DT#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
+<#
+		}
+#>
+
+            return <#=math#>.Sqrt(<#for(int p = 0; p < size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static <#=fName#> CatmullRom(ref <#=fName#> value1, ref <#=fName#> value2, ref <#=fName#> value3, ref <#=fName#> value4, <#=d.DT#> amount)
+        {
+            <#=d.FP#> squared = amount * amount;
+            <#=d.FP#> cubed = amount * squared;
+
+            return new <#=fName#>()
+            {
+<#
+				for(int p = 0; p < size; p++)
+				{
+#>
+				<#=pMapUpper[p]#> = <#=fpCast#>(0.5<#=d.FPL#> * ((((2<#=d.FPL#> * value2.<#=pMapUpper[p]#>) + 
+                ((-value1.<#=pMapUpper[p]#> + value3.<#=pMapUpper[p]#>) * amount)) + 
+                (((((2<#=d.FPL#> * value1.<#=pMapUpper[p]#>) - (5<#=d.FPL#> * value2.<#=pMapUpper[p]#>)) + (4<#=d.FPL#> * value3.<#=pMapUpper[p]#>)) - value4.<#=pMapUpper[p]#>) * squared)) +
+                ((((-value1.<#=pMapUpper[p]#> + (3<#=d.FPL#> * value2.<#=pMapUpper[p]#>)) - (3<#=d.FPL#> * value3.<#=pMapUpper[p]#>)) + value4.<#=pMapUpper[p]#>) * cubed))),
+
+<#
+			    }
+#>
+            };
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
+        public static <#=fName#> CatmullRom(<#=fName#> value1, <#=fName#> value2, <#=fName#> value3, <#=fName#> value4, <#=d.DT#> amount)
+        {
+            return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
+        }
+
+        		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <#=See(fName)#> vector.</param>
+        /// <param name="tangent1">First source tangent <#=See(fName)#> vector.</param>
+        /// <param name="value2">Second source position <#=See(fName)#> vector.</param>
+        /// <param name="tangent2">Second source tangent <#=See(fName)#> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static <#=fName#> Hermite(ref <#=fName#> value1, ref <#=fName#> tangent1, ref <#=fName#> value2, ref <#=fName#> tangent2, <#=d.DT#> amount)
+        {
+            <#=d.FP#> squared = amount * amount;
+            <#=d.FP#> cubed = amount * squared;
+            <#=d.FP#> part1 = ((2.0<#=d.FPL#> * cubed) - (3.0<#=d.FPL#> * squared)) + 1.0<#=d.FPL#>;
+            <#=d.FP#> part2 = (-2.0<#=d.FPL#> * cubed) + (3.0<#=d.FPL#> * squared);
+            <#=d.FP#> part3 = (cubed - (2.0<#=d.FPL#> * squared)) + amount;
+            <#=d.FP#> part4 = cubed - squared;
+
+			return new <#=fName#>()
+			{
+<#
+		for(int p = 0; p < size; p++)
+		{
+			if(d.DT == d.FP)
+			{
+#>
+				<#=pMapUpper[p]#> = (((value1.<#=pMapUpper[p]#> * part1) + (value2.<#=pMapUpper[p]#> * part2)) + (tangent1.<#=pMapUpper[p]#> * part3)) + (tangent2.<#=pMapUpper[p]#> * part4),
+<#
+			}
+			else
+			{
+#>
+				<#=pMapUpper[p]#> = <#=fpCast#>((((value1.<#=pMapUpper[p]#> * part1) + (value2.<#=pMapUpper[p]#> * part2)) + (tangent1.<#=pMapUpper[p]#> * part3)) + (tangent2.<#=pMapUpper[p]#> * part4)),
+<#
+			}
+		}
+#>
+			};
+        }
+
+        /// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <#=See(fName)#>.</param>
+        /// <param name="tangent1">First source tangent <#=See(fName)#>.</param>
+        /// <param name="value2">Second source position <#=See(fName)#>.</param>
+        /// <param name="tangent2">Second source tangent <#=See(fName)#>.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>The result of the Hermite spline interpolation.</returns>
+        public static <#=fName#> Hermite(<#=fName#> value1, <#=fName#> tangent1, <#=fName#> value2, <#=fName#> tangent2, <#=d.DT#> amount)
+        {
+            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
+        }
+
+#region Static Methods
+		/// <summary>Truncate each near-zero component of a vector towards zero.</summary>
+        /// <param name="value">The <#=fName#> to be truncated.</param>
+        /// <returns></returns>
+        public static <#=fName#> Truncate(<#=fName#> value)
+        {
+            return new <#=fName#>()
+            {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				<#=pMapUpper[p]#> = (<#=math#>.Abs(value.<#=pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : value.X,
+<#
+		}
+#>
+            };
+        }
+#endregion
+	}
+}
+<#
+		SaveFile(outputPath + subDir, fn, this.GenerationEnvironment.ToString());
+		this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+	}
+}
+#>

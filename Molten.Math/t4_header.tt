@@ -29,7 +29,11 @@ int[] _vectorSizes = new int[]{2, 3, 4};
 
 public void SaveFile(string folder, string fileName, string content)
 {
-	using (FileStream fs = new FileStream(Path.Combine(folder, fileName.Trim() + ".cs"), FileMode.Create))
+    string path = Path.Combine(folder, fileName.Trim() + ".cs");
+    if(!Directory.Exists(folder))
+        Directory.CreateDirectory(folder);
+
+	using (FileStream fs = new FileStream(path, FileMode.Create))
     {
         using (StreamWriter str = new StreamWriter(fs))
         {

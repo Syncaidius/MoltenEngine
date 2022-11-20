@@ -1,0 +1,626 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ include file="t4_header.tt" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".txt" #>
+<#
+string outputPath = this.Host.ResolvePath("");
+List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
+string pMap = "xyzw";
+string pMapUpper = "XYZW";
+
+foreach(TypeData d in _def)
+{
+	if(!d.IsFPType)
+	{
+		continue;
+	}
+
+	int size = 3;
+	string fName = $"{d.Name}{size}{d.Postfix}";
+	string fn = $"{fName}.fp3";
+	string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
+	string mathHelper = d.DT == "double" ? "MathHelperDP" : "MathHelper";
+    string subNamespace = "";
+    string subDir = "";
+
+    switch(d.Bits){
+        case 16:
+            subNamespace = ".HalfPrecision"; 
+            subDir = "/HalfPrecision/Vectors";
+            break;
+
+        case 64: 
+            subNamespace = ".DoublePrecision"; 
+            subDir = "/DoublePrecision/Vectors";
+            break;
+
+        case 128: 
+            subNamespace = ".QuadPrecision"; 
+            subDir = "/QuadPrecision/Vectors";
+            break;
+
+        default:
+            subDir = "/SinglePrecision/Vectors";
+            break;
+    }
+#>
+namespace Molten<#=subNamespace#>
+{
+	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
+	public partial struct <#=fName#>
+	{
+#region Instance methods
+        
+#endregion
+
+#region Static Methods
+        /// <summary>
+        /// Projects a 3D vector from object space into screen space. 
+        /// </summary>
+        /// <param name="vector">The vector to project.</param>
+        /// <param name="x">The X position of the viewport.</param>
+        /// <param name="y">The Y position of the viewport.</param>
+        /// <param name="width">The width of the viewport.</param>
+        /// <param name="height">The height of the viewport.</param>
+        /// <param name="minZ">The minimum depth of the viewport.</param>
+        /// <param name="maxZ">The maximum depth of the viewport.</param>
+        /// <param name="worldViewProjection">The combined world-view-projection matrix.</param>
+        /// <param name="result">When the method completes, contains the vector in screen space.</param>
+        public static void Project(ref <#=fName#> vector, <#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> width, <#=d.DT#> height, <#=d.DT#> minZ, <#=d.DT#> maxZ, ref Matrix4<#=d.Postfix#> worldViewProjection, out <#=fName#> result)
+        {
+            <#=fName#> v = new <#=fName#>();
+            TransformCoordinate(ref vector, ref worldViewProjection, out v);
+
+            result = new <#=fName#>(((<#=d.One#> + v.X) * 0.5<#=d.Postfix#> * width) + x, ((1.0f - v.Y) * 0.5<#=d.Postfix#> * height) + y, (v.Z * (maxZ - minZ)) + minZ);
+        }
+
+        /// <summary>
+        /// Projects a 3D vector from object space into screen space. 
+        /// </summary>
+        /// <param name="vector">The vector to project.</param>
+        /// <param name="x">The X position of the viewport.</param>
+        /// <param name="y">The Y position of the viewport.</param>
+        /// <param name="width">The width of the viewport.</param>
+        /// <param name="height">The height of the viewport.</param>
+        /// <param name="minZ">The minimum depth of the viewport.</param>
+        /// <param name="maxZ">The maximum depth of the viewport.</param>
+        /// <param name="worldViewProjection">The combined world-view-projection matrix.</param>
+        /// <returns>The vector in screen space.</returns>
+        public static <#=fName#> Project(<#=fName#> vector, <#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> width, <#=d.DT#> height, <#=d.DT#> minZ, <#=d.DT#> maxZ, Matrix4<#=d.Postfix#> worldViewProjection)
+        {
+            <#=fName#> result;
+            Project(ref vector, x, y, width, height, minZ, maxZ, ref worldViewProjection, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Projects a 3D vector from screen space into object space. 
+        /// </summary>
+        /// <param name="vector">The vector to project.</param>
+        /// <param name="x">The X position of the viewport.</param>
+        /// <param name="y">The Y position of the viewport.</param>
+        /// <param name="width">The width of the viewport.</param>
+        /// <param name="height">The height of the viewport.</param>
+        /// <param name="minZ">The minimum depth of the viewport.</param>
+        /// <param name="maxZ">The maximum depth of the viewport.</param>
+        /// <param name="worldViewProjection">The combined world-view-projection matrix.</param>
+        /// <param name="result">When the method completes, contains the vector in object space.</param>
+        public static void Unproject(ref <#=fName#> vector, <#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> width, <#=d.DT#> height, <#=d.DT#> minZ, <#=d.DT#> maxZ, ref Matrix4<#=d.Postfix#> worldViewProjection, out <#=fName#> result)
+        {
+            <#=fName#> v = new <#=fName#>();
+            Matrix4<#=d.Postfix#> matrix = new Matrix4<#=d.Postfix#>();
+            Matrix4<#=d.Postfix#>.Invert(ref worldViewProjection, out matrix);
+
+            v.X = (((vector.X - x) / width) * 2.0f) - 1.0f;
+            v.Y = -((((vector.Y - y) / height) * 2.0f) - 1.0f);
+            v.Z = (vector.Z - minZ) / (maxZ - minZ);
+
+            TransformCoordinate(ref v, ref matrix, out result);
+        }
+
+        /// <summary>
+        /// Projects a 3D vector from screen space into object space. 
+        /// </summary>
+        /// <param name="vector">The vector to project.</param>
+        /// <param name="x">The X position of the viewport.</param>
+        /// <param name="y">The Y position of the viewport.</param>
+        /// <param name="width">The width of the viewport.</param>
+        /// <param name="height">The height of the viewport.</param>
+        /// <param name="minZ">The minimum depth of the viewport.</param>
+        /// <param name="maxZ">The maximum depth of the viewport.</param>
+        /// <param name="worldViewProjection">The combined world-view-projection matrix.</param>
+        /// <returns>The vector in object space.</returns>
+        public static <#=fName#> Unproject(<#=fName#> vector, <#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> width, <#=d.DT#> height, <#=d.DT#> minZ, <#=d.DT#> maxZ, Matrix4<#=d.Postfix#> worldViewProjection)
+        {
+            <#=fName#> result;
+            Unproject(ref vector, x, y, width, height, minZ, maxZ, ref worldViewProjection, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
+        /// </summary>
+        /// <param name="vector">The vector to rotate.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="Vector4<#=d.Postfix#>"/>.</param>
+        public static void Transform(ref <#=fName#> vector, ref Quaternion<#=d.Postfix#> rotation, out <#=fName#> result)
+        {
+            <#=d.DT#> x = rotation.X + rotation.X;
+            <#=d.DT#> y = rotation.Y + rotation.Y;
+            <#=d.DT#> z = rotation.Z + rotation.Z;
+            <#=d.DT#> wx = rotation.W * x;
+            <#=d.DT#> wy = rotation.W * y;
+            <#=d.DT#> wz = rotation.W * z;
+            <#=d.DT#> xx = rotation.X * x;
+            <#=d.DT#> xy = rotation.X * y;
+            <#=d.DT#> xz = rotation.X * z;
+            <#=d.DT#> yy = rotation.Y * y;
+            <#=d.DT#> yz = rotation.Y * z;
+            <#=d.DT#> zz = rotation.Z * z;
+
+            
+            result.X = ((vector.X * ((1.0f - yy) - zz)) + (vector.Y * (xy - wz))) + (vector.Z * (xz + wy));
+            result.Y = ((vector.X * (xy + wz)) + (vector.Y * ((1.0f - xx) - zz))) + (vector.Z * (yz - wx));
+            result.Z = ((vector.X * (xz - wy)) + (vector.Y * (yz + wx))) + (vector.Z * ((1.0f - xx) - yy));
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
+        /// </summary>
+        /// <param name="vector">The vector to rotate.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="Vector4<#=d.Postfix#>"/>.</param>
+        public static <#=fName#> Transform(ref <#=fName#> vector, ref Quaternion<#=d.Postfix#> rotation)
+        {
+            Transform(ref vector, ref rotation, out <#=fName#> result);
+            return result;
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
+        /// </summary>
+        /// <param name="vector">The vector to rotate.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
+        /// <returns>The transformed <see cref="Vector4<#=d.Postfix#>"/>.</returns>
+        public static <#=fName#> Transform(<#=fName#> vector, Quaternion<#=d.Postfix#> rotation)
+        {
+            <#=fName#> result;
+            Transform(ref vector, ref rotation, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Transforms an array of vectors by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
+        /// </summary>
+        /// <param name="source">The array of vectors to transform.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
+        /// <param name="destination">The array for which the transformed vectors are stored.
+        /// This array may be the same array as <paramref name="source"/>.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
+        public static void Transform(<#=fName#>[] source, ref Quaternion<#=d.Postfix#> rotation, <#=fName#>[] destination)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (destination.Length < source.Length)
+                throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+
+            <#=d.DT#> x = rotation.X + rotation.X;
+            <#=d.DT#> y = rotation.Y + rotation.Y;
+            <#=d.DT#> z = rotation.Z + rotation.Z;
+            <#=d.DT#> wx = rotation.W * x;
+            <#=d.DT#> wy = rotation.W * y;
+            <#=d.DT#> wz = rotation.W * z;
+            <#=d.DT#> xx = rotation.X * x;
+            <#=d.DT#> xy = rotation.X * y;
+            <#=d.DT#> xz = rotation.X * z;
+            <#=d.DT#> yy = rotation.Y * y;
+            <#=d.DT#> yz = rotation.Y * z;
+            <#=d.DT#> zz = rotation.Z * z;
+
+            <#=d.DT#> num1 = ((1.0f - yy) - zz);
+            <#=d.DT#> num2 = (xy - wz);
+            <#=d.DT#> num3 = (xz + wy);
+            <#=d.DT#> num4 = (xy + wz);
+            <#=d.DT#> num5 = ((1.0f - xx) - zz);
+            <#=d.DT#> num6 = (yz - wx);
+            <#=d.DT#> num7 = (xz - wy);
+            <#=d.DT#> num8 = (yz + wx);
+            <#=d.DT#> num9 = ((1.0f - xx) - yy);
+
+            for (int i = 0; i < source.Length; ++i)
+            {
+                destination[i] = new <#=fName#>(
+                    ((source[i].X * num1) + (source[i].Y * num2)) + (source[i].Z * num3),
+                    ((source[i].X * num4) + (source[i].Y * num5)) + (source[i].Z * num6),
+                    ((source[i].X * num7) + (source[i].Y * num8)) + (source[i].Z * num9));
+            }
+        }
+
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Matrix3<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix3<#=d.Postfix#>"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
+        public static void Transform(ref <#=fName#> vector, ref Matrix3<#=d.Postfix#> transform, out <#=fName#> result)
+        {
+            result = new <#=fName#>()
+            {
+                X = (vector.X * transform.M11) + (vector.Y * transform.M21) + (vector.Z * transform.M31),
+                Y = (vector.X * transform.M12) + (vector.Y * transform.M22) + (vector.Z * transform.M32),
+                Z = (vector.X * transform.M13) + (vector.Y * transform.M23) + (vector.Z * transform.M33)
+            };
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Matrix3<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix3<#=d.Postfix#>"/>.</param>
+        /// <returns>The transformed <see cref="<#=fName#>"/>.</returns>
+        public static <#=fName#> Transform(<#=fName#> vector, Matrix3<#=d.Postfix#> transform)
+        {
+            <#=fName#> result;
+            Transform(ref vector, ref transform, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
+        public static void Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform, out <#=fName#> result)
+        {
+            Transform(ref vector, ref transform, out Vector4<#=d.Postfix#> v4Result);
+            result = (<#=fName#>)v4Result;
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
+        public static <#=fName#> Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform)
+        {
+            Transform(ref vector, ref transform, out Vector4<#=d.Postfix#> result);
+            return (<#=fName#>)result;
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="Vector4<#=d.Postfix#>"/>.</param>
+        public static void Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform, out Vector4<#=d.Postfix#> result)
+        {
+            result = new Vector4<#=d.Postfix#>(
+                (vector.X * transform.M11) + (vector.Y * transform.M21) + (vector.Z * transform.M31) + transform.M41,
+                (vector.X * transform.M12) + (vector.Y * transform.M22) + (vector.Z * transform.M32) + transform.M42,
+                (vector.X * transform.M13) + (vector.Y * transform.M23) + (vector.Z * transform.M33) + transform.M43,
+                (vector.X * transform.M14) + (vector.Y * transform.M24) + (vector.Z * transform.M34) + transform.M44);
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <returns>The transformed <see cref="Vector4<#=d.Postfix#>"/>.</returns>
+        public static Vector4<#=d.Postfix#> Transform(<#=fName#> vector, Matrix4<#=d.Postfix#> transform)
+        {
+            Vector4<#=d.Postfix#> result;
+            Transform(ref vector, ref transform, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Transforms an array of 3D vectors by the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="source">The array of vectors to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="destination">The array for which the transformed vectors are stored.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
+        public static void Transform(<#=fName#>[] source, ref Matrix4<#=d.Postfix#> transform, Vector4<#=d.Postfix#>[] destination)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (destination.Length < source.Length)
+                throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+
+            for (int i = 0; i < source.Length; ++i)
+            {
+                Transform(ref source[i], ref transform, out destination[i]);
+            }
+        }
+
+
+        /// <summary>
+        /// Transforms a vector using a quaternion. Specialized for x,0,0 vectors.
+        /// </summary>
+        /// <param name="x">X component of the vector to transform.</param>
+        /// <param name="rotation">Rotation to apply to the vector.</param>
+        /// <param name="result">Transformed vector.</param>
+        public static void TransformX(<#=d.DT#> x, ref Quaternion<#=d.Postfix#> rotation, out <#=fName#> result)
+        {
+            //This operation is an optimized-down version of v' = q * v * q^-1.
+            //The expanded form would be to treat v as an 'axis only' quaternion
+            //and perform standard quaternion multiplication.  Assuming q is normalized,
+            //q^-1 can be replaced by a conjugation.
+            <#=d.DT#> y2 = rotation.Y + rotation.Y;
+            <#=d.DT#> z2 = rotation.Z + rotation.Z;
+            <#=d.DT#> xy2 = rotation.X * y2;
+            <#=d.DT#> xz2 = rotation.X * z2;
+            <#=d.DT#> yy2 = rotation.Y * y2;
+            <#=d.DT#> zz2 = rotation.Z * z2;
+            <#=d.DT#> wy2 = rotation.W * y2;
+            <#=d.DT#> wz2 = rotation.W * z2;
+            //Defer the component setting since they're used in computation.
+            <#=d.DT#> transformedX = x * (1f - yy2 - zz2);
+            <#=d.DT#> transformedY = x * (xy2 + wz2);
+            <#=d.DT#> transformedZ = x * (xz2 - wy2);
+            result.X = transformedX;
+            result.Y = transformedY;
+            result.Z = transformedZ;
+
+        }
+
+        /// <summary>
+        /// Transforms a vector using a quaternion. Specialized for 0,y,0 vectors.
+        /// </summary>
+        /// <param name="y">Y component of the vector to transform.</param>
+        /// <param name="rotation">Rotation to apply to the vector.</param>
+        /// <param name="result">Transformed vector.</param>
+        public static void TransformY(<#=d.DT#> y, ref Quaternion<#=d.Postfix#> rotation, out <#=fName#> result)
+        {
+            //This operation is an optimized-down version of v' = q * v * q^-1.
+            //The expanded form would be to treat v as an 'axis only' quaternion
+            //and perform standard quaternion multiplication.  Assuming q is normalized,
+            //q^-1 can be replaced by a conjugation.
+            <#=d.DT#> x2 = rotation.X + rotation.X;
+            <#=d.DT#> y2 = rotation.Y + rotation.Y;
+            <#=d.DT#> z2 = rotation.Z + rotation.Z;
+            <#=d.DT#> xx2 = rotation.X * x2;
+            <#=d.DT#> xy2 = rotation.X * y2;
+            <#=d.DT#> yz2 = rotation.Y * z2;
+            <#=d.DT#> zz2 = rotation.Z * z2;
+            <#=d.DT#> wx2 = rotation.W * x2;
+            <#=d.DT#> wz2 = rotation.W * z2;
+            //Defer the component setting since they're used in computation.
+            <#=d.DT#> transformedX = y * (xy2 - wz2);
+            <#=d.DT#> transformedY = y * (1f - xx2 - zz2);
+            <#=d.DT#> transformedZ = y * (yz2 + wx2);
+            result.X = transformedX;
+            result.Y = transformedY;
+            result.Z = transformedZ;
+
+        }
+
+        /// <summary>
+        /// Transforms a vector using a quaternion. Specialized for 0,0,z vectors.
+        /// </summary>
+        /// <param name="z">Z component of the vector to transform.</param>
+        /// <param name="rotation">Rotation to apply to the vector.</param>
+        /// <param name="result">Transformed vector.</param>
+        public static void TransformZ(<#=d.DT#> z, ref Quaternion<#=d.Postfix#> rotation, out <#=fName#> result)
+        {
+            //This operation is an optimized-down version of v' = q * v * q^-1.
+            //The expanded form would be to treat v as an 'axis only' quaternion
+            //and perform standard quaternion multiplication.  Assuming q is normalized,
+            //q^-1 can be replaced by a conjugation.
+            <#=d.DT#> x2 = rotation.X + rotation.X;
+            <#=d.DT#> y2 = rotation.Y + rotation.Y;
+            <#=d.DT#> z2 = rotation.Z + rotation.Z;
+            <#=d.DT#> xx2 = rotation.X * x2;
+            <#=d.DT#> xz2 = rotation.X * z2;
+            <#=d.DT#> yy2 = rotation.Y * y2;
+            <#=d.DT#> yz2 = rotation.Y * z2;
+            <#=d.DT#> wx2 = rotation.W * x2;
+            <#=d.DT#> wy2 = rotation.W * y2;
+            //Defer the component setting since they're used in computation.
+            <#=d.DT#> transformedX = z * (xz2 + wy2);
+            <#=d.DT#> transformedY = z * (yz2 - wx2);
+            <#=d.DT#> transformedZ = z * (1f - xx2 - yy2);
+            result.X = transformedX;
+            result.Y = transformedY;
+            result.Z = transformedZ;
+
+        }
+
+        /// <summary>
+        /// Performs a coordinate transformation using the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="coordinate">The coordinate vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed coordinates.</param>
+        /// <remarks>
+        /// A coordinate transform performs the transformation with the assumption that the w component
+        /// is one. The four dimensional vector obtained from the transformation operation has each
+        /// component in the vector divided by the w component. This forces the w component to be one and
+        /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
+        /// with coordinates as the w component can safely be ignored.
+        /// </remarks>
+        public static void TransformCoordinate(ref <#=fName#> coordinate, ref Matrix4<#=d.Postfix#> transform, out <#=fName#> result)
+        {
+            Vector4<#=d.Postfix#> vector = new Vector4<#=d.Postfix#>();
+            vector.X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + (coordinate.Z * transform.M31) + transform.M41;
+            vector.Y = (coordinate.X * transform.M12) + (coordinate.Y * transform.M22) + (coordinate.Z * transform.M32) + transform.M42;
+            vector.Z = (coordinate.X * transform.M13) + (coordinate.Y * transform.M23) + (coordinate.Z * transform.M33) + transform.M43;
+            vector.W = 1f / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + (coordinate.Z * transform.M34) + transform.M44);
+
+            result = new <#=fName#>(vector.X * vector.W, vector.Y * vector.W, vector.Z * vector.W);
+        }
+
+        /// <summary>
+        /// Performs a coordinate transformation using the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="coordinate">The coordinate vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <remarks>
+        /// A coordinate transform performs the transformation with the assumption that the w component
+        /// is one. The four dimensional vector obtained from the transformation operation has each
+        /// component in the vector divided by the w component. This forces the w component to be one and
+        /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
+        /// with coordinates as the w component can safely be ignored.
+        /// </remarks>
+        public static <#=fName#> TransformCoordinate(ref <#=fName#> coordinate, ref Matrix4<#=d.Postfix#> transform)
+        {
+            TransformCoordinate(ref coordinate, ref transform, out <#=fName#> result);
+            return result;
+        }
+
+        /// <summary>
+        /// Performs a coordinate transformation using the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="coordinate">The coordinate vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <returns>The transformed coordinates.</returns>
+        /// <remarks>
+        /// A coordinate transform performs the transformation with the assumption that the w component
+        /// is one. The four dimensional vector obtained from the transformation operation has each
+        /// component in the vector divided by the w component. This forces the w component to be one and
+        /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
+        /// with coordinates as the w component can safely be ignored.
+        /// </remarks>
+        public static <#=fName#> TransformCoordinate(<#=fName#> coordinate, Matrix4<#=d.Postfix#> transform)
+        {
+             TransformCoordinate(ref coordinate, ref transform, out <#=fName#> result);
+             return result;
+        }
+
+        /// <summary>
+        /// Performs a coordinate transformation on an array of vectors using the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="source">The array of coordinate vectors to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="destination">The array for which the transformed vectors are stored.
+        /// This array may be the same array as <paramref name="source"/>.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
+        /// <remarks>
+        /// A coordinate transform performs the transformation with the assumption that the w component
+        /// is one. The four dimensional vector obtained from the transformation operation has each
+        /// component in the vector divided by the w component. This forces the w component to be one and
+        /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
+        /// with coordinates as the w component can safely be ignored.
+        /// </remarks>
+        public static void TransformCoordinate(<#=fName#>[] source, ref Matrix4<#=d.Postfix#> transform, <#=fName#>[] destination)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (destination.Length < source.Length)
+                throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+
+            for (int i = 0; i < source.Length; ++i)
+                TransformCoordinate(ref source[i], ref transform, out destination[i]);
+        }
+
+        /// <summary>
+        /// Performs a normal transformation using the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="normal">The normal vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed normal.</param>
+        /// <remarks>
+        /// A normal transform performs the transformation with the assumption that the w component
+        /// is zero. This causes the fourth row and fourth column of the matrix to be unused. The
+        /// end result is a vector that is not translated, but all other transformation properties
+        /// apply. This is often preferred for normal vectors as normals purely represent direction
+        /// rather than location because normal vectors should not be translated.
+        /// </remarks>
+        public static void TransformNormal(ref <#=fName#> normal, ref Matrix4<#=d.Postfix#> transform, out <#=fName#> result)
+        {
+            result.X = (normal.X * transform.M11) + (normal.Y * transform.M21) + (normal.Z * transform.M31);
+            result.Y = (normal.X * transform.M12) + (normal.Y * transform.M22) + (normal.Z * transform.M32);
+            result.Z = (normal.X * transform.M13) + (normal.Y * transform.M23) + (normal.Z * transform.M33);
+        }
+
+        /// <summary>
+        /// Performs a normal transformation using the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="normal">The normal vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed normal.</param>
+        /// <remarks>
+        /// A normal transform performs the transformation with the assumption that the w component
+        /// is zero. This causes the fourth row and fourth column of the matrix to be unused. The
+        /// end result is a vector that is not translated, but all other transformation properties
+        /// apply. This is often preferred for normal vectors as normals purely represent direction
+        /// rather than location because normal vectors should not be translated.
+        /// </remarks>
+        public static <#=fName#> TransformNormal(ref <#=fName#> normal, ref Matrix4<#=d.Postfix#> transform)
+        {
+            TransformNormal(ref normal, ref transform, out <#=fName#> result);
+            return result;
+        }
+
+        /// <summary>
+        /// Performs a normal transformation using the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="normal">The normal vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <returns>The transformed normal.</returns>
+        /// <remarks>
+        /// A normal transform performs the transformation with the assumption that the w component
+        /// is zero. This causes the fourth row and fourth column of the matrix to be unused. The
+        /// end result is a vector that is not translated, but all other transformation properties
+        /// apply. This is often preferred for normal vectors as normals purely represent direction
+        /// rather than location because normal vectors should not be translated.
+        /// </remarks>
+        public static <#=fName#> TransformNormal(<#=fName#> normal, Matrix4<#=d.Postfix#> transform)
+        {
+            return TransformNormal(ref normal, ref transform);
+        }
+
+        /// <summary>
+        /// Performs a normal transformation on an array of vectors using the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="source">The array of normal vectors to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="destination">The array for which the transformed vectors are stored.
+        /// This array may be the same array as <paramref name="source"/>.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
+        /// <remarks>
+        /// A normal transform performs the transformation with the assumption that the w component
+        /// is zero. This causes the fourth row and fourth column of the matrix to be unused. The
+        /// end result is a vector that is not translated, but all other transformation properties
+        /// apply. This is often preferred for normal vectors as normals purely represent direction
+        /// rather than location because normal vectors should not be translated.
+        /// </remarks>
+        public static void TransformNormal(<#=fName#>[] source, ref Matrix4<#=d.Postfix#> transform, <#=fName#>[] destination)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (destination.Length < source.Length)
+                throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+
+            for (int i = 0; i < source.Length; ++i)
+                TransformNormal(ref source[i], ref transform, out destination[i]);
+        }
+#endregion
+	}
+}
+<#
+		SaveFile(outputPath+ subDir, fn, this.GenerationEnvironment.ToString());
+		this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+}
+#>
