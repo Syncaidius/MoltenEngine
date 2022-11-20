@@ -31,7 +31,6 @@ foreach(TypeData d in _def)
 		string intCast = d.DT == "float" ? "(int)" : (d.DT == "double" ? "(long)" : "$(${d.DT}");
 		string intCastPostfix = d.DT == "float" ? "I" : "L";
 #>
-using System.Runtime.InteropServices;
 using System;
 
 namespace Molten

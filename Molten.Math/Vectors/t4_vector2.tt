@@ -23,16 +23,11 @@ foreach(TypeData d in _def)
     string typeCast = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"({d.DT})" : "";
     string intType = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"int" : d.DT;
 #>
-using System.Runtime.InteropServices;
-
 namespace Molten
 {
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
 	public partial struct <#=fName#>
 	{
-		
-
-
 #region Static Methods
         /// <summary>
         /// Calculates the cross product of two vectors.

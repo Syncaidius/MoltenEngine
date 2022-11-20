@@ -1,11 +1,8 @@
 namespace Molten
 {
-    ///<summary>A <see cref = "ulong"/> vector comprised of 2 components.</summary>
-    public partial struct Vector2UL
+	///<summary>A <see cref = "ulong"/> vector comprised of 2 components.</summary>
+	public partial struct Vector2UL
 	{
-		
-
-
 #region Static Methods
         /// <summary>
         /// Calculates the cross product of two vectors.

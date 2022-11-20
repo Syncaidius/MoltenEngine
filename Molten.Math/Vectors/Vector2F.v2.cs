@@ -1,11 +1,8 @@
 namespace Molten
 {
-    ///<summary>A <see cref = "float"/> vector comprised of 2 components.</summary>
-    public partial struct Vector2F
+	///<summary>A <see cref = "float"/> vector comprised of 2 components.</summary>
+	public partial struct Vector2F
 	{
-		
-
-
 #region Static Methods
         /// <summary>
         /// Calculates the cross product of two vectors.

@@ -1,11 +1,13 @@
+
+
+
+
+
 namespace Molten
 {
-    ///<summary>A <see cref = "sbyte"/> vector comprised of 2 components.</summary>
-    public partial struct SByte2
+	///<summary>A <see cref = "sbyte"/> vector comprised of 2 components.</summary>
+	public partial struct SByte2
 	{
-		
-
-
 #region Static Methods
         /// <summary>
         /// Calculates the cross product of two vectors.
