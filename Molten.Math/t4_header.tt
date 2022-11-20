@@ -2,14 +2,16 @@
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Microsoft.VisualStudio.TextTemplating" #>
 <#@ assembly name="Newtonsoft.Json" #>
 <#@ import namespace="Newtonsoft.Json" #>
 <#@ output extension=".cs" #>
 
 
 <#+
-// TODO move to Json file
-struct TypeData
+public delegate void GenerateTypeCallback(TypeData d, Metadata md, List<TypeData> defs);
+
+public struct TypeData
 {
     public string Name;     // Name
     public string Postfix;  //Name post-fix
@@ -24,8 +26,75 @@ struct TypeData
     public int Bits;        // The number of bits in DT
 }
 
+public struct Metadata
+{
+    public int Size;
+	public string Name;
+	public string Filename;
+	public string FPCast;
+	public string MathHelper;
+    public string Math;
+    public string TypeCast;
+    public string FPToTypeCast;
+    public string IntType;
+    public string SubNamespace;
+    public string SubDirectory;
+}
+
 string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
 int[] _vectorSizes = new int[]{2, 3, 4};
+
+public void GenerateTypes(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string definitionFileName, int[] sizes, GenerateTypeCallback callback)
+{
+    string outputPath = host.ResolvePath("");
+    List<TypeData> defs = ReadJsonDef<TypeData>(outputPath, definitionFileName);
+
+    foreach(TypeData d in defs)
+    {
+        Metadata md = new Metadata();
+		md.FPCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
+		md.MathHelper = d.FP == "double" ? "MathHelperDP" : "MathHelper";
+		md.Math = d.FP == "float" ? "MathF" : "Math";
+        md.TypeCast = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"({d.DT})" : "";
+        md.FPToTypeCast = (md.TypeCast.Length > 0) ? md.TypeCast : (d.DT != d.FP ? $"({d.DT})" : "");
+        md.IntType = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"int" : d.DT;
+        md.SubNamespace = "";
+        md.SubDirectory = "";
+
+        switch(d.Bits){
+            case 16:
+                md.SubNamespace = ".HalfPrecision"; 
+                md.SubDirectory = "/HalfPrecision/Vectors";
+                break;
+
+            case 64: 
+                md.SubNamespace = ".DoublePrecision"; 
+                md.SubDirectory = "/DoublePrecision/Vectors";
+                break;
+
+            case 128: 
+                md.SubNamespace = ".QuadPrecision"; 
+                md.SubDirectory = "/QuadPrecision/Vectors";
+                break;
+
+            default:
+                md.SubDirectory = "/SinglePrecision/Vectors";
+                break;
+        }
+
+        foreach(int size in sizes)
+        {
+            md.Name = $"{d.Name}{size}{d.Postfix}";
+		    md.Filename = $"{md.Name}";
+            md.Size = size;
+
+            callback(d, md, defs);
+
+            SaveFile(outputPath + md.SubDirectory, md.Filename, genEnvironment.ToString());
+		    genEnvironment.Length = 0;
+        }
+    }
+}
 
 public void SaveFile(string folder, string fileName, string content)
 {
