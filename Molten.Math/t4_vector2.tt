@@ -9,47 +9,16 @@
 <#@ output extension=".txt" #>
 
 <#
-string outputPath = this.Host.ResolvePath("");
-List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
 string pMap = "xyzw";
 string pMapUpper = "XYZW";
 
-foreach(TypeData d in _def)
+GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "vector_defs.json", "v2", _vectorSizes, (d,md) => md.Size == 2, (d, md, defs) =>
 {
-	int size = 2;
-	string fName = $"{d.Name}{size}{d.Postfix}";
-	string fn = $"{fName}.v2";
-	string fpCast = d.DT == "float" ? "(float)" : "";
-    string typeCast = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"({d.DT})" : "";
-    string intType = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"int" : d.DT;
-    string subNamespace = "";
-    string subDir = "";
-
-    switch(d.Bits){
-        case 16:
-            subNamespace = ".HalfPrecision"; 
-            subDir = "/HalfPrecision/Vectors";
-            break;
-
-        case 64: 
-            subNamespace = ".DoublePrecision"; 
-            subDir = "/DoublePrecision/Vectors";
-            break;
-
-        case 128: 
-            subNamespace = ".QuadPrecision"; 
-            subDir = "/QuadPrecision/Vectors";
-            break;
-
-        default:
-            subDir = "/SinglePrecision/Vectors";
-            break;
-    }
 #>
-namespace Molten<#=subNamespace#>
+namespace Molten<#=md.SubNamespace#>
 {
-	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
-	public partial struct <#=fName#>
+	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=md.Size#> components.</summary>
+	public partial struct <#=md.Name#>
 	{
 #region Static Methods
         /// <summary>
@@ -57,9 +26,9 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="left">First source vector.</param>
         /// <param name="right">Second source vector.</param>
-        public static <#=d.DT#> Cross(ref <#=fName#> left, ref <#=fName#> right)
+        public static <#=d.DT#> Cross(ref <#=md.Name#> left, ref <#=md.Name#> right)
         {
-            return <#=typeCast#>((left.X * right.Y) - (left.Y * right.X));
+            return <#=md.TypeCast#>((left.X * right.Y) - (left.Y * right.X));
         }
 
         /// <summary>
@@ -67,15 +36,13 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="left">First source vector.</param>
         /// <param name="right">Second source vector.</param>
-        public static <#=d.DT#> Cross(<#=fName#> left, <#=fName#> right)
+        public static <#=d.DT#> Cross(<#=md.Name#> left, <#=md.Name#> right)
         {
-            return <#=typeCast#>((left.X * right.Y) - (left.Y * right.X));
+            return <#=md.TypeCast#>((left.X * right.Y) - (left.Y * right.X));
         }
 #endregion
 	}
 }
 <#
-	SaveFile(outputPath + subDir, fn, this.GenerationEnvironment.ToString());
-	this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
-}
+});
 #>

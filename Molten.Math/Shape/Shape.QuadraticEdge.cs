@@ -147,14 +147,14 @@ namespace Molten
                 int solutions = SignedDistanceSolver.SolveCubic(t, a, b, c, d);
 
                 Vector2D epDir = GetDirection(0);
-                double minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(epDir, qa)) * qa.Length(); // distance from A
+                double minDistance = MathHelper.NonZeroSign(Vector2D.Cross(epDir, qa)) * qa.Length(); // distance from A
                 param = -Vector2D.Dot(qa, epDir) / Vector2D.Dot(epDir, epDir);
                 {
                     epDir = GetDirection(1);
                     double distance = (P[2] - origin).Length(); // distance from B
                     if (distance < Math.Abs(minDistance))
                     {
-                        minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(epDir, P[2] - origin)) * distance;
+                        minDistance = MathHelper.NonZeroSign(Vector2D.Cross(epDir, P[2] - origin)) * distance;
                         param = Vector2D.Dot(origin - P[1], epDir) / Vector2D.Dot(epDir, epDir);
                     }
                 }
@@ -166,7 +166,7 @@ namespace Molten
                         double distance = qe.Length();
                         if (distance <= Math.Abs(minDistance))
                         {
-                            minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(ab + t[i] * br, qe)) * distance;
+                            minDistance = MathHelper.NonZeroSign(Vector2D.Cross(ab + t[i] * br, qe)) * distance;
                             param = t[i];
                         }
                     }

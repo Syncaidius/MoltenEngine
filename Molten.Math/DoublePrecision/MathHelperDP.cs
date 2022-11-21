@@ -250,16 +250,6 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Clamps the specified value between 0 and 1.0
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of clamping a value between min and max</returns>
-        public static double Clamp(double value)
-        {
-            return value < 0.0 ? 0.0 : value > 1.0 ? 1.0 : value;
-        }
-
-        /// <summary>
         /// Interpolates between two values using a linear function by a given amount.
         /// </summary>
         /// <remarks>
@@ -370,31 +360,17 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Calculates the modulo of the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="modulo">The modulo.</param>
-        /// <returns>The result of the modulo applied to value</returns>
-        public static double Mod(double value, double modulo)
-        {
-            if (modulo == 0.0D)
-                return value;
-
-            return value % modulo;
-        }
-
-        /// <summary>
         /// Calculates the modulo 2*PI of the specified value.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the modulo applied to value</returns>
         public static double Mod2PI(double value)
         {
-            return Mod(value, TwoPi);
+            return MathHelper.Mod(value, TwoPi);
         }
 
         /// <summary>
-        /// Wraps the specified value into a range [min, max[
+        /// Wraps the specified value into a range [min, max]
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="min">The min.</param>
@@ -458,191 +434,6 @@ namespace Molten.DoublePrecision
             double componentY = (cy * cy) / (2 * sigmaY * sigmaY);
 
             return amplitude * Math.Exp(-(componentX + componentY));
-        }
-
-        /// <summary>Rounds down to the nearest X value.</summary>
-        /// <param name="value">The value.</param>
-        /// <param name="x">The x (nearest to round to).</param>
-        /// <returns></returns>
-        public static double RoundToNearest(double value, double x)
-        {
-            double diff = value % x;
-            return value - diff;
-        }
-
-        /// <summary>
-        /// Computes the velocity of a point as if it were attached to an object with the given center and velocity.
-        /// </summary>
-        /// <param name="point">Point to compute the velocity of.</param>
-        /// <param name="center">Center of the object to which the point is attached.</param>
-        /// <param name="linearVelocity">Linear velocity of the object.</param>
-        /// <param name="angularVelocity">Angular velocity of the object.</param>
-        /// <param name="velocity">Velocity of the point.</param>
-        public static void GetVelocityOfPoint(ref Vector3D point, ref Vector3D center, ref Vector3D linearVelocity, ref Vector3D angularVelocity, out Vector3D velocity)
-        {
-            Vector3D offset;
-            Vector3D.Subtract(ref point, ref center, out offset);
-            Vector3D.Cross(ref angularVelocity, ref offset, out velocity);
-            Vector3D.Add(ref velocity, ref linearVelocity, out velocity);
-        }
-
-        /// <summary>
-        /// Computes the velocity of a point as if it were attached to an object with the given center and velocity.
-        /// </summary>
-        /// <param name="point">Point to compute the velocity of.</param>
-        /// <param name="center">Center of the object to which the point is attached.</param>
-        /// <param name="linearVelocity">Linear velocity of the object.</param>
-        /// <param name="angularVelocity">Angular velocity of the object.</param>
-        /// <returns>Velocity of the point.</returns>
-        public static Vector3D GetVelocityOfPoint(Vector3D point, Vector3D center, Vector3D linearVelocity, Vector3D angularVelocity)
-        {
-            Vector3D toReturn;
-            GetVelocityOfPoint(ref point, ref center, ref linearVelocity, ref angularVelocity, out toReturn);
-            return toReturn;
-        }
-
-        /// <summary>
-        ///  Returns 1 for non-negative values and -1 for negative values.
-        /// </summary>
-        /// <param name="value">The value</param>
-        public static int NonZeroSign(double value)
-        {
-            return 2 * (value > 0 ? 1 : 0) - 1;
-        }
-
-        /// <summary>
-        /// Gets the barycentric coordinates of the point with respect to a triangle's vertices.
-        /// </summary>
-        /// <param name="p">Point to compute the barycentric coordinates of.</param>
-        /// <param name="a">First vertex in the triangle.</param>
-        /// <param name="b">Second vertex in the triangle.</param>
-        /// <param name="c">Third vertex in the triangle.</param>
-        /// <param name="aWeight">Weight of the first vertex.</param>
-        /// <param name="bWeight">Weight of the second vertex.</param>
-        /// <param name="cWeight">Weight of the third vertex.</param>
-        public static void BarycentricCoordinates(ref Vector3D p, ref Vector3D a, ref Vector3D b, ref Vector3D c, out double aWeight, out double bWeight, out double cWeight)
-        {
-            Vector3D ab, ac;
-            Vector3D.Subtract(ref b, ref a, out ab);
-            Vector3D.Subtract(ref c, ref a, out ac);
-            Vector3D triangleNormal;
-            Vector3D.Cross(ref ab, ref ac, out triangleNormal);
-            double x = triangleNormal.X < 0 ? -triangleNormal.X : triangleNormal.X;
-            double y = triangleNormal.Y < 0 ? -triangleNormal.Y : triangleNormal.Y;
-            double z = triangleNormal.Z < 0 ? -triangleNormal.Z : triangleNormal.Z;
-
-            double numeratorU, numeratorV, denominator;
-            if (x >= y && x >= z)
-            {
-                //The projection of the triangle on the YZ plane is the largest.
-                numeratorU = (p.Y - b.Y) * (b.Z - c.Z) - (b.Y - c.Y) * (p.Z - b.Z); //PBC
-                numeratorV = (p.Y - c.Y) * (c.Z - a.Z) - (c.Y - a.Y) * (p.Z - c.Z); //PCA
-                denominator = triangleNormal.X;
-            }
-            else if (y >= z)
-            {
-                //The projection of the triangle on the XZ plane is the largest.
-                numeratorU = (p.X - b.X) * (b.Z - c.Z) - (b.X - c.X) * (p.Z - b.Z); //PBC
-                numeratorV = (p.X - c.X) * (c.Z - a.Z) - (c.X - a.X) * (p.Z - c.Z); //PCA
-                denominator = -triangleNormal.Y;
-            }
-            else
-            {
-                //The projection of the triangle on the XY plane is the largest.
-                numeratorU = (p.X - b.X) * (b.Y - c.Y) - (b.X - c.X) * (p.Y - b.Y); //PBC
-                numeratorV = (p.X - c.X) * (c.Y - a.Y) - (c.X - a.X) * (p.Y - c.Y); //PCA
-                denominator = triangleNormal.Z;
-            }
-
-            if (denominator < -1e-9 || denominator > 1e-9)
-            {
-                denominator = 1 / denominator;
-                aWeight = numeratorU * denominator;
-                bWeight = numeratorV * denominator;
-                cWeight = 1 - aWeight - bWeight;
-            }
-            else
-            {
-                //It seems to be a degenerate triangle.
-                //In that case, pick one of the closest vertices.
-                //MOST of the time, this will happen when the vertices
-                //are all very close together (all three points form a single point).
-                //Sometimes, though, it could be that it's more of a line.
-                //If it's a little inefficient, don't worry- this is a corner case anyway.
-
-                double distance1 = Vector3D.DistanceSquared(ref p, ref a);
-                double distance2 = Vector3D.DistanceSquared(ref p, ref b);
-                double distance3 = Vector3D.DistanceSquared(ref p, ref c);
-                if (distance1 < distance2 && distance1 < distance3)
-                {
-                    aWeight = 1;
-                    bWeight = 0;
-                    cWeight = 0;
-                }
-                else if (distance2 < distance3)
-                {
-                    aWeight = 0;
-                    bWeight = 1;
-                    cWeight = 0;
-                }
-                else
-                {
-                    aWeight = 0;
-                    bWeight = 0;
-                    cWeight = 1;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Forumla to calculate signed area. Positive if CCW. Negative if CW. 0 if collinear
-        /// 
-        /// </summary>
-        /// <remarks>A[1,P2,P3]  =  (x1*y2 - y1*x2) + (x2*y3 - y2*x3) + (x3*y1 - y3*x1)
-        ///              =  (x1-x3)*(y2-y3) - (y1-y3)*(x2-x3)
-        /// </remarks>
-        /// <param name="pa"></param>
-        /// <param name="pb"></param>
-        /// <param name="pc"></param>
-        /// <returns></returns>
-        public static Winding GetWinding(Vector2D pa, Vector2D pb, Vector2D pc)
-        {
-            double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
-            double detright = (pa.Y - pc.Y) * (pb.X - pc.X);
-            double val = detleft - detright;
-
-            if (val > -TriUtil.EPSILON && val < TriUtil.EPSILON)
-                return Winding.Collinear;
-            else if (val > 0)
-                return Winding.CounterClockwise;
-
-            return Winding.Clockwise;
-        }
-
-        public static int GetWindingSign(Vector2D pa, Vector2D pb, Vector2D pc)
-        {
-            double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
-            double detright = (pa.Y - pc.Y) * (pb.X - pc.X);
-            double val = detleft - detright;
-
-            if (val > -TriUtil.EPSILON && val < TriUtil.EPSILON)
-                return 0;
-            else if (val > 0)
-                return -1;
-
-            return 1;
-        }
-
-        /// <summary>
-        /// Returns the middle out of three values
-        /// </summary>
-        /// <param name="a">First value.</param>
-        /// <param name="b">Second value.</param>
-        /// <param name="c">Third value.</param>
-        /// <returns></returns>
-        public static double Median(double a, double b, double c)
-        {
-            return Math.Max(Math.Min(a, b), Math.Min(Math.Max(a, b), c));
         }
     }
 }

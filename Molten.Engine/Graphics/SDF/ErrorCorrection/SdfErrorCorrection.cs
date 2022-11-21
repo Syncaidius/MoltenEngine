@@ -240,7 +240,7 @@ namespace Molten.Graphics.SDF
 
         public unsafe float InterpolatedMedian(Color3* a, Color3* l, Color3* q, double t)
         {
-            return (float)(MathHelperDP.Median(
+            return (float)(MathHelper.Median(
                  t * (t * q->R + l->R) + a->R,
                 t * (t * q->G + l->G) + a->G,
                 t * (t * q->B + l->B) + a->B

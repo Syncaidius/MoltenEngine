@@ -77,7 +77,7 @@ namespace Molten
 
                 Vector2D abNormalized = Vector2D.Normalize(ab);
                 Vector2D eqNormalized = Vector2D.Normalize(eq);
-                return new SignedDistance(MathHelperDP.NonZeroSign(Vector2D.Cross(aq, ab)) * endpointDistance, Math.Abs(Vector2D.Dot(abNormalized, eqNormalized)));
+                return new SignedDistance(MathHelper.NonZeroSign(Vector2D.Cross(aq, ab)) * endpointDistance, Math.Abs(Vector2D.Dot(abNormalized, eqNormalized)));
             }
         }
     }

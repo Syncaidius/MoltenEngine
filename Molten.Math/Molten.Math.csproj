@@ -22,6 +22,10 @@
     <Version>0.2.0</Version>
     <Company>James Yarwood</Company>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="t4_quaternions - Copy.cs" />
+  </ItemGroup>
 	
   <ItemGroup>
     <None Include="..\Images\logo_128.png">
@@ -52,21 +56,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector.tt</DependentUpon>
-    </None>
-    <None Include="t4_vector.fp.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>t4_vector.fp.tt</DependentUpon>
-    </None>
-    <None Include="t4_vector2.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>t4_vector2.tt</DependentUpon>
-    </None>
-    <None Include="t4_vector2.fp.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>t4_vector2.fp.tt</DependentUpon>
     </None>
     <None Include="t4_vector3.cs">
       <DesignTime>True</DesignTime>
@@ -158,6 +147,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_vector3.fp.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_vector4.fp.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector4.fp.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 

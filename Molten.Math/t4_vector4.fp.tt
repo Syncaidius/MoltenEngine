@@ -7,51 +7,16 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".txt" #>
 <#
-string outputPath = this.Host.ResolvePath("");
-List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
 string pMap = "xyzw";
 string pMapUpper = "XYZW";
 
-foreach(TypeData d in _def)
+GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "vector_defs.json", "fp4", _vectorSizes, (d,md) => d.IsFPType && md.Size == 4, (d, md, defs) =>
 {
-	if(!d.IsFPType)
-	{
-		continue;
-	}
-
-	int size = 4;
-	string fName = $"{d.Name}{size}{d.Postfix}";
-	string fn = $"{fName}.fp4";
-	string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
-	string mathHelper = d.DT == "double" ? "MathHelperDP" : "MathHelper";
-    string subNamespace = "";
-    string subDir = "";
-
-    switch(d.Bits){
-        case 16:
-            subNamespace = ".HalfPrecision"; 
-            subDir = "/HalfPrecision/Vectors";
-            break;
-
-        case 64: 
-            subNamespace = ".DoublePrecision"; 
-            subDir = "/DoublePrecision/Vectors";
-            break;
-
-        case 128: 
-            subNamespace = ".QuadPrecision"; 
-            subDir = "/QuadPrecision/Vectors";
-            break;
-
-        default:
-            subDir = "/SinglePrecision/Vectors";
-            break;
-    }
 #>
-namespace Molten<#=subNamespace#>
+namespace Molten<#=md.SubNamespace#>
 {
-	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
-	public partial struct <#=fName#>
+	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=md.Size#> components.</summary>
+	public partial struct <#=md.Name#>
 	{
 #region Instance methods
         
@@ -63,8 +28,8 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
-        /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
-        public static <#=fName#> Transform(ref <#=fName#> vector, ref Quaternion<#=d.Postfix#> rotation)
+        /// <param name="result">When the method completes, contains the transformed <see cref="<#=md.Name#>"/>.</param>
+        public static <#=md.Name#> Transform(ref <#=md.Name#> vector, ref Quaternion<#=d.Postfix#> rotation)
         {
             <#=d.DT#> x = rotation.X + rotation.X;
             <#=d.DT#> y = rotation.Y + rotation.Y;
@@ -79,7 +44,7 @@ namespace Molten<#=subNamespace#>
             <#=d.DT#> yz = rotation.Y * z;
             <#=d.DT#> zz = rotation.Z * z;
 
-            return new <#=fName#>(
+            return new <#=md.Name#>(
                 ((vector.X * ((1.0f - yy) - zz)) + (vector.Y * (xy - wz))) + (vector.Z * (xz + wy)),
                 ((vector.X * (xy + wz)) + (vector.Y * ((1.0f - xx) - zz))) + (vector.Z * (yz - wx)),
                 ((vector.X * (xz - wy)) + (vector.Y * (yz + wx))) + (vector.Z * ((1.0f - xx) - yy)),
@@ -91,8 +56,8 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
-        /// <returns>The transformed <see cref="<#=fName#>"/>.</returns>
-        public static <#=fName#> Transform(<#=fName#> vector, Quaternion<#=d.Postfix#> rotation)
+        /// <returns>The transformed <see cref="<#=md.Name#>"/>.</returns>
+        public static <#=md.Name#> Transform(<#=md.Name#> vector, Quaternion<#=d.Postfix#> rotation)
         {
             return Transform(ref vector, ref rotation);
         }
@@ -106,7 +71,7 @@ namespace Molten<#=subNamespace#>
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(<#=fName#>[] source, ref Quaternion<#=d.Postfix#> rotation, <#=fName#>[] destination)
+        public static void Transform(<#=md.Name#>[] source, ref Quaternion<#=d.Postfix#> rotation, <#=md.Name#>[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -140,7 +105,7 @@ namespace Molten<#=subNamespace#>
 
             for (int i = 0; i < source.Length; ++i)
             {
-                destination[i] = new <#=fName#>(
+                destination[i] = new <#=md.Name#>(
                     ((source[i].X * num1) + (source[i].Y * num2)) + (source[i].Z * num3),
                     ((source[i].X * num4) + (source[i].Y * num5)) + (source[i].Z * num6),
                     ((source[i].X * num7) + (source[i].Y * num8)) + (source[i].Z * num9),
@@ -153,10 +118,10 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
-        /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
-        public static void Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform, out <#=fName#> result)
+        /// <param name="result">When the method completes, contains the transformed <see cref="<#=md.Name#>"/>.</param>
+        public static void Transform(ref <#=md.Name#> vector, ref Matrix4<#=d.Postfix#> transform, out <#=md.Name#> result)
         {
-            result = new <#=fName#>(
+            result = new <#=md.Name#>(
                 (vector.X * transform.M11) + (vector.Y * transform.M21) + (vector.Z * transform.M31) + (vector.W * transform.M41),
                 (vector.X * transform.M12) + (vector.Y * transform.M22) + (vector.Z * transform.M32) + (vector.W * transform.M42),
                 (vector.X * transform.M13) + (vector.Y * transform.M23) + (vector.Z * transform.M33) + (vector.W * transform.M43),
@@ -168,10 +133,10 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
-        /// <returns>The transformed <see cref="<#=fName#>"/>.</returns>
-        public static <#=fName#> Transform(<#=fName#> vector, Matrix4<#=d.Postfix#> transform)
+        /// <returns>The transformed <see cref="<#=md.Name#>"/>.</returns>
+        public static <#=md.Name#> Transform(<#=md.Name#> vector, Matrix4<#=d.Postfix#> transform)
         {
-            <#=fName#> result;
+            <#=md.Name#> result;
             Transform(ref vector, ref transform, out result);
             return result;
         }
@@ -181,10 +146,10 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix5x4"/>.</param>
-        /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
-        public static void Transform(ref <#=fName#> vector, ref Matrix5x4 transform, out <#=fName#> result)
+        /// <param name="result">When the method completes, contains the transformed <see cref="<#=md.Name#>"/>.</param>
+        public static void Transform(ref <#=md.Name#> vector, ref Matrix5x4 transform, out <#=md.Name#> result)
         {
-            result = new <#=fName#>(
+            result = new <#=md.Name#>(
                 (vector.X * transform.M11) + (vector.Y * transform.M21) + (vector.Z * transform.M31) + (vector.W * transform.M41) + transform.M51,
                 (vector.X * transform.M12) + (vector.Y * transform.M22) + (vector.Z * transform.M32) + (vector.W * transform.M42) + transform.M52,
                 (vector.X * transform.M13) + (vector.Y * transform.M23) + (vector.Z * transform.M33) + (vector.W * transform.M43) + transform.M53,
@@ -196,10 +161,10 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix5x4"/>.</param>
-        /// <returns>The transformed <see cref="<#=fName#>"/>.</returns>
-        public static <#=fName#> Transform(<#=fName#> vector, Matrix5x4 transform)
+        /// <returns>The transformed <see cref="<#=md.Name#>"/>.</returns>
+        public static <#=md.Name#> Transform(<#=md.Name#> vector, Matrix5x4 transform)
         {
-            <#=fName#> result;
+            <#=md.Name#> result;
             Transform(ref vector, ref transform, out result);
             return result;
         }
@@ -213,7 +178,7 @@ namespace Molten<#=subNamespace#>
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(<#=fName#>[] source, ref Matrix4<#=d.Postfix#> transform, <#=fName#>[] destination)
+        public static void Transform(<#=md.Name#>[] source, ref Matrix4<#=d.Postfix#> transform, <#=md.Name#>[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -231,7 +196,5 @@ namespace Molten<#=subNamespace#>
 	}
 }
 <#
-		SaveFile(outputPath + subDir, fn, this.GenerationEnvironment.ToString());
-		this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
-}
+});
 #>

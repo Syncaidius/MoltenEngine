@@ -1,6 +1,3 @@
-
-
-
 namespace Molten
 {
 	///<summary>A <see cref = "float"/> vector comprised of 3 components.</summary>
@@ -11,6 +8,35 @@ namespace Molten
 #endregion
 
 #region Static Methods
+        /// <summary>
+        /// Computes the velocity of a point as if it were attached to an object with the given center and velocity.
+        /// </summary>
+        /// <param name="point">Point to compute the velocity of.</param>
+        /// <param name="center">Center of the object to which the point is attached.</param>
+        /// <param name="linearVelocity">Linear velocity of the object.</param>
+        /// <param name="angularVelocity">Angular velocity of the object.</param>
+        /// <param name="velocity">Velocity of the point.</param>
+        public static void GetVelocityOfPoint(ref Vector3F point, ref Vector3F center, ref Vector3F linearVelocity, ref Vector3F angularVelocity, out Vector3F velocity)
+        {
+            Subtract(ref point, ref center, out Vector3F offset);
+            Cross(ref angularVelocity, ref offset, out velocity);
+            Add(ref velocity, ref linearVelocity, out velocity);
+        }
+
+        /// <summary>
+        /// Computes the velocity of a point as if it were attached to an object with the given center and velocity.
+        /// </summary>
+        /// <param name="point">Point to compute the velocity of.</param>
+        /// <param name="center">Center of the object to which the point is attached.</param>
+        /// <param name="linearVelocity">Linear velocity of the object.</param>
+        /// <param name="angularVelocity">Angular velocity of the object.</param>
+        /// <returns>Velocity of the point.</returns>
+        public static Vector3F GetVelocityOfPoint(Vector3F point, Vector3F center, Vector3F linearVelocity, Vector3F angularVelocity)
+        {
+            GetVelocityOfPoint(ref point, ref center, ref linearVelocity, ref angularVelocity, out Vector3F toReturn);
+            return toReturn;
+        }
+
         /// <summary>
         /// Projects a 3D vector from object space into screen space. 
         /// </summary>
@@ -45,8 +71,7 @@ namespace Molten
         /// <returns>The vector in screen space.</returns>
         public static Vector3F Project(Vector3F vector, float x, float y, float width, float height, float minZ, float maxZ, Matrix4F worldViewProjection)
         {
-            Vector3F result;
-            Project(ref vector, x, y, width, height, minZ, maxZ, ref worldViewProjection, out result);
+            Project(ref vector, x, y, width, height, minZ, maxZ, ref worldViewProjection, out Vector3F result);
             return result;
         }
 
@@ -89,8 +114,7 @@ namespace Molten
         /// <returns>The vector in object space.</returns>
         public static Vector3F Unproject(Vector3F vector, float x, float y, float width, float height, float minZ, float maxZ, Matrix4F worldViewProjection)
         {
-            Vector3F result;
-            Unproject(ref vector, x, y, width, height, minZ, maxZ, ref worldViewProjection, out result);
+            Unproject(ref vector, x, y, width, height, minZ, maxZ, ref worldViewProjection, out Vector3F result);
             return result;
         }
 
@@ -141,8 +165,7 @@ namespace Molten
         /// <returns>The transformed <see cref="Vector4F"/>.</returns>
         public static Vector3F Transform(Vector3F vector, QuaternionF rotation)
         {
-            Vector3F result;
-            Transform(ref vector, ref rotation, out result);
+            Transform(ref vector, ref rotation, out Vector3F result);
             return result;
         }
 
@@ -221,8 +244,7 @@ namespace Molten
         /// <returns>The transformed <see cref="Vector3F"/>.</returns>
         public static Vector3F Transform(Vector3F vector, Matrix3F transform)
         {
-            Vector3F result;
-            Transform(ref vector, ref transform, out result);
+            Transform(ref vector, ref transform, out Vector3F result);
             return result;
         }
 
@@ -273,8 +295,7 @@ namespace Molten
         /// <returns>The transformed <see cref="Vector4F"/>.</returns>
         public static Vector4F Transform(Vector3F vector, Matrix4F transform)
         {
-            Vector4F result;
-            Transform(ref vector, ref transform, out result);
+            Transform(ref vector, ref transform, out Vector4F result);
             return result;
         }
 
@@ -568,6 +589,91 @@ namespace Molten
 
             for (int i = 0; i < source.Length; ++i)
                 TransformNormal(ref source[i], ref transform, out destination[i]);
+        }
+
+        /// <summary>
+        /// Gets the barycentric coordinates of the point with respect to a triangle's vertices.
+        /// </summary>
+        /// <param name="p">Point to compute the barycentric coordinates of.</param>
+        /// <param name="a">First vertex in the triangle.</param>
+        /// <param name="b">Second vertex in the triangle.</param>
+        /// <param name="c">Third vertex in the triangle.</param>
+        /// <param name="aWeight">Weight of the first vertex.</param>
+        /// <param name="bWeight">Weight of the second vertex.</param>
+        /// <param name="cWeight">Weight of the third vertex.</param>
+        public static void BarycentricCoordinates(ref Vector3F p, ref Vector3F a, ref Vector3F b, ref Vector3F c,
+            out float aWeight, out float bWeight, out float cWeight)
+        {
+            Vector3F ab, ac;
+            Subtract(ref b, ref a, out ab);
+            Subtract(ref c, ref a, out ac);
+            Vector3F triangleNormal;
+            Cross(ref ab, ref ac, out triangleNormal);
+            float x = triangleNormal.X < 0 ? -triangleNormal.X : triangleNormal.X;
+            float y = triangleNormal.Y < 0 ? -triangleNormal.Y : triangleNormal.Y;
+            float z = triangleNormal.Z < 0 ? -triangleNormal.Z : triangleNormal.Z;
+
+            float numeratorU, numeratorV, denominator;
+            if (x >= y && x >= z)
+            {
+                //The projection of the triangle on the YZ plane is the largest.
+                numeratorU = (p.Y - b.Y) * (b.Z - c.Z) - (b.Y - c.Y) * (p.Z - b.Z); //PBC
+                numeratorV = (p.Y - c.Y) * (c.Z - a.Z) - (c.Y - a.Y) * (p.Z - c.Z); //PCA
+                denominator = triangleNormal.X;
+            }
+            else if (y >= z)
+            {
+                //The projection of the triangle on the XZ plane is the largest.
+                numeratorU = (p.X - b.X) * (b.Z - c.Z) - (b.X - c.X) * (p.Z - b.Z); //PBC
+                numeratorV = (p.X - c.X) * (c.Z - a.Z) - (c.X - a.X) * (p.Z - c.Z); //PCA
+                denominator = -triangleNormal.Y;
+            }
+            else
+            {
+                //The projection of the triangle on the XY plane is the largest.
+                numeratorU = (p.X - b.X) * (b.Y - c.Y) - (b.X - c.X) * (p.Y - b.Y); //PBC
+                numeratorV = (p.X - c.X) * (c.Y - a.Y) - (c.X - a.X) * (p.Y - c.Y); //PCA
+                denominator = triangleNormal.Z;
+            }
+
+            if (denominator < -1e-9F || denominator > 1e-9F)
+            {
+                denominator = 1 / denominator;
+                aWeight = numeratorU * denominator;
+                bWeight = numeratorV * denominator;
+                cWeight = 1 - aWeight - bWeight;
+            }
+            else
+            {
+                //It seems to be a degenerate triangle.
+                //In that case, pick one of the closest vertices.
+                //MOST of the time, this will happen when the vertices
+                //are all very close together (all three points form a single point).
+                //Sometimes, though, it could be that it's more of a line.
+                //If it's a little inefficient, don't worry- this is a corner case anyway.
+
+                float distance1 = DistanceSquared(ref p, ref a);
+                float distance2 = DistanceSquared(ref p, ref b);
+                float distance3 = DistanceSquared(ref p, ref c);
+                if (distance1 < distance2 && distance1 < distance3)
+                {
+                    aWeight = 1;
+                    bWeight = 0;
+                    cWeight = 0;
+                }
+                else if (distance2 < distance3)
+                {
+                    aWeight = 0;
+                    bWeight = 1;
+                    cWeight = 0;
+                }
+                else
+                {
+                    aWeight = 0;
+                    bWeight = 0;
+                    cWeight = 1;
+                }
+            }
         }
 #endregion
 	}

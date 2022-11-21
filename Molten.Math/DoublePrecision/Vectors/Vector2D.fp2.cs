@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace Molten.DoublePrecision
 {
 	///<summary>A <see cref = "double"/> vector comprised of 2 components.</summary>
@@ -23,6 +25,52 @@ namespace Molten.DoublePrecision
 #endregion
 
 #region Static Methods
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Winding GetWinding(Vector2D pa, Vector2D pb, Vector2D pc)
+        {
+            return GetWinding(ref pa, ref pb, ref pc);
+        }
+
+        /// Forumla to calculate signed area
+        /// Positive if CCW
+        /// Negative if CW
+        /// 0 if collinear
+        /// A[1,P2,P3]  =  (x1*y2 - y1*x2) + (x2*y3 - y2*x3) + (x3*y1 - y3*x1)
+        ///              =  (x1-x3)*(y2-y3) - (y1-y3)*(x2-x3)
+        public static Winding GetWinding(ref Vector2D pa, ref Vector2D pb, ref Vector2D pc)
+        {
+            double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
+            double detright = (pa.Y - pc.Y) * (pb.X - pc.X);
+            double val = detleft - detright;
+
+            if (val > -TriUtil.EPSILON && val < TriUtil.EPSILON)
+                return Winding.Collinear;
+            else if (val > 0)
+                return Winding.CounterClockwise;
+
+            return Winding.Clockwise;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int GetWindingSign(Vector2D pa, Vector2D pb, Vector2D pc)
+        {
+            return GetWindingSign(ref pa, ref pb, ref pc);
+        }
+
+        public static int GetWindingSign(ref Vector2D pa, ref Vector2D pb, ref Vector2D pc)
+        {
+            double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
+            double detright = (pa.Y - pc.Y) * (pb.X - pc.X);
+            double val = detleft - detright;
+
+            if (val > -TriUtil.EPSILON && val < TriUtil.EPSILON)
+                return 0;
+            else if (val > 0)
+                return -1;
+
+            return 1;
+        }
+
         /// <summary>
         /// Transforms a 2D vector by the given <see cref="QuaternionD"/> rotation.
         /// </summary>

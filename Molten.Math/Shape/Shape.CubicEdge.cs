@@ -179,14 +179,14 @@ namespace Molten
                 Vector2D ass = (P[3] - P[2]) - (P[2] - P[1]) - br;
 
                 Vector2D epDir = GetDirection(0);
-                double minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(epDir, qa)) * qa.Length(); // distance from A
+                double minDistance = MathHelper.NonZeroSign(Vector2D.Cross(epDir, qa)) * qa.Length(); // distance from A
                 param = -Vector2D.Dot(qa, epDir) / Vector2D.Dot(epDir, epDir);
                 {
                     epDir = GetDirection(1);
                     double distance = (P[3] - origin).Length(); // distance from B
                     if (distance < Math.Abs(minDistance))
                     {
-                        minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(epDir, P[3] - origin)) * distance;
+                        minDistance = MathHelper.NonZeroSign(Vector2D.Cross(epDir, P[3] - origin)) * distance;
                         param = Vector2D.Dot(epDir - (P[3] - origin), epDir) / Vector2D.Dot(epDir, epDir);
                     }
                 }
@@ -207,7 +207,7 @@ namespace Molten
                         double distance = qe.Length();
                         if (distance < Math.Abs(minDistance))
                         {
-                            minDistance = MathHelperDP.NonZeroSign(Vector2D.Cross(d1, qe)) * distance;
+                            minDistance = MathHelper.NonZeroSign(Vector2D.Cross(d1, qe)) * distance;
                             param = t;
                         }
                     }

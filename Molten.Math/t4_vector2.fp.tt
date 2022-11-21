@@ -9,79 +9,92 @@
 <#@ output extension=".txt" #>
 
 <#
-string outputPath = this.Host.ResolvePath("");
-List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
 string pMap = "xyzw";
 string pMapUpper = "XYZW";
 
-foreach(TypeData d in _def)
+GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "vector_defs.json", "fp2", _vectorSizes, (d,md) => d.IsFPType && md.Size == 2, (d, md, defs) =>
 {
-	if(!d.IsFPType)
-	{
-		continue;
-	}
-
-	int size = 2;
-	string fName = $"{d.Name}{size}{d.Postfix}";
-	string fn = $"{fName}.fp2";
-	string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
-	string mathHelper = d.DT == "double" ? "MathHelperDP" : "MathHelper";
-    string subNamespace = "";
-    string subDir = "";
-
-    switch(d.Bits){
-        case 16:
-            subNamespace = ".HalfPrecision"; 
-            subDir = "/HalfPrecision/Vectors";
-            break;
-
-        case 64: 
-            subNamespace = ".DoublePrecision"; 
-            subDir = "/DoublePrecision/Vectors";
-            break;
-
-        case 128: 
-            subNamespace = ".QuadPrecision"; 
-            subDir = "/QuadPrecision/Vectors";
-            break;
-
-        default:
-            subDir = "/SinglePrecision/Vectors";
-            break;
-    }
 #>
-namespace Molten<#=subNamespace#>
+using System.Runtime.CompilerServices;
+
+namespace Molten<#=md.SubNamespace#>
 {
-	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
-	public partial struct <#=fName#>
+	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=md.Size#> components.</summary>
+	public partial struct <#=md.Name#>
 	{
 #region Instance methods
-        public <#=fName#> GetOrthonormal(bool polarity = true, bool allowZero = false)
+        public <#=md.Name#> GetOrthonormal(bool polarity = true, bool allowZero = false)
         {
             <#=d.DT#> len = Length();
             <#=d.DT#> az = allowZero ? 1 : 0;
             <#=d.DT#> azInv = 1 - az;
 
             if(len == 0)
-                return polarity ? new <#=fName#>(0, azInv) : new <#=fName#>(0, -azInv);
+                return polarity ? new <#=md.Name#>(0, azInv) : new <#=md.Name#>(0, -azInv);
             else
-                return polarity ? new <#=fName#>(-Y/len, X/len) : new <#=fName#>(Y/len, -X/len);
+                return polarity ? new <#=md.Name#>(-Y/len, X/len) : new <#=md.Name#>(Y/len, -X/len);
         }
 
-        public <#=fName#> GetOrthogonal(bool polarity)
+        public <#=md.Name#> GetOrthogonal(bool polarity)
         {
-            return polarity ? new <#=fName#>(-Y, X) : new <#=fName#>(Y, -X);
+            return polarity ? new <#=md.Name#>(-Y, X) : new <#=md.Name#>(Y, -X);
         }
 #endregion
 
 #region Static Methods
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Winding GetWinding(<#=md.Name#> pa, <#=md.Name#> pb, <#=md.Name#> pc)
+        {
+            return GetWinding(ref pa, ref pb, ref pc);
+        }
+
+        /// Forumla to calculate signed area
+        /// Positive if CCW
+        /// Negative if CW
+        /// 0 if collinear
+        /// A[1,P2,P3]  =  (x1*y2 - y1*x2) + (x2*y3 - y2*x3) + (x3*y1 - y3*x1)
+        ///              =  (x1-x3)*(y2-y3) - (y1-y3)*(x2-x3)
+        public static Winding GetWinding(ref <#=md.Name#> pa, ref <#=md.Name#> pb, ref <#=md.Name#> pc)
+        {
+            <#=d.DT#> detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
+            <#=d.DT#> detright = (pa.Y - pc.Y) * (pb.X - pc.X);
+            <#=d.DT#> val = detleft - detright;
+
+            if (val > -TriUtil.EPSILON && val < TriUtil.EPSILON)
+                return Winding.Collinear;
+            else if (val > 0)
+                return Winding.CounterClockwise;
+
+            return Winding.Clockwise;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int GetWindingSign(<#=md.Name#> pa, <#=md.Name#> pb, <#=md.Name#> pc)
+        {
+            return GetWindingSign(ref pa, ref pb, ref pc);
+        }
+
+        public static int GetWindingSign(ref <#=md.Name#> pa, ref <#=md.Name#> pb, ref <#=md.Name#> pc)
+        {
+            <#=d.DT#> detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
+            <#=d.DT#> detright = (pa.Y - pc.Y) * (pb.X - pc.X);
+            <#=d.DT#> val = detleft - detright;
+
+            if (val > -TriUtil.EPSILON && val < TriUtil.EPSILON)
+                return 0;
+            else if (val > 0)
+                return -1;
+
+            return 1;
+        }
+
         /// <summary>
         /// Transforms a 2D vector by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
-        /// <param name="result">When the method completes, contains the transformed <#=See(fName)#>.</param>
-        public static void Transform(ref <#=fName#> vector, ref Quaternion<#=d.Postfix#> rotation, out <#=fName#> result)
+        /// <param name="result">When the method completes, contains the transformed <#=See(md.Name)#>.</param>
+        public static void Transform(ref <#=md.Name#> vector, ref Quaternion<#=d.Postfix#> rotation, out <#=md.Name#> result)
         {
             <#=d.DT#> x = rotation.X + rotation.X;
             <#=d.DT#> y = rotation.Y + rotation.Y;
@@ -92,7 +105,7 @@ namespace Molten<#=subNamespace#>
             <#=d.DT#> yy = rotation.Y * y;
             <#=d.DT#> zz = rotation.Z * z;
 
-            result = new <#=fName#>((vector.X * (<#=d.One#> - yy - zz)) + (vector.Y * (xy - wz)), (vector.X * (xy + wz)) + (vector.Y * (<#=d.One#> - xx - zz)));
+            result = new <#=md.Name#>((vector.X * (<#=d.One#> - yy - zz)) + (vector.Y * (xy - wz)), (vector.X * (xy + wz)) + (vector.Y * (<#=d.One#> - xx - zz)));
         }
 
         /// <summary>
@@ -101,9 +114,9 @@ namespace Molten<#=subNamespace#>
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
         /// <returns>The transformed <see cref="Vector4<#=d.Postfix#>"/>.</returns>
-        public static <#=fName#> Transform(<#=fName#> vector, Quaternion<#=d.Postfix#> rotation)
+        public static <#=md.Name#> Transform(<#=md.Name#> vector, Quaternion<#=d.Postfix#> rotation)
         {
-            <#=fName#> result;
+            <#=md.Name#> result;
             Transform(ref vector, ref rotation, out result);
             return result;
         }  
@@ -113,7 +126,7 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
-        public static void Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform, out Vector4<#=d.Postfix#> result)
+        public static void Transform(ref <#=md.Name#> vector, ref Matrix4<#=d.Postfix#> transform, out Vector4<#=d.Postfix#> result)
         {
             result.X = (vector.X * transform.M11) + (vector.Y * transform.M21) + transform.M41;
             result.Y = (vector.X * transform.M12) + (vector.Y * transform.M22) + transform.M42;
@@ -126,7 +139,7 @@ namespace Molten<#=subNamespace#>
         /// </summary>
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
-        public static Vector4<#=d.Postfix#> Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform)
+        public static Vector4<#=d.Postfix#> Transform(ref <#=md.Name#> vector, ref Matrix4<#=d.Postfix#> transform)
         {
             return new Vector4<#=d.Postfix#>(
                 (vector.X * transform.M11) + (vector.Y * transform.M21) + transform.M41,
@@ -141,7 +154,7 @@ namespace Molten<#=subNamespace#>
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
         /// <returns>The transformed <see cref="Vector4<#=d.Postfix#>"/>.</returns>
-        public static Vector4<#=d.Postfix#> Transform(<#=fName#> vector, Matrix4<#=d.Postfix#> transform)
+        public static Vector4<#=d.Postfix#> Transform(<#=md.Name#> vector, Matrix4<#=d.Postfix#> transform)
         {
             Transform(ref vector, ref transform, out Vector4<#=d.Postfix#> result);
             return result;
@@ -155,7 +168,7 @@ namespace Molten<#=subNamespace#>
         /// <param name="destination">The array for which the transformed vectors are stored.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(<#=fName#>[] source, ref Matrix4<#=d.Postfix#> transform, Vector4<#=d.Postfix#>[] destination)
+        public static void Transform(<#=md.Name#>[] source, ref Matrix4<#=d.Postfix#> transform, Vector4<#=d.Postfix#>[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -177,7 +190,7 @@ namespace Molten<#=subNamespace#>
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(<#=fName#>[] source, ref Quaternion<#=d.Postfix#> rotation, <#=fName#>[] destination)
+        public static void Transform(<#=md.Name#>[] source, ref Quaternion<#=d.Postfix#> rotation, <#=md.Name#>[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -202,7 +215,7 @@ namespace Molten<#=subNamespace#>
 
             for (int i = 0; i < source.Length; ++i)
             {
-                destination[i] = new <#=fName#>(
+                destination[i] = new <#=md.Name#>(
                     (source[i].X * num1) + (source[i].Y * num2),
                     (source[i].X * num3) + (source[i].Y * num4));
             }
@@ -220,7 +233,7 @@ namespace Molten<#=subNamespace#>
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static <#=fName#> TransformCoordinate(ref <#=fName#> coordinate, ref Matrix4<#=d.Postfix#> transform)
+        public static <#=md.Name#> TransformCoordinate(ref <#=md.Name#> coordinate, ref Matrix4<#=d.Postfix#> transform)
         {
             Vector4<#=d.Postfix#> vector = new Vector4<#=d.Postfix#>();
             vector.X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + transform.M41;
@@ -228,7 +241,7 @@ namespace Molten<#=subNamespace#>
             vector.Z = (coordinate.X * transform.M13) + (coordinate.Y * transform.M23) + transform.M43;
             vector.W = <#=d.One#> / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + transform.M44);
 
-            return new <#=fName#>(vector.X * vector.W, vector.Y * vector.W);
+            return new <#=md.Name#>(vector.X * vector.W, vector.Y * vector.W);
         }
 
         /// <summary>
@@ -247,7 +260,7 @@ namespace Molten<#=subNamespace#>
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static void TransformCoordinate(<#=fName#>[] source, ref Matrix4<#=d.Postfix#> transform, <#=fName#>[] destination)
+        public static void TransformCoordinate(<#=md.Name#>[] source, ref Matrix4<#=d.Postfix#> transform, <#=md.Name#>[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -273,9 +286,9 @@ namespace Molten<#=subNamespace#>
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static <#=fName#> TransformNormal(ref <#=fName#> normal, ref Matrix4<#=d.Postfix#> transform)
+        public static <#=md.Name#> TransformNormal(ref <#=md.Name#> normal, ref Matrix4<#=d.Postfix#> transform)
         {
-            return new <#=fName#>(
+            return new <#=md.Name#>(
                 (normal.X * transform.M11) + (normal.Y * transform.M21),
                 (normal.X * transform.M12) + (normal.Y * transform.M22));
         }
@@ -293,7 +306,7 @@ namespace Molten<#=subNamespace#>
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static <#=fName#> TransformNormal(<#=fName#> normal, Matrix4<#=d.Postfix#> transform)
+        public static <#=md.Name#> TransformNormal(<#=md.Name#> normal, Matrix4<#=d.Postfix#> transform)
         {
             return TransformNormal(ref normal, ref transform);
         }
@@ -305,9 +318,9 @@ namespace Molten<#=subNamespace#>
         /// <param name="normal">The normal vector to transform.</param>
         /// <param name="transform">The transformation <see cref="Matrix2<#=d.Postfix#>"/>.</param>
         /// <param name="result">When the method completes, contains the transformed normal.</param>
-        public static <#=fName#> TransformNormal(ref <#=fName#> normal, ref Matrix2<#=d.Postfix#> transform)
+        public static <#=md.Name#> TransformNormal(ref <#=md.Name#> normal, ref Matrix2<#=d.Postfix#> transform)
         {
-            return new <#=fName#>(
+            return new <#=md.Name#>(
                 (normal.X * transform.M11) + (normal.Y * transform.M21),
                 (normal.X * transform.M12) + (normal.Y * transform.M22));
         }
@@ -318,7 +331,7 @@ namespace Molten<#=subNamespace#>
         /// <param name="normal">The normal vector to transform.</param>
         /// <param name="transform">The transformation <see cref="Matrix2<#=d.Postfix#>"/>.</param>
         /// <returns>The transformed normal.</returns>
-        public static <#=fName#> TransformNormal(<#=fName#> normal, Matrix2<#=d.Postfix#> transform)
+        public static <#=md.Name#> TransformNormal(<#=md.Name#> normal, Matrix2<#=d.Postfix#> transform)
         {
             return TransformNormal(ref normal, ref transform);
         }
@@ -339,7 +352,7 @@ namespace Molten<#=subNamespace#>
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static void TransformNormal(<#=fName#>[] source, ref Matrix4<#=d.Postfix#> transform, <#=fName#>[] destination)
+        public static void TransformNormal(<#=md.Name#>[] source, ref Matrix4<#=d.Postfix#> transform, <#=md.Name#>[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -355,7 +368,5 @@ namespace Molten<#=subNamespace#>
 	}
 }
 <#
-		SaveFile(outputPath + subDir, fn, this.GenerationEnvironment.ToString());
-		this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
-}
+});
 #>

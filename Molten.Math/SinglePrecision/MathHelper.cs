@@ -308,9 +308,10 @@ namespace Molten
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of clamping a value between 0 and 1.0f</returns>
-        public static double Clamp(float value)
+        public static T Clamp<T>(T value)
+            where T : IFloatingPoint<T>
         {
-            return value < 0f ? 0f : value > 1f ? 1f : value;
+            return value < T.Zero ? T.Zero : value > T.One ? T.One : value;
         }
 
         /// <summary>
@@ -324,9 +325,9 @@ namespace Molten
         /// <param name="to">Value to interpolate to.</param>
         /// <param name="amount">Interpolation amount.</param>
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
-        public static float Lerp(float from, float to, float amount)
+        public static float Lerp(float from, float to, double amount)
         {
-            return (1f - amount) * from + amount * to;
+            return (float)((1D - amount) * from + amount * to);
         }
 
         /// <summary>
@@ -341,9 +342,10 @@ namespace Molten
         /// <param name="amount">Interpolation amount.</param>
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Lerp(float from, float to, double amount)
+        public static T LerpGeneric<T>(T from, T to, T amount)
+            where T : struct, IFloatingPoint<T>
         {
-            return (float)((1.0 - amount) * from + amount * to);
+            return (T.One - amount) * from + amount * to;
         }
 
         /// <summary>
@@ -357,6 +359,7 @@ namespace Molten
         /// <param name="to">Value to interpolate to.</param>
         /// <param name="amount">Interpolation amount.</param>
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte Lerp(byte from, byte to, float amount)
         {
             return (byte)Lerp(from, (float)to, amount);
@@ -373,6 +376,7 @@ namespace Molten
         /// <param name="to">Value to interpolate to.</param>
         /// <param name="amount">Interpolation amount.</param>
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Lerp(int from, int to, float amount)
         {
             return (int)Lerp(from, (float)to, amount);
@@ -389,6 +393,7 @@ namespace Molten
         /// <param name="to">Value to interpolate to.</param>
         /// <param name="amount">Interpolation amount.</param>
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint Lerp(uint from, uint to, float amount)
         {
             return (uint)Lerp(from, (float)to, amount);
@@ -401,6 +406,7 @@ namespace Molten
         /// See https://en.wikipedia.org/wiki/Smoothstep
         /// </remarks>
         /// <param name="amount">Value between 0 and 1 indicating interpolation amount.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float SmoothStep(float amount)
         {
             return (amount <= 0) ? 0
@@ -429,12 +435,10 @@ namespace Molten
         /// <param name="value">The value.</param>
         /// <param name="modulo">The modulo.</param>
         /// <returns>The result of the modulo applied to value</returns>
-        public static float Mod(float value, float modulo)
+        public static T Mod<T>(T value, T modulo)
+            where T : IFloatingPoint<T>
         {
-            if (modulo == 0.0f)
-                return value;
-
-            return value % modulo;
+            return modulo == T.Zero ? value : value % modulo;
         }
 
         /// <summary>
@@ -541,221 +545,53 @@ namespace Molten
         /// <param name="value">The value.</param>
         /// <param name="x">The x (nearest to round to).</param>
         /// <returns></returns>
-        public static float RoundToNearest(float value, float x)
+        public static T RoundToNearest<T>(T value, T x)
+            where T : IFloatingPoint<T>
         {
-            float diff = value % x;
+            T diff = value % x;
             return value - diff;
         }
 
         /// <summary>
-        /// Computes the velocity of a point as if it were attached to an object with the given center and velocity.
-        /// </summary>
-        /// <param name="point">Point to compute the velocity of.</param>
-        /// <param name="center">Center of the object to which the point is attached.</param>
-        /// <param name="linearVelocity">Linear velocity of the object.</param>
-        /// <param name="angularVelocity">Angular velocity of the object.</param>
-        /// <param name="velocity">Velocity of the point.</param>
-        public static void GetVelocityOfPoint(ref Vector3F point, ref Vector3F center, ref Vector3F linearVelocity, ref Vector3F angularVelocity, out Vector3F velocity)
-        {
-            Vector3F offset;
-            Vector3F.Subtract(ref point, ref center, out offset);
-            Vector3F.Cross(ref angularVelocity, ref offset, out velocity);
-            Vector3F.Add(ref velocity, ref linearVelocity, out velocity);
-        }
-
-        /// <summary>
-        /// Computes the velocity of a point as if it were attached to an object with the given center and velocity.
-        /// </summary>
-        /// <param name="point">Point to compute the velocity of.</param>
-        /// <param name="center">Center of the object to which the point is attached.</param>
-        /// <param name="linearVelocity">Linear velocity of the object.</param>
-        /// <param name="angularVelocity">Angular velocity of the object.</param>
-        /// <returns>Velocity of the point.</returns>
-        public static Vector3F GetVelocityOfPoint(Vector3F point, Vector3F center, Vector3F linearVelocity, Vector3F angularVelocity)
-        {
-            Vector3F toReturn;
-            GetVelocityOfPoint(ref point, ref center, ref linearVelocity, ref angularVelocity, out toReturn);
-            return toReturn;
-        }
-
-        /// <summary>
         ///  Returns 1 for non-negative values and -1 for negative values.
         /// </summary>
         /// <param name="value">The value</param>
-        public static int NonZeroSign(float value)
+        public static int NonZeroSign<T>(T value)
+            where T : ISignedNumber<T>, INumber<T>
         {
-            return 2 * ((value > 0) ? 1 : 0) - 1;
-        }
-
-        /// <summary>
-        ///  Returns 1 for non-negative values and -1 for negative values.
-        /// </summary>
-        /// <param name="value">The value</param>
-        /// <returns></returns>
-        public static int NonZeroSign(int value)
-        {
-            return 2 * ((value > 0) ? 1 : 0) - 1;
-        }
-
-        /// <summary>
-        ///  Returns 1 for non-negative values and -1 for negative values.
-        /// </summary>
-        /// <param name="value">The value</param>
-        public static int NonZeroSign(long value)
-        {
-            return 2 * ((value > 0) ? 1 : 0) - 1;
-        }
-
-        /// <summary>
-        /// Gets the barycentric coordinates of the point with respect to a triangle's vertices.
-        /// </summary>
-        /// <param name="p">Point to compute the barycentric coordinates of.</param>
-        /// <param name="a">First vertex in the triangle.</param>
-        /// <param name="b">Second vertex in the triangle.</param>
-        /// <param name="c">Third vertex in the triangle.</param>
-        /// <param name="aWeight">Weight of the first vertex.</param>
-        /// <param name="bWeight">Weight of the second vertex.</param>
-        /// <param name="cWeight">Weight of the third vertex.</param>
-        public static void BarycentricCoordinates(ref Vector3F p, ref Vector3F a, ref Vector3F b, ref Vector3F c, out float aWeight, out float bWeight, out float cWeight)
-        {
-            Vector3F ab, ac;
-            Vector3F.Subtract(ref b, ref a, out ab);
-            Vector3F.Subtract(ref c, ref a, out ac);
-            Vector3F triangleNormal;
-            Vector3F.Cross(ref ab, ref ac, out triangleNormal);
-            float x = triangleNormal.X < 0 ? -triangleNormal.X : triangleNormal.X;
-            float y = triangleNormal.Y < 0 ? -triangleNormal.Y : triangleNormal.Y;
-            float z = triangleNormal.Z < 0 ? -triangleNormal.Z : triangleNormal.Z;
-
-            float numeratorU, numeratorV, denominator;
-            if (x >= y && x >= z)
-            {
-                //The projection of the triangle on the YZ plane is the largest.
-                numeratorU = (p.Y - b.Y) * (b.Z - c.Z) - (b.Y - c.Y) * (p.Z - b.Z); //PBC
-                numeratorV = (p.Y - c.Y) * (c.Z - a.Z) - (c.Y - a.Y) * (p.Z - c.Z); //PCA
-                denominator = triangleNormal.X;
-            }
-            else if (y >= z)
-            {
-                //The projection of the triangle on the XZ plane is the largest.
-                numeratorU = (p.X - b.X) * (b.Z - c.Z) - (b.X - c.X) * (p.Z - b.Z); //PBC
-                numeratorV = (p.X - c.X) * (c.Z - a.Z) - (c.X - a.X) * (p.Z - c.Z); //PCA
-                denominator = -triangleNormal.Y;
-            }
-            else
-            {
-                //The projection of the triangle on the XY plane is the largest.
-                numeratorU = (p.X - b.X) * (b.Y - c.Y) - (b.X - c.X) * (p.Y - b.Y); //PBC
-                numeratorV = (p.X - c.X) * (c.Y - a.Y) - (c.X - a.X) * (p.Y - c.Y); //PCA
-                denominator = triangleNormal.Z;
-            }
-
-            if (denominator < -1e-9 || denominator > 1e-9)
-            {
-                denominator = 1 / denominator;
-                aWeight = numeratorU * denominator;
-                bWeight = numeratorV * denominator;
-                cWeight = 1 - aWeight - bWeight;
-            }
-            else
-            {
-                //It seems to be a degenerate triangle.
-                //In that case, pick one of the closest vertices.
-                //MOST of the time, this will happen when the vertices
-                //are all very close together (all three points form a single point).
-                //Sometimes, though, it could be that it's more of a line.
-                //If it's a little inefficient, don't worry- this is a corner case anyway.
-
-                float distance1 = Vector3F.DistanceSquared(ref p, ref a);
-                float distance2 = Vector3F.DistanceSquared(ref p, ref b);
-                float distance3 = Vector3F.DistanceSquared(ref p, ref c);
-                if (distance1 < distance2 && distance1 < distance3)
-                {
-                    aWeight = 1;
-                    bWeight = 0;
-                    cWeight = 0;
-                }
-                else if (distance2 < distance3)
-                {
-                    aWeight = 0;
-                    bWeight = 1;
-                    cWeight = 0;
-                }
-                else
-                {
-                    aWeight = 0;
-                    bWeight = 0;
-                    cWeight = 1;
-                }
-            }
-        }
-
-        /// Forumla to calculate signed area
-        /// Positive if CCW
-        /// Negative if CW
-        /// 0 if collinear
-        /// A[1,P2,P3]  =  (x1*y2 - y1*x2) + (x2*y3 - y2*x3) + (x3*y1 - y3*x1)
-        ///              =  (x1-x3)*(y2-y3) - (y1-y3)*(x2-x3)
-        public static Winding GetWinding(Vector2F pa, Vector2F pb, Vector2F pc)
-        {
-            double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
-            double detright = (pa.Y - pc.Y) * (pb.X - pc.X);
-            double val = detleft - detright;
-
-            if (val > -TriUtil.EPSILON && val < TriUtil.EPSILON)
-                return Winding.Collinear;
-            else if (val > 0)
-                return Winding.CounterClockwise;
-
-            return Winding.Clockwise;
-        }
-
-        public static int GetWindingSign(Vector2F pa, Vector2F pb, Vector2F pc)
-        {
-            double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
-            double detright = (pa.Y - pc.Y) * (pb.X - pc.X);
-            double val = detleft - detright;
-
-            if (val > -TriUtil.EPSILON && val < TriUtil.EPSILON)
-                return 0;
-            else if (val > 0)
-                return -1;
-
-            return 1;
+            return 2 * ((value > T.Zero) ? 1 : 0) - 1;
         }
 
         /// <summary>
         /// Returns the largest value out of all of the provided values.
         /// </summary>
-        /// <param name="first">The first value to be compared.</param>
-        /// <param name="otherValues">The other values to be compared.</param>
+        /// <param name="a">The first value to be compared.</param>
+        /// <param name="b">The second value to be compared.</param>
+        /// <param name="others">The other values to be compared.</param>
         /// <returns></returns>
-        public static int Max(int first, params int[] otherValues)
+        public static T Max<T>(T a, T b, params T[] others)
+            where T : struct, INumber<T>
         {
-            if (otherValues.Length == 0)
-                throw new Exception("At least one other value must be provided.");
+            T min = T.Max(a, b);
+            for (int i = 0; i < others.Length; i++)
+                min = T.Max(min, others[i]);
 
-            int max = first;
-            for (int i = 0; i < otherValues.Length; i++)
-                max = Math.Max(max, otherValues[i]);
-
-            return max;
+            return min;
         }
 
         /// <summary>
         /// Returns the smallest value out of all of the provided values.
         /// </summary>
-        /// <param name="first">The first value to be compared.</param>
-        /// <param name="otherValues">The other values to be compared.</param>
+        /// <param name="a">The first value to be compared.</param>
+        /// <param name="b">The second value to be compared.</param>
+        /// <param name="others">The other values to be compared.</param>
         /// <returns></returns>
-        public static int Min(int first, params int[] otherValues)
+        public static T Min<T>(T a, T b, params T[] others)
+            where T : struct, INumber<T>
         {
-            if (otherValues.Length == 0)
-                throw new Exception("At least one other value must be provided.");
-
-            int min = first;
-            for (int i = 0; i < otherValues.Length; i++)
-                min = Math.Min(min, otherValues[i]);
+            T min = T.Min(a,b);
+            for (int i = 0; i < others.Length; i++)
+                min = T.Min(min, others[i]);
 
             return min;
         }
@@ -767,9 +603,10 @@ namespace Molten
         /// <param name="b">Second value.</param>
         /// <param name="c">Third value.</param>
         /// <returns></returns>
-        public static float Median(float a, float b, float c)
+        public static T Median<T>(T a, T b, T c)
+            where T : struct, INumber<T>
         {
-            return Math.Max(Math.Min(a, b), Math.Min(Math.Max(a, b), c));
+            return T.Max(T.Min(a, b), T.Min(T.Max(a, b), c));
         }
     }
 }

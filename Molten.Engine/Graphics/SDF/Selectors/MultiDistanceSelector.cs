@@ -120,7 +120,7 @@ namespace Molten.Graphics.SDF
 
         public double ResolveDistance(Color3D distance)
         {
-            return MathHelperDP.Median(distance.R, distance.G, distance.B);
+            return MathHelper.Median(distance.R, distance.G, distance.B);
         }
 
         public float GetRefPSD(ref Color3D dist, double invRange)

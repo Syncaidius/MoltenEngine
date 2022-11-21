@@ -32,6 +32,7 @@ public class Metadata
     public int Size;
 	public string Name;
 	public string Filename;
+    public string FilePostFix;
 	public string FPCast;
 	public string MathHelper;
     public string Math;
@@ -45,14 +46,23 @@ public class Metadata
 string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
 int[] _vectorSizes = new int[]{2, 3, 4};
 
-public void GenerateTypes(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string subFolder, string definitionFileName, int[] sizes, GenerateTypeCallback callback, GenerateTypeFilter filter = null)
+public void GenerateTypes(
+    StringBuilder genEnvironment, 
+    ITextTemplatingEngineHost host, 
+    string subFolder, 
+    string definitionFileName, 
+    string filePostFix, 
+    int[] sizes, 
+    GenerateTypeFilter filter,
+    GenerateTypeCallback callback)
 {
     string outputPath = host.ResolvePath("");
     List<TypeData> defs = ReadJsonDef<TypeData>(outputPath, definitionFileName);
+    Metadata md = new Metadata();
+    sizes = sizes ?? new int[] {1};
 
     foreach(TypeData d in defs)
     {
-        Metadata md = new Metadata();
 		md.FPCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
 		md.MathHelper = d.FP == "double" ? "MathHelperDP" : "MathHelper";
 		md.Math = d.FP == "float" ? "MathF" : "Math";
@@ -61,6 +71,11 @@ public void GenerateTypes(StringBuilder genEnvironment, ITextTemplatingEngineHos
         md.IntType = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"int" : d.DT;
         md.SubNamespace = "";
         md.SubDirectory = "";
+
+        if(!string.IsNullOrWhiteSpace(filePostFix))
+            md.FilePostFix = $".{filePostFix}";
+        else
+            md.FilePostFix = "";
 
         switch(d.Bits){
             case 16:
@@ -85,15 +100,17 @@ public void GenerateTypes(StringBuilder genEnvironment, ITextTemplatingEngineHos
 
         foreach(int size in sizes)
         {
+            md.Size = size;
+
             if(filter != null && !filter(d, md))
                 continue;
 
             md.Name = $"{d.Name}{size}{d.Postfix}";
-            md.Size = size;
+            genEnvironment.Length = 0;
 
             callback(d, md, defs);
 
-		    md.Filename = $"{md.Name}";
+		    md.Filename = $"{md.Name}{md.FilePostFix}";
 
             SaveFile(outputPath + md.SubDirectory, md.Filename, genEnvironment.ToString());
 		    genEnvironment.Length = 0;

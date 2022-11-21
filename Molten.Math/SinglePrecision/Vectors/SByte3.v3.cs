@@ -1,8 +1,3 @@
-
-
-
-
-
 using System.Runtime.InteropServices;
 
 namespace Molten

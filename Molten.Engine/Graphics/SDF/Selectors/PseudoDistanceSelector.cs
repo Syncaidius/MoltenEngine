@@ -105,7 +105,7 @@ namespace Molten.Graphics.SDF
 
         public void Reset(in double delta)
         {
-            MinTrueDistance.Distance += MathHelperDP.NonZeroSign(MinTrueDistance.Distance) * delta;
+            MinTrueDistance.Distance += MathHelper.NonZeroSign(MinTrueDistance.Distance) * delta;
             MinNegativePseudoDistance = -Math.Abs(MinTrueDistance.Distance);
             MinPositivePseudoDistance = Math.Abs(MinTrueDistance.Distance);
             NearEdge = null;

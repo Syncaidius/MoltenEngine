@@ -1594,7 +1594,7 @@ namespace Molten
         public static bool IsPointInsideTriangle(ref Vector3F vA, ref Vector3F vB, ref Vector3F vC, ref Vector3F p)
         {
             float u, v, w;
-            MathHelper.BarycentricCoordinates(ref p, ref vA, ref vB, ref vC, out u, out v, out w);
+            Vector3F.BarycentricCoordinates(ref p, ref vA, ref vB, ref vC, out u, out v, out w);
             //Are the barycoords valid?
             return (u > -MathHelper.Epsilon) && (v > -MathHelper.Epsilon) && (w > -MathHelper.Epsilon);
         }
@@ -1611,7 +1611,7 @@ namespace Molten
         public static bool IsPointInsideTriangle(ref Vector3F vA, ref Vector3F vB, ref Vector3F vC, ref Vector3F p, float margin)
         {
             float u, v, w;
-            MathHelper.BarycentricCoordinates(ref p, ref vA, ref vB, ref vC, out u, out v, out w);
+            Vector3F.BarycentricCoordinates(ref p, ref vA, ref vB, ref vC, out u, out v, out w);
             //Are the barycoords valid?
             return (u > -margin) && (v > -margin) && (w > -margin);
         }
