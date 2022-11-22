@@ -60,6 +60,30 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
+        /// Tests whether one 3D vector is near another 3D vector.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <param name="epsilon">The epsilon.</param>
+        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
+        public static bool NearEqual(Vector4D left, Vector4D right, Vector4D epsilon)
+        {
+            return NearEqual(ref left, ref right, ref epsilon);
+        }
+
+        /// <summary>
+        /// Tests whether one 3D vector is near another 3D vector.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <param name="epsilon">The epsilon.</param>
+        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
+        public static bool NearEqual(ref Vector4D left, ref Vector4D right, ref Vector4D epsilon)
+        {
+            return MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y) && MathHelper.WithinEpsilon(left.Z, right.Z, epsilon.Z) && MathHelper.WithinEpsilon(left.W, right.W, epsilon.W);
+        }
+
+        /// <summary>
         /// Converts the <see cref="Vector4D"/> into a unit vector.
         /// </summary>
         /// <param name="value">The <see cref="Vector4D"/> to normalize.</param>

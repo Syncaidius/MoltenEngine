@@ -187,9 +187,10 @@ namespace Molten
         /// <param name="b">The right value to compare.</param>
         /// <param name="epsilon">Epsilon value</param>
         /// <returns><c>true</c> if a almost equal to b within a float epsilon, <c>false</c> otherwise</returns>
-        public static bool WithinEpsilon(float a, float b, float epsilon)
+        public static bool WithinEpsilon<T>(T a, T b, T epsilon)
+            where T : IFloatingPoint<T>
         {
-            float num = a - b;
+            T num = a - b;
             return ((-epsilon <= num) && (num <= epsilon));
         }
 

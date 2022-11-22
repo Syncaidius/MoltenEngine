@@ -60,6 +60,30 @@ namespace Molten
         }
 
         /// <summary>
+        /// Tests whether one 3D vector is near another 3D vector.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <param name="epsilon">The epsilon.</param>
+        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
+        public static bool NearEqual(Vector2F left, Vector2F right, Vector2F epsilon)
+        {
+            return NearEqual(ref left, ref right, ref epsilon);
+        }
+
+        /// <summary>
+        /// Tests whether one 3D vector is near another 3D vector.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <param name="epsilon">The epsilon.</param>
+        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
+        public static bool NearEqual(ref Vector2F left, ref Vector2F right, ref Vector2F epsilon)
+        {
+            return MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y);
+        }
+
+        /// <summary>
         /// Converts the <see cref="Vector2F"/> into a unit vector.
         /// </summary>
         /// <param name="value">The <see cref="Vector2F"/> to normalize.</param>

@@ -428,30 +428,6 @@ namespace Molten
 
 #region Static Methods
         /// <summary>
-        /// Tests whether one 3D vector is near another 3D vector.
-        /// </summary>
-        /// <param name="left">The left vector.</param>
-        /// <param name="right">The right vector.</param>
-        /// <param name="epsilon">The epsilon.</param>
-        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
-        public static bool NearEqual(Byte2 left, Byte2 right, Byte2 epsilon)
-        {
-            return NearEqual(ref left, ref right, ref epsilon);
-        }
-
-        /// <summary>
-        /// Tests whether one 3D vector is near another 3D vector.
-        /// </summary>
-        /// <param name="left">The left vector.</param>
-        /// <param name="right">The right vector.</param>
-        /// <param name="epsilon">The epsilon.</param>
-        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
-        public static bool NearEqual(ref Byte2 left, ref Byte2 right, ref Byte2 epsilon)
-        {
-            return MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y);
-        }
-
-        /// <summary>
         /// Performs a cubic interpolation between two vectors.
         /// </summary>
         /// <param name="start">Start vector.</param>

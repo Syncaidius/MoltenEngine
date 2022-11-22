@@ -127,19 +127,6 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Checks if a - b are almost equals within a float epsilon.
-        /// </summary>
-        /// <param name="a">The left value to compare.</param>
-        /// <param name="b">The right value to compare.</param>
-        /// <param name="epsilon">Epsilon value</param>
-        /// <returns><c>true</c> if a almost equal to b within a float epsilon, <c>false</c> otherwise</returns>
-        public static bool WithinEpsilon(double a, double b, double epsilon)
-        {
-            double num = a - b;
-            return ((-epsilon <= num) && (num <= epsilon));
-        }
-
-        /// <summary>
         /// Converts revolutions to degrees.
         /// </summary>
         /// <param name="revolution">The value to convert.</param>

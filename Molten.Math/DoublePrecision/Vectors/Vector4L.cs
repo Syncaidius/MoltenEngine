@@ -520,30 +520,6 @@ namespace Molten.DoublePrecision
 
 #region Static Methods
         /// <summary>
-        /// Tests whether one 3D vector is near another 3D vector.
-        /// </summary>
-        /// <param name="left">The left vector.</param>
-        /// <param name="right">The right vector.</param>
-        /// <param name="epsilon">The epsilon.</param>
-        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
-        public static bool NearEqual(Vector4L left, Vector4L right, Vector4L epsilon)
-        {
-            return NearEqual(ref left, ref right, ref epsilon);
-        }
-
-        /// <summary>
-        /// Tests whether one 3D vector is near another 3D vector.
-        /// </summary>
-        /// <param name="left">The left vector.</param>
-        /// <param name="right">The right vector.</param>
-        /// <param name="epsilon">The epsilon.</param>
-        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
-        public static bool NearEqual(ref Vector4L left, ref Vector4L right, ref Vector4L epsilon)
-        {
-            return MathHelperDP.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelperDP.WithinEpsilon(left.Y, right.Y, epsilon.Y) && MathHelperDP.WithinEpsilon(left.Z, right.Z, epsilon.Z) && MathHelperDP.WithinEpsilon(left.W, right.W, epsilon.W);
-        }
-
-        /// <summary>
         /// Performs a cubic interpolation between two vectors.
         /// </summary>
         /// <param name="start">Start vector.</param>

@@ -77,6 +77,30 @@ namespace Molten<#=md.SubNamespace#>
         }
 
         /// <summary>
+        /// Tests whether one 3D vector is near another 3D vector.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <param name="epsilon">The epsilon.</param>
+        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
+        public static bool NearEqual(<#=md.Name#> left, <#=md.Name#> right, <#=md.Name#> epsilon)
+        {
+            return NearEqual(ref left, ref right, ref epsilon);
+        }
+
+        /// <summary>
+        /// Tests whether one 3D vector is near another 3D vector.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <param name="epsilon">The epsilon.</param>
+        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
+        public static bool NearEqual(ref <#=md.Name#> left, ref <#=md.Name#> right, ref <#=md.Name#> epsilon)
+        {
+            return <#for(int p = 0; p < md.Size; p++){#>MathHelper.WithinEpsilon(left.<#=pMapUpper[p]#>, right.<#=pMapUpper[p]#>, epsilon.<#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " && " : "")#><#}#>;
+        }
+
+        /// <summary>
         /// Converts the <#=See(md.Name)#> into a unit vector.
         /// </summary>
         /// <param name="value">The <#=See(md.Name)#> to normalize.</param>
