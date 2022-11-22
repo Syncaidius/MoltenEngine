@@ -13,21 +13,6 @@ namespace Molten.DoublePrecision
         public const double ZeroTolerance = 1e-6D; // Value a 8x higher than 1.19209290E-07F
 
         /// <summary>
-        /// A value specifying the approximation of π which is 180 degrees.
-        /// </summary>
-        public const double Pi = double.Pi;
-
-        /// <summary>
-        /// Equvilent to <see cref="Tau"/>. A value specifying the approximation of 2π which is 360 degrees.
-        /// </summary>
-        public const double TwoPi = double.Tau;
-
-        /// <summary>
-        /// Equivilent to <see cref="TwoPi"/>. Represents the number of radians in one turn, specified by the constant, τ
-        /// </summary>
-        public const double Tau = double.Tau;
-
-        /// <summary>
         /// A value specifying the approximation of π/2 which is 90 degrees.
         /// </summary>
         public const double PiOverTwo = double.Pi / 2;
@@ -40,17 +25,17 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Multiply by this value to convert from degrees to radians.
         /// </summary>
-        public const double DegToRad = Pi / 180.0D;
+        public const double DegToRad = double.Pi / 180.0D;
 
         /// <summary>
         /// Multiply by this value to convert from radians to degrees.
         /// </summary>
-        public const double RadToDeg = 180.0D / Pi;
+        public const double RadToDeg = 180.0D / double.Pi;
 
         /// <summary>
         /// Multiply by this value to convert from gradians to radians.
         /// </summary>
-        public const double GradToRad = Pi / 200.0D;
+        public const double GradToRad = double.Pi / 200.0D;
 
         /// <summary>
         /// Multiply by this value to convert from gradians to degrees.
@@ -59,7 +44,7 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Multiply by this value to convert from radians to gradians.
         /// </summary>
-        public const double RadToGrad = 200.0D / Pi;
+        public const double RadToGrad = 200.0D / double.Pi;
 
         /// <summary>
         /// Large tolerance value. Defaults to 1e-5D.
@@ -143,7 +128,7 @@ namespace Molten.DoublePrecision
         /// <returns>The converted value.</returns>
         public static double RevolutionsToRadians(double revolution)
         {
-            return revolution * TwoPi;
+            return revolution * double.Tau;
         }
 
         /// <summary>
@@ -183,7 +168,7 @@ namespace Molten.DoublePrecision
         /// <returns>The converted value.</returns>
         public static double RadiansToRevolutions(double radian)
         {
-            return radian / TwoPi;
+            return radian / double.Tau;
         }
 
         /// <summary>
@@ -347,16 +332,6 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Calculates the modulo 2*PI of the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the modulo applied to value</returns>
-        public static double Mod2PI(double value)
-        {
-            return MathHelper.Mod(value, TwoPi);
-        }
-
-        /// <summary>
         /// Wraps the specified value into a range [min, max]
         /// </summary>
         /// <param name="value">The value.</param>
@@ -378,26 +353,6 @@ namespace Molten.DoublePrecision
 
             double range_size = maxd - mind;
             return mind + (valued - mind) - (range_size * Math.Floor((valued - mind) / range_size));
-        }
-
-        /// <summary>
-        /// Reduces the angle into a range from -Pi to Pi.
-        /// </summary>
-        /// <param name="angle">Angle to wrap.</param>
-        /// <returns>Wrapped angle.</returns>
-        public static double WrapAngle(double angle)
-        {
-            angle = Math.IEEERemainder(angle, TwoPi);
-            if (angle < -Pi)
-            {
-                angle += TwoPi;
-                return angle;
-            }
-
-            if (angle >= Pi)
-                angle -= TwoPi;
-
-            return angle;
         }
 
         /// <summary>

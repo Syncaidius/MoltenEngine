@@ -88,9 +88,9 @@ namespace Molten.Graphics
             float rightHeight = dest.Height - corners.TopRight - corners.BottomRight;
 
             Ellipse ctl = new Ellipse(tl, corners.TopLeft, 0, MathHelper.PiHalf);
-            Ellipse ctr = new Ellipse(tr, corners.TopRight, MathHelper.PiHalf, MathHelper.Pi);
-            Ellipse cbr = new Ellipse(br, corners.BottomRight, MathHelper.Pi, MathHelper.PiHalf * 3);
-            Ellipse cbl = new Ellipse(bl, corners.BottomLeft, MathHelper.PiHalf * 3, MathHelper.TwoPi);
+            Ellipse ctr = new Ellipse(tr, corners.TopRight, MathHelper.PiHalf, float.Pi);
+            Ellipse cbr = new Ellipse(br, corners.BottomRight, float.Pi, MathHelper.PiHalf * 3);
+            Ellipse cbl = new Ellipse(bl, corners.BottomLeft, MathHelper.PiHalf * 3, float.Tau);
 
             EllipseStyle cornerStyle = new EllipseStyle(style.FillColor, style.BorderColor, style.BorderThickness);
             if (corners.TopLeft > 0)

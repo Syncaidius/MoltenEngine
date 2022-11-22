@@ -148,14 +148,7 @@ namespace Molten
         /// </summary>
         public void Wrap()
         {
-            float newangle = (float)Math.IEEERemainder(radians, MathHelper.TwoPi);
-
-            if (newangle <= -MathHelper.Pi)
-                newangle += MathHelper.TwoPi;
-            else if (newangle > MathHelper.Pi)
-                newangle -= MathHelper.TwoPi;
-
-            radians = newangle;
+            radians = MathHelper.WrapAngle(radians);
         }
 
         /// <summary>
@@ -163,10 +156,10 @@ namespace Molten
         /// </summary>
         public void WrapPositive()
         {
-            float newangle = radians % MathHelper.TwoPi;
+            float newangle = radians % float.Tau;
 
             if (newangle < 0.0)
-                newangle += MathHelper.TwoPi;
+                newangle += float.Tau;
 
             radians = newangle;
         }
@@ -282,8 +275,8 @@ namespace Molten
         /// </summary>
         public float Milliradians
         {
-            get { return radians / (Milliradian * MathHelper.TwoPi); }
-            set { radians = value * (Milliradian * MathHelper.TwoPi); }
+            get { return radians / (Milliradian * float.Tau); }
+            set { radians = value * (Milliradian * float.Tau); }
         }
 
         /// <summary>
@@ -310,7 +303,7 @@ namespace Molten
         /// </summary>
         public bool IsStraight
         {
-            get { return radians == MathHelper.Pi; }
+            get { return radians == float.Pi; }
         }
 
         /// <summary>
@@ -319,7 +312,7 @@ namespace Molten
         /// </summary>
         public bool IsFullRotation
         {
-            get { return radians == MathHelper.TwoPi; }
+            get { return radians == float.Tau; }
         }
 
         /// <summary>
@@ -346,7 +339,7 @@ namespace Molten
         /// </summary>
         public bool IsObtuse
         {
-            get { return radians > MathHelper.PiOverTwo && radians < MathHelper.Pi; }
+            get { return radians > MathHelper.PiOverTwo && radians < float.Pi; }
         }
 
         /// <summary>
@@ -355,7 +348,7 @@ namespace Molten
         /// </summary>
         public bool IsReflex
         {
-            get { return radians > MathHelper.Pi && radians < MathHelper.TwoPi; }
+            get { return radians > float.Pi && radians < float.Tau; }
         }
 
         /// <summary>
@@ -371,7 +364,7 @@ namespace Molten
         /// </summary>
         public AngleF Supplement
         {
-            get { return new AngleF(MathHelper.Pi - radians, AngleType.Radian); }
+            get { return new AngleF(float.Pi - radians, AngleType.Radian); }
         }
 
         /// <summary>
@@ -489,7 +482,7 @@ namespace Molten
         /// </summary>
         public static AngleF StraightAngle
         {
-            get { return new AngleF(MathHelper.Pi, AngleType.Radian); }
+            get { return new AngleF(float.Pi, AngleType.Radian); }
         }
 
         /// <summary>
@@ -497,7 +490,7 @@ namespace Molten
         /// </summary>
         public static AngleF FullRotationAngle
         {
-            get { return new AngleF(MathHelper.TwoPi, AngleType.Radian); }
+            get { return new AngleF(float.Tau, AngleType.Radian); }
         }
 
         /// <summary>

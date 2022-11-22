@@ -277,7 +277,7 @@ namespace Molten.Examples
 
                 for (int i = 0; i < styles.Length; i++)
                 {
-                    float angle = MathHelper.TwoPi * (0.15f * (i + 1));
+                    float angle = float.Tau * (0.15f * (i + 1));
                     uint texArrayID = (uint)i % 3;
                     cl.StartAngle = angle;
                     el.EndAngle = angle;

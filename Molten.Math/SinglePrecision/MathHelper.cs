@@ -67,21 +67,6 @@ namespace Molten
         public const float PiHalf = (float)(Math.PI / 2.0);
 
         /// <summary>
-        /// A value specifying the approximation of π which is 180 degrees.
-        /// </summary>
-        public const float Pi = float.Pi;
-
-        /// <summary>
-        /// Equvilent to <see cref="Tau"/>. A value specifying the approximation of 2π which is 360 degrees.
-        /// </summary>
-        public const float TwoPi = float.Tau;
-
-        /// <summary>
-        /// Equivilent to <see cref="TwoPi"/>. Represents the number of radians in one turn, specified by the constant, τ
-        /// </summary>
-        public const float Tau = float.Tau;
-
-        /// <summary>
         /// A value specifying the approximation of π/2 which is 90 degrees.
         /// </summary>
         public const float PiOverTwo = float.Pi / 2f;
@@ -94,17 +79,17 @@ namespace Molten
         /// <summary>
         /// Multiply by this value to convert from degrees to radians.
         /// </summary>
-        public const float DegToRad = Pi / 180.0f;
+        public const float DegToRad = float.Pi / 180.0f;
 
         /// <summary>
         /// Multiply by this value to convert from radians to degrees.
         /// </summary>
-        public const float RadToDeg = 180.0f / Pi;
+        public const float RadToDeg = 180.0f / float.Pi;
 
         /// <summary>
         /// Multiply by this value to convert from gradians to radians.
         /// </summary>
-        public const float GradToRad = Pi / 200.0f;
+        public const float GradToRad = float.Pi / 200.0f;
 
         /// <summary>
         /// Multiply by this value to convert from gradians to degrees.
@@ -113,7 +98,7 @@ namespace Molten
         /// <summary>
         /// Multiply by this value to convert from radians to gradians.
         /// </summary>
-        public const float RadToGrad = 200.0f / Pi;
+        public const float RadToGrad = 200.0f / float.Pi;
 
         /// <summary>
         /// Large tolerance value. Defaults to 1e-5f.
@@ -211,7 +196,7 @@ namespace Molten
         /// <returns>The converted value.</returns>
         public static float RevolutionsToRadians(float revolution)
         {
-            return revolution * TwoPi;
+            return revolution * float.Tau;
         }
 
         /// <summary>
@@ -251,7 +236,7 @@ namespace Molten
         /// <returns>The converted value.</returns>
         public static float RadiansToRevolutions(float radian)
         {
-            return radian / TwoPi;
+            return radian / float.Tau;
         }
 
         /// <summary>
@@ -447,29 +432,31 @@ namespace Molten
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the modulo applied to value</returns>
-        public static float Mod2PI(float value)
+        public static T Mod2PI<T>(T value)
+            where T : IFloatingPoint<T>
         {
-            return Mod(value, TwoPi);
+            return Mod(value, T.Tau);
         }
 
         /// <summary>
-        /// Wraps the specified value into a range [min, max]
+        /// Wraps the specified integer value into a range [min, max]
         /// </summary>
-        /// <param name="value">The value to wrap.</param>
+        /// <param name="value">The integer value to wrap.</param>
         /// <param name="min">The min.</param>
         /// <param name="max">The max.</param>
         /// <returns>Result of the wrapping.</returns>
         /// <exception cref="ArgumentException">Is thrown when <paramref name="min"/> is greater than <paramref name="max"/>.</exception>
-        public static int Wrap(int value, int min, int max)
+        public static T WrapI<T>(T value, T min, T max)
+            where T : IBinaryInteger<T>
         {
             if (min > max)
                 throw new ArgumentException(string.Format("min {0} should be less than or equal to max {1}", min, max), "min");
 
             // Code from http://stackoverflow.com/a/707426/1356325
-            int range_size = max - min + 1;
+            T range_size = max - min + T.One;
 
             if (value < min)
-                value += range_size * ((min - value) / range_size + 1);
+                value += range_size * ((min - value) / range_size + T.One);
 
             return min + (value - min) % range_size;
         }
@@ -503,20 +490,16 @@ namespace Molten
         /// </summary>
         /// <param name="angle">Angle to wrap.</param>
         /// <returns>Wrapped angle.</returns>
-        public static float WrapAngle(float angle)
+        public static T WrapAngle<T>(T angle)
+            where T : IFloatingPointIeee754<T>
         {
-            angle = (float)Math.IEEERemainder(angle, TwoPi);
-            if (angle < -Pi)
-            {
-                angle += TwoPi;
-                return angle;
-            }
-            if (angle >= Pi)
-            {
-                angle -= TwoPi;
-            }
-            return angle;
+            angle = T.Ieee754Remainder(angle, T.Tau);
+            if (angle < -T.Pi)
+                angle += T.Tau;
+            else if (angle >= T.Pi)
+                angle -= T.Tau;
 
+            return angle;
         }
 
         /// <summary>

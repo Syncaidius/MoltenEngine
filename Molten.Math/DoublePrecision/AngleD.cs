@@ -150,14 +150,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public void Wrap()
         {
-            double newangle = Math.IEEERemainder(radians, MathHelperDP.TwoPi);
-
-            if (newangle <= -MathHelperDP.Pi)
-                newangle += MathHelperDP.TwoPi;
-            else if (newangle > MathHelperDP.Pi)
-                newangle -= MathHelperDP.TwoPi;
-
-            radians = newangle;
+            radians = MathHelper.WrapAngle(radians);
         }
 
         /// <summary>
@@ -165,10 +158,10 @@ namespace Molten.DoublePrecision
         /// </summary>
         public void WrapPositive()
         {
-            double newangle = radians % MathHelperDP.TwoPi;
+            double newangle = radians % double.Tau;
 
             if (newangle < 0.0)
-                newangle += MathHelperDP.TwoPi;
+                newangle += double.Tau;
 
             radians = newangle;
         }
@@ -284,8 +277,8 @@ namespace Molten.DoublePrecision
         /// </summary>
         public double Milliradians
         {
-            get { return radians / (Milliradian * MathHelperDP.TwoPi); }
-            set { radians = value * (Milliradian * MathHelperDP.TwoPi); }
+            get { return radians / (Milliradian * double.Tau); }
+            set { radians = value * (Milliradian * double.Tau); }
         }
 
         /// <summary>
@@ -312,7 +305,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsStraight
         {
-            get { return radians == MathHelperDP.Pi; }
+            get { return radians == double.Pi; }
         }
 
         /// <summary>
@@ -321,7 +314,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsFullRotation
         {
-            get { return radians == MathHelperDP.TwoPi; }
+            get { return radians == double.Tau; }
         }
 
         /// <summary>
@@ -348,7 +341,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsObtuse
         {
-            get { return radians > MathHelperDP.PiOverTwo && radians < MathHelperDP.Pi; }
+            get { return radians > MathHelperDP.PiOverTwo && radians < double.Pi; }
         }
 
         /// <summary>
@@ -357,7 +350,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsReflex
         {
-            get { return radians > MathHelperDP.Pi && radians < MathHelperDP.TwoPi; }
+            get { return radians > double.Pi && radians < double.Tau; }
         }
 
         /// <summary>
@@ -373,7 +366,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public AngleD Supplement
         {
-            get { return new AngleD(MathHelperDP.Pi - radians, AngleType.Radian); }
+            get { return new AngleD(double.Pi - radians, AngleType.Radian); }
         }
 
         /// <summary>
@@ -491,7 +484,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public static AngleD StraightAngle
         {
-            get { return new AngleD(MathHelperDP.Pi, AngleType.Radian); }
+            get { return new AngleD(double.Pi, AngleType.Radian); }
         }
 
         /// <summary>
@@ -499,7 +492,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public static AngleD FullRotationAngle
         {
-            get { return new AngleD(MathHelperDP.TwoPi, AngleType.Radian); }
+            get { return new AngleD(double.Tau, AngleType.Radian); }
         }
 
         /// <summary>

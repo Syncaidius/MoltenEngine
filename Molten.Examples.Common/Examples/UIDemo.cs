@@ -1011,7 +1011,7 @@ namespace Molten.UI
 
             _graphSet2 = new GraphDataSet(200);
             _graphSet2.KeyColor = Color.Lime;
-            float piInc = MathHelper.TwoPi / 20;
+            float piInc = float.Tau / 20;
             float waveScale = 100;
             for (int i = 0; i < _graphSet2.Capacity; i++)
                 _graphSet2.Plot(waveScale * Math.Sin(piInc * i));

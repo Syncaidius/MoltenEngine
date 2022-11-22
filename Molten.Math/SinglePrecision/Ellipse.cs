@@ -20,7 +20,7 @@ namespace Molten
             RadiusX = 1;
             RadiusY = 1;
             StartAngle = 0;
-            EndAngle = MathHelper.TwoPi;
+            EndAngle = float.Tau;
         }
 
         public Ellipse(Vector2F center, float radius, float startAngle, float endAngle)
@@ -47,7 +47,7 @@ namespace Molten
             RadiusX = radX;
             RadiusY = radY;
             StartAngle = 0;
-            EndAngle = MathHelper.TwoPi;
+            EndAngle = float.Tau;
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Molten
             RadiusX = radius;
             RadiusY = radius;
             StartAngle = 0;
-            EndAngle = MathHelper.TwoPi;
+            EndAngle = float.Tau;
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Molten
         /// <returns></returns>
         public float GetArea()
         {
-            return MathHelper.Pi * (RadiusX * RadiusY);
+            return float.Pi * (RadiusX * RadiusY);
         }
 
         /// <summary>
