@@ -124,7 +124,7 @@ namespace Molten.Examples
 
             for (int i = 0; i <= outlineSegments; i++)
             {
-                float rad = angle * MathHelper.DegToRad;
+                float rad = angle * MathHelper.Constants<float>.DegToRad;
                 angle += angleIncrement;
 
                 circleLinePoints.Add(new Vector2F()

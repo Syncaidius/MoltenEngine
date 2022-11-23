@@ -614,10 +614,10 @@ namespace Molten.DoublePrecision
         /// </remarks>
         public static void Lerp(ref Color4D start, ref Color4D end, double amount, out Color4D result)
         {
-            result.R = MathHelper.Lerp(start.R, end.R, amount);
-            result.G = MathHelper.Lerp(start.G, end.G, amount);
-            result.B = MathHelper.Lerp(start.B, end.B, amount);
-            result.A = MathHelper.Lerp(start.A, end.A, amount);
+            result.R = Molten.MathHelper.Lerp(start.R, end.R, amount);
+            result.G = Molten.MathHelper.Lerp(start.G, end.G, amount);
+            result.B = Molten.MathHelper.Lerp(start.B, end.B, amount);
+            result.A = Molten.MathHelper.Lerp(start.A, end.A, amount);
         }
 
         /// <summary>
@@ -646,7 +646,7 @@ namespace Molten.DoublePrecision
         /// <param name="result">When the method completes, contains the cubic interpolation of the two colors.</param>
         public static void SmoothStep(ref Color4D start, ref Color4D end, double amount, out Color4D result)
         {
-            amount = MathHelperDP.SmoothStep(amount);
+            amount = MathHelper.SmoothStep(amount);
             Lerp(ref start, ref end, amount, out result);
         }
 

@@ -483,10 +483,10 @@ namespace Molten.DoublePrecision
         /// </returns>
         public bool Equals(ref RectangleD other)
         {
-            return MathHelperDP.NearEqual(other.Left, Left) &&
-                   MathHelperDP.NearEqual(other.Right, Right) &&
-                   MathHelperDP.NearEqual(other.Top, Top) &&
-                   MathHelperDP.NearEqual(other.Bottom, Bottom);
+            return MathHelper.NearEqual(other.Left, Left) &&
+                   MathHelper.NearEqual(other.Right, Right) &&
+                   MathHelper.NearEqual(other.Top, Top) &&
+                   MathHelper.NearEqual(other.Bottom, Bottom);
         }
 
         /// <summary>
@@ -536,10 +536,10 @@ namespace Molten.DoublePrecision
         {
             return new RectangleD()
             {
-                Left = MathHelper.Lerp(start.Left, end.Left, percent),
-                Right = MathHelper.Lerp(start.Right, end.Right, percent),
-                Top = MathHelper.Lerp(start.Top, end.Top, percent),
-                Bottom = MathHelper.Lerp(start.Bottom, end.Bottom, percent),
+                Left = Molten.MathHelper.Lerp(start.Left, end.Left, percent),
+                Right = Molten.MathHelper.Lerp(start.Right, end.Right, percent),
+                Top = Molten.MathHelper.Lerp(start.Top, end.Top, percent),
+                Bottom = Molten.MathHelper.Lerp(start.Bottom, end.Bottom, percent),
             };
         }
 

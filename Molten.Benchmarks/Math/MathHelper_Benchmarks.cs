@@ -16,7 +16,7 @@ namespace Molten.Benchmarks
         public const int ITERATIONS = 1000;
 
         [Benchmark]
-        public void MathHelper_Lerp_Float()
+        public void DegreesToRadians_Float()
         {
             float a, b, c;
             float result;
@@ -27,12 +27,12 @@ namespace Molten.Benchmarks
                 b = i * 9;
                 c = i;
 
-                result = MathHelper.Lerp(a, b, i / 1000f);
+                result = MathHelper.DegreesToRadians(i * 9.8f);
             }
         }
 
         [Benchmark]
-        public void MathHelper_Lerp_Float_Generic()
+        public void DegreesToRadians_Float_Generic()
         {
             float a, b, c;
             float result;
@@ -43,13 +43,29 @@ namespace Molten.Benchmarks
                 b = i * 9;
                 c = i;
 
-                result = MathHelper.Lerp(a, b, i / 1000f);
+               // result = MathHelper.DegreesToRadiansGeneric(i * 9.8f);
+            }
+        }
+
+        [Benchmark]
+        public void DegreesToRadians_Double()
+        {
+            double a, b, c;
+            double result;
+
+            for (int i = 0; i < ITERATIONS; i++)
+            {
+                a = i * 248.8f;
+                b = i * 9;
+                c = i;
+
+                result = MathHelper.DegreesToRadians(i * 9.8);
             }
         }
 
 
         [Benchmark]
-        public void MathHelper_Lerp_Double()
+        public void DegreesToRadians_Double_Generic()
         {
             double a, b, c;
             double result;
@@ -60,23 +76,7 @@ namespace Molten.Benchmarks
                 b = i * 9;
                 c = i;
 
-                result = MathHelper.Lerp(a, b, i / 1000D);
-            }
-        }
-
-        [Benchmark]
-        public void MathHelper_Lerp_Double_Generic()
-        {
-            double a, b, c;
-            double result;
-
-            for (int i = 0; i < ITERATIONS; i++)
-            {
-                a = i * 248.8D;
-                b = i * 9;
-                c = i;
-
-                result = MathHelper.Lerp(a, b, i / 1000D);
+              //  result = MathHelper.DegreesToRadiansGeneric(i * 9.8);
             }
         }
     }

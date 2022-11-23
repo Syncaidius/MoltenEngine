@@ -632,18 +632,18 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> inverse;
             <#=d.DT#> dot = Dot(start, end);
 
-            if (Math.Abs(dot) > 1.0<#=d.FPL#> - <#=md.MathHelper#>.ZeroTolerance)
+            if (<#=md.Math#>.Abs(dot) > 1.0<#=d.FPL#> - MathHelper.Constants<<#=d.DT#>>.ZeroTolerance)
             {
                 inverse = 1.0<#=d.FPL#> - amount;
-                opposite = amount * Math.Sign(dot);
+                opposite = amount * <#=md.Math#>.Sign(dot);
             }
             else
             {
-                <#=d.DT#> acos = <#=md.FPCast#>Math.Acos(Math.Abs(dot));
-                <#=d.DT#> invSin = <#=md.FPCast#>(1.0 / Math.Sin(acos));
+                <#=d.DT#> acos = <#=md.Math#>.Acos(Math.Abs(dot));
+                <#=d.DT#> invSin = 1.0<#=d.FPL#> / <#=md.Math#>.Sin(acos);
 
-                inverse = <#=md.FPCast#>(Math.Sin((1.0<#=d.FPL#> - amount) * acos) * invSin);
-                opposite = <#=md.FPCast#>(Math.Sin(amount * acos) * invSin * Math.Sign(dot));
+                inverse = <#=md.Math#>.Sin((1.0<#=d.FPL#> - amount) * acos) * invSin;
+                opposite = <#=md.Math#>.Sin(amount * acos) * invSin * Math.Sign(dot);
             }
 
             return new <#=md.Name#>()

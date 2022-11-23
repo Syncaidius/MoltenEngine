@@ -295,18 +295,18 @@ namespace Molten.DoublePrecision
 
         public static bool operator ==(Matrix2D matrix1, Matrix2D matrix2)
         {
-            return MathHelperDP.NearEqual(matrix1.M11, matrix2.M11)
-                && MathHelperDP.NearEqual(matrix1.M21, matrix2.M21)
-                && MathHelperDP.NearEqual(matrix1.M12, matrix2.M12)
-                && MathHelperDP.NearEqual(matrix1.M22, matrix2.M22);
+            return MathHelper.NearEqual(matrix1.M11, matrix2.M11)
+                && MathHelper.NearEqual(matrix1.M21, matrix2.M21)
+                && MathHelper.NearEqual(matrix1.M12, matrix2.M12)
+                && MathHelper.NearEqual(matrix1.M22, matrix2.M22);
         }
 
         public static bool operator !=(Matrix2D matrix1, Matrix2D matrix2)
         {
-            return !MathHelperDP.NearEqual(matrix1.M11, matrix2.M11)
-                || !MathHelperDP.NearEqual(matrix1.M21, matrix2.M21)
-                || !MathHelperDP.NearEqual(matrix1.M12, matrix2.M12)
-                || !MathHelperDP.NearEqual(matrix1.M22, matrix2.M22);
+            return !MathHelper.NearEqual(matrix1.M11, matrix2.M11)
+                || !MathHelper.NearEqual(matrix1.M21, matrix2.M21)
+                || !MathHelper.NearEqual(matrix1.M12, matrix2.M12)
+                || !MathHelper.NearEqual(matrix1.M22, matrix2.M22);
         }
 
         public static Matrix2D operator +(Matrix2D matrix1, Matrix2D matrix2)

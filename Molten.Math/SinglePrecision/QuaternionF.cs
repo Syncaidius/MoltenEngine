@@ -309,7 +309,7 @@ namespace Molten
         /// </remarks>
         public float Length()
         {
-            return MathF.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
+            return (float)Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -474,7 +474,7 @@ namespace Molten
             float qw = Math.Abs(q.W);
             if (qw > 1)
                 return 0;
-            return 2 * MathF.Acos(qw);
+            return 2 * (float)Math.Acos(qw);
         }
 
         /// <summary>
@@ -488,8 +488,8 @@ namespace Molten
 
             if (Math.Abs(value.W) < 1.0)
             {
-                float angle = MathF.Acos(value.W);
-                float sin = MathF.Sin(angle);
+                float angle = (float)Math.Acos(value.W);
+                float sin = (float)Math.Sin(angle);
 
                 if (!MathHelper.IsZero(sin))
                 {
@@ -613,18 +613,18 @@ namespace Molten
             float inverse;
             float dot = Dot(start, end);
 
-            if (Math.Abs(dot) > 1.0F - MathHelper.ZeroTolerance)
+            if (MathF.Abs(dot) > 1.0F - MathHelper.Constants<float>.ZeroTolerance)
             {
                 inverse = 1.0F - amount;
-                opposite = amount * Math.Sign(dot);
+                opposite = amount * MathF.Sign(dot);
             }
             else
             {
                 float acos = MathF.Acos(Math.Abs(dot));
-                float invSin = (float)(1.0 / Math.Sin(acos));
+                float invSin = 1.0F / MathF.Sin(acos);
 
-                inverse = (float)(Math.Sin((1.0F - amount) * acos) * invSin);
-                opposite = (float)(Math.Sin(amount * acos) * invSin * Math.Sign(dot));
+                inverse = MathF.Sin((1.0F - amount) * acos) * invSin;
+                opposite = MathF.Sin(amount * acos) * invSin * Math.Sign(dot);
             }
 
             return new QuaternionF()
@@ -648,12 +648,12 @@ namespace Molten
             float halfPitch = pitch * 0.5f;
             float halfYaw = yaw * 0.5f;
 
-            float sinRoll = MathF.Sin(halfRoll);
-            float cosRoll = MathF.Cos(halfRoll);
-            float sinPitch = MathF.Sin(halfPitch);
-            float cosPitch = MathF.Cos(halfPitch);
-            float sinYaw = MathF.Sin(halfYaw);
-            float cosYaw = MathF.Cos(halfYaw);
+            float sinRoll = (float)Math.Sin(halfRoll);
+            float cosRoll = (float)Math.Cos(halfRoll);
+            float sinPitch = (float)Math.Sin(halfPitch);
+            float cosPitch = (float)Math.Cos(halfPitch);
+            float sinYaw = (float)Math.Sin(halfYaw);
+            float cosYaw = (float)Math.Cos(halfYaw);
 
             result.X = (cosYaw * sinPitch * cosRoll) + (sinYaw * cosPitch * sinRoll);
             result.Y = (sinYaw * cosPitch * cosRoll) - (cosYaw * sinPitch * sinRoll);
@@ -673,12 +673,12 @@ namespace Molten
             float halfPitch = pitch * 0.5f;
             float halfYaw = yaw * 0.5f;
 
-            float sinRoll = MathF.Sin(halfRoll);
-            float cosRoll = MathF.Cos(halfRoll);
-            float sinPitch = MathF.Sin(halfPitch);
-            float cosPitch = MathF.Cos(halfPitch);
-            float sinYaw = MathF.Sin(halfYaw);
-            float cosYaw = MathF.Cos(halfYaw);
+            float sinRoll = (float)Math.Sin(halfRoll);
+            float cosRoll = (float)Math.Cos(halfRoll);
+            float sinPitch = (float)Math.Sin(halfPitch);
+            float cosPitch = (float)Math.Cos(halfPitch);
+            float sinYaw = (float)Math.Sin(halfYaw);
+            float cosYaw = (float)Math.Cos(halfYaw);
 
             return new QuaternionF()
             {
@@ -702,7 +702,7 @@ namespace Molten
 
             if (scale > 0.0F)
             {
-                sqrt = MathF.Sqrt(scale + 1.0F);
+                sqrt = (float)Math.Sqrt(scale + 1.0F);
                 result.W = sqrt * 0.5F;
                 sqrt = 0.5F / sqrt;
 
@@ -712,7 +712,7 @@ namespace Molten
             }
             else if ((matrix.M11 >= matrix.M22) && (matrix.M11 >= matrix.M33))
             {
-                sqrt = MathF.Sqrt(1.0F + matrix.M11 - matrix.M22 - matrix.M33);
+                sqrt = (float)Math.Sqrt(1.0F + matrix.M11 - matrix.M22 - matrix.M33);
                 half = 0.5F / sqrt;
 
                 result.X = 0.5F * sqrt;
@@ -722,7 +722,7 @@ namespace Molten
             }
             else if (matrix.M22 > matrix.M33)
             {
-                sqrt = MathF.Sqrt(1.0F + matrix.M22 - matrix.M11 - matrix.M33);
+                sqrt = (float)Math.Sqrt(1.0F + matrix.M22 - matrix.M11 - matrix.M33);
                 half = 0.5f / sqrt;
 
                 result.X = (matrix.M21 + matrix.M12) * half;
@@ -732,7 +732,7 @@ namespace Molten
             }
             else
             {
-                sqrt = MathF.Sqrt(1.0F  + matrix.M33 - matrix.M11 - matrix.M22);
+                sqrt = (float)Math.Sqrt(1.0F  + matrix.M33 - matrix.M11 - matrix.M22);
                 half = 0.5F  / sqrt;
 
                 result.X = (matrix.M31 + matrix.M13) * half;
@@ -757,7 +757,7 @@ namespace Molten
 
             if (scale > 0.0f)
             {
-                sqrt = MathF.Sqrt(scale + 1.0f);
+                sqrt = (float)Math.Sqrt(scale + 1.0f);
                 result.W = sqrt * 0.5F;
                 sqrt = 0.5F / sqrt;
 
@@ -767,7 +767,7 @@ namespace Molten
             }
             else if ((matrix.M11 >= matrix.M22) && (matrix.M11 >= matrix.M33))
             {
-                sqrt = MathF.Sqrt(1.0f + matrix.M11 - matrix.M22 - matrix.M33);
+                sqrt = (float)Math.Sqrt(1.0f + matrix.M11 - matrix.M22 - matrix.M33);
                 half = 0.5F / sqrt;
 
                 result.X = 0.5F * sqrt;
@@ -777,7 +777,7 @@ namespace Molten
             }
             else if (matrix.M22 > matrix.M33)
             {
-                sqrt = MathF.Sqrt(1.0f + matrix.M22 - matrix.M11 - matrix.M33);
+                sqrt = (float)Math.Sqrt(1.0f + matrix.M22 - matrix.M11 - matrix.M33);
                 half = 0.5F / sqrt;
 
                 result.X = (matrix.M21 + matrix.M12) * half;
@@ -787,7 +787,7 @@ namespace Molten
             }
             else
             {
-                sqrt = MathF.Sqrt(1.0f + matrix.M33 - matrix.M11 - matrix.M22);
+                sqrt = (float)Math.Sqrt(1.0f + matrix.M33 - matrix.M11 - matrix.M22);
                 half = 0.5F / sqrt;
 
                 result.X = (matrix.M31 + matrix.M13) * half;
@@ -826,8 +826,8 @@ namespace Molten
         /// <param name="value">The <see cref="QuaternionF"/> to exponentiate.</param>
         public static QuaternionF Exponential(ref QuaternionF value)
         {
-            float angle = MathF.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z));
-            float sin = MathF.Sin(angle);
+            float angle = (float)Math.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z));
+            float sin = (float)Math.Sin(angle);
             QuaternionF result;
 
             if (!MathHelper.IsZero(sin))
@@ -842,7 +842,7 @@ namespace Molten
                 result = value;
             }
 
-            result.W = MathF.Cos(angle);
+            result.W = (float)Math.Cos(angle);
             return result;
         }
 
@@ -980,8 +980,8 @@ namespace Molten
             Vector3F normalized = axis.GetNormalized();
 
             float half = angle * 0.5F;
-            float sin = MathF.Sin(half);
-            float cos = MathF.Cos(half);
+            float sin = (float)Math.Sin(half);
+            float cos = (float)Math.Cos(half);
 
             return new QuaternionF()
             {

@@ -96,7 +96,7 @@ namespace Molten.Examples
             for (int i = 0; i < count; i++)
             {
                 pair = new ParentChildPair();
-                float angRad = angle * MathHelper.DegToRad;
+                float angRad = angle * MathHelper.Constants<float>.DegToRad;
                 Vector3F pos = origin + new Vector3F()
                 {
                     X = MathF.Sin(angRad) * outerRadius,

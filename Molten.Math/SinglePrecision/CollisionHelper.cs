@@ -387,7 +387,7 @@ namespace Molten
             //Same thing as RayIntersectsSphere except that the radius of the sphere (point)
             //is the epsilon for zero.
             float b = Vector3F.Dot(m, ray.Direction);
-            float c = Vector3F.Dot(m, m) - MathHelper.ZeroTolerance;
+            float c = Vector3F.Dot(m, m) - MathHelper.Constants<float>.ZeroTolerance;
 
             if (c > 0f && b > 0f)
                 return false;

@@ -737,7 +737,7 @@ namespace Molten
             var inv_scale = 1f / scale;
 
             //If any of the scaling factors are zero, then the rotation matrix can not exist.
-            if (Math.Abs(scale) < MathHelper.ZeroTolerance)
+            if (Math.Abs(scale) < MathHelper.Constants<float>.ZeroTolerance)
             {
                 rotation = QuaternionF.Identity;
                 return false;

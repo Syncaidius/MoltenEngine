@@ -112,11 +112,11 @@ namespace Molten.DoublePrecision
             switch (type)
             {
                 case AngleType.Revolution:
-                    radians = MathHelperDP.RevolutionsToRadians(angle);
+                    radians = Molten.MathHelper.RevolutionsToRadians(angle);
                     break;
 
                 case AngleType.Degree:
-                    radians = MathHelperDP.DegreesToRadians(angle);
+                    radians = Molten.MathHelper.DegreesToRadians(angle);
                     break;
 
                 case AngleType.Radian:
@@ -124,7 +124,7 @@ namespace Molten.DoublePrecision
                     break;
 
                 case AngleType.Gradian:
-                    radians = MathHelperDP.GradiansToRadians(angle);
+                    radians = Molten.MathHelper.GradiansToRadians(angle);
                     break;
 
                 default:
@@ -150,7 +150,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public void Wrap()
         {
-            radians = MathHelper.WrapAngle(radians);
+            radians = Molten.MathHelper.WrapAngle(radians);
         }
 
         /// <summary>
@@ -171,8 +171,8 @@ namespace Molten.DoublePrecision
         /// </summary>
         public double Revolutions
         {
-            get { return MathHelperDP.RadiansToRevolutions(radians); }
-            set { radians = MathHelperDP.RevolutionsToRadians(value); }
+            get { return Molten.MathHelper.RadiansToRevolutions(radians); }
+            set { radians = Molten.MathHelper.RevolutionsToRadians(value); }
         }
 
         /// <summary>
@@ -180,8 +180,8 @@ namespace Molten.DoublePrecision
         /// </summary>
         public double Degrees
         {
-            get { return MathHelperDP.RadiansToDegrees(radians); }
-            set { radians = MathHelperDP.DegreesToRadians(value); }
+            get { return MathHelper.RadiansToDegrees(radians); }
+            set { radians = MathHelper.DegreesToRadians(value); }
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace Molten.DoublePrecision
         {
             get
             {
-                double degrees = MathHelperDP.RadiansToDegrees(radians);
+                double degrees = MathHelper.RadiansToDegrees(radians);
 
                 if (degrees < 0)
                 {
@@ -209,11 +209,11 @@ namespace Molten.DoublePrecision
             }
             set
             {
-                double degrees = MathHelperDP.RadiansToDegrees(radians);
+                double degrees = MathHelper.RadiansToDegrees(radians);
                 double degreesfloor = Math.Floor(degrees);
 
                 degreesfloor += value / 60.0;
-                radians = MathHelperDP.DegreesToRadians(degreesfloor);
+                radians = MathHelper.DegreesToRadians(degreesfloor);
             }
         }
 
@@ -227,7 +227,7 @@ namespace Molten.DoublePrecision
         {
             get
             {
-                double degrees = MathHelperDP.RadiansToDegrees(radians);
+                double degrees = MathHelper.RadiansToDegrees(radians);
 
                 if (degrees < 0)
                 {
@@ -250,7 +250,7 @@ namespace Molten.DoublePrecision
             }
             set
             {
-                double degrees = MathHelperDP.RadiansToDegrees(radians);
+                double degrees = MathHelper.RadiansToDegrees(radians);
                 double degreesfloor = Math.Floor(degrees);
 
                 double minutes = (degrees - degreesfloor) * 60.0;
@@ -258,7 +258,7 @@ namespace Molten.DoublePrecision
 
                 minutesfloor += value / 60.0;
                 degreesfloor += minutesfloor / 60.0;
-                radians = MathHelperDP.DegreesToRadians(degreesfloor);
+                radians = MathHelper.DegreesToRadians(degreesfloor);
             }
         }
         
@@ -286,8 +286,8 @@ namespace Molten.DoublePrecision
         /// </summary>
         public double Gradians
         {
-            get { return MathHelperDP.RadiansToGradians(radians); }
-            set { radians = MathHelperDP.RadiansToGradians(value); }
+            get { return MathHelper.RadiansToGradians(radians); }
+            set { radians = MathHelper.RadiansToGradians(value); }
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsRight
         {
-            get { return radians == MathHelperDP.PiOverTwo; }
+            get { return radians == MathHelper.Constants<double>.PiOverTwo; }
         }
 
         /// <summary>
@@ -323,7 +323,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsOblique
         {
-            get { return WrapPositive(this).radians != MathHelperDP.PiOverTwo; }
+            get { return WrapPositive(this).radians != MathHelper.Constants<double>.PiOverTwo; }
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsAcute
         {
-            get { return radians > 0.0 && radians < MathHelperDP.PiOverTwo; }
+            get { return radians > 0.0 && radians < MathHelper.Constants<double>.PiOverTwo; }
         }
 
         /// <summary>
@@ -341,7 +341,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsObtuse
         {
-            get { return radians > MathHelperDP.PiOverTwo && radians < double.Pi; }
+            get { return radians > MathHelper.Constants<double>.PiOverTwo && radians < double.Pi; }
         }
 
         /// <summary>
@@ -358,7 +358,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public AngleD Complement
         {
-            get { return new AngleD(MathHelperDP.PiOverTwo - radians, AngleType.Radian); }
+            get { return new AngleD(MathHelper.Constants<double>.PiOverTwo - radians, AngleType.Radian); }
         }
 
         /// <summary>
@@ -476,7 +476,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public static AngleD RightAngle
         {
-            get { return new AngleD(MathHelperDP.PiOverTwo, AngleType.Radian); }
+            get { return new AngleD(MathHelper.Constants<double>.PiOverTwo, AngleType.Radian); }
         }
 
         /// <summary>
@@ -710,7 +710,7 @@ namespace Molten.DoublePrecision
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, MathHelperDP.RadiansToDegrees(radians).ToString("0.##°"));
+            return string.Format(CultureInfo.CurrentCulture, MathHelper.RadiansToDegrees(radians).ToString("0.##°"));
         }
 
         /// <summary>
@@ -725,7 +725,7 @@ namespace Molten.DoublePrecision
             if (format == null)
                 return ToString();
 
-            return string.Format(CultureInfo.CurrentCulture, "{0}°", MathHelperDP.RadiansToDegrees(radians).ToString(format, CultureInfo.CurrentCulture));
+            return string.Format(CultureInfo.CurrentCulture, "{0}°", MathHelper.RadiansToDegrees(radians).ToString(format, CultureInfo.CurrentCulture));
         }
 
         /// <summary>
@@ -737,7 +737,7 @@ namespace Molten.DoublePrecision
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, MathHelperDP.RadiansToDegrees(radians).ToString("0.##°"));
+            return string.Format(formatProvider, MathHelper.RadiansToDegrees(radians).ToString("0.##°"));
         }
 
         /// <summary>
@@ -753,7 +753,7 @@ namespace Molten.DoublePrecision
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider, "{0}°", MathHelperDP.RadiansToDegrees(radians).ToString(format, CultureInfo.CurrentCulture));
+            return string.Format(formatProvider, "{0}°", MathHelper.RadiansToDegrees(radians).ToString(format, CultureInfo.CurrentCulture));
         }
 
         /// <summary>

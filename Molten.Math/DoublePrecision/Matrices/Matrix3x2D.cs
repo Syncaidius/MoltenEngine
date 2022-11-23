@@ -479,12 +479,12 @@ namespace Molten.DoublePrecision
         /// </remarks>
         public static void Lerp(ref Matrix3x2D start, ref Matrix3x2D end, double amount, out Matrix3x2D result)
         {
-            result.M11 = MathHelper.Lerp(start.M11, end.M11, amount);
-            result.M12 = MathHelper.Lerp(start.M12, end.M12, amount);
-            result.M21 = MathHelper.Lerp(start.M21, end.M21, amount);
-            result.M22 = MathHelper.Lerp(start.M22, end.M22, amount);
-            result.M31 = MathHelper.Lerp(start.M31, end.M31, amount);
-            result.M32 = MathHelper.Lerp(start.M32, end.M32, amount);
+            result.M11 = Molten.MathHelper.Lerp(start.M11, end.M11, amount);
+            result.M12 = Molten.MathHelper.Lerp(start.M12, end.M12, amount);
+            result.M21 = Molten.MathHelper.Lerp(start.M21, end.M21, amount);
+            result.M22 = Molten.MathHelper.Lerp(start.M22, end.M22, amount);
+            result.M31 = Molten.MathHelper.Lerp(start.M31, end.M31, amount);
+            result.M32 = Molten.MathHelper.Lerp(start.M32, end.M32, amount);
         }
 
         /// <summary>
@@ -513,7 +513,7 @@ namespace Molten.DoublePrecision
         /// <param name="result">When the method completes, contains the cubic interpolation of the two matrices.</param>
         public static void SmoothStep(ref Matrix3x2D start, ref Matrix3x2D end, double amount, out Matrix3x2D result)
         {
-            amount = MathHelperDP.SmoothStep(amount);
+            amount = MathHelper.SmoothStep(amount);
             Lerp(ref start, ref end, amount, out result);
         }
 
@@ -866,7 +866,7 @@ namespace Molten.DoublePrecision
         {
             double determinant = value.Determinant();
 
-            if (MathHelperDP.IsZero(determinant))
+            if (MathHelper.IsZero(determinant))
             {
                 result = Identity;
                 return;
@@ -1115,12 +1115,12 @@ namespace Molten.DoublePrecision
         /// </returns>
         public bool Equals(ref Matrix3x2D other)
         {
-            return (MathHelperDP.NearEqual(other.M11, M11) &&
-                MathHelperDP.NearEqual(other.M12, M12) &&
-                MathHelperDP.NearEqual(other.M21, M21) &&
-                MathHelperDP.NearEqual(other.M22, M22) &&
-                MathHelperDP.NearEqual(other.M31, M31) &&
-                MathHelperDP.NearEqual(other.M32, M32));
+            return (MathHelper.NearEqual(other.M11, M11) &&
+                MathHelper.NearEqual(other.M12, M12) &&
+                MathHelper.NearEqual(other.M21, M21) &&
+                MathHelper.NearEqual(other.M22, M22) &&
+                MathHelper.NearEqual(other.M31, M31) &&
+                MathHelper.NearEqual(other.M32, M32));
         }
         /// <summary>
         /// Determines whether the specified <see cref="Matrix3x2D"/> is equal to this instance.

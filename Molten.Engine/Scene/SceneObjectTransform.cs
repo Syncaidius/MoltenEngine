@@ -24,9 +24,9 @@
 
         internal void CalculateLocal()
         {
-            _orientation = QuaternionF.RotationYawPitchRoll(_angles.Y * MathHelper.DegToRad,
-                _angles.X * MathHelper.DegToRad,
-                _angles.Z * MathHelper.DegToRad);
+            _orientation = QuaternionF.RotationYawPitchRoll(_angles.Y * MathHelper.Constants<float>.DegToRad,
+                _angles.X * MathHelper.Constants<float>.DegToRad,
+                _angles.Z * MathHelper.Constants<float>.DegToRad);
             _localTransform = Matrix4F.Scaling(_localScale) * Matrix4F.FromQuaternion(_orientation) * Matrix4F.CreateTranslation(_localPosition);
         }
 

@@ -294,7 +294,7 @@ namespace Molten
         /// </summary>
         public bool IsRight
         {
-            get { return radians == MathHelper.PiOverTwo; }
+            get { return radians == MathHelper.Constants<float>.PiOverTwo; }
         }
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace Molten
         /// </summary>
         public bool IsOblique
         {
-            get { return WrapPositive(this).radians != MathHelper.PiOverTwo; }
+            get { return WrapPositive(this).radians != MathHelper.Constants<float>.PiOverTwo; }
         }
 
         /// <summary>
@@ -330,7 +330,7 @@ namespace Molten
         /// </summary>
         public bool IsAcute
         {
-            get { return radians > 0.0 && radians < MathHelper.PiOverTwo; }
+            get { return radians > 0.0 && radians < MathHelper.Constants<float>.PiOverTwo; }
         }
 
         /// <summary>
@@ -339,7 +339,7 @@ namespace Molten
         /// </summary>
         public bool IsObtuse
         {
-            get { return radians > MathHelper.PiOverTwo && radians < float.Pi; }
+            get { return radians > MathHelper.Constants<float>.PiOverTwo && radians < float.Pi; }
         }
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace Molten
         /// </summary>
         public AngleF Complement
         {
-            get { return new AngleF(MathHelper.PiOverTwo - radians, AngleType.Radian); }
+            get { return new AngleF(MathHelper.Constants<float>.PiOverTwo - radians, AngleType.Radian); }
         }
 
         /// <summary>
@@ -474,7 +474,7 @@ namespace Molten
         /// </summary>
         public static AngleF RightAngle
         {
-            get { return new AngleF(MathHelper.PiOverTwo, AngleType.Radian); }
+            get { return new AngleF(MathHelper.Constants<float>.PiOverTwo, AngleType.Radian); }
         }
 
         /// <summary>

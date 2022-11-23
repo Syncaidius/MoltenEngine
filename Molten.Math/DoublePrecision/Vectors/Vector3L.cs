@@ -495,7 +495,7 @@ namespace Molten.DoublePrecision
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         public static Vector3L SmoothStep(ref Vector3L start, ref Vector3L end, double amount)
         {
-            amount = MathHelperDP.SmoothStep(amount);
+            amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
         }
 

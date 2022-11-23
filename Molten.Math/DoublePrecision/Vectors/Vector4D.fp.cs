@@ -10,7 +10,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsNormalized
         {
-            get => MathHelperDP.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
+            get => MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Molten.DoublePrecision
         /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
         public static bool NearEqual(ref Vector4D left, ref Vector4D right, ref Vector4D epsilon)
         {
-            return MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y) && MathHelper.WithinEpsilon(left.Z, right.Z, epsilon.Z) && MathHelper.WithinEpsilon(left.W, right.W, epsilon.W);
+            return Molten.MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && Molten.MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y) && Molten.MathHelper.WithinEpsilon(left.Z, right.Z, epsilon.Z) && Molten.MathHelper.WithinEpsilon(left.W, right.W, epsilon.W);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Molten.DoublePrecision
         public Vector4D GetNormalized(bool allowZero = false)
         {
             double length = Length();
-            if (!MathHelperDP.IsZero(length))
+            if (!MathHelper.IsZero(length))
             {
                 double inverse = 1.0D / length;
                 return new Vector4D()
@@ -129,7 +129,7 @@ namespace Molten.DoublePrecision
         public void Normalize(bool allowZero = false)
         {
             double length = Length();
-            if (!MathHelperDP.IsZero(length))
+            if (!MathHelper.IsZero(length))
             {
                 double inverse = 1.0D / length;
 			    X = (X * inverse);

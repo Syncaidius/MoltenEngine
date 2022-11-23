@@ -116,7 +116,7 @@ namespace Molten.DoublePrecision
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Vector3D other)
         {
-            return MathHelperDP.NearEqual(other.X, X) && MathHelperDP.NearEqual(other.Y, Y) && MathHelperDP.NearEqual(other.Z, Z);
+            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z);
         }
 
         /// <summary>
@@ -495,7 +495,7 @@ namespace Molten.DoublePrecision
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         public static Vector3D SmoothStep(ref Vector3D start, ref Vector3D end, double amount)
         {
-            amount = MathHelperDP.SmoothStep(amount);
+            amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
         }
 

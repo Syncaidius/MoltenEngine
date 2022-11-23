@@ -92,7 +92,6 @@ namespace Molten.Graphics
                 totalWidth += (glyph.AdvanceWidth * font.Scale);
 
                 ref GpuData data = ref GetData(RangeType.MSDF, font.Manager.UnderlyingTexture, material);
-                float rad = MathHelper.DegreesToRadians(45);
                 data.Rotation = 0;
                 data.Position = new Vector2F()
                 {

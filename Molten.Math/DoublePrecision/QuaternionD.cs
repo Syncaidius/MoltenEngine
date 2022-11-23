@@ -50,7 +50,7 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Gets a value indicting whether this  <see cref="QuaternionD"/> is normalized.
         /// </summary>
-        public bool IsNormalized => MathHelperDP.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
+        public bool IsNormalized => MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
 
         /// <summary>
         /// Gets the angle of the  <see cref="QuaternionD"/>.
@@ -61,7 +61,7 @@ namespace Molten.DoublePrecision
             get
             {
                 double length = (X * X) + (Y * Y) + (Z * Z);
-                if (MathHelperDP.IsZero(length))
+                if (MathHelper.IsZero(length))
                     return 0.0D;
 
                 return 2.0D * Math.Acos(double.Clamp(W, -1D, 1D));
@@ -77,7 +77,7 @@ namespace Molten.DoublePrecision
             get
             {
                 double length = (X * X) + (Y * Y) + (Z * Z);
-                if (MathHelperDP.IsZero(length))
+                if (MathHelper.IsZero(length))
                     return Vector3D.UnitX;
 
                 double inv = 1.0D  / Math.Sqrt(length);
@@ -290,7 +290,7 @@ namespace Molten.DoublePrecision
         public void Normalize()
         {
             double length = Length();
-            if (!MathHelperDP.IsZero(length))
+            if (!MathHelper.IsZero(length))
             {
                 double inverse = 1.0D / length;
                 X *= inverse;
@@ -318,7 +318,7 @@ namespace Molten.DoublePrecision
         public void Invert()
         {
             double lengthSq = LengthSquared();
-            if (!MathHelperDP.IsZero(lengthSq))
+            if (!MathHelper.IsZero(lengthSq))
             {
                 lengthSq = 1.0D / lengthSq;
 
@@ -339,7 +339,7 @@ namespace Molten.DoublePrecision
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref QuaternionD other)
         {
-            return MathHelperDP.NearEqual(other.X, X) && MathHelperDP.NearEqual(other.Y, Y) && MathHelperDP.NearEqual(other.Z, Z) && MathHelperDP.NearEqual(other.W, W);
+            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z) && MathHelper.NearEqual(other.W, W);
         }
 
         /// <summary>
@@ -491,7 +491,7 @@ namespace Molten.DoublePrecision
                 double angle = Math.Acos(value.W);
                 double sin = Math.Sin(angle);
 
-                if (!MathHelperDP.IsZero(sin))
+                if (!MathHelper.IsZero(sin))
                 {
                     double coeff = angle / sin;
                     result.X = value.X * coeff;
@@ -613,7 +613,7 @@ namespace Molten.DoublePrecision
             double inverse;
             double dot = Dot(start, end);
 
-            if (Math.Abs(dot) > 1.0D - MathHelperDP.ZeroTolerance)
+            if (Math.Abs(dot) > 1.0D - Molten.MathHelper.Constants<double>.ZeroTolerance)
             {
                 inverse = 1.0D - amount;
                 opposite = amount * Math.Sign(dot);
@@ -621,10 +621,10 @@ namespace Molten.DoublePrecision
             else
             {
                 double acos = Math.Acos(Math.Abs(dot));
-                double invSin = (1.0 / Math.Sin(acos));
+                double invSin = 1.0D / Math.Sin(acos);
 
-                inverse = (Math.Sin((1.0D - amount) * acos) * invSin);
-                opposite = (Math.Sin(amount * acos) * invSin * Math.Sign(dot));
+                inverse = Math.Sin((1.0D - amount) * acos) * invSin;
+                opposite = Math.Sin(amount * acos) * invSin * Math.Sign(dot);
             }
 
             return new QuaternionD()
@@ -830,7 +830,7 @@ namespace Molten.DoublePrecision
             double sin = Math.Sin(angle);
             QuaternionD result;
 
-            if (!MathHelperDP.IsZero(sin))
+            if (!MathHelper.IsZero(sin))
             {
                 double coeff = sin / angle;
                 result.X = coeff * value.X;
