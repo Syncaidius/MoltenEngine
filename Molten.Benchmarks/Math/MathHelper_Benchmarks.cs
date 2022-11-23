@@ -43,7 +43,7 @@ namespace Molten.Benchmarks
                 b = i * 9;
                 c = i;
 
-                result = MathHelper.LerpGeneric(a, b, i / 1000f);
+                result = MathHelper.Lerp(a, b, i / 1000f);
             }
         }
 
@@ -76,7 +76,7 @@ namespace Molten.Benchmarks
                 b = i * 9;
                 c = i;
 
-                result = MathHelper.LerpGeneric(a, b, i / 1000D);
+                result = MathHelper.Lerp(a, b, i / 1000D);
             }
         }
     }

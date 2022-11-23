@@ -318,7 +318,7 @@ namespace Molten
         /// <param name="amount">Interpolation amount.</param>
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T LerpGeneric<T>(T from, T to, T amount)
+        public static T Lerp<T>(T from, T to, T amount)
             where T : struct, IFloatingPoint<T>
         {
             return (T.One - amount) * from + amount * to;
