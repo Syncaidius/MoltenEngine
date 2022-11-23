@@ -224,7 +224,7 @@ namespace Molten.DoublePrecision
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         public static int Lerp(int from, int to, double amount)
         {
-            return (int)Lerp(from, (double)to, amount);
+            return (int)MathHelper.Lerp(from, (double)to, amount);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace Molten.DoublePrecision
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         public static uint Lerp(uint from, uint to, double amount)
         {
-            return (uint)Lerp(from, (double)to, amount);
+            return (uint)MathHelper.Lerp(from, (double)to, amount);
         }
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace Molten.DoublePrecision
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         public static long Lerp(long from, long to, double amount)
         {
-            return (long)Lerp(from, (double)to, amount);
+            return (long)MathHelper.Lerp(from, (double)to, amount);
         }
 
         /// <summary>
@@ -272,7 +272,7 @@ namespace Molten.DoublePrecision
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         public static ulong Lerp(ulong from, ulong to, double amount)
         {
-            return (ulong)Lerp(from, (double)to, amount);
+            return (ulong)MathHelper.Lerp(from, (double)to, amount);
         }
 
         /// <summary>

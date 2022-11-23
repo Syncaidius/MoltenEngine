@@ -1189,22 +1189,22 @@ namespace Molten.DoublePrecision
         /// </remarks>
         public static void Lerp(ref Matrix4D start, ref Matrix4D end, double amount, out Matrix4D result)
         {
-            result.M11 = MathHelperDP.Lerp(start.M11, end.M11, amount);
-            result.M12 = MathHelperDP.Lerp(start.M12, end.M12, amount);
-            result.M13 = MathHelperDP.Lerp(start.M13, end.M13, amount);
-            result.M14 = MathHelperDP.Lerp(start.M14, end.M14, amount);
-            result.M21 = MathHelperDP.Lerp(start.M21, end.M21, amount);
-            result.M22 = MathHelperDP.Lerp(start.M22, end.M22, amount);
-            result.M23 = MathHelperDP.Lerp(start.M23, end.M23, amount);
-            result.M24 = MathHelperDP.Lerp(start.M24, end.M24, amount);
-            result.M31 = MathHelperDP.Lerp(start.M31, end.M31, amount);
-            result.M32 = MathHelperDP.Lerp(start.M32, end.M32, amount);
-            result.M33 = MathHelperDP.Lerp(start.M33, end.M33, amount);
-            result.M34 = MathHelperDP.Lerp(start.M34, end.M34, amount);
-            result.M41 = MathHelperDP.Lerp(start.M41, end.M41, amount);
-            result.M42 = MathHelperDP.Lerp(start.M42, end.M42, amount);
-            result.M43 = MathHelperDP.Lerp(start.M43, end.M43, amount);
-            result.M44 = MathHelperDP.Lerp(start.M44, end.M44, amount);
+            result.M11 = MathHelper.Lerp(start.M11, end.M11, amount);
+            result.M12 = MathHelper.Lerp(start.M12, end.M12, amount);
+            result.M13 = MathHelper.Lerp(start.M13, end.M13, amount);
+            result.M14 = MathHelper.Lerp(start.M14, end.M14, amount);
+            result.M21 = MathHelper.Lerp(start.M21, end.M21, amount);
+            result.M22 = MathHelper.Lerp(start.M22, end.M22, amount);
+            result.M23 = MathHelper.Lerp(start.M23, end.M23, amount);
+            result.M24 = MathHelper.Lerp(start.M24, end.M24, amount);
+            result.M31 = MathHelper.Lerp(start.M31, end.M31, amount);
+            result.M32 = MathHelper.Lerp(start.M32, end.M32, amount);
+            result.M33 = MathHelper.Lerp(start.M33, end.M33, amount);
+            result.M34 = MathHelper.Lerp(start.M34, end.M34, amount);
+            result.M41 = MathHelper.Lerp(start.M41, end.M41, amount);
+            result.M42 = MathHelper.Lerp(start.M42, end.M42, amount);
+            result.M43 = MathHelper.Lerp(start.M43, end.M43, amount);
+            result.M44 = MathHelper.Lerp(start.M44, end.M44, amount);
         }
 
         /// <summary>

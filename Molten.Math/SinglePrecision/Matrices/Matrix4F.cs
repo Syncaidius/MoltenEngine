@@ -158,16 +158,16 @@ namespace Molten
           get
           {
             Vector3F vector3;
-            vector3.X = this.M21;
-            vector3.Y = this.M22;
-            vector3.Z = this.M23;
+            vector3.X = M21;
+            vector3.Y = M22;
+            vector3.Z = M23;
             return vector3;
           }
           set
           {
-            this.M21 = value.X;
-            this.M22 = value.Y;
-            this.M23 = value.Z;
+            M21 = value.X;
+            M22 = value.Y;
+            M23 = value.Z;
           }
         }
     
@@ -179,16 +179,16 @@ namespace Molten
           get
           {
             Vector3F vector3;
-            vector3.X = -this.M21;
-            vector3.Y = -this.M22;
-            vector3.Z = -this.M23;
+            vector3.X = -M21;
+            vector3.Y = -M22;
+            vector3.Z = -M23;
             return vector3;
           }
           set
           {
-            this.M21 = -value.X;
-            this.M22 = -value.Y;
-            this.M23 = -value.Z;
+            M21 = -value.X;
+            M22 = -value.Y;
+            M23 = -value.Z;
           }
         }
     
@@ -200,16 +200,16 @@ namespace Molten
           get
           {
             Vector3F vector3;
-            vector3.X = this.M11;
-            vector3.Y = this.M12;
-            vector3.Z = this.M13;
+            vector3.X = M11;
+            vector3.Y = M12;
+            vector3.Z = M13;
             return vector3;
           }
           set
           {
-            this.M11 = value.X;
-            this.M12 = value.Y;
-            this.M13 = value.Z;
+            M11 = value.X;
+            M12 = value.Y;
+            M13 = value.Z;
           }
         }
     
@@ -221,16 +221,16 @@ namespace Molten
           get
           {
             Vector3F vector3;
-            vector3.X = -this.M11;
-            vector3.Y = -this.M12;
-            vector3.Z = -this.M13;
+            vector3.X = -M11;
+            vector3.Y = -M12;
+            vector3.Z = -M13;
             return vector3;
           }
           set
           {
-            this.M11 = -value.X;
-            this.M12 = -value.Y;
-            this.M13 = -value.Z;
+            M11 = -value.X;
+            M12 = -value.Y;
+            M13 = -value.Z;
           }
         }
         
@@ -242,16 +242,16 @@ namespace Molten
           get
           {
             Vector3F vector3;
-            vector3.X = -this.M31;
-            vector3.Y = -this.M32;
-            vector3.Z = -this.M33;
+            vector3.X = -M31;
+            vector3.Y = -M32;
+            vector3.Z = -M33;
             return vector3;
           }
           set
           {
-            this.M31 = -value.X;
-            this.M32 = -value.Y;
-            this.M33 = -value.Z;
+            M31 = -value.X;
+            M32 = -value.Y;
+            M33 = -value.Z;
           }
         }
         
@@ -263,16 +263,16 @@ namespace Molten
           get
           {
             Vector3F vector3;
-            vector3.X = this.M31;
-            vector3.Y = this.M32;
-            vector3.Z = this.M33;
+            vector3.X = M31;
+            vector3.Y = M32;
+            vector3.Z = M33;
             return vector3;
           }
           set
           {
-            this.M31 = value.X;
-            this.M32 = value.Y;
-            this.M33 = value.Z;
+            M31 = value.X;
+            M32 = value.Y;
+            M33 = value.Z;
           }
         }
         
@@ -291,31 +291,31 @@ namespace Molten
         /// <summary>
         /// Initializes a new instance of the <see cref="Matrix4F"/> struct.
         /// </summary>
-        /// <param name="M11">The value to assign at row 1 column 1 of the matrix.</param>
-        /// <param name="M12">The value to assign at row 1 column 2 of the matrix.</param>
-        /// <param name="M13">The value to assign at row 1 column 3 of the matrix.</param>
-        /// <param name="M14">The value to assign at row 1 column 4 of the matrix.</param>
-        /// <param name="M21">The value to assign at row 2 column 1 of the matrix.</param>
-        /// <param name="M22">The value to assign at row 2 column 2 of the matrix.</param>
-        /// <param name="M23">The value to assign at row 2 column 3 of the matrix.</param>
-        /// <param name="M24">The value to assign at row 2 column 4 of the matrix.</param>
-        /// <param name="M31">The value to assign at row 3 column 1 of the matrix.</param>
-        /// <param name="M32">The value to assign at row 3 column 2 of the matrix.</param>
-        /// <param name="M33">The value to assign at row 3 column 3 of the matrix.</param>
-        /// <param name="M34">The value to assign at row 3 column 4 of the matrix.</param>
-        /// <param name="M41">The value to assign at row 4 column 1 of the matrix.</param>
-        /// <param name="M42">The value to assign at row 4 column 2 of the matrix.</param>
-        /// <param name="M43">The value to assign at row 4 column 3 of the matrix.</param>
-        /// <param name="M44">The value to assign at row 4 column 4 of the matrix.</param>
-        public Matrix4F(float M11, float M12, float M13, float M14,
-            float M21, float M22, float M23, float M24,
-            float M31, float M32, float M33, float M34,
-            float M41, float M42, float M43, float M44)
+        /// <param name="m11">The value to assign at row 1 column 1 of the matrix.</param>
+        /// <param name="m12">The value to assign at row 1 column 2 of the matrix.</param>
+        /// <param name="m13">The value to assign at row 1 column 3 of the matrix.</param>
+        /// <param name="m14">The value to assign at row 1 column 4 of the matrix.</param>
+        /// <param name="m21">The value to assign at row 2 column 1 of the matrix.</param>
+        /// <param name="m22">The value to assign at row 2 column 2 of the matrix.</param>
+        /// <param name="m23">The value to assign at row 2 column 3 of the matrix.</param>
+        /// <param name="m24">The value to assign at row 2 column 4 of the matrix.</param>
+        /// <param name="m31">The value to assign at row 3 column 1 of the matrix.</param>
+        /// <param name="m32">The value to assign at row 3 column 2 of the matrix.</param>
+        /// <param name="m33">The value to assign at row 3 column 3 of the matrix.</param>
+        /// <param name="m34">The value to assign at row 3 column 4 of the matrix.</param>
+        /// <param name="m41">The value to assign at row 4 column 1 of the matrix.</param>
+        /// <param name="m42">The value to assign at row 4 column 2 of the matrix.</param>
+        /// <param name="m43">The value to assign at row 4 column 3 of the matrix.</param>
+        /// <param name="m44">The value to assign at row 4 column 4 of the matrix.</param>
+        public Matrix4F(float m11, float m12, float m13, float m14,
+            float m21, float m22, float m23, float m24,
+            float m31, float m32, float m33, float m34,
+            float m41, float m42, float m43, float m44)
         {
-            this.M11 = M11; this.M12 = M12; this.M13 = M13; this.M14 = M14;
-            this.M21 = M21; this.M22 = M22; this.M23 = M23; this.M24 = M24;
-            this.M31 = M31; this.M32 = M32; this.M33 = M33; this.M34 = M34;
-            this.M41 = M41; this.M42 = M42; this.M43 = M43; this.M44 = M44;
+            M11 = m11; M12 = m12; M13 = m13; M14 = m14;
+            M21 = m21; M22 = m22; M23 = m23; M24 = m24;
+            M31 = m31; M32 = m32; M33 = m33; M34 = m34;
+            M41 = m41; M42 = m42; M43 = m43; M44 = m44;
         }
 
         /// <summary>
@@ -450,7 +450,7 @@ namespace Molten
         /// </value>
         public bool IsIdentity
         {
-            get { return this.Equals(Identity); }
+            get { return Equals(Identity); }
         }
 
         /// <summary>
@@ -677,14 +677,14 @@ namespace Molten
             //References: http://www.gamedev.net/community/forums/topic.asp?topic_id=441695
 
             // Get the translation.
-            translation.X = this.M41;
-            translation.Y = this.M42;
-            translation.Z = this.M43;
+            translation.X = M41;
+            translation.Y = M42;
+            translation.Z = M43;
 
             // Scaling is the length of the rows.
-            scale.X = (float)Math.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
-            scale.Y = (float)Math.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
-            scale.Z = (float)Math.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
+            scale.X = MathF.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            scale.Y = MathF.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
+            scale.Z = MathF.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
 
             // If any of the scaling factors are zero, then the rotation matrix can not exist.
             if (MathHelper.IsZero(scale.X) ||
@@ -728,12 +728,12 @@ namespace Molten
         public bool DecomposeUniformScale(out float scale, out QuaternionF rotation, out Vector3F translation)
         {
             //Get the translation.
-            translation.X = this.M41;
-            translation.Y = this.M42;
-            translation.Z = this.M43;
+            translation.X = M41;
+            translation.Y = M42;
+            translation.Z = M43;
 
             //Scaling is the length of the rows. ( just take one row since this is a uniform matrix)
-            scale = (float)Math.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            scale = MathF.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
             var inv_scale = 1f / scale;
 
             //If any of the scaling factors are zero, then the rotation matrix can not exist.
@@ -2517,8 +2517,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void RotationX(float angle, out Matrix4F result)
         {
-            float cos = (float)Math.Cos(angle);
-            float sin = (float)Math.Sin(angle);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
 
             result = Matrix4F.Identity;
             result.M22 = cos;
@@ -2546,8 +2546,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void RotationY(float angle, out Matrix4F result)
         {
-            float cos = (float)Math.Cos(angle);
-            float sin = (float)Math.Sin(angle);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
 
             result = Matrix4F.Identity;
             result.M11 = cos;
@@ -2575,8 +2575,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void RotationZ(float angle, out Matrix4F result)
         {
-            float cos = (float)Math.Cos(angle);
-            float sin = (float)Math.Sin(angle);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
 
             result = Matrix4F.Identity;
             result.M11 = cos;
@@ -2608,8 +2608,8 @@ namespace Molten
             float x = axis.X;
             float y = axis.Y;
             float z = axis.Z;
-            float cos = (float)Math.Cos(angle);
-            float sin = (float)Math.Sin(angle);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
             float xx = x * x;
             float yy = y * y;
             float zz = z * z;
@@ -2790,8 +2790,8 @@ namespace Molten
             float rv1 = Vector3F.Dot(ref rotationVec, ref  e1);
             e0 += rv1 * e1;
             float rv0 = Vector3F.Dot(ref rotationVec, ref e0);
-            float cosa = (float)Math.Cos(angle);
-            float sina = (float)Math.Sin(angle);
+            float cosa = MathF.Cos(angle);
+            float sina = MathF.Sin(angle);
             float rr0 = rv0 * cosa - rv1 * sina;
             float rr1 = rv0 * sina + rv1 * cosa;
 

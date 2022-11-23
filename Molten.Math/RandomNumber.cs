@@ -306,7 +306,7 @@ namespace Molten
         /// <returns>Random <c>double</c> number.</returns>
         public double NextDouble(double min, double max)
         {
-            return MathHelperDP.Lerp(min, max, (double)NextDecimal());
+            return MathHelper.Lerp(min, max, (double)NextDecimal());
         }
 
         /// <summary>

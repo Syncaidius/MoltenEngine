@@ -52,7 +52,7 @@ namespace Molten
                 if ((y >= P[0].Y && y < P[1].Y) || (y >= P[1].Y && y < P[0].Y))
                 {
                     double param = (y - P[0].Y) / (P[1].Y - P[0].Y);
-                    x[0] = MathHelperDP.Lerp(P[0].X, P[1].X, param);
+                    x[0] = MathHelper.Lerp(P[0].X, P[1].X, param);
                     dy[0] = Math.Sign(P[1].Y - P[0].Y);
                     return 1;
                 }

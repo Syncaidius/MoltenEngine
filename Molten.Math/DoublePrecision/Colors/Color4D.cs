@@ -614,10 +614,10 @@ namespace Molten.DoublePrecision
         /// </remarks>
         public static void Lerp(ref Color4D start, ref Color4D end, double amount, out Color4D result)
         {
-            result.R = MathHelperDP.Lerp(start.R, end.R, amount);
-            result.G = MathHelperDP.Lerp(start.G, end.G, amount);
-            result.B = MathHelperDP.Lerp(start.B, end.B, amount);
-            result.A = MathHelperDP.Lerp(start.A, end.A, amount);
+            result.R = MathHelper.Lerp(start.R, end.R, amount);
+            result.G = MathHelper.Lerp(start.G, end.G, amount);
+            result.B = MathHelper.Lerp(start.B, end.B, amount);
+            result.A = MathHelper.Lerp(start.A, end.A, amount);
         }
 
         /// <summary>

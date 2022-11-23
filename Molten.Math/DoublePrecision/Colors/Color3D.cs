@@ -409,9 +409,9 @@ namespace Molten.DoublePrecision
         /// </remarks>
         public static void Lerp(ref Color3D start, ref Color3D end, double amount, out Color3D result)
         {
-            result.R = MathHelperDP.Lerp(start.R, end.R, amount);
-            result.G = MathHelperDP.Lerp(start.G, end.G, amount);
-            result.B = MathHelperDP.Lerp(start.B, end.B, amount);
+            result.R = MathHelper.Lerp(start.R, end.R, amount);
+            result.G = MathHelper.Lerp(start.G, end.G, amount);
+            result.B = MathHelper.Lerp(start.B, end.B, amount);
         }
 
         /// <summary>

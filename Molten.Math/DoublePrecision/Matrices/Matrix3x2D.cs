@@ -479,12 +479,12 @@ namespace Molten.DoublePrecision
         /// </remarks>
         public static void Lerp(ref Matrix3x2D start, ref Matrix3x2D end, double amount, out Matrix3x2D result)
         {
-            result.M11 = MathHelperDP.Lerp(start.M11, end.M11, amount);
-            result.M12 = MathHelperDP.Lerp(start.M12, end.M12, amount);
-            result.M21 = MathHelperDP.Lerp(start.M21, end.M21, amount);
-            result.M22 = MathHelperDP.Lerp(start.M22, end.M22, amount);
-            result.M31 = MathHelperDP.Lerp(start.M31, end.M31, amount);
-            result.M32 = MathHelperDP.Lerp(start.M32, end.M32, amount);
+            result.M11 = MathHelper.Lerp(start.M11, end.M11, amount);
+            result.M12 = MathHelper.Lerp(start.M12, end.M12, amount);
+            result.M21 = MathHelper.Lerp(start.M21, end.M21, amount);
+            result.M22 = MathHelper.Lerp(start.M22, end.M22, amount);
+            result.M31 = MathHelper.Lerp(start.M31, end.M31, amount);
+            result.M32 = MathHelper.Lerp(start.M32, end.M32, amount);
         }
 
         /// <summary>

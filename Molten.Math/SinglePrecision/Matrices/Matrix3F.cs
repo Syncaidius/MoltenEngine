@@ -130,22 +130,22 @@ namespace Molten
         /// <summary>
         /// Initializes a new instance of the <see cref="Matrix3F"/> struct.
         /// </summary>
-        /// <param name="M11">The value to assign at row 1 column 1 of the Matrix3x3.</param>
-        /// <param name="M12">The value to assign at row 1 column 2 of the Matrix3x3.</param>
-        /// <param name="M13">The value to assign at row 1 column 3 of the Matrix3x3.</param>
-        /// <param name="M21">The value to assign at row 2 column 1 of the Matrix3x3.</param>
-        /// <param name="M22">The value to assign at row 2 column 2 of the Matrix3x3.</param>
-        /// <param name="M23">The value to assign at row 2 column 3 of the Matrix3x3.</param>
-        /// <param name="M31">The value to assign at row 3 column 1 of the Matrix3x3.</param>
-        /// <param name="M32">The value to assign at row 3 column 2 of the Matrix3x3.</param>
-        /// <param name="M33">The value to assign at row 3 column 3 of the Matrix3x3.</param>
-        public Matrix3F(float M11, float M12, float M13,
-            float M21, float M22, float M23,
-            float M31, float M32, float M33)
+        /// <param name="m11">The value to assign at row 1 column 1 of the Matrix3x3.</param>
+        /// <param name="m12">The value to assign at row 1 column 2 of the Matrix3x3.</param>
+        /// <param name="m13">The value to assign at row 1 column 3 of the Matrix3x3.</param>
+        /// <param name="m21">The value to assign at row 2 column 1 of the Matrix3x3.</param>
+        /// <param name="m22">The value to assign at row 2 column 2 of the Matrix3x3.</param>
+        /// <param name="m23">The value to assign at row 2 column 3 of the Matrix3x3.</param>
+        /// <param name="m31">The value to assign at row 3 column 1 of the Matrix3x3.</param>
+        /// <param name="m32">The value to assign at row 3 column 2 of the Matrix3x3.</param>
+        /// <param name="m33">The value to assign at row 3 column 3 of the Matrix3x3.</param>
+        public Matrix3F(float m11, float m12, float m13,
+            float m21, float m22, float m23,
+            float m31, float m32, float m33)
         {
-            this.M11 = M11; this.M12 = M12; this.M13 = M13;
-            this.M21 = M21; this.M22 = M22; this.M23 = M23;
-            this.M31 = M31; this.M32 = M32; this.M33 = M33;
+            M11 = m11; M12 = m12; M13 = m13;
+            M21 = m21; M22 = m22; M23 = m23;
+            M31 = m31; M32 = m32; M33 = m33;
         }
 
         /// <summary>
@@ -493,9 +493,9 @@ namespace Molten
             //References: http://www.gamedev.net/community/forums/topic.asp?topic_id=441695
 
             //Scaling is the length of the rows.
-            scale.X = (float)Math.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
-            scale.Y = (float)Math.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
-            scale.Z = (float)Math.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
+            scale.X = MathF.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            scale.Y = MathF.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
+            scale.Z = MathF.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
 
             //If any of the scaling factors are zero, than the rotation Matrix3x3 can not exist.
             if (MathHelper.IsZero(scale.X) ||
@@ -536,7 +536,7 @@ namespace Molten
         public bool DecomposeUniformScale(out float scale, out QuaternionF rotation)
         {
             //Scaling is the length of the rows. ( just take one row since this is a uniform matrix)
-            scale = (float)Math.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            scale = MathF.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
             var inv_scale = 1f / scale;
 
             //If any of the scaling factors are zero, then the rotation matrix can not exist.
@@ -1793,8 +1793,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
         public static void RotationX(float angle, out Matrix3F result)
         {
-            float cos = (float)Math.Cos(angle);
-            float sin = (float)Math.Sin(angle);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
 
             result = Matrix3F.Identity;
             result.M22 = cos;
@@ -1822,8 +1822,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
         public static void RotationY(float angle, out Matrix3F result)
         {
-            float cos = (float)Math.Cos(angle);
-            float sin = (float)Math.Sin(angle);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
 
             result = Matrix3F.Identity;
             result.M11 = cos;
@@ -1851,8 +1851,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
         public static void RotationZ(float angle, out Matrix3F result)
         {
-            float cos = (float)Math.Cos(angle);
-            float sin = (float)Math.Sin(angle);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
 
             result = Matrix3F.Identity;
             result.M11 = cos;
@@ -1884,8 +1884,8 @@ namespace Molten
             float x = axis.X;
             float y = axis.Y;
             float z = axis.Z;
-            float cos = (float)Math.Cos(angle);
-            float sin = (float)Math.Sin(angle);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
             float xx = x * x;
             float yy = y * y;
             float zz = z * z;

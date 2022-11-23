@@ -536,10 +536,10 @@ namespace Molten.DoublePrecision
         {
             return new RectangleD()
             {
-                Left = MathHelperDP.Lerp(start.Left, end.Left, percent),
-                Right = MathHelperDP.Lerp(start.Right, end.Right, percent),
-                Top = MathHelperDP.Lerp(start.Top, end.Top, percent),
-                Bottom = MathHelperDP.Lerp(start.Bottom, end.Bottom, percent),
+                Left = MathHelper.Lerp(start.Left, end.Left, percent),
+                Right = MathHelper.Lerp(start.Right, end.Right, percent),
+                Top = MathHelper.Lerp(start.Top, end.Top, percent),
+                Bottom = MathHelper.Lerp(start.Bottom, end.Bottom, percent),
             };
         }
 
