@@ -45,16 +45,6 @@ namespace Molten.DoublePrecision
         /// Multiply by this value to convert from radians to gradians.
         /// </summary>
         public const double RadToGrad = 200.0D / double.Pi;
-
-        /// <summary>
-        /// Large tolerance value. Defaults to 1e-5D.
-        /// </summary>
-        public static double BigEpsilon = 1E-5D;
-
-        /// <summary>
-        /// Tolerance value. Defaults to 1e-7D.
-        /// </summary>
-        public static double Epsilon = 1E-7D;
         
         /// <summary>
         /// Checks if a and b are almost equals, taking into account the magnitude of floating point numbers (unlike <see cref="WithinEpsilon"/> method). See Remarks.

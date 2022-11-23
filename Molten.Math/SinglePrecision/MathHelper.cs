@@ -101,16 +101,6 @@ namespace Molten
         public const float RadToGrad = 200.0f / float.Pi;
 
         /// <summary>
-        /// Large tolerance value. Defaults to 1e-5f.
-        /// </summary>
-        public static float BigEpsilon = 1E-5f;
-
-        /// <summary>
-        /// Tolerance value. Defaults to 1e-7f.
-        /// </summary>
-        public static float Epsilon = 1E-7f;
-
-        /// <summary>
         /// Checks if a and b are almost equals, taking into account the magnitude of floating point numbers (unlike <see cref="WithinEpsilon"/> method). See Remarks.
         /// See remarks.
         /// </summary>

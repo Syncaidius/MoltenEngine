@@ -75,6 +75,16 @@ namespace Molten
     public static class CollisionHelper
     {
         /// <summary>
+        /// Large tolerance value. Defaults to 1e-5f.
+        /// </summary>
+        public static float BigEpsilon = 1E-5f;
+
+        /// <summary>
+        /// Tolerance value. Defaults to 1e-7f.
+        /// </summary>
+        public static float Epsilon = 1E-7f;
+
+        /// <summary>
         /// Determines the closest point between a point and a triangle.
         /// </summary>
         /// <param name="point">The point to test.</param>
@@ -554,7 +564,7 @@ namespace Molten
         public static bool RayIntersectsPlane(ref Ray ray, ref Plane p, out float t, out Vector3F q)
         {
             float denominator = Vector3F.Dot(ref p.Normal, ref ray.Direction);
-            if (denominator < MathHelper.Epsilon && denominator > -MathHelper.Epsilon)
+            if (denominator < Epsilon && denominator > -Epsilon)
             {
                 //Surface of plane and line are parallel (or very close to it).
                 q = new Vector3F();
@@ -719,7 +729,7 @@ namespace Molten
             Vector3F.Subtract(ref c, ref a, out ac);
 
             Vector3F.Cross(ref ab, ref ac, out hit.Normal);
-            if (hit.Normal.LengthSquared() < MathHelper.Epsilon)
+            if (hit.Normal.LengthSquared() < Epsilon)
                 return false; //Degenerate triangle!
 
             float d = Vector3F.Dot(ref ray.Direction, ref hit.Normal);
@@ -749,7 +759,7 @@ namespace Molten
             float u = (ACdotAC * ABdotAP - ABdotAC * ACdotAP) * denom;
             float v = (ABdotAB * ACdotAP - ABdotAC * ABdotAP) * denom;
 
-            return (u >= -MathHelper.BigEpsilon) && (v >= -MathHelper.BigEpsilon) && (u + v <= 1 + MathHelper.BigEpsilon);
+            return (u >= -BigEpsilon) && (v >= -BigEpsilon) && (u + v <= 1 + BigEpsilon);
 
         }
 
@@ -772,7 +782,7 @@ namespace Molten
             Vector3F.Subtract(ref c, ref a, out ac);
 
             Vector3F.Cross(ref ab, ref ac, out hit.Normal);
-            if (hit.Normal.LengthSquared() < MathHelper.Epsilon)
+            if (hit.Normal.LengthSquared() < Epsilon)
                 return false; //Degenerate triangle!
 
             float d = -Vector3F.Dot(ref ray.Direction, ref hit.Normal);
@@ -821,7 +831,7 @@ namespace Molten
             float u = (ACdotAC * ABdotAP - ABdotAC * ACdotAP) * denom;
             float v = (ABdotAB * ACdotAP - ABdotAC * ABdotAP) * denom;
 
-            return (u >= -MathHelper.BigEpsilon) && (v >= -MathHelper.BigEpsilon) && (u + v <= 1 + MathHelper.BigEpsilon);
+            return (u >= -BigEpsilon) && (v >= -BigEpsilon) && (u + v <= 1 + BigEpsilon);
 
         }
 
@@ -1338,7 +1348,7 @@ namespace Molten
             Vector3F ab;
             Vector3F.Subtract(ref b, ref a, out ab);
             float denominator = Vector3F.Dot(ref p.Normal, ref ab);
-            if (denominator < MathHelper.Epsilon && denominator > -MathHelper.Epsilon)
+            if (denominator < Epsilon && denominator > -Epsilon)
             {
                 //Surface of plane and line are parallel (or very close to it).
                 q = new Vector3F();
@@ -1596,7 +1606,7 @@ namespace Molten
             float u, v, w;
             Vector3F.BarycentricCoordinates(ref p, ref vA, ref vB, ref vC, out u, out v, out w);
             //Are the barycoords valid?
-            return (u > -MathHelper.Epsilon) && (v > -MathHelper.Epsilon) && (w > -MathHelper.Epsilon);
+            return (u > -Epsilon) && (v > -Epsilon) && (w > -Epsilon);
         }
 
         /// <summary>
