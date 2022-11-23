@@ -658,8 +658,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void Rotation(float angle, out Matrix3x2F result)
         {
-            float cos = (float)Math.Cos(angle);
-            float sin = (float)Math.Sin(angle);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
 
             result = Matrix3x2F.Identity;
             result.M11 = cos;

@@ -129,14 +129,14 @@ namespace Molten
         public void Encapsulate(Vector2F p)
         {
             if (p.X < Left)
-                Left = (float)Math.Floor(p.X);
+                Left = MathF.Floor(p.X);
             if (p.X > Right)
-                Right = (float)Math.Ceiling(p.X);
+                Right = MathF.Ceiling(p.X);
 
             if (p.Y < Top)
-                Top = (float)Math.Floor(p.Y);
+                Top = MathF.Floor(p.Y);
             if (p.Y > Bottom)
-                Bottom = (float)Math.Ceiling(p.Y);
+                Bottom = MathF.Ceiling(p.Y);
         }
 
         /// <summary>

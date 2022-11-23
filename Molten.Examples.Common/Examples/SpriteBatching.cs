@@ -129,8 +129,8 @@ namespace Molten.Examples
 
                 circleLinePoints.Add(new Vector2F()
                 {
-                    X = center.X + (float)Math.Sin(rad) * radius,
-                    Y = center.Y + (float)Math.Cos(rad) * radius,
+                    X = center.X + MathF.Sin(rad) * radius,
+                    Y = center.Y + MathF.Cos(rad) * radius,
                 });
             }
 

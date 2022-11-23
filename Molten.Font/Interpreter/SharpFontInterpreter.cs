@@ -1417,18 +1417,18 @@ namespace Molten.Font
         {
             switch (state.RoundState)
             {
-                case RoundMode.ToGrid: return value >= 0 ? (float)Math.Round(value) : -(float)Math.Round(-value);
-                case RoundMode.ToHalfGrid: return value >= 0 ? (float)Math.Floor(value) + 0.5f : -((float)Math.Floor(-value) + 0.5f);
-                case RoundMode.ToDoubleGrid: return value >= 0 ? (float)(Math.Round(value * 2, MidpointRounding.AwayFromZero) / 2) : -(float)(Math.Round(-value * 2, MidpointRounding.AwayFromZero) / 2);
-                case RoundMode.DownToGrid: return value >= 0 ? (float)Math.Floor(value) : -(float)Math.Floor(-value);
-                case RoundMode.UpToGrid: return value >= 0 ? (float)Math.Ceiling(value) : -(float)Math.Ceiling(-value);
+                case RoundMode.ToGrid: return value >= 0 ? MathF.Round(value) : -MathF.Round(-value);
+                case RoundMode.ToHalfGrid: return value >= 0 ? MathF.Floor(value) + 0.5f : -(MathF.Floor(-value) + 0.5f);
+                case RoundMode.ToDoubleGrid: return value >= 0 ? (MathF.Round(value * 2, MidpointRounding.AwayFromZero) / 2) : -(MathF.Round(-value * 2, MidpointRounding.AwayFromZero) / 2);
+                case RoundMode.DownToGrid: return value >= 0 ? MathF.Floor(value) : -MathF.Floor(-value);
+                case RoundMode.UpToGrid: return value >= 0 ? MathF.Ceiling(value) : -MathF.Ceiling(-value);
                 case RoundMode.Super:
                 case RoundMode.Super45:
                     float result;
                     if (value >= 0)
                     {
                         result = value - roundPhase + roundThreshold;
-                        result = (float)Math.Truncate(result / roundPeriod) * roundPeriod;
+                        result = MathF.Truncate(result / roundPeriod) * roundPeriod;
                         result += roundPhase;
                         if (result < 0)
                             result = roundPhase;
@@ -1436,7 +1436,7 @@ namespace Molten.Font
                     else
                     {
                         result = -value - roundPhase + roundThreshold;
-                        result = -(float)Math.Truncate(result / roundPeriod) * roundPeriod;
+                        result = -MathF.Truncate(result / roundPeriod) * roundPeriod;
                         result -= roundPhase;
                         if (result > 0)
                             result = -roundPhase;
@@ -1644,14 +1644,14 @@ namespace Molten.Font
         }
 
         static float F2Dot14ToFloat(int value) { return (short)value / 16384.0f; }
-        static int FloatToF2Dot14(float value) { return (int)(uint)(short)Math.Round(value * 16384.0f); }
+        static int FloatToF2Dot14(float value) { return (int)(uint)(short)MathF.Round(value * 16384.0f); }
         static float F26Dot6ToFloat(int value) { return value / 64.0f; }
-        static int FloatToF26Dot6(float value) { return (int)Math.Round(value * 64.0f); }
+        static int FloatToF26Dot6(float value) { return (int)MathF.Round(value * 64.0f); }
 
         //TODO: review here again
         unsafe static float* GetPoint(byte* data, int index) { return (float*)(data + sizeof(GlyphPoint) * index); }
 
-        static readonly float Sqrt2Over2 = (float)(Math.Sqrt(2) / 2);
+        static readonly float Sqrt2Over2 = (MathF.Sqrt(2f) / 2f);
 
         const int MaxCallStack = 128;
         const float Epsilon = 0.000001f;

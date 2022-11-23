@@ -281,7 +281,7 @@ namespace Molten
             if (point.Z > box.Max.Z)
                 distance += (point.Z - box.Max.Z) * (point.Z - box.Max.Z);
 
-            return (float)Math.Sqrt(distance);
+            return MathF.Sqrt(distance);
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace Molten
                 distance += delta * delta;
             }
 
-            return (float)Math.Sqrt(distance);
+            return MathF.Sqrt(distance);
         }
 
         /// <summary>
@@ -1001,7 +1001,7 @@ namespace Molten
                 return false;
             }
 
-            distance = -b - (float)Math.Sqrt(discriminant);
+            distance = -b - MathF.Sqrt(discriminant);
 
             if (distance < 0f)
                 distance = 0f;
@@ -1057,7 +1057,7 @@ namespace Molten
             if (discriminant < 0)
                 return false;
 
-            hit.T = -b - (float)Math.Sqrt(discriminant);
+            hit.T = -b - MathF.Sqrt(discriminant);
             if (hit.T < 0)
                 hit.T = 0;
             if (hit.T > maximumLength)

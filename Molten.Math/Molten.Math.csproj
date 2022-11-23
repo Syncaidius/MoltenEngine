@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Compile Remove="t4_quaternions - Copy.cs" />
+    <Compile Remove="t4_vector - Copy.cs" />
   </ItemGroup>
 	
   <ItemGroup>
@@ -112,6 +113,16 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_header.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_matrix.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_matrix.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_matrix4_fp.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_matrix4_fp.tt</DependentUpon>
     </Compile>
     <Compile Update="t4_quaternions.cs">
       <DesignTime>True</DesignTime>

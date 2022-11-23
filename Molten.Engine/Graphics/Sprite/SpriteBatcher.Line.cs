@@ -213,7 +213,7 @@ namespace Molten.Graphics
             Vector2F pos = (p2 + p1) / 2; // The center of the line will be the mean position of both points.
 
             data.Position = pos;
-            data.Rotation = (float)Math.Atan2(dir.Y, dir.X);
+            data.Rotation = MathF.Atan2(dir.Y, dir.X);
             data.Array.SrcArraySlice = 0;
             data.Array.DestSurfaceSlice = surfaceSlice;
             data.Size = size;

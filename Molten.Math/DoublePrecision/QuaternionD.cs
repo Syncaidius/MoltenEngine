@@ -256,7 +256,7 @@ namespace Molten.DoublePrecision
             QuaternionD q;
             double dot = Vector3D.Dot(ref v1, ref v2);
             //For non-normal vectors, the multiplying the axes length squared would be necessary:
-            //float w = dot + (float)Math.Sqrt(v1.LengthSquared() * v2.LengthSquared());
+            //float w = dot + MathF.Sqrt(v1.LengthSquared() * v2.LengthSquared());
             if (dot < -0.9999D) //parallel, opposing direction
             {
                 //If this occurs, the rotation required is ~180 degrees.

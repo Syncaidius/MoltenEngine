@@ -73,21 +73,21 @@
             _rawValue.X = int.Clamp(xValue, -_maxValue, _maxValue);
             _rawValue.Y = int.Clamp(yValue, -_maxValue, _maxValue);
 
-            double deadX = _maxValue * _deadzone.X;
-            double deadY = _maxValue * _deadzone.Y;
+            float deadX = _maxValue * _deadzone.X;
+            float deadY = _maxValue * _deadzone.Y;
 
-            double finalRangeX = _maxValue - deadX;
-            double finalRangeY = _maxValue - deadY;
+            float finalRangeX = _maxValue - deadX;
+            float finalRangeY = _maxValue - deadY;
 
             if (_rawValue.X <= -deadX)
-                _value.X = (float)(Math.Min(0, _rawValue.X + deadX) / finalRangeX);
+                _value.X = MathF.Min(0, _rawValue.X + deadX) / finalRangeX;
             else
-                _value.X = (float)(Math.Max(0, _rawValue.X - deadX) / finalRangeX);
+                _value.X = MathF.Max(0, _rawValue.X - deadX) / finalRangeX;
 
             if (yValue <= -deadY)
-                _value.Y = (float)(Math.Min(0, _rawValue.Y + deadY) / finalRangeY);
+                _value.Y = MathF.Min(0, _rawValue.Y + deadY) / finalRangeY;
             else
-                _value.Y = (float)(Math.Max(0, _rawValue.Y - deadY) / finalRangeY);
+                _value.Y = MathF.Max(0, _rawValue.Y - deadY) / finalRangeY;
         }
 
         protected override void OnUpdate(Timing time) { }

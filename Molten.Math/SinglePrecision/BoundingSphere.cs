@@ -276,7 +276,7 @@ namespace Molten
             }
 
             //Find the real distance from the DistanceSquared.
-            radius = (float)Math.Sqrt(radius);
+            radius = MathF.Sqrt(radius);
 
             //Construct the sphere.
             result.Center = center;

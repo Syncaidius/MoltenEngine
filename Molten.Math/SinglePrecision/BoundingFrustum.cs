@@ -791,9 +791,9 @@ namespace Molten
         public float GetZoomToExtentsShiftDistance(Vector3F[] points)
         {
             float vAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pTop.Normal))));
-            float vSin = (float)Math.Sin(vAngle);
+            float vSin = MathF.Sin(vAngle);
             float hAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pLeft.Normal))));
-            float hSin = (float)Math.Sin(hAngle);
+            float hSin = MathF.Sin(hAngle);
             float horizontalToVerticalMapping = vSin / hSin;
 
             var ioFrustrum = GetInsideOutClone();

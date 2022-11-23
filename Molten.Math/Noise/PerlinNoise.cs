@@ -189,8 +189,8 @@
 
             for (int i = 0; i < pOctaves; i++)
             {
-                currentHalf = (float)Math.Pow(0.5f, i);
-                currentDouble = (float)Math.Pow(2, i);
+                currentHalf = MathF.Pow(0.5f, i);
+                currentDouble = MathF.Pow(2, i);
                 value += GetNoise(pX * currentDouble, pY * currentDouble, pZ) * currentHalf;
                 divisor += currentHalf;
             }

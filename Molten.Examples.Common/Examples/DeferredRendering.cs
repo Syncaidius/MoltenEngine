@@ -99,9 +99,9 @@ namespace Molten.Examples
                 float angRad = angle * MathHelper.DegToRad;
                 Vector3F pos = origin + new Vector3F()
                 {
-                    X = (float)Math.Sin(angRad) * outerRadius,
+                    X = MathF.Sin(angRad) * outerRadius,
                     Y = 0,
-                    Z = (float)Math.Cos(angRad) * outerRadius,
+                    Z = MathF.Cos(angRad) * outerRadius,
                 };
                 SpawnParentChild(_mesh, pos, out pair.Parent, out pair.Child);
                 pair.Parent.Transform.LocalRotationZ = Rng.Next(0, 360);
@@ -135,9 +135,9 @@ namespace Molten.Examples
             {
                 Vector3F pos = origin + new Vector3F()
                 {
-                    X = (float)Math.Sin(angle) * radius,
+                    X = MathF.Sin(angle) * radius,
                     Y = 2f,
-                    Z = (float)Math.Cos(angle) * radius,
+                    Z = MathF.Cos(angle) * radius,
                 };
 
                 PointLightComponent lightCom = MainScene.AddObjectWithComponent<PointLightComponent>();

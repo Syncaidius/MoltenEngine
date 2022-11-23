@@ -86,7 +86,7 @@
         /// <returns></returns>
         public float Length()
         {
-            return (float)Math.Sqrt(X * X + Y * Y);
+            return MathF.Sqrt(X * X + Y * Y);
         }
 
         /// <summary>
