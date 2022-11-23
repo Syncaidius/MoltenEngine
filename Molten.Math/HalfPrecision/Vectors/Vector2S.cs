@@ -595,6 +595,7 @@ namespace Molten.HalfPrecision
         /// <param name="start">The start vector.</param>
         /// <param name="end">The end vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">The output for the resultant <see cref="Vector2S"/>.</param>
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
@@ -645,6 +646,7 @@ namespace Molten.HalfPrecision
         /// </summary>
         /// <param name="left">The first source <see cref="Vector2S"/>.</param>
         /// <param name="right">The second source <see cref="Vector2S"/>.</param>
+        /// <param name="result">The output for the resultant <see cref="Vector2S"/>.</param>
         /// <returns>A <see cref="Vector2S"/> containing the smallest components of the source vectors.</returns>
 		public static void Min(ref Vector2S left, ref Vector2S right, out Vector2S result)
 		{
@@ -684,6 +686,7 @@ namespace Molten.HalfPrecision
         /// </summary>
         /// <param name="left">The first source <see cref="Vector2S"/>.</param>
         /// <param name="right">The second source <see cref="Vector2S"/>.</param>
+        /// <param name="result">The output for the resultant <see cref="Vector2S"/>.</param>
         /// <returns>A <see cref="Vector2S"/> containing the largest components of the source vectors.</returns>
 		public static void Max(ref Vector2S left, ref Vector2S right, out Vector2S result)
 		{
@@ -777,6 +780,7 @@ namespace Molten.HalfPrecision
         /// <param name="value">The <see cref="Vector2S"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        /// <param name="result">The output for the resultant <see cref="Vector2S"/>.</param>
         public static void Clamp(ref Vector2S value, ref Vector2S min, ref Vector2S max, out Vector2S result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;

@@ -629,6 +629,7 @@ namespace Molten
         /// <param name="start">The start vector.</param>
         /// <param name="end">The end vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">The output for the resultant <see cref="SByte3"/>.</param>
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
@@ -682,6 +683,7 @@ namespace Molten
         /// </summary>
         /// <param name="left">The first source <see cref="SByte3"/>.</param>
         /// <param name="right">The second source <see cref="SByte3"/>.</param>
+        /// <param name="result">The output for the resultant <see cref="SByte3"/>.</param>
         /// <returns>A <see cref="SByte3"/> containing the smallest components of the source vectors.</returns>
 		public static void Min(ref SByte3 left, ref SByte3 right, out SByte3 result)
 		{
@@ -723,6 +725,7 @@ namespace Molten
         /// </summary>
         /// <param name="left">The first source <see cref="SByte3"/>.</param>
         /// <param name="right">The second source <see cref="SByte3"/>.</param>
+        /// <param name="result">The output for the resultant <see cref="SByte3"/>.</param>
         /// <returns>A <see cref="SByte3"/> containing the largest components of the source vectors.</returns>
 		public static void Max(ref SByte3 left, ref SByte3 right, out SByte3 result)
 		{
@@ -821,6 +824,7 @@ namespace Molten
         /// <param name="value">The <see cref="SByte3"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        /// <param name="result">The output for the resultant <see cref="SByte3"/>.</param>
         public static void Clamp(ref SByte3 value, ref SByte3 min, ref SByte3 max, out SByte3 result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;

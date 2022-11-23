@@ -565,6 +565,7 @@ namespace Molten
         /// <param name="start">The start vector.</param>
         /// <param name="end">The end vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">The output for the resultant <see cref="Byte2"/>.</param>
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
@@ -615,6 +616,7 @@ namespace Molten
         /// </summary>
         /// <param name="left">The first source <see cref="Byte2"/>.</param>
         /// <param name="right">The second source <see cref="Byte2"/>.</param>
+        /// <param name="result">The output for the resultant <see cref="Byte2"/>.</param>
         /// <returns>A <see cref="Byte2"/> containing the smallest components of the source vectors.</returns>
 		public static void Min(ref Byte2 left, ref Byte2 right, out Byte2 result)
 		{
@@ -654,6 +656,7 @@ namespace Molten
         /// </summary>
         /// <param name="left">The first source <see cref="Byte2"/>.</param>
         /// <param name="right">The second source <see cref="Byte2"/>.</param>
+        /// <param name="result">The output for the resultant <see cref="Byte2"/>.</param>
         /// <returns>A <see cref="Byte2"/> containing the largest components of the source vectors.</returns>
 		public static void Max(ref Byte2 left, ref Byte2 right, out Byte2 result)
 		{
@@ -747,6 +750,7 @@ namespace Molten
         /// <param name="value">The <see cref="Byte2"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        /// <param name="result">The output for the resultant <see cref="Byte2"/>.</param>
         public static void Clamp(ref Byte2 value, ref Byte2 min, ref Byte2 max, out Byte2 result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
