@@ -180,7 +180,7 @@ namespace Molten<#=md.SubNamespace#>
         if(d.IsFPType)
         {
 #>
-            return <#for(int p = 0; p < md.Size; p++){#><#=md.MathHelper#>.NearEqual(other.<#=pMapUpper[p]#>, <#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " && " : "")#><#}#>;
+            return <#for(int p = 0; p < md.Size; p++){#>MathHelper.NearEqual(other.<#=pMapUpper[p]#>, <#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " && " : "")#><#}#>;
 <#
         }
         else
@@ -650,7 +650,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         public static <#=md.Name#> SmoothStep(ref <#=md.Name#> start, ref <#=md.Name#> end, <#=d.FP#> amount)
         {
-            amount = <#=md.MathHelper#>.SmoothStep(amount);
+            amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
         }
 

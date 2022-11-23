@@ -69,7 +69,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <summary>
         /// Gets a value indicting whether this  <see cref="<#=md.Name#>"/> is normalized.
         /// </summary>
-        public bool IsNormalized => <#=md.MathHelper#>.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
+        public bool IsNormalized => MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
 
         /// <summary>
         /// Gets the angle of the  <see cref="<#=md.Name#>"/>.
@@ -80,7 +80,7 @@ namespace Molten<#=md.SubNamespace#>
             get
             {
                 <#=d.DT#> length = (X * X) + (Y * Y) + (Z * Z);
-                if (<#=md.MathHelper#>.IsZero(length))
+                if (MathHelper.IsZero(length))
                     return 0.0<#=d.FPL#>;
 
                 return 2.0<#=d.FPL#> * <#=md.Math#>.Acos(<#=d.DT#>.Clamp(W, -1<#=d.FPL#>, 1<#=d.FPL#>));
@@ -96,7 +96,7 @@ namespace Molten<#=md.SubNamespace#>
             get
             {
                 <#=d.DT#> length = (X * X) + (Y * Y) + (Z * Z);
-                if (<#=md.MathHelper#>.IsZero(length))
+                if (MathHelper.IsZero(length))
                     return Vector3<#=d.Postfix#>.UnitX;
 
                 <#=d.DT#> inv = 1.0<#=d.FPL#>  / <#=md.Math#>.Sqrt(length);
@@ -309,7 +309,7 @@ namespace Molten<#=md.SubNamespace#>
         public void Normalize()
         {
             <#=d.DT#> length = Length();
-            if (!<#=md.MathHelper#>.IsZero(length))
+            if (!MathHelper.IsZero(length))
             {
                 <#=d.DT#> inverse = 1.0<#=d.FPL#> / length;
                 X *= inverse;
@@ -337,7 +337,7 @@ namespace Molten<#=md.SubNamespace#>
         public void Invert()
         {
             <#=d.DT#> lengthSq = LengthSquared();
-            if (!<#=md.MathHelper#>.IsZero(lengthSq))
+            if (!MathHelper.IsZero(lengthSq))
             {
                 lengthSq = 1.0<#=d.FPL#> / lengthSq;
 
@@ -358,7 +358,7 @@ namespace Molten<#=md.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref <#=md.Name#> other)
         {
-            return <#=md.MathHelper#>.NearEqual(other.X, X) && <#=md.MathHelper#>.NearEqual(other.Y, Y) && <#=md.MathHelper#>.NearEqual(other.Z, Z) && <#=md.MathHelper#>.NearEqual(other.W, W);
+            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z) && MathHelper.NearEqual(other.W, W);
         }
 
         /// <summary>
@@ -510,7 +510,7 @@ namespace Molten<#=md.SubNamespace#>
                 <#=d.DT#> angle = <#=md.FPCast#>Math.Acos(value.W);
                 <#=d.DT#> sin = <#=md.FPCast#>Math.Sin(angle);
 
-                if (!<#=md.MathHelper#>.IsZero(sin))
+                if (!MathHelper.IsZero(sin))
                 {
                     <#=d.DT#> coeff = angle / sin;
                     result.X = value.X * coeff;
@@ -849,7 +849,7 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> sin = <#=md.FPCast#>Math.Sin(angle);
             <#=md.Name#> result;
 
-            if (!<#=md.MathHelper#>.IsZero(sin))
+            if (!MathHelper.IsZero(sin))
             {
                 <#=d.DT#> coeff = sin / angle;
                 result.X = coeff * value.X;

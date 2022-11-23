@@ -27,7 +27,7 @@ namespace Molten<#=md.SubNamespace#>
         /// </summary>
         public bool IsNormalized
         {
-            get => <#=md.MathHelper#>.IsOne(<#for(int p = 0; p < md.Size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
+            get => MathHelper.IsOne(<#for(int p = 0; p < md.Size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Molten<#=md.SubNamespace#>
         public <#=md.Name#> GetNormalized(bool allowZero = false)
         {
             <#=d.FP#> length = Length();
-            if (!<#=md.MathHelper#>.IsZero(length))
+            if (!MathHelper.IsZero(length))
             {
                 <#=d.FP#> inverse = 1.0<#=d.FPL#> / length;
                 return new <#=md.Name#>()
@@ -154,7 +154,7 @@ namespace Molten<#=md.SubNamespace#>
         public void Normalize(bool allowZero = false)
         {
             <#=d.DT#> length = Length();
-            if (!<#=md.MathHelper#>.IsZero(length))
+            if (!MathHelper.IsZero(length))
             {
                 <#=d.FP#> inverse = 1.0<#=d.FPL#> / length;
 <#

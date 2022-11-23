@@ -64,7 +64,6 @@ public void GenerateTypes(
     foreach(TypeData d in defs)
     {
 		md.FPCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
-		md.MathHelper = d.FP == "double" ? "MathHelperDP" : "MathHelper";
 		md.Math = d.FP == "float" ? "MathF" : "Math";
         md.TypeCast = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"({d.DT})" : "";
         md.FPToTypeCast = (md.TypeCast.Length > 0) ? md.TypeCast : (d.DT != d.FP ? $"({d.DT})" : "");
