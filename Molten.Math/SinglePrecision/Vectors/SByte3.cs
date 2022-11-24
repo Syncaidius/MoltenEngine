@@ -206,10 +206,18 @@ namespace Molten
 			Z = Z < min ? min : Z > max ? max : Z;
         }
 
-		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         public void Clamp(SByte3 min, SByte3 max)
+        {
+            Clamp(min, max);
+        }
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(ref SByte3 min, ref SByte3 max)
         {
 			X = X < min.X ? min.X : X > max.X ? max.X : X;
 			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
@@ -493,6 +501,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SByte3 SmoothStep(ref SByte3 start, ref SByte3 end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
@@ -506,6 +515,7 @@ namespace Molten
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>The cubic interpolation of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SByte3 SmoothStep(SByte3 start, SByte3 end, sbyte amount)
         {
             return SmoothStep(ref start, ref end, amount);
@@ -565,6 +575,7 @@ namespace Molten
 		/// <param name="yIndex">The axis index to use for the new Y value.</param>
 		/// <param name="zIndex">The axis index to use for the new Z value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe SByte3 Swizzle(SByte3 val, int xIndex, int yIndex, int zIndex)
         {
             return new SByte3()
@@ -576,6 +587,7 @@ namespace Molten
         }
 
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe SByte3 Swizzle(SByte3 val, uint xIndex, uint yIndex, uint zIndex)
         {
             return new SByte3()
@@ -591,6 +603,7 @@ namespace Molten
         /// </summary>
         /// <param name="left">First <see cref="SByte3"/> source vector</param>
         /// <param name="right">Second <see cref="SByte3"/> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static sbyte Dot(ref SByte3 left, ref SByte3 right)
         {
 			return (sbyte)(((sbyte)left.X * right.X) + ((sbyte)left.Y * right.Y) + ((sbyte)left.Z * right.Z));
@@ -601,6 +614,7 @@ namespace Molten
         /// </summary>
         /// <param name="left">First <see cref="SByte3"/> source vector</param>
         /// <param name="right">Second <see cref="SByte3"/> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static sbyte Dot(SByte3 left, SByte3 right)
         {
 			return (sbyte)((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
@@ -633,6 +647,7 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Lerp(ref SByte3 start, ref SByte3 end, float amount, out SByte3 result)
         {
 			result.X = (sbyte)((1F - amount) * start.X + amount * end.X);
@@ -649,6 +664,7 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SByte3 Lerp(SByte3 start, SByte3 end, float amount)
         {
 			return new SByte3()
@@ -668,6 +684,7 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SByte3 Lerp(ref SByte3 start, ref SByte3 end, float amount)
         {
 			return new SByte3()
@@ -685,6 +702,7 @@ namespace Molten
         /// <param name="right">The second source <see cref="SByte3"/>.</param>
         /// <param name="result">The output for the resultant <see cref="SByte3"/>.</param>
         /// <returns>A <see cref="SByte3"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Min(ref SByte3 left, ref SByte3 right, out SByte3 result)
 		{
 				result.X = (left.X < right.X) ? left.X : right.X;
@@ -698,6 +716,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="SByte3"/>.</param>
         /// <param name="right">The second source <see cref="SByte3"/>.</param>
         /// <returns>A <see cref="SByte3"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SByte3 Min(ref SByte3 left, ref SByte3 right)
 		{
 			Min(ref left, ref right, out SByte3 result);
@@ -710,6 +729,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="SByte3"/>.</param>
         /// <param name="right">The second source <see cref="SByte3"/>.</param>
         /// <returns>A <see cref="SByte3"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SByte3 Min(SByte3 left, SByte3 right)
 		{
 			return new SByte3()
@@ -727,6 +747,7 @@ namespace Molten
         /// <param name="right">The second source <see cref="SByte3"/>.</param>
         /// <param name="result">The output for the resultant <see cref="SByte3"/>.</param>
         /// <returns>A <see cref="SByte3"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Max(ref SByte3 left, ref SByte3 right, out SByte3 result)
 		{
 				result.X = (left.X > right.X) ? left.X : right.X;
@@ -740,6 +761,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="SByte3"/>.</param>
         /// <param name="right">The second source <see cref="SByte3"/>.</param>
         /// <returns>A <see cref="SByte3"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SByte3 Max(ref SByte3 left, ref SByte3 right)
 		{
 			Max(ref left, ref right, out SByte3 result);
@@ -752,6 +774,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="SByte3"/>.</param>
         /// <param name="right">The second source <see cref="SByte3"/>.</param>
         /// <returns>A <see cref="SByte3"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SByte3 Max(SByte3 left, SByte3 right)
 		{
 			return new SByte3()
@@ -810,6 +833,7 @@ namespace Molten
         /// <param name="value">The <see cref="SByte3"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SByte3 Clamp(SByte3 value, sbyte min, sbyte max)
         {
 			return new SByte3()
@@ -825,6 +849,7 @@ namespace Molten
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         /// <param name="result">The output for the resultant <see cref="SByte3"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(ref SByte3 value, ref SByte3 min, ref SByte3 max, out SByte3 result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
@@ -836,6 +861,7 @@ namespace Molten
         /// <param name="value">The <see cref="SByte3"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SByte3 Clamp(SByte3 value, SByte3 min, SByte3 max)
         {
 			return new SByte3()

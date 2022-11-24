@@ -220,10 +220,18 @@ namespace Molten.DoublePrecision
 			W = W < min ? min : W > max ? max : W;
         }
 
-		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         public void Clamp(Vector4UL min, Vector4UL max)
+        {
+            Clamp(min, max);
+        }
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(ref Vector4UL min, ref Vector4UL max)
         {
 			X = X < min.X ? min.X : X > max.X ? max.X : X;
 			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
@@ -493,6 +501,7 @@ namespace Molten.DoublePrecision
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4UL SmoothStep(ref Vector4UL start, ref Vector4UL end, double amount)
         {
             amount = MathHelper.SmoothStep(amount);
@@ -506,6 +515,7 @@ namespace Molten.DoublePrecision
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>The cubic interpolation of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4UL SmoothStep(Vector4UL start, Vector4UL end, ulong amount)
         {
             return SmoothStep(ref start, ref end, amount);
@@ -566,6 +576,7 @@ namespace Molten.DoublePrecision
 		/// <param name="zIndex">The axis index to use for the new Z value.</param>
 		/// <param name="wIndex">The axis index to use for the new W value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector4UL Swizzle(Vector4UL val, int xIndex, int yIndex, int zIndex, int wIndex)
         {
             return new Vector4UL()
@@ -578,6 +589,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector4UL Swizzle(Vector4UL val, uint xIndex, uint yIndex, uint zIndex, uint wIndex)
         {
             return new Vector4UL()
@@ -594,6 +606,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="left">First <see cref="Vector4UL"/> source vector</param>
         /// <param name="right">Second <see cref="Vector4UL"/> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong Dot(ref Vector4UL left, ref Vector4UL right)
         {
 			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
@@ -604,6 +617,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="left">First <see cref="Vector4UL"/> source vector</param>
         /// <param name="right">Second <see cref="Vector4UL"/> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong Dot(Vector4UL left, Vector4UL right)
         {
 			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
@@ -637,6 +651,7 @@ namespace Molten.DoublePrecision
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Lerp(ref Vector4UL start, ref Vector4UL end, double amount, out Vector4UL result)
         {
 			result.X = (ulong)((1D - amount) * start.X + amount * end.X);
@@ -654,6 +669,7 @@ namespace Molten.DoublePrecision
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4UL Lerp(Vector4UL start, Vector4UL end, double amount)
         {
 			return new Vector4UL()
@@ -674,6 +690,7 @@ namespace Molten.DoublePrecision
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4UL Lerp(ref Vector4UL start, ref Vector4UL end, double amount)
         {
 			return new Vector4UL()
@@ -692,6 +709,7 @@ namespace Molten.DoublePrecision
         /// <param name="right">The second source <see cref="Vector4UL"/>.</param>
         /// <param name="result">The output for the resultant <see cref="Vector4UL"/>.</param>
         /// <returns>A <see cref="Vector4UL"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Min(ref Vector4UL left, ref Vector4UL right, out Vector4UL result)
 		{
 				result.X = (left.X < right.X) ? left.X : right.X;
@@ -706,6 +724,7 @@ namespace Molten.DoublePrecision
         /// <param name="left">The first source <see cref="Vector4UL"/>.</param>
         /// <param name="right">The second source <see cref="Vector4UL"/>.</param>
         /// <returns>A <see cref="Vector4UL"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector4UL Min(ref Vector4UL left, ref Vector4UL right)
 		{
 			Min(ref left, ref right, out Vector4UL result);
@@ -718,6 +737,7 @@ namespace Molten.DoublePrecision
         /// <param name="left">The first source <see cref="Vector4UL"/>.</param>
         /// <param name="right">The second source <see cref="Vector4UL"/>.</param>
         /// <returns>A <see cref="Vector4UL"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector4UL Min(Vector4UL left, Vector4UL right)
 		{
 			return new Vector4UL()
@@ -736,6 +756,7 @@ namespace Molten.DoublePrecision
         /// <param name="right">The second source <see cref="Vector4UL"/>.</param>
         /// <param name="result">The output for the resultant <see cref="Vector4UL"/>.</param>
         /// <returns>A <see cref="Vector4UL"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Max(ref Vector4UL left, ref Vector4UL right, out Vector4UL result)
 		{
 				result.X = (left.X > right.X) ? left.X : right.X;
@@ -750,6 +771,7 @@ namespace Molten.DoublePrecision
         /// <param name="left">The first source <see cref="Vector4UL"/>.</param>
         /// <param name="right">The second source <see cref="Vector4UL"/>.</param>
         /// <returns>A <see cref="Vector4UL"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector4UL Max(ref Vector4UL left, ref Vector4UL right)
 		{
 			Max(ref left, ref right, out Vector4UL result);
@@ -762,6 +784,7 @@ namespace Molten.DoublePrecision
         /// <param name="left">The first source <see cref="Vector4UL"/>.</param>
         /// <param name="right">The second source <see cref="Vector4UL"/>.</param>
         /// <returns>A <see cref="Vector4UL"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector4UL Max(Vector4UL left, Vector4UL right)
 		{
 			return new Vector4UL()
@@ -823,6 +846,7 @@ namespace Molten.DoublePrecision
         /// <param name="value">The <see cref="Vector4UL"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4UL Clamp(Vector4UL value, ulong min, ulong max)
         {
 			return new Vector4UL()
@@ -839,6 +863,7 @@ namespace Molten.DoublePrecision
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         /// <param name="result">The output for the resultant <see cref="Vector4UL"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(ref Vector4UL value, ref Vector4UL min, ref Vector4UL max, out Vector4UL result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
@@ -851,6 +876,7 @@ namespace Molten.DoublePrecision
         /// <param name="value">The <see cref="Vector4UL"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4UL Clamp(Vector4UL value, Vector4UL min, Vector4UL max)
         {
 			return new Vector4UL()

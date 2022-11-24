@@ -178,10 +178,18 @@ namespace Molten
 			Y = Y < min ? min : Y > max ? max : Y;
         }
 
-		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         public void Clamp(Vector2UI min, Vector2UI max)
+        {
+            Clamp(min, max);
+        }
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(ref Vector2UI min, ref Vector2UI max)
         {
 			X = X < min.X ? min.X : X > max.X ? max.X : X;
 			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
@@ -433,6 +441,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2UI SmoothStep(ref Vector2UI start, ref Vector2UI end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
@@ -446,6 +455,7 @@ namespace Molten
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>The cubic interpolation of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2UI SmoothStep(Vector2UI start, Vector2UI end, uint amount)
         {
             return SmoothStep(ref start, ref end, amount);
@@ -504,6 +514,7 @@ namespace Molten
 		/// <param name="xIndex">The axis index to use for the new X value.</param>
 		/// <param name="yIndex">The axis index to use for the new Y value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector2UI Swizzle(Vector2UI val, int xIndex, int yIndex)
         {
             return new Vector2UI()
@@ -514,6 +525,7 @@ namespace Molten
         }
 
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector2UI Swizzle(Vector2UI val, uint xIndex, uint yIndex)
         {
             return new Vector2UI()
@@ -528,6 +540,7 @@ namespace Molten
         /// </summary>
         /// <param name="left">First <see cref="Vector2UI"/> source vector</param>
         /// <param name="right">Second <see cref="Vector2UI"/> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint Dot(ref Vector2UI left, ref Vector2UI right)
         {
 			return ((left.X * right.X) + (left.Y * right.Y));
@@ -538,6 +551,7 @@ namespace Molten
         /// </summary>
         /// <param name="left">First <see cref="Vector2UI"/> source vector</param>
         /// <param name="right">Second <see cref="Vector2UI"/> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint Dot(Vector2UI left, Vector2UI right)
         {
 			return ((left.X * right.X) + (left.Y * right.Y));
@@ -569,6 +583,7 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Lerp(ref Vector2UI start, ref Vector2UI end, float amount, out Vector2UI result)
         {
 			result.X = (uint)((1F - amount) * start.X + amount * end.X);
@@ -584,6 +599,7 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2UI Lerp(Vector2UI start, Vector2UI end, float amount)
         {
 			return new Vector2UI()
@@ -602,6 +618,7 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2UI Lerp(ref Vector2UI start, ref Vector2UI end, float amount)
         {
 			return new Vector2UI()
@@ -618,6 +635,7 @@ namespace Molten
         /// <param name="right">The second source <see cref="Vector2UI"/>.</param>
         /// <param name="result">The output for the resultant <see cref="Vector2UI"/>.</param>
         /// <returns>A <see cref="Vector2UI"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Min(ref Vector2UI left, ref Vector2UI right, out Vector2UI result)
 		{
 				result.X = (left.X < right.X) ? left.X : right.X;
@@ -630,6 +648,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector2UI"/>.</param>
         /// <param name="right">The second source <see cref="Vector2UI"/>.</param>
         /// <returns>A <see cref="Vector2UI"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2UI Min(ref Vector2UI left, ref Vector2UI right)
 		{
 			Min(ref left, ref right, out Vector2UI result);
@@ -642,6 +661,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector2UI"/>.</param>
         /// <param name="right">The second source <see cref="Vector2UI"/>.</param>
         /// <returns>A <see cref="Vector2UI"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2UI Min(Vector2UI left, Vector2UI right)
 		{
 			return new Vector2UI()
@@ -658,6 +678,7 @@ namespace Molten
         /// <param name="right">The second source <see cref="Vector2UI"/>.</param>
         /// <param name="result">The output for the resultant <see cref="Vector2UI"/>.</param>
         /// <returns>A <see cref="Vector2UI"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Max(ref Vector2UI left, ref Vector2UI right, out Vector2UI result)
 		{
 				result.X = (left.X > right.X) ? left.X : right.X;
@@ -670,6 +691,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector2UI"/>.</param>
         /// <param name="right">The second source <see cref="Vector2UI"/>.</param>
         /// <returns>A <see cref="Vector2UI"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2UI Max(ref Vector2UI left, ref Vector2UI right)
 		{
 			Max(ref left, ref right, out Vector2UI result);
@@ -682,6 +704,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector2UI"/>.</param>
         /// <param name="right">The second source <see cref="Vector2UI"/>.</param>
         /// <returns>A <see cref="Vector2UI"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2UI Max(Vector2UI left, Vector2UI right)
 		{
 			return new Vector2UI()
@@ -737,6 +760,7 @@ namespace Molten
         /// <param name="value">The <see cref="Vector2UI"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2UI Clamp(Vector2UI value, uint min, uint max)
         {
 			return new Vector2UI()
@@ -751,6 +775,7 @@ namespace Molten
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         /// <param name="result">The output for the resultant <see cref="Vector2UI"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(ref Vector2UI value, ref Vector2UI min, ref Vector2UI max, out Vector2UI result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
@@ -761,6 +786,7 @@ namespace Molten
         /// <param name="value">The <see cref="Vector2UI"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2UI Clamp(Vector2UI value, Vector2UI min, Vector2UI max)
         {
 			return new Vector2UI()

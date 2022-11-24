@@ -296,10 +296,18 @@ namespace Molten<#=md.SubNamespace#>
 #>
         }
 
-		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         public void Clamp(<#=md.Name#> min, <#=md.Name#> max)
+        {
+            Clamp(min, max);
+        }
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(ref <#=md.Name#> min, ref <#=md.Name#> max)
         {
 <#
 		for(int p = 0; p < md.Size; p++)
@@ -648,6 +656,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=md.Name#> SmoothStep(ref <#=md.Name#> start, ref <#=md.Name#> end, <#=d.FP#> amount)
         {
             amount = MathHelper.SmoothStep(amount);
@@ -661,6 +670,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>The cubic interpolation of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=md.Name#> SmoothStep(<#=md.Name#> start, <#=md.Name#> end, <#=d.DT#> amount)
         {
             return SmoothStep(ref start, ref end, amount);
@@ -725,6 +735,7 @@ namespace Molten<#=md.SubNamespace#>
 		}
 #>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe <#=md.Name#> Swizzle(<#=md.Name#> val, <#for(int p = 0; p < md.Size; p++){#>int <#=pMap[p]#>Index<#=(p < (md.Size-1) ? ", " : "")#><#}#>)
         {
             return new <#=md.Name#>()
@@ -741,6 +752,7 @@ namespace Molten<#=md.SubNamespace#>
         }
 
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe <#=md.Name#> Swizzle(<#=md.Name#> val, <#for(int p = 0; p < md.Size; p++){#>uint <#=pMap[p]#>Index<#=(p < (md.Size-1) ? ", " : "")#><#}#>)
         {
             return new <#=md.Name#>()
@@ -761,6 +773,7 @@ namespace Molten<#=md.SubNamespace#>
         /// </summary>
         /// <param name="left">First <#=See(md.Name)#> source vector</param>
         /// <param name="right">Second <#=See(md.Name)#> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=d.DT#> Dot(ref <#=md.Name#> left, ref <#=md.Name#> right)
         {
 			return <#=md.TypeCast#>(<#for(int p = 0; p < md.Size; p++){#>(<#=md.TypeCast#>left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
@@ -771,6 +784,7 @@ namespace Molten<#=md.SubNamespace#>
         /// </summary>
         /// <param name="left">First <#=See(md.Name)#> source vector</param>
         /// <param name="right">Second <#=See(md.Name)#> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=d.DT#> Dot(<#=md.Name#> left, <#=md.Name#> right)
         {
 			return <#=md.TypeCast#>(<#for(int p = 0; p < md.Size; p++){#>(left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
@@ -808,6 +822,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Lerp(ref <#=md.Name#> start, ref <#=md.Name#> end, <#=d.FP#> amount, out <#=md.Name#> result)
         {
 <#
@@ -829,6 +844,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=md.Name#> Lerp(<#=md.Name#> start, <#=md.Name#> end, <#=d.FP#> amount)
         {
 			return new <#=md.Name#>()
@@ -853,6 +869,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=md.Name#> Lerp(ref <#=md.Name#> start, ref <#=md.Name#> end, <#=d.FP#> amount)
         {
 			return new <#=md.Name#>()
@@ -875,6 +892,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="right">The second source <#=See(md.Name)#>.</param>
         /// <param name="result">The output for the resultant <#=See(md.Name)#>.</param>
         /// <returns>A <#=See(md.Name)#> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Min(ref <#=md.Name#> left, ref <#=md.Name#> right, out <#=md.Name#> result)
 		{
 <#
@@ -893,6 +911,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="left">The first source <#=See(md.Name)#>.</param>
         /// <param name="right">The second source <#=See(md.Name)#>.</param>
         /// <returns>A <#=See(md.Name)#> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static <#=md.Name#> Min(ref <#=md.Name#> left, ref <#=md.Name#> right)
 		{
 			Min(ref left, ref right, out <#=md.Name#> result);
@@ -905,6 +924,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="left">The first source <#=See(md.Name)#>.</param>
         /// <param name="right">The second source <#=See(md.Name)#>.</param>
         /// <returns>A <#=See(md.Name)#> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static <#=md.Name#> Min(<#=md.Name#> left, <#=md.Name#> right)
 		{
 			return new <#=md.Name#>()
@@ -927,6 +947,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="right">The second source <#=See(md.Name)#>.</param>
         /// <param name="result">The output for the resultant <#=See(md.Name)#>.</param>
         /// <returns>A <#=See(md.Name)#> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Max(ref <#=md.Name#> left, ref <#=md.Name#> right, out <#=md.Name#> result)
 		{
 <#
@@ -945,6 +966,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="left">The first source <#=See(md.Name)#>.</param>
         /// <param name="right">The second source <#=See(md.Name)#>.</param>
         /// <returns>A <#=See(md.Name)#> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static <#=md.Name#> Max(ref <#=md.Name#> left, ref <#=md.Name#> right)
 		{
 			Max(ref left, ref right, out <#=md.Name#> result);
@@ -957,6 +979,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="left">The first source <#=See(md.Name)#>.</param>
         /// <param name="right">The second source <#=See(md.Name)#>.</param>
         /// <returns>A <#=See(md.Name)#> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static <#=md.Name#> Max(<#=md.Name#> left, <#=md.Name#> right)
 		{
 			return new <#=md.Name#>()
@@ -1034,6 +1057,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="value">The <#=See(md.Name)#> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=md.Name#> Clamp(<#=md.Name#> value, <#=d.DT#> min, <#=d.DT#> max)
         {
 			return new <#=md.Name#>()
@@ -1054,6 +1078,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         /// <param name="result">The output for the resultant <#=See(md.Name)#>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(ref <#=md.Name#> value, ref <#=md.Name#> min, ref <#=md.Name#> max, out <#=md.Name#> result)
         {
 <#
@@ -1070,6 +1095,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="value">The <#=See(md.Name)#> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=md.Name#> Clamp(<#=md.Name#> value, <#=md.Name#> min, <#=md.Name#> max)
         {
 			return new <#=md.Name#>()

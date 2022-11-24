@@ -198,10 +198,18 @@ namespace Molten
 			Z = Z < min ? min : Z > max ? max : Z;
         }
 
-		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         public void Clamp(Byte3 min, Byte3 max)
+        {
+            Clamp(min, max);
+        }
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(ref Byte3 min, ref Byte3 max)
         {
 			X = X < min.X ? min.X : X > max.X ? max.X : X;
 			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
@@ -462,6 +470,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Byte3 SmoothStep(ref Byte3 start, ref Byte3 end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
@@ -475,6 +484,7 @@ namespace Molten
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>The cubic interpolation of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Byte3 SmoothStep(Byte3 start, Byte3 end, byte amount)
         {
             return SmoothStep(ref start, ref end, amount);
@@ -534,6 +544,7 @@ namespace Molten
 		/// <param name="yIndex">The axis index to use for the new Y value.</param>
 		/// <param name="zIndex">The axis index to use for the new Z value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Byte3 Swizzle(Byte3 val, int xIndex, int yIndex, int zIndex)
         {
             return new Byte3()
@@ -545,6 +556,7 @@ namespace Molten
         }
 
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Byte3 Swizzle(Byte3 val, uint xIndex, uint yIndex, uint zIndex)
         {
             return new Byte3()
@@ -560,6 +572,7 @@ namespace Molten
         /// </summary>
         /// <param name="left">First <see cref="Byte3"/> source vector</param>
         /// <param name="right">Second <see cref="Byte3"/> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte Dot(ref Byte3 left, ref Byte3 right)
         {
 			return (byte)(((byte)left.X * right.X) + ((byte)left.Y * right.Y) + ((byte)left.Z * right.Z));
@@ -570,6 +583,7 @@ namespace Molten
         /// </summary>
         /// <param name="left">First <see cref="Byte3"/> source vector</param>
         /// <param name="right">Second <see cref="Byte3"/> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte Dot(Byte3 left, Byte3 right)
         {
 			return (byte)((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
@@ -602,6 +616,7 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Lerp(ref Byte3 start, ref Byte3 end, float amount, out Byte3 result)
         {
 			result.X = (byte)((1F - amount) * start.X + amount * end.X);
@@ -618,6 +633,7 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Byte3 Lerp(Byte3 start, Byte3 end, float amount)
         {
 			return new Byte3()
@@ -637,6 +653,7 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Byte3 Lerp(ref Byte3 start, ref Byte3 end, float amount)
         {
 			return new Byte3()
@@ -654,6 +671,7 @@ namespace Molten
         /// <param name="right">The second source <see cref="Byte3"/>.</param>
         /// <param name="result">The output for the resultant <see cref="Byte3"/>.</param>
         /// <returns>A <see cref="Byte3"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Min(ref Byte3 left, ref Byte3 right, out Byte3 result)
 		{
 				result.X = (left.X < right.X) ? left.X : right.X;
@@ -667,6 +685,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="Byte3"/>.</param>
         /// <param name="right">The second source <see cref="Byte3"/>.</param>
         /// <returns>A <see cref="Byte3"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Byte3 Min(ref Byte3 left, ref Byte3 right)
 		{
 			Min(ref left, ref right, out Byte3 result);
@@ -679,6 +698,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="Byte3"/>.</param>
         /// <param name="right">The second source <see cref="Byte3"/>.</param>
         /// <returns>A <see cref="Byte3"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Byte3 Min(Byte3 left, Byte3 right)
 		{
 			return new Byte3()
@@ -696,6 +716,7 @@ namespace Molten
         /// <param name="right">The second source <see cref="Byte3"/>.</param>
         /// <param name="result">The output for the resultant <see cref="Byte3"/>.</param>
         /// <returns>A <see cref="Byte3"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Max(ref Byte3 left, ref Byte3 right, out Byte3 result)
 		{
 				result.X = (left.X > right.X) ? left.X : right.X;
@@ -709,6 +730,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="Byte3"/>.</param>
         /// <param name="right">The second source <see cref="Byte3"/>.</param>
         /// <returns>A <see cref="Byte3"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Byte3 Max(ref Byte3 left, ref Byte3 right)
 		{
 			Max(ref left, ref right, out Byte3 result);
@@ -721,6 +743,7 @@ namespace Molten
         /// <param name="left">The first source <see cref="Byte3"/>.</param>
         /// <param name="right">The second source <see cref="Byte3"/>.</param>
         /// <returns>A <see cref="Byte3"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Byte3 Max(Byte3 left, Byte3 right)
 		{
 			return new Byte3()
@@ -779,6 +802,7 @@ namespace Molten
         /// <param name="value">The <see cref="Byte3"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Byte3 Clamp(Byte3 value, byte min, byte max)
         {
 			return new Byte3()
@@ -794,6 +818,7 @@ namespace Molten
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         /// <param name="result">The output for the resultant <see cref="Byte3"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(ref Byte3 value, ref Byte3 min, ref Byte3 max, out Byte3 result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
@@ -805,6 +830,7 @@ namespace Molten
         /// <param name="value">The <see cref="Byte3"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Byte3 Clamp(Byte3 value, Byte3 min, Byte3 max)
         {
 			return new Byte3()

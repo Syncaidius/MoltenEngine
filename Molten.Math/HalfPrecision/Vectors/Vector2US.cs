@@ -178,10 +178,18 @@ namespace Molten.HalfPrecision
 			Y = Y < min ? min : Y > max ? max : Y;
         }
 
-		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         public void Clamp(Vector2US min, Vector2US max)
+        {
+            Clamp(min, max);
+        }
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(ref Vector2US min, ref Vector2US max)
         {
 			X = X < min.X ? min.X : X > max.X ? max.X : X;
 			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
@@ -433,6 +441,7 @@ namespace Molten.HalfPrecision
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2US SmoothStep(ref Vector2US start, ref Vector2US end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
@@ -446,6 +455,7 @@ namespace Molten.HalfPrecision
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>The cubic interpolation of the two vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2US SmoothStep(Vector2US start, Vector2US end, ushort amount)
         {
             return SmoothStep(ref start, ref end, amount);
@@ -504,6 +514,7 @@ namespace Molten.HalfPrecision
 		/// <param name="xIndex">The axis index to use for the new X value.</param>
 		/// <param name="yIndex">The axis index to use for the new Y value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector2US Swizzle(Vector2US val, int xIndex, int yIndex)
         {
             return new Vector2US()
@@ -514,6 +525,7 @@ namespace Molten.HalfPrecision
         }
 
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Vector2US Swizzle(Vector2US val, uint xIndex, uint yIndex)
         {
             return new Vector2US()
@@ -528,6 +540,7 @@ namespace Molten.HalfPrecision
         /// </summary>
         /// <param name="left">First <see cref="Vector2US"/> source vector</param>
         /// <param name="right">Second <see cref="Vector2US"/> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ushort Dot(ref Vector2US left, ref Vector2US right)
         {
 			return (ushort)(((ushort)left.X * right.X) + ((ushort)left.Y * right.Y));
@@ -538,6 +551,7 @@ namespace Molten.HalfPrecision
         /// </summary>
         /// <param name="left">First <see cref="Vector2US"/> source vector</param>
         /// <param name="right">Second <see cref="Vector2US"/> source vector.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ushort Dot(Vector2US left, Vector2US right)
         {
 			return (ushort)((left.X * right.X) + (left.Y * right.Y));
@@ -569,6 +583,7 @@ namespace Molten.HalfPrecision
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Lerp(ref Vector2US start, ref Vector2US end, float amount, out Vector2US result)
         {
 			result.X = (ushort)((1F - amount) * start.X + amount * end.X);
@@ -584,6 +599,7 @@ namespace Molten.HalfPrecision
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2US Lerp(Vector2US start, Vector2US end, float amount)
         {
 			return new Vector2US()
@@ -602,6 +618,7 @@ namespace Molten.HalfPrecision
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2US Lerp(ref Vector2US start, ref Vector2US end, float amount)
         {
 			return new Vector2US()
@@ -618,6 +635,7 @@ namespace Molten.HalfPrecision
         /// <param name="right">The second source <see cref="Vector2US"/>.</param>
         /// <param name="result">The output for the resultant <see cref="Vector2US"/>.</param>
         /// <returns>A <see cref="Vector2US"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Min(ref Vector2US left, ref Vector2US right, out Vector2US result)
 		{
 				result.X = (left.X < right.X) ? left.X : right.X;
@@ -630,6 +648,7 @@ namespace Molten.HalfPrecision
         /// <param name="left">The first source <see cref="Vector2US"/>.</param>
         /// <param name="right">The second source <see cref="Vector2US"/>.</param>
         /// <returns>A <see cref="Vector2US"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2US Min(ref Vector2US left, ref Vector2US right)
 		{
 			Min(ref left, ref right, out Vector2US result);
@@ -642,6 +661,7 @@ namespace Molten.HalfPrecision
         /// <param name="left">The first source <see cref="Vector2US"/>.</param>
         /// <param name="right">The second source <see cref="Vector2US"/>.</param>
         /// <returns>A <see cref="Vector2US"/> containing the smallest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2US Min(Vector2US left, Vector2US right)
 		{
 			return new Vector2US()
@@ -658,6 +678,7 @@ namespace Molten.HalfPrecision
         /// <param name="right">The second source <see cref="Vector2US"/>.</param>
         /// <param name="result">The output for the resultant <see cref="Vector2US"/>.</param>
         /// <returns>A <see cref="Vector2US"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Max(ref Vector2US left, ref Vector2US right, out Vector2US result)
 		{
 				result.X = (left.X > right.X) ? left.X : right.X;
@@ -670,6 +691,7 @@ namespace Molten.HalfPrecision
         /// <param name="left">The first source <see cref="Vector2US"/>.</param>
         /// <param name="right">The second source <see cref="Vector2US"/>.</param>
         /// <returns>A <see cref="Vector2US"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2US Max(ref Vector2US left, ref Vector2US right)
 		{
 			Max(ref left, ref right, out Vector2US result);
@@ -682,6 +704,7 @@ namespace Molten.HalfPrecision
         /// <param name="left">The first source <see cref="Vector2US"/>.</param>
         /// <param name="right">The second source <see cref="Vector2US"/>.</param>
         /// <returns>A <see cref="Vector2US"/> containing the largest components of the source vectors.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2US Max(Vector2US left, Vector2US right)
 		{
 			return new Vector2US()
@@ -737,6 +760,7 @@ namespace Molten.HalfPrecision
         /// <param name="value">The <see cref="Vector2US"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2US Clamp(Vector2US value, ushort min, ushort max)
         {
 			return new Vector2US()
@@ -751,6 +775,7 @@ namespace Molten.HalfPrecision
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
         /// <param name="result">The output for the resultant <see cref="Vector2US"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(ref Vector2US value, ref Vector2US min, ref Vector2US max, out Vector2US result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
@@ -761,6 +786,7 @@ namespace Molten.HalfPrecision
         /// <param name="value">The <see cref="Vector2US"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2US Clamp(Vector2US value, Vector2US min, Vector2US max)
         {
 			return new Vector2US()
