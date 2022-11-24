@@ -613,7 +613,7 @@ namespace Molten.DoublePrecision
             double inverse;
             double dot = Dot(start, end);
 
-            if (Math.Abs(dot) > 1.0D - Molten.MathHelper.Constants<double>.ZeroTolerance)
+            if (Math.Abs(dot) > 1.0D - MathHelper.Constants<double>.ZeroTolerance)
             {
                 inverse = 1.0D - amount;
                 opposite = amount * Math.Sign(dot);

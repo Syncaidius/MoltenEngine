@@ -12,7 +12,7 @@
 string pMap = "xyzw";
 string pMapUpper = "XYZW";
 
-GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "vector_defs.json", "v2", _vectorSizes, (d,md) => md.Size == 2, (d, md, defs) =>
+GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", "v2", _vectorSizes, (d,md) => md.Size == 2, (d, md, defs) =>
 {
 #>
 namespace Molten<#=md.SubNamespace#>

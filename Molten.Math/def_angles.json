@@ -1,0 +1,28 @@
+[
+  {
+    "Name": "Angle",
+    "Postfix": "F",
+    "DT": "float",
+    "FP": "float",
+    "FPL": "F",
+    "Pack": "4",
+    "One": "1F",
+    "Zero": "0F",
+    "IsFPType": true,
+    "Unsigned": false,
+    "Bits": 32
+  },
+  {
+    "Name": "Angle",
+    "Postfix": "D",
+    "DT": "double",
+    "FP": "double",
+    "FPL": "D",
+    "Pack": "8",
+    "One": "1D",
+    "Zero": "0D",
+    "IsFPType": true,
+    "Unsigned": false,
+    "Bits": 64
+  }
+]

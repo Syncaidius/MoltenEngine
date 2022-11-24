@@ -37,6 +37,11 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <None Include="t4_angles.cs">
+      <DependentUpon>t4_angles.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -66,6 +71,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="t4_angles.tt">
+      <LastGenOutput>t4_angles.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="t4_quaternions.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_quaternions.cs</LastGenOutput>
@@ -109,6 +118,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="t4_angles.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_angles.tt</DependentUpon>
+    </Compile>
     <Compile Update="t4_header.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

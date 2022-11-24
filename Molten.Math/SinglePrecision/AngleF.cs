@@ -1,93 +1,47 @@
-﻿// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-// -----------------------------------------------------------------------------
-// Original code from SlimMath project. http://code.google.com/p/slimmath/
-// Greetings to SlimDX Group. Original code published with the following license:
-// -----------------------------------------------------------------------------
-/*
-* Copyright (c) 2007-2011 SlimDX Group
-* 
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
-*/
-
+using System;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 namespace Molten
 {
-    /// <summary>
-    /// Represents a unit independent angle using a single-precision floating-point
-    /// internal representation.
-    /// </summary>
-    [StructLayout(LayoutKind.Explicit)]
+	///<summary>Represents a four dimensional mathematical AngleF.</summary>
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
-    public struct AngleF : IComparable, IComparable<AngleF>, IEquatable<AngleF>, IFormattable
-    {
-        /// <summary>
+	public partial struct AngleF : IFormattable, IEquatable<AngleF>
+	{
+		/// <summary>
         /// A value that specifies the size of a single degree.
         /// </summary>
-        public const float Degree = 0.002777777777777778f;
+        public const float Degree = 0.002777777777777778F;
 
         /// <summary>
         /// A value that specifies the size of a single minute.
         /// </summary>
-        public const float Minute = 0.000046296296296296f;
+        public const float Minute = 0.000046296296296296F;
 
         /// <summary>
         /// A value that specifies the size of a single second.
         /// </summary>
-        public const float Second = 0.000000771604938272f;
+        public const float Second = 0.000000771604938272F;
 
         /// <summary>
         /// A value that specifies the size of a single radian.
         /// </summary>
-        public const float Radian = 0.159154943091895336f;
+        public const float Radian = 0.159154943091895336F;
 
         /// <summary>
         /// A value that specifies the size of a single milliradian.
         /// </summary>
-        public const float Milliradian = 0.0001591549431f;
+        public const float Milliradian = 0.0001591549431F;
 
         /// <summary>
         /// A value that specifies the size of a single gradian.
         /// </summary>
-        public const float Gradian = 0.0025f;
+        public const float Gradian = 0.0025F;
 
-        /// <summary>
+         /// <summary>
         /// The internal representation of the angle.
         /// </summary>
         [FieldOffset(0)]
@@ -98,7 +52,7 @@ namespace Molten
         [DataMember]
         private int radiansInt;
 
-        /// <summary>
+         /// <summary>
         /// Initializes a new instance of the <see cref="AngleF"/> structure with the
         /// given unit dependant angle and unit type.
         /// </summary>
@@ -126,7 +80,7 @@ namespace Molten
                     break;
 
                 default:
-                    radians = 0.0f;
+                    radians = 0F;
                     break;
             }
         }
@@ -169,8 +123,8 @@ namespace Molten
         /// </summary>
         public float Revolutions
         {
-            get { return MathHelper.RadiansToRevolutions(radians); }
-            set { radians = MathHelper.RevolutionsToRadians(value); }
+            get => MathHelper.RadiansToRevolutions(radians);
+            set => radians = MathHelper.RevolutionsToRadians(value);
         }
 
         /// <summary>
@@ -178,8 +132,8 @@ namespace Molten
         /// </summary>
         public float Degrees
         {
-            get { return MathHelper.RadiansToDegrees(radians); }
-            set { radians = MathHelper.DegreesToRadians(value); }
+            get => MathHelper.RadiansToDegrees(radians);
+            set => radians = MathHelper.DegreesToRadians(value);
         }
 
         /// <summary>
@@ -197,12 +151,12 @@ namespace Molten
                 if (degrees < 0)
                 {
                     float degreesfloor = MathF.Ceiling(degrees);
-                    return (degrees - degreesfloor) * 60.0f;
+                    return (degrees - degreesfloor) * 60.0F;
                 }
                 else
                 {
                     float degreesfloor = MathF.Floor(degrees);
-                    return (degrees - degreesfloor) * 60.0f;
+                    return (degrees - degreesfloor) * 60.0F;
                 }
             }
             set
@@ -210,7 +164,7 @@ namespace Molten
                 float degrees = MathHelper.RadiansToDegrees(radians);
                 float degreesfloor = MathF.Floor(degrees);
 
-                degreesfloor += value / 60.0f;
+                degreesfloor += value / 60.0F;
                 radians = MathHelper.DegreesToRadians(degreesfloor);
             }
         }
@@ -231,19 +185,19 @@ namespace Molten
                 {
                     float degreesfloor = MathF.Ceiling(degrees);
 
-                    float minutes = (degrees - degreesfloor) * 60.0f;
+                    float minutes = (degrees - degreesfloor) * 60.0F;
                     float minutesfloor = MathF.Ceiling(minutes);
 
-                    return (minutes - minutesfloor) * 60.0f;
+                    return (minutes - minutesfloor) * 60.0F;
                 }
                 else
                 {
                     float degreesfloor = MathF.Floor(degrees);
 
-                    float minutes = (degrees - degreesfloor) * 60.0f;
+                    float minutes = (degrees - degreesfloor) * 60.0F;
                     float minutesfloor = MathF.Floor(minutes);
 
-                    return (minutes - minutesfloor) * 60.0f;
+                    return (minutes - minutesfloor) * 60.0F;
                 }
             }
             set
@@ -251,11 +205,11 @@ namespace Molten
                 float degrees = MathHelper.RadiansToDegrees(radians);
                 float degreesfloor = MathF.Floor(degrees);
 
-                float minutes = (degrees - degreesfloor) * 60.0f;
+                float minutes = (degrees - degreesfloor) * 60.0F;
                 float minutesfloor = MathF.Floor(minutes);
 
-                minutesfloor += value / 60.0f;
-                degreesfloor += minutesfloor / 60.0f;
+                minutesfloor += value / 60.0F;
+                degreesfloor += minutesfloor / 60.0F;
                 radians = MathHelper.DegreesToRadians(degreesfloor);
             }
         }
@@ -265,8 +219,8 @@ namespace Molten
         /// </summary>
         public float Radians
         {
-            get { return radians; }
-            set { radians = value; }
+            get => radians;
+            set => radians = value;
         }
 
         /// <summary>
@@ -275,8 +229,8 @@ namespace Molten
         /// </summary>
         public float Milliradians
         {
-            get { return radians / (Milliradian * float.Tau); }
-            set { radians = value * (Milliradian * float.Tau); }
+            get => radians / (Milliradian * float.Tau);
+            set => radians = value * (Milliradian * float.Tau);
         }
 
         /// <summary>
@@ -284,88 +238,61 @@ namespace Molten
         /// </summary>
         public float Gradians
         {
-            get { return MathHelper.RadiansToGradians(radians); }
-            set { radians = MathHelper.RadiansToGradians(value); }
+            get => MathHelper.RadiansToGradians(radians);
+            set => radians = MathHelper.RadiansToGradians(value);
         }
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is a right angle (i.e. 90° or π/2).
         /// </summary>
-        public bool IsRight
-        {
-            get { return radians == MathHelper.Constants<float>.PiOverTwo; }
-        }
+        public bool IsRight => radians == MathHelper.Constants<float>.PiOverTwo; 
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is a straight angle (i.e. 180° or π).
         /// </summary>
-        public bool IsStraight
-        {
-            get { return radians == float.Pi; }
-        }
+        public bool IsStraight => radians == float.Pi;
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is a full rotation angle (i.e. 360° or 2π).
         /// </summary>
-        public bool IsFullRotation
-        {
-            get { return radians == float.Tau; }
-        }
+        public bool IsFullRotation => radians == float.Tau;
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is an oblique angle (i.e. is not 90° or a multiple of 90°).
         /// </summary>
-        public bool IsOblique
-        {
-            get { return WrapPositive(this).radians != MathHelper.Constants<float>.PiOverTwo; }
-        }
+        public bool IsOblique => WrapPositive(this).radians != MathHelper.Constants<float>.PiOverTwo; 
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is an acute angle (i.e. less than 90° but greater than 0°).
         /// </summary>
-        public bool IsAcute
-        {
-            get { return radians > 0.0 && radians < MathHelper.Constants<float>.PiOverTwo; }
-        }
+        public bool IsAcute => radians > 0.0 && radians < MathHelper.Constants<float>.PiOverTwo;
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is an obtuse angle (i.e. greater than 90° but less than 180°).
         /// </summary>
-        public bool IsObtuse
-        {
-            get { return radians > MathHelper.Constants<float>.PiOverTwo && radians < float.Pi; }
-        }
+        public bool IsObtuse => radians > MathHelper.Constants<float>.PiOverTwo && radians < float.Pi;
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleF"/>
         /// is a reflex angle (i.e. greater than 180° but less than 360°).
         /// </summary>
-        public bool IsReflex
-        {
-            get { return radians > float.Pi && radians < float.Tau; }
-        }
+        public bool IsReflex => radians > float.Pi && radians < float.Tau;
 
         /// <summary>
         /// Gets a <see cref="AngleF"/> instance that complements this angle (i.e. the two angles add to 90°).
         /// </summary>
-        public AngleF Complement
-        {
-            get { return new AngleF(MathHelper.Constants<float>.PiOverTwo - radians, AngleType.Radian); }
-        }
+        public AngleF Complement => new AngleF(MathHelper.Constants<float>.PiOverTwo - radians, AngleType.Radian);
 
         /// <summary>
         /// Gets a <see cref="AngleF"/> instance that supplements this angle (i.e. the two angles add to 180°).
         /// </summary>
-        public AngleF Supplement
-        {
-            get { return new AngleF(float.Pi - radians, AngleType.Radian); }
-        }
+        public AngleF Supplement => new AngleF(float.Pi - radians, AngleType.Radian);
 
         /// <summary>
         /// Wraps the <see cref="AngleF"/> given in the value argument to be in the range [π, -π].
@@ -373,6 +300,17 @@ namespace Molten
         /// <param name="value">A <see cref="AngleF"/> to wrap.</param>
         /// <returns>The <see cref="AngleF"/> that is wrapped.</returns>
         public static AngleF Wrap(AngleF value)
+        {
+            value.Wrap();
+            return value;
+        }
+
+                /// <summary>
+        /// Wraps the <see cref="AngleF"/> given in the value argument to be in the range [π, -π].
+        /// </summary>
+        /// <param name="value">A <see cref="AngleF"/> to wrap.</param>
+        /// <returns>The <see cref="AngleF"/> that is wrapped.</returns>
+        public static AngleF Wrap(ref AngleF value)
         {
             value.Wrap();
             return value;
@@ -389,6 +327,20 @@ namespace Molten
             return value;
         }
 
+                /// <summary>
+        /// Compares two <see cref="AngleF"/> instances and returns the smaller angle.
+        /// </summary>
+        /// <param name="left">The first <see cref="AngleF"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="AngleF"/> instance to compare.</param>
+        /// <returns>The smaller of the two given <see cref="AngleF"/> instances.</returns>
+        public static AngleF Min(ref AngleF left, ref AngleF right)
+        {
+            if (left.radians < right.radians)
+                return left;
+
+            return right;
+        }
+
         /// <summary>
         /// Compares two <see cref="AngleF"/> instances and returns the smaller angle.
         /// </summary>
@@ -398,6 +350,20 @@ namespace Molten
         public static AngleF Min(AngleF left, AngleF right)
         {
             if (left.radians < right.radians)
+                return left;
+
+            return right;
+        }
+
+        /// <summary>
+        /// Compares two <see cref="AngleF"/> instances and returns the greater angle.
+        /// </summary>
+        /// <param name="left">The first <see cref="AngleF"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="AngleF"/> instance to compare.</param>
+        /// <returns>The greater of the two given <see cref="AngleF"/> instances.</returns>
+        public static AngleF Max(ref AngleF left, ref AngleF right)
+        {
+            if (left.radians > right.radians)
                 return left;
 
             return right;
@@ -423,7 +389,7 @@ namespace Molten
         /// <param name="left">The first object to add.</param>
         /// <param name="right">The second object to add.</param>
         /// <returns>The value of the two objects added together.</returns>
-        public static AngleF Add(AngleF left, AngleF right)
+        public static AngleF Add(ref AngleF left, ref AngleF right)
         {
             return new AngleF(left.radians + right.radians, AngleType.Radian);
         }
@@ -434,7 +400,7 @@ namespace Molten
         /// <param name="left">The first object to subtract.</param>
         /// <param name="right">The second object to subtract.</param>
         /// <returns>The value of the two objects subtracted.</returns>
-        public static AngleF Subtract(AngleF left, AngleF right)
+        public static AngleF Subtract(ref AngleF left, ref AngleF right)
         {
             return new AngleF(left.radians - right.radians, AngleType.Radian);
         }
@@ -445,7 +411,7 @@ namespace Molten
         /// <param name="left">The first object to multiply.</param>
         /// <param name="right">The second object to multiply.</param>
         /// <returns>The value of the two objects multiplied together.</returns>
-        public static AngleF Multiply(AngleF left, AngleF right)
+        public static AngleF Multiply(ref AngleF left, ref AngleF right)
         {
             return new AngleF(left.radians * right.radians, AngleType.Radian);
         }
@@ -456,7 +422,7 @@ namespace Molten
         /// <param name="left">The numerator object.</param>
         /// <param name="right">The denominator object.</param>
         /// <returns>The value of the two objects divided.</returns>
-        public static AngleF Divide(AngleF left, AngleF right)
+        public static AngleF Divide(ref AngleF left, ref AngleF right)
         {
             return new AngleF(left.radians / right.radians, AngleType.Radian);
         }
@@ -464,34 +430,22 @@ namespace Molten
         /// <summary>
         /// Gets a new <see cref="AngleF"/> instance that represents the zero angle (i.e. 0°).
         /// </summary>
-        public static AngleF ZeroAngle
-        {
-            get { return new AngleF(0.0f, AngleType.Radian); }
-        }
+        public static AngleF ZeroAngle => new AngleF(0.0F, AngleType.Radian); 
 
         /// <summary>
         /// Gets a new <see cref="AngleF"/> instance that represents the right angle (i.e. 90° or π/2).
         /// </summary>
-        public static AngleF RightAngle
-        {
-            get { return new AngleF(MathHelper.Constants<float>.PiOverTwo, AngleType.Radian); }
-        }
+        public static AngleF RightAngle => new AngleF(MathHelper.Constants<float>.PiOverTwo, AngleType.Radian);
 
         /// <summary>
         /// Gets a new <see cref="AngleF"/> instance that represents the straight angle (i.e. 180° or π).
         /// </summary>
-        public static AngleF StraightAngle
-        {
-            get { return new AngleF(float.Pi, AngleType.Radian); }
-        }
+        public static AngleF StraightAngle => new AngleF(float.Pi, AngleType.Radian);
 
         /// <summary>
         /// Gets a new <see cref="AngleF"/> instance that represents the full rotation angle (i.e. 360° or 2π).
         /// </summary>
-        public static AngleF FullRotationAngle
-        {
-            get { return new AngleF(float.Tau, AngleType.Radian); }
-        }
+        public static AngleF FullRotationAngle => new AngleF(float.Tau, AngleType.Radian);
 
         /// <summary>
         /// Returns a System.Boolean that indicates whether the values of two <see cref="AngleF"/>
@@ -701,10 +655,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -712,11 +666,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format)
         {
@@ -727,11 +681,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
@@ -739,12 +693,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
@@ -778,5 +732,6 @@ namespace Molten
         {
             return (obj is AngleF) && (this == (AngleF)obj);
         }
-    }
+	}
 }
+

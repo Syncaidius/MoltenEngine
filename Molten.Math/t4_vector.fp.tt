@@ -12,7 +12,7 @@
 string pMap = "xyzw";
 string pMapUpper = "XYZW";
 
-GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "vector_defs.json", "fp", _vectorSizes, (d,md) => d.IsFPType, (d, md, defs) =>
+GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", "fp", _vectorSizes, (d,md) => d.IsFPType, (d, md, defs) =>
 {
 #>
 using System;

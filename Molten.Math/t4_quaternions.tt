@@ -12,7 +12,7 @@
 string _pMap = "xyzw";
 string _pMapUpper = "XYZW";
 
-GenerateTypes(this.GenerationEnvironment, this.Host, "", "quaternion_defs.json", null, new int[] {4}, null, (d, md, defs) =>
+GenerateTypes(this.GenerationEnvironment, this.Host, "", "def_quaternions.json", null, new int[] {4}, null, (d, md, defs) =>
 {
     string vectorName = $"Vector3{d.Postfix}";
     md.Name = $"{d.Name}{d.Postfix}";

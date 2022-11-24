@@ -1,64 +1,83 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+
+<#@ include file="t4_header.tt" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".txt" #>
+
+<#
+string _pMap = "xyzw";
+string _pMapUpper = "XYZW";
+
+GenerateTypes(this.GenerationEnvironment, this.Host, "", "def_angles.json", null, new int[] {4}, null, (d, md, defs) =>
+{
+    string vectorName = $"Vector3{d.Postfix}";
+    md.Name = $"{d.Name}{d.Postfix}";
+#>
 using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten.DoublePrecision
+namespace Molten<#=md.SubNamespace#>
 {
-	///<summary>Represents a four dimensional mathematical AngleD.</summary>
+	///<summary>Represents a four dimensional mathematical <#=md.Name#>.</summary>
 	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
-	public partial struct AngleD : IFormattable, IEquatable<AngleD>
+	public partial struct <#=md.Name#> : IFormattable, IEquatable<<#=md.Name#>>
 	{
 		/// <summary>
         /// A value that specifies the size of a single degree.
         /// </summary>
-        public const double Degree = 0.002777777777777778D;
+        public const <#=d.DT#> Degree = 0.002777777777777778<#=d.FPL#>;
 
         /// <summary>
         /// A value that specifies the size of a single minute.
         /// </summary>
-        public const double Minute = 0.000046296296296296D;
+        public const <#=d.DT#> Minute = 0.000046296296296296<#=d.FPL#>;
 
         /// <summary>
         /// A value that specifies the size of a single second.
         /// </summary>
-        public const double Second = 0.000000771604938272D;
+        public const <#=d.DT#> Second = 0.000000771604938272<#=d.FPL#>;
 
         /// <summary>
         /// A value that specifies the size of a single radian.
         /// </summary>
-        public const double Radian = 0.159154943091895336D;
+        public const <#=d.DT#> Radian = 0.159154943091895336<#=d.FPL#>;
 
         /// <summary>
         /// A value that specifies the size of a single milliradian.
         /// </summary>
-        public const double Milliradian = 0.0001591549431D;
+        public const <#=d.DT#> Milliradian = 0.0001591549431<#=d.FPL#>;
 
         /// <summary>
         /// A value that specifies the size of a single gradian.
         /// </summary>
-        public const double Gradian = 0.0025D;
+        public const <#=d.DT#> Gradian = 0.0025<#=d.FPL#>;
 
          /// <summary>
         /// The internal representation of the angle.
         /// </summary>
         [FieldOffset(0)]
         [DataMember]
-        double radians;
+        <#=d.DT#> radians;
 
         [FieldOffset(0)]
         [DataMember]
         private int radiansInt;
 
          /// <summary>
-        /// Initializes a new instance of the <see cref="AngleD"/> structure with the
+        /// Initializes a new instance of the <see cref="Angle<#=d.Postfix#>"/> structure with the
         /// given unit dependant angle and unit type.
         /// </summary>
         /// <param name="angle">A unit dependant measure of the angle.</param>
         /// <param name="type">The type of unit the angle argument is.</param>
-        public AngleD(double angle, AngleType type)
+        public <#=md.Name#>(<#=d.DT#> angle, AngleType type)
         {
             radiansInt = 0;
             switch (type)
@@ -80,25 +99,25 @@ namespace Molten.DoublePrecision
                     break;
 
                 default:
-                    radians = 0D;
+                    radians = 0<#=d.FPL#>;
                     break;
             }
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AngleD"/> structure using the
+        /// Initializes a new instance of the <see cref="Angle<#=d.Postfix#>"/> structure using the
         /// arc length formula (θ = s/r).
         /// </summary>
         /// <param name="arcLength">The measure of the arc.</param>
         /// <param name="radius">The radius of the circle.</param>
-        public AngleD(double arcLength, double radius)
+        public <#=md.Name#>(<#=d.DT#> arcLength, <#=d.DT#> radius)
         {
             radiansInt = 0;
             radians = arcLength / radius;
         }
 
         /// <summary>
-        /// Wraps this <see cref="AngleD"/> to be in the range [π, -π].
+        /// Wraps this <see cref="Angle<#=d.Postfix#>"/> to be in the range [π, -π].
         /// </summary>
         public void Wrap()
         {
@@ -106,234 +125,234 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Wraps this <see cref="AngleD"/> to be in the range [0, 2π).
+        /// Wraps this <see cref="Angle<#=d.Postfix#>"/> to be in the range [0, 2π).
         /// </summary>
         public void WrapPositive()
         {
-            double newangle = radians % double.Tau;
+            <#=d.DT#> newangle = radians % <#=d.DT#>.Tau;
 
             if (newangle < 0.0)
-                newangle += double.Tau;
+                newangle += <#=d.DT#>.Tau;
 
             radians = newangle;
         }
 
         /// <summary>
-        /// Gets or sets the total number of revolutions this <see cref="AngleD"/> represents.
+        /// Gets or sets the total number of revolutions this <see cref="Angle<#=d.Postfix#>"/> represents.
         /// </summary>
-        public double Revolutions
+        public <#=d.DT#> Revolutions
         {
             get => MathHelper.RadiansToRevolutions(radians);
             set => radians = MathHelper.RevolutionsToRadians(value);
         }
 
         /// <summary>
-        /// Gets or sets the total number of degrees this <see cref="AngleD"/> represents.
+        /// Gets or sets the total number of degrees this <see cref="Angle<#=d.Postfix#>"/> represents.
         /// </summary>
-        public double Degrees
+        public <#=d.DT#> Degrees
         {
             get => MathHelper.RadiansToDegrees(radians);
             set => radians = MathHelper.DegreesToRadians(value);
         }
 
         /// <summary>
-        /// Gets or sets the minutes component of the degrees this <see cref="AngleD"/> represents.
+        /// Gets or sets the minutes component of the degrees this <see cref="Angle<#=d.Postfix#>"/> represents.
         /// When setting the minutes, if the value is in the range (-60, 60) the whole degrees are
         /// not changed; otherwise, the whole degrees may be changed. Fractional values may set
         /// the seconds component.
         /// </summary>
-        public double Minutes
+        public <#=d.DT#> Minutes
         {
             get
             {
-                double degrees = MathHelper.RadiansToDegrees(radians);
+                <#=d.DT#> degrees = MathHelper.RadiansToDegrees(radians);
 
                 if (degrees < 0)
                 {
-                    double degreesfloor = Math.Ceiling(degrees);
-                    return (degrees - degreesfloor) * 60.0D;
+                    <#=d.DT#> degreesfloor = <#=md.Math#>.Ceiling(degrees);
+                    return (degrees - degreesfloor) * 60.0<#=d.FPL#>;
                 }
                 else
                 {
-                    double degreesfloor = Math.Floor(degrees);
-                    return (degrees - degreesfloor) * 60.0D;
+                    <#=d.DT#> degreesfloor = <#=md.Math#>.Floor(degrees);
+                    return (degrees - degreesfloor) * 60.0<#=d.FPL#>;
                 }
             }
             set
             {
-                double degrees = MathHelper.RadiansToDegrees(radians);
-                double degreesfloor = Math.Floor(degrees);
+                <#=d.DT#> degrees = MathHelper.RadiansToDegrees(radians);
+                <#=d.DT#> degreesfloor = <#=md.Math#>.Floor(degrees);
 
-                degreesfloor += value / 60.0D;
+                degreesfloor += value / 60.0<#=d.FPL#>;
                 radians = MathHelper.DegreesToRadians(degreesfloor);
             }
         }
 
         /// <summary>
-        /// Gets or sets the seconds of the degrees this <see cref="AngleD"/> represents.
+        /// Gets or sets the seconds of the degrees this <see cref="Angle<#=d.Postfix#>"/> represents.
         /// When setting the seconds, if the value is in the range (-60, 60) the whole minutes
         /// or whole degrees are not changed; otherwise, the whole minutes or whole degrees
         /// may be changed.
         /// </summary>
-        public double Seconds
+        public <#=d.DT#> Seconds
         {
             get
             {
-                double degrees = MathHelper.RadiansToDegrees(radians);
+                <#=d.DT#> degrees = MathHelper.RadiansToDegrees(radians);
 
                 if (degrees < 0)
                 {
-                    double degreesfloor = Math.Ceiling(degrees);
+                    <#=d.DT#> degreesfloor = <#=md.Math#>.Ceiling(degrees);
 
-                    double minutes = (degrees - degreesfloor) * 60.0D;
-                    double minutesfloor = Math.Ceiling(minutes);
+                    <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FPL#>;
+                    <#=d.DT#> minutesfloor = <#=md.Math#>.Ceiling(minutes);
 
-                    return (minutes - minutesfloor) * 60.0D;
+                    return (minutes - minutesfloor) * 60.0<#=d.FPL#>;
                 }
                 else
                 {
-                    double degreesfloor = Math.Floor(degrees);
+                    <#=d.DT#> degreesfloor = <#=md.Math#>.Floor(degrees);
 
-                    double minutes = (degrees - degreesfloor) * 60.0D;
-                    double minutesfloor = Math.Floor(minutes);
+                    <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FPL#>;
+                    <#=d.DT#> minutesfloor = <#=md.Math#>.Floor(minutes);
 
-                    return (minutes - minutesfloor) * 60.0D;
+                    return (minutes - minutesfloor) * 60.0<#=d.FPL#>;
                 }
             }
             set
             {
-                double degrees = MathHelper.RadiansToDegrees(radians);
-                double degreesfloor = Math.Floor(degrees);
+                <#=d.DT#> degrees = MathHelper.RadiansToDegrees(radians);
+                <#=d.DT#> degreesfloor = <#=md.Math#>.Floor(degrees);
 
-                double minutes = (degrees - degreesfloor) * 60.0D;
-                double minutesfloor = Math.Floor(minutes);
+                <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FPL#>;
+                <#=d.DT#> minutesfloor = <#=md.Math#>.Floor(minutes);
 
-                minutesfloor += value / 60.0D;
-                degreesfloor += minutesfloor / 60.0D;
+                minutesfloor += value / 60.0<#=d.FPL#>;
+                degreesfloor += minutesfloor / 60.0<#=d.FPL#>;
                 radians = MathHelper.DegreesToRadians(degreesfloor);
             }
         }
         
         /// <summary>
-        /// Gets or sets the total number of radians this <see cref="AngleD"/> represents.
+        /// Gets or sets the total number of radians this <see cref="Angle<#=d.Postfix#>"/> represents.
         /// </summary>
-        public double Radians
+        public <#=d.DT#> Radians
         {
             get => radians;
             set => radians = value;
         }
 
         /// <summary>
-        /// Gets or sets the total number of milliradians this <see cref="AngleD"/> represents.
+        /// Gets or sets the total number of milliradians this <see cref="Angle<#=d.Postfix#>"/> represents.
         /// One milliradian is equal to 1/(2000π).
         /// </summary>
-        public double Milliradians
+        public <#=d.DT#> Milliradians
         {
-            get => radians / (Milliradian * double.Tau);
-            set => radians = value * (Milliradian * double.Tau);
+            get => radians / (Milliradian * <#=d.DT#>.Tau);
+            set => radians = value * (Milliradian * <#=d.DT#>.Tau);
         }
 
         /// <summary>
-        /// Gets or sets the total number of gradians this <see cref="AngleD"/> represents.
+        /// Gets or sets the total number of gradians this <see cref="Angle<#=d.Postfix#>"/> represents.
         /// </summary>
-        public double Gradians
+        public <#=d.DT#> Gradians
         {
             get => MathHelper.RadiansToGradians(radians);
             set => radians = MathHelper.RadiansToGradians(value);
         }
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
+        /// Gets a System.Boolean that determines whether this <see cref="Angle<#=d.Postfix#>"/>
         /// is a right angle (i.e. 90° or π/2).
         /// </summary>
-        public bool IsRight => radians == MathHelper.Constants<double>.PiOverTwo; 
+        public bool IsRight => radians == MathHelper.Constants<<#=d.DT#>>.PiOverTwo; 
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
+        /// Gets a System.Boolean that determines whether this <see cref="Angle<#=d.Postfix#>"/>
         /// is a straight angle (i.e. 180° or π).
         /// </summary>
-        public bool IsStraight => radians == double.Pi;
+        public bool IsStraight => radians == <#=d.DT#>.Pi;
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
+        /// Gets a System.Boolean that determines whether this <see cref="Angle<#=d.Postfix#>"/>
         /// is a full rotation angle (i.e. 360° or 2π).
         /// </summary>
-        public bool IsFullRotation => radians == double.Tau;
+        public bool IsFullRotation => radians == <#=d.DT#>.Tau;
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
+        /// Gets a System.Boolean that determines whether this <see cref="Angle<#=d.Postfix#>"/>
         /// is an oblique angle (i.e. is not 90° or a multiple of 90°).
         /// </summary>
-        public bool IsOblique => WrapPositive(this).radians != MathHelper.Constants<double>.PiOverTwo; 
+        public bool IsOblique => WrapPositive(this).radians != MathHelper.Constants<<#=d.DT#>>.PiOverTwo; 
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
+        /// Gets a System.Boolean that determines whether this <see cref="Angle<#=d.Postfix#>"/>
         /// is an acute angle (i.e. less than 90° but greater than 0°).
         /// </summary>
-        public bool IsAcute => radians > 0.0 && radians < MathHelper.Constants<double>.PiOverTwo;
+        public bool IsAcute => radians > 0.0 && radians < MathHelper.Constants<<#=d.DT#>>.PiOverTwo;
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
+        /// Gets a System.Boolean that determines whether this <see cref="Angle<#=d.Postfix#>"/>
         /// is an obtuse angle (i.e. greater than 90° but less than 180°).
         /// </summary>
-        public bool IsObtuse => radians > MathHelper.Constants<double>.PiOverTwo && radians < double.Pi;
+        public bool IsObtuse => radians > MathHelper.Constants<<#=d.DT#>>.PiOverTwo && radians < <#=d.DT#>.Pi;
 
         /// <summary>
-        /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
+        /// Gets a System.Boolean that determines whether this <see cref="Angle<#=d.Postfix#>"/>
         /// is a reflex angle (i.e. greater than 180° but less than 360°).
         /// </summary>
-        public bool IsReflex => radians > double.Pi && radians < double.Tau;
+        public bool IsReflex => radians > <#=d.DT#>.Pi && radians < <#=d.DT#>.Tau;
 
         /// <summary>
-        /// Gets a <see cref="AngleD"/> instance that complements this angle (i.e. the two angles add to 90°).
+        /// Gets a <see cref="Angle<#=d.Postfix#>"/> instance that complements this angle (i.e. the two angles add to 90°).
         /// </summary>
-        public AngleD Complement => new AngleD(MathHelper.Constants<double>.PiOverTwo - radians, AngleType.Radian);
+        public Angle<#=d.Postfix#> Complement => new Angle<#=d.Postfix#>(MathHelper.Constants<<#=d.DT#>>.PiOverTwo - radians, AngleType.Radian);
 
         /// <summary>
-        /// Gets a <see cref="AngleD"/> instance that supplements this angle (i.e. the two angles add to 180°).
+        /// Gets a <see cref="Angle<#=d.Postfix#>"/> instance that supplements this angle (i.e. the two angles add to 180°).
         /// </summary>
-        public AngleD Supplement => new AngleD(double.Pi - radians, AngleType.Radian);
+        public Angle<#=d.Postfix#> Supplement => new Angle<#=d.Postfix#>(<#=d.DT#>.Pi - radians, AngleType.Radian);
 
         /// <summary>
-        /// Wraps the <see cref="AngleD"/> given in the value argument to be in the range [π, -π].
+        /// Wraps the <see cref="Angle<#=d.Postfix#>"/> given in the value argument to be in the range [π, -π].
         /// </summary>
-        /// <param name="value">A <see cref="AngleD"/> to wrap.</param>
-        /// <returns>The <see cref="AngleD"/> that is wrapped.</returns>
-        public static AngleD Wrap(AngleD value)
+        /// <param name="value">A <see cref="Angle<#=d.Postfix#>"/> to wrap.</param>
+        /// <returns>The <see cref="Angle<#=d.Postfix#>"/> that is wrapped.</returns>
+        public static Angle<#=d.Postfix#> Wrap(Angle<#=d.Postfix#> value)
         {
             value.Wrap();
             return value;
         }
 
                 /// <summary>
-        /// Wraps the <see cref="AngleD"/> given in the value argument to be in the range [π, -π].
+        /// Wraps the <see cref="Angle<#=d.Postfix#>"/> given in the value argument to be in the range [π, -π].
         /// </summary>
-        /// <param name="value">A <see cref="AngleD"/> to wrap.</param>
-        /// <returns>The <see cref="AngleD"/> that is wrapped.</returns>
-        public static AngleD Wrap(ref AngleD value)
+        /// <param name="value">A <see cref="Angle<#=d.Postfix#>"/> to wrap.</param>
+        /// <returns>The <see cref="Angle<#=d.Postfix#>"/> that is wrapped.</returns>
+        public static Angle<#=d.Postfix#> Wrap(ref Angle<#=d.Postfix#> value)
         {
             value.Wrap();
             return value;
         }
 
         /// <summary>
-        /// Wraps the <see cref="AngleD"/> given in the value argument to be in the range [0, 2π).
+        /// Wraps the <see cref="Angle<#=d.Postfix#>"/> given in the value argument to be in the range [0, 2π).
         /// </summary>
-        /// <param name="value">A <see cref="AngleD"/> to wrap.</param>
-        /// <returns>The <see cref="AngleD"/> that is wrapped.</returns>
-        public static AngleD WrapPositive(AngleD value)
+        /// <param name="value">A <see cref="Angle<#=d.Postfix#>"/> to wrap.</param>
+        /// <returns>The <see cref="Angle<#=d.Postfix#>"/> that is wrapped.</returns>
+        public static Angle<#=d.Postfix#> WrapPositive(Angle<#=d.Postfix#> value)
         {
             value.WrapPositive();
             return value;
         }
 
                 /// <summary>
-        /// Compares two <see cref="AngleD"/> instances and returns the smaller angle.
+        /// Compares two <see cref="Angle<#=d.Postfix#>"/> instances and returns the smaller angle.
         /// </summary>
-        /// <param name="left">The first <see cref="AngleD"/> instance to compare.</param>
-        /// <param name="right">The second <see cref="AngleD"/> instance to compare.</param>
-        /// <returns>The smaller of the two given <see cref="AngleD"/> instances.</returns>
-        public static AngleD Min(ref AngleD left, ref AngleD right)
+        /// <param name="left">The first <see cref="Angle<#=d.Postfix#>"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="Angle<#=d.Postfix#>"/> instance to compare.</param>
+        /// <returns>The smaller of the two given <see cref="Angle<#=d.Postfix#>"/> instances.</returns>
+        public static Angle<#=d.Postfix#> Min(ref Angle<#=d.Postfix#> left, ref Angle<#=d.Postfix#> right)
         {
             if (left.radians < right.radians)
                 return left;
@@ -342,12 +361,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Compares two <see cref="AngleD"/> instances and returns the smaller angle.
+        /// Compares two <see cref="Angle<#=d.Postfix#>"/> instances and returns the smaller angle.
         /// </summary>
-        /// <param name="left">The first <see cref="AngleD"/> instance to compare.</param>
-        /// <param name="right">The second <see cref="AngleD"/> instance to compare.</param>
-        /// <returns>The smaller of the two given <see cref="AngleD"/> instances.</returns>
-        public static AngleD Min(AngleD left, AngleD right)
+        /// <param name="left">The first <see cref="Angle<#=d.Postfix#>"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="Angle<#=d.Postfix#>"/> instance to compare.</param>
+        /// <returns>The smaller of the two given <see cref="Angle<#=d.Postfix#>"/> instances.</returns>
+        public static Angle<#=d.Postfix#> Min(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
             if (left.radians < right.radians)
                 return left;
@@ -356,12 +375,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Compares two <see cref="AngleD"/> instances and returns the greater angle.
+        /// Compares two <see cref="Angle<#=d.Postfix#>"/> instances and returns the greater angle.
         /// </summary>
-        /// <param name="left">The first <see cref="AngleD"/> instance to compare.</param>
-        /// <param name="right">The second <see cref="AngleD"/> instance to compare.</param>
-        /// <returns>The greater of the two given <see cref="AngleD"/> instances.</returns>
-        public static AngleD Max(ref AngleD left, ref AngleD right)
+        /// <param name="left">The first <see cref="Angle<#=d.Postfix#>"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="Angle<#=d.Postfix#>"/> instance to compare.</param>
+        /// <returns>The greater of the two given <see cref="Angle<#=d.Postfix#>"/> instances.</returns>
+        public static Angle<#=d.Postfix#> Max(ref Angle<#=d.Postfix#> left, ref Angle<#=d.Postfix#> right)
         {
             if (left.radians > right.radians)
                 return left;
@@ -370,12 +389,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Compares two <see cref="AngleD"/> instances and returns the greater angle.
+        /// Compares two <see cref="Angle<#=d.Postfix#>"/> instances and returns the greater angle.
         /// </summary>
-        /// <param name="left">The first <see cref="AngleD"/> instance to compare.</param>
-        /// <param name="right">The second <see cref="AngleD"/> instance to compare.</param>
-        /// <returns>The greater of the two given <see cref="AngleD"/> instances.</returns>
-        public static AngleD Max(AngleD left, AngleD right)
+        /// <param name="left">The first <see cref="Angle<#=d.Postfix#>"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="Angle<#=d.Postfix#>"/> instance to compare.</param>
+        /// <returns>The greater of the two given <see cref="Angle<#=d.Postfix#>"/> instances.</returns>
+        public static Angle<#=d.Postfix#> Max(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
             if (left.radians > right.radians)
                 return left;
@@ -384,204 +403,204 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Adds two <see cref="AngleD"/> objects and returns the result.
+        /// Adds two <see cref="Angle<#=d.Postfix#>"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to add.</param>
         /// <param name="right">The second object to add.</param>
         /// <returns>The value of the two objects added together.</returns>
-        public static AngleD Add(ref AngleD left, ref AngleD right)
+        public static Angle<#=d.Postfix#> Add(ref Angle<#=d.Postfix#> left, ref Angle<#=d.Postfix#> right)
         {
-            return new AngleD(left.radians + right.radians, AngleType.Radian);
+            return new Angle<#=d.Postfix#>(left.radians + right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Subtracts two <see cref="AngleD"/> objects and returns the result.
+        /// Subtracts two <see cref="Angle<#=d.Postfix#>"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to subtract.</param>
         /// <param name="right">The second object to subtract.</param>
         /// <returns>The value of the two objects subtracted.</returns>
-        public static AngleD Subtract(ref AngleD left, ref AngleD right)
+        public static Angle<#=d.Postfix#> Subtract(ref Angle<#=d.Postfix#> left, ref Angle<#=d.Postfix#> right)
         {
-            return new AngleD(left.radians - right.radians, AngleType.Radian);
+            return new Angle<#=d.Postfix#>(left.radians - right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Multiplies two <see cref="AngleD"/> objects and returns the result.
+        /// Multiplies two <see cref="Angle<#=d.Postfix#>"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to multiply.</param>
         /// <param name="right">The second object to multiply.</param>
         /// <returns>The value of the two objects multiplied together.</returns>
-        public static AngleD Multiply(ref AngleD left, ref AngleD right)
+        public static Angle<#=d.Postfix#> Multiply(ref Angle<#=d.Postfix#> left, ref Angle<#=d.Postfix#> right)
         {
-            return new AngleD(left.radians * right.radians, AngleType.Radian);
+            return new Angle<#=d.Postfix#>(left.radians * right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Divides two <see cref="AngleD"/> objects and returns the result.
+        /// Divides two <see cref="Angle<#=d.Postfix#>"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The numerator object.</param>
         /// <param name="right">The denominator object.</param>
         /// <returns>The value of the two objects divided.</returns>
-        public static AngleD Divide(ref AngleD left, ref AngleD right)
+        public static Angle<#=d.Postfix#> Divide(ref Angle<#=d.Postfix#> left, ref Angle<#=d.Postfix#> right)
         {
-            return new AngleD(left.radians / right.radians, AngleType.Radian);
+            return new Angle<#=d.Postfix#>(left.radians / right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Gets a new <see cref="AngleD"/> instance that represents the zero angle (i.e. 0°).
+        /// Gets a new <see cref="Angle<#=d.Postfix#>"/> instance that represents the zero angle (i.e. 0°).
         /// </summary>
-        public static AngleD ZeroAngle => new AngleD(0.0D, AngleType.Radian); 
+        public static Angle<#=d.Postfix#> ZeroAngle => new Angle<#=d.Postfix#>(0.0<#=d.FPL#>, AngleType.Radian); 
 
         /// <summary>
-        /// Gets a new <see cref="AngleD"/> instance that represents the right angle (i.e. 90° or π/2).
+        /// Gets a new <see cref="Angle<#=d.Postfix#>"/> instance that represents the right angle (i.e. 90° or π/2).
         /// </summary>
-        public static AngleD RightAngle => new AngleD(MathHelper.Constants<double>.PiOverTwo, AngleType.Radian);
+        public static Angle<#=d.Postfix#> RightAngle => new Angle<#=d.Postfix#>(MathHelper.Constants<<#=d.DT#>>.PiOverTwo, AngleType.Radian);
 
         /// <summary>
-        /// Gets a new <see cref="AngleD"/> instance that represents the straight angle (i.e. 180° or π).
+        /// Gets a new <see cref="Angle<#=d.Postfix#>"/> instance that represents the straight angle (i.e. 180° or π).
         /// </summary>
-        public static AngleD StraightAngle => new AngleD(double.Pi, AngleType.Radian);
+        public static Angle<#=d.Postfix#> StraightAngle => new Angle<#=d.Postfix#>(<#=d.DT#>.Pi, AngleType.Radian);
 
         /// <summary>
-        /// Gets a new <see cref="AngleD"/> instance that represents the full rotation angle (i.e. 360° or 2π).
+        /// Gets a new <see cref="Angle<#=d.Postfix#>"/> instance that represents the full rotation angle (i.e. 360° or 2π).
         /// </summary>
-        public static AngleD FullRotationAngle => new AngleD(double.Tau, AngleType.Radian);
+        public static Angle<#=d.Postfix#> FullRotationAngle => new Angle<#=d.Postfix#>(<#=d.DT#>.Tau, AngleType.Radian);
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether the values of two <see cref="AngleD"/>
+        /// Returns a System.Boolean that indicates whether the values of two <see cref="Angle<#=d.Postfix#>"/>
         /// objects are equal.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if the left and right parameters have the same value; otherwise, false.</returns>
-        public static bool operator ==(AngleD left, AngleD right)
+        public static bool operator ==(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
             return left.radians == right.radians;
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether the values of two <see cref="AngleD"/>
+        /// Returns a System.Boolean that indicates whether the values of two <see cref="Angle<#=d.Postfix#>"/>
         /// objects are not equal.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if the left and right parameters do not have the same value; otherwise, false.</returns>
-        public static bool operator !=(AngleD left, AngleD right)
+        public static bool operator !=(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
             return left.radians != right.radians;
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a <see cref="AngleD"/>
-        /// object is less than another <see cref="AngleD"/> object.
+        /// Returns a System.Boolean that indicates whether a <see cref="Angle<#=d.Postfix#>"/>
+        /// object is less than another <see cref="Angle<#=d.Postfix#>"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if left is less than right; otherwise, false.</returns>
-        public static bool operator <(AngleD left, AngleD right)
+        public static bool operator <(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
             return left.radians < right.radians;
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a <see cref="AngleD"/>
-        /// object is greater than another <see cref="AngleD"/> object.
+        /// Returns a System.Boolean that indicates whether a <see cref="Angle<#=d.Postfix#>"/>
+        /// object is greater than another <see cref="Angle<#=d.Postfix#>"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if left is greater than right; otherwise, false.</returns>
-        public static bool operator >(AngleD left, AngleD right)
+        public static bool operator >(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
             return left.radians > right.radians;
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a <see cref="AngleD"/>
-        /// object is less than or equal to another <see cref="AngleD"/> object.
+        /// Returns a System.Boolean that indicates whether a <see cref="Angle<#=d.Postfix#>"/>
+        /// object is less than or equal to another <see cref="Angle<#=d.Postfix#>"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if left is less than or equal to right; otherwise, false.</returns>
-        public static bool operator <=(AngleD left, AngleD right)
+        public static bool operator <=(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
             return left.radians <= right.radians;
         }
 
         /// <summary>
-        /// Returns a System.Boolean that indicates whether a <see cref="AngleD"/>
-        /// object is greater than or equal to another <see cref="AngleD"/> object.
+        /// Returns a System.Boolean that indicates whether a <see cref="Angle<#=d.Postfix#>"/>
+        /// object is greater than or equal to another <see cref="Angle<#=d.Postfix#>"/> object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if left is greater than or equal to right; otherwise, false.</returns>
-        public static bool operator >=(AngleD left, AngleD right)
+        public static bool operator >=(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
             return left.radians >= right.radians;
         }
 
         /// <summary>
-        /// Returns the value of the <see cref="AngleD"/> operand. (The sign of
+        /// Returns the value of the <see cref="Angle<#=d.Postfix#>"/> operand. (The sign of
         /// the operand is unchanged.)
         /// </summary>
-        /// <param name="value">A <see cref="AngleD"/> object.</param>
+        /// <param name="value">A <see cref="Angle<#=d.Postfix#>"/> object.</param>
         /// <returns>The value of the value parameter.</returns>
-        public static AngleD operator +(AngleD value)
+        public static Angle<#=d.Postfix#> operator +(Angle<#=d.Postfix#> value)
         {
             return value;
         }
 
         /// <summary>
-        /// Returns the the negated value of the <see cref="AngleD"/> operand.
+        /// Returns the the negated value of the <see cref="Angle<#=d.Postfix#>"/> operand.
         /// </summary>
-        /// <param name="value">A <see cref="AngleD"/> object.</param>
+        /// <param name="value">A <see cref="Angle<#=d.Postfix#>"/> object.</param>
         /// <returns>The negated value of the value parameter.</returns>
-        public static AngleD operator -(AngleD value)
+        public static Angle<#=d.Postfix#> operator -(Angle<#=d.Postfix#> value)
         {
-            return new AngleD(-value.radians, AngleType.Radian);
+            return new Angle<#=d.Postfix#>(-value.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Adds two <see cref="AngleD"/> objects and returns the result.
+        /// Adds two <see cref="Angle<#=d.Postfix#>"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to add.</param>
         /// <param name="right">The second object to add.</param>
         /// <returns>The value of the two objects added together.</returns>
-        public static AngleD operator +(AngleD left, AngleD right)
+        public static Angle<#=d.Postfix#> operator +(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
-            return new AngleD(left.radians + right.radians, AngleType.Radian);
+            return new Angle<#=d.Postfix#>(left.radians + right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Subtracts two <see cref="AngleD"/> objects and returns the result.
+        /// Subtracts two <see cref="Angle<#=d.Postfix#>"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to subtract</param>
         /// <param name="right">The second object to subtract.</param>
         /// <returns>The value of the two objects subtracted.</returns>
-        public static AngleD operator -(AngleD left, AngleD right)
+        public static Angle<#=d.Postfix#> operator -(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
-            return new AngleD(left.radians - right.radians, AngleType.Radian);
+            return new Angle<#=d.Postfix#>(left.radians - right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Multiplies two <see cref="AngleD"/> objects and returns the result.
+        /// Multiplies two <see cref="Angle<#=d.Postfix#>"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to multiply.</param>
         /// <param name="right">The second object to multiply.</param>
         /// <returns>The value of the two objects multiplied together.</returns>
-        public static AngleD operator *(AngleD left, AngleD right)
+        public static Angle<#=d.Postfix#> operator *(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
-            return new AngleD(left.radians * right.radians, AngleType.Radian);
+            return new Angle<#=d.Postfix#>(left.radians * right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Divides two <see cref="AngleD"/> objects and returns the result.
+        /// Divides two <see cref="Angle<#=d.Postfix#>"/> objects and returns the result.
         /// </summary>
         /// <param name="left">The numerator object.</param>
         /// <param name="right">The denominator object.</param>
         /// <returns>The value of the two objects divided.</returns>
-        public static AngleD operator /(AngleD left, AngleD right)
+        public static Angle<#=d.Postfix#> operator /(Angle<#=d.Postfix#> left, Angle<#=d.Postfix#> right)
         {
-            return new AngleD(left.radians / right.radians, AngleType.Radian);
+            return new Angle<#=d.Postfix#>(left.radians / right.radians, AngleType.Radian);
         }
 
         /// <summary>
@@ -602,10 +621,10 @@ namespace Molten.DoublePrecision
             if (other == null)
                 return 1;
 
-            if (!(other is AngleD))
+            if (!(other is Angle<#=d.Postfix#>))
                 throw new ArgumentException("Argument must be of type Angle.", "other");
 
-            double radians = ((AngleD)other).radians;
+            <#=d.DT#> radians = ((Angle<#=d.Postfix#>)other).radians;
 
             if (this.radians > radians)
                 return 1;
@@ -617,7 +636,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Compares this instance to a second <see cref="AngleD"/> and returns
+        /// Compares this instance to a second <see cref="Angle<#=d.Postfix#>"/> and returns
         /// an integer that indicates whether the value of this instance is less than,
         /// equal to, or greater than the value of the specified object.
         /// </summary>
@@ -629,7 +648,7 @@ namespace Molten.DoublePrecision
         /// to the other. If the value is greater than zero, the current instance is
         /// greater than the other.
         /// </returns>
-        public int CompareTo(AngleD other)
+        public int CompareTo(Angle<#=d.Postfix#> other)
         {
             if (this.radians > other.radians)
                 return 1;
@@ -642,14 +661,14 @@ namespace Molten.DoublePrecision
 
         /// <summary>
         /// Returns a value that indicates whether the current instance and a specified
-        /// <see cref="AngleD"/> object have the same value.
+        /// <see cref="Angle<#=d.Postfix#>"/> object have the same value.
         /// </summary>
         /// <param name="other">The object to compare.</param>
         /// <returns>
-        /// Returns true if this <see cref="AngleD"/> object and another have the same value;
+        /// Returns true if this <see cref="Angle<#=d.Postfix#>"/> object and another have the same value;
         /// otherwise, false.
         /// </returns>
-        public bool Equals(AngleD other)
+        public bool Equals(Angle<#=d.Postfix#> other)
         {
             return this == other;
         }
@@ -709,7 +728,7 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Returns a hash code for this <see cref="AngleD"/> instance.
+        /// Returns a hash code for this <see cref="Angle<#=d.Postfix#>"/> instance.
         /// </summary>
         /// <returns>A 32-bit signed integer hash code.</returns>
         public override int GetHashCode()
@@ -723,15 +742,17 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="obj">The object to compare.</param>
         /// <returns>
-        /// Returns true if the obj parameter is a <see cref="AngleD"/> object or a type
-        /// capable of implicit conversion to a <see cref="AngleD"/> value, and
-        /// its value is equal to the value of the current <see cref="AngleD"/>
+        /// Returns true if the obj parameter is a <see cref="Angle<#=d.Postfix#>"/> object or a type
+        /// capable of implicit conversion to a <see cref="Angle<#=d.Postfix#>"/> value, and
+        /// its value is equal to the value of the current <see cref="Angle<#=d.Postfix#>"/>
         /// object; otherwise, false.
         /// </returns>
         public override bool Equals(object obj)
         {
-            return (obj is AngleD) && (this == (AngleD)obj);
+            return (obj is Angle<#=d.Postfix#>) && (this == (Angle<#=d.Postfix#>)obj);
         }
 	}
 }
-
+<#
+});
+#>
