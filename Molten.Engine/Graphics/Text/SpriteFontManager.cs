@@ -84,7 +84,7 @@ namespace Molten.Graphics
 
                 _camera.Surface = _camera.Surface;
 
-                Rectangle rtBounds = new Rectangle(0, 0, PageSize, PageSize);
+                RectangleF rtBounds = new RectangleF(0, 0, PageSize, PageSize);
                 for(uint i = 0; i < _rtTransfer.ArraySize; i++)
                     sb.Draw(rtBounds, rtBounds, Color.White, _rtTransfer, null, i, i);
 
@@ -95,7 +95,7 @@ namespace Molten.Graphics
 
             while (_pendingGlyphs.TryDequeue(out SpriteFontGlyphBinding binding))
             {
-                Rectangle gBounds = binding.Glyph.Bounds;
+                RectangleF gBounds = (RectangleF)binding.Glyph.Bounds;
                 Vector2F glyphScale = new Vector2F()
                 {
                     X = (float)binding.PWidth / gBounds.Width,
@@ -116,7 +116,7 @@ namespace Molten.Graphics
                 _sdf.To8Bit(sdfRef);
 
                 ITexture2D tex = _sdf.ConvertToTexture(_engine.Renderer, sdfRef);
-                sb.Draw(binding.Location, ref style, tex, null, 0, (uint)binding.PageID);
+                sb.Draw((RectangleF)binding.Location, ref style, tex, null, 0, (uint)binding.PageID);
 
                 sdfRef.Slice.Dispose();
                // tex.Dispose(); -- TODO implement proper GPU disposal handling (only disposes gpu resources after X frames)

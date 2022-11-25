@@ -1,78 +1,52 @@
-﻿// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using Molten.DoublePrecision;
 
 namespace Molten
 {
-    /// <summary>
-    /// Define a Rectangle. This structure is slightly different from System.Drawing.Rectangle as it is
-    /// internally storing Left,Top,Right,Bottom instead of Left,Top,Width,Height.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+	///<summary>Represents a four dimensional mathematical RectangleF.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Serializable]
-    public struct Rectangle : IEquatable<Rectangle>
-    {
-        /// <summary>
+	public partial struct RectangleF : IFormattable, IEquatable<RectangleF>
+	{
+		/// <summary>
         /// The left.
         /// </summary>
         [DataMember]
-        public int Left;
+        public float Left;
 
         /// <summary>
         /// The top.
         /// </summary>
         [DataMember]
-        public int Top;
+        public float Top;
 
         /// <summary>
         /// The right.
         /// </summary>
         [DataMember]
-        public int Right;
+        public float Right;
 
         /// <summary>
         /// The bottom.
         /// </summary>
         [DataMember]
-        public int Bottom;
+        public float Bottom;
 
         /// <summary>
         /// An empty rectangle.
         /// </summary>
-        public static readonly Rectangle Empty;
-
-        static Rectangle()
-        {
-            Empty = new Rectangle();
-        }
+        public static readonly RectangleF Empty = new RectangleF();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Rectangle"/> struct.
         /// </summary>
         /// <param name="position">The position of the rectangle.</param>
         /// <param name="size">The size of the rectangle.</param>
-        public Rectangle(Vector2I position, Vector2I size)
+        public RectangleF(Vector2F position, Vector2F size)
         {
             Left = position.X;
             Top = position.Y;
@@ -87,7 +61,7 @@ namespace Molten
         /// <param name="y">The top.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public Rectangle(int x, int y, int width, int height)
+        public RectangleF(float x, float y, float width, float height)
         {
             Left = x;
             Top = y;
@@ -99,7 +73,7 @@ namespace Molten
         /// Gets or sets the X position.
         /// </summary>
         /// <value>The X position.</value>
-        public int X
+        public float X
         {
             get => Left;
             set
@@ -113,7 +87,7 @@ namespace Molten
         /// Gets or sets the Y position.
         /// </summary>
         /// <value>The Y position.</value>
-        public int Y
+        public float Y
         {
             get => Top;
             set
@@ -127,7 +101,7 @@ namespace Molten
         /// Gets or sets the width.
         /// </summary>
         /// <value>The width.</value>
-        public int Width
+        public float Width
         {
             get => Right - Left;
             set => Right = Left + value;
@@ -137,7 +111,7 @@ namespace Molten
         /// Gets or sets the height.
         /// </summary>
         /// <value>The height.</value>
-        public int Height
+        public float Height
         {
             get => Bottom - Top;
             set => Bottom = Top + value;
@@ -162,12 +136,12 @@ namespace Molten
         /// <value>
         /// The center.
         /// </value>
-        public Vector2I Center
+        public Vector2F Center
         {
-            get => new Vector2I(Left + (Width / 2), Top + (Height / 2));
+            get => new Vector2F(Left + (Width / 2), Top + (Height / 2));
             set
             {
-                Vector2I centerDif = value - Center;
+                Vector2F centerDif = value - Center;
                 Left += centerDif.X;
                 Right += centerDif.X;
                 Top += centerDif.Y;
@@ -178,9 +152,9 @@ namespace Molten
         /// <summary>
         /// Gets or sets the size of the rectangle.
         /// </summary>
-        public Vector2I Size
+        public Vector2F Size
         {
-            get => new Vector2I(Right - Left, Bottom - Top);
+            get => new Vector2F(Right - Left, Bottom - Top);
             set
             {
                 Right = Left + value.X;
@@ -192,9 +166,9 @@ namespace Molten
         /// Gets or sets the position of the top-left corner of the rectangle. Setting this will move the rectangle without resizing.
         /// </summary>
         /// <value>The top-left corner of the rectangle.</value>
-        public Vector2I TopLeft
+        public Vector2F TopLeft
         {
-            get => new Vector2I(Left, Top);
+            get => new Vector2F(Left, Top);
             set
             {
                 Bottom = value.Y + Height;
@@ -209,9 +183,9 @@ namespace Molten
         /// Gets or sets the position of the top-right corner of the rectangle. Setting this will move the rectangle without resizing.
         /// </summary>
         /// <value>The top-right corner of the rectangle.</value>
-        public Vector2I TopRight
+        public Vector2F TopRight
         {
-            get => new Vector2I(Right, Top);
+            get => new Vector2F(Right, Top);
             set
             {
                 Left = value.X - Width;
@@ -226,9 +200,9 @@ namespace Molten
         /// Gets or sets the position of the bottom-left corner of the rectangle. Setting this will move the rectangle without resizing.
         /// </summary>
         /// <value>The bottom-left corner of the rectangle.</value>
-        public Vector2I BottomLeft
+        public Vector2F BottomLeft
         {
-            get => new Vector2I(Left, Bottom);
+            get => new Vector2F(Left, Bottom);
             set
             {
                 Top = value.Y - Height;
@@ -243,9 +217,9 @@ namespace Molten
         /// Gets or sets the position of the bottom-right corner of the rectangle. Setting this will move the rectangle without resizing.
         /// </summary>
         /// <value>The bottom-right corner of the rectangle.</value>
-        public Vector2I BottomRight
+        public Vector2F BottomRight
         {
-            get => new Vector2I(Right, Bottom);
+            get => new Vector2F(Right, Bottom);
             set
             {
                 Top = value.Y - Height;
@@ -272,23 +246,6 @@ namespace Molten
         public void Encapsulate(Vector2F p)
         {
             if (p.X < Left)
-                Left = (int)Math.Floor(p.X);
-            else if (p.X > Right)
-                Right = (int)Math.Ceiling(p.X);
-
-            if (p.Y < Top)
-                Top = (int)Math.Floor(p.Y);
-            else if (p.Y > Bottom)
-                Bottom = (int)Math.Ceiling(p.Y);
-        }
-
-        /// <summary>
-        /// Expands the rectangle as needed so that the given point falls within it's bounds.
-        /// </summary>
-        /// <param name="p"></param>
-        public void Encapsulate(Vector2I p)
-        {
-            if (p.X < Left)
                 Left = p.X;
             else if (p.X > Right)
                 Right = p.X;
@@ -303,7 +260,7 @@ namespace Molten
         /// Expands the rectangle as needed so that the given point falls within it's bounds.
         /// </summary>
         /// <param name="p"></param>
-        public void Encapsulate(Rectangle p)
+        public void Encapsulate(RectangleF p)
         {
             if (p.Left < Left)
                 Left = p.Left;
@@ -321,7 +278,7 @@ namespace Molten
         /// <param name="topAmount">Value to push the top side out by.</param>
         /// <param name="rightAmount">Value to push the right side out by.</param>
         /// <param name="bottomAmount">Value to push the bottom side out by.</param>
-        public void Inflate(int leftAmount, int topAmount, int rightAmount, int bottomAmount)
+        public void Inflate(float leftAmount, float topAmount, float rightAmount, float bottomAmount)
         {
             X -= leftAmount;
             Y -= topAmount;
@@ -332,7 +289,7 @@ namespace Molten
         /// <summary>Pushes the edges of the rectangle out by the horizontal and vertical values specified. Negative values can be used to shrink the rectangle.</summary>
         /// <param name="horizontalAmount">Value to push the sides out by.</param>
         /// <param name="verticalAmount">Value to push the top and bottom out by.</param>
-        public void Inflate(int horizontalAmount, int verticalAmount)
+        public void Inflate(float horizontalAmount, float verticalAmount)
         {
             X -= horizontalAmount;
             Y -= verticalAmount;
@@ -342,7 +299,7 @@ namespace Molten
 
         /// <summary>Pushes the edges of the rectangle out by the horizontal and vertical values specified. Negative values can be used to shrink the rectangle.</summary>
         /// <param name="amount">Value to push all sides out by.</param>
-        public void Inflate(int amount)
+        public void Inflate(float amount)
         {
             X -= amount;
             Y -= amount;
@@ -353,58 +310,29 @@ namespace Molten
         /// <summary>Determines whether this rectangle contains a specified point represented by its x- and y-coordinates.</summary>
         /// <param name="x">The x-coordinate of the specified point.</param>
         /// <param name="y">The y-coordinate of the specified point.</param>
-        public bool Contains(int x, int y)
+        public bool Contains(float x, float y)
         {
             return (X <= x) && (x < Right) && (Y <= y) && (y < Bottom);
         }
 
-        ///// <summary>Determines whether this rectangle contains a specified Point.</summary>
-        ///// <param name="value">The Point to evaluate.</param>
-        //public bool Contains(Point value)
-        //{
-        //    bool result;
-        //    Contains(ref value, out result);
-        //    return result;
-        //}
-
-        ///// <summary>Determines whether this rectangle contains a specified Point.</summary>
-        ///// <param name="value">The Point to evaluate.</param>
-        ///// <param name="result">[OutAttribute] true if the specified Point is contained within this rectangle; false otherwise.</param>
-        //public void Contains(ref Point value, out bool result)
-        //{
-        //    result = (X <= value.X) && (value.X < Right) && (Y <= value.Y) && (value.Y < Bottom);
-        //}
-
         /// <summary>Determines whether this rectangle entirely contains a specified rectangle.</summary>
         /// <param name="value">The rectangle to evaluate.</param>
-        public bool Contains(Rectangle value)
+        public bool Contains(RectangleF value)
         {
-            bool result;
-            Contains(ref value, out result);
+            Contains(ref value, out bool result);
             return result;
         }
 
         /// <summary>Determines whether this rectangle entirely contains a specified rectangle.</summary>
         /// <param name="value">The rectangle to evaluate.</param>
         /// <param name="result">[OutAttribute] On exit, is true if this rectangle entirely contains the specified rectangle, or false if not.</param>
-        public void Contains(ref Rectangle value, out bool result)
+        public void Contains(ref RectangleF value, out bool result)
         {
             result = (X <= value.X) && (value.Right <= Right) && (Y <= value.Y) && (value.Bottom <= Bottom);
         }
 
         /// <summary>
-        /// Checks, if specified point is inside <see cref="Rectangle"/>.
-        /// </summary>
-        /// <param name="x">X point coordinate.</param>
-        /// <param name="y">Y point coordinate.</param>
-        /// <returns><c>true</c> if point is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
-        public bool Contains(float x, float y)
-        {
-            return (x >= Left && x <= Right && y >= Top && y <= Bottom);
-        }
-
-        /// <summary>
-        /// Checks, if specified <see cref="Vector2F"/> is inside <see cref="Rectangle"/>.
+        /// Checks, if specified <see cref="Vector2F"/> is inside the current <see cref="Rectangle"/>
         /// </summary>
         /// <param name="vector">Coordinate <see cref="Vector2F"/>.</param>
         /// <returns><c>true</c> if <see cref="Vector2F"/> is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
@@ -413,22 +341,11 @@ namespace Molten
             return Contains(vector.X, vector.Y);
         }
 
-        /// <summary>
-        /// Checks, if specified <see cref="Vector2I"/> is inside the current <see cref="Rectangle"/>
-        /// </summary>
-        /// <param name="vector">Coordinate <see cref="Vector2I"/>.</param>
-        /// <returns><c>true</c> if <see cref="Vector2I"/> is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
-        public bool Contains(Vector2I vector)
-        {
-            return Contains(vector.X, vector.Y);
-        }
-
         /// <summary>Determines whether a specified rectangle intersects with this rectangle.</summary>
         /// <param name="value">The rectangle to evaluate.</param>
-        public bool Intersects(Rectangle value)
+        public bool Intersects(RectangleF value)
         {
-            bool result;
-            Intersects(ref value, out result);
+            Intersects(ref value, out bool result);
             return result;
         }
 
@@ -437,7 +354,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The rectangle to evaluate</param>
         /// <param name="result">[OutAttribute] true if the specified rectangle intersects with this one; false otherwise.</param>
-        public void Intersects(ref Rectangle value, out bool result)
+        public void Intersects(ref RectangleF value, out bool result)
         {
             result = (value.X < Right) && (X < value.Right) && (value.Y < Bottom) && (Y < value.Bottom);
         }
@@ -448,9 +365,9 @@ namespace Molten
         /// <param name="value1">The first rectangle to compare.</param>
         /// <param name="value2">The second rectangle to compare.</param>
         /// <returns>The intersection rectangle.</returns>
-        public static Rectangle Intersect(Rectangle value1, Rectangle value2)
+        public static RectangleF Intersect(RectangleF value1, RectangleF value2)
         {
-            Rectangle result;
+            RectangleF result;
             Intersect(ref value1, ref value2, out result);
             return result;
         }
@@ -459,20 +376,17 @@ namespace Molten
         /// <param name="value1">The first rectangle to compare.</param>
         /// <param name="value2">The second rectangle to compare.</param>
         /// <param name="result">[OutAttribute] The area where the two first parameters overlap.</param>
-        public static void Intersect(ref Rectangle value1, ref Rectangle value2, out Rectangle result)
+        public static void Intersect(ref RectangleF value1, ref RectangleF value2, out RectangleF result)
         {
-            int newLeft = (value1.X > value2.X) ? value1.X : value2.X;
-            int newTop = (value1.Y > value2.Y) ? value1.Y : value2.Y;
-            int newRight = (value1.Right < value2.Right) ? value1.Right : value2.Right;
-            int newBottom = (value1.Bottom < value2.Bottom) ? value1.Bottom : value2.Bottom;
+            float newLeft = (value1.X > value2.X) ? value1.X : value2.X;
+            float newTop = (value1.Y > value2.Y) ? value1.Y : value2.Y;
+            float newRight = (value1.Right < value2.Right) ? value1.Right : value2.Right;
+            float newBottom = (value1.Bottom < value2.Bottom) ? value1.Bottom : value2.Bottom;
+
             if ((newRight > newLeft) && (newBottom > newTop))
-            {
-                result = new Rectangle(newLeft, newTop, newRight - newLeft, newBottom - newTop);
-            }
+                result = new RectangleF(newLeft, newTop, newRight - newLeft, newBottom - newTop);
             else
-            {
                 result = Empty;
-            }
         }
 
         /// <summary>
@@ -481,10 +395,9 @@ namespace Molten
         /// <param name="value1">The first rectangle to contain.</param>
         /// <param name="value2">The second rectangle to contain.</param>
         /// <returns>The union rectangle.</returns>
-        public static Rectangle Union(Rectangle value1, Rectangle value2)
+        public static RectangleF Union(RectangleF value1, RectangleF value2)
         {
-            Rectangle result;
-            Union(ref value1, ref value2, out result);
+            Union(ref value1, ref value2, out RectangleF result);
             return result;
         }
 
@@ -494,13 +407,13 @@ namespace Molten
         /// <param name="value1">The first rectangle to contain.</param>
         /// <param name="value2">The second rectangle to contain.</param>
         /// <param name="result">[OutAttribute] The rectangle that must be the union of the first two rectangles.</param>
-        public static void Union(ref Rectangle value1, ref Rectangle value2, out Rectangle result)
+        public static void Union(ref RectangleF value1, ref RectangleF value2, out RectangleF result)
         {
-            var left = Math.Min(value1.Left, value2.Left);
-            var right = Math.Max(value1.Right, value2.Right);
-            var top = Math.Min(value1.Top, value2.Top);
-            var bottom = Math.Max(value1.Bottom, value2.Bottom);
-            result = new Rectangle(left, top, right - left, bottom - top);
+            float left = Math.Min(value1.Left, value2.Left);
+            float right = Math.Max(value1.Right, value2.Right);
+            float top = Math.Min(value1.Top, value2.Top);
+            float bottom = Math.Max(value1.Bottom, value2.Bottom);
+            result = new RectangleF(left, top, right - left, bottom - top);
         }
 
         /// <summary>
@@ -512,10 +425,10 @@ namespace Molten
         /// </returns>
         public override bool Equals(object obj)
         {
-            if(!(obj is Rectangle))
+            if(!(obj is RectangleF))
                 return false;
 
-            var strongValue = (Rectangle)obj;
+            var strongValue = (RectangleF)obj;
             return Equals(ref strongValue);
         }
 
@@ -527,7 +440,7 @@ namespace Molten
         /// <c>true</c> if the specified <see cref="Rectangle"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Rectangle other)
+        public bool Equals(ref RectangleF other)
         {
             return other.Left == Left && other.Top == Top && other.Right == Right && other.Bottom == Bottom;
         }
@@ -540,7 +453,7 @@ namespace Molten
         /// <c>true</c> if the specified <see cref="Rectangle"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Rectangle other)
+        public bool Equals(RectangleF other)
         {
             return Equals(ref other);
         }
@@ -554,12 +467,17 @@ namespace Molten
         {
             unchecked
             {
-                int result = Left;
-                result = (result * 397) ^ Top;
-                result = (result * 397) ^ Right;
-                result = (result * 397) ^ Bottom;
+                int result = Left.GetHashCode();
+                result = (result * 397) ^ Top.GetHashCode();
+                result = (result * 397) ^ Right.GetHashCode();
+                result = (result * 397) ^ Bottom.GetHashCode();
                 return result;
             }
+        }
+
+        string IFormattable.ToString(string? format, IFormatProvider? formatProvider)
+        {
+            return string.Format(formatProvider, format, X, Y, Width, Height);
         }
         
         public override string ToString()
@@ -568,15 +486,15 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns an interpolated <see cref="Rectangle"/> based on the start and end rectangles given.
+        /// Returns an interpolated <see cref="RectangleF"/> based on the start and end rectangles given.
         /// </summary>
-        /// <param name="start">The end <see cref="Rectangle"/>.</param>
-        /// <param name="end">The end <see cref="Rectangle"/>.</param>
+        /// <param name="start">The end <see cref="RectangleF"/>.</param>
+        /// <param name="end">The end <see cref="RectangleF"/>.</param>
         /// <param name="percent">The percentage of interpolation, between 0.0 and 1.0f.</param>
         /// <returns></returns>
-        public static Rectangle Lerp(Rectangle start, Rectangle end, float percent)
+        public static RectangleF Lerp(RectangleF start, RectangleF end, float percent)
         {
-            return new Rectangle()
+            return new RectangleF()
             {
                 Left = MathHelper.Lerp(start.Left, end.Left, percent),
                 Right = MathHelper.Lerp(start.Right, end.Right, percent),
@@ -593,7 +511,7 @@ namespace Molten
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Rectangle left, Rectangle right)
+        public static bool operator ==(RectangleF left, RectangleF right)
         {
             return left.Equals(ref right);
         }
@@ -605,31 +523,9 @@ namespace Molten
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Rectangle left, Rectangle right)
+        public static bool operator !=(RectangleF left, RectangleF right)
         {
             return !left.Equals(ref right);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion to the <see cref="RectangleF"/> structure.
-        /// </summary>
-        /// <remarks>Performs direct converstion from int to float.</remarks>
-        /// <param name="value">The source <see cref="Rectangle"/> value.</param>
-        /// <returns>The converted structure.</returns>
-        public static implicit operator RectangleF(Rectangle value)
-        {
-            return new RectangleF(value.X, value.Y, value.Width, value.Height);
-        }
-
-        /// <summary>
-        /// Adds a <see cref="Vector2I"/> to a <see cref="Rectangle"/>.
-        /// </summary>
-        /// <param name="value">The <see cref="Rectangle"/>.</param>
-        /// <param name="vector">The <see cref="Vector2I"/>.</param>
-        /// <returns></returns>
-        public static Rectangle operator +(Rectangle value, Vector2I vector)
-        {
-            return new Rectangle(value.X + vector.X, value.Y + vector.Y, value.Width, value.Height);
         }
 
         /// <summary>
@@ -638,10 +534,69 @@ namespace Molten
         /// <param name="value">The <see cref="Rectangle"/>.</param>
         /// <param name="vector">The <see cref="Vector2F"/>.</param>
         /// <returns></returns>
-        public static Rectangle operator +(Rectangle value, Vector2F vector)
+        public static RectangleF operator +(RectangleF value, Vector2F vector)
         {
-            return new Rectangle(value.X + (int)vector.X, value.Y + (int)vector.Y, value.Width, value.Height);
+            return new RectangleF(value.X + vector.X, value.Y + vector.Y, value.Width, value.Height);
         }
         #endregion
-    }
+
+        #region Rectangle Cast Operators
+        public static explicit operator Rectangle(RectangleF rect)
+        {
+            return new Rectangle()
+            {
+                Left = (int)rect.Left,
+                Top = (int)rect.Top,
+                Right = (int)rect.Right,
+                Bottom = (int)rect.Bottom,
+            };
+        }
+
+        public static explicit operator RectangleUI(RectangleF rect)
+        {
+            return new RectangleUI()
+            {
+                Left = (uint)rect.Left,
+                Top = (uint)rect.Top,
+                Right = (uint)rect.Right,
+                Bottom = (uint)rect.Bottom,
+            };
+        }
+
+        public static explicit operator RectangleL(RectangleF rect)
+        {
+            return new RectangleL()
+            {
+                Left = (long)rect.Left,
+                Top = (long)rect.Top,
+                Right = (long)rect.Right,
+                Bottom = (long)rect.Bottom,
+            };
+        }
+
+        public static explicit operator RectangleUL(RectangleF rect)
+        {
+            return new RectangleUL()
+            {
+                Left = (ulong)rect.Left,
+                Top = (ulong)rect.Top,
+                Right = (ulong)rect.Right,
+                Bottom = (ulong)rect.Bottom,
+            };
+        }
+
+        public static explicit operator RectangleD(RectangleF rect)
+        {
+            return new RectangleD()
+            {
+                Left = (double)rect.Left,
+                Top = (double)rect.Top,
+                Right = (double)rect.Right,
+                Bottom = (double)rect.Bottom,
+            };
+        }
+
+        #endregion
+	}
 }
+

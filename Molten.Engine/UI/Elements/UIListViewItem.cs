@@ -55,7 +55,7 @@ namespace Molten.UI
         {
             base.OnRender(sb);
 
-            sb.DrawRect(GlobalBounds, ref _bgStyle);
+            sb.DrawRect((RectangleF)GlobalBounds, ref _bgStyle);
         }
 
         /// <summary>

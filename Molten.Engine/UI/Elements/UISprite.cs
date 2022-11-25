@@ -69,7 +69,7 @@ namespace Molten.UI
             }
             else
             {
-                sb.DrawRect(GlobalBounds, Color.White, 0);
+                sb.DrawRect((RectangleF)GlobalBounds, Color.White, 0);
             }
         }
 

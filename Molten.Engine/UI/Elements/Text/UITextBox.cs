@@ -62,7 +62,7 @@ namespace Molten.UI
 
             internal void Render(SpriteBatcher sb)
             {
-                sb.DrawRect(_bounds, ref MarginStyle, 0, null, 0);
+                sb.DrawRect((RectangleF)_bounds, ref MarginStyle, 0, null, 0);
                 sb.DrawLine(_linePos, _linePos + new Vector2F(0, _bounds.Height), ref Style, 0);
             }
         }
@@ -193,7 +193,7 @@ namespace Molten.UI
             _textBounds.Left += _margin.Width;
 
             _textClipBounds = _textBounds;
-            _textBounds += RenderOffset;
+            _textBounds += (Vector2I)RenderOffset;
 
             Recalculate();
 
@@ -274,7 +274,7 @@ namespace Molten.UI
         {
             base.OnRender(sb);
 
-            Rectangle gb = GlobalBounds;
+            RectangleF gb = (RectangleF)GlobalBounds;
 
             sb.DrawRect(gb, _bgColor, 0, null, 0);
 
@@ -332,8 +332,8 @@ namespace Molten.UI
 
                 if (_textClipBounds.Intersects(cBounds) || _textClipBounds.Contains(cBounds))
                 {
-                    RectangleF segBounds = cBounds;
-                    RectangleF lineBounds = cBounds;
+                    RectangleF segBounds = (RectangleF)cBounds;
+                    RectangleF lineBounds = (RectangleF)cBounds;
                     UITextLine line = chunk.FirstLine;
 
                     while (line != null)

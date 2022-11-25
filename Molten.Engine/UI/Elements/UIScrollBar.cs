@@ -94,11 +94,11 @@ namespace Molten.UI
         {
             base.OnPressed(tracker);
 
-            if (_barBounds.Contains(tracker.Position))
+            if (_barBounds.Contains((Vector2I)tracker.Position))
             {
                 _barPressed = true;
             }
-            else if(_bgBounds.Contains(tracker.Position))
+            else if(_bgBounds.Contains((Vector2I)tracker.Position))
             {
                 if(Direction == UIElementFlowDirection.Vertical)
                 {
@@ -210,8 +210,8 @@ namespace Molten.UI
         protected override void OnRender(SpriteBatcher sb)
         {
             base.OnRender(sb);
-            sb.DrawRect(_bgBounds, ref _style);
-            sb.DrawRect(_barBounds, _style.BorderColor);
+            sb.DrawRect((RectangleF)_bgBounds, ref _style);
+            sb.DrawRect((RectangleF)_barBounds, _style.BorderColor);
         }
 
         /// <summary>

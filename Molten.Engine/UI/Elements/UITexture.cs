@@ -52,7 +52,7 @@ namespace Molten.UI
             base.OnRender(sb);
 
             if(_texture != null)
-                sb.Draw(_texBounds, ref _style, _texture, null, ArraySlice, 0);
+                sb.Draw((RectangleF)_texBounds, ref _style, _texture, null, ArraySlice, 0);
         }
 
         /// <summary>

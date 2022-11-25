@@ -97,7 +97,7 @@ namespace Molten.Examples
 
         private void InitializeFontDebug()
         {
-            _fontBounds = _fontFile.ContainerBounds;
+            _fontBounds = (RectangleF)_fontFile.ContainerBounds;
             _fontBounds.X *= _scale;
             _fontBounds.Y *= _scale;
             _fontBounds.Width *= _scale;
@@ -141,12 +141,12 @@ namespace Molten.Examples
                 //sb.DrawTriangleList(_glyphTriPoints, _colors);
                 sb.DrawShapeOutline(_shape, Color.Red, Color.SkyBlue, 2);
 
-                Rectangle clickRect;
+                RectangleF clickRect;
                 style = new RectStyle(_clickColor);
 
                 if (_shape != null)
                 {
-                    clickRect = new Rectangle((int)_clickPoint.X, (int)_clickPoint.Y, 0, 0);
+                    clickRect = new RectangleF(_clickPoint.X, _clickPoint.Y, 0, 0);
                     clickRect.Inflate(8);
                     sb.DrawRect(clickRect, ref style);
                 }
@@ -164,7 +164,7 @@ namespace Molten.Examples
                 {
                     RectStyle boundsStyle = new RectStyle(Color.Transparent, Color.Grey, 2);
                     Vector2F pos = new Vector2F(800, 65);
-                    Rectangle texBounds = new Rectangle((int)pos.X, (int)pos.Y, 512, 512);
+                    RectangleF texBounds = new RectangleF(pos.X, pos.Y, 512, 512);
                     sb.Draw(texBounds, Color.White, _font2Test.Manager.UnderlyingTexture);
 
                     boundsStyle.BorderColor = Color.Red;
@@ -201,7 +201,7 @@ namespace Molten.Examples
             _shape = glyph.CreateShape();
             _shape.ScaleAndOffset(_charOffset, _scale);
 
-            _glyphBounds = glyph.Bounds;
+            _glyphBounds = (RectangleF)glyph.Bounds;
             _glyphBounds.X *= _scale;
             _glyphBounds.Y *= _scale;
             _glyphBounds.Width *= _scale;

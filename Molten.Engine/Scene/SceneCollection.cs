@@ -29,14 +29,14 @@ namespace Molten
         public event DataHandler OnAdd;
 
         /// <summary>
-        /// Occurs when a <see cref="{T}"/> is added to the collection.
+        /// Occurs when an object of type T is added to the collection.
         /// </summary>
         public event Handler OnAdded;
 
         public event DataHandler OnRemove;
 
         /// <summary>
-        /// Occurs when a <see cref="{T}"/> is removed from the collection.
+        /// Occurs when an object of type T is removed from the collection.
         /// </summary>
         public event Handler OnRemoved;
 

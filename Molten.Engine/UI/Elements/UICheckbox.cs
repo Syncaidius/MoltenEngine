@@ -109,7 +109,7 @@ namespace Molten.UI
 
         protected override bool OnPicked(Vector2F globalPos)
         {
-            return _boxBounds.Contains(globalPos);
+            return _boxBounds.Contains((Vector2I)globalPos);
         }
 
         public override void OnPressed(UIPointerTracker tracker)
@@ -129,7 +129,7 @@ namespace Molten.UI
                 CornerRadius = CornerRadius.Restrict(radiusLimit)
             };
 
-            sb.DrawRoundedRect(_boxBounds, 0, Vector2F.Zero, ref style);
+            sb.DrawRoundedRect((RectangleF)_boxBounds, 0, Vector2F.Zero, ref style);
 
             if (_checked)
             {
@@ -140,7 +140,7 @@ namespace Molten.UI
                         break;
 
                     case UICheckboxStyle.Fill:
-                        sb.DrawRoundedRect(_FillBounds, CheckColor, 0, Vector2F.Zero, CornerRadius);
+                        sb.DrawRoundedRect((RectangleF)_FillBounds, CheckColor, 0, Vector2F.Zero, CornerRadius);
                         break;
                 }
             }

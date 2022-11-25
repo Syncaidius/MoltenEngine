@@ -24,6 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="t4_angles - Copy.cs" />
     <Compile Remove="t4_quaternions - Copy.cs" />
     <Compile Remove="t4_vector - Copy.cs" />
   </ItemGroup>
@@ -36,6 +37,11 @@
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
+    </None>
+    <None Include="t4_rectangles.cs">
+      <DependentUpon>t4_rectangles.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </None>
     <None Include="t4_angles.cs">
       <DependentUpon>t4_angles.tt</DependentUpon>
@@ -71,6 +77,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="t4_rectangles.tt">
+      <LastGenOutput>t4_rectangles.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="t4_angles.tt">
       <LastGenOutput>t4_angles.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -142,6 +152,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_quaternions.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_rectangles.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_rectangles.tt</DependentUpon>
     </Compile>
     <Compile Update="t4_vector.cs">
       <DesignTime>True</DesignTime>

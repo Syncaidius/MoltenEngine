@@ -17,7 +17,7 @@ namespace Molten.Examples
         ContentLoadHandle _hTexMesh;
         ContentLoadHandle _hTexPrimitive;
 
-        Rectangle[] _rects;
+        RectangleF[] _rects;
         RectStyle[] _rectStyles;
         float _rotAngle;
         int _numRects = 100;
@@ -46,7 +46,7 @@ namespace Molten.Examples
             // Setup sprite rectangles and styles.
             if (_rects == null)
             {
-                _rects = new Rectangle[_numRects];
+                _rects = new RectangleF[_numRects];
                 _rectStyles = new RectStyle[_rects.Length];
             }
             else if (curCount < _numRects) // We need to expand arrays
@@ -61,7 +61,7 @@ namespace Molten.Examples
 
             for (int i = curCount; i < _rects.Length; i++)
             {
-                _rects[i] = new Rectangle()
+                _rects[i] = new RectangleF()
                 {
                     X = Rng.Next(0, 1920),
                     Y = Rng.Next(0, 1080),
@@ -240,7 +240,7 @@ namespace Molten.Examples
                     LineThickness = new Vector2F(3),
                 };
 
-                sb.DrawGrid(new Rectangle(1450, 400, 400, 400), new Vector2F(20, 20), _rotAngle, new Vector2F(0.5f), ref gridStyle);
+                sb.DrawGrid(new RectangleF(1450, 400, 400, 400), new Vector2F(20, 20), _rotAngle, new Vector2F(0.5f), ref gridStyle);
 
                 LineStyle linePathStyle = new LineStyle()
                 {

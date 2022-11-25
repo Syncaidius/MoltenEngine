@@ -62,7 +62,7 @@ namespace Molten.Examples
                     Data = new SpriteData()
                     {
                         Texture = tex,
-                        Source = new Rectangle(0, 0, 128, 128),
+                        Source = new RectangleF(0, 0, 128, 128),
                         ArraySlice = Rng.Next(0, 3),
                     },
                     Scale = new Vector2F(Rng.Next(25, 101), Rng.Next(25, 101)) / 100,

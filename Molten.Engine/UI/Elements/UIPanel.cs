@@ -57,7 +57,7 @@ namespace Molten.UI
                 CornerRadius = CornerRadius.Restrict(radiusLimit)
             };
 
-            sb.DrawRoundedRect(GlobalBounds, 0, Vector2F.Zero, ref style);
+            sb.DrawRoundedRect((RectangleF)GlobalBounds, 0, Vector2F.Zero, ref style);
 
             base.OnRender(sb);
         }

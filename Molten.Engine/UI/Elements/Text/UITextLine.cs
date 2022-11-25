@@ -33,16 +33,17 @@ namespace Molten.UI
         internal bool Pick(ref Rectangle lBounds, ref Vector2I pos, UITextCaret.CaretPoint point)
         {
             UITextSegment seg = FirstSegment;
+            Vector2F fPos = (Vector2F)pos;
 
             if (lBounds.Contains(pos))
             {
                 point.Line = this;
+                RectangleF segBounds = (RectangleF)lBounds;
 
-                RectangleF segBounds = lBounds;
                 while (seg != null)
                 {
                     segBounds.Width = seg.Size.X;
-                    if (segBounds.Contains(pos))
+                    if (segBounds.Contains(fPos))
                     {
                         point.Segment = seg;
                         // TODO Get char index of picked segment, along with width from start of segment. May need a SpriteFont.PickText() helper to calculate this efficiently.

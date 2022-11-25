@@ -145,7 +145,7 @@ namespace Molten
         public ContentManager Manager { get; }
 
         /// <summary>
-        /// Gets the total number of <see cref="ContentLoadHandle{T}="/> 
+        /// Gets the total number of <see cref="ContentLoadHandle"/> 
         /// </summary>
         public int Count => _handles.Count;
 

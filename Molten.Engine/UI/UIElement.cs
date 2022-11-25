@@ -293,7 +293,7 @@ namespace Molten.UI
         /// <returns></returns>
         public bool Contains(Vector2F point)
         {
-            return _globalBounds.Contains(point);
+            return _globalBounds.Contains((Vector2I)point);
         }
 
         /// <summary>
