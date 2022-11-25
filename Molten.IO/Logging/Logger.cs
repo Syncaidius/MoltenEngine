@@ -1,8 +1,7 @@
 ﻿using Molten.Collections;
 using System.Diagnostics;
-using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Molten
 {
@@ -58,13 +57,16 @@ namespace Molten
             return log;
         }
 
+        /// <summary>
+        /// Disposes all known <see cref="Logger"/> instances.
+        /// </summary>
         public static void DisposeAll()
         {
             _loggers.For(0, 1, (index, log) => log.Dispose());
             _loggers.Clear();
         }
 
-        /// <summary>Adds a <see cref="TextWriter"/> to which the logger's output will be written.</summary>
+        /// <summary>Adds a <see cref="ILogOutput"/> to the current <see cref="Logger"/>.</summary>
         /// <param name="writer"></param>
         public void AddOutput(ILogOutput writer)
         {
@@ -72,11 +74,19 @@ namespace Molten
                 _outputs.Add(writer);
         }
 
+        /// <summary>
+        /// Removes an attached <see cref="ILogOutput"/> from the current <see cref="Logger"/>.
+        /// </summary>
+        /// <param name="output"></param>
         public void RemoveOutput(ILogOutput output)
         {
             _outputs.Remove(output);
         }
 
+        /// <summary>
+        /// Writes a new line of text to the current <see cref="Logger"/>.
+        /// </summary>
+        /// <param name="value"></param>
         public void WriteLine(string value)
         {
             WriteLine(value, Color.White);
@@ -85,6 +95,7 @@ namespace Molten
         /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
         /// <param name="value">The text to be written.</param>
         [Conditional("DEBUG")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Debug(string value)
         {
             WriteLine($"[DEBUG] {value}", Color.White);
@@ -94,6 +105,7 @@ namespace Molten
         /// <param name="value">The text to be written.</param>
         /// <param name="filename">The filename associated with the message.</param>
         [Conditional("DEBUG")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Debug(string value, string filename)
         {
             if (string.IsNullOrEmpty(filename))
@@ -106,6 +118,7 @@ namespace Molten
         /// <param name="value">The text to be written.</param>
         /// <param name="color">The color of the text.</param>
         [Conditional("DEBUG")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteDebugLine(string value, Color color)
         {
             WriteLine($"[DEBUG] {value}", color, LogCategory.Debug);
@@ -149,11 +162,23 @@ namespace Molten
             });
         }
 
-        public void Write(string value, LogCategory category = LogCategory.Message)
+        /// <summary>
+        /// Writes a string of text to the current <see cref="Logger"/>. Does not start a new line.
+        /// </summary>
+        /// <param name="text">The string of text to be written.</param>
+        /// <param name="category">The category of the message.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write(string text, LogCategory category = LogCategory.Message)
         {
-            Write(value, Color.White, category);
+            Write(text, Color.White, category);
         }
 
+        /// <summary>
+        /// Writes a string of text to the current <see cref="Logger"/>. Does not start a new line.
+        /// </summary>
+        /// <param name="text">The string of text to be written.</param>
+        /// <param name="color">The color of the text in attached <see cref="ILogOutput"/>, if they support color.</param>
+        /// <param name="category">The category of the message.</param>
         public void Write(string text, Color color, LogCategory category = LogCategory.Message)
         {
             WriteInternal(text, color, category);
@@ -214,15 +239,15 @@ namespace Molten
             else
                 WriteLine("===UNHANDLED EXCEPTION===", ErrorColor, LogCategory.Error);
 
-            WriteLine(title, ErrorColor, LogCategory.Error);
-            WriteLine(msg, ErrorColor, LogCategory.Error);
-            WriteLine(source, ErrorColor, LogCategory.Error);
-            WriteLine(hResult, ErrorColor, LogCategory.Error);
-            WriteLine(target, ErrorColor, LogCategory.Error);
+            Error(title);
+            Error(msg);
+            Error(source);
+            Error(hResult);
+            Error(target);
 
             // Stack-trace lines.
             for (int i = 0; i < st.Length; i++)
-                WriteLine(st[i], ErrorColor, LogCategory.Error);
+                Error(st[i]);
 
             if (e.InnerException != null)
             {
@@ -231,30 +256,48 @@ namespace Molten
             }
         }
 
-        public void Error(string value)
+        /// <summary>
+        /// Writes an error message to the current <see cref="Logger"/>.
+        /// </summary>
+        /// <param name="text">The string of text to be written.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Error(string text)
         {
-            WriteLine(value, ErrorColor, LogCategory.Error);
+            WriteLine(text, ErrorColor, LogCategory.Error);
         }
 
-        public void Error(string value, string filename)
+        /// <summary>Writes an error message to the current <see cref="Logger"/>, with a filename prefix.</summary>
+        /// <param name="text">The string of text to be written.</param>
+        /// <param name="filename">The file name or path to be included in the error messsage.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Error(string text, string filename)
         {
             if (string.IsNullOrWhiteSpace(filename))
-                Error(value);
+                Error(text);
             else
-                WriteLine($"{filename}: {value}", ErrorColor, LogCategory.Error);
+                Error($"{filename}: {text}");
         }
 
-        public void Warning(string value)
+        /// <summary>
+        /// Writes a warning message to the current <see cref="Logger"/>.
+        /// </summary>
+        /// <param name="text">The string of text to be written.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Warning(string text)
         {
-            WriteLine($"{value}", WarningColor, LogCategory.Warning);
+            WriteLine($"{text}", WarningColor, LogCategory.Warning);
         }
 
-        public void Warning(string value, string filename)
+        /// <summary>Writes an warning message to the current <see cref="Logger"/>, with a filename prefix.</summary>
+        /// <param name="text">The string of text to be written.</param>
+        /// <param name="filename">The file name or path to be included in the warning messsage.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Warning(string text, string filename)
         {
             if (string.IsNullOrEmpty(filename))
-                Warning(value);
+                Warning(text);
             else
-                WriteLine($"{filename}: {value}", WarningColor, LogCategory.Warning);
+                Warning($"{filename}: {text}");
         }
 
         /// <summary>
