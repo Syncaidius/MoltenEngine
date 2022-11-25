@@ -220,15 +220,15 @@ namespace Molten
             WriteLine(hResult, ErrorColor, LogCategory.Error);
             WriteLine(target, ErrorColor, LogCategory.Error);
 
-            if (e.InnerException != null)
-            {
-                string inner = "   Inner Exception: " + e.InnerException.GetType().ToString();
-                WriteLine(title, ErrorColor, LogCategory.Error);
-            }
-
             // Stack-trace lines.
             for (int i = 0; i < st.Length; i++)
                 WriteLine(st[i], ErrorColor, LogCategory.Error);
+
+            if (e.InnerException != null)
+            {
+                Error($"Inner Exception: ");
+                Error(e.InnerException, handled);
+            }
         }
 
         public void Error(string value)
