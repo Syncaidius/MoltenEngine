@@ -1910,7 +1910,7 @@ namespace Molten
             if (MathHelper.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
-                difference *= (float)(1.0 / Math.Sqrt(lengthSq));
+                difference *= 1.0f / float.Sqrt(lengthSq);
 
             Vector3F crossed = Vector3F.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
@@ -1965,7 +1965,7 @@ namespace Molten
             if (MathHelper.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
-                difference *= (float)(1.0 / Math.Sqrt(lengthSq));
+                difference *= (1.0f / float.Sqrt(lengthSq));
 
             Vector3F crossed = Vector3F.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
@@ -2300,7 +2300,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created projection matrix.</param>
         public static void PerspectiveFovLH(float fov, float aspect, float znear, float zfar, out Matrix4F result)
         {
-            float yScale = (float)(1.0 / Math.Tan(fov * 0.5f));
+            float yScale = 1.0f / float.Tan(fov * 0.5f);
             float xScale = yScale / aspect;
 
             float halfWidth = znear / xScale;
@@ -2334,7 +2334,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created projection matrix.</param>
         public static void PerspectiveFovRH(float fov, float aspect, float znear, float zfar, out Matrix4F result)
         {
-            float yScale = (float)(1.0 / Math.Tan(fov * 0.5f));
+            float yScale = 1.0f / float.Tan(fov * 0.5f);
             float xScale = yScale / aspect;
 
             float halfWidth = znear / xScale;

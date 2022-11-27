@@ -11,12 +11,23 @@ namespace Molten.UI
     {
         public class CaretPoint
         {
+            public class SelectedChar
+            {
+                public int? Index { get; internal set; }
+
+                public float WidthOffset { get; internal set; }
+
+                public float Width { get; internal set; }
+            }
+
             internal void Clear()
             {
                 Chunk = null;
                 Line = null;
                 Segment = null;
-                CharIndex = null;
+                Char.Index = null;
+                Char.Width = 0;
+                Char.WidthOffset = 0;
             }
 
             public UITextChunk Chunk { get; internal set; }
@@ -25,7 +36,11 @@ namespace Molten.UI
 
             public UITextSegment Segment { get; internal set; }
 
-            public int? CharIndex { get; internal set; }
+            public SelectedChar Char { get; } = new SelectedChar();
+
+            public float CharSelectWidthOffset { get; internal set; }
+
+            public float CharSelectWidth { get; internal set; }
         }
 
         public RectStyle SelectedLineStyle = new RectStyle(new Color(60, 60, 60, 200), new Color(160, 160, 160, 255), 2);

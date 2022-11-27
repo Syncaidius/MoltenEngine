@@ -73,7 +73,6 @@ namespace Molten.UI
         UITextChunk _firstChunk;
         UITextChunk _lastChunk;
 
-        bool _isMultiline;
         LineMargin _margin;
         int _scrollbarWidth = 20;
         int _lineSpacing = 5;

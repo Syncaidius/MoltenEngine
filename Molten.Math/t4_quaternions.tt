@@ -845,8 +845,8 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="value">The <#=See(md.Name)#> to exponentiate.</param>
         public static <#=md.Name#> Exponential(ref <#=md.Name#> value)
         {
-            <#=d.DT#> angle = <#=md.FPCast#>Math.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z));
-            <#=d.DT#> sin = <#=md.FPCast#>Math.Sin(angle);
+            <#=d.DT#> angle = <#=d.DT#>.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z));
+            <#=d.DT#> sin = <#=d.DT#>.Sin(angle);
             <#=md.Name#> result;
 
             if (!MathHelper.IsZero(sin))
@@ -861,7 +861,7 @@ namespace Molten<#=md.SubNamespace#>
                 result = value;
             }
 
-            result.W = <#=md.FPCast#>Math.Cos(angle);
+            result.W = <#=d.DT#>.Cos(angle);
             return result;
         }
 

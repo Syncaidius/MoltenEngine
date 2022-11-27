@@ -211,7 +211,7 @@
                 float t2 = w3.Y - w1.Y;
                 float denom = s1 * t2 - s2 * t1;
 
-                if (Math.Abs(denom) < float.Epsilon)
+                if (MathF.Abs(denom) < float.Epsilon)
                 {
                     // The triangle UVs are zero sized one dimension.
                     //

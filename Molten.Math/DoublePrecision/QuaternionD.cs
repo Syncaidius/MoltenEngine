@@ -826,8 +826,8 @@ namespace Molten.DoublePrecision
         /// <param name="value">The <see cref="QuaternionD"/> to exponentiate.</param>
         public static QuaternionD Exponential(ref QuaternionD value)
         {
-            double angle = Math.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z));
-            double sin = Math.Sin(angle);
+            double angle = double.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z));
+            double sin = double.Sin(angle);
             QuaternionD result;
 
             if (!MathHelper.IsZero(sin))
@@ -842,7 +842,7 @@ namespace Molten.DoublePrecision
                 result = value;
             }
 
-            result.W = Math.Cos(angle);
+            result.W = double.Cos(angle);
             return result;
         }
 

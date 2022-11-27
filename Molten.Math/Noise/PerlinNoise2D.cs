@@ -48,8 +48,8 @@
 
         private double Interpolate(double x, double y, double a)
         {
-            double value = (1 - Math.Cos(a * Math.PI)) * 0.5;
-            return x * (1 - value) + y * value;
+            double value = (1D - Math.Cos(a * double.Pi)) * 0.5D;
+            return x * (1D - value) + y * value;
         }
 
         private double Smooth(double x, double y)

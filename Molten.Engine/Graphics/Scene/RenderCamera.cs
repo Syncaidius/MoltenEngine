@@ -66,7 +66,7 @@
             ClipRange clip = _clipPreset[mode];
             _nearClip = clip.Near;
             _farClip = clip.Far;
-            _fov = MathF.PI / 4.0f;
+            _fov = float.Pi / 4.0f;
             _projFunc = _projectionFuncs[mode];
             _projection = Matrix4F.Identity;
         }

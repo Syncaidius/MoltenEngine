@@ -263,8 +263,8 @@ namespace Molten
 
             Vector3F nearCenter = cameraPos + lookDir * znear;
             Vector3F farCenter = cameraPos + lookDir * zfar;
-            float nearHalfHeight = (float)(znear * Math.Tan(fov / 2f));
-            float farHalfHeight = (float)(zfar * Math.Tan(fov / 2f));
+            float nearHalfHeight = znear * float.Tan(fov / 2f);
+            float farHalfHeight = zfar * float.Tan(fov / 2f);
             float nearHalfWidth = nearHalfHeight * aspect;
             float farHalfWidth = farHalfHeight * aspect;
 
@@ -360,7 +360,7 @@ namespace Molten
             cameraParam.Position = Get3PlanesInterPoint(ref _pRight, ref _pTop, ref _pLeft);
             cameraParam.LookAtDir = _pNear.Normal;
             cameraParam.UpDir = Vector3F.Normalize(Vector3F.Cross(_pRight.Normal, _pNear.Normal));
-            cameraParam.FOV = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pTop.Normal))) * 2);
+            cameraParam.FOV = (float.Pi / 2.0f - MathF.Acos(Vector3F.Dot(_pNear.Normal, _pTop.Normal))) * 2f;
             cameraParam.AspectRatio = (corners[6] - corners[5]).Length() / (corners[4] - corners[5]).Length();
             cameraParam.ZNear = (cameraParam.Position + (_pNear.Normal * _pNear.D)).Length();
             cameraParam.ZFar = (cameraParam.Position + (_pFar.Normal * _pFar.D)).Length();
@@ -680,8 +680,8 @@ namespace Molten
         /// <returns>With of the frustum at the specified depth</returns>
         public float GetWidthAtDepth(float depth)
         {
-            float hAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pLeft.Normal))));
-            return (float)(Math.Tan(hAngle) * depth * 2);
+            float hAngle = float.Pi / 2.0f - MathF.Acos(Vector3F.Dot(_pNear.Normal, _pLeft.Normal));
+            return MathF.Tan(hAngle) * depth * 2f;
         }
 
         /// <summary>
@@ -691,8 +691,8 @@ namespace Molten
         /// <returns>Height of the frustum at the specified depth</returns>
         public float GetHeightAtDepth(float depth)
         {
-            float vAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pTop.Normal))));
-            return (float)(Math.Tan(vAngle) * depth * 2);
+            float vAngle = float.Pi / 2.0f - MathF.Acos(Vector3F.Dot(_pNear.Normal, _pTop.Normal));
+            return MathF.Tan(vAngle) * depth * 2f;
         }
 
         private BoundingFrustum GetInsideOutClone()
@@ -757,8 +757,8 @@ namespace Molten
                     float distance;
                     if (CollisionHelper.RayIntersectsPlane(ref ray, ref plane, out distance))
                     {
-                        minDist = Math.Min(minDist, distance);
-                        maxDist = Math.Max(maxDist, distance);
+                        minDist = float.Min(minDist, distance);
+                        maxDist = float.Max(maxDist, distance);
                     }
                 }
 
@@ -790,9 +790,9 @@ namespace Molten
         /// <returns>The zoom to fit distance</returns>
         public float GetZoomToExtentsShiftDistance(Vector3F[] points)
         {
-            float vAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pTop.Normal))));
+            float vAngle = float.Pi / 2.0f - MathF.Acos(Vector3F.Dot(_pNear.Normal, _pTop.Normal));
             float vSin = MathF.Sin(vAngle);
-            float hAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(_pNear.Normal, _pLeft.Normal))));
+            float hAngle = float.Pi / 2.0f - MathF.Acos(Vector3F.Dot(_pNear.Normal, _pLeft.Normal));
             float hSin = MathF.Sin(hAngle);
             float horizontalToVerticalMapping = vSin / hSin;
 

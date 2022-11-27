@@ -70,7 +70,7 @@ namespace Molten.Examples
             loader.OnCompleted += Loader_OnCompleted;
         }
 
-        private void SpawnFractalTree(FractalBranch branch, int branchCount, int maxDepth, int depth = 0, float arc = MathF.PI / 4, float scale = 0.80f)
+        private void SpawnFractalTree(FractalBranch branch, int branchCount, int maxDepth, int depth = 0, float arc = float.Pi / 4, float scale = 0.80f)
         {
             if (depth == maxDepth)
                 return;
@@ -85,7 +85,7 @@ namespace Molten.Examples
         {
             // Spawn fractal tree
             _rootBranch = new FractalBranch(new Vector2F(700, 900), new Vector2F(0, -1), 180);
-            SpawnFractalTree(_rootBranch, 2, 12, 0, MathF.PI / 4);
+            SpawnFractalTree(_rootBranch, 2, 12, 0, float.Pi / 4f);
 
             SampleSpriteRenderComponent com = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             com.RenderCallback = (sb) =>

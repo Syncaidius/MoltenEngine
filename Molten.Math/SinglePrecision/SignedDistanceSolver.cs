@@ -56,8 +56,8 @@ namespace Molten
                 t = Math.Acos(t);
                 q = -2 * Math.Sqrt(q);
                 x[0] = q * Math.Cos(1 / 3.0* t) - a;
-                x[1] = q * Math.Cos(1 / 3.0* (t + 2 * Math.PI)) - a;
-                x[2] = q * Math.Cos(1 / 3.0* (t - 2 * Math.PI)) - a;
+                x[1] = q * Math.Cos(1 / 3.0* (t + 2 * double.Pi)) - a;
+                x[2] = q * Math.Cos(1 / 3.0* (t - 2 * double.Pi)) - a;
                 return 3;
             }
             else

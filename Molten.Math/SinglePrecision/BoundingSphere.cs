@@ -323,7 +323,7 @@ namespace Molten
             float y = box.Min.Y - box.Max.Y;
             float z = box.Min.Z - box.Max.Z;
 
-            float distance = (float)(Math.Sqrt((x * x) + (y * y) + (z * z)));
+            float distance = float.Sqrt((x * x) + (y * y) + (z * z));
             result.Radius = distance * 0.5f;
         }
 

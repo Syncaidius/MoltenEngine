@@ -2,7 +2,7 @@
 {
     internal static class TriUtil
     {
-        public const double PI_3div4 = 3 * Math.PI / 4;
+        public const double PI_3div4 = 3 * double.Pi / 4;
         public const double PI_div2 = 1.57079632679489661923;
         public const double EPSILON = 1e-12;
 

@@ -826,8 +826,8 @@ namespace Molten
         /// <param name="value">The <see cref="QuaternionF"/> to exponentiate.</param>
         public static QuaternionF Exponential(ref QuaternionF value)
         {
-            float angle = (float)Math.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z));
-            float sin = (float)Math.Sin(angle);
+            float angle = float.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z));
+            float sin = float.Sin(angle);
             QuaternionF result;
 
             if (!MathHelper.IsZero(sin))
@@ -842,7 +842,7 @@ namespace Molten
                 result = value;
             }
 
-            result.W = (float)Math.Cos(angle);
+            result.W = float.Cos(angle);
             return result;
         }
 
