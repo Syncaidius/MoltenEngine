@@ -13,11 +13,20 @@ namespace Molten.UI
         {
             public class SelectedChar
             {
+                /// <summary>
+                 /// The character index of the caret, within the selected segment's string.
+                 /// </summary>
                 public int? Index { get; internal set; }
 
-                public float WidthOffset { get; internal set; }
+                /// <summary>
+                /// The offset of the caret, from the start of the selected segment, in pixels.
+                /// </summary>
+                public float StartOffset { get; internal set; }
 
-                public float Width { get; internal set; }
+                /// <summary>
+                /// The offset of the caret, from the end of the selected segment, in pixels.
+                /// </summary>
+                public float EndOffset { get; internal set; }
             }
 
             internal void Clear()
@@ -26,8 +35,8 @@ namespace Molten.UI
                 Line = null;
                 Segment = null;
                 Char.Index = null;
-                Char.Width = 0;
-                Char.WidthOffset = 0;
+                Char.StartOffset = 0;
+                Char.EndOffset = 0;
             }
 
             public UITextChunk Chunk { get; internal set; }

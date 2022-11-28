@@ -66,7 +66,7 @@ namespace Molten.UI
         /// Gets the measured size of <see cref="Text"/>.
         /// <para>If <see cref="Font"/> or <see cref="Text"/> are null/empty, size will equate to <see cref="Vector2F.Zero"/>.</para>
         /// </summary>
-        public Vector2F Size { get; private set; }
+        public Vector2F Size { get; protected set; }
 
         /// <summary>
         /// Gets the previous <see cref="UITextSegment"/>, or null if none.

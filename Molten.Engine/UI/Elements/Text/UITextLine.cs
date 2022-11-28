@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,14 +29,14 @@ namespace Molten.UI
             LastSegment = FirstSegment;
         }
 
-        internal bool Pick(ref Rectangle lBounds, ref Vector2I pos, UITextCaret.CaretPoint point)
+        internal bool Pick(ref Rectangle lBounds, ref Vector2I pickPoint, UITextCaret.CaretPoint caretPoint)
         {
             UITextSegment seg = FirstSegment;
-            Vector2F fPos = (Vector2F)pos;
+            Vector2F fPos = (Vector2F)pickPoint;
 
-            if (lBounds.Contains(pos))
+            if (lBounds.Contains(pickPoint))
             {
-                point.Line = this;
+                caretPoint.Line = this;
                 RectangleF segBounds = (RectangleF)lBounds;
 
                 while (seg != null)
@@ -45,8 +44,25 @@ namespace Molten.UI
                     segBounds.Width = seg.Size.X;
                     if (segBounds.Contains(fPos))
                     {
-                        point.Segment = seg;
-                        // TODO Get char index of picked segment, along with width from start of segment. May need a SpriteFont.PickText() helper to calculate this efficiently.
+                        caretPoint.Segment = seg;
+                        SpriteFont segFont = seg.Font ?? Parent.DefaultFont;
+
+                        if (!string.IsNullOrWhiteSpace(seg.Text))
+                        {
+                            float dist = 0;
+                            for (int i = 0; i < seg.Text.Length; i++)
+                            {
+                                dist += segFont.GetAdvanceWidth(seg.Text[i]);
+                                if (pickPoint.X <= segBounds.Left + dist)
+                                {
+                                    caretPoint.Char.Index = i;
+                                    caretPoint.Char.StartOffset = dist;
+                                    caretPoint.Char.EndOffset = segBounds.Width - dist;
+                                    break;
+                                }
+                            }
+                        }                       
+
                         return true;
                     }
                     segBounds.X += seg.Size.X;

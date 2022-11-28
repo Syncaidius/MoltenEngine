@@ -364,7 +364,25 @@ namespace Molten.UI
                 segBounds.Height = seg.Size.Y;
 
                 if (seg.IsSelected)
-                    sb.Draw(segBounds, ref Caret.SelectedSegmentStyle);
+                {
+                    if (seg == Caret.Start.Segment)
+                    {
+                        RectangleF eBounds = segBounds;
+                        eBounds.X += Caret.Start.Char.StartOffset;
+                        eBounds.Width = Caret.Start.Char.EndOffset;
+                        sb.Draw(eBounds, ref Caret.SelectedSegmentStyle);
+                    }
+                    else if (seg == Caret.End.Segment)
+                    {
+                        RectangleF eBounds = segBounds;
+                        eBounds.Width = Caret.End.Char.StartOffset;
+                        sb.Draw(eBounds, ref Caret.SelectedSegmentStyle);
+                    }
+                    else
+                    {
+                        sb.Draw(segBounds, ref Caret.SelectedSegmentStyle);
+                    }
+                }
 
                 segBounds.X += seg.Size.X;
                 seg = seg.Next;
