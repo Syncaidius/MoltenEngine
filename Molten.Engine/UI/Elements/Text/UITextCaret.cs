@@ -188,6 +188,12 @@ namespace Molten.UI
         {
             UITextLine line = startLine;
 
+            if (line == start.Line && start.Segment == null)
+            {
+                firstSegFound = true;
+                line = line.Next;
+            }
+
             while (line != null)
             {
                 UITextSegment seg = line.FirstSegment;
@@ -221,10 +227,19 @@ namespace Molten.UI
             ResetSelected();
         }
 
+        /// <summary>
+        /// Gets the start point of the caret.
+        /// </summary>
         public CaretPoint Start { get; }
 
+        /// <summary>
+        /// Gets the end point of the caret.
+        /// </summary>
         public CaretPoint End { get; }
 
+        /// <summary>
+        /// Gets the parent <see cref="UITextElement"/> of the current <see cref="UITextCaret"/>.
+        /// </summary>
         public UITextElement Parent { get; }
     }
 }

@@ -246,19 +246,13 @@ namespace Molten.UI
 
                 if (Caret.Start.Line == null)
                 {
-                    Caret.Start.Chunk = chunk;
-                    chunk.Pick(pos, ref cBounds, Caret.Start);
-                    
-                    if (Caret.Start.Line != null)
+                    if (chunk.Pick(pos, ref cBounds, Caret.Start))
                         break;
                 }
                 else
                 {
-                    chunk.Pick(pos, ref cBounds, Caret.End);
-
-                    if (Caret.End.Line != null)
+                    if (chunk.Pick(pos, ref cBounds, Caret.End))
                     {
-                        Caret.End.Chunk = chunk;
                         Caret.CalculateSelected();
                         break;
                     }
@@ -355,7 +349,10 @@ namespace Molten.UI
         private void DrawLineSelection(SpriteBatcher sb, ref RectangleF lineBounds, ref RectangleF segBounds, UITextLine line)
         {
             if (line == Caret.Start.Line && Caret.End.Line == null)
+            {
                 sb.DrawRect(lineBounds, ref Caret.SelectedLineStyle);
+                return;
+            }
 
             UITextSegment seg = line.FirstSegment;
             while (seg != null)

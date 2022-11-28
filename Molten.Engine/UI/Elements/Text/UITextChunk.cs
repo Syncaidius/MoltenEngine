@@ -205,12 +205,13 @@ namespace Molten.UI
             Next.Previous = this;
         }
 
-        internal void Pick(Vector2I pos, ref Rectangle bounds, UITextCaret.CaretPoint point)
+        internal bool Pick(Vector2I pos, ref Rectangle bounds, UITextCaret.CaretPoint point)
         {
             Rectangle lBounds = bounds;
 
             if (bounds.Contains(pos))
             {
+                point.Chunk = this;
                 point.Line = null;
                 point.Segment = null;
 
@@ -219,12 +220,16 @@ namespace Molten.UI
                 {
                     lBounds.Height = line.Height;
                     if (line.Pick(ref lBounds, ref pos, point))
-                        break;                        
+                        return true;                       
 
                     lBounds.Y += line.Height;
                     line = line.Next;
                 }
+
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
