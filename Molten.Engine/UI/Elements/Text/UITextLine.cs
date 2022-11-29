@@ -61,7 +61,7 @@ namespace Molten.UI
                                     break;
                                 }
                             }
-                        }                       
+                        } 
 
                         return true;
                     }

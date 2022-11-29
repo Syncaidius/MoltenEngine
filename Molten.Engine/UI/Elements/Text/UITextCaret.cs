@@ -58,6 +58,9 @@ namespace Molten.UI
 
         internal List<UITextSegment> Selected { get; } = new List<UITextSegment>();
 
+        TimeSpan _blinkTime;
+        bool _blinkVisible;
+
         internal UITextCaret(UITextElement element)
         {
             Parent = element;
@@ -220,6 +223,25 @@ namespace Molten.UI
             }
         }
 
+        internal void Update(Timing time)
+        {
+            _blinkTime += time.ElapsedTime;
+            if (_blinkTime >= BlinkInterval)
+            {
+                _blinkTime -= BlinkInterval;
+                _blinkVisible = !_blinkVisible;
+            }
+        }
+
+        internal void Render(SpriteBatcher sb, Vector2F pos, float height)
+        {
+            if (_blinkVisible && IsVisible)
+            {
+                Vector2F end = new Vector2F(pos.X, pos.Y + height);
+                sb.DrawLine(pos, end, Color.White, 2);
+            }
+        }
+
         public void Clear()
         {
             Start.Clear();
@@ -241,5 +263,15 @@ namespace Molten.UI
         /// Gets the parent <see cref="UITextElement"/> of the current <see cref="UITextCaret"/>.
         /// </summary>
         public UITextElement Parent { get; }
+
+        /// <summary>
+        /// Gets or sets the blink interval of the caret.
+        /// </summary>
+        public TimeSpan BlinkInterval { get; set; } = TimeSpan.FromMilliseconds(500);
+
+        /// <summary>
+        /// Gets or sets whether or not the caret is visible.
+        /// </summary>
+        public bool IsVisible { get; set; } = true;
     }
 }

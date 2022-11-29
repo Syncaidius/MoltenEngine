@@ -79,6 +79,12 @@ namespace Molten.UI
             _parser.ParseText(this, text);
         }
 
+        protected override void OnUpdate(Timing time)
+        {
+            base.OnUpdate(time);
+            Caret.Update(time);
+        }
+
         /// <summary>
         /// Gets or sets the name of the default font for the current <see cref="UITextBox"/>. This will attempt to load/retrieve and populate <see cref="Font"/>.
         /// </summary>
