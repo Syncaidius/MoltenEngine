@@ -66,12 +66,12 @@ namespace Molten.UI
             RefreshButtons();
         }
 
-        private void _btnIncrease_Pressed(UIElement element, UIPointerTracker tracker)
+        private void _btnIncrease_Pressed(UIElement element, CameraInputTracker tracker)
         {
             Value += _increment;
         }
 
-        private void _btnDecrease_Pressed(UIElement element, UIPointerTracker tracker)
+        private void _btnDecrease_Pressed(UIElement element, CameraInputTracker tracker)
         {
             Value -= _increment;
         }
@@ -90,7 +90,7 @@ namespace Molten.UI
             UpdateBarBounds();
         }
 
-        public override void OnPressed(UIPointerTracker tracker)
+        public override void OnPressed(CameraInputTracker tracker)
         {
             base.OnPressed(tracker);
 
@@ -117,7 +117,7 @@ namespace Molten.UI
             }
         }
 
-        public override void OnDragged(UIPointerTracker tracker)
+        public override void OnDragged(CameraInputTracker tracker)
         {
             base.OnDragged(tracker);
 
@@ -130,7 +130,7 @@ namespace Molten.UI
             }
         }
 
-        public override void OnReleased(UIPointerTracker tracker, bool releasedOutside)
+        public override void OnReleased(CameraInputTracker tracker, bool releasedOutside)
         {
             base.OnReleased(tracker, releasedOutside);
             _barPressed = false;

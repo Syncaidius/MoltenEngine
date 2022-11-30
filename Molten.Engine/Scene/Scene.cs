@@ -205,6 +205,11 @@ namespace Molten
             Engine.Log.WriteLine($"Destroyed scene '{Name}'");
         }
 
+        /// <summary>
+        /// Gets the <see cref="CameraComponent"/> that currently has input focus, or null if none.
+        /// </summary>
+        public CameraComponent FocusedCamera { get; internal set; }
+
         /// <summary>Gets or sets whether or not the scene is updated.</summary>
         public bool IsEnabled { get; set; } = true;
 

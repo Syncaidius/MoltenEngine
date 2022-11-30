@@ -5,13 +5,13 @@ using System.Xml.Linq;
 
 namespace Molten.UI
 {
-    public delegate void UIElementPointerHandler(UIElement element, UIPointerTracker tracker);
+    public delegate void UIElementPointerHandler(UIElement element, CameraInputTracker tracker);
 
     public delegate void UIElementHandler(UIElement element);
 
     public delegate void UIElementHandler<T>(T element) where T : UIElement;
 
-    public delegate void UIElementDeltaPositionHandler(UIElement element, UIPointerTracker tracker, Vector2F localPos, Vector2F globalPos, Vector2I delta);
+    public delegate void UIElementDeltaPositionHandler(UIElement element, CameraInputTracker tracker, Vector2F localPos, Vector2F globalPos, Vector2I delta);
 
     public delegate void UIElementScrollWheelHandler(UIElement element, InputScrollWheel wheel);
 
@@ -25,25 +25,25 @@ namespace Molten.UI
     /// The base class for a UI component.
     /// </summary>
     [Serializable]
-    public abstract class UIElement : EngineObject
+    public abstract class UIElement : EngineObject, IPickable2D
     {
         /// <summary>
-        /// Invoked when the current <see cref="UIElement"/> is pressed by a <see cref="UIPointerTracker"/>.
+        /// Invoked when the current <see cref="UIElement"/> is pressed by a <see cref="CameraInputTracker"/>.
         /// </summary>
         public event UIElementPointerHandler Pressed;
 
         /// <summary>
-        /// Invoked when the current <see cref="UIElement"/> is held by a <see cref="UIPointerTracker"/>.
+        /// Invoked when the current <see cref="UIElement"/> is held by a <see cref="CameraInputTracker"/>.
         /// </summary>
         public event UIElementDeltaPositionHandler Held;
 
         /// <summary>
-        /// Invoked when the current <see cref="UIElement"/> is dragged by a <see cref="UIPointerTracker"/>.
+        /// Invoked when the current <see cref="UIElement"/> is dragged by a <see cref="CameraInputTracker"/>.
         /// </summary>
         public event UIElementDeltaPositionHandler Dragged;
 
         /// <summary>
-        /// Invoked when the current <see cref="UIElement"/> is released by a <see cref="UIPointerTracker"/>.
+        /// Invoked when the current <see cref="UIElement"/> is released by a <see cref="CameraInputTracker"/>.
         /// </summary>
         public event UIElementPointerHandler Released;
 
@@ -289,11 +289,11 @@ namespace Molten.UI
         /// <summary>
         /// Checks if the current <see cref="UIElement"/> contains the given <see cref="Vector2F"/>. This does not test any child <see cref="UIElement"/> objects.
         /// </summary>
-        /// <param name="point"></param>
+        /// <param name="pos"></param>
         /// <returns></returns>
-        public bool Contains(Vector2F point)
+        public bool Contains(Vector2F pos)
         {
-            return _globalBounds.Contains((Vector2I)point);
+            return _globalBounds.Contains((Vector2I)pos);
         }
 
         /// <summary>
@@ -301,7 +301,11 @@ namespace Molten.UI
         /// </summary>
         public void Focus()
         {
-            Manager.FocusedElement = this;
+            if (Manager == null || Manager.Object == null || Manager.Object.Scene == null)
+                return;
+
+            if (Manager.Object.Scene.FocusedCamera != null)
+                Manager.Object.Scene.FocusedCamera.FocusedPickable = this;
         }
 
         /// <summary>
@@ -309,21 +313,29 @@ namespace Molten.UI
         /// </summary>
         public void Unfocus()
         {
-            if (Manager.FocusedElement == this)
-                Manager.FocusedElement = null;
+            if (Manager == null || Manager.Object == null || Manager.Object.Scene == null)
+                return;
+
+            Scene scene = Manager.Object.Scene;
+
+            if (scene.FocusedCamera != null)
+            {
+                if (scene.FocusedCamera.FocusedPickable == this)
+                    scene.FocusedCamera.FocusedPickable = null;
+            }
         }
 
         /// <summary>
-        /// Returns the current <see cref="UIElement"/> or one of it's children (recursive), depending on which contains <paramref name="point"/>.
+        /// Returns the current <see cref="UIElement"/> or one of it's children (recursive), depending on which contains <paramref name="pos"/>.
         /// </summary>
-        /// <param name="point">The point to use for picking a <see cref="UIElement"/>.</param>
-        /// <param name="ignoreRules">If true, <see cref="InputRules"/> is ignored when picking.</param>
+        /// <param name="pos">The point to use for picking a <see cref="UIElement"/>.</param>
+        /// <param name="time">A snapshot of timing of the current frame.</param>
         /// <returns></returns>
-        public UIElement Pick(Vector2F point)
+        public IPickable2D Pick(Vector2F pos, Timing time)
         {
-            UIElement result = null;
+            IPickable2D result = null;
 
-            if (IsEnabled && Contains(point))
+            if (IsEnabled && Contains(pos))
             {
                 UIElementLayer layer;
 
@@ -341,7 +353,7 @@ namespace Molten.UI
                         // Try picking one of the layer's elements.
                         for (int e = layer.Count - 1; e >= 0; e--)
                         {
-                            result = layer[e].Pick(point);
+                            result = layer[e].Pick(pos, time);
                             if (result != null)
                                 return result;
                         }
@@ -349,7 +361,7 @@ namespace Molten.UI
                 }
 
                 if(HasInputRules(UIInputRuleFlags.Self))
-                    return OnPicked(point) ? this : null;
+                    return OnPicked(pos) ? this : null;
             }
 
             return result;
@@ -379,8 +391,8 @@ namespace Molten.UI
         /// <summary>
         /// Invoked when a pointer is hovering over the current <see cref="UIElement"/>.
         /// </summary>
-        /// <param name="tracker">The <see cref="UIPointerTracker"/> which triggered hovered over the current <see cref="UIElement"/>.</param>
-        public virtual void OnHover(UIPointerTracker tracker)
+        /// <param name="tracker">The <see cref="CameraInputTracker"/> which triggered hovered over the current <see cref="UIElement"/>.</param>
+        public virtual void OnHover(CameraInputTracker tracker)
         {
             if (State == UIElementState.Default)
                 State = UIElementState.Hovered;
@@ -391,8 +403,8 @@ namespace Molten.UI
         /// <summary>
         /// Invoked when a pointer enters the current <see cref="UIElement"/>.
         /// </summary>
-        /// <param name="tracker">The <see cref="UIPointerTracker"/> which triggered entered the current <see cref="UIElement"/> bounds.</param>
-        public virtual void OnEnter(UIPointerTracker tracker)
+        /// <param name="tracker">The <see cref="CameraInputTracker"/> which triggered entered the current <see cref="UIElement"/> bounds.</param>
+        public virtual void OnEnter(CameraInputTracker tracker)
         {
             Enter?.Invoke(this, tracker);
         }
@@ -400,8 +412,8 @@ namespace Molten.UI
         /// <summary>
         /// Invoked when a pointer leaves the current <see cref="UIElement"/>.
         /// </summary>
-        /// <param name="tracker">The <see cref="UIPointerTracker"/> which triggered left the current <see cref="UIElement"/> bounds.</param>
-        public virtual void OnLeave(UIPointerTracker tracker)
+        /// <param name="tracker">The <see cref="CameraInputTracker"/> which triggered left the current <see cref="UIElement"/> bounds.</param>
+        public virtual void OnLeave(CameraInputTracker tracker)
         {
             if (State == UIElementState.Hovered)
                 State = UIElementState.Default;
@@ -409,7 +421,7 @@ namespace Molten.UI
             Leave?.Invoke(this, tracker);
         }
 
-        public virtual void OnPressed(UIPointerTracker tracker)
+        public virtual void OnPressed(CameraInputTracker tracker)
         {
             if (State == UIElementState.Default || 
                 State != UIElementState.Hovered || 
@@ -421,7 +433,7 @@ namespace Molten.UI
             }
         }
 
-        public virtual void OnHeld(UIPointerTracker tracker)
+        public virtual void OnHeld(CameraInputTracker tracker)
         {
             if (State == UIElementState.Pressed)
             {
@@ -430,7 +442,7 @@ namespace Molten.UI
             }
         }
 
-        public virtual void OnDragged(UIPointerTracker tracker)
+        public virtual void OnDragged(CameraInputTracker tracker)
         {
             if (State == UIElementState.Pressed)
             {
@@ -450,7 +462,7 @@ namespace Molten.UI
         /// </summary>
         /// <param name="tracker"></param>
         /// <param name="releasedOutside">The current <see cref="UIElement"/> was released outside of it's bounds.</param>
-        public virtual void OnReleased(UIPointerTracker tracker, bool releasedOutside)
+        public virtual void OnReleased(CameraInputTracker tracker, bool releasedOutside)
         {
             if (State == UIElementState.Pressed)
             {
@@ -689,6 +701,11 @@ namespace Molten.UI
         /// Gets the parent of the current <see cref="UIElement"/>.
         /// </summary>
         public UIElement ParentElement => _parentLayer?.Owner;
+
+        /// <summary>
+        /// An <see cref="IPickable2D"/> version of <see cref="ParentElement"/>.
+        /// </summary>
+        IPickable2D IPickable2D.ParentPickable => _parentLayer?.Owner;
 
         /// <summary>
         /// Gets the <see cref="Engine"/> instance that the current <see cref="UIElement"/> is bound to.

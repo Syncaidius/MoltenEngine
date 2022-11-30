@@ -30,7 +30,7 @@ namespace Molten.UI
             BorderThickness.OnChanged += BorderThickness_OnChanged;
         }
 
-        public override void OnReleased(UIPointerTracker tracker, bool releasedOutside)
+        public override void OnReleased(CameraInputTracker tracker, bool releasedOutside)
         {
             base.OnReleased(tracker, releasedOutside);
 

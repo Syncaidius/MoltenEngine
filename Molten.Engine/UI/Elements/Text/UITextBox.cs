@@ -227,7 +227,7 @@ namespace Molten.UI
             return true;
         }
 
-        public override void OnPressed(UIPointerTracker tracker)
+        public override void OnPressed(CameraInputTracker tracker)
         {
             base.OnPressed(tracker);
 

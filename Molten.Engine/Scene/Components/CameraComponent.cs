@@ -1,5 +1,6 @@
 ﻿using Molten.Graphics;
 using Molten.Input;
+using Molten.UI;
 
 namespace Molten
 {
@@ -8,8 +9,19 @@ namespace Molten
     {
         public delegate void InputCameraSurfaceHandler(CameraComponent camera, IRenderSurface2D surface);
 
+        public event SceneInputEventHandler<PointerButton> OnObjectFocused;
+
+        public event SceneInputEventHandler<PointerButton> OnObjectUnfocused;
+
+        public event ObjectHandler<IPickable2D> FocusedChanged;
+
         RenderCamera _camera;
-        bool _inScene = false;
+        bool _inScene = false; 
+        IPickable2D _focused;
+
+        static PointerButton[] _pButtons;
+
+        Dictionary<ulong, List<CameraInputTracker>> _trackers;
 
         /// <summary>
         /// Invoked when the output surface has been changed.
@@ -21,11 +33,17 @@ namespace Molten
         /// </summary>
         public event InputCameraSurfaceHandler OnSurfaceResized;
 
+        static CameraComponent()
+        {
+            _pButtons = ReflectionHelper.GetEnumValues<PointerButton>(); 
+        }
+
         /// <summary>
         /// Creates a new instance of <see cref="CameraComponent"/>
         /// </summary>
         public CameraComponent()
         {
+            _trackers = new Dictionary<ulong, List<CameraInputTracker>>();
             _camera = new RenderCamera(RenderCameraMode.Perspective);
             _camera.OnOutputSurfaceChanged += _camera_OnOutputSurfaceChanged;
             _camera.OnSurfaceResized += _camera_OnSurfaceResized;
@@ -62,6 +80,9 @@ namespace Molten
             {
                 obj.Scene.RenderData.AddObject(_camera);
                 _inScene = true;
+
+                if (IsFocused)
+                    Focus();
             }
         }
 
@@ -73,6 +94,7 @@ namespace Molten
             if (obj.Scene != null)
             {
                 obj.Scene.RenderData.RemoveObject(_camera);
+                Unfocus();
                 _inScene = false;
             }
         }
@@ -99,32 +121,109 @@ namespace Molten
         public override void OnUpdate(Timing time)
         {
             base.OnUpdate(time);
+
             _camera.Transform = Object.Transform.Global;
+            Rectangle constraintBounds = InputConstraintBounds.HasValue ? InputConstraintBounds.Value : Rectangle.Empty;
+
+            // Update all pointer trackers
+            foreach (KeyValuePair<ulong, List<CameraInputTracker>> kv in _trackers)
+            {
+                for (int j = 0; j < kv.Value.Count; j++)
+                    kv.Value[j].Update(time, ref constraintBounds);
+            }
         }
 
-        /// <summary>Attempts to pick a scene object through the perspective of the current <see cref="CameraComponent"/>.</summary>
-        /// <param name="pDevice">The <see cref="PointingDevice"/> to use for picking.</param>
-        /// <param name="time">A timing instance to use when picking.</param>
-        /// <returns></returns>
-        public IPickable PickObject(PointingDevice pDevice, Timing time)
+        public void Focus()
         {
-            // TODO Apply/respect LayerMask property
-
-            if (Object != null && Object.Scene != null)
+            if (_inScene)
             {
-                SceneLayer layer = null;
-                for (int i = Object.Scene.Layers.Count - 1; i >= 0; i--)
+                if(Object.Scene.FocusedCamera != this)
                 {
-                    layer = Object.Scene.Layers[i];
-                    for (int j = layer.Pickables.Count - 1; j >= 0; j--)
-                    {
-                        if (layer.Pickables[j].Pick(pDevice, time))
-                            return layer.Pickables[j];
-                    }
+                    if(Object.Scene.FocusedCamera != null)
+                        Object.Scene.FocusedCamera.Unfocus();
+
+                    TrackPointingDevices();
+                    Object.Scene.FocusedCamera = this;
                 }
             }
 
-            return null;
+            IsFocused = true;
+        }
+
+        public void Unfocus()
+        {
+            if (_inScene)
+            {
+                if (Object.Scene.FocusedCamera == this)
+                    Object.Scene.FocusedCamera = null;
+            }
+
+            if (IsFocused)
+            {
+                foreach (ulong deviceID in _trackers.Keys)
+                {
+                    if (_trackers.TryGetValue(deviceID, out List<CameraInputTracker> trackers))
+                    {
+                        foreach (CameraInputTracker tracker in trackers)
+                            tracker.Release();
+                    }
+                }
+
+                _trackers.Clear();
+                IsFocused = false;
+            }
+        }
+
+        private void TrackPointingDevices()
+        {
+            MouseDevice mouse = Object.Engine.Input.GetMouse();
+            TouchDevice touch = Object.Engine.Input.GetTouch();
+
+            if (mouse != null)
+                TrackDevice(mouse);
+
+            if (touch != null)
+                TrackDevice(touch);
+        }
+
+        private void TrackDevice(PointingDevice device)
+        {
+            if (_trackers.ContainsKey(device.EOID) || device.IsDisposed)
+                return;
+
+            List<CameraInputTracker> trackers = new List<CameraInputTracker>();
+            _trackers.Add(device.EOID, trackers);
+
+            device.OnDisposing += Device_OnDisposing;
+
+            Rectangle constraintBounds = InputConstraintBounds.HasValue ? InputConstraintBounds.Value : Rectangle.Empty;
+
+            for (int setID = 0; setID < device.StateSetCount; setID++)
+            {
+                foreach (PointerButton button in _pButtons)
+                {
+                    if (button == PointerButton.None)
+                        continue;
+                    
+                    trackers.Add(new CameraInputTracker(this, device, setID, button, ref constraintBounds));
+                }
+            }
+        }
+
+        private void UntrackDevice(PointingDevice device)
+        {
+            if (_trackers.TryGetValue(device.EOID, out List<CameraInputTracker> trackers))
+            {
+                foreach (CameraInputTracker tracker in trackers)
+                    tracker.Release();
+            }
+
+            _trackers.Remove(device.EOID);
+        }
+
+        private void Device_OnDisposing(EngineObject o)
+        {
+            UntrackDevice(o as PointingDevice);
         }
 
         /// <summary>Converts the provided screen position to a globalized 3D world position.</summary>
@@ -250,6 +349,41 @@ namespace Molten
         {
             get => _camera.MultiSampleLevel;
             set => _camera.MultiSampleLevel = value;
+        }
+
+        /// <summary>
+        /// Gets whether the current <see cref="CameraComponent"/> is focused.
+        /// </summary>
+        public bool IsFocused { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the constraint bounds for input. Only accepts input if it is within these bounds. 
+        /// 
+        /// <para>Any positional input data will be relative to the top-left of these bounds.</para>
+        /// </summary>
+        public Rectangle? InputConstraintBounds { get; set; }
+
+        /// <summary>
+        /// Gets the currently-focused <see cref="IPickable2D"/>.
+        /// </summary>
+        public IPickable2D FocusedPickable
+        {
+            get => _focused;
+            set
+            {
+                if (_focused != value)
+                {
+                    if (_focused != null)
+                        _focused.IsFocused = false;
+
+                    _focused = value;
+
+                    if (_focused != null)
+                        _focused.IsFocused = true;
+
+                    FocusedChanged?.Invoke(_focused);
+                }
+            }
         }
     }
 }

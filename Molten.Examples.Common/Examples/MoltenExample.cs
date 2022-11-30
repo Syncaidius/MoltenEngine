@@ -43,7 +43,6 @@ namespace Molten.Examples
             UILayer = MainScene.AddLayer("ui", true);
             UILayer.BringToFront();
             UI = UILayer.AddObjectWithComponent<UIManagerComponent>();
-            UI.InputConstraintBounds = window.RenderBounds;
 
             SampleSpriteRenderComponent spriteCom = UILayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             spriteCom.RenderCallback = DrawSprites;
@@ -58,6 +57,8 @@ namespace Molten.Examples
             Camera2D.LayerMask = SceneLayerMask.Layer0;
             Camera2D.OnSurfaceChanged += UpdateUIRootBounds;
             Camera2D.OnSurfaceResized += UpdateUIRootBounds;
+            Camera2D.InputConstraintBounds = window.RenderBounds;
+            Camera2D.Focus();
 
             UI.Root.IsScrollingEnabled = false;
 
@@ -146,13 +147,9 @@ namespace Molten.Examples
 
         public void Update(Timing time)
         {
-            UI.InputConstraintBounds = Window.RenderBounds;
-
+            Camera2D.InputConstraintBounds = Window.RenderBounds;
             CameraController.AcceptInput = IsFocused;
-
-            if(IsFocused)
-                Camera2D.PickObject(Mouse, time);
-
+            
             // Don't update until the base content is loaded.
             if (_loader.Status != ContentLoadBatchStatus.Completed)
             {

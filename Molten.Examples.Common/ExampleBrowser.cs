@@ -75,6 +75,7 @@ namespace Molten.Examples
             _cam2D.MaxDrawDistance = 1.0f;
             _cam2D.Surface = Window;
             _cam2D.LayerMask = SceneLayerMask.Layer0;
+            _cam2D.Focus();
 
             UI.Root.IsScrollingEnabled = false;
             _cam2D.OnSurfaceChanged += UpdateUIRootBounds;
@@ -204,7 +205,7 @@ namespace Molten.Examples
             UpdateUIlayout(ui);
         }
 
-        private void _btnCloseAll_Released(UIElement element, UIPointerTracker tracker)
+        private void _btnCloseAll_Released(UIElement element, CameraInputTracker tracker)
         {
             List<ExampleBindings> bindings = _exampleBindings.Values.ToList();
             foreach(ExampleBindings b in bindings)
@@ -216,7 +217,7 @@ namespace Molten.Examples
             _btnCloseAll.IsEnabled = false;
         }
 
-        private void BtnStart_StartExample(UIElement element, UIPointerTracker tracker)
+        private void BtnStart_StartExample(UIElement element, CameraInputTracker tracker)
         {
             if (_lstExamples.SelectedItem == null)
                 return;
@@ -352,8 +353,6 @@ namespace Molten.Examples
             // Don't update until the base content is loaded.
             if (!_baseContentLoaded)
                 return;
-
-            _cam2D.PickObject(Mouse, time);
 
             // Cycle through window modes.
             if (Engine.Renderer == null || Engine.Renderer.State != EngineServiceState.Running)

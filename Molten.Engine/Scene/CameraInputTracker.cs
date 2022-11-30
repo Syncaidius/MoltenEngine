@@ -4,7 +4,7 @@ using Molten.UI;
 
 namespace Molten
 {
-    public class UIPointerTracker
+    public class CameraInputTracker
     {
         float _dragThreshold = 10; // Pixels
         Vector2F _dragDistance;
@@ -13,12 +13,11 @@ namespace Molten
         Vector2F _curPos;
         Vector2F _dragDefecit;
 
-        UIManagerComponent _manager;
-        UIElement _pressed = null;
-        UIElement _held = null;
-        UIElement _hovered = null;
-        UIElement _dragging = null;
-
+        CameraComponent _parent;
+        IPickable2D _pressed = null;
+        IPickable2D _held = null;
+        IPickable2D _hovered = null;
+        IPickable2D _dragging = null;
 
         /// <summary>
         /// The button set ID, or finger ID.
@@ -26,12 +25,12 @@ namespace Molten
         public int SetID { get; }
 
         /// <summary>
-        /// Gets the button being tracked by the current <see cref="UIPointerTracker"/>.
+        /// Gets the button being tracked by the current <see cref="CameraInputTracker"/>.
         /// </summary>
         public PointerButton Button { get; }
 
         /// <summary>
-        /// Gets the pointing device that the current <see cref="UIPointerTracker"/> is tracking.
+        /// Gets the pointing device that the current <see cref="CameraInputTracker"/> is tracking.
         /// </summary>
         public PointingDevice Device { get; }
 
@@ -56,20 +55,15 @@ namespace Molten
         public Vector2F DeltaSincePress => _delta;
 
         /// <summary>
-        /// Gets the <see cref="Timing"/> used during the last <see cref="Update(Timing)"/> call.
-        /// </summary>
-        public Timing Time { get; private set; }
-
-        /// <summary>
         /// 
         /// </summary>
-        /// <param name="manager"></param>
+        /// <param name="parent"></param>
         /// <param name="pDevice"></param>
         /// <param name="setID"></param>
         /// <param name="button"></param>
-        internal UIPointerTracker(UIManagerComponent manager, PointingDevice pDevice, int setID, PointerButton button, ref Rectangle inputConstraintBounds)
+        internal CameraInputTracker(CameraComponent parent, PointingDevice pDevice, int setID, PointerButton button, ref Rectangle inputConstraintBounds)
         {
-            _manager = manager;
+            _parent = parent;
             Device = pDevice;
             SetID = setID;
             Button = button;
@@ -78,9 +72,8 @@ namespace Molten
 
         internal void Update(Timing time, ref Rectangle constraintBounds)
         {
-            Time = time;
-
             Vector2F relPos = Device.Position - (Vector2F)constraintBounds.TopLeft;
+
             _delta = relPos - _curPos;
             _curPos = relPos;
 
@@ -93,9 +86,9 @@ namespace Molten
             _dragDefecit.X -= _iDelta.X;
             _dragDefecit.Y -= _iDelta.Y;
  
-            UIElement prevHover = _hovered;
+            IPickable2D prevHover = _hovered;
 
-            _hovered = _manager.Root.Pick(_curPos);
+            _hovered = Pick(_curPos, time);
 
             // Trigger on-leave of previous hover element.
             if (_hovered != prevHover)
@@ -108,6 +101,24 @@ namespace Molten
                     _hovered.OnEnter(this);
 
                 _hovered.OnHover(this);
+
+                if (Device is MouseDevice mouse)
+                {
+                    // Handle scroll wheel event
+                    if (mouse.ScrollWheel.Delta != 0)
+                    {
+                        // If the current element did not respond to scrolling, go to it's parent.
+                        // Repeat this until a parent element responds to scrolling, or we reach the top of the UI tree.
+                        IPickable2D scrolled = _hovered;
+                        while (scrolled != null)
+                        {
+                            if (scrolled.OnScrollWheel(mouse.ScrollWheel))
+                                break;
+                            
+                            scrolled = scrolled.ParentPickable;
+                        }
+                    }
+                }
             }
 
             switch (Button)
@@ -126,6 +137,26 @@ namespace Molten
             }
         }
 
+        private IPickable2D Pick(Vector2F pos, Timing time)
+        {
+            if (_parent.Object != null && _parent.Object.Scene != null)
+            {
+                SceneLayer layer;
+                for (int i = _parent.Object.Scene.Layers.Count - 1; i >= 0; i--)
+                {
+                    layer = _parent.Object.Scene.Layers[i];
+                    for (int j = layer.Pickables.Count - 1; j >= 0; j--)
+                    {
+                        IPickable2D picked = layer.Pickables[j].Pick(pos, time);
+                        if (picked != null)
+                            return picked;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         private void HandleLeftClick()
         {
             // Handle mouse-specific actions, such as hovering
@@ -139,8 +170,8 @@ namespace Molten
                         _pressed = _hovered;
 
                         // Check if focused control needs unfocusing.
-                        if (_manager.FocusedElement != _pressed)
-                            _manager.FocusedElement?.Unfocus();
+                        if (_parent.FocusedPickable != _pressed)
+                            _parent.FocusedPickable?.Unfocus();
 
                         // Trigger press-start event
                         _pressed.Focus();

@@ -38,7 +38,7 @@ namespace Molten.UI
             _label.LocalBounds = _panel.LocalBounds;
         }
 
-        public override void OnPressed(UIPointerTracker tracker)
+        public override void OnPressed(CameraInputTracker tracker)
         {
             _panel.State = UIElementState.Pressed;
             _label.State = UIElementState.Pressed;
@@ -46,7 +46,7 @@ namespace Molten.UI
             base.OnPressed(tracker);
         }
 
-        public override void OnReleased(UIPointerTracker tracker, bool releasedOutside)
+        public override void OnReleased(CameraInputTracker tracker, bool releasedOutside)
         {
             _panel.State = UIElementState.Default;
             _label.State = UIElementState.Default;

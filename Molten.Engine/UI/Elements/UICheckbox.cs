@@ -112,7 +112,7 @@ namespace Molten.UI
             return _boxBounds.Contains((Vector2I)globalPos);
         }
 
-        public override void OnPressed(UIPointerTracker tracker)
+        public override void OnPressed(CameraInputTracker tracker)
         {
             base.OnPressed(tracker);
             IsChecked = !IsChecked;

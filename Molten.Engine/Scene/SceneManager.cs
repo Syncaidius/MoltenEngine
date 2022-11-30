@@ -14,7 +14,6 @@ namespace Molten
             _pendingChanges = new ThreadedQueue<SceneChange>();
         }
 
-
         internal void QueueChange(Scene scene, SceneChange change)
         {
             change.Scene = scene;
