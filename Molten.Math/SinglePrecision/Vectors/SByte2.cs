@@ -11,7 +11,7 @@ namespace Molten
 	///<summary>A <see cref = "sbyte"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=1)]
     [Serializable]
-	public partial struct SByte2 : IFormattable
+	public partial struct SByte2 : IFormattable, IVector<sbyte>
 	{
 		///<summary>The X component.</summary>
         [DataMember]

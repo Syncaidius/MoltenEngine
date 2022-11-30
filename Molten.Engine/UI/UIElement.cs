@@ -25,7 +25,7 @@ namespace Molten.UI
     /// The base class for a UI component.
     /// </summary>
     [Serializable]
-    public abstract class UIElement : EngineObject, IPickable2D
+    public abstract class UIElement : EngineObject, IPickable<Vector2F>
     {
         /// <summary>
         /// Invoked when the current <see cref="UIElement"/> is pressed by a <see cref="CameraInputTracker"/>.
@@ -331,9 +331,9 @@ namespace Molten.UI
         /// <param name="pos">The point to use for picking a <see cref="UIElement"/>.</param>
         /// <param name="time">A snapshot of timing of the current frame.</param>
         /// <returns></returns>
-        public IPickable2D Pick(Vector2F pos, Timing time)
+        public IPickable<Vector2F> Pick2D(Vector2F pos, Timing time)
         {
-            IPickable2D result = null;
+            IPickable<Vector2F> result = null;
 
             if (IsEnabled && Contains(pos))
             {
@@ -353,7 +353,7 @@ namespace Molten.UI
                         // Try picking one of the layer's elements.
                         for (int e = layer.Count - 1; e >= 0; e--)
                         {
-                            result = layer[e].Pick(pos, time);
+                            result = layer[e].Pick2D(pos, time);
                             if (result != null)
                                 return result;
                         }
@@ -366,6 +366,8 @@ namespace Molten.UI
 
             return result;
         }
+
+        IPickable<Vector3F> IPickable.Pick3D(Molten.Vector3F pos, Molten.Timing time) { return null; }
 
         /// <summary>
         /// Invoked when the current <see cref="UIElement"/> is picked by a pointer or other form of input.
@@ -703,9 +705,9 @@ namespace Molten.UI
         public UIElement ParentElement => _parentLayer?.Owner;
 
         /// <summary>
-        /// An <see cref="IPickable2D"/> version of <see cref="ParentElement"/>.
+        /// An <see cref="IPickable<Vector2F>"/> version of <see cref="ParentElement"/>.
         /// </summary>
-        IPickable2D IPickable2D.ParentPickable => _parentLayer?.Owner;
+        IPickable<Vector2F> IPickable<Vector2F>.ParentPickable => _parentLayer?.Owner;
 
         /// <summary>
         /// Gets the <see cref="Engine"/> instance that the current <see cref="UIElement"/> is bound to.

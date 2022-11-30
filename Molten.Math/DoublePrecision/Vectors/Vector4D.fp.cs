@@ -80,7 +80,7 @@ namespace Molten.DoublePrecision
         /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
         public static bool NearEqual(ref Vector4D left, ref Vector4D right, ref Vector4D epsilon)
         {
-            return Molten.MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && Molten.MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y) && Molten.MathHelper.WithinEpsilon(left.Z, right.Z, epsilon.Z) && Molten.MathHelper.WithinEpsilon(left.W, right.W, epsilon.W);
+            return MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y) && MathHelper.WithinEpsilon(left.Z, right.Z, epsilon.Z) && MathHelper.WithinEpsilon(left.W, right.W, epsilon.W);
         }
 
         /// <summary>

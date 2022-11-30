@@ -21,6 +21,7 @@
     <PackageIcon>logo_128.png</PackageIcon>
     <Version>0.2.0</Version>
     <Company>James Yarwood</Company>
+    <RootNamespace>Molten</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

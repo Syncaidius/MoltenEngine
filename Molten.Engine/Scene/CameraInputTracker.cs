@@ -14,10 +14,10 @@ namespace Molten
         Vector2F _dragDefecit;
 
         CameraComponent _parent;
-        IPickable2D _pressed = null;
-        IPickable2D _held = null;
-        IPickable2D _hovered = null;
-        IPickable2D _dragging = null;
+        IPickable<Vector2F> _pressed = null;
+        IPickable<Vector2F> _held = null;
+        IPickable<Vector2F> _hovered = null;
+        IPickable<Vector2F> _dragging = null;
 
         /// <summary>
         /// The button set ID, or finger ID.
@@ -86,7 +86,7 @@ namespace Molten
             _dragDefecit.X -= _iDelta.X;
             _dragDefecit.Y -= _iDelta.Y;
  
-            IPickable2D prevHover = _hovered;
+            IPickable<Vector2F> prevHover = _hovered;
 
             _hovered = Pick(_curPos, time);
 
@@ -109,7 +109,7 @@ namespace Molten
                     {
                         // If the current element did not respond to scrolling, go to it's parent.
                         // Repeat this until a parent element responds to scrolling, or we reach the top of the UI tree.
-                        IPickable2D scrolled = _hovered;
+                        IPickable<Vector2F> scrolled = _hovered;
                         while (scrolled != null)
                         {
                             if (scrolled.OnScrollWheel(mouse.ScrollWheel))
@@ -137,7 +137,7 @@ namespace Molten
             }
         }
 
-        private IPickable2D Pick(Vector2F pos, Timing time)
+        private IPickable<Vector2F> Pick(Vector2F pos, Timing time)
         {
             if (_parent.Object != null && _parent.Object.Scene != null)
             {
@@ -147,7 +147,7 @@ namespace Molten
                     layer = _parent.Object.Scene.Layers[i];
                     for (int j = layer.Pickables.Count - 1; j >= 0; j--)
                     {
-                        IPickable2D picked = layer.Pickables[j].Pick(pos, time);
+                        IPickable<Vector2F> picked = layer.Pickables[j].Pick2D(pos, time);
                         if (picked != null)
                             return picked;
                     }

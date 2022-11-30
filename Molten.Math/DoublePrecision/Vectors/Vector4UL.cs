@@ -11,7 +11,7 @@ namespace Molten.DoublePrecision
 	///<summary>A <see cref = "ulong"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=8)]
     [Serializable]
-	public partial struct Vector4UL : IFormattable
+	public partial struct Vector4UL : IFormattable, IVector<ulong>
 	{
 		///<summary>The X component.</summary>
         [DataMember]

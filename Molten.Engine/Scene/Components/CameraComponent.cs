@@ -13,11 +13,11 @@ namespace Molten
 
         public event SceneInputEventHandler<PointerButton> OnObjectUnfocused;
 
-        public event ObjectHandler<IPickable2D> FocusedChanged;
+        public event ObjectHandler<IPickable<Vector2F>> FocusedChanged;
 
         RenderCamera _camera;
         bool _inScene = false; 
-        IPickable2D _focused;
+        IPickable<Vector2F> _focused;
 
         static PointerButton[] _pButtons;
 
@@ -133,6 +133,9 @@ namespace Molten
             }
         }
 
+        /// <summary>
+        /// Focuses input towards the current <see cref="CameraComponent"/>.
+        /// </summary>
         public void Focus()
         {
             if (_inScene)
@@ -150,6 +153,9 @@ namespace Molten
             IsFocused = true;
         }
 
+        /// <summary>
+        /// Removes input focus from the current <see cref="CameraComponent"/>.
+        /// </summary>
         public void Unfocus()
         {
             if (_inScene)
@@ -364,9 +370,9 @@ namespace Molten
         public Rectangle? InputConstraintBounds { get; set; }
 
         /// <summary>
-        /// Gets the currently-focused <see cref="IPickable2D"/>.
+        /// Gets the currently-focused <see cref="IPickable<Vector2F>"/>.
         /// </summary>
-        public IPickable2D FocusedPickable
+        public IPickable<Vector2F> FocusedPickable
         {
             get => _focused;
             set

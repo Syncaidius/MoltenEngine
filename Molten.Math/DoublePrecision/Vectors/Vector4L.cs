@@ -11,7 +11,7 @@ namespace Molten.DoublePrecision
 	///<summary>A <see cref = "long"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=8)]
     [Serializable]
-	public partial struct Vector4L : IFormattable
+	public partial struct Vector4L : IFormattable, IVector<long>
 	{
 		///<summary>The X component.</summary>
         [DataMember]

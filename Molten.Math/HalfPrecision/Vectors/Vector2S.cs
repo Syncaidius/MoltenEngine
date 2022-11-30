@@ -11,7 +11,7 @@ namespace Molten.HalfPrecision
 	///<summary>A <see cref = "short"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=2)]
     [Serializable]
-	public partial struct Vector2S : IFormattable
+	public partial struct Vector2S : IFormattable, IVector<short>
 	{
 		///<summary>The X component.</summary>
         [DataMember]

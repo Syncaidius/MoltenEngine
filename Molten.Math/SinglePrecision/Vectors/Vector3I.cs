@@ -11,7 +11,7 @@ namespace Molten
 	///<summary>A <see cref = "int"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
     [Serializable]
-	public partial struct Vector3I : IFormattable
+	public partial struct Vector3I : IFormattable, IVector<int>
 	{
 		///<summary>The X component.</summary>
         [DataMember]

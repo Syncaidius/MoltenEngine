@@ -39,9 +39,14 @@ namespace Molten.UI
             _root.Render(sb);
         }
 
-        public IPickable2D Pick(Vector2F pos, Timing time)
+        public IPickable<Vector2F> Pick2D(Vector2F pos, Timing time)
         {
-            return _root.Pick(pos, time);
+            return _root.Pick2D(pos, time);
+        }
+
+        public IPickable<Vector3F> Pick3D(Vector3F pos, Timing time)
+        {
+            return null;
         }
 
         /*public void PointerHeld(UIPointerTracker tracker)

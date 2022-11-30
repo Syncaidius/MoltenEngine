@@ -27,7 +27,7 @@ namespace Molten<#=md.SubNamespace#>
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=_strSize[md.Size]#> components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=<#=d.Pack#>)]
     [Serializable]
-	public partial struct <#=md.Name#> : IFormattable
+	public partial struct <#=md.Name#> : IFormattable, IVector<<#=d.DT#>>
 	{
 <#
 		for(int p = 0; p < md.Size; p++)
