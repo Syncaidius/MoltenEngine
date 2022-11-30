@@ -331,7 +331,7 @@ namespace Molten.UI
         /// <param name="pos">The point to use for picking a <see cref="UIElement"/>.</param>
         /// <param name="time">A snapshot of timing of the current frame.</param>
         /// <returns></returns>
-        public IPickable<Vector2F> Pick2D(Vector2F pos, Timing time)
+        public IPickable<Vector2F> Pick(Vector2F pos, Timing time)
         {
             IPickable<Vector2F> result = null;
 
@@ -353,7 +353,7 @@ namespace Molten.UI
                         // Try picking one of the layer's elements.
                         for (int e = layer.Count - 1; e >= 0; e--)
                         {
-                            result = layer[e].Pick2D(pos, time);
+                            result = layer[e].Pick(pos, time);
                             if (result != null)
                                 return result;
                         }
@@ -366,8 +366,6 @@ namespace Molten.UI
 
             return result;
         }
-
-        IPickable<Vector3F> IPickable.Pick3D(Molten.Vector3F pos, Molten.Timing time) { return null; }
 
         /// <summary>
         /// Invoked when the current <see cref="UIElement"/> is picked by a pointer or other form of input.

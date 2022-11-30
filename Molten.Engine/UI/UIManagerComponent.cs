@@ -7,7 +7,7 @@ namespace Molten.UI
     /// <summary>
     /// A <see cref="SceneComponent"/> used for updating and rendering a UI system into a <see cref="Scene"/>.
     /// </summary>
-    public sealed class UIManagerComponent : SpriteRenderComponent, IPickable
+    public sealed class UIManagerComponent : SpriteRenderComponent, IPickable<Vector2F>
     {       
         UIContainer _root;
 
@@ -39,14 +39,64 @@ namespace Molten.UI
             _root.Render(sb);
         }
 
-        public IPickable<Vector2F> Pick2D(Vector2F pos, Timing time)
+        public IPickable<Vector2F> Pick(Vector2F pos, Timing time)
         {
-            return _root.Pick2D(pos, time);
+            return _root.Pick(pos, time);
         }
 
-        public IPickable<Vector3F> Pick3D(Vector3F pos, Timing time)
+        public bool OnScrollWheel(InputScrollWheel wheel)
         {
-            return null;
+            throw new NotImplementedException();
+        }
+
+        public void OnHover(CameraInputTracker tracker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnEnter(CameraInputTracker tracker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnLeave(CameraInputTracker tracker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnPressed(CameraInputTracker tracker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnHeld(CameraInputTracker tracker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnDragged(CameraInputTracker tracker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnReleased(CameraInputTracker tracker, bool releasedOutside)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(Vector2F pos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Focus()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unfocus()
+        {
+            throw new NotImplementedException();
         }
 
         /*public void PointerHeld(UIPointerTracker tracker)
@@ -74,5 +124,8 @@ namespace Molten.UI
         /// </summary>
         public UIContainer Root => _root;
 
+        public IPickable<Vector2F> ParentPickable => throw new NotImplementedException();
+
+        public bool IsFocused { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

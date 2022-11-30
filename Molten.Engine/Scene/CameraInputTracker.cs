@@ -145,9 +145,9 @@ namespace Molten
                 for (int i = _parent.Object.Scene.Layers.Count - 1; i >= 0; i--)
                 {
                     layer = _parent.Object.Scene.Layers[i];
-                    for (int j = layer.Pickables.Count - 1; j >= 0; j--)
+                    for (int j = layer.Pickables2D.Count - 1; j >= 0; j--)
                     {
-                        IPickable<Vector2F> picked = layer.Pickables[j].Pick2D(pos, time);
+                        IPickable<Vector2F> picked = layer.Pickables2D[j].Pick(pos, time);
                         if (picked != null)
                             return picked;
                     }

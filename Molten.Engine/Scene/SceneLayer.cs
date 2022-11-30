@@ -1,4 +1,5 @@
-﻿using Molten.Graphics;
+﻿using System.Buffers;
+using Molten.Graphics;
 
 namespace Molten
 {
@@ -11,7 +12,8 @@ namespace Molten
 
         internal List<SceneObject> Objects { get; }
 
-        internal List<IPickable> Pickables { get; }
+        internal List<IPickable<Vector2F>> Pickables2D { get; }
+        internal List<IPickable<Vector3F>> Pickables3D { get; }
 
         internal List<IInputReceiver> InputHandlers { get; }
 
@@ -23,7 +25,8 @@ namespace Molten
         internal SceneLayer()
         {
             Objects = new List<SceneObject>();
-            Pickables = new List<IPickable>();
+            Pickables2D = new List<IPickable<Vector2F>>();
+            Pickables3D = new List<IPickable<Vector3F>>();
             InputHandlers = new List<IInputReceiver>();
         }
 

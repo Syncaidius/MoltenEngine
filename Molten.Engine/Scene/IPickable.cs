@@ -5,31 +5,17 @@ namespace Molten
     /// <summary>
     /// Represents an object which can picked via a<see cref="CameraComponent"/>.
     /// </summary>
-    public interface IPickable
-    {
-        /// <summary>
-        /// Performs 2D picking on the current <see cref="IPickable"/>. Returning null means no object was picked.
-        /// </summary>
-        /// <param name="pos">The 2D screen position to be picked.</param>
-        /// <param name="time">A timing instance.</param>
-        /// <returns></returns>
-        IPickable<Vector2F> Pick2D(Vector2F pos, Timing time);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pos">The 3D world position to be picked.</param>
-        /// <param name="time">A timing instance.</param>
-        /// <returns></returns>
-        IPickable<Vector3F> Pick3D(Vector3F pos, Timing time);
-    }
-
-    /// <summary>
-    /// Represents an object which can picked via a<see cref="CameraComponent"/>.
-    /// </summary>
-    public interface IPickable<T> : IPickable
+    public interface IPickable<T>
         where T : IVector<float>
-    {
+    {        
+        /// <summary>
+        /// Performs picking on the current <see cref="IPickable"/>. Returning null means no object was picked.
+        /// </summary>
+        /// <param name="pos">The position to be picked.</param>
+        /// <param name="time">A timing instance.</param>
+        /// <returns></returns>
+        IPickable<T> Pick(T pos, Timing time);
+
         bool OnScrollWheel(InputScrollWheel wheel);
 
         void OnHover(CameraInputTracker tracker);

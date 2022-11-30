@@ -13,8 +13,11 @@
         }
         internal void RegisterOnLayer()
         {
-            if (this is IPickable p)
-                Object.Layer.Pickables.Add(p);
+            if (this is IPickable<Vector2F> p2d)
+                Object.Layer.Pickables2D.Add(p2d);
+
+            if (this is IPickable<Vector3F> p3d)
+                Object.Layer.Pickables3D.Add(p3d);
 
             if (this is IInputReceiver ih)
                 Object.Layer.InputHandlers.Add(ih);
@@ -22,8 +25,11 @@
 
         internal void UnregisterFromLayer()
         {
-            if (this is IPickable p)
-                Object.Layer.Pickables.Remove(p);
+            if (this is IPickable<Vector2F> p2d)
+                Object.Layer.Pickables2D.Remove(p2d);
+
+            if (this is IPickable<Vector3F> p3d)
+                Object.Layer.Pickables3D.Remove(p3d);
 
             if (this is IInputReceiver ih)
                 Object.Layer.InputHandlers.Remove(ih);
