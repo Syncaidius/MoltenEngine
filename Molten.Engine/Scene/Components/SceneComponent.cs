@@ -13,26 +13,38 @@
         }
         internal void RegisterOnLayer()
         {
-            if (this is IPickable<Vector2F> p2d)
-                Object.Layer.Pickables2D.Add(p2d);
+            switch (this)
+            {
+                case IPickable<Vector2F> p2d:
+                    Object.Layer.Pickables2D.Add(p2d);
+                    break;
 
-            if (this is IPickable<Vector3F> p3d)
-                Object.Layer.Pickables3D.Add(p3d);
+                case IPickable<Vector3F> p3d:
+                    Object.Layer.Pickables3D.Add(p3d);
+                    break;
 
-            if (this is IInputReceiver ih)
-                Object.Layer.InputHandlers.Add(ih);
+                case IInputReceiver ih:
+                    Object.Layer.InputHandlers.Add(ih);
+                    break;
+            }
         }
 
         internal void UnregisterFromLayer()
         {
-            if (this is IPickable<Vector2F> p2d)
-                Object.Layer.Pickables2D.Remove(p2d);
+            switch (this)
+            {
+                case IPickable<Vector2F> p2d:
+                    Object.Layer.Pickables2D.Remove(p2d);
+                    break;
 
-            if (this is IPickable<Vector3F> p3d)
-                Object.Layer.Pickables3D.Remove(p3d);
+                case IPickable<Vector3F> p3d:
+                    Object.Layer.Pickables3D.Remove(p3d);
+                    break;
 
-            if (this is IInputReceiver ih)
-                Object.Layer.InputHandlers.Remove(ih);
+                case IInputReceiver ih:
+                    Object.Layer.InputHandlers.Remove(ih);
+                    break;
+            }
         }
 
         /// <summary>
