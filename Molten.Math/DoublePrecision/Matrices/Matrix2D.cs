@@ -1,10 +1,15 @@
-﻿
+using System;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+
 namespace Molten.DoublePrecision
 {
-    /// <summary>
-    /// 2 row, 2 column matrix.
-    /// </summary>
-    public struct Matrix2D : ITransposedMatrix<Matrix2D>
+    /// <summary>A 2x2 matrix of <see cref="double"/>.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=8)]
+    [Serializable]
+	public struct Matrix2D : ITransposedMatrix<Matrix2D>
     {
         /// <summary>
         /// A single-precision Matrix2x2 with values intialized to the identity of a 2 x 2 matrix
@@ -14,23 +19,26 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Value at row 1, column 1 of the matrix.
         /// </summary>
+        [DataMember]
         public double M11;
 
         /// <summary>
         /// Value at row 1, column 2 of the matrix.
         /// </summary>
+        [DataMember]
         public double M12;
 
         /// <summary>
         /// Value at row 2, column 1 of the matrix.
         /// </summary>
+        [DataMember]
         public double M21;
 
         /// <summary>
         /// Value at row 2, column 2 of the matrix.
         /// </summary>
+        [DataMember]
         public double M22;
-
 
         /// <summary>
         /// Constructs a new 2 row, 2 column matrix.
@@ -67,7 +75,7 @@ namespace Molten.DoublePrecision
         /// <param name="a">First matrix to add.</param>
         /// <param name="b">Second matrix to add.</param>
         /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref Matrix4F a, ref Matrix2D b, out Matrix2D result)
+        public static void Add(ref Matrix4D a, ref Matrix2D b, out Matrix2D result)
         {
             result.M11 = a.M11 + b.M11;
             result.M12 = a.M12 + b.M12;
@@ -81,7 +89,7 @@ namespace Molten.DoublePrecision
         /// <param name="a">First matrix to add.</param>
         /// <param name="b">Second matrix to add.</param>
         /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref Matrix2D a, ref Matrix4F b, out Matrix2D result)
+        public static void Add(ref Matrix2D a, ref Matrix4D b, out Matrix2D result)
         {
             result.M11 = a.M11 + b.M11;
             result.M12 = a.M12 + b.M12;
@@ -95,7 +103,7 @@ namespace Molten.DoublePrecision
         /// <param name="a">First matrix to add.</param>
         /// <param name="b">Second matrix to add.</param>
         /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref Matrix4F a, ref Matrix4F b, out Matrix2D result)
+        public static void Add(ref Matrix4D a, ref Matrix4D b, out Matrix2D result)
         {
             result.M11 = a.M11 + b.M11;
             result.M12 = a.M12 + b.M12;
@@ -152,7 +160,7 @@ namespace Molten.DoublePrecision
         /// <param name="a">First matrix to multiply.</param>
         /// <param name="b">Second matrix to multiply.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref Matrix2D a, ref Matrix4F b, out Matrix2D result)
+        public static void Multiply(ref Matrix2D a, ref Matrix4D b, out Matrix2D result)
         {
             result.M11 = a.M11 * b.M11 + a.M12 * b.M21;
             result.M12 = a.M11 * b.M12 + a.M12 * b.M22;
@@ -166,7 +174,7 @@ namespace Molten.DoublePrecision
         /// <param name="a">First matrix to multiply.</param>
         /// <param name="b">Second matrix to multiply.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref Matrix4F a, ref Matrix2D b, out Matrix2D result)
+        public static void Multiply(ref Matrix4D a, ref Matrix2D b, out Matrix2D result)
         {
             result.M11 = a.M11 * b.M11 + a.M12 * b.M21;
             result.M12 = a.M11 * b.M12 + a.M12 * b.M22;
@@ -180,7 +188,7 @@ namespace Molten.DoublePrecision
         /// <param name="a">First matrix to multiply.</param>
         /// <param name="b">Second matrix to multiply.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref Matrix2x3F a, ref Matrix3x2F b, out Matrix2D result)
+        public static void Multiply(ref Matrix2x3F a, ref Matrix3x2D b, out Matrix2D result)
         {
             result.M11 = a.M11 * b.M11 + a.M12 * b.M21 + a.M13 * b.M31;
             result.M12 = a.M11 * b.M12 + a.M12 * b.M22 + a.M13 * b.M32;
@@ -226,9 +234,7 @@ namespace Molten.DoublePrecision
         {
             double vX = v.X;
             double vY = v.Y;
-#if !WINDOWS
-            result = new Vector2D();
-#endif
+
             result.X = vX * matrix.M11 + vY * matrix.M21;
             result.Y = vX * matrix.M12 + vY * matrix.M22;
         }
@@ -255,7 +261,7 @@ namespace Molten.DoublePrecision
         {
             matrix.Transpose(out result);
         }
-        
+
         /// <summary>
         /// Transposes the matrix in-place.
         /// </summary>
@@ -264,7 +270,7 @@ namespace Molten.DoublePrecision
             double m21 = M21;
             M21 = M12;
             M12 = m21;
-        }      
+        }
 
         /// <summary>
         /// Creates a string representation of the matrix.
@@ -377,3 +383,4 @@ namespace Molten.DoublePrecision
         }
     }
 }
+
