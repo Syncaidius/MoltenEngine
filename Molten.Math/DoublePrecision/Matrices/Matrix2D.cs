@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 
 namespace Molten.DoublePrecision
 {
-    /// <summary>A 2x2 matrix of <see cref="double"/>.</summary>
+    /// <summary>Represents a double-precision 2x2 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Sequential, Pack=8)]
     [Serializable]
 	public struct Matrix2D : ITransposedMatrix<Matrix2D>

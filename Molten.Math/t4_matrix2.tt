@@ -22,7 +22,7 @@ using System.Runtime.Serialization;
 
 namespace Molten<#=md.SubNamespace#>
 {
-    /// <summary>A 2x2 matrix of <see cref="<#=d.DT#>"/>.</summary>
+    /// <summary>Represents a <#=(d.Bits > 32 ? "double" : "single")#>-precision 2x2 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Sequential, Pack=<#=d.Pack#>)]
     [Serializable]
 	public struct <#=md.Name#> : ITransposedMatrix<<#=md.Name#>>

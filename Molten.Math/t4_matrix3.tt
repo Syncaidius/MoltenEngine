@@ -69,9 +69,7 @@ using System.Runtime.Serialization;
 
 namespace Molten<#=md.SubNamespace#>
 {
-    /// <summary>
-    /// Represents a single-precision 3x3 Matrix ( contains only Scale and Rotation ).
-    /// </summary>
+    /// <summary>Represents a <#=(d.Bits > 32 ? "double" : "single")#>-precision 3x3 Matrix. Contains position, scale and rotation.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = <#=d.Pack#>)]
     [Serializable]
     public struct <#=md.Name#> : IEquatable<<#=md.Name#>>, IFormattable, ITransposedMatrix<<#=md.Name#>>

@@ -52,9 +52,7 @@ using System.Runtime.Serialization;
 
 namespace Molten
 {
-    /// <summary>
-    /// Represents a single-precision 3x3 Matrix ( contains only Scale and Rotation ).
-    /// </summary>
+    /// <summary>Represents a single-precision 3x3 Matrix. Contains position, scale and rotation.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Serializable]
     public struct Matrix3F : IEquatable<Matrix3F>, IFormattable, ITransposedMatrix<Matrix3F>
