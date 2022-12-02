@@ -24,24 +24,24 @@ namespace Molten
 		///<summary>The size of <see cref="Byte2"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Byte2));
 
-		///<summary>A Byte2 with every component set to 1.</summary>
-		public static readonly Byte2 One = new Byte2(1, 1);
+		///<summary>A Byte2 with every component set to (byte)1.</summary>
+		public static readonly Byte2 One = new Byte2((byte)1, (byte)1);
 
 		/// <summary>The X unit <see cref="Byte2"/>.</summary>
-		public static readonly Byte2 UnitX = new Byte2(1, 0);
+		public static readonly Byte2 UnitX = new Byte2((byte)1, (byte)0);
 
 		/// <summary>The Y unit <see cref="Byte2"/>.</summary>
-		public static readonly Byte2 UnitY = new Byte2(0, 1);
+		public static readonly Byte2 UnitY = new Byte2((byte)0, (byte)1);
 
 		/// <summary>Represents a zero'd Byte2.</summary>
-		public static readonly Byte2 Zero = new Byte2(0, 0);
+		public static readonly Byte2 Zero = new Byte2((byte)0, (byte)0);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => X == 0 && Y == 0;
+            get => X == (byte)0 && Y == (byte)0;
         }
 
 #region Constructors
@@ -423,13 +423,13 @@ namespace Molten
         ///<summary>Casts a <see cref="Byte2"/> to a <see cref="Byte3"/>.</summary>
         public static explicit operator Byte3(Byte2 value)
         {
-            return new Byte3(value.X, value.Y, 0);
+            return new Byte3(value.X, value.Y, (byte)0);
         }
 
         ///<summary>Casts a <see cref="Byte2"/> to a <see cref="Byte4"/>.</summary>
         public static explicit operator Byte4(Byte2 value)
         {
-            return new Byte4(value.X, value.Y, 0, 0);
+            return new Byte4(value.X, value.Y, (byte)0, (byte)0);
         }
 
 #endregion

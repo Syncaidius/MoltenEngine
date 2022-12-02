@@ -15,54 +15,54 @@ GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.jso
 #>
 using System.Runtime.InteropServices;
 
-namespace Molten<#=md.SubNamespace#>
+namespace Molten<#=d.DT.SubNamespace#>
 {
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=md.Size#> components.</summary>
 	public partial struct <#=md.Name#>
 	{
 <#
-    if(!d.Unsigned)
+    if(!d.DT.IsUnsigned)
     {
 #>
            /// <summary>
         /// A unit <see cref="<#=md.Name#>"/> designating up (0, 1, 0).
         /// </summary>
-        public static readonly <#=md.Name#> Up = new <#=md.Name#>(<#=d.Zero#>, <#=d.One#>, <#=d.Zero#>);
+        public static readonly <#=md.Name#> Up = new <#=md.Name#>(<#=d.DT.Zero#>, <#=d.DT.One#>, <#=d.DT.Zero#>);
 
         /// <summary>
         /// A unit <see cref="<#=md.Name#>"/> designating down (0, -1, 0).
         /// </summary>
-        public static readonly <#=md.Name#> Down = new <#=md.Name#>(<#=d.Zero#>, -<#=d.One#>, <#=d.Zero#>);
+        public static readonly <#=md.Name#> Down = new <#=md.Name#>(<#=d.DT.Zero#>, -<#=d.DT.One#>, <#=d.DT.Zero#>);
 
         /// <summary>
         /// A unit <see cref="<#=md.Name#>"/> designating left (-1, 0, 0).
         /// </summary>
-        public static readonly <#=md.Name#> Left = new <#=md.Name#>(-<#=d.One#>, <#=d.Zero#>, <#=d.Zero#>);
+        public static readonly <#=md.Name#> Left = new <#=md.Name#>(-<#=d.DT.One#>, <#=d.DT.Zero#>, <#=d.DT.Zero#>);
 
         /// <summary>
         /// A unit <see cref="<#=md.Name#>"/> designating right (1, 0, 0).
         /// </summary>
-        public static readonly <#=md.Name#> Right = new <#=md.Name#>(<#=d.One#>, <#=d.Zero#>, <#=d.Zero#>);
+        public static readonly <#=md.Name#> Right = new <#=md.Name#>(<#=d.DT.One#>, <#=d.DT.Zero#>, <#=d.DT.Zero#>);
 
         /// <summary>
         /// A unit <see cref="<#=md.Name#>"/> designating forward in a right-handed coordinate system (0, 0, -1).
         /// </summary>
-        public static readonly <#=md.Name#> ForwardRH = new <#=md.Name#>(<#=d.Zero#>, <#=d.Zero#>, -<#=d.One#>);
+        public static readonly <#=md.Name#> ForwardRH = new <#=md.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, -<#=d.DT.One#>);
 
         /// <summary>
         /// A unit <see cref="<#=md.Name#>"/> designating forward in a left-handed coordinate system (0, 0, 1).
         /// </summary>
-        public static readonly <#=md.Name#> ForwardLH = new <#=md.Name#>(<#=d.Zero#>, <#=d.Zero#>, <#=d.One#>);
+        public static readonly <#=md.Name#> ForwardLH = new <#=md.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, <#=d.DT.One#>);
 
         /// <summary>
         /// A unit <see cref="<#=md.Name#>"/> designating backward in a right-handed coordinate system (0, 0, 1).
         /// </summary>
-        public static readonly <#=md.Name#> BackwardRH = new <#=md.Name#>(<#=d.Zero#>, <#=d.Zero#>, <#=d.One#>);
+        public static readonly <#=md.Name#> BackwardRH = new <#=md.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, <#=d.DT.One#>);
 
         /// <summary>
         /// A unit <see cref="<#=md.Name#>"/> designating backward in a left-handed coordinate system (0, 0, -1).
         /// </summary>
-        public static readonly <#=md.Name#> BackwardLH = new <#=md.Name#>(<#=d.Zero#>, <#=d.Zero#>, -<#=d.One#>);
+        public static readonly <#=md.Name#> BackwardLH = new <#=md.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, -<#=d.DT.One#>);
 <#
     }
 #>
@@ -76,9 +76,9 @@ namespace Molten<#=md.SubNamespace#>
 
         public static void Cross(ref <#=md.Name#> left, ref <#=md.Name#> right, out <#=md.Name#> result)
         {
-                result.X = <#=md.TypeCast#>((left.Y * right.Z) - (left.Z * right.Y));
-                result.Y = <#=md.TypeCast#>((left.Z * right.X) - (left.X * right.Z));
-                result.Z = <#=md.TypeCast#>((left.X * right.Y) - (left.Y * right.X));
+                result.X = <#=d.DT.TypeCast#>((left.Y * right.Z) - (left.Z * right.Y));
+                result.Y = <#=d.DT.TypeCast#>((left.Z * right.X) - (left.X * right.Z));
+                result.Z = <#=d.DT.TypeCast#>((left.X * right.Y) - (left.Y * right.X));
         }
 
         /// <summary>
@@ -90,9 +90,9 @@ namespace Molten<#=md.SubNamespace#>
         public static <#=md.Name#> Cross(ref <#=md.Name#> left, ref <#=md.Name#> right)
         {
             return new <#=md.Name#>(
-                <#=md.TypeCast#>((left.Y * right.Z) - (left.Z * right.Y)),
-                <#=md.TypeCast#>((left.Z * right.X) - (left.X * right.Z)),
-                <#=md.TypeCast#>((left.X * right.Y) - (left.Y * right.X)));
+                <#=d.DT.TypeCast#>((left.Y * right.Z) - (left.Z * right.Y)),
+                <#=d.DT.TypeCast#>((left.Z * right.X) - (left.X * right.Z)),
+                <#=d.DT.TypeCast#>((left.X * right.Y) - (left.Y * right.X)));
         }
 
         /// <summary>

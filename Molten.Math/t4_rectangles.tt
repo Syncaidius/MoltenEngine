@@ -7,11 +7,7 @@
 <#@ import namespace="System.Text.RegularExpressions" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".txt" #>
-
 <#
-string _pMap = "xyzw";
-string _pMapUpper = "XYZW";
-
 GenerateTypes(this.GenerationEnvironment, this.Host, "Rectangles", "def_rectangles.json", null, new int[] {4}, null, (d, md, defs) =>
 {
     string postFix = (d.Postfix == null || d.Postfix.Length == 0) ? "I" : d.Postfix;
@@ -24,7 +20,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 <#
-    if(md.SubNamespace.Length == 0)
+    if(d.DT.SubNamespace.Length == 0)
     {
 #>
 using Molten.DoublePrecision;
@@ -32,10 +28,10 @@ using Molten.DoublePrecision;
     }
 #>
 
-namespace Molten<#=md.SubNamespace#>
+namespace Molten<#=d.DT.SubNamespace#>
 {
 	///<summary>Represents a four dimensional mathematical <#=md.Name#>.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = <#=d.Pack#>)]
+	[StructLayout(LayoutKind.Sequential, Pack = <#=d.DT.Pack#>)]
     [Serializable]
 	public partial struct <#=md.Name#> : IFormattable, IEquatable<<#=md.Name#>>
 	{
@@ -569,7 +565,7 @@ namespace Molten<#=md.SubNamespace#>
 
         #region Rectangle Cast Operators
 <#
-        foreach(TypeData dCast in defs)
+        foreach(TypeDef dCast in defs)
         {
             string castName = $"Rectangle{dCast.Postfix}";
             if(castName == md.Name)
@@ -585,7 +581,6 @@ namespace Molten<#=md.SubNamespace#>
                 Bottom = (<#=dCast.DT#>)rect.Bottom,
             };
         }
-
 <#
         }
 #>

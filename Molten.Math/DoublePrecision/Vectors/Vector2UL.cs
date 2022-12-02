@@ -28,20 +28,20 @@ namespace Molten.DoublePrecision
 		public static readonly Vector2UL One = new Vector2UL(1UL, 1UL);
 
 		/// <summary>The X unit <see cref="Vector2UL"/>.</summary>
-		public static readonly Vector2UL UnitX = new Vector2UL(1UL, 0);
+		public static readonly Vector2UL UnitX = new Vector2UL(1UL, 0UL);
 
 		/// <summary>The Y unit <see cref="Vector2UL"/>.</summary>
-		public static readonly Vector2UL UnitY = new Vector2UL(0, 1UL);
+		public static readonly Vector2UL UnitY = new Vector2UL(0UL, 1UL);
 
 		/// <summary>Represents a zero'd Vector2UL.</summary>
-		public static readonly Vector2UL Zero = new Vector2UL(0, 0);
+		public static readonly Vector2UL Zero = new Vector2UL(0UL, 0UL);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => X == 0 && Y == 0;
+            get => X == 0UL && Y == 0UL;
         }
 
 #region Constructors
@@ -423,13 +423,13 @@ namespace Molten.DoublePrecision
         ///<summary>Casts a <see cref="Vector2UL"/> to a <see cref="Vector3UL"/>.</summary>
         public static explicit operator Vector3UL(Vector2UL value)
         {
-            return new Vector3UL(value.X, value.Y, 0);
+            return new Vector3UL(value.X, value.Y, 0UL);
         }
 
         ///<summary>Casts a <see cref="Vector2UL"/> to a <see cref="Vector4UL"/>.</summary>
         public static explicit operator Vector4UL(Vector2UL value)
         {
-            return new Vector4UL(value.X, value.Y, 0, 0);
+            return new Vector4UL(value.X, value.Y, 0UL, 0UL);
         }
 
 #endregion

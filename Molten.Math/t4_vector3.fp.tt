@@ -10,10 +10,10 @@
 string pMap = "xyzw";
 string pMapUpper = "XYZW";
 
-GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", "fp3", _vectorSizes, (d,md) => d.IsFPType && md.Size == 3, (d, md, defs) =>
+GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", "fp3", _vectorSizes, (d,md) => d.DT.IsFPType && md.Size == 3, (d, md, defs) =>
 {
 #>
-namespace Molten<#=md.SubNamespace#>
+namespace Molten<#=d.DT.SubNamespace#>
 {
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=md.Size#> components.</summary>
 	public partial struct <#=md.Name#>
@@ -69,7 +69,7 @@ namespace Molten<#=md.SubNamespace#>
             <#=md.Name#> v = new <#=md.Name#>();
             TransformCoordinate(ref vector, ref worldViewProjection, out v);
 
-            result = new <#=md.Name#>(((<#=d.One#> + v.X) * 0.5<#=d.Postfix#> * width) + x, ((1.0f - v.Y) * 0.5<#=d.Postfix#> * height) + y, (v.Z * (maxZ - minZ)) + minZ);
+            result = new <#=md.Name#>(((<#=d.DT.One#> + v.X) * 0.5<#=d.Postfix#> * width) + x, ((1.0f - v.Y) * 0.5<#=d.Postfix#> * height) + y, (v.Z * (maxZ - minZ)) + minZ);
         }
 
         /// <summary>
@@ -651,7 +651,7 @@ namespace Molten<#=md.SubNamespace#>
                 denominator = triangleNormal.Z;
             }
 
-            if (denominator < -1e-9<#=d.FPL#> || denominator > 1e-9<#=d.FPL#>)
+            if (denominator < -1e-9<#=d.FP.Literal#> || denominator > 1e-9<#=d.FP.Literal#>)
             {
                 denominator = 1 / denominator;
                 aWeight = numeratorU * denominator;

@@ -12,12 +12,12 @@
 string pMap = "xyzw";
 string pMapUpper = "XYZW";
 
-GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", "fp", _vectorSizes, (d,md) => d.IsFPType, (d, md, defs) =>
+GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", "fp", _vectorSizes, (d,md) => d.DT.IsFPType, (d, md, defs) =>
 {
 #>
 using System;
 
-namespace Molten<#=md.SubNamespace#>
+namespace Molten<#=d.DT.SubNamespace#>
 {
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=md.Size#> components.</summary>
 	public partial struct <#=md.Name#>
@@ -119,7 +119,7 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.FP#> length = Length();
             if (!MathHelper.IsZero(length))
             {
-                <#=d.FP#> inverse = 1.0<#=d.FPL#> / length;
+                <#=d.FP#> inverse = 1.0<#=d.FP.Literal#> / length;
                 return new <#=md.Name#>()
                 {
 <#
@@ -156,12 +156,12 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> length = Length();
             if (!MathHelper.IsZero(length))
             {
-                <#=d.FP#> inverse = 1.0<#=d.FPL#> / length;
+                <#=d.FP#> inverse = 1.0<#=d.FP.Literal#> / length;
 <#
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			    <#=pMapUpper[p]#> = <#=md.FPCast#>(<#=pMapUpper[p]#> * inverse);
+			    <#=pMapUpper[p]#> = <#=d.DT.FPCast#>(<#=pMapUpper[p]#> * inverse);
 <#
 		}
 #>
@@ -188,7 +188,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			<#=pMapUpper[p]#> = <#=pMapUpper[p]#> < <#=d.Zero#> ? <#=d.Zero#> : <#=pMapUpper[p]#> > <#=d.One#> ? <#=d.One#> : <#=pMapUpper[p]#>;
+			<#=pMapUpper[p]#> = <#=pMapUpper[p]#> < <#=d.DT.Zero#> ? <#=d.DT.Zero#> : <#=pMapUpper[p]#> > <#=d.DT.One#> ? <#=d.DT.One#> : <#=pMapUpper[p]#>;
 <#
 		}
 #>
@@ -206,7 +206,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-				<#=pMapUpper[p]#> = <#=md.Math#>.Pow(vec.<#=pMapUpper[p]#>, power),
+				<#=pMapUpper[p]#> = <#=d.DT.Math#>.Pow(vec.<#=pMapUpper[p]#>, power),
 <#
 		}
 #>
@@ -220,7 +220,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			<#=pMapUpper[p]#> = <#=md.Math#>.Floor(<#=pMapUpper[p]#>);
+			<#=pMapUpper[p]#> = <#=d.DT.Math#>.Floor(<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -233,7 +233,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			<#=pMapUpper[p]#> = <#=md.Math#>.Ceiling(<#=pMapUpper[p]#>);
+			<#=pMapUpper[p]#> = <#=d.DT.Math#>.Ceiling(<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -246,7 +246,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			<#=pMapUpper[p]#> = <#=md.Math#>.Abs(<#=pMapUpper[p]#>);
+			<#=pMapUpper[p]#> = <#=d.DT.Math#>.Abs(<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -260,7 +260,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			<#=pMapUpper[p]#> = (<#=md.Math#>.Abs(<#=pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : <#=pMapUpper[p]#>;
+			<#=pMapUpper[p]#> = (<#=d.DT.Math#>.Abs(<#=pMapUpper[p]#>) - 0.0001<#=d.FP.Literal#> < 0) ? 0 : <#=pMapUpper[p]#>;
 <#
 		}
 #>
@@ -274,7 +274,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			<#=pMapUpper[p]#> = <#=md.Math#>.Pow(<#=pMapUpper[p]#>, power);
+			<#=pMapUpper[p]#> = <#=d.DT.Math#>.Pow(<#=pMapUpper[p]#>, power);
 <#
 		}
 #>
@@ -290,7 +290,7 @@ namespace Molten<#=md.SubNamespace#>
         /// </remarks>
         public <#=d.DT#> Length()
         {
-            return <#=md.Math#>.Sqrt(<#for(int p = 0; p < md.Size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
+            return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < md.Size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -313,7 +313,7 @@ namespace Molten<#=md.SubNamespace#>
 <#
 		}
 #>
-           return <#=md.Math#>.Sqrt(<#for(int p = 0; p < md.Size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
+           return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < md.Size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
         }
 
                 /// <summary>
@@ -337,7 +337,7 @@ namespace Molten<#=md.SubNamespace#>
 		}
 #>
 
-            return <#=md.Math#>.Sqrt(<#for(int p = 0; p < md.Size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
+            return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < md.Size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -359,10 +359,10 @@ namespace Molten<#=md.SubNamespace#>
 				for(int p = 0; p < md.Size; p++)
 				{
 #>
-				<#=pMapUpper[p]#> = <#=md.FPCast#>(0.5<#=d.FPL#> * ((((2<#=d.FPL#> * value2.<#=pMapUpper[p]#>) + 
+				<#=pMapUpper[p]#> = <#=d.DT.FPCast#>(0.5<#=d.FP.Literal#> * ((((2<#=d.FP.Literal#> * value2.<#=pMapUpper[p]#>) + 
                 ((-value1.<#=pMapUpper[p]#> + value3.<#=pMapUpper[p]#>) * amount)) + 
-                (((((2<#=d.FPL#> * value1.<#=pMapUpper[p]#>) - (5<#=d.FPL#> * value2.<#=pMapUpper[p]#>)) + (4<#=d.FPL#> * value3.<#=pMapUpper[p]#>)) - value4.<#=pMapUpper[p]#>) * squared)) +
-                ((((-value1.<#=pMapUpper[p]#> + (3<#=d.FPL#> * value2.<#=pMapUpper[p]#>)) - (3<#=d.FPL#> * value3.<#=pMapUpper[p]#>)) + value4.<#=pMapUpper[p]#>) * cubed))),
+                (((((2<#=d.FP.Literal#> * value1.<#=pMapUpper[p]#>) - (5<#=d.FP.Literal#> * value2.<#=pMapUpper[p]#>)) + (4<#=d.FP.Literal#> * value3.<#=pMapUpper[p]#>)) - value4.<#=pMapUpper[p]#>) * squared)) +
+                ((((-value1.<#=pMapUpper[p]#> + (3<#=d.FP.Literal#> * value2.<#=pMapUpper[p]#>)) - (3<#=d.FP.Literal#> * value3.<#=pMapUpper[p]#>)) + value4.<#=pMapUpper[p]#>) * cubed))),
 
 <#
 			    }
@@ -396,9 +396,9 @@ namespace Molten<#=md.SubNamespace#>
         {
             <#=d.FP#> squared = amount * amount;
             <#=d.FP#> cubed = amount * squared;
-            <#=d.FP#> part1 = ((2.0<#=d.FPL#> * cubed) - (3.0<#=d.FPL#> * squared)) + 1.0<#=d.FPL#>;
-            <#=d.FP#> part2 = (-2.0<#=d.FPL#> * cubed) + (3.0<#=d.FPL#> * squared);
-            <#=d.FP#> part3 = (cubed - (2.0<#=d.FPL#> * squared)) + amount;
+            <#=d.FP#> part1 = ((2.0<#=d.FP.Literal#> * cubed) - (3.0<#=d.FP.Literal#> * squared)) + 1.0<#=d.FP.Literal#>;
+            <#=d.FP#> part2 = (-2.0<#=d.FP.Literal#> * cubed) + (3.0<#=d.FP.Literal#> * squared);
+            <#=d.FP#> part3 = (cubed - (2.0<#=d.FP.Literal#> * squared)) + amount;
             <#=d.FP#> part4 = cubed - squared;
 
 			return new <#=md.Name#>()
@@ -415,7 +415,7 @@ namespace Molten<#=md.SubNamespace#>
 			else
 			{
 #>
-				<#=pMapUpper[p]#> = <#=md.FPCast#>((((value1.<#=pMapUpper[p]#> * part1) + (value2.<#=pMapUpper[p]#> * part2)) + (tangent1.<#=pMapUpper[p]#> * part3)) + (tangent2.<#=pMapUpper[p]#> * part4)),
+				<#=pMapUpper[p]#> = <#=d.DT.FPCast#>((((value1.<#=pMapUpper[p]#> * part1) + (value2.<#=pMapUpper[p]#> * part2)) + (tangent1.<#=pMapUpper[p]#> * part3)) + (tangent2.<#=pMapUpper[p]#> * part4)),
 <#
 			}
 		}
@@ -449,7 +449,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-				<#=pMapUpper[p]#> = (<#=md.Math#>.Abs(value.<#=pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : value.X,
+				<#=pMapUpper[p]#> = (<#=d.DT.Math#>.Abs(value.<#=pMapUpper[p]#>) - 0.0001<#=d.FP.Literal#> < 0) ? 0 : value.X,
 <#
 		}
 #>

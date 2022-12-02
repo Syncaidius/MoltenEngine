@@ -28,20 +28,20 @@ namespace Molten.HalfPrecision
 		public static readonly Vector2US One = new Vector2US((ushort)1, (ushort)1);
 
 		/// <summary>The X unit <see cref="Vector2US"/>.</summary>
-		public static readonly Vector2US UnitX = new Vector2US((ushort)1, 0);
+		public static readonly Vector2US UnitX = new Vector2US((ushort)1, (ushort)0);
 
 		/// <summary>The Y unit <see cref="Vector2US"/>.</summary>
-		public static readonly Vector2US UnitY = new Vector2US(0, (ushort)1);
+		public static readonly Vector2US UnitY = new Vector2US((ushort)0, (ushort)1);
 
 		/// <summary>Represents a zero'd Vector2US.</summary>
-		public static readonly Vector2US Zero = new Vector2US(0, 0);
+		public static readonly Vector2US Zero = new Vector2US((ushort)0, (ushort)0);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => X == 0 && Y == 0;
+            get => X == (ushort)0 && Y == (ushort)0;
         }
 
 #region Constructors
@@ -423,13 +423,13 @@ namespace Molten.HalfPrecision
         ///<summary>Casts a <see cref="Vector2US"/> to a <see cref="Vector3US"/>.</summary>
         public static explicit operator Vector3US(Vector2US value)
         {
-            return new Vector3US(value.X, value.Y, 0);
+            return new Vector3US(value.X, value.Y, (ushort)0);
         }
 
         ///<summary>Casts a <see cref="Vector2US"/> to a <see cref="Vector4US"/>.</summary>
         public static explicit operator Vector4US(Vector2US value)
         {
-            return new Vector4US(value.X, value.Y, 0, 0);
+            return new Vector4US(value.X, value.Y, (ushort)0, (ushort)0);
         }
 
 #endregion

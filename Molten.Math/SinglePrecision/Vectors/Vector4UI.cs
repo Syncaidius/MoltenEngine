@@ -36,26 +36,26 @@ namespace Molten
 		public static readonly Vector4UI One = new Vector4UI(1U, 1U, 1U, 1U);
 
 		/// <summary>The X unit <see cref="Vector4UI"/>.</summary>
-		public static readonly Vector4UI UnitX = new Vector4UI(1U, 0, 0, 0);
+		public static readonly Vector4UI UnitX = new Vector4UI(1U, 0U, 0U, 0U);
 
 		/// <summary>The Y unit <see cref="Vector4UI"/>.</summary>
-		public static readonly Vector4UI UnitY = new Vector4UI(0, 1U, 0, 0);
+		public static readonly Vector4UI UnitY = new Vector4UI(0U, 1U, 0U, 0U);
 
 		/// <summary>The Z unit <see cref="Vector4UI"/>.</summary>
-		public static readonly Vector4UI UnitZ = new Vector4UI(0, 0, 1U, 0);
+		public static readonly Vector4UI UnitZ = new Vector4UI(0U, 0U, 1U, 0U);
 
 		/// <summary>The W unit <see cref="Vector4UI"/>.</summary>
-		public static readonly Vector4UI UnitW = new Vector4UI(0, 0, 0, 1U);
+		public static readonly Vector4UI UnitW = new Vector4UI(0U, 0U, 0U, 1U);
 
 		/// <summary>Represents a zero'd Vector4UI.</summary>
-		public static readonly Vector4UI Zero = new Vector4UI(0, 0, 0, 0);
+		public static readonly Vector4UI Zero = new Vector4UI(0U, 0U, 0U, 0U);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => X == 0 && Y == 0 && Z == 0 && W == 0;
+            get => X == 0U && Y == 0U && Z == 0U && W == 0U;
         }
 
 #region Constructors

@@ -67,10 +67,10 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten<#=md.SubNamespace#>
+namespace Molten<#=d.DT.SubNamespace#>
 {
-    /// <summary>Represents a <#=(d.Bits > 32 ? "double" : "single")#>-precision 3x3 Matrix. Contains position, scale and rotation.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack = <#=d.Pack#>)]
+    /// <summary>Represents a <#=(d.DT.Bits > 32 ? "double" : "single")#>-precision 3x3 Matrix. Contains position, scale and rotation.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = <#=d.DT.Pack#>)]
     [Serializable]
     public struct <#=md.Name#> : IEquatable<<#=md.Name#>>, IFormattable, ITransposedMatrix<<#=md.Name#>>
     {
@@ -87,7 +87,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <summary>
         /// The identity <see cref="<#=md.Name#>"/>.
         /// </summary>
-        public static readonly <#=md.Name#> Identity = new <#=md.Name#>() { M11 = 1.0<#=d.FPL#>, M22 = 1.0<#=d.FPL#>, M33 = 1.0<#=d.FPL#> };
+        public static readonly <#=md.Name#> Identity = new <#=md.Name#>() { M11 = 1.0<#=d.FP.Literal#>, M22 = 1.0<#=d.FP.Literal#>, M33 = 1.0<#=d.FP.Literal#> };
 
         /// <summary>
         /// Value at row 1 column 1 of the Matrix3x3.
@@ -803,7 +803,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <param name="result">When the method completes, contains the scaled Matrix3x3.</param>
         public static void Divide(ref <#=md.Name#> left, <#=d.DT#> right, out <#=md.Name#> result)
         {
-            <#=d.DT#> inv = 1.0<#=d.FPL#> / right;
+            <#=d.DT#> inv = 1.0<#=d.FP.Literal#> / right;
 
             result.M11 = left.M11 * inv;
             result.M12 = left.M12 * inv;
@@ -1176,7 +1176,7 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> d13 = value.M21 * value.M32 + value.M22 * -value.M31;
 
             <#=d.DT#> det = value.M11 * d11 - value.M12 * d12 + value.M13 * d13;
-            if (Math.Abs(det) == 0.0<#=d.FPL#>)
+            if (Math.Abs(det) == 0.0<#=d.FP.Literal#>)
             {
                 result = <#=md.Name#>.Zero;
                 return;
@@ -1577,7 +1577,7 @@ namespace Molten<#=md.SubNamespace#>
             if (MathHelper.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
-                difference *= (1.0<#=d.FPL#> / <#=d.DT#>.Sqrt(lengthSq));
+                difference *= (1.0<#=d.FP.Literal#> / <#=d.DT#>.Sqrt(lengthSq));
 
             <#=vectorName#> crossed = <#=vectorName#>.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
@@ -1630,7 +1630,7 @@ namespace Molten<#=md.SubNamespace#>
             if (MathHelper.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
-                difference *= (1.0<#=d.FPL#> / <#=d.DT#>.Sqrt(lengthSq));
+                difference *= (1.0<#=d.FP.Literal#> / <#=d.DT#>.Sqrt(lengthSq));
 
             <#=vectorName#> crossed = <#=vectorName#>.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
@@ -1916,15 +1916,15 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> yz = y * z;
 
             result = Identity;
-            result.M11 = xx + (cos * (1.0<#=d.FPL#> - xx));
+            result.M11 = xx + (cos * (1.0<#=d.FP.Literal#> - xx));
             result.M12 = (xy - (cos * xy)) + (sin * z);
             result.M13 = (xz - (cos * xz)) - (sin * y);
             result.M21 = (xy - (cos * xy)) - (sin * z);
-            result.M22 = yy + (cos * (1.0<#=d.FPL#> - yy));
+            result.M22 = yy + (cos * (1.0<#=d.FP.Literal#> - yy));
             result.M23 = (yz - (cos * yz)) + (sin * x);
             result.M31 = (xz - (cos * xz)) + (sin * y);
             result.M32 = (yz - (cos * yz)) - (sin * x);
-            result.M33 = zz + (cos * (1.0<#=d.FPL#> - zz));
+            result.M33 = zz + (cos * (1.0<#=d.FP.Literal#> - zz));
         }
 
         /// <summary>
@@ -1955,15 +1955,15 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> yz = rotation.Y * rotation.Z;
             <#=d.DT#> xw = rotation.X * rotation.W;
 
-            result.M11 = 1.0<#=d.FPL#> - (2.0<#=d.FPL#> * (yy + zz));
-            result.M12 = 2.0<#=d.FPL#> * (xy + zw);
-            result.M13 = 2.0<#=d.FPL#> * (zx - yw);
-            result.M21 = 2.0<#=d.FPL#> * (xy - zw);
-            result.M22 = 1.0<#=d.FPL#> - (2.0<#=d.FPL#> * (zz + xx));
-            result.M23 = 2.0<#=d.FPL#> * (yz + xw);
-            result.M31 = 2.0<#=d.FPL#> * (zx + yw);
-            result.M32 = 2.0<#=d.FPL#> * (yz - xw);
-            result.M33 = 1.0<#=d.FPL#> - (2.0<#=d.FPL#> * (yy + xx));
+            result.M11 = 1.0<#=d.FP.Literal#> - (2.0<#=d.FP.Literal#> * (yy + zz));
+            result.M12 = 2.0<#=d.FP.Literal#> * (xy + zw);
+            result.M13 = 2.0<#=d.FP.Literal#> * (zx - yw);
+            result.M21 = 2.0<#=d.FP.Literal#> * (xy - zw);
+            result.M22 = 1.0<#=d.FP.Literal#> - (2.0<#=d.FP.Literal#> * (zz + xx));
+            result.M23 = 2.0<#=d.FP.Literal#> * (yz + xw);
+            result.M31 = 2.0<#=d.FP.Literal#> * (zx + yw);
+            result.M32 = 2.0<#=d.FP.Literal#> * (yz - xw);
+            result.M33 = 1.0<#=d.FP.Literal#> - (2.0<#=d.FP.Literal#> * (yy + xx));
         }
 
         /// <summary>

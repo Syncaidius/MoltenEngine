@@ -36,26 +36,26 @@ namespace Molten.DoublePrecision
 		public static readonly Vector4L One = new Vector4L(1L, 1L, 1L, 1L);
 
 		/// <summary>The X unit <see cref="Vector4L"/>.</summary>
-		public static readonly Vector4L UnitX = new Vector4L(1L, 0, 0, 0);
+		public static readonly Vector4L UnitX = new Vector4L(1L, 0L, 0L, 0L);
 
 		/// <summary>The Y unit <see cref="Vector4L"/>.</summary>
-		public static readonly Vector4L UnitY = new Vector4L(0, 1L, 0, 0);
+		public static readonly Vector4L UnitY = new Vector4L(0L, 1L, 0L, 0L);
 
 		/// <summary>The Z unit <see cref="Vector4L"/>.</summary>
-		public static readonly Vector4L UnitZ = new Vector4L(0, 0, 1L, 0);
+		public static readonly Vector4L UnitZ = new Vector4L(0L, 0L, 1L, 0L);
 
 		/// <summary>The W unit <see cref="Vector4L"/>.</summary>
-		public static readonly Vector4L UnitW = new Vector4L(0, 0, 0, 1L);
+		public static readonly Vector4L UnitW = new Vector4L(0L, 0L, 0L, 1L);
 
 		/// <summary>Represents a zero'd Vector4L.</summary>
-		public static readonly Vector4L Zero = new Vector4L(0, 0, 0, 0);
+		public static readonly Vector4L Zero = new Vector4L(0L, 0L, 0L, 0L);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => X == 0 && Y == 0 && Z == 0 && W == 0;
+            get => X == 0L && Y == 0L && Z == 0L && W == 0L;
         }
 
 #region Constructors

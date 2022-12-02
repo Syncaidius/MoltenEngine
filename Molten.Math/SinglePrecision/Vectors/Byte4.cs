@@ -32,30 +32,30 @@ namespace Molten
 		///<summary>The size of <see cref="Byte4"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Byte4));
 
-		///<summary>A Byte4 with every component set to 1.</summary>
-		public static readonly Byte4 One = new Byte4(1, 1, 1, 1);
+		///<summary>A Byte4 with every component set to (byte)1.</summary>
+		public static readonly Byte4 One = new Byte4((byte)1, (byte)1, (byte)1, (byte)1);
 
 		/// <summary>The X unit <see cref="Byte4"/>.</summary>
-		public static readonly Byte4 UnitX = new Byte4(1, 0, 0, 0);
+		public static readonly Byte4 UnitX = new Byte4((byte)1, (byte)0, (byte)0, (byte)0);
 
 		/// <summary>The Y unit <see cref="Byte4"/>.</summary>
-		public static readonly Byte4 UnitY = new Byte4(0, 1, 0, 0);
+		public static readonly Byte4 UnitY = new Byte4((byte)0, (byte)1, (byte)0, (byte)0);
 
 		/// <summary>The Z unit <see cref="Byte4"/>.</summary>
-		public static readonly Byte4 UnitZ = new Byte4(0, 0, 1, 0);
+		public static readonly Byte4 UnitZ = new Byte4((byte)0, (byte)0, (byte)1, (byte)0);
 
 		/// <summary>The W unit <see cref="Byte4"/>.</summary>
-		public static readonly Byte4 UnitW = new Byte4(0, 0, 0, 1);
+		public static readonly Byte4 UnitW = new Byte4((byte)0, (byte)0, (byte)0, (byte)1);
 
 		/// <summary>Represents a zero'd Byte4.</summary>
-		public static readonly Byte4 Zero = new Byte4(0, 0, 0, 0);
+		public static readonly Byte4 Zero = new Byte4((byte)0, (byte)0, (byte)0, (byte)0);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => X == 0 && Y == 0 && Z == 0 && W == 0;
+            get => X == (byte)0 && Y == (byte)0 && Z == (byte)0 && W == (byte)0;
         }
 
 #region Constructors

@@ -24,24 +24,24 @@ namespace Molten
 		///<summary>The size of <see cref="SByte2"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(SByte2));
 
-		///<summary>A SByte2 with every component set to 1.</summary>
-		public static readonly SByte2 One = new SByte2(1, 1);
+		///<summary>A SByte2 with every component set to (sbyte)1.</summary>
+		public static readonly SByte2 One = new SByte2((sbyte)1, (sbyte)1);
 
 		/// <summary>The X unit <see cref="SByte2"/>.</summary>
-		public static readonly SByte2 UnitX = new SByte2(1, 0);
+		public static readonly SByte2 UnitX = new SByte2((sbyte)1, (sbyte)0);
 
 		/// <summary>The Y unit <see cref="SByte2"/>.</summary>
-		public static readonly SByte2 UnitY = new SByte2(0, 1);
+		public static readonly SByte2 UnitY = new SByte2((sbyte)0, (sbyte)1);
 
 		/// <summary>Represents a zero'd SByte2.</summary>
-		public static readonly SByte2 Zero = new SByte2(0, 0);
+		public static readonly SByte2 Zero = new SByte2((sbyte)0, (sbyte)0);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => X == 0 && Y == 0;
+            get => X == (sbyte)0 && Y == (sbyte)0;
         }
 
 #region Constructors
@@ -453,13 +453,13 @@ namespace Molten
         ///<summary>Casts a <see cref="SByte2"/> to a <see cref="SByte3"/>.</summary>
         public static explicit operator SByte3(SByte2 value)
         {
-            return new SByte3(value.X, value.Y, 0);
+            return new SByte3(value.X, value.Y, (sbyte)0);
         }
 
         ///<summary>Casts a <see cref="SByte2"/> to a <see cref="SByte4"/>.</summary>
         public static explicit operator SByte4(SByte2 value)
         {
-            return new SByte4(value.X, value.Y, 0, 0);
+            return new SByte4(value.X, value.Y, (sbyte)0, (sbyte)0);
         }
 
 #endregion

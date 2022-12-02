@@ -1,0 +1,70 @@
+[
+  {
+    "Name": "byte",
+    "TypeName": "System.Byte",
+    "Literal": null,
+    "FPDataType": "float",
+    "One": "(byte)1",
+    "Zero": "(byte)0"
+  },
+  {
+    "Name": "sbyte",
+    "TypeName": "System.SByte",
+    "Literal": null,
+    "FPDataType": "float",
+    "One": "(sbyte)1",
+    "Zero": "(sbyte)0"
+  },
+  {
+    "Name": "short",
+    "TypeName": "System.Int16",
+    "Literal": null,
+    "FPDataType": "float",
+    "One": "(short)1",
+    "Zero": "(short)0"
+  },
+  {
+    "Name": "ushort",
+    "TypeName": "System.UInt16",
+    "Literal": null,
+    "FPDataType": "float",
+    "One": "(ushort)1",
+    "Zero": "(ushort)0"
+  },
+  {
+    "Name": "float",
+    "TypeName": "System.Single",
+    "Literal": "F",
+    "FPDataType": "float"
+  },
+  {
+    "Name": "double",
+    "TypeName": "System.Double",
+    "Literal": "D",
+    "FPDataType": "double"
+  },
+  {
+    "Name": "int",
+    "TypeName": "System.Int32",
+    "Literal": null,
+    "FPDataType": "float"
+  },
+  {
+    "Name": "uint",
+    "TypeName": "System.UInt32",
+    "Literal": "U",
+    "FPDataType": "float"
+  },
+  {
+    "Name": "long",
+    "TypeName": "System.Int64",
+    "Literal": "L",
+    "FPDataType": "double"
+  },
+  {
+    "Name": "ulong",
+    "TypeName": "System.UInt64",
+    "Literal": "UL",
+    "FPDataType": "double"
+  }
+]

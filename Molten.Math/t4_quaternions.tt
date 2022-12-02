@@ -23,10 +23,10 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten<#=md.SubNamespace#>
+namespace Molten<#=d.DT.SubNamespace#>
 {
 	///<summary>Represents a four dimensional mathematical <#=md.Name#>.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = <#=d.Pack#>)]
+	[StructLayout(LayoutKind.Sequential, Pack = <#=d.DT.Pack#>)]
     [Serializable]
 	public partial struct <#=md.Name#> : IFormattable, IEquatable<<#=md.Name#>>
 	{
@@ -43,12 +43,12 @@ namespace Molten<#=md.SubNamespace#>
         /// <summary>
         /// A <see cref="<#=md.Name#>"/> with all of its components set to one.
         /// </summary>
-        public static readonly <#=md.Name#> One = new <#=md.Name#>(<#=d.One#>, <#=d.One#>, <#=d.One#>, <#=d.One#>);
+        public static readonly <#=md.Name#> One = new <#=md.Name#>(<#=d.DT.One#>, <#=d.DT.One#>, <#=d.DT.One#>, <#=d.DT.One#>);
 
         /// <summary>
         /// The identity <see cref="<#=md.Name#>"/> (0, 0, 0, 1).
         /// </summary>
-        public static readonly <#=md.Name#> Identity = new <#=md.Name#>(<#=d.Zero#>, <#=d.Zero#>, <#=d.Zero#>, <#=d.Zero#>);
+        public static readonly <#=md.Name#> Identity = new <#=md.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, <#=d.DT.Zero#>, <#=d.DT.Zero#>);
 
 		///<summary>The X component of the <#=md.Name#>.</summary>
         [DataMember]
@@ -81,9 +81,9 @@ namespace Molten<#=md.SubNamespace#>
             {
                 <#=d.DT#> length = (X * X) + (Y * Y) + (Z * Z);
                 if (MathHelper.IsZero(length))
-                    return 0.0<#=d.FPL#>;
+                    return 0.0<#=d.FP.Literal#>;
 
-                return 2.0<#=d.FPL#> * <#=md.Math#>.Acos(<#=d.DT#>.Clamp(W, -1<#=d.FPL#>, 1<#=d.FPL#>));
+                return 2.0<#=d.FP.Literal#> * <#=d.DT.Math#>.Acos(<#=d.DT#>.Clamp(W, -1<#=d.FP.Literal#>, 1<#=d.FP.Literal#>));
             }
         }
 
@@ -99,7 +99,7 @@ namespace Molten<#=md.SubNamespace#>
                 if (MathHelper.IsZero(length))
                     return Vector3<#=d.Postfix#>.UnitX;
 
-                <#=d.DT#> inv = 1.0<#=d.FPL#>  / <#=md.Math#>.Sqrt(length);
+                <#=d.DT#> inv = 1.0<#=d.FP.Literal#>  / <#=d.DT.Math#>.Sqrt(length);
                 return new Vector3<#=d.Postfix#>(X * inv, Y * inv, Z * inv);
             }
         }
@@ -276,7 +276,7 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> dot = <#=vectorName#>.Dot(ref v1, ref v2);
             //For non-normal vectors, the multiplying the axes length squared would be necessary:
             //float w = dot + MathF.Sqrt(v1.LengthSquared() * v2.LengthSquared());
-            if (dot < -0.9999<#=d.FPL#>) //parallel, opposing direction
+            if (dot < -0.9999<#=d.FP.Literal#>) //parallel, opposing direction
             {
                 //If this occurs, the rotation required is ~180 degrees.
                 //The problem is that we could choose any perpendicular axis for the rotation. It's not uniquely defined.
@@ -311,7 +311,7 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> length = Length();
             if (!MathHelper.IsZero(length))
             {
-                <#=d.DT#> inverse = 1.0<#=d.FPL#> / length;
+                <#=d.DT#> inverse = 1.0<#=d.FP.Literal#> / length;
                 X *= inverse;
                 Y *= inverse;
                 Z *= inverse;
@@ -328,7 +328,7 @@ namespace Molten<#=md.SubNamespace#>
         /// </remarks>
         public <#=d.DT#> Length()
         {
-            return <#=md.FPCast#>Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
+            return <#=d.DT.FPCast#>Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -339,7 +339,7 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> lengthSq = LengthSquared();
             if (!MathHelper.IsZero(lengthSq))
             {
-                lengthSq = 1.0<#=d.FPL#> / lengthSq;
+                lengthSq = 1.0<#=d.FP.Literal#> / lengthSq;
 
                 X = -X * lengthSq;
                 Y = -Y * lengthSq;
@@ -507,8 +507,8 @@ namespace Molten<#=md.SubNamespace#>
 
             if (Math.Abs(value.W) < 1.0)
             {
-                <#=d.DT#> angle = <#=md.FPCast#>Math.Acos(value.W);
-                <#=d.DT#> sin = <#=md.FPCast#>Math.Sin(angle);
+                <#=d.DT#> angle = <#=d.DT.FPCast#>Math.Acos(value.W);
+                <#=d.DT#> sin = <#=d.DT.FPCast#>Math.Sin(angle);
 
                 if (!MathHelper.IsZero(sin))
                 {
@@ -527,7 +527,7 @@ namespace Molten<#=md.SubNamespace#>
                 result = value;
             }
 
-            result.W = 0.0<#=d.FPL#>;
+            result.W = 0.0<#=d.FP.Literal#>;
             return result;
         }
 
@@ -567,8 +567,8 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> lengthSquared = axis.LengthSquared();
             if (lengthSquared > 1e-14f)
             {
-                axis = axis / <#=md.Math#>.Sqrt(lengthSquared);
-                angle = 2<#=d.FPL#> * <#=md.Math#>.Acos(<#=d.DT#>.Clamp(qw, -1, 1));
+                axis = axis / <#=d.DT.Math#>.Sqrt(lengthSquared);
+                angle = 2<#=d.FP.Literal#> * <#=d.DT.Math#>.Acos(<#=d.DT#>.Clamp(qw, -1, 1));
             }
             else
             {
@@ -616,7 +616,7 @@ namespace Molten<#=md.SubNamespace#>
         {
             <#=md.Name#> start = Slerp(ref value1, ref value4, amount);
             <#=md.Name#> end = Slerp(ref value2, ref value3, amount);
-            return Slerp(ref start, ref end, 2.0<#=d.FPL#> * amount * (1.0<#=d.FPL#> - amount));
+            return Slerp(ref start, ref end, 2.0<#=d.FP.Literal#> * amount * (1.0<#=d.FP.Literal#> - amount));
         }
 
         /// <summary>
@@ -632,18 +632,18 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> inverse;
             <#=d.DT#> dot = Dot(start, end);
 
-            if (<#=md.Math#>.Abs(dot) > 1.0<#=d.FPL#> - MathHelper.Constants<<#=d.DT#>>.ZeroTolerance)
+            if (<#=d.DT.Math#>.Abs(dot) > 1.0<#=d.FP.Literal#> - MathHelper.Constants<<#=d.DT#>>.ZeroTolerance)
             {
-                inverse = 1.0<#=d.FPL#> - amount;
-                opposite = amount * <#=md.Math#>.Sign(dot);
+                inverse = 1.0<#=d.FP.Literal#> - amount;
+                opposite = amount * <#=d.DT.Math#>.Sign(dot);
             }
             else
             {
-                <#=d.DT#> acos = <#=md.Math#>.Acos(Math.Abs(dot));
-                <#=d.DT#> invSin = 1.0<#=d.FPL#> / <#=md.Math#>.Sin(acos);
+                <#=d.DT#> acos = <#=d.DT.Math#>.Acos(Math.Abs(dot));
+                <#=d.DT#> invSin = 1.0<#=d.FP.Literal#> / <#=d.DT.Math#>.Sin(acos);
 
-                inverse = <#=md.Math#>.Sin((1.0<#=d.FPL#> - amount) * acos) * invSin;
-                opposite = <#=md.Math#>.Sin(amount * acos) * invSin * Math.Sign(dot);
+                inverse = <#=d.DT.Math#>.Sin((1.0<#=d.FP.Literal#> - amount) * acos) * invSin;
+                opposite = <#=d.DT.Math#>.Sin(amount * acos) * invSin * Math.Sign(dot);
             }
 
             return new <#=md.Name#>()
@@ -667,12 +667,12 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> halfPitch = pitch * 0.5f;
             <#=d.DT#> halfYaw = yaw * 0.5f;
 
-            <#=d.DT#> sinRoll = <#=md.FPCast#>Math.Sin(halfRoll);
-            <#=d.DT#> cosRoll = <#=md.FPCast#>Math.Cos(halfRoll);
-            <#=d.DT#> sinPitch = <#=md.FPCast#>Math.Sin(halfPitch);
-            <#=d.DT#> cosPitch = <#=md.FPCast#>Math.Cos(halfPitch);
-            <#=d.DT#> sinYaw = <#=md.FPCast#>Math.Sin(halfYaw);
-            <#=d.DT#> cosYaw = <#=md.FPCast#>Math.Cos(halfYaw);
+            <#=d.DT#> sinRoll = <#=d.DT.FPCast#>Math.Sin(halfRoll);
+            <#=d.DT#> cosRoll = <#=d.DT.FPCast#>Math.Cos(halfRoll);
+            <#=d.DT#> sinPitch = <#=d.DT.FPCast#>Math.Sin(halfPitch);
+            <#=d.DT#> cosPitch = <#=d.DT.FPCast#>Math.Cos(halfPitch);
+            <#=d.DT#> sinYaw = <#=d.DT.FPCast#>Math.Sin(halfYaw);
+            <#=d.DT#> cosYaw = <#=d.DT.FPCast#>Math.Cos(halfYaw);
 
             result.X = (cosYaw * sinPitch * cosRoll) + (sinYaw * cosPitch * sinRoll);
             result.Y = (sinYaw * cosPitch * cosRoll) - (cosYaw * sinPitch * sinRoll);
@@ -692,12 +692,12 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> halfPitch = pitch * 0.5f;
             <#=d.DT#> halfYaw = yaw * 0.5f;
 
-            <#=d.DT#> sinRoll = <#=md.FPCast#>Math.Sin(halfRoll);
-            <#=d.DT#> cosRoll = <#=md.FPCast#>Math.Cos(halfRoll);
-            <#=d.DT#> sinPitch = <#=md.FPCast#>Math.Sin(halfPitch);
-            <#=d.DT#> cosPitch = <#=md.FPCast#>Math.Cos(halfPitch);
-            <#=d.DT#> sinYaw = <#=md.FPCast#>Math.Sin(halfYaw);
-            <#=d.DT#> cosYaw = <#=md.FPCast#>Math.Cos(halfYaw);
+            <#=d.DT#> sinRoll = <#=d.DT.FPCast#>Math.Sin(halfRoll);
+            <#=d.DT#> cosRoll = <#=d.DT.FPCast#>Math.Cos(halfRoll);
+            <#=d.DT#> sinPitch = <#=d.DT.FPCast#>Math.Sin(halfPitch);
+            <#=d.DT#> cosPitch = <#=d.DT.FPCast#>Math.Cos(halfPitch);
+            <#=d.DT#> sinYaw = <#=d.DT.FPCast#>Math.Sin(halfYaw);
+            <#=d.DT#> cosYaw = <#=d.DT.FPCast#>Math.Cos(halfYaw);
 
             return new <#=md.Name#>()
             {
@@ -719,11 +719,11 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> scale = matrix.M11 + matrix.M22 + matrix.M33;
             <#=md.Name#> result;
 
-            if (scale > 0.0<#=d.FPL#>)
+            if (scale > 0.0<#=d.FP.Literal#>)
             {
-                sqrt = <#=md.FPCast#>Math.Sqrt(scale + 1.0<#=d.FPL#>);
-                result.W = sqrt * 0.5<#=d.FPL#>;
-                sqrt = 0.5<#=d.FPL#> / sqrt;
+                sqrt = <#=d.DT.FPCast#>Math.Sqrt(scale + 1.0<#=d.FP.Literal#>);
+                result.W = sqrt * 0.5<#=d.FP.Literal#>;
+                sqrt = 0.5<#=d.FP.Literal#> / sqrt;
 
                 result.X = (matrix.M23 - matrix.M32) * sqrt;
                 result.Y = (matrix.M31 - matrix.M13) * sqrt;
@@ -731,32 +731,32 @@ namespace Molten<#=md.SubNamespace#>
             }
             else if ((matrix.M11 >= matrix.M22) && (matrix.M11 >= matrix.M33))
             {
-                sqrt = <#=md.FPCast#>Math.Sqrt(1.0<#=d.FPL#> + matrix.M11 - matrix.M22 - matrix.M33);
-                half = 0.5<#=d.FPL#> / sqrt;
+                sqrt = <#=d.DT.FPCast#>Math.Sqrt(1.0<#=d.FP.Literal#> + matrix.M11 - matrix.M22 - matrix.M33);
+                half = 0.5<#=d.FP.Literal#> / sqrt;
 
-                result.X = 0.5<#=d.FPL#> * sqrt;
+                result.X = 0.5<#=d.FP.Literal#> * sqrt;
                 result.Y = (matrix.M12 + matrix.M21) * half;
                 result.Z = (matrix.M13 + matrix.M31) * half;
                 result.W = (matrix.M23 - matrix.M32) * half;
             }
             else if (matrix.M22 > matrix.M33)
             {
-                sqrt = <#=md.FPCast#>Math.Sqrt(1.0<#=d.FPL#> + matrix.M22 - matrix.M11 - matrix.M33);
+                sqrt = <#=d.DT.FPCast#>Math.Sqrt(1.0<#=d.FP.Literal#> + matrix.M22 - matrix.M11 - matrix.M33);
                 half = 0.5f / sqrt;
 
                 result.X = (matrix.M21 + matrix.M12) * half;
-                result.Y = 0.5<#=d.FPL#> * sqrt;
+                result.Y = 0.5<#=d.FP.Literal#> * sqrt;
                 result.Z = (matrix.M32 + matrix.M23) * half;
                 result.W = (matrix.M31 - matrix.M13) * half;
             }
             else
             {
-                sqrt = <#=md.FPCast#>Math.Sqrt(1.0<#=d.FPL#>  + matrix.M33 - matrix.M11 - matrix.M22);
-                half = 0.5<#=d.FPL#>  / sqrt;
+                sqrt = <#=d.DT.FPCast#>Math.Sqrt(1.0<#=d.FP.Literal#>  + matrix.M33 - matrix.M11 - matrix.M22);
+                half = 0.5<#=d.FP.Literal#>  / sqrt;
 
                 result.X = (matrix.M31 + matrix.M13) * half;
                 result.Y = (matrix.M32 + matrix.M23) * half;
-                result.Z = 0.5<#=d.FPL#> * sqrt;
+                result.Z = 0.5<#=d.FP.Literal#> * sqrt;
                 result.W = (matrix.M12 - matrix.M21) * half;
             }
 
@@ -776,9 +776,9 @@ namespace Molten<#=md.SubNamespace#>
 
             if (scale > 0.0f)
             {
-                sqrt = <#=md.FPCast#>Math.Sqrt(scale + 1.0f);
-                result.W = sqrt * 0.5<#=d.FPL#>;
-                sqrt = 0.5<#=d.FPL#> / sqrt;
+                sqrt = <#=d.DT.FPCast#>Math.Sqrt(scale + 1.0f);
+                result.W = sqrt * 0.5<#=d.FP.Literal#>;
+                sqrt = 0.5<#=d.FP.Literal#> / sqrt;
 
                 result.X = (matrix.M23 - matrix.M32) * sqrt;
                 result.Y = (matrix.M31 - matrix.M13) * sqrt;
@@ -786,32 +786,32 @@ namespace Molten<#=md.SubNamespace#>
             }
             else if ((matrix.M11 >= matrix.M22) && (matrix.M11 >= matrix.M33))
             {
-                sqrt = <#=md.FPCast#>Math.Sqrt(1.0f + matrix.M11 - matrix.M22 - matrix.M33);
-                half = 0.5<#=d.FPL#> / sqrt;
+                sqrt = <#=d.DT.FPCast#>Math.Sqrt(1.0f + matrix.M11 - matrix.M22 - matrix.M33);
+                half = 0.5<#=d.FP.Literal#> / sqrt;
 
-                result.X = 0.5<#=d.FPL#> * sqrt;
+                result.X = 0.5<#=d.FP.Literal#> * sqrt;
                 result.Y = (matrix.M12 + matrix.M21) * half;
                 result.Z = (matrix.M13 + matrix.M31) * half;
                 result.W = (matrix.M23 - matrix.M32) * half;
             }
             else if (matrix.M22 > matrix.M33)
             {
-                sqrt = <#=md.FPCast#>Math.Sqrt(1.0f + matrix.M22 - matrix.M11 - matrix.M33);
-                half = 0.5<#=d.FPL#> / sqrt;
+                sqrt = <#=d.DT.FPCast#>Math.Sqrt(1.0f + matrix.M22 - matrix.M11 - matrix.M33);
+                half = 0.5<#=d.FP.Literal#> / sqrt;
 
                 result.X = (matrix.M21 + matrix.M12) * half;
-                result.Y = 0.5<#=d.FPL#> * sqrt;
+                result.Y = 0.5<#=d.FP.Literal#> * sqrt;
                 result.Z = (matrix.M32 + matrix.M23) * half;
                 result.W = (matrix.M31 - matrix.M13) * half;
             }
             else
             {
-                sqrt = <#=md.FPCast#>Math.Sqrt(1.0f + matrix.M33 - matrix.M11 - matrix.M22);
-                half = 0.5<#=d.FPL#> / sqrt;
+                sqrt = <#=d.DT.FPCast#>Math.Sqrt(1.0f + matrix.M33 - matrix.M11 - matrix.M22);
+                half = 0.5<#=d.FP.Literal#> / sqrt;
 
                 result.X = (matrix.M31 + matrix.M13) * half;
                 result.Y = (matrix.M32 + matrix.M23) * half;
-                result.Z = 0.5<#=d.FPL#> * sqrt;
+                result.Z = 0.5<#=d.FP.Literal#> * sqrt;
                 result.W = (matrix.M12 - matrix.M21) * half;
             }
 
@@ -957,10 +957,10 @@ namespace Molten<#=md.SubNamespace#>
         /// </remarks>
         public static <#=md.Name#> Lerp(ref <#=md.Name#> start, ref <#=md.Name#> end, <#=d.DT#> amount)
         {
-            <#=d.DT#> inverse = 1.0<#=d.FPL#> - amount;
+            <#=d.DT#> inverse = 1.0<#=d.FP.Literal#> - amount;
             <#=md.Name#> result;
 
-            if (Dot(start, end) >= 0.0<#=d.FPL#>)
+            if (Dot(start, end) >= 0.0<#=d.FP.Literal#>)
             {
                 result.X = (inverse * start.X) + (amount * end.X);
                 result.Y = (inverse * start.Y) + (amount * end.Y);
@@ -998,9 +998,9 @@ namespace Molten<#=md.SubNamespace#>
         {
             <#=vectorName#> normalized = axis.GetNormalized();
 
-            <#=d.DT#> half = angle * 0.5<#=d.FPL#>;
-            <#=d.DT#> sin = <#=md.FPCast#>Math.Sin(half);
-            <#=d.DT#> cos = <#=md.FPCast#>Math.Cos(half);
+            <#=d.DT#> half = angle * 0.5<#=d.FP.Literal#>;
+            <#=d.DT#> sin = <#=d.DT.FPCast#>Math.Sin(half);
+            <#=d.DT#> cos = <#=d.DT.FPCast#>Math.Cos(half);
 
             return new <#=md.Name#>()
             {

@@ -10,10 +10,10 @@
 string pMap = "xyzw";
 string pMapUpper = "XYZW";
 
-GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", "fp4", _vectorSizes, (d,md) => d.IsFPType && md.Size == 4, (d, md, defs) =>
+GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", "fp4", _vectorSizes, (d,md) => d.DT.IsFPType && md.Size == 4, (d, md, defs) =>
 {
 #>
-namespace Molten<#=md.SubNamespace#>
+namespace Molten<#=d.DT.SubNamespace#>
 {
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=md.Size#> components.</summary>
 	public partial struct <#=md.Name#>

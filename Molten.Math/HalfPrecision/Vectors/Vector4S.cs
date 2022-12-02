@@ -36,26 +36,26 @@ namespace Molten.HalfPrecision
 		public static readonly Vector4S One = new Vector4S((short)1, (short)1, (short)1, (short)1);
 
 		/// <summary>The X unit <see cref="Vector4S"/>.</summary>
-		public static readonly Vector4S UnitX = new Vector4S((short)1, 0, 0, 0);
+		public static readonly Vector4S UnitX = new Vector4S((short)1, (short)0, (short)0, (short)0);
 
 		/// <summary>The Y unit <see cref="Vector4S"/>.</summary>
-		public static readonly Vector4S UnitY = new Vector4S(0, (short)1, 0, 0);
+		public static readonly Vector4S UnitY = new Vector4S((short)0, (short)1, (short)0, (short)0);
 
 		/// <summary>The Z unit <see cref="Vector4S"/>.</summary>
-		public static readonly Vector4S UnitZ = new Vector4S(0, 0, (short)1, 0);
+		public static readonly Vector4S UnitZ = new Vector4S((short)0, (short)0, (short)1, (short)0);
 
 		/// <summary>The W unit <see cref="Vector4S"/>.</summary>
-		public static readonly Vector4S UnitW = new Vector4S(0, 0, 0, (short)1);
+		public static readonly Vector4S UnitW = new Vector4S((short)0, (short)0, (short)0, (short)1);
 
 		/// <summary>Represents a zero'd Vector4S.</summary>
-		public static readonly Vector4S Zero = new Vector4S(0, 0, 0, 0);
+		public static readonly Vector4S Zero = new Vector4S((short)0, (short)0, (short)0, (short)0);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => X == 0 && Y == 0 && Z == 0 && W == 0;
+            get => X == (short)0 && Y == (short)0 && Z == (short)0 && W == (short)0;
         }
 
 #region Constructors

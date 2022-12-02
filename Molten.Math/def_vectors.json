@@ -2,131 +2,51 @@
   {
     "Name": "SByte",
     "Postfix": "",
-    "DT": "sbyte",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "1",
-    "One": "1",
-    "Zero": "0",
-    "IsFPType": false,
-    "Unsigned": false,
-    "Bits": 8
+    "DataTypeName": "sbyte"
   },
   {
     "Name": "Byte",
     "Postfix": "",
-    "DT": "byte",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "1",
-    "One": "1",
-    "Zero": "0",
-    "IsFPType": false,
-    "Unsigned": true,
-    "Bits": 8
+    "DataTypeName": "byte"
   },
   {
     "Name": "Vector",
     "Postfix": "I",
-    "DT": "int",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "4",
-    "One": "1",
-    "Zero": "0",
-    "IsFPType": false,
-    "Unsigned": false,
-    "Bits": 32
+    "DataTypeName": "int"
   },
   {
     "Name": "Vector",
     "Postfix": "UI",
-    "DT": "uint",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "4",
-    "One": "1U",
-    "Zero": "0",
-    "IsFPType": false,
-    "Unsigned": true,
-    "Bits": 32
+    "DataTypeName": "uint"
   },
   {
     "Name": "Vector",
     "Postfix": "S",
-    "DT": "short",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "2",
-    "One": "(short)1",
-    "Zero": "0",
-    "IsFPType": false,
-    "Unsigned": false,
-    "Bits": 16
+    "DataTypeName": "short"
   },
   {
     "Name": "Vector",
     "Postfix": "US",
-    "DT": "ushort",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "2",
-    "One": "(ushort)1",
-    "Zero": "0",
-    "IsFPType": false,
-    "Unsigned": true,
-    "Bits": 16
+    "DataTypeName": "ushort"
   },
   {
     "Name": "Vector",
     "Postfix": "L",
-    "DT": "long",
-    "FP": "double",
-    "FPL": "D",
-    "Pack": "8",
-    "One": "1L",
-    "Zero": "0",
-    "IsFPType": false,
-    "Unsigned": false,
-    "Bits": 64
+    "DataTypeName": "long"
   },
   {
     "Name": "Vector",
     "Postfix": "UL",
-    "DT": "ulong",
-    "FP": "double",
-    "FPL": "D",
-    "Pack": "8",
-    "One": "1UL",
-    "Zero": "0",
-    "IsFPType": false,
-    "Unsigned": true,
-    "Bits": 64
+    "DataTypeName": "ulong"
   },
   {
     "Name": "Vector",
     "Postfix": "F",
-    "DT": "float",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "4",
-    "One": "1F",
-    "Zero": "0F",
-    "IsFPType": true,
-    "Unsigned": false,
-    "Bits": 32
+    "DataTypeName": "float"
   },
   {
     "Name": "Vector",
     "Postfix": "D",
-    "DT": "double",
-    "FP": "double",
-    "FPL": "D",
-    "Pack": "8",
-    "One": "1D",
-    "Zero": "0D",
-    "IsFPType": true,
-    "Unsigned": false,
-    "Bits": 64
+    "DataTypeName": "double"
   }
 ]

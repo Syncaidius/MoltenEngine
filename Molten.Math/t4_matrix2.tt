@@ -20,10 +20,10 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten<#=md.SubNamespace#>
+namespace Molten<#=d.DT.SubNamespace#>
 {
-    /// <summary>Represents a <#=(d.Bits > 32 ? "double" : "single")#>-precision 2x2 Matrix. Contains only scale and rotation.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=<#=d.Pack#>)]
+    /// <summary>Represents a <#=(d.DT.Bits > 32 ? "double" : "single")#>-precision 2x2 Matrix. Contains only scale and rotation.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=<#=d.DT.Pack#>)]
     [Serializable]
 	public struct <#=md.Name#> : ITransposedMatrix<<#=md.Name#>>
     {

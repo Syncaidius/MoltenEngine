@@ -1,6 +1,7 @@
 ﻿<#@ assembly name="System.Core" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Text" #>
+<#@ import namespace="System.Runtime.InteropServices" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Microsoft.VisualStudio.TextTemplating" #>
 <#@ assembly name="Newtonsoft.Json" #>
@@ -9,22 +10,66 @@
 
 
 <#+
-public delegate void GenerateTypeCallback(TypeData d, Metadata md, List<TypeData> defs);
-public delegate bool GenerateTypeFilter(TypeData d, Metadata md);
+public delegate void GenerateTypeCallback(TypeDef d, Metadata md, List<TypeDef> defs);
+public delegate bool GenerateTypeFilter(TypeDef d, Metadata md);
 
-public class TypeData
+
+public class DataType
 {
-    public string Name;     // Name
-    public string Postfix;  //Name post-fix
-    public string DT;       // DataType
-    public string FP;       // Floating-point type
-    public string FPL;      // Floating-point literal
-    public string Pack;     // Packing
-    public string One;      // Value for 1 or One
-    public string Zero;     // Value for 0 or Zero
-    public bool IsFPType;   // The type is a floating-point type
-    public bool Unsigned;   // The type uses an unsigned data type
-    public int Bits;        // The number of bits in DT
+    // Populated by deserialization
+    public string Name;
+    public string TypeName;
+    public string Literal;
+    public string FPDataType;
+
+    // Populated after deserialization
+    public Type UnderlyingType;
+    public DataType FP;
+    public int Bits;
+    public int Pack;
+    public string One;
+    public string Zero;
+    public bool IsFPType;
+    public bool IsUnsigned;
+    public string FPCast;
+    public string Math; //Which math class to use. Math or MathF.
+    public string TypeCast;
+    public string FPToTypeCast;
+    public string IntType;
+
+    public string SubNamespace;
+    public string SubDirectory;
+
+    public override string ToString()
+    {
+        return Name;
+    }
+
+    public static bool operator ==(DataType dt, string str){
+        return dt?.Name == str;
+    }
+
+    public static bool operator !=(DataType dt, string str){
+        return dt?.Name != str;
+    }
+
+    public static bool operator ==(string str, DataType dt){
+        return str != dt?.Name;
+    }
+
+    public static bool operator !=(string str, DataType dt){
+        return str != dt?.Name;
+    }
+}
+
+public class TypeDef
+{
+    public string Name;         // Name
+    public string Postfix;      //Name post-fix
+    public DataType DT;         // The underlying DataType definition.
+    public string DataTypeName;  // The name of the DataType to be used.
+
+    public DataType FP => DT.FP;
 }
 
 public class Metadata
@@ -33,14 +78,6 @@ public class Metadata
 	public string Name;
 	public string Filename;
     public string FilePostFix;
-	public string FPCast;
-	public string MathHelper;
-    public string Math;
-    public string TypeCast;
-    public string FPToTypeCast;
-    public string IntType;
-    public string SubNamespace;
-    public string SubDirectory;
 }
 
 string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
@@ -57,61 +94,97 @@ public void GenerateTypes(
     GenerateTypeCallback callback)
 {
     string outputPath = host.ResolvePath("");
-    List<TypeData> defs = ReadJsonDef<TypeData>(outputPath, definitionFileName);
+
+    // Load supported data types and build metadata for them.
+    List<DataType> supportedDataTypes = ReadJsonDef<DataType>(outputPath, "def_datatypes.json");
+    Dictionary<string, DataType> dataTypes = new Dictionary<string, DataType>();
+
+    foreach(DataType dt in supportedDataTypes)
+    {
+        dt.UnderlyingType = Type.GetType(dt.TypeName);
+        if(dt.UnderlyingType == null)
+            continue;
+
+        dataTypes[dt.Name] = dt;
+
+        // Check deserialized values
+        dt.Literal = string.IsNullOrWhiteSpace(dt.Literal) ? "" : dt.Literal;
+
+        dt.Pack = Marshal.SizeOf(dt.UnderlyingType);
+        dt.Bits = dt.Pack * 8;
+        dt.One = string.IsNullOrWhiteSpace(dt.One) ? ("1" + dt.Literal) : dt.One;
+        dt.Zero = string.IsNullOrWhiteSpace(dt.Zero) ? ("0" + dt.Literal) : dt.Zero;
+        dt.IsFPType = dt.FPDataType == dt.Name;
+        dt.IsUnsigned = dt.Name.StartsWith("u") || dt.Name == "byte";
+        dt.FPCast = dt.Name == "float" ? "(float)" : (dt.Name == "double" ? "" : $"({dt.Name})");
+        dt.Math = dt.Name == "float" ? "MathF" : "Math";
+        dt.TypeCast = (dt.Name == "byte" || dt.Name == "sbyte" || dt.Name == "short" || dt.Name == "ushort") ? $"({dt.Name})" : "";
+        dt.FPToTypeCast = (dt.TypeCast.Length > 0) ? dt.TypeCast : (dt.Name != dt.FPDataType ? $"({dt.Name})" : "");
+        dt.IntType = (dt.Name == "byte" || dt.Name == "sbyte" || dt.Name == "short" || dt.Name == "ushort") ? $"int" : dt.Name;
+
+        switch(dt.Bits){
+            case 16:
+                dt.SubNamespace = ".HalfPrecision"; 
+                dt.SubDirectory = $"/HalfPrecision/{subFolder}";
+                break;
+
+            case 64: 
+                dt.SubNamespace = ".DoublePrecision"; 
+                dt.SubDirectory = $"/DoublePrecision/{subFolder}";
+                break;
+
+            case 128: 
+                dt.SubNamespace = ".QuadPrecision"; 
+                dt.SubDirectory = $"/QuadPrecision/{subFolder}";
+                break;
+
+            default:
+                dt.SubDirectory = $"/SinglePrecision/{subFolder}";
+                dt.SubNamespace = "";
+                break;
+        }
+    }
+
+    // Assign floating point type names.
+    foreach(DataType dt in supportedDataTypes){
+        if(dt.FPDataType == dt.Name)
+            dt.FP = dt;
+        else
+            dataTypes.TryGetValue(dt.FPDataType, out dt.FP);
+    }
+
+    List<TypeDef> defs = ReadJsonDef<TypeDef>(outputPath, definitionFileName);
     Metadata md = new Metadata();
     sizes = sizes ?? new int[] {1};
 
-    foreach(TypeData d in defs)
+    foreach(TypeDef t in defs)
     {
-		md.FPCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
-		md.Math = d.FP == "float" ? "MathF" : "Math";
-        md.TypeCast = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"({d.DT})" : "";
-        md.FPToTypeCast = (md.TypeCast.Length > 0) ? md.TypeCast : (d.DT != d.FP ? $"({d.DT})" : "");
-        md.IntType = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"int" : d.DT;
-        md.SubNamespace = "";
-        md.SubDirectory = "";
+        if(dataTypes.ContainsKey(t.DataTypeName))
+            t.DT = dataTypes[t.DataTypeName];
+    }
 
+    foreach(TypeDef t in defs)
+    {
         if(!string.IsNullOrWhiteSpace(filePostFix))
             md.FilePostFix = $".{filePostFix}";
         else
             md.FilePostFix = "";
 
-        switch(d.Bits){
-            case 16:
-                md.SubNamespace = ".HalfPrecision"; 
-                md.SubDirectory = $"/HalfPrecision/{subFolder}";
-                break;
-
-            case 64: 
-                md.SubNamespace = ".DoublePrecision"; 
-                md.SubDirectory = $"/DoublePrecision/{subFolder}";
-                break;
-
-            case 128: 
-                md.SubNamespace = ".QuadPrecision"; 
-                md.SubDirectory = $"/QuadPrecision/{subFolder}";
-                break;
-
-            default:
-                md.SubDirectory = $"/SinglePrecision/{subFolder}";
-                break;
-        }
-
         foreach(int size in sizes)
         {
             md.Size = size;
 
-            if(filter != null && !filter(d, md))
+            if(filter != null && !filter(t, md))
                 continue;
 
-            md.Name = $"{d.Name}{size}{d.Postfix}";
+            md.Name = $"{t.Name}{size}{t.Postfix}";
             genEnvironment.Length = 0;
 
-            callback(d, md, defs);
+            callback(t, md, defs);
 
 		    md.Filename = $"{md.Name}{md.FilePostFix}";
 
-            SaveFile(outputPath + md.SubDirectory, md.Filename, genEnvironment.ToString());
+            SaveFile(outputPath + t.DT.SubDirectory, md.Filename, genEnvironment.ToString());
 		    genEnvironment.Length = 0;
         }
     }
@@ -139,7 +212,7 @@ public List<T> ReadJsonDef<T>(string folder, string fileName) where T : class
     return JsonConvert.DeserializeObject<List<T>>(json);
 }
 
-public string GetConstructorArgs(string type, string map, int count, string prefix = "", string postfix = "")
+public string GetConstructorArgs(DataType type, string map, int count, string prefix = "", string postfix = "")
 {
     if(map.Length < count)
         throw new Exception("Map length is shorter than count");
@@ -148,7 +221,7 @@ public string GetConstructorArgs(string type, string map, int count, string pref
     for(int i = 0; i < count; i++)
     {
         if(i > 0) r += ", ";
-        r += $"{type} {prefix}{map[i]}{postfix}";
+        r += $"{type.Name} {prefix}{map[i]}{postfix}";
     }
 
     return r;

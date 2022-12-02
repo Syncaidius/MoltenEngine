@@ -32,23 +32,23 @@ namespace Molten
 		public static readonly Vector3UI One = new Vector3UI(1U, 1U, 1U);
 
 		/// <summary>The X unit <see cref="Vector3UI"/>.</summary>
-		public static readonly Vector3UI UnitX = new Vector3UI(1U, 0, 0);
+		public static readonly Vector3UI UnitX = new Vector3UI(1U, 0U, 0U);
 
 		/// <summary>The Y unit <see cref="Vector3UI"/>.</summary>
-		public static readonly Vector3UI UnitY = new Vector3UI(0, 1U, 0);
+		public static readonly Vector3UI UnitY = new Vector3UI(0U, 1U, 0U);
 
 		/// <summary>The Z unit <see cref="Vector3UI"/>.</summary>
-		public static readonly Vector3UI UnitZ = new Vector3UI(0, 0, 1U);
+		public static readonly Vector3UI UnitZ = new Vector3UI(0U, 0U, 1U);
 
 		/// <summary>Represents a zero'd Vector3UI.</summary>
-		public static readonly Vector3UI Zero = new Vector3UI(0, 0, 0);
+		public static readonly Vector3UI Zero = new Vector3UI(0U, 0U, 0U);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => X == 0 && Y == 0 && Z == 0;
+            get => X == 0U && Y == 0U && Z == 0U;
         }
 
 #region Constructors
@@ -458,7 +458,7 @@ namespace Molten
         ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="Vector4UI"/>.</summary>
         public static explicit operator Vector4UI(Vector3UI value)
         {
-            return new Vector4UI(value.X, value.Y, value.Z, 0);
+            return new Vector4UI(value.X, value.Y, value.Z, 0U);
         }
 
 #endregion

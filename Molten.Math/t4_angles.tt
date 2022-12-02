@@ -23,7 +23,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten<#=md.SubNamespace#>
+namespace Molten<#=d.DT.SubNamespace#>
 {
 	///<summary>Represents a four dimensional mathematical <#=md.Name#>.</summary>
 	[StructLayout(LayoutKind.Explicit)]
@@ -33,32 +33,32 @@ namespace Molten<#=md.SubNamespace#>
 		/// <summary>
         /// A value that specifies the size of a single degree.
         /// </summary>
-        public const <#=d.DT#> Degree = 0.002777777777777778<#=d.FPL#>;
+        public const <#=d.DT#> Degree = 0.002777777777777778<#=d.FP.Literal#>;
 
         /// <summary>
         /// A value that specifies the size of a single minute.
         /// </summary>
-        public const <#=d.DT#> Minute = 0.000046296296296296<#=d.FPL#>;
+        public const <#=d.DT#> Minute = 0.000046296296296296<#=d.FP.Literal#>;
 
         /// <summary>
         /// A value that specifies the size of a single second.
         /// </summary>
-        public const <#=d.DT#> Second = 0.000000771604938272<#=d.FPL#>;
+        public const <#=d.DT#> Second = 0.000000771604938272<#=d.FP.Literal#>;
 
         /// <summary>
         /// A value that specifies the size of a single radian.
         /// </summary>
-        public const <#=d.DT#> Radian = 0.159154943091895336<#=d.FPL#>;
+        public const <#=d.DT#> Radian = 0.159154943091895336<#=d.FP.Literal#>;
 
         /// <summary>
         /// A value that specifies the size of a single milliradian.
         /// </summary>
-        public const <#=d.DT#> Milliradian = 0.0001591549431<#=d.FPL#>;
+        public const <#=d.DT#> Milliradian = 0.0001591549431<#=d.FP.Literal#>;
 
         /// <summary>
         /// A value that specifies the size of a single gradian.
         /// </summary>
-        public const <#=d.DT#> Gradian = 0.0025<#=d.FPL#>;
+        public const <#=d.DT#> Gradian = 0.0025<#=d.FP.Literal#>;
 
          /// <summary>
         /// The internal representation of the angle.
@@ -99,7 +99,7 @@ namespace Molten<#=md.SubNamespace#>
                     break;
 
                 default:
-                    radians = 0<#=d.FPL#>;
+                    radians = 0<#=d.FP.Literal#>;
                     break;
             }
         }
@@ -169,21 +169,21 @@ namespace Molten<#=md.SubNamespace#>
 
                 if (degrees < 0)
                 {
-                    <#=d.DT#> degreesfloor = <#=md.Math#>.Ceiling(degrees);
-                    return (degrees - degreesfloor) * 60.0<#=d.FPL#>;
+                    <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Ceiling(degrees);
+                    return (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
                 }
                 else
                 {
-                    <#=d.DT#> degreesfloor = <#=md.Math#>.Floor(degrees);
-                    return (degrees - degreesfloor) * 60.0<#=d.FPL#>;
+                    <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Floor(degrees);
+                    return (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
                 }
             }
             set
             {
                 <#=d.DT#> degrees = MathHelper.RadiansToDegrees(radians);
-                <#=d.DT#> degreesfloor = <#=md.Math#>.Floor(degrees);
+                <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Floor(degrees);
 
-                degreesfloor += value / 60.0<#=d.FPL#>;
+                degreesfloor += value / 60.0<#=d.FP.Literal#>;
                 radians = MathHelper.DegreesToRadians(degreesfloor);
             }
         }
@@ -202,33 +202,33 @@ namespace Molten<#=md.SubNamespace#>
 
                 if (degrees < 0)
                 {
-                    <#=d.DT#> degreesfloor = <#=md.Math#>.Ceiling(degrees);
+                    <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Ceiling(degrees);
 
-                    <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FPL#>;
-                    <#=d.DT#> minutesfloor = <#=md.Math#>.Ceiling(minutes);
+                    <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
+                    <#=d.DT#> minutesfloor = <#=d.DT.Math#>.Ceiling(minutes);
 
-                    return (minutes - minutesfloor) * 60.0<#=d.FPL#>;
+                    return (minutes - minutesfloor) * 60.0<#=d.FP.Literal#>;
                 }
                 else
                 {
-                    <#=d.DT#> degreesfloor = <#=md.Math#>.Floor(degrees);
+                    <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Floor(degrees);
 
-                    <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FPL#>;
-                    <#=d.DT#> minutesfloor = <#=md.Math#>.Floor(minutes);
+                    <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
+                    <#=d.DT#> minutesfloor = <#=d.DT.Math#>.Floor(minutes);
 
-                    return (minutes - minutesfloor) * 60.0<#=d.FPL#>;
+                    return (minutes - minutesfloor) * 60.0<#=d.FP.Literal#>;
                 }
             }
             set
             {
                 <#=d.DT#> degrees = MathHelper.RadiansToDegrees(radians);
-                <#=d.DT#> degreesfloor = <#=md.Math#>.Floor(degrees);
+                <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Floor(degrees);
 
-                <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FPL#>;
-                <#=d.DT#> minutesfloor = <#=md.Math#>.Floor(minutes);
+                <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
+                <#=d.DT#> minutesfloor = <#=d.DT.Math#>.Floor(minutes);
 
-                minutesfloor += value / 60.0<#=d.FPL#>;
-                degreesfloor += minutesfloor / 60.0<#=d.FPL#>;
+                minutesfloor += value / 60.0<#=d.FP.Literal#>;
+                degreesfloor += minutesfloor / 60.0<#=d.FP.Literal#>;
                 radians = MathHelper.DegreesToRadians(degreesfloor);
             }
         }
@@ -449,7 +449,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <summary>
         /// Gets a new <see cref="Angle<#=d.Postfix#>"/> instance that represents the zero angle (i.e. 0°).
         /// </summary>
-        public static Angle<#=d.Postfix#> ZeroAngle => new Angle<#=d.Postfix#>(0.0<#=d.FPL#>, AngleType.Radian); 
+        public static Angle<#=d.Postfix#> ZeroAngle => new Angle<#=d.Postfix#>(0.0<#=d.FP.Literal#>, AngleType.Radian); 
 
         /// <summary>
         /// Gets a new <see cref="Angle<#=d.Postfix#>"/> instance that represents the right angle (i.e. 90° or π/2).

@@ -2,79 +2,31 @@
   {
     "Name": "Rectangle",
     "Postfix": "",
-    "DT": "int",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "4",
-    "One": "1",
-    "Zero": "0",
-    "IsFPType": false,
-    "Unsigned": false,
-    "Bits": 32
+    "DataTypeName": "int"
   },
   {
     "Name": "Rectangle",
     "Postfix": "UI",
-    "DT": "uint",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "4",
-    "One": "1U",
-    "Zero": "0U",
-    "IsFPType": false,
-    "Unsigned": true,
-    "Bits": 32
+    "DataTypeName": "uint"
   },
   {
     "Name": "Rectangle",
     "Postfix": "L",
-    "DT": "long",
-    "FP": "double",
-    "FPL": "L",
-    "Pack": "8",
-    "One": "1L",
-    "Zero": "0L",
-    "IsFPType": false,
-    "Unsigned": true,
-    "Bits": 64
+    "DataTypeName": "long"
   },
   {
     "Name": "Rectangle",
     "Postfix": "UL",
-    "DT": "ulong",
-    "FP": "double",
-    "FPL": "UL",
-    "Pack": "8",
-    "One": "1UL",
-    "Zero": "0UL",
-    "IsFPType": false,
-    "Unsigned": true,
-    "Bits": 64
+    "DataTypeName": "ulong"
   },
   {
     "Name": "Rectangle",
     "Postfix": "F",
-    "DT": "float",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "4",
-    "One": "1F",
-    "Zero": "0F",
-    "IsFPType": true,
-    "Unsigned": false,
-    "Bits": 32
+    "DataTypeName": "float"
   },
   {
     "Name": "Rectangle",
     "Postfix": "D",
-    "DT": "double",
-    "FP": "double",
-    "FPL": "D",
-    "Pack": "8",
-    "One": "1D",
-    "Zero": "0D",
-    "IsFPType": true,
-    "Unsigned": false,
-    "Bits": 64
+    "DataTypeName": "double"
   }
 ]

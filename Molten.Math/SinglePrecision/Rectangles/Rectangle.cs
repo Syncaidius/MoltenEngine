@@ -551,7 +551,6 @@ namespace Molten
                 Bottom = (uint)rect.Bottom,
             };
         }
-
         public static explicit operator RectangleL(Rectangle rect)
         {
             return new RectangleL()
@@ -562,7 +561,6 @@ namespace Molten
                 Bottom = (long)rect.Bottom,
             };
         }
-
         public static explicit operator RectangleUL(Rectangle rect)
         {
             return new RectangleUL()
@@ -573,7 +571,6 @@ namespace Molten
                 Bottom = (ulong)rect.Bottom,
             };
         }
-
         public static explicit operator RectangleF(Rectangle rect)
         {
             return new RectangleF()
@@ -584,7 +581,6 @@ namespace Molten
                 Bottom = (float)rect.Bottom,
             };
         }
-
         public static explicit operator RectangleD(Rectangle rect)
         {
             return new RectangleD()
@@ -595,7 +591,6 @@ namespace Molten
                 Bottom = (double)rect.Bottom,
             };
         }
-
         #endregion
 	}
 }

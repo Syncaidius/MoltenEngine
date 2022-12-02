@@ -22,10 +22,10 @@ using System.Runtime.Serialization;
 using Molten.HalfPrecision;
 using Molten.DoublePrecision;
 
-namespace Molten<#=md.SubNamespace#>
+namespace Molten<#=d.DT.SubNamespace#>
 {
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=_strSize[md.Size]#> components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=<#=d.Pack#>)]
+	[StructLayout(LayoutKind.Sequential, Pack=<#=d.DT.Pack#>)]
     [Serializable]
 	public partial struct <#=md.Name#> : IFormattable, IVector<<#=d.DT#>>
 	{
@@ -43,28 +43,28 @@ namespace Molten<#=md.SubNamespace#>
 		///<summary>The size of <see cref="<#=md.Name#>"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=md.Name#>));
 
-		///<summary>A <#=md.Name#> with every component set to <#=d.One#>.</summary>
-		public static readonly <#=md.Name#> One = new <#=md.Name#>(<#for(int p = 0; p < md.Size; p++){#><#=d.One#><#=(p < (md.Size-1) ? ", " : "")#><#}#>);
+		///<summary>A <#=md.Name#> with every component set to <#=d.DT.One#>.</summary>
+		public static readonly <#=md.Name#> One = new <#=md.Name#>(<#for(int p = 0; p < md.Size; p++){#><#=d.DT.One#><#=(p < (md.Size-1) ? ", " : "")#><#}#>);
 
 <#
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
 		/// <summary>The <#=pMapUpper[p]#> unit <see cref="<#=md.Name#>"/>.</summary>
-		public static readonly <#=md.Name#> Unit<#=pMapUpper[p]#> = new <#=md.Name#>(<#for(int u = 0; u < md.Size; u++){#><#=(u == p ?d.One : d.Zero)#><#=(u < (md.Size-1) ? ", " : "")#><#}#>);
+		public static readonly <#=md.Name#> Unit<#=pMapUpper[p]#> = new <#=md.Name#>(<#for(int u = 0; u < md.Size; u++){#><#=(u == p ? d.DT.One : d.DT.Zero)#><#=(u < (md.Size-1) ? ", " : "")#><#}#>);
 
 <#
 		}
 #>
 		/// <summary>Represents a zero'd <#=md.Name#>.</summary>
-		public static readonly <#=md.Name#> Zero = new <#=md.Name#>(<#for(int p = 0; p < md.Size; p++){#><#=d.Zero#><#=(p < (md.Size-1) ? ", " : "")#><#}#>);
+		public static readonly <#=md.Name#> Zero = new <#=md.Name#>(<#for(int p = 0; p < md.Size; p++){#><#=d.DT.Zero#><#=(p < (md.Size-1) ? ", " : "")#><#}#>);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => <#for(int p = 0; p < md.Size; p++){#><#=pMapUpper[p]#> == <#=d.Zero#><#=(p < (md.Size-1) ? " && " : "")#><#}#>;
+            get => <#for(int p = 0; p < md.Size; p++){#><#=pMapUpper[p]#> == <#=d.DT.Zero#><#=(p < (md.Size-1) ? " && " : "")#><#}#>;
         }
 
 #region Constructors
@@ -177,7 +177,7 @@ namespace Molten<#=md.SubNamespace#>
         public bool Equals(ref <#=md.Name#> other)
         {
 <#
-        if(d.IsFPType)
+        if(d.DT.IsFPType)
         {
 #>
             return <#for(int p = 0; p < md.Size; p++){#>MathHelper.NearEqual(other.<#=pMapUpper[p]#>, <#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " && " : "")#><#}#>;
@@ -254,7 +254,7 @@ namespace Molten<#=md.SubNamespace#>
         /// </remarks>
         public <#=d.DT#> LengthSquared()
         {
-            return <#=md.TypeCast#>(<#for(int p = 0; p < md.Size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
+            return <#=d.DT.TypeCast#>(<#for(int p = 0; p < md.Size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
         }
 
 		/// <summary>
@@ -266,7 +266,7 @@ namespace Molten<#=md.SubNamespace#>
             return new <#=d.DT#>[] { <#=GetParamSentence(pMapUpper, md.Size, ", ", ", ")#>};
         }
 <#
-    if(!d.Unsigned)
+    if(!d.DT.IsUnsigned)
     {
 #>
 		/// <summary>
@@ -275,7 +275,7 @@ namespace Molten<#=md.SubNamespace#>
         /// <returns>A <#=See(md.Name)#> facing the opposite direction.</returns>
 		public <#=md.Name#> Negate()
 		{
-			return new <#=md.Name#>(<#=GetParamSentence(pMapUpper, md.Size, ", ", ", ", $"{md.TypeCast}-")#>);
+			return new <#=md.Name#>(<#=GetParamSentence(pMapUpper, md.Size, ", ", ", ", $"{d.DT.TypeCast}-")#>);
 		}
 <#
     }
@@ -390,7 +390,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			result.<#=pMapUpper[p]#> = <#=md.TypeCast#>(left.<#=pMapUpper[p]#> + right.<#=pMapUpper[p]#>);
+			result.<#=pMapUpper[p]#> = <#=d.DT.TypeCast#>(left.<#=pMapUpper[p]#> + right.<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -402,7 +402,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			result.<#=pMapUpper[p]#> = <#=md.TypeCast#>(left.<#=pMapUpper[p]#> + right);
+			result.<#=pMapUpper[p]#> = <#=d.DT.TypeCast#>(left.<#=pMapUpper[p]#> + right);
 <#
 		}
 #>
@@ -444,7 +444,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			result.<#=pMapUpper[p]#> = <#=md.TypeCast#>(left.<#=pMapUpper[p]#> - right.<#=pMapUpper[p]#>);
+			result.<#=pMapUpper[p]#> = <#=d.DT.TypeCast#>(left.<#=pMapUpper[p]#> - right.<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -456,7 +456,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			result.<#=pMapUpper[p]#> = <#=md.TypeCast#>(left.<#=pMapUpper[p]#> - right);
+			result.<#=pMapUpper[p]#> = <#=d.DT.TypeCast#>(left.<#=pMapUpper[p]#> - right);
 <#
 		}
 #>
@@ -481,7 +481,7 @@ namespace Molten<#=md.SubNamespace#>
 		}
 
 <#
-        if(!d.Unsigned)
+        if(!d.DT.IsUnsigned)
         {
 #>
         /// <summary>
@@ -495,7 +495,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			result.<#=pMapUpper[p]#> = <#=md.TypeCast#>-value.<#=pMapUpper[p]#>;
+			result.<#=pMapUpper[p]#> = <#=d.DT.TypeCast#>-value.<#=pMapUpper[p]#>;
 <#
 		}
 #>            
@@ -523,7 +523,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			result.<#=pMapUpper[p]#> = <#=md.TypeCast#>(left.<#=pMapUpper[p]#> / right.<#=pMapUpper[p]#>);
+			result.<#=pMapUpper[p]#> = <#=d.DT.TypeCast#>(left.<#=pMapUpper[p]#> / right.<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -535,7 +535,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			result.<#=pMapUpper[p]#> = <#=md.TypeCast#>(left.<#=pMapUpper[p]#> / right);
+			result.<#=pMapUpper[p]#> = <#=d.DT.TypeCast#>(left.<#=pMapUpper[p]#> / right);
 <#
 		}
 #>
@@ -567,7 +567,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			result.<#=pMapUpper[p]#> = <#=md.TypeCast#>(left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>);
+			result.<#=pMapUpper[p]#> = <#=d.DT.TypeCast#>(left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -579,7 +579,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			result.<#=pMapUpper[p]#> = <#=md.TypeCast#>(left.<#=pMapUpper[p]#> * right);
+			result.<#=pMapUpper[p]#> = <#=d.DT.TypeCast#>(left.<#=pMapUpper[p]#> * right);
 <#
 		}
 #>
@@ -641,7 +641,7 @@ namespace Molten<#=md.SubNamespace#>
         ///<summary>Casts a <#=See(md.Name)#> to a <#=See(castName)#>.</summary>
         public static explicit operator <#=castName#>(<#=md.Name#> value)
         {
-            return new <#=castName#>(<#for(int p = 0; p < castSize; p++){#><#=(p < md.Size ? $"value.{pMapUpper[p]}" : d.Zero)#><#=(p < (castSize-1) ? ", " : "")#><#}#>);
+            return new <#=castName#>(<#for(int p = 0; p < castSize; p++){#><#=(p < md.Size ? $"value.{pMapUpper[p]}" : d.DT.Zero)#><#=(p < (castSize-1) ? ", " : "")#><#}#>);
         }
 
 <#
@@ -713,7 +713,7 @@ namespace Molten<#=md.SubNamespace#>
                 <#=md.Name#> newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                    newvector -= <#=md.TypeCast#>(Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
+                    newvector -= <#=d.DT.TypeCast#>(Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
 
                 destination[i] = newvector;
             }
@@ -776,7 +776,7 @@ namespace Molten<#=md.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=d.DT#> Dot(ref <#=md.Name#> left, ref <#=md.Name#> right)
         {
-			return <#=md.TypeCast#>(<#for(int p = 0; p < md.Size; p++){#>(<#=md.TypeCast#>left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
+			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < md.Size; p++){#>(<#=d.DT.TypeCast#>left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
         }
 
 		/// <summary>
@@ -787,7 +787,7 @@ namespace Molten<#=md.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=d.DT#> Dot(<#=md.Name#> left, <#=md.Name#> right)
         {
-			return <#=md.TypeCast#>(<#for(int p = 0; p < md.Size; p++){#>(left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
+			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < md.Size; p++){#>(left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
         }
 
 		/// <summary>
@@ -805,7 +805,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-				<#=md.TypeCast#>((value1.<#=pMapUpper[p]#> + (amount1 * (value2.<#=pMapUpper[p]#> - value1.<#=pMapUpper[p]#>))) + (amount2 * (value3.<#=pMapUpper[p]#> - value1.<#=pMapUpper[p]#>)))<#=(p < (md.Size -1) ? ", " : "")#>
+				<#=d.DT.TypeCast#>((value1.<#=pMapUpper[p]#> + (amount1 * (value2.<#=pMapUpper[p]#> - value1.<#=pMapUpper[p]#>))) + (amount2 * (value3.<#=pMapUpper[p]#> - value1.<#=pMapUpper[p]#>)))<#=(p < (md.Size -1) ? ", " : "")#>
 <#
 		}
 #>
@@ -829,7 +829,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-			result.<#=pMapUpper[p]#> = <#=md.FPCast#>((1<#=d.FPL#> - amount) * start.<#=pMapUpper[p]#> + amount * end.<#=pMapUpper[p]#>);
+			result.<#=pMapUpper[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=pMapUpper[p]#> + amount * end.<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -853,7 +853,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-				<#=pMapUpper[p]#> = <#=md.FPCast#>((1<#=d.FPL#> - amount) * start.<#=pMapUpper[p]#> + amount * end.<#=pMapUpper[p]#>),
+				<#=pMapUpper[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=pMapUpper[p]#> + amount * end.<#=pMapUpper[p]#>),
 <#
 		}
 #>
@@ -878,7 +878,7 @@ namespace Molten<#=md.SubNamespace#>
 		for(int p = 0; p < md.Size; p++)
 		{
 #>
-				<#=pMapUpper[p]#> = <#=md.FPCast#>((1<#=d.FPL#> - amount) * start.<#=pMapUpper[p]#> + amount * end.<#=pMapUpper[p]#>),
+				<#=pMapUpper[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=pMapUpper[p]#> + amount * end.<#=pMapUpper[p]#>),
 <#
 		}
 #>
@@ -1016,12 +1016,12 @@ namespace Molten<#=md.SubNamespace#>
 			{
 				r+= $"({pMap[p]} * {pMap[p]}){(p < (md.Size-1) ? " + " : "")}";
 #>
-            <#=md.IntType#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
+            <#=d.DT.IntType#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
 <#
 			}
 #>
 
-            return <#=md.TypeCast#>(<#=r#>);
+            return <#=d.DT.TypeCast#>(<#=r#>);
         }
 
         /// <summary>
@@ -1045,12 +1045,12 @@ namespace Molten<#=md.SubNamespace#>
 			{
 				r+= $"({pMap[p]} * {pMap[p]}){(p < (md.Size-1) ? " + " : "")}";
 #>
-            <#=md.IntType#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
+            <#=d.DT.IntType#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
 <#
 			}
 #>
 
-            return <#=md.TypeCast#>(<#=r#>);
+            return <#=d.DT.TypeCast#>(<#=r#>);
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -1120,7 +1120,7 @@ namespace Molten<#=md.SubNamespace#>
         /// whether the original vector was close enough to the surface to hit it.</remarks>
         public static <#=md.Name#> Reflect(ref <#=md.Name#> vector, ref <#=md.Name#> normal)
         {
-            <#=md.IntType#> dot = <#for(int p = 0; p < md.Size; p++){#>(vector.<#=pMapUpper[p]#> * normal.<#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>;
+            <#=d.DT.IntType#> dot = <#for(int p = 0; p < md.Size; p++){#>(vector.<#=pMapUpper[p]#> * normal.<#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>;
 
             return new <#=md.Name#>()
             {
@@ -1128,7 +1128,7 @@ namespace Molten<#=md.SubNamespace#>
 				for(int p = 0; p < md.Size; p++)
 				{
 #>
-				<#=pMapUpper[p]#> = <#=md.FPToTypeCast#>(vector.<#=pMapUpper[p]#> - ((2 * dot) * normal.<#=pMapUpper[p]#>)),
+				<#=pMapUpper[p]#> = <#=d.DT.FPToTypeCast#>(vector.<#=pMapUpper[p]#> - ((2 * dot) * normal.<#=pMapUpper[p]#>)),
 <#
 			    }
 #>
@@ -1194,7 +1194,7 @@ namespace Molten<#=md.SubNamespace#>
 
 #region Casts - vectors
 <#
-    foreach(TypeData dCast in defs)
+    foreach(TypeDef dCast in defs)
     {
         string castName = $"{dCast.Name}{md.Size}{dCast.Postfix}";
         if(castName == md.Name)
@@ -1202,10 +1202,10 @@ namespace Molten<#=md.SubNamespace#>
 
 		string castFn = $"{md.Name}";
         bool sameDT = dCast.DT == d.DT;
-        bool sameFP = dCast.IsFPType == d.IsFPType;
-        bool sameSign = dCast.Unsigned == d.Unsigned;
-        bool sameBits = dCast.Bits == d.Bits;
-        bool isHigherBits = dCast.Bits > d.Bits;
+        bool sameFP = dCast.DT.IsFPType == d.DT.IsFPType;
+        bool sameSign = dCast.DT.IsUnsigned == d.DT.IsUnsigned;
+        bool sameBits = dCast.DT.Bits == d.DT.Bits;
+        bool isHigherBits = dCast.DT.Bits > d.DT.Bits;
         string castTypeCast = !sameDT && (!sameFP || !sameSign || (sameFP && !isHigherBits)) ? $"({dCast.DT})" : "";
 #>
         ///<summary>Casts a <see cref="<#=md.Name#>"/> to a <see cref="<#=castName#>"/>.</summary>

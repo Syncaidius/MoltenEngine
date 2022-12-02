@@ -32,23 +32,23 @@ namespace Molten.HalfPrecision
 		public static readonly Vector3US One = new Vector3US((ushort)1, (ushort)1, (ushort)1);
 
 		/// <summary>The X unit <see cref="Vector3US"/>.</summary>
-		public static readonly Vector3US UnitX = new Vector3US((ushort)1, 0, 0);
+		public static readonly Vector3US UnitX = new Vector3US((ushort)1, (ushort)0, (ushort)0);
 
 		/// <summary>The Y unit <see cref="Vector3US"/>.</summary>
-		public static readonly Vector3US UnitY = new Vector3US(0, (ushort)1, 0);
+		public static readonly Vector3US UnitY = new Vector3US((ushort)0, (ushort)1, (ushort)0);
 
 		/// <summary>The Z unit <see cref="Vector3US"/>.</summary>
-		public static readonly Vector3US UnitZ = new Vector3US(0, 0, (ushort)1);
+		public static readonly Vector3US UnitZ = new Vector3US((ushort)0, (ushort)0, (ushort)1);
 
 		/// <summary>Represents a zero'd Vector3US.</summary>
-		public static readonly Vector3US Zero = new Vector3US(0, 0, 0);
+		public static readonly Vector3US Zero = new Vector3US((ushort)0, (ushort)0, (ushort)0);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => X == 0 && Y == 0 && Z == 0;
+            get => X == (ushort)0 && Y == (ushort)0 && Z == (ushort)0;
         }
 
 #region Constructors
@@ -458,7 +458,7 @@ namespace Molten.HalfPrecision
         ///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector4US"/>.</summary>
         public static explicit operator Vector4US(Vector3US value)
         {
-            return new Vector4US(value.X, value.Y, value.Z, 0);
+            return new Vector4US(value.X, value.Y, value.Z, (ushort)0);
         }
 
 #endregion

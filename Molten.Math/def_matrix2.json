@@ -2,27 +2,11 @@
   {
     "Name": "Matrix2",
     "Postfix": "F",
-    "DT": "float",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "4",
-    "One": "1F",
-    "Zero": "0F",
-    "IsFPType": true,
-    "Unsigned": false,
-    "Bits": 32
+    "DataTypeName": "float"
   },
   {
     "Name": "Matrix2",
     "Postfix": "D",
-    "DT": "double",
-    "FP": "double",
-    "FPL": "D",
-    "Pack": "8",
-    "One": "1D",
-    "Zero": "0D",
-    "IsFPType": true,
-    "Unsigned": false,
-    "Bits": 64
+    "DataTypeName": "double"
   }
 ]

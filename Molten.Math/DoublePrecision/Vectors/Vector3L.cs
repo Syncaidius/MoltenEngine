@@ -32,23 +32,23 @@ namespace Molten.DoublePrecision
 		public static readonly Vector3L One = new Vector3L(1L, 1L, 1L);
 
 		/// <summary>The X unit <see cref="Vector3L"/>.</summary>
-		public static readonly Vector3L UnitX = new Vector3L(1L, 0, 0);
+		public static readonly Vector3L UnitX = new Vector3L(1L, 0L, 0L);
 
 		/// <summary>The Y unit <see cref="Vector3L"/>.</summary>
-		public static readonly Vector3L UnitY = new Vector3L(0, 1L, 0);
+		public static readonly Vector3L UnitY = new Vector3L(0L, 1L, 0L);
 
 		/// <summary>The Z unit <see cref="Vector3L"/>.</summary>
-		public static readonly Vector3L UnitZ = new Vector3L(0, 0, 1L);
+		public static readonly Vector3L UnitZ = new Vector3L(0L, 0L, 1L);
 
 		/// <summary>Represents a zero'd Vector3L.</summary>
-		public static readonly Vector3L Zero = new Vector3L(0, 0, 0);
+		public static readonly Vector3L Zero = new Vector3L(0L, 0L, 0L);
 
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
         public bool IsZero
         {
-            get => X == 0 && Y == 0 && Z == 0;
+            get => X == 0L && Y == 0L && Z == 0L;
         }
 
 #region Constructors
@@ -489,7 +489,7 @@ namespace Molten.DoublePrecision
         ///<summary>Casts a <see cref="Vector3L"/> to a <see cref="Vector4L"/>.</summary>
         public static explicit operator Vector4L(Vector3L value)
         {
-            return new Vector4L(value.X, value.Y, value.Z, 0);
+            return new Vector4L(value.X, value.Y, value.Z, 0L);
         }
 
 #endregion

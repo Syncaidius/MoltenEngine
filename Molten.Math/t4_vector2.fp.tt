@@ -12,12 +12,12 @@
 string pMap = "xyzw";
 string pMapUpper = "XYZW";
 
-GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", "fp2", _vectorSizes, (d,md) => d.IsFPType && md.Size == 2, (d, md, defs) =>
+GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", "fp2", _vectorSizes, (d,md) => d.DT.IsFPType && md.Size == 2, (d, md, defs) =>
 {
 #>
 using System.Runtime.CompilerServices;
 
-namespace Molten<#=md.SubNamespace#>
+namespace Molten<#=d.DT.SubNamespace#>
 {
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=md.Size#> components.</summary>
 	public partial struct <#=md.Name#>
@@ -105,7 +105,7 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> yy = rotation.Y * y;
             <#=d.DT#> zz = rotation.Z * z;
 
-            result = new <#=md.Name#>((vector.X * (<#=d.One#> - yy - zz)) + (vector.Y * (xy - wz)), (vector.X * (xy + wz)) + (vector.Y * (<#=d.One#> - xx - zz)));
+            result = new <#=md.Name#>((vector.X * (<#=d.DT.One#> - yy - zz)) + (vector.Y * (xy - wz)), (vector.X * (xy + wz)) + (vector.Y * (<#=d.DT.One#> - xx - zz)));
         }
 
         /// <summary>
@@ -208,10 +208,10 @@ namespace Molten<#=md.SubNamespace#>
             <#=d.DT#> yy = rotation.Y * y;
             <#=d.DT#> zz = rotation.Z * z;
 
-            <#=d.DT#> num1 = (<#=d.One#> - yy - zz);
+            <#=d.DT#> num1 = (<#=d.DT.One#> - yy - zz);
             <#=d.DT#> num2 = (xy - wz);
             <#=d.DT#> num3 = (xy + wz);
-            <#=d.DT#> num4 = (<#=d.One#> - xx - zz);
+            <#=d.DT#> num4 = (<#=d.DT.One#> - xx - zz);
 
             for (int i = 0; i < source.Length; ++i)
             {
@@ -239,7 +239,7 @@ namespace Molten<#=md.SubNamespace#>
             vector.X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + transform.M41;
             vector.Y = (coordinate.X * transform.M12) + (coordinate.Y * transform.M22) + transform.M42;
             vector.Z = (coordinate.X * transform.M13) + (coordinate.Y * transform.M23) + transform.M43;
-            vector.W = <#=d.One#> / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + transform.M44);
+            vector.W = <#=d.DT.One#> / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + transform.M44);
 
             return new <#=md.Name#>(vector.X * vector.W, vector.Y * vector.W);
         }

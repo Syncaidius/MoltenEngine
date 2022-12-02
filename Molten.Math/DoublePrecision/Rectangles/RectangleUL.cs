@@ -550,7 +550,6 @@ namespace Molten.DoublePrecision
                 Bottom = (int)rect.Bottom,
             };
         }
-
         public static explicit operator RectangleUI(RectangleUL rect)
         {
             return new RectangleUI()
@@ -561,7 +560,6 @@ namespace Molten.DoublePrecision
                 Bottom = (uint)rect.Bottom,
             };
         }
-
         public static explicit operator RectangleL(RectangleUL rect)
         {
             return new RectangleL()
@@ -572,7 +570,6 @@ namespace Molten.DoublePrecision
                 Bottom = (long)rect.Bottom,
             };
         }
-
         public static explicit operator RectangleF(RectangleUL rect)
         {
             return new RectangleF()
@@ -583,7 +580,6 @@ namespace Molten.DoublePrecision
                 Bottom = (float)rect.Bottom,
             };
         }
-
         public static explicit operator RectangleD(RectangleUL rect)
         {
             return new RectangleD()
@@ -594,7 +590,6 @@ namespace Molten.DoublePrecision
                 Bottom = (double)rect.Bottom,
             };
         }
-
         #endregion
 	}
 }
