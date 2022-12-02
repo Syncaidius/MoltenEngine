@@ -1,0 +1,12 @@
+[
+  {
+    "Name": "Matrix4",
+    "Postfix": "F",
+    "DataTypeName": "float"
+  },
+  {
+    "Name": "Matrix4",
+    "Postfix": "D",
+    "DataTypeName": "double"
+  }
+]

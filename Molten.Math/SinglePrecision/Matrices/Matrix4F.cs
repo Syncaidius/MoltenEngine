@@ -1,4 +1,6 @@
-﻿// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
+// James Yarwood - Updated for Molten Engine - MIT license
+
+// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -46,13 +48,13 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
-    /// <summary>
-    /// Represents a single-precision 4x4 mathematical matrix.
-    /// </summary>
+    /// <summary>Represents a single-precision 4x4 Matrix. Contains position, scale, rotation and transform.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [Serializable]
     public struct Matrix4F : IEquatable<Matrix4F>, IFormattable, ITransposedMatrix<Matrix4F>
     {
         /// <summary>
@@ -68,86 +70,102 @@ namespace Molten
         /// <summary>
         /// The identity <see cref="Matrix4F"/>.
         /// </summary>
-        public static readonly Matrix4F Identity = new Matrix4F() { M11 = 1.0f, M22 = 1.0f, M33 = 1.0f, M44 = 1.0f };
+        public static readonly Matrix4F Identity = new Matrix4F() { M11 = 1F, M22 = 1F, M33 = 1F, M44 = 1F };
 
         /// <summary>
         /// Value at row 1 column 1 of the matrix.
         /// </summary>
+        [DataMember]
         public float M11;
 
         /// <summary>
         /// Value at row 1 column 2 of the matrix.
         /// </summary>
+        [DataMember]
         public float M12;
 
         /// <summary>
         /// Value at row 1 column 3 of the matrix.
         /// </summary>
+        [DataMember]
         public float M13;
 
         /// <summary>
         /// Value at row 1 column 4 of the matrix.
         /// </summary>
+        [DataMember]
         public float M14;
 
         /// <summary>
         /// Value at row 2 column 1 of the matrix.
         /// </summary>
+        [DataMember]
         public float M21;
 
         /// <summary>
         /// Value at row 2 column 2 of the matrix.
         /// </summary>
+        [DataMember]
         public float M22;
 
         /// <summary>
         /// Value at row 2 column 3 of the matrix.
         /// </summary>
+        [DataMember]
         public float M23;
 
         /// <summary>
         /// Value at row 2 column 4 of the matrix.
         /// </summary>
+        [DataMember]
         public float M24;
 
         /// <summary>
         /// Value at row 3 column 1 of the matrix.
         /// </summary>
+        [DataMember]
         public float M31;
 
         /// <summary>
         /// Value at row 3 column 2 of the matrix.
         /// </summary>
+        [DataMember]
         public float M32;
 
         /// <summary>
         /// Value at row 3 column 3 of the matrix.
         /// </summary>
+        [DataMember]
         public float M33;
 
         /// <summary>
         /// Value at row 3 column 4 of the matrix.
         /// </summary>
+        [DataMember]
         public float M34;
 
         /// <summary>
         /// Value at row 4 column 1 of the matrix.
         /// </summary>
+        [DataMember]
         public float M41;
 
         /// <summary>
         /// Value at row 4 column 2 of the matrix.
         /// </summary>
+        [DataMember]
         public float M42;
 
         /// <summary>
         /// Value at row 4 column 3 of the matrix.
         /// </summary>
+        [DataMember]
         public float M43;
 
         /// <summary>
         /// Value at row 4 column 4 of the matrix.
         /// </summary>
+        [DataMember]
         public float M44;
      
         /// <summary>
@@ -357,7 +375,7 @@ namespace Molten
         /// </summary>
         public Vector4F Row1
         {
-            get { return new Vector4F(M11, M12, M13, M14); }
+            get => new Vector4F(M11, M12, M13, M14); 
             set { M11 = value.X; M12 = value.Y; M13 = value.Z; M14 = value.W; }
         }
 
@@ -366,7 +384,7 @@ namespace Molten
         /// </summary>
         public Vector4F Row2
         {
-            get { return new Vector4F(M21, M22, M23, M24); }
+            get => new Vector4F(M21, M22, M23, M24); 
             set { M21 = value.X; M22 = value.Y; M23 = value.Z; M24 = value.W; }
         }
 
@@ -375,7 +393,7 @@ namespace Molten
         /// </summary>
         public Vector4F Row3
         {
-            get { return new Vector4F(M31, M32, M33, M34); }
+            get => new Vector4F(M31, M32, M33, M34);
             set { M31 = value.X; M32 = value.Y; M33 = value.Z; M34 = value.W; }
         }
 
@@ -384,7 +402,7 @@ namespace Molten
         /// </summary>
         public Vector4F Row4
         {
-            get { return new Vector4F(M41, M42, M43, M44); }
+            get => new Vector4F(M41, M42, M43, M44);
             set { M41 = value.X; M42 = value.Y; M43 = value.Z; M44 = value.W; }
         }
 
@@ -393,7 +411,7 @@ namespace Molten
         /// </summary>
         public Vector4F Column1
         {
-            get { return new Vector4F(M11, M21, M31, M41); }
+            get => new Vector4F(M11, M21, M31, M41);
             set { M11 = value.X; M21 = value.Y; M31 = value.Z; M41 = value.W; }
         }
 
@@ -402,7 +420,7 @@ namespace Molten
         /// </summary>
         public Vector4F Column2
         {
-            get { return new Vector4F(M12, M22, M32, M42); }
+            get => new Vector4F(M12, M22, M32, M42);
             set { M12 = value.X; M22 = value.Y; M32 = value.Z; M42 = value.W; }
         }
 
@@ -411,7 +429,7 @@ namespace Molten
         /// </summary>
         public Vector4F Column3
         {
-            get { return new Vector4F(M13, M23, M33, M43); }
+            get => new Vector4F(M13, M23, M33, M43); 
             set { M13 = value.X; M23 = value.Y; M33 = value.Z; M43 = value.W; }
         }
 
@@ -420,7 +438,7 @@ namespace Molten
         /// </summary>
         public Vector4F Column4
         {
-            get { return new Vector4F(M14, M24, M34, M44); }
+            get => new Vector4F(M14, M24, M34, M44); 
             set { M14 = value.X; M24 = value.Y; M34 = value.Z; M44 = value.W; }
         }
 
@@ -429,7 +447,7 @@ namespace Molten
         /// </summary>
         public Vector3F Translation
         {
-            get { return new Vector3F(M41, M42, M43); }
+            get => new Vector3F(M41, M42, M43); 
             set { M41 = value.X; M42 = value.Y; M43 = value.Z; }
         }
 
@@ -438,7 +456,7 @@ namespace Molten
         /// </summary>
         public Vector3F ScaleVector
         {
-            get { return new Vector3F(M11, M22, M33); }
+            get => new Vector3F(M11, M22, M33); 
             set { M11 = value.X; M22 = value.Y; M33 = value.Z; }
         }
 
@@ -448,10 +466,7 @@ namespace Molten
         /// <value>
         /// <c>true</c> if this instance is an identity matrix; otherwise, <c>false</c>.
         /// </value>
-        public bool IsIdentity
-        {
-            get { return Equals(Identity); }
-        }
+        public bool IsIdentity => Equals(Identity);
 
         /// <summary>
         /// Gets or sets the component at the specified index.
@@ -682,9 +697,9 @@ namespace Molten
             translation.Z = M43;
 
             // Scaling is the length of the rows.
-            scale.X = MathF.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
-            scale.Y = MathF.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
-            scale.Z = MathF.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
+            scale.X = float.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            scale.Y = float.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
+            scale.Z = float.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
 
             // If any of the scaling factors are zero, then the rotation matrix can not exist.
             if (MathHelper.IsZero(scale.X) ||
@@ -696,22 +711,22 @@ namespace Molten
             }
 
             // The rotation is the left over matrix after dividing out the scaling.
-            Matrix4F rotationmatrix = new Matrix4F();
-            rotationmatrix.M11 = M11 / scale.X;
-            rotationmatrix.M12 = M12 / scale.X;
-            rotationmatrix.M13 = M13 / scale.X;
+            Matrix4F rotMatrix = new Matrix4F();
+            rotMatrix.M11 = M11 / scale.X;
+            rotMatrix.M12 = M12 / scale.X;
+            rotMatrix.M13 = M13 / scale.X;
 
-            rotationmatrix.M21 = M21 / scale.Y;
-            rotationmatrix.M22 = M22 / scale.Y;
-            rotationmatrix.M23 = M23 / scale.Y;
+            rotMatrix.M21 = M21 / scale.Y;
+            rotMatrix.M22 = M22 / scale.Y;
+            rotMatrix.M23 = M23 / scale.Y;
 
-            rotationmatrix.M31 = M31 / scale.Z;
-            rotationmatrix.M32 = M32 / scale.Z;
-            rotationmatrix.M33 = M33 / scale.Z;
+            rotMatrix.M31 = M31 / scale.Z;
+            rotMatrix.M32 = M32 / scale.Z;
+            rotMatrix.M33 = M33 / scale.Z;
 
-            rotationmatrix.M44 = 1f;
+            rotMatrix.M44 = 1F;
 
-            rotation = QuaternionF.FromRotationMatrix(ref rotationmatrix);
+            rotation = QuaternionF.FromRotationMatrix(ref rotMatrix);
             return true;
         }
 
@@ -733,8 +748,8 @@ namespace Molten
             translation.Z = M43;
 
             //Scaling is the length of the rows. ( just take one row since this is a uniform matrix)
-            scale = MathF.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
-            var inv_scale = 1f / scale;
+            scale = float.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            var inv_scale = 1F / scale;
 
             //If any of the scaling factors are zero, then the rotation matrix can not exist.
             if (Math.Abs(scale) < MathHelper.Constants<float>.ZeroTolerance)
@@ -744,22 +759,22 @@ namespace Molten
             }
 
             //The rotation is the left over matrix after dividing out the scaling.
-            Matrix4F rotationmatrix = new Matrix4F();
-            rotationmatrix.M11 = M11 * inv_scale;
-            rotationmatrix.M12 = M12 * inv_scale;
-            rotationmatrix.M13 = M13 * inv_scale;
+            Matrix4F rotMatrix = new Matrix4F();
+            rotMatrix.M11 = M11 * inv_scale;
+            rotMatrix.M12 = M12 * inv_scale;
+            rotMatrix.M13 = M13 * inv_scale;
 
-            rotationmatrix.M21 = M21 * inv_scale;
-            rotationmatrix.M22 = M22 * inv_scale;
-            rotationmatrix.M23 = M23 * inv_scale;
+            rotMatrix.M21 = M21 * inv_scale;
+            rotMatrix.M22 = M22 * inv_scale;
+            rotMatrix.M23 = M23 * inv_scale;
 
-            rotationmatrix.M31 = M31 * inv_scale;
-            rotationmatrix.M32 = M32 * inv_scale;
-            rotationmatrix.M33 = M33 * inv_scale;
+            rotMatrix.M31 = M31 * inv_scale;
+            rotMatrix.M32 = M32 * inv_scale;
+            rotMatrix.M33 = M33 * inv_scale;
 
-            rotationmatrix.M44 = 1f;
+            rotMatrix.M44 = 1F;
 
-            rotation = QuaternionF.FromRotationMatrix(ref rotationmatrix);
+            rotation = QuaternionF.FromRotationMatrix(ref rotMatrix);
             return true;
         }
 
@@ -1008,7 +1023,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the scaled matrix.</param>
         public static void Divide(ref Matrix4F left, float right, out Matrix4F result)
         {
-            float inv = 1.0f / right;
+            float inv = 1F / right;
 
             result.M11 = left.M11 * inv;
             result.M12 = left.M12 * inv;
@@ -1353,13 +1368,13 @@ namespace Molten
             float d14 = value.M21 * b3 + value.M22 * -b1 + value.M23 * b0;
 
             float det = value.M11 * d11 - value.M12 * d12 + value.M13 * d13 - value.M14 * d14;
-            if (Math.Abs(det) == 0.0f)
+            if (Math.Abs(det) == 0.0F)
             {
                 result = Matrix4F.Zero;
                 return;
             }
 
-            det = 1f / det;
+            det = 1F / det;
 
             float a0 = (value.M11 * value.M22) - (value.M12 * value.M21);
             float a1 = (value.M11 * value.M23) - (value.M13 * value.M21);
@@ -1576,7 +1591,7 @@ namespace Molten
                     result.ExchangeRows(i, r);
                 }
 
-                float multiplier = 1f / result[r, lead];
+                float multiplier = 1F / result[r, lead];
 
                 for (; i < rowcount; ++i)
                 {
@@ -1658,7 +1673,7 @@ namespace Molten
                     result.ExchangeRows(i, r);
                 }
 
-                float multiplier = 1f / result[r, lead];
+                float multiplier = 1F / result[r, lead];
 
                 for (; i < rowcount; ++i)
                 {
@@ -1736,7 +1751,7 @@ namespace Molten
                     result.ExchangeRows(i, r);
                 }
 
-                float multiplier = 1f / result[r, lead];
+                float multiplier = 1F / result[r, lead];
                 result[r, 0] *= multiplier;
                 result[r, 1] *= multiplier;
                 result[r, 2] *= multiplier;
@@ -1910,7 +1925,7 @@ namespace Molten
             if (MathHelper.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
-                difference *= 1.0f / float.Sqrt(lengthSq);
+                difference *= 1F / float.Sqrt(lengthSq);
 
             Vector3F crossed = Vector3F.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
@@ -1919,19 +1934,19 @@ namespace Molten
             result.M11 = crossed.X;
             result.M12 = crossed.Y;
             result.M13 = crossed.Z;
-            result.M14 = 0.0f;
+            result.M14 = 0.0F;
             result.M21 = final.X;
             result.M22 = final.Y;
             result.M23 = final.Z;
-            result.M24 = 0.0f;
+            result.M24 = 0.0F;
             result.M31 = difference.X;
             result.M32 = difference.Y;
             result.M33 = difference.Z;
-            result.M34 = 0.0f;
+            result.M34 = 0.0F;
             result.M41 = objectPosition.X;
             result.M42 = objectPosition.Y;
             result.M43 = objectPosition.Z;
-            result.M44 = 1.0f;
+            result.M44 = 1F;
         }
 
         /// <summary>
@@ -1965,7 +1980,7 @@ namespace Molten
             if (MathHelper.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
-                difference *= (1.0f / float.Sqrt(lengthSq));
+                difference *= (1F / float.Sqrt(lengthSq));
 
             Vector3F crossed = Vector3F.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
@@ -1974,19 +1989,19 @@ namespace Molten
             result.M11 = crossed.X;
             result.M12 = crossed.Y;
             result.M13 = crossed.Z;
-            result.M14 = 0.0f;
+            result.M14 = 0.0F;
             result.M21 = final.X;
             result.M22 = final.Y;
             result.M23 = final.Z;
-            result.M24 = 0.0f;
+            result.M24 = 0.0F;
             result.M31 = difference.X;
             result.M32 = difference.Y;
             result.M33 = difference.Z;
-            result.M34 = 0.0f;
+            result.M34 = 0.0F;
             result.M41 = objectPosition.X;
             result.M42 = objectPosition.Y;
             result.M43 = objectPosition.Z;
-            result.M44 = 1.0f;
+            result.M44 = 1F;
         }
 
         /// <summary>
@@ -2103,8 +2118,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created projection matrix.</param>
         public static void OrthoLH(float width, float height, float znear, float zfar, out Matrix4F result)
         {
-            float halfWidth = width * 0.5f;
-            float halfHeight = height * 0.5f;
+            float halfWidth = width * 0.5F;
+            float halfHeight = height * 0.5F;
 
             OrthoOffCenterLH(-halfWidth, halfWidth, -halfHeight, halfHeight, znear, zfar, out result);
         }
@@ -2134,8 +2149,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created projection matrix.</param>
         public static void OrthoRH(float width, float height, float znear, float zfar, out Matrix4F result)
         {
-            float halfWidth = width * 0.5f;
-            float halfHeight = height * 0.5f;
+            float halfWidth = width * 0.5F;
+            float halfHeight = height * 0.5F;
 
             OrthoOffCenterRH(-halfWidth, halfWidth, -halfHeight, halfHeight, znear, zfar, out result);
         }
@@ -2167,11 +2182,11 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created projection matrix.</param>
         public static void OrthoOffCenterLH(float left, float right, float bottom, float top, float znear, float zfar, out Matrix4F result)
         {
-            float zRange = 1.0f / (zfar - znear);
+            float zRange = 1F / (zfar - znear);
 
             result = Matrix4F.Identity;
-            result.M11 = 2.0f / (right - left);
-            result.M22 = 2.0f / (top - bottom);
+            result.M11 = 2.0F / (right - left);
+            result.M22 = 2.0F / (top - bottom);
             result.M33 = zRange;
             result.M41 = (left + right) / (left - right);
             result.M42 = (top + bottom) / (bottom - top);
@@ -2208,7 +2223,7 @@ namespace Molten
         public static void OrthoOffCenterRH(float left, float right, float bottom, float top, float znear, float zfar, out Matrix4F result)
         {
             OrthoOffCenterLH(left, right, bottom, top, znear, zfar, out result);
-            result.M33 *= -1.0f;
+            result.M33 *= -1F;
         }
 
         /// <summary>
@@ -2223,8 +2238,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4F OrthoOffCenterRH(float left, float right, float bottom, float top, float znear, float zfar)
         {
-            Matrix4F result;
-            OrthoOffCenterRH(left, right, bottom, top, znear, zfar, out result);
+            OrthoOffCenterRH(left, right, bottom, top, znear, zfar, out Matrix4F result);
             return result;
         }
 
@@ -2238,8 +2252,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created projection matrix.</param>
         public static void PerspectiveLH(float width, float height, float znear, float zfar, out Matrix4F result)
         {
-            float halfWidth = width * 0.5f;
-            float halfHeight = height * 0.5f;
+            float halfWidth = width * 0.5F;
+            float halfHeight = height * 0.5F;
 
             PerspectiveOffCenterLH(-halfWidth, halfWidth, -halfHeight, halfHeight, znear, zfar, out result);
         }
@@ -2254,8 +2268,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4F PerspectiveLH(float width, float height, float znear, float zfar)
         {
-            Matrix4F result;
-            PerspectiveLH(width, height, znear, zfar, out result);
+            PerspectiveLH(width, height, znear, zfar, out Matrix4F result);
             return result;
         }
 
@@ -2269,8 +2282,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created projection matrix.</param>
         public static void PerspectiveRH(float width, float height, float znear, float zfar, out Matrix4F result)
         {
-            float halfWidth = width * 0.5f;
-            float halfHeight = height * 0.5f;
+            float halfWidth = width * 0.5F;
+            float halfHeight = height * 0.5F;
 
             PerspectiveOffCenterRH(-halfWidth, halfWidth, -halfHeight, halfHeight, znear, zfar, out result);
         }
@@ -2285,8 +2298,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4F PerspectiveRH(float width, float height, float znear, float zfar)
         {
-            Matrix4F result;
-            PerspectiveRH(width, height, znear, zfar, out result);
+            PerspectiveRH(width, height, znear, zfar, out Matrix4F result);
             return result;
         }
 
@@ -2300,7 +2312,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created projection matrix.</param>
         public static void PerspectiveFovLH(float fov, float aspect, float znear, float zfar, out Matrix4F result)
         {
-            float yScale = 1.0f / float.Tan(fov * 0.5f);
+            float yScale = 1F / float.Tan(fov * 0.5F);
             float xScale = yScale / aspect;
 
             float halfWidth = znear / xScale;
@@ -2334,7 +2346,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created projection matrix.</param>
         public static void PerspectiveFovRH(float fov, float aspect, float znear, float zfar, out Matrix4F result)
         {
-            float yScale = 1.0f / float.Tan(fov * 0.5f);
+            float yScale = 1F / float.Tan(fov * 0.5F);
             float xScale = yScale / aspect;
 
             float halfWidth = znear / xScale;
@@ -2353,8 +2365,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4F PerspectiveFovRH(float fov, float aspect, float znear, float zfar)
         {
-            Matrix4F result;
-            PerspectiveFovRH(fov, aspect, znear, zfar, out result);
+            PerspectiveFovRH(fov, aspect, znear, zfar, out Matrix4F result);
             return result;
         }
 
@@ -2373,12 +2384,12 @@ namespace Molten
             float zRange = zfar / (zfar - znear);
 
             result = new Matrix4F();
-            result.M11 = 2.0f * znear / (right - left);
-            result.M22 = 2.0f * znear / (top - bottom);
+            result.M11 = 2.0F * znear / (right - left);
+            result.M22 = 2.0F * znear / (top - bottom);
             result.M31 = (left + right) / (left - right);
             result.M32 = (top + bottom) / (bottom - top);
             result.M33 = zRange;
-            result.M34 = 1.0f;
+            result.M34 = 1F;
             result.M43 = -znear * zRange;
         }
 
@@ -2412,10 +2423,10 @@ namespace Molten
         public static void PerspectiveOffCenterRH(float left, float right, float bottom, float top, float znear, float zfar, out Matrix4F result)
         {
             PerspectiveOffCenterLH(left, right, bottom, top, znear, zfar, out result);
-            result.M31 *= -1.0f;
-            result.M32 *= -1.0f;
-            result.M33 *= -1.0f;
-            result.M34 *= -1.0f;
+            result.M31 *= -1F;
+            result.M32 *= -1F;
+            result.M33 *= -1F;
+            result.M34 *= -1F;
         }
 
         /// <summary>
@@ -2430,8 +2441,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4F PerspectiveOffCenterRH(float left, float right, float bottom, float top, float znear, float zfar)
         {
-            Matrix4F result;
-            PerspectiveOffCenterRH(left, right, bottom, top, znear, zfar, out result);
+            PerspectiveOffCenterRH(left, right, bottom, top, znear, zfar, out Matrix4F result);
             return result;
         }
 
@@ -2453,8 +2463,7 @@ namespace Molten
         /// <returns>The created scaling matrix.</returns>
         public static Matrix4F Scaling(Vector3F scale)
         {
-            Matrix4F result;
-            Scaling(ref scale, out result);
+            Scaling(ref scale, out Matrix4F result);
             return result;
         }
 
@@ -2482,8 +2491,7 @@ namespace Molten
         /// <returns>The created scaling matrix.</returns>
         public static Matrix4F Scaling(float x, float y, float z)
         {
-            Matrix4F result;
-            Scaling(x, y, z, out result);
+            Scaling(x, y, z, out Matrix4F result);
             return result;
         }
 
@@ -2505,8 +2513,7 @@ namespace Molten
         /// <returns>The created scaling matrix.</returns>
         public static Matrix4F Scaling(float scale)
         {
-            Matrix4F result;
-            Scaling(scale, out result);
+            Scaling(scale, out Matrix4F result);
             return result;
         }
 
@@ -2517,8 +2524,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void RotationX(float angle, out Matrix4F result)
         {
-            float cos = MathF.Cos(angle);
-            float sin = MathF.Sin(angle);
+            float cos = float.Cos(angle);
+            float sin = float.Sin(angle);
 
             result = Matrix4F.Identity;
             result.M22 = cos;
@@ -2534,8 +2541,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4F RotationX(float angle)
         {
-            Matrix4F result;
-            RotationX(angle, out result);
+            RotationX(angle, out Matrix4F result);
             return result;
         }
 
@@ -2546,8 +2552,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void RotationY(float angle, out Matrix4F result)
         {
-            float cos = MathF.Cos(angle);
-            float sin = MathF.Sin(angle);
+            float cos = float.Cos(angle);
+            float sin = float.Sin(angle);
 
             result = Matrix4F.Identity;
             result.M11 = cos;
@@ -2563,8 +2569,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4F RotationY(float angle)
         {
-            Matrix4F result;
-            RotationY(angle, out result);
+            RotationY(angle, out Matrix4F result);
             return result;
         }
 
@@ -2575,8 +2580,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void RotationZ(float angle, out Matrix4F result)
         {
-            float cos = MathF.Cos(angle);
-            float sin = MathF.Sin(angle);
+            float cos = float.Cos(angle);
+            float sin = float.Sin(angle);
 
             result = Matrix4F.Identity;
             result.M11 = cos;
@@ -2592,8 +2597,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4F RotationZ(float angle)
         {
-            Matrix4F result;
-            RotationZ(angle, out result);
+            RotationZ(angle, out Matrix4F result);
             return result;
         }
 
@@ -2608,8 +2612,8 @@ namespace Molten
             float x = axis.X;
             float y = axis.Y;
             float z = axis.Z;
-            float cos = MathF.Cos(angle);
-            float sin = MathF.Sin(angle);
+            float cos = float.Cos(angle);
+            float sin = float.Sin(angle);
             float xx = x * x;
             float yy = y * y;
             float zz = z * z;
@@ -2618,15 +2622,15 @@ namespace Molten
             float yz = y * z;
 
             result = Matrix4F.Identity;
-            result.M11 = xx + (cos * (1.0f - xx));
+            result.M11 = xx + (cos * (1F - xx));
             result.M12 = (xy - (cos * xy)) + (sin * z);
             result.M13 = (xz - (cos * xz)) - (sin * y);
             result.M21 = (xy - (cos * xy)) - (sin * z);
-            result.M22 = yy + (cos * (1.0f - yy));
+            result.M22 = yy + (cos * (1F - yy));
             result.M23 = (yz - (cos * yz)) + (sin * x);
             result.M31 = (xz - (cos * xz)) + (sin * y);
             result.M32 = (yz - (cos * yz)) - (sin * x);
-            result.M33 = zz + (cos * (1.0f - zz));
+            result.M33 = zz + (cos * (1F - zz));
         }
 
         /// <summary>
@@ -2637,8 +2641,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4F RotationAxis(Vector3F axis, float angle)
         {
-            Matrix4F result;
-            RotationAxis(ref axis, angle, out result);
+            RotationAxis(ref axis, angle, out Matrix4F result);
             return result;
         }
 
@@ -2660,15 +2663,15 @@ namespace Molten
             float xw = rotation.X * rotation.W;
 
             result = Matrix4F.Identity;
-            result.M11 = 1.0f - (2.0f * (yy + zz));
-            result.M12 = 2.0f * (xy + zw);
-            result.M13 = 2.0f * (zx - yw);
-            result.M21 = 2.0f * (xy - zw);
-            result.M22 = 1.0f - (2.0f * (zz + xx));
-            result.M23 = 2.0f * (yz + xw);
-            result.M31 = 2.0f * (zx + yw);
-            result.M32 = 2.0f * (yz - xw);
-            result.M33 = 1.0f - (2.0f * (yy + xx));
+            result.M11 = 1F - (2.0F * (yy + zz));
+            result.M12 = 2.0F * (xy + zw);
+            result.M13 = 2.0F * (zx - yw);
+            result.M21 = 2.0F * (xy - zw);
+            result.M22 = 1F - (2.0F * (zz + xx));
+            result.M23 = 2.0F * (yz + xw);
+            result.M31 = 2.0F * (zx + yw);
+            result.M32 = 2.0F * (yz - xw);
+            result.M33 = 1F - (2.0F * (yy + xx));
         }
 
         /// <summary>
@@ -2782,7 +2785,7 @@ namespace Molten
         public static void CreateSkew(float angle, ref Vector3F rotationVec, ref Vector3F transVec, out Matrix4F matrix)
         {
             //http://elckerlyc.ewi.utwente.nl/browser/Elckerlyc/Hmi/HmiMath/src/hmi/math/Mat3f.java
-            float MINIMAL_SKEW_ANGLE = 0.000001f;
+            float MINIMAL_SKEW_ANGLE = 0.000001F;
 
             Vector3F e0 = rotationVec;
             Vector3F e1 = Vector3F.Normalize(transVec);
@@ -2790,8 +2793,8 @@ namespace Molten
             float rv1 = Vector3F.Dot(ref rotationVec, ref  e1);
             e0 += rv1 * e1;
             float rv0 = Vector3F.Dot(ref rotationVec, ref e0);
-            float cosa = MathF.Cos(angle);
-            float sina = MathF.Sin(angle);
+            float cosa = float.Cos(angle);
+            float sina = float.Sin(angle);
             float rr0 = rv0 * cosa - rv1 * sina;
             float rr1 = rv0 * sina + rv1 * cosa;
 
@@ -2801,15 +2804,15 @@ namespace Molten
             float d = (rr1 / rr0) - (rv1 / rv0);
 
             matrix = Matrix4F.Identity;
-            matrix.M11 = d * e1[0] * e0[0] + 1.0f;
+            matrix.M11 = d * e1[0] * e0[0] + 1F;
             matrix.M12 = d * e1[0] * e0[1];
             matrix.M13 = d * e1[0] * e0[2];
             matrix.M21 = d * e1[1] * e0[0];
-            matrix.M22 = d * e1[1] * e0[1] + 1.0f;
+            matrix.M22 = d * e1[1] * e0[1] + 1F;
             matrix.M23 = d * e1[1] * e0[2];
             matrix.M31 = d * e1[2] * e0[0];
             matrix.M32 = d * e1[2] * e0[1];
-            matrix.M33 = d * e1[2] * e0[2] + 1.0f;
+            matrix.M33 = d * e1[2] * e0[2] + 1F;
         }
 
         /// <summary>
@@ -2874,7 +2877,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created affine transformation matrix.</param>
         public static void AffineTransformation2D(float scaling, float rotation, ref Vector2F translation, out Matrix4F result)
         {
-            result = Scaling(scaling, scaling, 1.0f) * RotationZ(rotation) * CreateTranslation((Vector3F)translation);
+            result = Scaling(scaling, scaling, 1F) * RotationZ(rotation) * CreateTranslation((Vector3F)translation);
         }
 
         /// <summary>
@@ -2900,7 +2903,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created affine transformation matrix.</param>
         public static void AffineTransformation2D(float scaling, ref Vector2F rotationCenter, float rotation, ref Vector2F translation, out Matrix4F result)
         {
-            result = Scaling(scaling, scaling, 1.0f) * CreateTranslation((Vector3F)(-rotationCenter)) * RotationZ(rotation) *
+            result = Scaling(scaling, scaling, 1F) * CreateTranslation((Vector3F)(-rotationCenter)) * RotationZ(rotation) *
                 CreateTranslation((Vector3F)rotationCenter) * CreateTranslation((Vector3F)translation);
         }
 
@@ -2980,8 +2983,8 @@ namespace Molten
                 CreateTranslation((Vector3F)rotationCenter) * 
                 CreateTranslation((Vector3F)translation);
 
-            result.M33 = 1f;
-            result.M44 = 1f;
+            result.M33 = 1F;
+            result.M44 = 1F;
         }
 
         /// <summary>
@@ -3283,3 +3286,4 @@ namespace Molten
         }
     }
 }
+
