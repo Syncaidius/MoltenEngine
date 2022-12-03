@@ -1229,11 +1229,11 @@ namespace Molten
                 return ToString(formatProvider);
 
             return string.Format(formatProvider,
-                                 toStringFormat,
-                                 A.ToString(format, formatProvider),
-                                 R.ToString(format, formatProvider),
-                                 G.ToString(format, formatProvider),
-                                 B.ToString(format, formatProvider));
+                toStringFormat,
+                A.ToString(format, formatProvider),
+                R.ToString(format, formatProvider),
+                G.ToString(format, formatProvider),
+                B.ToString(format, formatProvider));
         }
 
         /// <summary>
@@ -1296,10 +1296,14 @@ namespace Molten
             return Equals(ref strongValue);
         }
 
-        private static byte ToByte(float component)
+        /// <summary>
+        /// Converts a float value between 0f and 1.0f to a byte value between 0 and 255, inclusive.
+        /// </summary>
+        /// <param name="value">The value to be converted.</param>
+        /// <returns></returns>
+        private static byte ToByte(float value)
         {
-            var value = (int)(component * 255.0f);
-            return ToByte(value);
+            return ToByte((int)(value * 255.0f));
         }
 
         public static byte ToByte(int value)

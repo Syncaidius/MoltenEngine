@@ -9,11 +9,10 @@
 <#@ output extension=".txt" #>
 
 <#
-GenerateTypes(this.GenerationEnvironment, this.Host, "Matrices", "def_matrix3.json", null, new int[] {3}, null, (d, md, defs) =>
+GenerateTypes(this.GenerationEnvironment, this.Host, "Matrices", "def_matrices.json", null, new int[] {3}, null, (d, md, defs) =>
 {
     string vectorName = $"Vector3{d.Postfix}";
     string quartName = $"Quaternion{d.Postfix}";
-    md.Name = $"{d.Name}{d.Postfix}";
 #>
 // James Yarwood - Updated for Molten Engine - MIT license
 

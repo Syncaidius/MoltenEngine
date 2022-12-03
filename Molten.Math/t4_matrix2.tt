@@ -9,10 +9,9 @@
 <#@ output extension=".txt" #>
 
 <#
-GenerateTypes(this.GenerationEnvironment, this.Host, "Matrices", "def_matrix2.json", null, new int[] {2}, null, (d, md, defs) =>
+GenerateTypes(this.GenerationEnvironment, this.Host, "Matrices", "def_matrices.json", null, new int[] {2}, null, (d, md, defs) =>
 {
     string vectorName = $"Vector2{d.Postfix}";
-    md.Name = $"{d.Name}{d.Postfix}";
 #>
 using System;
 using System.Globalization;

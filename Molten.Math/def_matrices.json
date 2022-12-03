@@ -1,11 +1,11 @@
 [
   {
-    "Name": "Matrix4",
+    "Name": "Matrix",
     "Postfix": "F",
     "DataTypeName": "float"
   },
   {
-    "Name": "Matrix4",
+    "Name": "Matrix",
     "Postfix": "D",
     "DataTypeName": "double"
   }
