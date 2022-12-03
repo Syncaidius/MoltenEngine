@@ -1,129 +1,72 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+
+<#@ include file="t4_header.tt" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".txt" #>
+
+<#
+string[] vecPMapUpper = new string[]{"X", "Y", "Z", "W"};
+TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "Colors", "def_colors.json");
+
+gen.Generate(null, (d, def) =>
+{
+    string vectorName = $"Vector{d.Size}{d.DT.Literal}";
+#>
 using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten.DoublePrecision
+namespace Molten<#=d.SubNamespace#>
 {
 	/// <summary>
-    /// Represents a color in the form of R, G, B.
+    /// Represents a color in the form of <#=gen.FieldsToArgs(def.FieldNames)#>.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Serializable]
-    public struct Color3D : IEquatable<Color3D>, IFormattable
+    public struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable
     {
         private const string toStringFormat = "Red:{0} Green:{1} Blue:{2}";
 
         /// <summary>
         /// The Black color (0, 0, 0).
         /// </summary>
-        public static readonly Color3D Black = new Color3D(0D);
+        public static readonly <#=d.Name#> Black = new <#=d.Name#>(<#=d.DT.Zero#>);
 
         /// <summary>
         /// The White color (1, 1, 1, 1).
         /// </summary>
-        public static readonly Color3D White = new Color3D(1D);
+        public static readonly <#=d.Name#> White = new <#=d.Name#>(<#=d.DT.One#>);
 
-		/// <summary>The red component.</summary>
-		[DataMember]
-		public double R;
-
-		/// <summary>The green component.</summary>
-		[DataMember]
-		public double G;
-
-		/// <summary>The blue component.</summary>
-		[DataMember]
-		public double B;
-
-
-		/// <summary>Initializes a new instance of <see cref="Color3D"/>.</summary>
-		/// <param name="value">The value that will be assigned to all components.</param>
-		public Color3D(double value)
-		{
-			R = value;
-			G = value;
-			B = value;
-		}
-		/// <summary>Initializes a new instance of <see cref="Color3D"/> from an array.</summary>
-		/// <param name="values">The values to assign to the R, G, B components of the color. This must be an array with at least three elements.</param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public Color3D(double[] values)
-		{
-			if (values == null)
-				throw new ArgumentNullException("values");
-			if (values.Length < 3)
-				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Color3D.");
-
-			R = values[0];
-			G = values[1];
-			B = values[2];
-		}
-		/// <summary>Initializes a new instance of <see cref="Color3D"/> from a span.</summary>
-		/// <param name="values">The values to assign to the R, G, B components of the color. This must be an array with at least three elements.</param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public Color3D(Span<double> values)
-		{
-			if (values == null)
-				throw new ArgumentNullException("values");
-			if (values.Length < 3)
-				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Color3D.");
-
-			R = values[0];
-			G = values[1];
-			B = values[2];
-		}
-		/// <summary>Initializes a new instance of <see cref="Color3D"/> from a an unsafe pointer.</summary>
-		/// <param name="ptrValues">The values to assign to the R, G, B components of the color.
-		/// <para>There must be at least three elements available or undefined behaviour will occur.</para></param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
-		public unsafe Color3D(double* ptrValues)
-		{
-			if (ptrValues == null)
-				throw new ArgumentNullException("ptrValues");
-
-			R = ptrValues[0];
-			G = ptrValues[1];
-			B = ptrValues[2];
-		}
-		/// <summary>
-		/// Initializes a new instance of <see cref="Color3D"/>.
-		/// </summary>
-		/// <param name="r">The R component.</param>
-		/// <param name="g">The G component.</param>
-		/// <param name="b">The B component.</param>
-		public Color3D(double r, double g, double b)
-		{
-			R = r;
-			G = g;
-			B = b;
-		}
+<#=gen.GenerateFields()#>
+<#gen.GenerateStandardConstructors();#>
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Color3D"/> struct.
+        /// Initializes a new instance of the <see cref="<#=d.Name#>"/> struct.
         /// </summary>
-        /// <param name="value">The R, G, B components of the color.</param>
-        public Color3D(Vector3D value)
+        /// <param name="value">The <#=gen.FieldsToArgs(def.FieldNames)#> components of the color.</param>
+        public <#=d.Name#>(<#=vectorName#> value)
         {
-            R = value.X;
-            G = value.Y;
-            B = value.Z;
+<#for(int i = 0; i < d.Size; i++){#>
+            <#=def.FieldNames[i]#> = value.<#=vecPMapUpper[i]#>;
+<#}#>
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Color3D"/> struct.
+        /// Initializes a new instance of the <see cref="<#=d.Name#>"/> struct.
         /// </summary>
         /// <param name="rgb">A packed integer containing all three color components in RGB order.
         /// The alpha component is ignored.</param>
-        public Color3D(int rgb)
+        public <#=d.Name#>(int rgb)
         {
-            B = ((rgb >> 16) & 255) / 255.0D;
-            G = ((rgb >> 8) & 255) / 255.0D;
-            R = (rgb & 255) / 255.0D;
+            B = ((rgb >> 16) & 255) / 255.0<#=d.DT.Literal#>;
+            G = ((rgb >> 8) & 255) / 255.0<#=d.DT.Literal#>;
+            R = (rgb & 255) / 255.0<#=d.DT.Literal#>;
         }
 
         /// <summary>
@@ -133,7 +76,7 @@ namespace Molten.DoublePrecision
         /// <param name="index">The index of the component to access. Use 0 for the red component, 1 for the green component, and 2 for the blue component.</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>
-        public double this[int index]
+        public <#=d.DT#> this[int index]
         {
             get
             {
@@ -144,7 +87,7 @@ namespace Molten.DoublePrecision
                     case 2: return B;
                 }
 
-                throw new ArgumentOutOfRangeException("index", "Indices for Color3D run from 0 to 2, inclusive.");
+                throw new ArgumentOutOfRangeException("index", "Indices for <#=d.Name#> run from 0 to 2, inclusive.");
             }
 
             set
@@ -154,7 +97,7 @@ namespace Molten.DoublePrecision
                     case 0: R = value; break;
                     case 1: G = value; break;
                     case 2: B = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for Color3D run from 0 to 2, inclusive.");
+                    default: throw new ArgumentOutOfRangeException("index", "Indices for <#=d.Name#> run from 0 to 2, inclusive.");
                 }
             }
         }
@@ -167,9 +110,9 @@ namespace Molten.DoublePrecision
         public int ToRgba()
         {
             uint a = 255;
-            uint r = (uint) (R * 255.0D) & 255;
-            uint g = (uint) (G * 255.0D) & 255;
-            uint b = (uint) (B * 255.0D) & 255;
+            uint r = (uint) (R * 255.0<#=d.DT.Literal#>) & 255;
+            uint g = (uint) (G * 255.0<#=d.DT.Literal#>) & 255;
+            uint b = (uint) (B * 255.0<#=d.DT.Literal#>) & 255;
 
             uint value = r;
             value |= g << 8;
@@ -187,9 +130,9 @@ namespace Molten.DoublePrecision
         public int ToBgra()
         {
             uint a = 255;
-            uint r = (uint)(R * 255.0D) & 255;
-            uint g = (uint)(G * 255.0D) & 255;
-            uint b = (uint)(B * 255.0D) & 255;
+            uint r = (uint)(R * 255.0<#=d.DT.Literal#>) & 255;
+            uint g = (uint)(G * 255.0<#=d.DT.Literal#>) & 255;
+            uint b = (uint)(B * 255.0<#=d.DT.Literal#>) & 255;
 
             uint value = b;
             value |= g << 8;
@@ -203,63 +146,27 @@ namespace Molten.DoublePrecision
         /// Converts the color into a three component vector.
         /// </summary>
         /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
-        public Vector3D ToVector()
+        public <#=vectorName#> ToVector()
         {
-            return new Vector3D(R, G, B);
+            return new <#=vectorName#>(<#=gen.FieldsToArgs(def.FieldNames)#>);
         }
 
         /// <summary>
         /// Creates an array containing the elements of the color.
         /// </summary>
         /// <returns>A three-element array containing the components of the color.</returns>
-        public double[] ToArray()
+        public <#=d.DT#>[] ToArray()
         {
-            return new double[] { R, G, B };
+            return new <#=d.DT#>[] { <#=gen.FieldsToArgs(def.FieldNames)#> };
         }
 
-		///<summary>Performs a add operation on two <see cref="Color3D"/>.</summary>
-		///<param name="a">The first <see cref="Color3D"/> to add.</param>
-		///<param name="b">The second <see cref="Color3D"/> to add.</param>
-		///<param name="result">Output for the result of the operation.</param>
-		public static void Add(ref Color3D a, ref Color3D b, out Color3D result)
-		{
-			result.R = a.R + b.R;
-			result.G = a.G + b.G;
-			result.B = a.B + b.B;
-		}
+<#gen.GenerateRefOperator("+", "add");#>
 
-		///<summary>Performs a subtract operation on two <see cref="Color3D"/>.</summary>
-		///<param name="a">The first <see cref="Color3D"/> to add.</param>
-		///<param name="b">The second <see cref="Color3D"/> to add.</param>
-		///<param name="result">Output for the result of the operation.</param>
-		public static void Subtract(ref Color3D a, ref Color3D b, out Color3D result)
-		{
-			result.R = a.R - b.R;
-			result.G = a.G - b.G;
-			result.B = a.B - b.B;
-		}
+<#gen.GenerateRefOperator("-", "subtract");#>
 
-		///<summary>Performs a modulate operation on two <see cref="Color3D"/>.</summary>
-		///<param name="a">The first <see cref="Color3D"/> to add.</param>
-		///<param name="b">The second <see cref="Color3D"/> to add.</param>
-		///<param name="result">Output for the result of the operation.</param>
-		public static void Modulate(ref Color3D a, ref Color3D b, out Color3D result)
-		{
-			result.R = a.R * b.R;
-			result.G = a.G * b.G;
-			result.B = a.B * b.B;
-		}
+<#gen.GenerateRefOperator("*", "modulate");#>
 
-		///<summary>Performs a divide operation on two <see cref="Color3D"/>.</summary>
-		///<param name="a">The first <see cref="Color3D"/> to add.</param>
-		///<param name="b">The second <see cref="Color3D"/> to add.</param>
-		///<param name="result">Output for the result of the operation.</param>
-		public static void Divide(ref Color3D a, ref Color3D b, out Color3D result)
-		{
-			result.R = a.R / b.R;
-			result.G = a.G / b.G;
-			result.B = a.B / b.B;
-		}
+<#gen.GenerateRefOperator("/", "divide");#>
 
         /// <summary>
         /// Scales a color.
@@ -267,11 +174,9 @@ namespace Molten.DoublePrecision
         /// <param name="value">The color to scale.</param>
         /// <param name="scale">The amount by which to scale.</param>
         /// <param name="result">When the method completes, contains the scaled color.</param>
-        public static void Scale(ref Color3D value, double scale, out Color3D result)
+        public static void Scale(ref <#=d.Name#> value, <#=d.DT#> scale, out <#=d.Name#> result)
         {
-			result.R = value.R * scale;
-			result.G = value.G * scale;
-			result.B = value.B * scale;
+<#gen.IterateFields((i, field) => $"result.{field} = value.{field} * scale;");#>
         }
 
         /// <summary>
@@ -280,9 +185,9 @@ namespace Molten.DoublePrecision
         /// <param name="value">The color to scale.</param>
         /// <param name="scale">The amount by which to scale.</param>
         /// <returns>The scaled color.</returns>
-        public static Color3D Scale(Color3D value, double scale)
+        public static <#=d.Name#> Scale(<#=d.Name#> value, <#=d.DT#> scale)
         {
-            return new Color3D(value.R * scale, value.G * scale, value.B * scale);
+            return new <#=d.Name#>(value.R * scale, value.G * scale, value.B * scale);
         }
 
         /// <summary>
@@ -290,11 +195,9 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="value">The color to negate.</param>
         /// <param name="result">When the method completes, contains the negated color.</param>
-        public static void Negate(ref Color3D value, out Color3D result)
+        public static void Negate(ref <#=d.Name#> value, out <#=d.Name#> result)
         {
-			result.R = 1D - value.R;
-			result.G = 1D - value.G;
-			result.B = 1D - value.B;
+<#gen.IterateFields((i, field) => $"result.{field} = {d.DT.One} - value.{field};");#>
         }
 
         /// <summary>
@@ -302,9 +205,9 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="value">The color to negate.</param>
         /// <returns>The negated color.</returns>
-        public static Color3D Negate(Color3D value)
+        public static <#=d.Name#> Negate(<#=d.Name#> value)
         {
-            return new Color3D(1D - value.R, 1D - value.G, 1D - value.B);
+            return new <#=d.Name#>(<#=d.DT.One#> - value.R, <#=d.DT.One#> - value.G, <#=d.DT.One#> - value.B);
         }
 
         /// <summary>
@@ -314,21 +217,22 @@ namespace Molten.DoublePrecision
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
         /// <param name="result">When the method completes, contains the clamped value.</param>
-        public static void Clamp(ref Color3D value, ref Color3D min, ref Color3D max, out Color3D result)
+        public static void Clamp(ref <#=d.Name#> value, ref <#=d.Name#> min, ref <#=d.Name#> max, out <#=d.Name#> result)
         {
-            double red = value.R;
-            red = (red > max.R) ? max.R : red;
-            red = (red < min.R) ? min.R : red;
+<#
+    for(int i = 0; i < d.Size; i++)
+    {
+        string n = def.FieldLabels[i];
+        string p = def.FieldNames[i];
+#>
+            <#=d.DT#> <#=n#> = value.<#=p#>;
+            <#=n#> = (<#=n#> > max.<#=p#>) ? max.<#=p#> : <#=n#>;
+            <#=n#> = (<#=n#> < min.<#=p#>) ? min.<#=p#> : <#=n#>;
 
-            double green = value.G;
-            green = (green > max.G) ? max.G : green;
-            green = (green < min.G) ? min.G : green;
-
-            double blue = value.B;
-            blue = (blue > max.B) ? max.B : blue;
-            blue = (blue < min.B) ? min.B : blue;
-
-            result = new Color3D(red, green, blue);
+<#
+    }
+#>
+            result = new <#=d.Name#>(<#=gen.FieldsToArgs(def.FieldLabels)#>);
         }
 
         /// <summary>
@@ -338,9 +242,9 @@ namespace Molten.DoublePrecision
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
         /// <returns>The clamped value.</returns>
-        public static Color3D Clamp(Color3D value, Color3D min, Color3D max)
+        public static <#=d.Name#> Clamp(<#=d.Name#> value, <#=d.Name#> min, <#=d.Name#> max)
         {
-            Clamp(ref value, ref min, ref max, out Color3D result);
+            Clamp(ref value, ref min, ref max, out <#=d.Name#> result);
             return result;
         }
 
@@ -354,11 +258,9 @@ namespace Molten.DoublePrecision
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Color3D start, ref Color3D end, double amount, out Color3D result)
+        public static void Lerp(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.DT#> amount, out <#=d.Name#> result)
         {
-			result.R = MathHelper.Lerp(start.R, end.R, amount);
-			result.G = MathHelper.Lerp(start.G, end.G, amount);
-			result.B = MathHelper.Lerp(start.B, end.B, amount);
+<#gen.IterateFields((i, field) => $"result.{field} = MathHelper.Lerp(start.{field}, end.{field}, amount);");#>
         }
 
         /// <summary>
@@ -371,9 +273,9 @@ namespace Molten.DoublePrecision
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static Color3D Lerp(Color3D start, Color3D end, double amount)
+        public static <#=d.Name#> Lerp(<#=d.Name#> start, <#=d.Name#> end, <#=d.DT#> amount)
         {
-            Lerp(ref start, ref end, amount, out Color3D result);
+            Lerp(ref start, ref end, amount, out <#=d.Name#> result);
             return result;
         }
 
@@ -384,7 +286,7 @@ namespace Molten.DoublePrecision
         /// <param name="end">End color.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <param name="result">When the method completes, contains the cubic interpolation of the two colors.</param>
-        public static void SmoothStep(ref Color3D start, ref Color3D end, double amount, out Color3D result)
+        public static void SmoothStep(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.DT#> amount, out <#=d.Name#> result)
         {
             amount = MathHelper.SmoothStep(amount);
             Lerp(ref start, ref end, amount, out result);
@@ -397,9 +299,9 @@ namespace Molten.DoublePrecision
         /// <param name="end">End color.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>The cubic interpolation of the two colors.</returns>
-        public static Color3D SmoothStep(Color3D start, Color3D end, double amount)
+        public static <#=d.Name#> SmoothStep(<#=d.Name#> start, <#=d.Name#> end, <#=d.DT#> amount)
         {
-            SmoothStep(ref start, ref end, amount, out Color3D result);
+            SmoothStep(ref start, ref end, amount, out <#=d.Name#> result);
             return result;
         }
 
@@ -409,11 +311,9 @@ namespace Molten.DoublePrecision
         /// <param name="left">The first source color.</param>
         /// <param name="right">The second source color.</param>
         /// <param name="result">When the method completes, contains an new color composed of the largest components of the source colors.</param>
-        public static void Max(ref Color3D left, ref Color3D right, out Color3D result)
+        public static void Max(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
         {
-			result.R = (left.R  > right.R ) ? left.R  : right.R ;
-			result.G = (left.G  > right.G ) ? left.G  : right.G ;
-			result.B = (left.B  > right.B ) ? left.B  : right.B ;
+<#gen.IterateFields((i, field) => $"result.{field} = (left.{field}  > right.{field} ) ? left.{field}  : right.{field} ;");#>
         }
 
         /// <summary>
@@ -422,9 +322,9 @@ namespace Molten.DoublePrecision
         /// <param name="left">The first source color.</param>
         /// <param name="right">The second source color.</param>
         /// <returns>A color containing the largest components of the source colors.</returns>
-        public static Color3D Max(Color3D left, Color3D right)
+        public static <#=d.Name#> Max(<#=d.Name#> left, <#=d.Name#> right)
         {
-            Max(ref left, ref right, out Color3D result);
+            Max(ref left, ref right, out <#=d.Name#> result);
             return result;
         }
 
@@ -434,11 +334,9 @@ namespace Molten.DoublePrecision
         /// <param name="left">The first source color.</param>
         /// <param name="right">The second source color.</param>
         /// <param name="result">When the method completes, contains an new color composed of the smallest components of the source colors.</param>
-        public static void Min(ref Color3D left, ref Color3D right, out Color3D result)
+        public static void Min(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
         {
-			result.R = (left.R < right.R) ? left.R : right.R;
-			result.G = (left.G < right.G) ? left.G : right.G;
-			result.B = (left.B < right.B) ? left.B : right.B;
+<#gen.IterateFields((i, field) => $"result.{field} = (left.{field} < right.{field}) ? left.{field} : right.{field};");#>
         }
 
         /// <summary>
@@ -447,9 +345,9 @@ namespace Molten.DoublePrecision
         /// <param name="left">The first source color.</param>
         /// <param name="right">The second source color.</param>
         /// <returns>A color containing the smallest components of the source colors.</returns>
-        public static Color3D Min(Color3D left, Color3D right)
+        public static <#=d.Name#> Min(<#=d.Name#> left, <#=d.Name#> right)
         {
-            Min(ref left, ref right, out Color3D result);
+            Min(ref left, ref right, out <#=d.Name#> result);
             return result;
         }
 
@@ -459,11 +357,9 @@ namespace Molten.DoublePrecision
         /// <param name="value">The color whose contrast is to be adjusted.</param>
         /// <param name="contrast">The amount by which to adjust the contrast.</param>
         /// <param name="result">When the method completes, contains the adjusted color.</param>
-        public static void AdjustContrast(ref Color3D value, double contrast, out Color3D result)
+        public static void AdjustContrast(ref <#=d.Name#> value, <#=d.DT#> contrast, out <#=d.Name#> result)
         {
-			result.R = 0.5D + contrast * (value.R - 0.5D);
-			result.G = 0.5D + contrast * (value.G - 0.5D);
-			result.B = 0.5D + contrast * (value.B - 0.5D);
+<#gen.IterateFields((i, field) => $"result.{field} = 0.5{d.DT.Literal} + contrast * (value.{field} - 0.5{d.DT.Literal});");#>
         }
 
         /// <summary>
@@ -472,12 +368,12 @@ namespace Molten.DoublePrecision
         /// <param name="value">The color whose contrast is to be adjusted.</param>
         /// <param name="contrast">The amount by which to adjust the contrast.</param>
         /// <returns>The adjusted color.</returns>
-        public static Color3D AdjustContrast(Color3D value, double contrast)
+        public static <#=d.Name#> AdjustContrast(<#=d.Name#> value, <#=d.DT#> contrast)
         {
-            return new Color3D(
-                0.5D + contrast * (value.R - 0.5D),
-                0.5D + contrast * (value.G - 0.5D),
-                0.5D + contrast * (value.B - 0.5D));
+            return new <#=d.Name#>(
+                0.5<#=d.DT.Literal#> + contrast * (value.R - 0.5<#=d.DT.Literal#>),
+                0.5<#=d.DT.Literal#> + contrast * (value.G - 0.5<#=d.DT.Literal#>),
+                0.5<#=d.DT.Literal#> + contrast * (value.B - 0.5<#=d.DT.Literal#>));
         }
 
         /// <summary>
@@ -486,12 +382,10 @@ namespace Molten.DoublePrecision
         /// <param name="value">The color whose saturation is to be adjusted.</param>
         /// <param name="saturation">The amount by which to adjust the saturation.</param>
         /// <param name="result">When the method completes, contains the adjusted color.</param>
-        public static void AdjustSaturation(ref Color3D value, double saturation, out Color3D result)
+        public static void AdjustSaturation(ref <#=d.Name#> value, <#=d.DT#> saturation, out <#=d.Name#> result)
         {
-            double grey = value.R * 0.2125f + value.G * 0.7154f + value.B * 0.0721f;
-			result.R = grey + saturation * (value.R  - grey);
-			result.G = grey + saturation * (value.G  - grey);
-			result.B = grey + saturation * (value.B  - grey);
+            <#=d.DT#> grey = value.R * 0.2125f + value.G * 0.7154f + value.B * 0.0721f;
+<#gen.IterateFields((i, field) => $"result.{field} = grey + saturation * (value.{field}  - grey);");#>
         }
 
         /// <summary>
@@ -500,11 +394,11 @@ namespace Molten.DoublePrecision
         /// <param name="value">The color whose saturation is to be adjusted.</param>
         /// <param name="saturation">The amount by which to adjust the saturation.</param>
         /// <returns>The adjusted color.</returns>
-        public static Color3D AdjustSaturation(Color3D value, double saturation)
+        public static <#=d.Name#> AdjustSaturation(<#=d.Name#> value, <#=d.DT#> saturation)
         {
-            double grey = value.R * 0.2125f + value.G * 0.7154f + value.B * 0.0721f;
+            <#=d.DT#> grey = value.R * 0.2125f + value.G * 0.7154f + value.B * 0.0721f;
 
-            return new Color3D(
+            return new <#=d.Name#>(
                 grey + saturation * (value.R - grey),
                 grey + saturation * (value.G - grey),
                 grey + saturation * (value.B - grey));
@@ -516,11 +410,9 @@ namespace Molten.DoublePrecision
         /// <param name="value">The non-premultiplied value.</param>
         /// <param name="alpha">The color alpha.</param>
         /// <param name="result">The premultiplied result.</param>
-        public static void Premultiply(ref Color3D value, double alpha, out Color3D result)
+        public static void Premultiply(ref <#=d.Name#> value, <#=d.DT#> alpha, out <#=d.Name#> result)
         {
-			result.R = value.R * alpha;
-			result.G = value.G * alpha;
-			result.B = value.B * alpha;
+<#gen.IterateFields((i, field) => $"result.{field} = value.{field} * alpha;");#>
         }
 
         /// <summary>
@@ -529,48 +421,34 @@ namespace Molten.DoublePrecision
         /// <param name="value">The non-premultiplied value.</param>
         /// <param name="alpha">The color alpha.</param>
         /// <returns>The premultiplied color.</returns>
-        public static Color3D Premultiply(Color3D value, double alpha)
+        public static <#=d.Name#> Premultiply(<#=d.Name#> value, <#=d.DT#> alpha)
         {
-            Premultiply(ref value, alpha, out Color3D result);
+            Premultiply(ref value, alpha, out <#=d.Name#> result);
             return result;
         }
 
-		///<summary>Performs a Add operation on two <see cref="Color3D"/>.</summary>
-		///<param name="a">The first <see cref="Color3D"/> to add.</param>
-		///<param name="b">The second <see cref="Color3D"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color3D operator +(Color3D a, Color3D b)
-		{
-			return new Color3D(a.R + b.R, a.G + b.G, a.B + b.B);
-		}
+<#gen.GenerateOperator("+", "Add");#>
 
         /// <summary>
         /// Assert a color (return it unchanged).
         /// </summary>
         /// <param name="value">The color to assert (unchanged).</param>
         /// <returns>The asserted (unchanged) color.</returns>
-        public static Color3D operator +(Color3D value)
+        public static <#=d.Name#> operator +(<#=d.Name#> value)
         {
             return value;
         }
 
-		///<summary>Performs a subtract operation on two <see cref="Color3D"/>.</summary>
-		///<param name="a">The first <see cref="Color3D"/> to add.</param>
-		///<param name="b">The second <see cref="Color3D"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color3D operator -(Color3D a, Color3D b)
-		{
-			return new Color3D(a.R - b.R, a.G - b.G, a.B - b.B);
-		}
+<#gen.GenerateOperator("-", "subtract");#>
 
         /// <summary>
         /// Negates a color.
         /// </summary>
         /// <param name="value">The color to negate.</param>
         /// <returns>A negated color.</returns>
-        public static Color3D operator -(Color3D value)
+        public static <#=d.Name#> operator -(<#=d.Name#> value)
         {
-            return new Color3D(-value.R, -value.G, -value.B);
+            return new <#=d.Name#>(<#=gen.FieldsToArgs(def.FieldNames, "-value")#>);
         }
 
         /// <summary>
@@ -579,9 +457,9 @@ namespace Molten.DoublePrecision
         /// <param name="scale">The factor by which to scale the color.</param>
         /// <param name="value">The color to scale.</param>
         /// <returns>The scaled color.</returns>
-        public static Color3D operator *(double scale, Color3D value)
+        public static <#=d.Name#> operator *(<#=d.DT#> scale, <#=d.Name#> value)
         {
-            return new Color3D(value.R * scale, value.G * scale, value.B * scale);
+            return new <#=d.Name#>(value.R * scale, value.G * scale, value.B * scale);
         }
 
         /// <summary>
@@ -590,28 +468,14 @@ namespace Molten.DoublePrecision
         /// <param name="value">The factor by which to scale the color.</param>
         /// <param name="scale">The color to scale.</param>
         /// <returns>The scaled color.</returns>
-        public static Color3D operator *(Color3D value, double scale)
+        public static <#=d.Name#> operator *(<#=d.Name#> value, <#=d.DT#> scale)
         {
-            return new Color3D(value.R * scale, value.G * scale, value.B * scale);
+            return new <#=d.Name#>(value.R * scale, value.G * scale, value.B * scale);
         }
 
-		///<summary>Performs a modulate operation on two <see cref="Color3D"/>.</summary>
-		///<param name="a">The first <see cref="Color3D"/> to add.</param>
-		///<param name="b">The second <see cref="Color3D"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color3D operator *(Color3D a, Color3D b)
-		{
-			return new Color3D(a.R * b.R, a.G * b.G, a.B * b.B);
-		}
+<#gen.GenerateOperator("*", "modulate");#>
 
-		///<summary>Performs a divide operation on two <see cref="Color3D"/>.</summary>
-		///<param name="a">The first <see cref="Color3D"/> to add.</param>
-		///<param name="b">The second <see cref="Color3D"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color3D operator /(Color3D a, Color3D b)
-		{
-			return new Color3D(a.R / b.R, a.G / b.G, a.B / b.B);
-		}
+<#gen.GenerateOperator("/", "divide");#>
 
         /// <summary>
         /// Tests for equality between two objects.
@@ -620,7 +484,7 @@ namespace Molten.DoublePrecision
         /// <param name="right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Color3D left, Color3D right)
+        public static bool operator ==(<#=d.Name#> left, <#=d.Name#> right)
         {
             return left.Equals(ref right);
         }
@@ -632,49 +496,49 @@ namespace Molten.DoublePrecision
         /// <param name="right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Color3D left, Color3D right)
+        public static bool operator !=(<#=d.Name#> left, <#=d.Name#> right)
         {
             return !left.Equals(ref right);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Color3D"/> to <see cref="Color4"/>.
+        /// Performs an explicit conversion from <see cref="<#=d.Name#>"/> to <see cref="Color4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Color4(Color3D value)
+        public static explicit operator Color4(<#=d.Name#> value)
         {
-            return new Color4(value.R, value.G, value.B, 1D);
+            return new Color4(value.R, value.G, value.B, <#=d.DT.One#>);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Color3D"/> to <see cref="Vector3F"/>.
+        /// Performs an implicit conversion from <see cref="<#=d.Name#>"/> to <see cref="Vector3F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Vector3D(Color3D value)
+        public static implicit operator <#=vectorName#>(<#=d.Name#> value)
         {
-            return new Vector3D(value.R, value.G, value.B);
+            return new <#=vectorName#>(<#=gen.FieldsToArgs(def.FieldNames, "value")#>);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Vector3F"/> to <see cref="Color3D"/>.
+        /// Performs an implicit conversion from <see cref="Vector3F"/> to <see cref="<#=d.Name#>"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Color3D(Vector3F value)
+        public static implicit operator <#=d.Name#>(Vector3F value)
         {
-            return new Color3D(value.X, value.Y, value.Z);
+            return new <#=d.Name#>(value.X, value.Y, value.Z);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="System.Int32"/> to <see cref="Color3D"/>.
+        /// Performs an explicit conversion from <see cref="System.Int32"/> to <see cref="<#=d.Name#>"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Color3D(int value)
+        public static explicit operator <#=d.Name#>(int value)
         {
-            return new Color3D(value);
+            return new <#=d.Name#>(value);
         }
 
         /// <summary>
@@ -691,7 +555,7 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
-        /// <param name="format">The format to apply to each channel element (double)</param>
+        /// <param name="format">The format to apply to each channel element (<#=d.DT#>)</param>
         /// <returns>
         /// A <see cref="string"/> that represents this instance.
         /// </returns>
@@ -715,7 +579,7 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
-        /// <param name="format">The format to apply to each channel element (double).</param>
+        /// <param name="format">The format to apply to each channel element (<#=d.DT#>).</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
         /// A <see cref="string"/> that represents this instance.
@@ -750,27 +614,27 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Color3D"/> is equal to this instance.
+        /// Determines whether the specified <see cref="<#=d.Name#>"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="Color3D"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="<#=d.Name#>"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Color3D"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="<#=d.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Color3D other)
+        public bool Equals(ref <#=d.Name#> other)
         {
             return R == other.R && G == other.G && B == other.B;
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Color3D"/> is equal to this instance.
+        /// Determines whether the specified <see cref="<#=d.Name#>"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="Color3D"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="<#=d.Name#>"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Color3D"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="<#=d.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Color3D other)
+        public bool Equals(<#=d.Name#> other)
         {
             return Equals(ref other);
         }
@@ -784,26 +648,26 @@ namespace Molten.DoublePrecision
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Color3D))
+            if (!(value is <#=d.Name#>))
                 return false;
 
-            var strongValue = (Color3D)value;
+            var strongValue = (<#=d.Name#>)value;
             return Equals(ref strongValue);
         }
 
 
         /// <summary>
-        /// Returns a new <see cref="Color3D"/> with the values of the provided color's components assigned based on their index.<para/>
-        /// For example, a swizzle input of (2,2,3) on a <see cref="Color3D"/> with RGBA values of 100,20,255, will return a <see cref="Color4"/> with values 20,20,255.
+        /// Returns a new <see cref="<#=d.Name#>"/> with the values of the provided color's components assigned based on their index.<para/>
+        /// For example, a swizzle input of (2,2,3) on a <see cref="<#=d.Name#>"/> with RGBA values of 100,20,255, will return a <see cref="Color4"/> with values 20,20,255.
         /// </summary>
         /// <param name="col">The color to use as a source for values.</param>
         /// <param name="rIndex">The axis index of the source color to use for the new red value.</param>
         /// <param name="gIndex">The axis index of the source color to use for the new green value.</param>
         /// <param name="bIndex">The axis index of the source color to use for the new blue value.</param>
         /// <returns></returns>
-        public static unsafe Color3D Swizzle(Color4 col, int rIndex, int gIndex, int bIndex)
+        public static unsafe <#=d.Name#> Swizzle(Color4 col, int rIndex, int gIndex, int bIndex)
         {
-            return new Color3D()
+            return new <#=d.Name#>()
             {
                 R = *(&col.R + (rIndex * sizeof(int))),
                 G = *(&col.G + (gIndex * sizeof(int))),
@@ -812,4 +676,6 @@ namespace Molten.DoublePrecision
         }
     }
 }
-
+<#
+});
+#>

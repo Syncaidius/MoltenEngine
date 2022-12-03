@@ -1,48 +1,4 @@
-﻿// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-// -----------------------------------------------------------------------------
-// Original code from SlimMath project. http://code.google.com/p/slimmath/
-// Greetings to SlimDX Group. Original code published with the following license:
-// -----------------------------------------------------------------------------
-/*
-* Copyright (c) 2007-2011 SlimDX Group
-* 
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
-*/
-
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -50,104 +6,117 @@ using System.Runtime.Serialization;
 
 namespace Molten
 {
-    /// <summary>
-    /// Represents a color in the form of rgba.
+	/// <summary>
+    /// Represents a color in the form of R, G, B, A.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Serializable]
     public struct Color4 : IEquatable<Color4>, IFormattable
     {
-        private const string toStringFormat = "Alpha:{0} Red:{1} Green:{2} Blue:{3}";
+        private const string toStringFormat = "Red:{0} Green:{1} Blue:{2}";
 
         /// <summary>
-        /// The Black color (0, 0, 0, 1).
+        /// The Black color (0, 0, 0).
         /// </summary>
-        public static readonly Color4 Black = new Color4(0.0f, 0.0f, 0.0f, 1.0f);
+        public static readonly Color4 Black = new Color4(0F);
 
         /// <summary>
         /// The White color (1, 1, 1, 1).
         /// </summary>
-        public static readonly Color4 White = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
+        public static readonly Color4 White = new Color4(1F);
 
-        /// <summary>
-        /// The transparent color (0,0,0,0). Identical to <see cref="Transparent"/>.
-        /// </summary>
-        public static readonly Color4 Zero = new Color4(0, 0, 0, 0);
+		/// <summary>The red component.</summary>
+		[DataMember]
+		public float R;
 
-        /// <summary>
-        /// The transparent color (0,0,0,0). Identical to <see cref="Zero"/>.
-        /// </summary>
-        public static readonly Color4 Transparent = new Color4(0, 0, 0, 0);
+		/// <summary>The green component.</summary>
+		[DataMember]
+		public float G;
 
-        /// <summary>
-        /// The total size of <see cref="Color4"/>, in bytes.
-        /// </summary>
-        public static int SizeOf => sizeof(float) * 4;
+		/// <summary>The blue component.</summary>
+		[DataMember]
+		public float B;
 
-        /// <summary>
-        /// The red component of the color.
-        /// </summary>
-        [DataMember]
-        public float R;
+		/// <summary>The alpha component.</summary>
+		[DataMember]
+		public float A;
 
-        /// <summary>
-        /// The green component of the color.
-        /// </summary>
-        [DataMember]
-        public float G;
 
-        /// <summary>
-        /// The blue component of the color.
-        /// </summary>
-        [DataMember]
-        public float B;
+		/// <summary>Initializes a new instance of <see cref="Color4"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public Color4(float value)
+		{
+			R = value;
+			G = value;
+			B = value;
+			A = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="Color4"/> from an array.</summary>
+		/// <param name="values">The values to assign to the R, G, B, A components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Color4(float[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Color4.");
 
-        /// <summary>
-        /// The alpha component of the color.
-        /// </summary>
-        [DataMember]
-        public float A;
+			R = values[0];
+			G = values[1];
+			B = values[2];
+			A = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="Color4"/> from a span.</summary>
+		/// <param name="values">The values to assign to the R, G, B, A components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Color4(Span<float> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Color4.");
+
+			R = values[0];
+			G = values[1];
+			B = values[2];
+			A = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="Color4"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the R, G, B, A components of the color.
+		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		public unsafe Color4(float* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			R = ptrValues[0];
+			G = ptrValues[1];
+			B = ptrValues[2];
+			A = ptrValues[3];
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="Color4"/>.
+		/// </summary>
+		/// <param name="r">The R component.</param>
+		/// <param name="g">The G component.</param>
+		/// <param name="b">The B component.</param>
+		/// <param name="a">The A component.</param>
+		public Color4(float r, float g, float b, float a)
+		{
+			R = r;
+			G = g;
+			B = b;
+			A = a;
+		}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
-        /// <param name="value">The value that will be assigned to all components.</param>
-        public Color4(float value)
-        {
-            A = R = G = B = value;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Color4"/> struct.
-        /// </summary>
-        /// <param name="values">A pointer to an array of <see cref="float"/> values. If there is less than 4 values, undefined behaviour should be expected.</param>
-        public unsafe Color4(float* values)
-        {
-            R = values[0];
-            G = values[1];
-            B = values[2];
-            A = values[3];
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Color4"/> struct.
-        /// </summary>
-        /// <param name="red">The red component of the color.</param>
-        /// <param name="green">The green component of the color.</param>
-        /// <param name="blue">The blue component of the color.</param>
-        /// <param name="alpha">The alpha component of the color.</param>
-        public Color4(float red, float green, float blue, float alpha)
-        {
-            R = red;
-            G = green;
-            B = blue;
-            A = alpha;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Color4"/> struct.
-        /// </summary>
-        /// <param name="value">The red, green, blue, and alpha components of the color.</param>
+        /// <param name="value">The R, G, B, A components of the color.</param>
         public Color4(Vector4F value)
         {
             R = value.X;
@@ -159,115 +128,22 @@ namespace Molten
         /// <summary>
         /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
-        /// <param name="value">The red, green, and blue components of the color.</param>
-        /// <param name="alpha">The alpha component of the color.</param>
-        public Color4(Vector3F value, float alpha)
+        /// <param name="rgb">A packed integer containing all three color components in RGB order.
+        /// The alpha component is ignored.</param>
+        public Color4(int rgb)
         {
-            R = value.X;
-            G = value.Y;
-            B = value.Z;
-            A = alpha;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Color4"/> struct.
-        /// </summary>
-        /// <param name="rgba">A packed integer containing all four color components in RGBA order.</param>
-        public Color4(uint rgba)
-        {
-            A = ((rgba >> 24) & 255) / 255.0f;
-            B = ((rgba >> 16) & 255) / 255.0f;
-            G = ((rgba >> 8) & 255) / 255.0f;
-            R = (rgba & 255) / 255.0f;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Color4"/> struct.
-        /// </summary>
-        /// <param name="rgba">A packed integer containing all four color components in RGBA order.</param>
-        public Color4(int rgba)
-        {
-            A = ((rgba >> 24) & 255) / 255.0f;
-            B = ((rgba >> 16) & 255) / 255.0f;
-            G = ((rgba >> 8) & 255) / 255.0f;
-            R = (rgba & 255) / 255.0f;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Color4"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the red, green, blue, and alpha components of the color. This must be an array with four elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-        public Color4(float[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for Color4.");
-
-            R = values[0];
-            G = values[1];
-            B = values[2];
-            A = values[3];
-        }
-
-        /// <summary>
-        /// Re-interprets a <see cref="float"/> pointer as a <see cref="Color4"/>. The pointer should point to the start of data
-        /// containing four (RGBA) <see cref="float"/> values.
-        /// </summary>
-        /// <param name="ptr"></param>
-        /// <returns></returns>
-        public unsafe static Color4 FromFloatPtr(float* ptr)
-        {
-            return *(Color4*)ptr;
-        }
-
-        /// <summary>
-        /// Copies the component color values of the current <see cref="Color4"/> to the provided pointer.
-        /// </summary>
-        /// <param name="col"></param>
-        /// <returns></returns>
-        public unsafe void CopyToPtr(float* ptr)
-        {
-            ptr[0] = R;
-            ptr[1] = G;
-            ptr[2] = B;
-            ptr[3] = A;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Color4"/> struct.
-        /// </summary>
-        /// <param name="color"><see cref="Color3"/> used to initialize the color.</param>
-        public Color4(Color3 color)
-        {
-          R = color.R;
-          G = color.G;
-          B = color.B;
-          A = 1.0f;
-        }
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Color4"/> struct.
-        /// </summary>
-        /// <param name="color"><see cref="Color3"/> used to initialize the color.</param>
-        /// <param name="alpha">The alpha component of the color.</param>
-        public Color4(Color3 color, float alpha)
-        {
-          R = color.R;
-          G = color.G;
-          B = color.B;
-          A = alpha;
+            B = ((rgb >> 16) & 255) / 255.0F;
+            G = ((rgb >> 8) & 255) / 255.0F;
+            R = (rgb & 255) / 255.0F;
         }
 
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of the red, green, blue, and alpha components, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the alpha component, 1 for the red component, 2 for the green component, and 3 for the blue component.</param>
+        /// <value>The value of the red, green, or blue component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the red component, 1 for the green component, and 2 for the blue component.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>
         public float this[int index]
         {
             get
@@ -277,10 +153,9 @@ namespace Molten
                     case 0: return R;
                     case 1: return G;
                     case 2: return B;
-                    case 3: return A;
                 }
 
-                throw new ArgumentOutOfRangeException("index", "Indices for Color4 run from 0 to 3, inclusive.");
+                throw new ArgumentOutOfRangeException("index", "Indices for Color4 run from 0 to 2, inclusive.");
             }
 
             set
@@ -290,8 +165,7 @@ namespace Molten
                     case 0: R = value; break;
                     case 1: G = value; break;
                     case 2: B = value; break;
-                    case 3: A = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for Color4 run from 0 to 3, inclusive.");
+                    default: throw new ArgumentOutOfRangeException("index", "Indices for Color4 run from 0 to 2, inclusive.");
                 }
             }
         }
@@ -299,44 +173,14 @@ namespace Molten
         /// <summary>
         /// Converts the color into a packed integer.
         /// </summary>
-        /// <returns>A packed integer containing all four color components.</returns>
-        public int ToBgra()
-        {
-            uint a = (uint)(A * 255.0f) & 255;
-            uint r = (uint)(R * 255.0f) & 255;
-            uint g = (uint)(G * 255.0f) & 255;
-            uint b = (uint)(B * 255.0f) & 255;
-
-            uint value = b;
-            value |= g << 8;
-            value |= r << 16;
-            value |= a << 24;
-
-            return (int)value;
-        }
-
-        /// <summary>
-        /// Converts the color into a packed integer.
-        /// </summary>
-        /// <returns>A packed integer containing all four color components.</returns>
-        public void ToBgra(out byte r, out byte g, out byte b, out byte a)
-        {
-            a = (byte)(A * 255.0f);
-            r = (byte)(R * 255.0f);
-            g = (byte)(G * 255.0f);
-            b = (byte)(B * 255.0f);
-        }
-
-        /// <summary>
-        /// Converts the color into a packed integer.
-        /// </summary>
-        /// <returns>A packed integer containing all four color components.</returns>
+        /// <returns>A packed integer containing all three color components.
+        /// The alpha channel is set to 255.</returns>
         public int ToRgba()
         {
-            uint a = (uint) (A * 255.0f) & 255;
-            uint r = (uint) (R * 255.0f) & 255;
-            uint g = (uint) (G * 255.0f) & 255;
-            uint b = (uint) (B * 255.0f) & 255;
+            uint a = 255;
+            uint r = (uint) (R * 255.0F) & 255;
+            uint g = (uint) (G * 255.0F) & 255;
+            uint b = (uint) (B * 255.0F) & 255;
 
             uint value = r;
             value |= g << 8;
@@ -347,19 +191,30 @@ namespace Molten
         }
 
         /// <summary>
-        /// Converts the color into a three component vector.
+        /// Converts the color into a packed integer.
         /// </summary>
-        /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
-        public Vector3F ToVector3()
+        /// <returns>A packed integer containing all three color components.
+        /// The alpha channel is set to 255.</returns>
+        public int ToBgra()
         {
-            return new Vector3F(R, G, B);
+            uint a = 255;
+            uint r = (uint)(R * 255.0F) & 255;
+            uint g = (uint)(G * 255.0F) & 255;
+            uint b = (uint)(B * 255.0F) & 255;
+
+            uint value = b;
+            value |= g << 8;
+            value |= r << 16;
+            value |= a << 24;
+
+            return (int)value;
         }
 
         /// <summary>
-        /// Converts the color into a four component vector.
+        /// Converts the color into a three component vector.
         /// </summary>
-        /// <returns>A four component vector containing all four color components.</returns>
-        public Vector4F ToVector4()
+        /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
+        public Vector4F ToVector()
         {
             return new Vector4F(R, G, B, A);
         }
@@ -367,109 +222,59 @@ namespace Molten
         /// <summary>
         /// Creates an array containing the elements of the color.
         /// </summary>
-        /// <returns>A four-element array containing the components of the color.</returns>
+        /// <returns>A three-element array containing the components of the color.</returns>
         public float[] ToArray()
         {
             return new float[] { R, G, B, A };
         }
 
-        /// <summary>
-        /// Calculates the dot product of two <see cref="Color4"/>.
-        /// </summary>
-        /// <param name="c0">The first color.</param>
-        /// <param name="c1">The second color.</param>
-        /// <returns></returns>
-        public static float Dot(Color4 c0, Color4 c1)
-        {
-            return c0.R * c1.R + c0.G * c1.G + c0.B * c1.B + c0.A * c1.A;
-        }
+		///<summary>Performs a add operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Color4 a, ref Color4 b, out Color4 result)
+		{
+			result.R = a.R + b.R;
+			result.G = a.G + b.G;
+			result.B = a.B + b.B;
+			result.A = a.A + b.A;
+		}
 
-        /// <summary>
-        /// Calculates the dot product of two <see cref="Color4"/>.
-        /// </summary>
-        /// <param name="c0">The first color.</param>
-        /// <param name="c1">The second color.</param>
-        /// <param name="result">The destination for the result.</param>
-        /// <returns></returns>
-        public static void Dot(ref Color4 c0,ref Color4 c1, out float result)
-        {
-            result = c0.R * c1.R + c0.G * c1.G + c0.B * c1.B + c0.A * c1.A;
-        }
+		///<summary>Performs a subtract operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Color4 a, ref Color4 b, out Color4 result)
+		{
+			result.R = a.R - b.R;
+			result.G = a.G - b.G;
+			result.B = a.B - b.B;
+			result.A = a.A - b.A;
+		}
 
-        /// <summary>
-        /// Adds two colors.
-        /// </summary>
-        /// <param name="left">The first color to add.</param>
-        /// <param name="right">The second color to add.</param>
-        /// <param name="result">When the method completes, completes the sum of the two colors.</param>
-        public static void Add(ref Color4 left, ref Color4 right, out Color4 result)
-        {
-            result.A = left.A + right.A;
-            result.R = left.R + right.R;
-            result.G = left.G + right.G;
-            result.B = left.B + right.B;
-        }
+		///<summary>Performs a modulate operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Modulate(ref Color4 a, ref Color4 b, out Color4 result)
+		{
+			result.R = a.R * b.R;
+			result.G = a.G * b.G;
+			result.B = a.B * b.B;
+			result.A = a.A * b.A;
+		}
 
-        /// <summary>
-        /// Adds two colors.
-        /// </summary>
-        /// <param name="left">The first color to add.</param>
-        /// <param name="right">The second color to add.</param>
-        /// <returns>The sum of the two colors.</returns>
-        public static Color4 Add(Color4 left, Color4 right)
-        {
-            return new Color4(left.R + right.R, left.G + right.G, left.B + right.B, left.A + right.A);
-        }
-
-        /// <summary>
-        /// Subtracts two colors.
-        /// </summary>
-        /// <param name="left">The first color to subtract.</param>
-        /// <param name="right">The second color to subtract.</param>
-        /// <param name="result">WHen the method completes, contains the difference of the two colors.</param>
-        public static void Subtract(ref Color4 left, ref Color4 right, out Color4 result)
-        {
-            result.A = left.A - right.A;
-            result.R = left.R - right.R;
-            result.G = left.G - right.G;
-            result.B = left.B - right.B;
-        }
-
-        /// <summary>
-        /// Subtracts two colors.
-        /// </summary>
-        /// <param name="left">The first color to subtract.</param>
-        /// <param name="right">The second color to subtract</param>
-        /// <returns>The difference of the two colors.</returns>
-        public static Color4 Subtract(Color4 left, Color4 right)
-        {
-            return new Color4(left.R - right.R, left.G - right.G, left.B - right.B, left.A - right.A);
-        }
-
-        /// <summary>
-        /// Modulates two colors.
-        /// </summary>
-        /// <param name="left">The first color to modulate.</param>
-        /// <param name="right">The second color to modulate.</param>
-        /// <param name="result">When the method completes, contains the modulated color.</param>
-        public static void Modulate(ref Color4 left, ref Color4 right, out Color4 result)
-        {
-            result.A = left.A * right.A;
-            result.R = left.R * right.R;
-            result.G = left.G * right.G;
-            result.B = left.B * right.B;
-        }
-
-        /// <summary>
-        /// Modulates two colors.
-        /// </summary>
-        /// <param name="left">The first color to modulate.</param>
-        /// <param name="right">The second color to modulate.</param>
-        /// <returns>The modulated color.</returns>
-        public static Color4 Modulate(Color4 left, Color4 right)
-        {
-            return new Color4(left.R * right.R, left.G * right.G, left.B * right.B, left.A * right.A);
-        }
+		///<summary>Performs a divide operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Color4 a, ref Color4 b, out Color4 result)
+		{
+			result.R = a.R / b.R;
+			result.G = a.G / b.G;
+			result.B = a.B / b.B;
+			result.A = a.A / b.A;
+		}
 
         /// <summary>
         /// Scales a color.
@@ -479,10 +284,10 @@ namespace Molten
         /// <param name="result">When the method completes, contains the scaled color.</param>
         public static void Scale(ref Color4 value, float scale, out Color4 result)
         {
-            result.A = value.A * scale;
-            result.R = value.R * scale;
-            result.G = value.G * scale;
-            result.B = value.B * scale;
+			result.R = value.R * scale;
+			result.G = value.G * scale;
+			result.B = value.B * scale;
+			result.A = value.A * scale;
         }
 
         /// <summary>
@@ -493,7 +298,7 @@ namespace Molten
         /// <returns>The scaled color.</returns>
         public static Color4 Scale(Color4 value, float scale)
         {
-            return new Color4(value.R * scale, value.G * scale, value.B * scale, value.A * scale);
+            return new Color4(value.R * scale, value.G * scale, value.B * scale);
         }
 
         /// <summary>
@@ -503,10 +308,10 @@ namespace Molten
         /// <param name="result">When the method completes, contains the negated color.</param>
         public static void Negate(ref Color4 value, out Color4 result)
         {
-            result.A = 1.0f - value.A;
-            result.R = 1.0f - value.R;
-            result.G = 1.0f - value.G;
-            result.B = 1.0f - value.B;
+			result.R = 1F - value.R;
+			result.G = 1F - value.G;
+			result.B = 1F - value.B;
+			result.A = 1F - value.A;
         }
 
         /// <summary>
@@ -516,48 +321,7 @@ namespace Molten
         /// <returns>The negated color.</returns>
         public static Color4 Negate(Color4 value)
         {
-            return new Color4(1.0f - value.R, 1.0f - value.G, 1.0f - value.B, 1.0f - value.A);
-        }
-
-        /// <summary>
-        /// Restricts a value to be within a specified range.
-        /// </summary>
-        /// <param name="value">The value to clamp.</param>
-        /// <param name="min">The minimum value.</param>
-        /// <param name="max">The maximum value.</param>
-        /// <param name="result">When the method completes, contains the clamped value.</param>
-        public static void Clamp(ref Color4 value, float min, float max, out Color4 result)
-        {
-            float alpha = value.A;
-            alpha = (alpha > max) ? max : alpha;
-            alpha = (alpha < min) ? min : alpha;
-
-            float red = value.R;
-            red = (red > max) ? max : red;
-            red = (red < min) ? min : red;
-
-            float green = value.G;
-            green = (green > max) ? max : green;
-            green = (green < min) ? min : green;
-
-            float blue = value.B;
-            blue = (blue > max) ? max : blue;
-            blue = (blue < min) ? min : blue;
-
-            result = new Color4(red, green, blue, alpha);
-        }
-
-        /// <summary>
-        /// Restricts a value to be within a specified range.
-        /// </summary>
-        /// <param name="value">The value to clamp.</param>
-        /// <param name="min">The minimum value.</param>
-        /// <param name="max">The maximum value.</param>
-        public static Color4 Clamp(Color4 value, float min, float max)
-        {
-            Color4 result;
-            Clamp(ref value, min, max, out result);
-            return result;
+            return new Color4(1F - value.R, 1F - value.G, 1F - value.B);
         }
 
         /// <summary>
@@ -569,10 +333,6 @@ namespace Molten
         /// <param name="result">When the method completes, contains the clamped value.</param>
         public static void Clamp(ref Color4 value, ref Color4 min, ref Color4 max, out Color4 result)
         {
-            float alpha = value.A;
-            alpha = (alpha > max.A) ? max.A : alpha;
-            alpha = (alpha < min.A) ? min.A : alpha;
-
             float red = value.R;
             red = (red > max.R) ? max.R : red;
             red = (red < min.R) ? min.R : red;
@@ -584,6 +344,10 @@ namespace Molten
             float blue = value.B;
             blue = (blue > max.B) ? max.B : blue;
             blue = (blue < min.B) ? min.B : blue;
+
+            float alpha = value.A;
+            alpha = (alpha > max.A) ? max.A : alpha;
+            alpha = (alpha < min.A) ? min.A : alpha;
 
             result = new Color4(red, green, blue, alpha);
         }
@@ -597,8 +361,7 @@ namespace Molten
         /// <returns>The clamped value.</returns>
         public static Color4 Clamp(Color4 value, Color4 min, Color4 max)
         {
-            Color4 result;
-            Clamp(ref value, ref min, ref max, out result);
+            Clamp(ref value, ref min, ref max, out Color4 result);
             return result;
         }
 
@@ -614,10 +377,10 @@ namespace Molten
         /// </remarks>
         public static void Lerp(ref Color4 start, ref Color4 end, float amount, out Color4 result)
         {
-            result.R = MathHelper.Lerp(start.R, end.R, amount);
-            result.G = MathHelper.Lerp(start.G, end.G, amount);
-            result.B = MathHelper.Lerp(start.B, end.B, amount);
-            result.A = MathHelper.Lerp(start.A, end.A, amount);
+			result.R = MathHelper.Lerp(start.R, end.R, amount);
+			result.G = MathHelper.Lerp(start.G, end.G, amount);
+			result.B = MathHelper.Lerp(start.B, end.B, amount);
+			result.A = MathHelper.Lerp(start.A, end.A, amount);
         }
 
         /// <summary>
@@ -632,8 +395,7 @@ namespace Molten
         /// </remarks>
         public static Color4 Lerp(Color4 start, Color4 end, float amount)
         {
-            Color4 result;
-            Lerp(ref start, ref end, amount, out result);
+            Lerp(ref start, ref end, amount, out Color4 result);
             return result;
         }
 
@@ -659,8 +421,7 @@ namespace Molten
         /// <returns>The cubic interpolation of the two colors.</returns>
         public static Color4 SmoothStep(Color4 start, Color4 end, float amount)
         {
-            Color4 result;
-            SmoothStep(ref start, ref end, amount, out result);
+            SmoothStep(ref start, ref end, amount, out Color4 result);
             return result;
         }
 
@@ -672,10 +433,10 @@ namespace Molten
         /// <param name="result">When the method completes, contains an new color composed of the largest components of the source colors.</param>
         public static void Max(ref Color4 left, ref Color4 right, out Color4 result)
         {
-            result.A = (left.A > right.A) ? left.A : right.A;
-            result.R = (left.R > right.R) ? left.R : right.R;
-            result.G = (left.G > right.G) ? left.G : right.G;
-            result.B = (left.B > right.B) ? left.B : right.B;
+			result.R = (left.R  > right.R ) ? left.R  : right.R ;
+			result.G = (left.G  > right.G ) ? left.G  : right.G ;
+			result.B = (left.B  > right.B ) ? left.B  : right.B ;
+			result.A = (left.A  > right.A ) ? left.A  : right.A ;
         }
 
         /// <summary>
@@ -686,8 +447,7 @@ namespace Molten
         /// <returns>A color containing the largest components of the source colors.</returns>
         public static Color4 Max(Color4 left, Color4 right)
         {
-            Color4 result;
-            Max(ref left, ref right, out result);
+            Max(ref left, ref right, out Color4 result);
             return result;
         }
 
@@ -699,10 +459,10 @@ namespace Molten
         /// <param name="result">When the method completes, contains an new color composed of the smallest components of the source colors.</param>
         public static void Min(ref Color4 left, ref Color4 right, out Color4 result)
         {
-            result.A = (left.A < right.A) ? left.A : right.A;
-            result.R = (left.R < right.R) ? left.R : right.R;
-            result.G = (left.G < right.G) ? left.G : right.G;
-            result.B = (left.B < right.B) ? left.B : right.B;
+			result.R = (left.R < right.R) ? left.R : right.R;
+			result.G = (left.G < right.G) ? left.G : right.G;
+			result.B = (left.B < right.B) ? left.B : right.B;
+			result.A = (left.A < right.A) ? left.A : right.A;
         }
 
         /// <summary>
@@ -713,8 +473,7 @@ namespace Molten
         /// <returns>A color containing the smallest components of the source colors.</returns>
         public static Color4 Min(Color4 left, Color4 right)
         {
-            Color4 result;
-            Min(ref left, ref right, out result);
+            Min(ref left, ref right, out Color4 result);
             return result;
         }
 
@@ -726,10 +485,10 @@ namespace Molten
         /// <param name="result">When the method completes, contains the adjusted color.</param>
         public static void AdjustContrast(ref Color4 value, float contrast, out Color4 result)
         {
-            result.A = value.A;
-            result.R = 0.5f + contrast * (value.R - 0.5f);
-            result.G = 0.5f + contrast * (value.G - 0.5f);
-            result.B = 0.5f + contrast * (value.B - 0.5f);
+			result.R = 0.5F + contrast * (value.R - 0.5F);
+			result.G = 0.5F + contrast * (value.G - 0.5F);
+			result.B = 0.5F + contrast * (value.B - 0.5F);
+			result.A = 0.5F + contrast * (value.A - 0.5F);
         }
 
         /// <summary>
@@ -740,11 +499,10 @@ namespace Molten
         /// <returns>The adjusted color.</returns>
         public static Color4 AdjustContrast(Color4 value, float contrast)
         {
-            return new Color4(                
-                0.5f + contrast * (value.R - 0.5f),
-                0.5f + contrast * (value.G - 0.5f),
-                0.5f + contrast * (value.B - 0.5f),
-                value.A);
+            return new Color4(
+                0.5F + contrast * (value.R - 0.5F),
+                0.5F + contrast * (value.G - 0.5F),
+                0.5F + contrast * (value.B - 0.5F));
         }
 
         /// <summary>
@@ -756,11 +514,10 @@ namespace Molten
         public static void AdjustSaturation(ref Color4 value, float saturation, out Color4 result)
         {
             float grey = value.R * 0.2125f + value.G * 0.7154f + value.B * 0.0721f;
-
-            result.A = value.A;
-            result.R = grey + saturation * (value.R - grey);
-            result.G = grey + saturation * (value.G - grey);
-            result.B = grey + saturation * (value.B - grey);
+			result.R = grey + saturation * (value.R  - grey);
+			result.G = grey + saturation * (value.G  - grey);
+			result.B = grey + saturation * (value.B  - grey);
+			result.A = grey + saturation * (value.A  - grey);
         }
 
         /// <summary>
@@ -773,48 +530,46 @@ namespace Molten
         {
             float grey = value.R * 0.2125f + value.G * 0.7154f + value.B * 0.0721f;
 
-            return new Color4(                
+            return new Color4(
                 grey + saturation * (value.R - grey),
                 grey + saturation * (value.G - grey),
-                grey + saturation * (value.B - grey),
-                value.A);
+                grey + saturation * (value.B - grey));
         }
 
         /// <summary>
         /// Computes the premultiplied value of the provided color.
         /// </summary>
         /// <param name="value">The non-premultiplied value.</param>
+        /// <param name="alpha">The color alpha.</param>
         /// <param name="result">The premultiplied result.</param>
-        public static void Premultiply(ref Color4 value, out Color4 result)
+        public static void Premultiply(ref Color4 value, float alpha, out Color4 result)
         {
-            result.A = value.A;
-            result.R = value.R * value.A;
-            result.G = value.G * value.A;
-            result.B = value.B * value.A;
+			result.R = value.R * alpha;
+			result.G = value.G * alpha;
+			result.B = value.B * alpha;
+			result.A = value.A * alpha;
         }
 
         /// <summary>
         /// Computes the premultiplied value of the provided color.
         /// </summary>
         /// <param name="value">The non-premultiplied value.</param>
-        /// <returns>The premultiplied result.</returns>
-        public static Color4 Premultiply(Color4 value)
+        /// <param name="alpha">The color alpha.</param>
+        /// <returns>The premultiplied color.</returns>
+        public static Color4 Premultiply(Color4 value, float alpha)
         {
-            Color4 result;
-            Premultiply(ref value, out result);
+            Premultiply(ref value, alpha, out Color4 result);
             return result;
         }
 
-        /// <summary>
-        /// Adds two colors.
-        /// </summary>
-        /// <param name="left">The first color to add.</param>
-        /// <param name="right">The second color to add.</param>
-        /// <returns>The sum of the two colors.</returns>
-        public static Color4 operator +(Color4 left, Color4 right)
-        {
-            return new Color4(left.R + right.R, left.G + right.G, left.B + right.B, left.A + right.A);
-        }
+		///<summary>Performs a Add operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		public static Color4 operator +(Color4 a, Color4 b)
+		{
+			return new Color4(a.R + b.R, a.G + b.G, a.B + b.B, a.A + b.A);
+		}
 
         /// <summary>
         /// Assert a color (return it unchanged).
@@ -826,16 +581,14 @@ namespace Molten
             return value;
         }
 
-        /// <summary>
-        /// Subtracts two colors.
-        /// </summary>
-        /// <param name="left">The first color to subtract.</param>
-        /// <param name="right">The second color to subtract.</param>
-        /// <returns>The difference of the two colors.</returns>
-        public static Color4 operator -(Color4 left, Color4 right)
-        {
-            return new Color4(left.R - right.R, left.G - right.G, left.B - right.B, left.A - right.A);
-        }
+		///<summary>Performs a subtract operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		public static Color4 operator -(Color4 a, Color4 b)
+		{
+			return new Color4(a.R - b.R, a.G - b.G, a.B - b.B, a.A - b.A);
+		}
 
         /// <summary>
         /// Negates a color.
@@ -855,7 +608,7 @@ namespace Molten
         /// <returns>The scaled color.</returns>
         public static Color4 operator *(float scale, Color4 value)
         {
-            return new Color4(value.R * scale, value.G * scale, value.B * scale, value.A * scale);
+            return new Color4(value.R * scale, value.G * scale, value.B * scale);
         }
 
         /// <summary>
@@ -866,20 +619,26 @@ namespace Molten
         /// <returns>The scaled color.</returns>
         public static Color4 operator *(Color4 value, float scale)
         {
-            return new Color4(value.R * scale, value.G * scale, value.B * scale, value.A * scale);
+            return new Color4(value.R * scale, value.G * scale, value.B * scale);
         }
 
-        /// <summary>
-        /// Modulates two colors.
-        /// </summary>
-        /// <param name="left">The first color to modulate.</param>
-        /// <param name="right">The second color to modulate.</param>
-        /// <returns>The modulated color.</returns>
-        public static Color4 operator *(Color4 left, Color4 right)
-        {
-            return new Color4(left.R * right.R, left.G * right.G, left.B * right.B, left.A * right.A);
-        }
+		///<summary>Performs a modulate operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		public static Color4 operator *(Color4 a, Color4 b)
+		{
+			return new Color4(a.R * b.R, a.G * b.G, a.B * b.B, a.A * b.A);
+		}
 
+		///<summary>Performs a divide operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		public static Color4 operator /(Color4 a, Color4 b)
+		{
+			return new Color4(a.R / b.R, a.G / b.G, a.B / b.B, a.A / b.A);
+		}
 
         /// <summary>
         /// Tests for equality between two objects.
@@ -906,27 +665,17 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Color4"/> to <see cref="Color3"/>.
+        /// Performs an explicit conversion from <see cref="Color4"/> to <see cref="Color4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Color3(Color4 value)
+        public static explicit operator Color4(Color4 value)
         {
-            return new Color3(value.R, value.G, value.B);
+            return new Color4(value.R, value.G, value.B, 1F);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Color4"/> to <see cref="Vector3F"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector3F(Color4 value)
-        {
-            return new Vector3F(value.R, value.G, value.B);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Color4"/> to <see cref="Vector4F"/>.
+        /// Performs an implicit conversion from <see cref="Color4"/> to <see cref="Vector3F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -936,74 +685,30 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector3F"/> to <see cref="Color4"/>.
+        /// Performs an implicit conversion from <see cref="Vector3F"/> to <see cref="Color4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Color4(Vector3F value)
+        public static implicit operator Color4(Vector3F value)
         {
-            return new Color4(value.X, value.Y, value.Z, 1.0f);
-        }
-
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector4F"/> to <see cref="Color4"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator Color4(Vector4F value)
-        {
-            return new Color4(value.X, value.Y, value.Z, value.W);
-        }
-
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector3F"/> to <see cref="Color4"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator Color4(ColorBGRA value)
-        {
-            return new Color4(value.R, value.G, value.B, value.A);
-        }
-
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector4F"/> to <see cref="Color4"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator ColorBGRA(Color4 value)
-        {
-            return new ColorBGRA(value.R, value.G, value.B, value.A);
-        }
-
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="Color4"/> to <see cref="System.Int32"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        /// The result of the conversion.
-        /// </returns>
-        public static explicit operator int(Color4 value)
-        {
-            return value.ToRgba();
+            return new Color4(value.X, value.Y, value.Z);
         }
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="System.Int32"/> to <see cref="Color4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
-        /// <returns>
-        /// The result of the conversion.
-        /// </returns>
+        /// <returns>The result of the conversion.</returns>
         public static explicit operator Color4(int value)
         {
             return new Color4(value);
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -1011,11 +716,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
-        /// <param name="format">The format to apply to each channel (float).</param>
+        /// <param name="format">The format to apply to each channel element (float)</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format)
         {
@@ -1023,24 +728,24 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, toStringFormat, A, R, G, B);
+            return string.Format(formatProvider, toStringFormat, R, G, B);
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
-        /// <param name="format">The format to apply to each channel (float).</param>
+        /// <param name="format">The format to apply to each channel element (float).</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
@@ -1049,7 +754,6 @@ namespace Molten
 
             return string.Format(formatProvider,
                                  toStringFormat,
-                                 A.ToString(format, formatProvider),
                                  R.ToString(format, formatProvider),
                                  G.ToString(format, formatProvider),
                                  B.ToString(format, formatProvider));
@@ -1068,7 +772,6 @@ namespace Molten
                 var hashCode = R.GetHashCode();
                 hashCode = (hashCode * 397) ^ G.GetHashCode();
                 hashCode = (hashCode * 397) ^ B.GetHashCode();
-                hashCode = (hashCode * 397) ^ A.GetHashCode();
                 return hashCode;
             }
         }
@@ -1083,7 +786,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Color4 other)
         {
-            return A == other.A && R == other.R && G == other.G && B == other.B;
+            return R == other.R && G == other.G && B == other.B;
         }
 
         /// <summary>
@@ -1097,25 +800,6 @@ namespace Molten
         public bool Equals(Color4 other)
         {
             return Equals(ref other);
-        }
-
-        public bool Equals(float[] values)
-        {
-            if (values.Length > 4)
-                return false;
-
-            return values[0] == R && 
-                values[1] == G && 
-                values[2] == B && 
-                values[3] == A;
-        }
-
-        public void CopyTo(float[] values, int startIndex)
-        {
-            values[startIndex++] = R;
-            values[startIndex++] = G;
-            values[startIndex++] = B;
-            values[startIndex] = G;
         }
 
         /// <summary>
@@ -1134,32 +818,25 @@ namespace Molten
             return Equals(ref strongValue);
         }
 
+
         /// <summary>
         /// Returns a new <see cref="Color4"/> with the values of the provided color's components assigned based on their index.<para/>
-        /// For example, a swizzle input of (1,1,3,1) on a <see cref="Color4"/> with RGBA values of 0.7f, 0.2f, 0f, 1.0f, will return a <see cref="Color4"/> with values 0.2f, 0.2f, 1f, 0.2f.
+        /// For example, a swizzle input of (2,2,3) on a <see cref="Color4"/> with RGBA values of 100,20,255, will return a <see cref="Color4"/> with values 20,20,255.
         /// </summary>
-        /// <param name="col"></param>
+        /// <param name="col">The color to use as a source for values.</param>
         /// <param name="rIndex">The axis index of the source color to use for the new red value.</param>
         /// <param name="gIndex">The axis index of the source color to use for the new green value.</param>
         /// <param name="bIndex">The axis index of the source color to use for the new blue value.</param>
-        /// <param name="aIndex">The axis index of the source color to use for the new alpha value.</param>
         /// <returns></returns>
-        public static unsafe Color4 Swizzle(Color4 col, int rIndex, int gIndex, int bIndex, int aIndex)
+        public static unsafe Color4 Swizzle(Color4 col, int rIndex, int gIndex, int bIndex)
         {
-            //return new Color4()
-            //{
-            //    R = *(&col.R + (rIndex * sizeof(float))),
-            //    G = *(&col.G + (gIndex * sizeof(float))),
-            //    B = *(&col.B + (bIndex * sizeof(float))),
-            //    A = *(&col.A + (aIndex * sizeof(float))),
-            //};
             return new Color4()
             {
-                R = col[rIndex],
-                G = col[gIndex],
-                B = col[bIndex],
-                A = col[aIndex],
+                R = *(&col.R + (rIndex * sizeof(int))),
+                G = *(&col.G + (gIndex * sizeof(int))),
+                B = *(&col.B + (bIndex * sizeof(int))),
             };
         }
     }
 }
+

@@ -13,22 +13,6 @@ namespace Molten
     [Serializable]
 	public partial struct SByte4 : IFormattable, IVector<sbyte>
 	{
-		///<summary>The X component.</summary>
-        [DataMember]
-		public sbyte X;
-
-		///<summary>The Y component.</summary>
-        [DataMember]
-		public sbyte Y;
-
-		///<summary>The Z component.</summary>
-        [DataMember]
-		public sbyte Z;
-
-		///<summary>The W component.</summary>
-        [DataMember]
-		public sbyte W;
-
 		///<summary>The size of <see cref="SByte4"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(SByte4));
 
@@ -50,6 +34,23 @@ namespace Molten
 		/// <summary>Represents a zero'd SByte4.</summary>
 		public static readonly SByte4 Zero = new SByte4((sbyte)0, (sbyte)0, (sbyte)0, (sbyte)0);
 
+		/// <summary>The X component.</summary>
+		[DataMember]
+		public sbyte X;
+
+		/// <summary>The Y component.</summary>
+		[DataMember]
+		public sbyte Y;
+
+		/// <summary>The Z component.</summary>
+		[DataMember]
+		public sbyte Z;
+
+		/// <summary>The W component.</summary>
+		[DataMember]
+		public sbyte W;
+
+
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
@@ -59,6 +60,76 @@ namespace Molten
         }
 
 #region Constructors
+		/// <summary>Initializes a new instance of <see cref="SByte4"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public SByte4(sbyte value)
+		{
+			X = value;
+			Y = value;
+			Z = value;
+			W = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="SByte4"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public SByte4(sbyte[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for SByte4.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="SByte4"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public SByte4(Span<sbyte> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for SByte4.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="SByte4"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		public unsafe SByte4(sbyte* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			X = ptrValues[0];
+			Y = ptrValues[1];
+			Z = ptrValues[2];
+			W = ptrValues[3];
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="SByte4"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		/// <param name="z">The Z component.</param>
+		/// <param name="w">The W component.</param>
+		public SByte4(sbyte x, sbyte y, sbyte z, sbyte w)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+			W = w;
+		}
         ///<summary>Creates a new instance of <see cref = "SByte4"/>, using a <see cref="SByte2"/> to populate the first two components.</summary>
 		public SByte4(SByte2 vector, sbyte z, sbyte w)
 		{
@@ -74,54 +145,6 @@ namespace Molten
 			Y = vector.Y;
 			Z = vector.Z;
 			W = w;
-		}
-
-		///<summary>Creates a new instance of <see cref = "SByte4"/>.</summary>
-		public SByte4(sbyte x, sbyte y, sbyte z, sbyte w)
-		{
-			X = x;
-			Y = y;
-			Z = z;
-			W = w;
-		}
-
-        ///<summary>Creates a new instance of <see cref = "SByte4"/>.</summary>
-		public SByte4(sbyte value)
-		{
-			X = value;
-			Y = value;
-			Z = value;
-			W = value;
-		}
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="SByte4"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X, Y, Z and W components of the vector. This must be an array with 4 elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public SByte4(sbyte[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be 4 and only 4 input values for SByte4.");
-
-			X = values[0];
-			Y = values[1];
-			Z = values[2];
-			W = values[3];
-        }
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="SByte4"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
-        /// </summary>
-		public unsafe SByte4(sbyte* ptr)
-		{
-			X = ptr[0];
-			Y = ptr[1];
-			Z = ptr[2];
-			W = ptr[3];
 		}
 #endregion
 

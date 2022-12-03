@@ -7,8 +7,9 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".txt" #>
 <#
-string pMap = "xyzw";
-string pMapUpper = "XYZW";
+string[] pMap = {"x", "y", "z", "w"};
+string[] pMapUpper = {"X", "Y", "Z", "W"};
+string[] pMapNames = {"X", "Y", "Z", "W"};
 string r = "";
 
 GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", null, _vectorSizes, null, (d, md, defs) =>
@@ -29,17 +30,6 @@ namespace Molten<#=d.DT.SubNamespace#>
     [Serializable]
 	public partial struct <#=md.Name#> : IFormattable, IVector<<#=d.DT#>>
 	{
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-		///<summary>The <#=pMapUpper[p]#> component.</summary>
-        [DataMember]
-		public <#=d.DT#> <#=pMapUpper[p]#>;
-
-<#
-		}
-#>
 		///<summary>The size of <see cref="<#=md.Name#>"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=md.Name#>));
 
@@ -59,6 +49,7 @@ namespace Molten<#=d.DT.SubNamespace#>
 		/// <summary>Represents a zero'd <#=md.Name#>.</summary>
 		public static readonly <#=md.Name#> Zero = new <#=md.Name#>(<#for(int p = 0; p < md.Size; p++){#><#=d.DT.Zero#><#=(p < (md.Size-1) ? ", " : "")#><#}#>);
 
+<#=GenerateFields(d, pMapUpper, pMapNames, md.Size, 2)#>
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
@@ -68,6 +59,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         }
 
 #region Constructors
+<#GenerateStandardConstructors(this.GenerationEnvironment, d, md, pMap, pMapUpper, pMapNames, md.Size);#>
 <#
         foreach(int vcSize in _vectorSizes)
         {
@@ -99,70 +91,6 @@ namespace Molten<#=d.DT.SubNamespace#>
             }
         }
 #>
-
-		///<summary>Creates a new instance of <see cref = "<#=md.Name#>"/>.</summary>
-		public <#=md.Name#>(<#=GetConstructorArgs(d.DT, pMap, md.Size)#>)
-		{
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=pMapUpper[p]#> = <#=pMap[p]#>;
-<#
-		}
-#>
-		}
-
-        ///<summary>Creates a new instance of <see cref = "<#=md.Name#>"/>.</summary>
-		public <#=md.Name#>(<#=d.DT#> value)
-		{
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=pMapUpper[p]#> = value;
-<#
-		}
-#>
-		}
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="<#=md.Name#>"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the <#=GetParamSentence(pMapUpper, md.Size, ", ", " and ")#> components of the vector. This must be an array with <#=md.Size#> elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public <#=md.Name#>(<#=d.DT#>[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != <#=md.Size#>)
-                throw new ArgumentOutOfRangeException("values", "There must be <#=md.Size#> and only <#=md.Size#> input values for <#=md.Name#>.");
-
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=pMapUpper[p]#> = values[<#=p#>];
-<#
-		}
-#>
-        }
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="<#=md.Name#>"/> struct from an unsafe pointer. The pointer should point to an array of <#=_strSize[md.Size]#> elements.
-        /// </summary>
-		public unsafe <#=md.Name#>(<#=d.DT#>* ptr)
-		{
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=pMapUpper[p]#> = ptr[<#=p#>];
-<#
-		}
-#>
-		}
 #endregion
 
 #region Instance Methods

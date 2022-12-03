@@ -13,14 +13,6 @@ namespace Molten.HalfPrecision
     [Serializable]
 	public partial struct Vector2US : IFormattable, IVector<ushort>
 	{
-		///<summary>The X component.</summary>
-        [DataMember]
-		public ushort X;
-
-		///<summary>The Y component.</summary>
-        [DataMember]
-		public ushort Y;
-
 		///<summary>The size of <see cref="Vector2US"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2US));
 
@@ -36,6 +28,15 @@ namespace Molten.HalfPrecision
 		/// <summary>Represents a zero'd Vector2US.</summary>
 		public static readonly Vector2US Zero = new Vector2US((ushort)0, (ushort)0);
 
+		/// <summary>The X component.</summary>
+		[DataMember]
+		public ushort X;
+
+		/// <summary>The Y component.</summary>
+		[DataMember]
+		public ushort Y;
+
+
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
@@ -45,45 +46,63 @@ namespace Molten.HalfPrecision
         }
 
 #region Constructors
-
-		///<summary>Creates a new instance of <see cref = "Vector2US"/>.</summary>
-		public Vector2US(ushort x, ushort y)
-		{
-			X = x;
-			Y = y;
-		}
-
-        ///<summary>Creates a new instance of <see cref = "Vector2US"/>.</summary>
+		/// <summary>Initializes a new instance of <see cref="Vector2US"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
 		public Vector2US(ushort value)
 		{
 			X = value;
 			Y = value;
 		}
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Vector2US"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X and Y components of the vector. This must be an array with 2 elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public Vector2US(ushort[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 2)
-                throw new ArgumentOutOfRangeException("values", "There must be 2 and only 2 input values for Vector2US.");
+		/// <summary>Initializes a new instance of <see cref="Vector2US"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least two elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Vector2US(ushort[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 2)
+				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Vector2US.");
 
 			X = values[0];
 			Y = values[1];
-        }
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Vector2US"/> struct from an unsafe pointer. The pointer should point to an array of two elements.
-        /// </summary>
-		public unsafe Vector2US(ushort* ptr)
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector2US"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least two elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Vector2US(Span<ushort> values)
 		{
-			X = ptr[0];
-			Y = ptr[1];
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 2)
+				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Vector2US.");
+
+			X = values[0];
+			Y = values[1];
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector2US"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least two elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		public unsafe Vector2US(ushort* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			X = ptrValues[0];
+			Y = ptrValues[1];
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="Vector2US"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		public Vector2US(ushort x, ushort y)
+		{
+			X = x;
+			Y = y;
 		}
 #endregion
 

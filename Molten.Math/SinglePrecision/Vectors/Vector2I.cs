@@ -13,14 +13,6 @@ namespace Molten
     [Serializable]
 	public partial struct Vector2I : IFormattable, IVector<int>
 	{
-		///<summary>The X component.</summary>
-        [DataMember]
-		public int X;
-
-		///<summary>The Y component.</summary>
-        [DataMember]
-		public int Y;
-
 		///<summary>The size of <see cref="Vector2I"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2I));
 
@@ -36,6 +28,15 @@ namespace Molten
 		/// <summary>Represents a zero'd Vector2I.</summary>
 		public static readonly Vector2I Zero = new Vector2I(0, 0);
 
+		/// <summary>The X component.</summary>
+		[DataMember]
+		public int X;
+
+		/// <summary>The Y component.</summary>
+		[DataMember]
+		public int Y;
+
+
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
@@ -45,45 +46,63 @@ namespace Molten
         }
 
 #region Constructors
-
-		///<summary>Creates a new instance of <see cref = "Vector2I"/>.</summary>
-		public Vector2I(int x, int y)
-		{
-			X = x;
-			Y = y;
-		}
-
-        ///<summary>Creates a new instance of <see cref = "Vector2I"/>.</summary>
+		/// <summary>Initializes a new instance of <see cref="Vector2I"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
 		public Vector2I(int value)
 		{
 			X = value;
 			Y = value;
 		}
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Vector2I"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X and Y components of the vector. This must be an array with 2 elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public Vector2I(int[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 2)
-                throw new ArgumentOutOfRangeException("values", "There must be 2 and only 2 input values for Vector2I.");
+		/// <summary>Initializes a new instance of <see cref="Vector2I"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least two elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Vector2I(int[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 2)
+				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Vector2I.");
 
 			X = values[0];
 			Y = values[1];
-        }
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Vector2I"/> struct from an unsafe pointer. The pointer should point to an array of two elements.
-        /// </summary>
-		public unsafe Vector2I(int* ptr)
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector2I"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least two elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Vector2I(Span<int> values)
 		{
-			X = ptr[0];
-			Y = ptr[1];
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 2)
+				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Vector2I.");
+
+			X = values[0];
+			Y = values[1];
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector2I"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least two elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		public unsafe Vector2I(int* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			X = ptrValues[0];
+			Y = ptrValues[1];
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="Vector2I"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		public Vector2I(int x, int y)
+		{
+			X = x;
+			Y = y;
 		}
 #endregion
 

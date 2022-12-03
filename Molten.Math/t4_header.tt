@@ -8,10 +8,22 @@
 <#@ import namespace="Newtonsoft.Json" #>
 <#@ output extension=".cs" #>
 
-
 <#+
-public delegate void GenerateTypeCallback(TypeDef d, Metadata md, List<TypeDef> defs);
-public delegate bool GenerateTypeFilter(TypeDef d, Metadata md);
+public delegate void GenerateTypeCallback(TypeDef d, GeneratorDefinition def);
+public delegate bool GenerateTypeFilter(TypeDef d);
+
+public class GeneratorDefinition
+{
+    public string[] FieldNames;
+
+    public string[] FieldLabels;
+
+    public string[] ArgNames;
+
+    public string SubFolder;
+
+    public List<TypeDef> Types;
+}
 
 
 public class DataType
@@ -37,9 +49,6 @@ public class DataType
     public string FPToTypeCast;
     public string IntType;
 
-    public string SubNamespace;
-    public string SubDirectory;
-
     public override string ToString()
     {
         return Name;
@@ -64,183 +73,376 @@ public class DataType
 
 public class TypeDef
 {
-    public string Name;         // Name
-    public string Postfix;      //Name post-fix
-    public DataType DT;         // The underlying DataType definition.
-    public string DataTypeName;  // The name of the DataType to be used.
+    public string DefName;              // Name
+    public string Postfix;              // Name post-fix
+    public string DataTypeName;         // The name of the DataType to be used.
+    public int[] Sizes = new int[]{1};  // The different sizes of this type that need to be defined, if any.
 
     public DataType FP => DT.FP;
-}
+    public DataType DT;                 // The underlying DataType definition.
 
-public class Metadata
-{
+    // Parameters of the current type to be generated
     public int Size;
 	public string Name;
 	public string Filename;
-    public string FilePostFix;
+    public string SubNamespace;
+    public string OutputPath;
 }
 
-string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
-int[] _vectorSizes = new int[]{2, 3, 4};
-
-public void GenerateTypes(
-    StringBuilder genEnvironment, 
-    ITextTemplatingEngineHost host, 
-    string subFolder, 
-    string definitionFileName, 
-    string filePostFix, 
-    int[] sizes, 
-    GenerateTypeFilter filter,
-    GenerateTypeCallback callback)
+public class TypeGenerator
 {
-    string outputPath = host.ResolvePath("");
+    static string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
+    StringBuilder _sb;
+    ITextTemplatingEngineHost _host;
+    string _outputPath;
+    string _filePostfix;
+    TypeDef _curDef;
 
-    // Load supported data types and build metadata for them.
-    List<DataType> supportedDataTypes = ReadJsonDef<DataType>(outputPath, "def_datatypes.json");
-    Dictionary<string, DataType> dataTypes = new Dictionary<string, DataType>();
+    GeneratorDefinition _def;
+    List<DataType> _supportedDataTypes;
+    Dictionary<string, DataType> _dataTypes;
 
-    foreach(DataType dt in supportedDataTypes)
+    public TypeGenerator(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string subFolder, string typeDefFileName, string filePostfix = "")
     {
-        dt.UnderlyingType = Type.GetType(dt.TypeName);
-        if(dt.UnderlyingType == null)
-            continue;
+        _sb = genEnvironment;
+        _host = host;
+        _outputPath = _host.ResolvePath("");
 
-        dataTypes[dt.Name] = dt;
-
-        // Check deserialized values
-        dt.Literal = string.IsNullOrWhiteSpace(dt.Literal) ? "" : dt.Literal;
-
-        dt.Pack = Marshal.SizeOf(dt.UnderlyingType);
-        dt.Bits = dt.Pack * 8;
-        dt.One = string.IsNullOrWhiteSpace(dt.One) ? ("1" + dt.Literal) : dt.One;
-        dt.Zero = string.IsNullOrWhiteSpace(dt.Zero) ? ("0" + dt.Literal) : dt.Zero;
-        dt.IsFPType = dt.FPDataType == dt.Name;
-        dt.IsUnsigned = dt.Name.StartsWith("u") || dt.Name == "byte";
-        dt.FPCast = dt.Name == "float" ? "(float)" : (dt.Name == "double" ? "" : $"({dt.Name})");
-        dt.Math = dt.Name == "float" ? "MathF" : "Math";
-        dt.TypeCast = (dt.Name == "byte" || dt.Name == "sbyte" || dt.Name == "short" || dt.Name == "ushort") ? $"({dt.Name})" : "";
-        dt.FPToTypeCast = (dt.TypeCast.Length > 0) ? dt.TypeCast : (dt.Name != dt.FPDataType ? $"({dt.Name})" : "");
-        dt.IntType = (dt.Name == "byte" || dt.Name == "sbyte" || dt.Name == "short" || dt.Name == "ushort") ? $"int" : dt.Name;
-
-        switch(dt.Bits){
-            case 16:
-                dt.SubNamespace = ".HalfPrecision"; 
-                dt.SubDirectory = $"/HalfPrecision/{subFolder}";
-                break;
-
-            case 64: 
-                dt.SubNamespace = ".DoublePrecision"; 
-                dt.SubDirectory = $"/DoublePrecision/{subFolder}";
-                break;
-
-            case 128: 
-                dt.SubNamespace = ".QuadPrecision"; 
-                dt.SubDirectory = $"/QuadPrecision/{subFolder}";
-                break;
-
-            default:
-                dt.SubDirectory = $"/SinglePrecision/{subFolder}";
-                dt.SubNamespace = "";
-                break;
-        }
-    }
-
-    // Assign floating point type names.
-    foreach(DataType dt in supportedDataTypes){
-        if(dt.FPDataType == dt.Name)
-            dt.FP = dt;
+        if(!string.IsNullOrWhiteSpace(filePostfix))
+            _filePostfix = $".{filePostfix}";
         else
-            dataTypes.TryGetValue(dt.FPDataType, out dt.FP);
+            _filePostfix = "";
+
+        _supportedDataTypes = ReadJsonDef<DataType>(_outputPath, "def_datatypes.json");
+        _dataTypes = new Dictionary<string, DataType>();
+        PopulateDataTypes();
+        ReadDefinition(typeDefFileName);        
     }
 
-    List<TypeDef> defs = ReadJsonDef<TypeDef>(outputPath, definitionFileName);
-    Metadata md = new Metadata();
-    sizes = sizes ?? new int[] {1};
-
-    foreach(TypeDef t in defs)
+    private void PopulateDataTypes()
     {
-        if(dataTypes.ContainsKey(t.DataTypeName))
-            t.DT = dataTypes[t.DataTypeName];
-    }
-
-    foreach(TypeDef t in defs)
-    {
-        if(!string.IsNullOrWhiteSpace(filePostFix))
-            md.FilePostFix = $".{filePostFix}";
-        else
-            md.FilePostFix = "";
-
-        foreach(int size in sizes)
+        foreach(DataType dt in _supportedDataTypes)
         {
-            md.Size = size;
-
-            if(filter != null && !filter(t, md))
+            dt.UnderlyingType = Type.GetType(dt.TypeName);
+            if(dt.UnderlyingType == null)
                 continue;
 
-            md.Name = $"{t.Name}{size}{t.Postfix}";
-            genEnvironment.Length = 0;
+            _dataTypes[dt.Name] = dt;
 
-            callback(t, md, defs);
+            // Check deserialized values
+            dt.Literal = string.IsNullOrWhiteSpace(dt.Literal) ? "" : dt.Literal;
 
-		    md.Filename = $"{md.Name}{md.FilePostFix}";
+            dt.Pack = Marshal.SizeOf(dt.UnderlyingType);
+            dt.Bits = dt.Pack * 8;
+            dt.One = string.IsNullOrWhiteSpace(dt.One) ? ("1" + dt.Literal) : dt.One;
+            dt.Zero = string.IsNullOrWhiteSpace(dt.Zero) ? ("0" + dt.Literal) : dt.Zero;
+            dt.IsFPType = dt.FPDataType == dt.Name;
+            dt.IsUnsigned = dt.Name.StartsWith("u") || dt.Name == "byte";
+            dt.FPCast = dt.Name == "float" ? "(float)" : (dt.Name == "double" ? "" : $"({dt.Name})");
+            dt.Math = dt.Name == "float" ? "MathF" : "Math";
+            dt.TypeCast = (dt.Name == "byte" || dt.Name == "sbyte" || dt.Name == "short" || dt.Name == "ushort") ? $"({dt.Name})" : "";
+            dt.FPToTypeCast = (dt.TypeCast.Length > 0) ? dt.TypeCast : (dt.Name != dt.FPDataType ? $"({dt.Name})" : "");
+            dt.IntType = (dt.Name == "byte" || dt.Name == "sbyte" || dt.Name == "short" || dt.Name == "ushort") ? $"int" : dt.Name;
+        }
 
-            SaveFile(outputPath + t.DT.SubDirectory, md.Filename, genEnvironment.ToString());
-		    genEnvironment.Length = 0;
+        // Assign floating point type names.
+        foreach(DataType dt in _supportedDataTypes){
+            if(dt.FPDataType == dt.Name)
+                dt.FP = dt;
+            else
+                _dataTypes.TryGetValue(dt.FPDataType, out dt.FP);
         }
     }
-}
 
-public void SaveFile(string folder, string fileName, string content)
-{
-    string path = Path.Combine(folder, fileName.Trim() + ".cs");
-    if(!Directory.Exists(folder))
-        Directory.CreateDirectory(folder);
-
-	using (FileStream fs = new FileStream(path, FileMode.Create))
+    private void ReadDefinition(string typeDefFileName)
     {
-        using (StreamWriter str = new StreamWriter(fs))
+        string json = File.ReadAllText(Path.Combine(_outputPath, typeDefFileName.Trim()));
+        _def = JsonConvert.DeserializeObject<GeneratorDefinition>(json);
+
+        foreach(TypeDef t in _def.Types)
         {
-            str.WriteLine(content);
-            str.Flush();
+            if(!_dataTypes.ContainsKey(t.DataTypeName))
+                continue;
+
+            t.DT = _dataTypes[t.DataTypeName];
+
+            switch(t.DT.Bits)
+            {
+                case 16:
+                    t.SubNamespace = ".HalfPrecision"; 
+                    t.OutputPath = $"{_outputPath}/HalfPrecision/{_def.SubFolder}";
+                    break;
+
+                case 64: 
+                    t.SubNamespace = ".DoublePrecision"; 
+                    t.OutputPath = $"{_outputPath}/DoublePrecision/{_def.SubFolder}";
+                    break;
+
+                case 128: 
+                    t.SubNamespace = ".QuadPrecision"; 
+                    t.OutputPath = $"{_outputPath}/QuadPrecision/{_def.SubFolder}";
+                    break;
+
+                default:
+                    t.SubNamespace = "";
+                    t.OutputPath = $"{_outputPath}/SinglePrecision/{_def.SubFolder}";
+                    break;
+            }
         }
     }
-}
 
-public List<T> ReadJsonDef<T>(string folder, string fileName) where T : class
-{
-    string json = File.ReadAllText(Path.Combine(folder, fileName.Trim()));
-    return JsonConvert.DeserializeObject<List<T>>(json);
-}
+    public void Generate(        
+        GenerateTypeFilter filter,
+        GenerateTypeCallback callback)
+    {
+        foreach(TypeDef t in _def.Types)
+        {
+            foreach(int size in t.Sizes)
+            {
+                t.Size = size;
+                _sb.Length = 0;
 
-public string GetConstructorArgs(DataType type, string map, int count, string prefix = "", string postfix = "")
-{
-    if(map.Length < count)
-        throw new Exception("Map length is shorter than count");
+                if(filter != null && !filter(t))
+                    continue;
+
+                string defName = t.DefName.Replace("{size}", size.ToString());
+                t.Name = $"{defName}{t.Postfix}";
+
+                _curDef = t;
+                callback(t, _def);
+
+		        t.Filename = $"{t.Name}{_filePostfix}";
+
+                SaveFile(t.OutputPath, t.Filename, _sb.ToString());
+		        _sb.Length = 0;
+            }
+        }
+    }
+
+    public List<T> ReadJsonDef<T>(string folder, string fileName) where T : class
+    {
+        string json = File.ReadAllText(Path.Combine(folder, fileName.Trim()));
+        return JsonConvert.DeserializeObject<List<T>>(json);
+    }
+
+    public void SaveFile(string folder, string fileName, string content)
+    {
+        string path = Path.Combine(folder, fileName.Trim() + ".cs");
+        if(!Directory.Exists(folder))
+            Directory.CreateDirectory(folder);
+
+	    using (FileStream fs = new FileStream(path, FileMode.Create))
+        {
+            using (StreamWriter str = new StreamWriter(fs))
+            {
+                str.WriteLine(content);
+                str.Flush();
+            }
+        }
+    }
+
+    public string GetConstructorArgs()
+    {
+        if(_def.ArgNames.Length < _curDef.Size)
+            throw new Exception("Length of provided argument names list (ArgNames) is shorter than the size of the current type.");
         
-    string r = "";
-    for(int i = 0; i < count; i++)
-    {
-        if(i > 0) r += ", ";
-        r += $"{type.Name} {prefix}{map[i]}{postfix}";
+        string r = "";
+        for(int i = 0; i < _curDef.Size; i++)
+        {
+            if(i > 0) r += ", ";
+                r += $"{_curDef.DT.Name} {_def.ArgNames[i]}";
+        }
+
+        return r;
     }
 
-    return r;
-}
-
-public string GetParamSentence(string pMap, int size, string delimiter = ", ", string finalDelimiter = "", string pPrefix = "", string pPostfix = "")
-{
-    string r = "";
-    for(int i = 0; i < size; i++)
+    public string GenerateFields(int indentLevel = 2)
     {
-        r += $"{pPrefix}{pMap[i]}{pPostfix}";
-        r += i < (size - 1) ? (i < (size - 2) ? ", " : finalDelimiter) : ""; 
+        string r = "";
+        string indent = indentLevel > 0 ? new string('\t', indentLevel) : "";
+        string n = Environment.NewLine;
+
+        for(int i = 0; i < _curDef.Size; i++)
+        {
+            r += $"{indent}/// <summary>The {_def.FieldLabels[i]} component.</summary>{n}";
+            r += $"{indent}[DataMember]{n}";
+            r += $"{indent}public {_curDef.DT} {_def.FieldNames[i]};{n}{n}";
+        }
+
+        return r;
     }
 
-    return r;
-}
+    public string FieldsToArgs(string[] pMap, string prefix = ""){
+        string r = "";
+        for(int i = 0; i < _curDef.Size; i++)
+            r += $"{(i > 0 ? ", " : "")}{(string.IsNullOrWhiteSpace(prefix) ? "" : $"{prefix}.")}{pMap[i]}";
 
-public string See(string typeName)
-{
-    return $"<see cref=\"{typeName}\"/>";
+        return r;
+    }
+
+    private void Out(int indent, string text)
+    {
+        _sb.AppendLine($"{new string('\t', indent)}{text}");
+    }
+
+    private void Out(string text)
+    {
+        _sb.AppendLine(text);
+    }
+
+    private void Indent(int indent)
+    {
+        _sb.Append(new string('\t', indent));
+    }
+
+    private void Append(string text)
+    {
+        _sb.Append(text);
+    }
+
+    public void GenerateStandardConstructors(int indent = 2)
+    {
+        // Single-value initialization parameter
+        Out(indent, $"/// <summary>Initializes a new instance of <see cref=\"{_curDef.Name}\"/>.</summary>");
+        Out(indent, $"/// <param name=\"value\">The value that will be assigned to all components.</param>");
+        Out(indent, $"public {_curDef.Name}({_curDef.DT} value)");
+        Out(indent, $"{{");
+        for(int i = 0; i < _curDef.Size; i++)
+            Out(indent + 1, $"{_def.FieldNames[i]} = value;");
+        Out(indent, $"}}");
+
+        // Array-value initialization parameter
+        Out(indent, $"/// <summary>Initializes a new instance of <see cref=\"{_curDef.Name}\"/> from an array.</summary>");
+        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color. This must be an array with at least {_strSize[_curDef.Size]} elements.</param>");
+        Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
+        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than four elements.</exception>");
+        Out(indent, $"public {_curDef.Name}({_curDef.DT}[] values)");
+        Out(indent, $"{{");
+        Out(indent + 1, $"if (values == null)");
+        Out(indent + 2, $"throw new ArgumentNullException(\"values\");");
+        Out(indent + 1, $"if (values.Length < {_curDef.Size})");
+        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {_strSize[_curDef.Size]} input values for {_curDef.Name}.\");");
+        Out("");
+
+        for(int i = 0; i < _curDef.Size; i++)
+            Out(indent + 1, $"{_def.FieldNames[i]} = values[{i}];");
+        Out(indent, $"}}");
+
+        // Span-based initialization parameter
+        Out(indent, $"/// <summary>Initializes a new instance of <see cref=\"{_curDef.Name}\"/> from a span.</summary>");
+        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color. This must be an array with at least {_strSize[_curDef.Size]} elements.</param>");
+        Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
+        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than four elements.</exception>");
+        Out(indent, $"public {_curDef.Name}(Span<{_curDef.DT}> values)");
+        Out(indent, $"{{");
+        Out(indent + 1, $"if (values == null)");
+        Out(indent + 2, $"throw new ArgumentNullException(\"values\");");
+        Out(indent + 1, $"if (values.Length < {_curDef.Size})");
+        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {_strSize[_curDef.Size]} input values for {_curDef.Name}.\");");
+        _sb.AppendLine("");
+
+        for(int i = 0; i < _curDef.Size; i++)
+            Out(indent + 1, $"{_def.FieldNames[i]} = values[{i}];");
+        Out(indent, $"}}");
+
+        // unsafee pointer-based initialization parameter
+        Out(indent, $"/// <summary>Initializes a new instance of <see cref=\"{_curDef.Name}\"/> from a an unsafe pointer.</summary>");
+        Out(indent, $"/// <param name=\"ptrValues\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color.");
+        Out(indent, $"/// <para>There must be at least {_strSize[_curDef.Size]} elements available or undefined behaviour will occur.</para></param>");
+        Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"ptrValues\"/> is <c>null</c>.</exception>");
+        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"ptrValues\"/> contains more or less than four elements.</exception>");
+        Out(indent, $"public unsafe {_curDef.Name}({_curDef.DT}* ptrValues)");
+        Out(indent, $"{{");
+        Out(indent + 1, $"if (ptrValues == null)");
+        Out(indent + 2, $"throw new ArgumentNullException(\"ptrValues\");");
+        _sb.AppendLine("");
+
+        for(int i = 0; i < _curDef.Size; i++)
+            Out(indent + 1, $"{_def.FieldNames[i]} = ptrValues[{i}];");
+        Out(indent, $"}}");
+
+        // Per-component initialization parameters
+        Out(indent, $"/// <summary>");
+        Out(indent, $"/// Initializes a new instance of <see cref=\"{_curDef.Name}\"/>.");
+        Out(indent, $"/// </summary>");
+
+        for(int i = 0; i < _curDef.Size; i++)
+            Out(indent, $"/// <param name=\"{_def.ArgNames[i]}\">The {_def.FieldNames[i]} component.</param>");
+
+        Out(indent, $"public {_curDef.Name}({GetConstructorArgs()})");
+        Out(indent, $"{{");
+        for(int i = 0; i < _curDef.Size; i++)
+            Out(indent + 1, $"{_def.FieldNames[i]} = {_def.ArgNames[i]};");
+        Out(indent, $"}}");
+    } 
+
+    public void GenerateOperator(string op, string name, int indent = 2)
+    {
+        Out(indent, $"///<summary>Performs a {name} operation on two <see cref=\"{_curDef.Name}\"/>.</summary>");
+        Out(indent, $"///<param name=\"a\">The first <see cref=\"{_curDef.Name}\"/> to add.</param>");
+        Out(indent, $"///<param name=\"b\">The second <see cref=\"{_curDef.Name}\"/> to add.</param>");
+        Out(indent, $"///<returns>The result of the operation.</returns>");
+        Out(indent, $"public static {_curDef.Name} operator {op}({_curDef.Name} a, {_curDef.Name} b)");
+        Out(indent, "{");
+        Indent(indent + 1); Append($"return new {_curDef.Name}(");
+        for(int i = 0; i < _curDef.Size; i++)
+        {
+            if(i > 0)
+                Append(", ");
+
+            Append($"a.{_def.FieldNames[i]} {op} b.{_def.FieldNames[i]}");
+        }
+        Out(");");
+        Out(indent, "}");
+    }
+
+    public void GenerateRefOperator(string op, string name, int indent = 2)
+    {
+        Out(indent, $"///<summary>Performs a {name} operation on two <see cref=\"{_curDef.Name}\"/>.</summary>");
+        Out(indent, $"///<param name=\"a\">The first <see cref=\"{_curDef.Name}\"/> to add.</param>");
+        Out(indent, $"///<param name=\"b\">The second <see cref=\"{_curDef.Name}\"/> to add.</param>");
+        Out(indent, $"///<param name=\"result\">Output for the result of the operation.</param>");
+        Out(indent, $"public static void {Capitalize(name)}(ref {_curDef.Name} a, ref {_curDef.Name} b, out {_curDef.Name} result)");
+        Out(indent, "{");
+        for(int i = 0; i < _curDef.Size; i++)
+            Out(indent+1, $"result.{_def.FieldNames[i]} = a.{_def.FieldNames[i]} {op} b.{_def.FieldNames[i]};");
+        Out(indent, "}");
+    }
+
+    public string GetParamSentence(string[] pMap, int size, string delimiter = ", ", string finalDelimiter = "", string pPrefix = "", string pPostfix = "")
+    {
+        string r = "";
+        for(int i = 0; i < size; i++)
+        {
+            r += $"{pPrefix}{pMap[i]}{pPostfix}";
+            r += i < (size - 1) ? (i < (size - 2) ? ", " : finalDelimiter) : ""; 
+        }
+
+        return r;
+    }
+
+    public void IterateFields(Func<int, string, string> callback, int indent = 3)
+    {
+        for(int i = 0; i < _curDef.Size; i++)
+            Out(indent, callback?.Invoke(i, _def.FieldNames[i]));
+    }
+
+    private string Capitalize(string word)
+    {
+        if(word.Length > 1)
+        {
+            char first = char.ToUpper(word[0]);
+            return $"{first}{word.Substring(1, word.Length - 1)}";
+        }
+        else
+        {
+            return word.ToUpper();
+        }
+    }
+
+    public string See(string typeName)
+    {
+        return $"<see cref=\"{typeName}\"/>";
+    }
 }
 #>

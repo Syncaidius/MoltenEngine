@@ -13,14 +13,6 @@ namespace Molten
     [Serializable]
 	public partial struct SByte2 : IFormattable, IVector<sbyte>
 	{
-		///<summary>The X component.</summary>
-        [DataMember]
-		public sbyte X;
-
-		///<summary>The Y component.</summary>
-        [DataMember]
-		public sbyte Y;
-
 		///<summary>The size of <see cref="SByte2"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(SByte2));
 
@@ -36,6 +28,15 @@ namespace Molten
 		/// <summary>Represents a zero'd SByte2.</summary>
 		public static readonly SByte2 Zero = new SByte2((sbyte)0, (sbyte)0);
 
+		/// <summary>The X component.</summary>
+		[DataMember]
+		public sbyte X;
+
+		/// <summary>The Y component.</summary>
+		[DataMember]
+		public sbyte Y;
+
+
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
@@ -45,45 +46,63 @@ namespace Molten
         }
 
 #region Constructors
-
-		///<summary>Creates a new instance of <see cref = "SByte2"/>.</summary>
-		public SByte2(sbyte x, sbyte y)
-		{
-			X = x;
-			Y = y;
-		}
-
-        ///<summary>Creates a new instance of <see cref = "SByte2"/>.</summary>
+		/// <summary>Initializes a new instance of <see cref="SByte2"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
 		public SByte2(sbyte value)
 		{
 			X = value;
 			Y = value;
 		}
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="SByte2"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X and Y components of the vector. This must be an array with 2 elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public SByte2(sbyte[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 2)
-                throw new ArgumentOutOfRangeException("values", "There must be 2 and only 2 input values for SByte2.");
+		/// <summary>Initializes a new instance of <see cref="SByte2"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least two elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public SByte2(sbyte[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 2)
+				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for SByte2.");
 
 			X = values[0];
 			Y = values[1];
-        }
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="SByte2"/> struct from an unsafe pointer. The pointer should point to an array of two elements.
-        /// </summary>
-		public unsafe SByte2(sbyte* ptr)
+		}
+		/// <summary>Initializes a new instance of <see cref="SByte2"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least two elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public SByte2(Span<sbyte> values)
 		{
-			X = ptr[0];
-			Y = ptr[1];
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 2)
+				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for SByte2.");
+
+			X = values[0];
+			Y = values[1];
+		}
+		/// <summary>Initializes a new instance of <see cref="SByte2"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least two elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		public unsafe SByte2(sbyte* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			X = ptrValues[0];
+			Y = ptrValues[1];
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="SByte2"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		public SByte2(sbyte x, sbyte y)
+		{
+			X = x;
+			Y = y;
 		}
 #endregion
 

@@ -13,18 +13,6 @@ namespace Molten.DoublePrecision
     [Serializable]
 	public partial struct Vector3UL : IFormattable, IVector<ulong>
 	{
-		///<summary>The X component.</summary>
-        [DataMember]
-		public ulong X;
-
-		///<summary>The Y component.</summary>
-        [DataMember]
-		public ulong Y;
-
-		///<summary>The Z component.</summary>
-        [DataMember]
-		public ulong Z;
-
 		///<summary>The size of <see cref="Vector3UL"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3UL));
 
@@ -43,6 +31,19 @@ namespace Molten.DoublePrecision
 		/// <summary>Represents a zero'd Vector3UL.</summary>
 		public static readonly Vector3UL Zero = new Vector3UL(0UL, 0UL, 0UL);
 
+		/// <summary>The X component.</summary>
+		[DataMember]
+		public ulong X;
+
+		/// <summary>The Y component.</summary>
+		[DataMember]
+		public ulong Y;
+
+		/// <summary>The Z component.</summary>
+		[DataMember]
+		public ulong Z;
+
+
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
@@ -52,56 +53,76 @@ namespace Molten.DoublePrecision
         }
 
 #region Constructors
-        ///<summary>Creates a new instance of <see cref = "Vector3UL"/>, using a <see cref="Vector2UL"/> to populate the first two components.</summary>
-		public Vector3UL(Vector2UL vector, ulong z)
-		{
-			X = vector.X;
-			Y = vector.Y;
-			Z = z;
-		}
-
-		///<summary>Creates a new instance of <see cref = "Vector3UL"/>.</summary>
-		public Vector3UL(ulong x, ulong y, ulong z)
-		{
-			X = x;
-			Y = y;
-			Z = z;
-		}
-
-        ///<summary>Creates a new instance of <see cref = "Vector3UL"/>.</summary>
+		/// <summary>Initializes a new instance of <see cref="Vector3UL"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
 		public Vector3UL(ulong value)
 		{
 			X = value;
 			Y = value;
 			Z = value;
 		}
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Vector3UL"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X, Y and Z components of the vector. This must be an array with 3 elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public Vector3UL(ulong[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 3)
-                throw new ArgumentOutOfRangeException("values", "There must be 3 and only 3 input values for Vector3UL.");
+		/// <summary>Initializes a new instance of <see cref="Vector3UL"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least three elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Vector3UL(ulong[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 3)
+				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Vector3UL.");
 
 			X = values[0];
 			Y = values[1];
 			Z = values[2];
-        }
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Vector3UL"/> struct from an unsafe pointer. The pointer should point to an array of three elements.
-        /// </summary>
-		public unsafe Vector3UL(ulong* ptr)
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector3UL"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least three elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Vector3UL(Span<ulong> values)
 		{
-			X = ptr[0];
-			Y = ptr[1];
-			Z = ptr[2];
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 3)
+				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Vector3UL.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector3UL"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least three elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		public unsafe Vector3UL(ulong* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			X = ptrValues[0];
+			Y = ptrValues[1];
+			Z = ptrValues[2];
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="Vector3UL"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		/// <param name="z">The Z component.</param>
+		public Vector3UL(ulong x, ulong y, ulong z)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+		}
+        ///<summary>Creates a new instance of <see cref = "Vector3UL"/>, using a <see cref="Vector2UL"/> to populate the first two components.</summary>
+		public Vector3UL(Vector2UL vector, ulong z)
+		{
+			X = vector.X;
+			Y = vector.Y;
+			Z = z;
 		}
 #endregion
 

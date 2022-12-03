@@ -13,22 +13,6 @@ namespace Molten.DoublePrecision
     [Serializable]
 	public partial struct Vector4L : IFormattable, IVector<long>
 	{
-		///<summary>The X component.</summary>
-        [DataMember]
-		public long X;
-
-		///<summary>The Y component.</summary>
-        [DataMember]
-		public long Y;
-
-		///<summary>The Z component.</summary>
-        [DataMember]
-		public long Z;
-
-		///<summary>The W component.</summary>
-        [DataMember]
-		public long W;
-
 		///<summary>The size of <see cref="Vector4L"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4L));
 
@@ -50,6 +34,23 @@ namespace Molten.DoublePrecision
 		/// <summary>Represents a zero'd Vector4L.</summary>
 		public static readonly Vector4L Zero = new Vector4L(0L, 0L, 0L, 0L);
 
+		/// <summary>The X component.</summary>
+		[DataMember]
+		public long X;
+
+		/// <summary>The Y component.</summary>
+		[DataMember]
+		public long Y;
+
+		/// <summary>The Z component.</summary>
+		[DataMember]
+		public long Z;
+
+		/// <summary>The W component.</summary>
+		[DataMember]
+		public long W;
+
+
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
@@ -59,6 +60,76 @@ namespace Molten.DoublePrecision
         }
 
 #region Constructors
+		/// <summary>Initializes a new instance of <see cref="Vector4L"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public Vector4L(long value)
+		{
+			X = value;
+			Y = value;
+			Z = value;
+			W = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector4L"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Vector4L(long[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Vector4L.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector4L"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Vector4L(Span<long> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Vector4L.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector4L"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		public unsafe Vector4L(long* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			X = ptrValues[0];
+			Y = ptrValues[1];
+			Z = ptrValues[2];
+			W = ptrValues[3];
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="Vector4L"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		/// <param name="z">The Z component.</param>
+		/// <param name="w">The W component.</param>
+		public Vector4L(long x, long y, long z, long w)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+			W = w;
+		}
         ///<summary>Creates a new instance of <see cref = "Vector4L"/>, using a <see cref="Vector2L"/> to populate the first two components.</summary>
 		public Vector4L(Vector2L vector, long z, long w)
 		{
@@ -74,54 +145,6 @@ namespace Molten.DoublePrecision
 			Y = vector.Y;
 			Z = vector.Z;
 			W = w;
-		}
-
-		///<summary>Creates a new instance of <see cref = "Vector4L"/>.</summary>
-		public Vector4L(long x, long y, long z, long w)
-		{
-			X = x;
-			Y = y;
-			Z = z;
-			W = w;
-		}
-
-        ///<summary>Creates a new instance of <see cref = "Vector4L"/>.</summary>
-		public Vector4L(long value)
-		{
-			X = value;
-			Y = value;
-			Z = value;
-			W = value;
-		}
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Vector4L"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X, Y, Z and W components of the vector. This must be an array with 4 elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public Vector4L(long[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be 4 and only 4 input values for Vector4L.");
-
-			X = values[0];
-			Y = values[1];
-			Z = values[2];
-			W = values[3];
-        }
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Vector4L"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
-        /// </summary>
-		public unsafe Vector4L(long* ptr)
-		{
-			X = ptr[0];
-			Y = ptr[1];
-			Z = ptr[2];
-			W = ptr[3];
 		}
 #endregion
 

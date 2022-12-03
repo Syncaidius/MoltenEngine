@@ -13,18 +13,6 @@ namespace Molten
     [Serializable]
 	public partial struct Byte3 : IFormattable, IVector<byte>
 	{
-		///<summary>The X component.</summary>
-        [DataMember]
-		public byte X;
-
-		///<summary>The Y component.</summary>
-        [DataMember]
-		public byte Y;
-
-		///<summary>The Z component.</summary>
-        [DataMember]
-		public byte Z;
-
 		///<summary>The size of <see cref="Byte3"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Byte3));
 
@@ -43,6 +31,19 @@ namespace Molten
 		/// <summary>Represents a zero'd Byte3.</summary>
 		public static readonly Byte3 Zero = new Byte3((byte)0, (byte)0, (byte)0);
 
+		/// <summary>The X component.</summary>
+		[DataMember]
+		public byte X;
+
+		/// <summary>The Y component.</summary>
+		[DataMember]
+		public byte Y;
+
+		/// <summary>The Z component.</summary>
+		[DataMember]
+		public byte Z;
+
+
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
@@ -52,56 +53,76 @@ namespace Molten
         }
 
 #region Constructors
-        ///<summary>Creates a new instance of <see cref = "Byte3"/>, using a <see cref="Byte2"/> to populate the first two components.</summary>
-		public Byte3(Byte2 vector, byte z)
-		{
-			X = vector.X;
-			Y = vector.Y;
-			Z = z;
-		}
-
-		///<summary>Creates a new instance of <see cref = "Byte3"/>.</summary>
-		public Byte3(byte x, byte y, byte z)
-		{
-			X = x;
-			Y = y;
-			Z = z;
-		}
-
-        ///<summary>Creates a new instance of <see cref = "Byte3"/>.</summary>
+		/// <summary>Initializes a new instance of <see cref="Byte3"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
 		public Byte3(byte value)
 		{
 			X = value;
 			Y = value;
 			Z = value;
 		}
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Byte3"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X, Y and Z components of the vector. This must be an array with 3 elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public Byte3(byte[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 3)
-                throw new ArgumentOutOfRangeException("values", "There must be 3 and only 3 input values for Byte3.");
+		/// <summary>Initializes a new instance of <see cref="Byte3"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least three elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Byte3(byte[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 3)
+				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Byte3.");
 
 			X = values[0];
 			Y = values[1];
 			Z = values[2];
-        }
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Byte3"/> struct from an unsafe pointer. The pointer should point to an array of three elements.
-        /// </summary>
-		public unsafe Byte3(byte* ptr)
+		}
+		/// <summary>Initializes a new instance of <see cref="Byte3"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least three elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Byte3(Span<byte> values)
 		{
-			X = ptr[0];
-			Y = ptr[1];
-			Z = ptr[2];
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 3)
+				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Byte3.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+		}
+		/// <summary>Initializes a new instance of <see cref="Byte3"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least three elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		public unsafe Byte3(byte* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			X = ptrValues[0];
+			Y = ptrValues[1];
+			Z = ptrValues[2];
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="Byte3"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		/// <param name="z">The Z component.</param>
+		public Byte3(byte x, byte y, byte z)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+		}
+        ///<summary>Creates a new instance of <see cref = "Byte3"/>, using a <see cref="Byte2"/> to populate the first two components.</summary>
+		public Byte3(Byte2 vector, byte z)
+		{
+			X = vector.X;
+			Y = vector.Y;
+			Z = z;
 		}
 #endregion
 

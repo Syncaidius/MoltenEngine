@@ -13,22 +13,6 @@ namespace Molten.HalfPrecision
     [Serializable]
 	public partial struct Vector4US : IFormattable, IVector<ushort>
 	{
-		///<summary>The X component.</summary>
-        [DataMember]
-		public ushort X;
-
-		///<summary>The Y component.</summary>
-        [DataMember]
-		public ushort Y;
-
-		///<summary>The Z component.</summary>
-        [DataMember]
-		public ushort Z;
-
-		///<summary>The W component.</summary>
-        [DataMember]
-		public ushort W;
-
 		///<summary>The size of <see cref="Vector4US"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4US));
 
@@ -50,6 +34,23 @@ namespace Molten.HalfPrecision
 		/// <summary>Represents a zero'd Vector4US.</summary>
 		public static readonly Vector4US Zero = new Vector4US((ushort)0, (ushort)0, (ushort)0, (ushort)0);
 
+		/// <summary>The X component.</summary>
+		[DataMember]
+		public ushort X;
+
+		/// <summary>The Y component.</summary>
+		[DataMember]
+		public ushort Y;
+
+		/// <summary>The Z component.</summary>
+		[DataMember]
+		public ushort Z;
+
+		/// <summary>The W component.</summary>
+		[DataMember]
+		public ushort W;
+
+
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
@@ -59,6 +60,76 @@ namespace Molten.HalfPrecision
         }
 
 #region Constructors
+		/// <summary>Initializes a new instance of <see cref="Vector4US"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public Vector4US(ushort value)
+		{
+			X = value;
+			Y = value;
+			Z = value;
+			W = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector4US"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Vector4US(ushort[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Vector4US.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector4US"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public Vector4US(Span<ushort> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Vector4US.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="Vector4US"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		public unsafe Vector4US(ushort* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			X = ptrValues[0];
+			Y = ptrValues[1];
+			Z = ptrValues[2];
+			W = ptrValues[3];
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="Vector4US"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		/// <param name="z">The Z component.</param>
+		/// <param name="w">The W component.</param>
+		public Vector4US(ushort x, ushort y, ushort z, ushort w)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+			W = w;
+		}
         ///<summary>Creates a new instance of <see cref = "Vector4US"/>, using a <see cref="Vector2US"/> to populate the first two components.</summary>
 		public Vector4US(Vector2US vector, ushort z, ushort w)
 		{
@@ -74,54 +145,6 @@ namespace Molten.HalfPrecision
 			Y = vector.Y;
 			Z = vector.Z;
 			W = w;
-		}
-
-		///<summary>Creates a new instance of <see cref = "Vector4US"/>.</summary>
-		public Vector4US(ushort x, ushort y, ushort z, ushort w)
-		{
-			X = x;
-			Y = y;
-			Z = z;
-			W = w;
-		}
-
-        ///<summary>Creates a new instance of <see cref = "Vector4US"/>.</summary>
-		public Vector4US(ushort value)
-		{
-			X = value;
-			Y = value;
-			Z = value;
-			W = value;
-		}
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Vector4US"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X, Y, Z and W components of the vector. This must be an array with 4 elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public Vector4US(ushort[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be 4 and only 4 input values for Vector4US.");
-
-			X = values[0];
-			Y = values[1];
-			Z = values[2];
-			W = values[3];
-        }
-
-		/// <summary>
-        /// Initializes a new instance of the <see cref="Vector4US"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
-        /// </summary>
-		public unsafe Vector4US(ushort* ptr)
-		{
-			X = ptr[0];
-			Y = ptr[1];
-			Z = ptr[2];
-			W = ptr[3];
 		}
 #endregion
 
