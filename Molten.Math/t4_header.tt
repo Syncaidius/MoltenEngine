@@ -23,6 +23,8 @@ public class GeneratorDefinition
     public string SubFolder;
 
     public List<TypeDef> Types;
+
+    public string[] SizeNames = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
 }
 
 
@@ -91,7 +93,6 @@ public class TypeDef
 
 public class TypeGenerator
 {
-    static string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
     StringBuilder _sb;
     ITextTemplatingEngineHost _host;
     string _outputPath;
@@ -272,10 +273,30 @@ public class TypeGenerator
         return r;
     }
 
-    public string FieldsToArgs(string[] pMap, string prefix = ""){
+    public string FieldsToArgs(string[] pMap, string prefix = "", string postfix = "", int count = 0, int expectedCount = 0, string defaultValue = ""){
         string r = "";
-        for(int i = 0; i < _curDef.Size; i++)
-            r += $"{(i > 0 ? ", " : "")}{(string.IsNullOrWhiteSpace(prefix) ? "" : $"{prefix}.")}{pMap[i]}";
+        int size = Math.Min(pMap.Length, _curDef.Size);
+        size = count > 0 ? Math.Min(count, size) : size;
+        if(expectedCount > 0)
+            size = Math.Min(size, expectedCount);
+
+        prefix = string.IsNullOrWhiteSpace(prefix) ? "" : $"{prefix}";
+        postfix = string.IsNullOrWhiteSpace(postfix) ? "" : $"{postfix}";
+
+        for(int i = 0; i < size; i++)
+            r += $"{(i > 0 ? ", " : "")}{prefix}{pMap[i]}{postfix}";
+
+        // If our current type doesn't have enough fields as arguments, populate the rest with the defaultValue string.
+        if(!string.IsNullOrWhiteSpace(defaultValue))
+        {
+            for(int s = size; s < expectedCount; s++)
+            {
+                if(s > 0)
+                    r += ", ";
+
+                r += defaultValue;
+            }
+        }
 
         return r;
     }
@@ -313,7 +334,7 @@ public class TypeGenerator
 
         // Array-value initialization parameter
         Out(indent, $"/// <summary>Initializes a new instance of <see cref=\"{_curDef.Name}\"/> from an array.</summary>");
-        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color. This must be an array with at least {_strSize[_curDef.Size]} elements.</param>");
+        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
         Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than four elements.</exception>");
         Out(indent, $"public {_curDef.Name}({_curDef.DT}[] values)");
@@ -321,7 +342,7 @@ public class TypeGenerator
         Out(indent + 1, $"if (values == null)");
         Out(indent + 2, $"throw new ArgumentNullException(\"values\");");
         Out(indent + 1, $"if (values.Length < {_curDef.Size})");
-        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {_strSize[_curDef.Size]} input values for {_curDef.Name}.\");");
+        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {_def.SizeNames[_curDef.Size]} input values for {_curDef.Name}.\");");
         Out("");
 
         for(int i = 0; i < _curDef.Size; i++)
@@ -330,7 +351,7 @@ public class TypeGenerator
 
         // Span-based initialization parameter
         Out(indent, $"/// <summary>Initializes a new instance of <see cref=\"{_curDef.Name}\"/> from a span.</summary>");
-        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color. This must be an array with at least {_strSize[_curDef.Size]} elements.</param>");
+        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
         Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than four elements.</exception>");
         Out(indent, $"public {_curDef.Name}(Span<{_curDef.DT}> values)");
@@ -338,7 +359,7 @@ public class TypeGenerator
         Out(indent + 1, $"if (values == null)");
         Out(indent + 2, $"throw new ArgumentNullException(\"values\");");
         Out(indent + 1, $"if (values.Length < {_curDef.Size})");
-        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {_strSize[_curDef.Size]} input values for {_curDef.Name}.\");");
+        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {_def.SizeNames[_curDef.Size]} input values for {_curDef.Name}.\");");
         _sb.AppendLine("");
 
         for(int i = 0; i < _curDef.Size; i++)
@@ -348,7 +369,7 @@ public class TypeGenerator
         // unsafee pointer-based initialization parameter
         Out(indent, $"/// <summary>Initializes a new instance of <see cref=\"{_curDef.Name}\"/> from a an unsafe pointer.</summary>");
         Out(indent, $"/// <param name=\"ptrValues\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color.");
-        Out(indent, $"/// <para>There must be at least {_strSize[_curDef.Size]} elements available or undefined behaviour will occur.</para></param>");
+        Out(indent, $"/// <para>There must be at least {_def.SizeNames[_curDef.Size]} elements available or undefined behaviour will occur.</para></param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"ptrValues\"/> is <c>null</c>.</exception>");
         Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"ptrValues\"/> contains more or less than four elements.</exception>");
         Out(indent, $"public unsafe {_curDef.Name}({_curDef.DT}* ptrValues)");
@@ -375,6 +396,37 @@ public class TypeGenerator
             Out(indent + 1, $"{_def.FieldNames[i]} = {_def.ArgNames[i]};");
         Out(indent, $"}}");
     } 
+
+    /// Generates cast operators from the current TypeDef to every other TypeDef in the same GeneratorDefinition.
+    /// If there are not enough fields in the current TypeDef to populate the args of another type constructor, 
+    /// the default value of the other TypeDefs can be retrieved via the otherDefault callback, to be used for population.
+    public void GenerateCasts(Func<TypeDef, string> otherDefault = null, int indent = 2)
+    {
+        foreach(TypeDef other in _def.Types)
+        {
+            if(other == _curDef)
+                continue;
+
+            foreach(int otherSize in other.Sizes)
+            {
+                string otherName = $"{other.DefName.Replace("{size}", otherSize.ToString())}";
+                string otherTypeCast = other.DT != _curDef.DT ? $"({other.DT})" : "";
+                string defaultValue = "";
+                if(otherDefault != null)
+                    defaultValue = otherDefault.Invoke(other);
+                else
+                    defaultValue = $"{otherTypeCast}{_curDef.DT.Zero}";
+
+                string castArgs = FieldsToArgs(_def.FieldNames, $"{otherTypeCast}value.", "", _curDef.Size, otherSize, defaultValue);
+
+                Out(indent, $"public static explicit operator {otherName}({_curDef.Name} value)");
+                Out(indent, "{");
+                Out(indent+1, $"return new {otherName}({castArgs});");
+                Out(indent, "}");
+                Out("");
+            }
+        }
+    }
 
     public void GenerateOperator(string op, string name, int indent = 2)
     {
@@ -421,9 +473,9 @@ public class TypeGenerator
         return r;
     }
 
-    public void IterateFields(Func<int, string, string> callback, int indent = 3)
+    public void IterateFields(Func<int, string, string> callback, int startIndex = 0, int indent = 3)
     {
-        for(int i = 0; i < _curDef.Size; i++)
+        for(int i = startIndex; i < _curDef.Size; i++)
             Out(indent, callback?.Invoke(i, _def.FieldNames[i]));
     }
 

@@ -1028,8 +1028,8 @@ namespace Molten.Graphics.Textures
                 {
                     Color4 epA, epB;
                     BC67.OptimizeRGBA(pEP.aHDRPixels, out epA, out epB, 4, np, auPixIdx);
-                    epA = Color4.Clamp(epA, 0.0f, 1.0f);
-                    epB = Color4.Clamp(epB, 0.0f, 1.0f);
+                    epA.Clamp(0.0f, 1.0f);
+                    epB.Clamp(0.0f, 1.0f);
                     epA *= 255.0f;
                     epB *= 255.0f;
                     aEndPts[p].A = BC67.HDRToLDRExplicit(epA);
@@ -1046,8 +1046,8 @@ namespace Molten.Graphics.Textures
 
                     Color4 epA, epB;
                     BC67.OptimizeRGB(pEP.aHDRPixels, out epA, out epB, 4, np, auPixIdx, cxt);
-                    epA = Color4.Clamp(epA, 0.0f, 1.0f);
-                    epB = Color4.Clamp(epB, 0.0f, 1.0f);
+                    epA.Clamp(0.0f, 1.0f);
+                    epB.Clamp(0.0f, 1.0f);
                     epA *= 255.0f;
                     epB *= 255.0f;
                     aEndPts[p].A = BC67.HDRToLDRExplicit(epA);

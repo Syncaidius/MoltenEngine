@@ -589,7 +589,7 @@ namespace Molten.Graphics.Textures
 
         internal static Color HDRUnitToLDR(Color4 c)
         {
-            Color4 tmp = Color4.Clamp(c, 0.0f, 1.0f) * 255.0f;
+            Color4 tmp = Color4.Clamp(ref c, 0.0f, 1.0f) * 255.0f;
             return new Color()
             {
                 R = (byte)(tmp.R + 0.001f),

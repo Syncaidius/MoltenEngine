@@ -3,27 +3,33 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using Molten.DoublePrecision;
 
 namespace Molten
 {
 	/// <summary>
-    /// Represents a color in the form of R, G, B.
+    /// Represents a color in the form of red, green, blue.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Serializable]
     public struct Color3 : IEquatable<Color3>, IFormattable
     {
-        private const string toStringFormat = "Red:{0} Green:{1} Blue:{2}";
+        private const string toStringFormat = "R:{0} G:{1} B:{2}";
 
         /// <summary>
-        /// The Black color (0, 0, 0).
+        /// Black (0F, 0F, 0F).
         /// </summary>
-        public static readonly Color3 Black = new Color3(0F);
+        public static readonly Color3 Black = new Color3(0F, 0F, 0F);
 
         /// <summary>
-        /// The White color (1, 1, 1, 1).
+        /// White (1F, 1F, 1F).
         /// </summary>
-        public static readonly Color3 White = new Color3(1F);
+        public static readonly Color3 White = new Color3(1F, 1F, 1F);
+
+        /// <summary>
+        /// Transparent (0F, 0F, 0F).
+        /// </summary>
+        public static readonly Color3 Zero = new Color3(0F, 0F, 0F);
 
 		/// <summary>The red component.</summary>
 		[DataMember]
@@ -117,13 +123,14 @@ namespace Molten
         /// <summary>
         /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>
-        /// <param name="rgb">A packed integer containing all three color components in RGB order.
+        /// <param name="rgb">A packed integer containing all three color components in R, G, B order.
         /// The alpha component is ignored.</param>
-        public Color3(int rgb)
+        public Color3(int packed)
         {
-            B = ((rgb >> 16) & 255) / 255.0F;
-            G = ((rgb >> 8) & 255) / 255.0F;
-            R = (rgb & 255) / 255.0F;
+            
+            B = ((packed >> 16) & 255) / 255.0F;
+            G = ((packed >> 8) & 255) / 255.0F;
+            R = (packed & 255) / 255.0F;
         }
 
         /// <summary>
@@ -164,12 +171,12 @@ namespace Molten
         /// </summary>
         /// <returns>A packed integer containing all three color components.
         /// The alpha channel is set to 255.</returns>
-        public int ToRgba()
+        public int PackRGBA()
         {
+			uint r = (uint)(R * 255.0F) & 255;
+			uint g = (uint)(G * 255.0F) & 255;
+			uint b = (uint)(B * 255.0F) & 255;
             uint a = 255;
-            uint r = (uint) (R * 255.0F) & 255;
-            uint g = (uint) (G * 255.0F) & 255;
-            uint b = (uint) (B * 255.0F) & 255;
 
             uint value = r;
             value |= g << 8;
@@ -182,14 +189,13 @@ namespace Molten
         /// <summary>
         /// Converts the color into a packed integer.
         /// </summary>
-        /// <returns>A packed integer containing all three color components.
-        /// The alpha channel is set to 255.</returns>
-        public int ToBgra()
+        /// <returns>A packed integer containing all three color components.The alpha channel is set to 255.</returns>
+        public int PackBGRA()
         {
+			uint r = (uint)(R * 255.0F) & 255;
+			uint g = (uint)(G * 255.0F) & 255;
+			uint b = (uint)(B * 255.0F) & 255;
             uint a = 255;
-            uint r = (uint)(R * 255.0F) & 255;
-            uint g = (uint)(G * 255.0F) & 255;
-            uint b = (uint)(B * 255.0F) & 255;
 
             uint value = b;
             value |= g << 8;
@@ -308,7 +314,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Restricts a value to be within a specified range.
+        /// Restricts a color to within the component ranges of the specified min and max colors.
         /// </summary>
         /// <param name="value">The value to clamp.</param>
         /// <param name="min">The minimum value.</param>
@@ -332,16 +338,84 @@ namespace Molten
         }
 
         /// <summary>
-        /// Restricts a value to be within a specified range.
+        /// Restricts the current <see cref="Color3"/> to within the component ranges of the specified min and max colors.
         /// </summary>
         /// <param name="value">The value to clamp.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
-        /// <returns>The clamped value.</returns>
-        public static Color3 Clamp(Color3 value, Color3 min, Color3 max)
+        /// <param name="result">When the method completes, contains the clamped value.</param>
+        public void Clamp(ref Color3 min, ref Color3 max)
         {
-            Clamp(ref value, ref min, ref max, out Color3 result);
-            return result;
+            R = (R > max.R) ? max.R : R;
+            R = (R < min.R) ? min.R : R;
+            G = (G > max.G) ? max.G : G;
+            G = (G < min.G) ? min.G : G;
+            B = (B > max.B) ? max.B : B;
+            B = (B < min.B) ? min.B : B;
+        }
+
+        /// <summary>
+        /// Restricts each color component to within the specified range.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        /// <param name="result">When the method completes, contains the clamped value.</param>
+        public static void Clamp(ref Color3 value, float min, float max, out Color3 result)
+        {
+            float red = value.R;
+            red = (red > max) ? max : red;
+            red = (red < min) ? min : red;
+
+            float green = value.G;
+            green = (green > max) ? max : green;
+            green = (green < min) ? min : green;
+
+            float blue = value.B;
+            blue = (blue > max) ? max : blue;
+            blue = (blue < min) ? min : blue;
+
+            result = new Color3(red, green, blue);
+        }
+
+        /// <summary>
+        /// Restricts each color component to within the specified range.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        public static Color3 Clamp(ref Color3 value, float min, float max)
+        {
+            float red = value.R;
+            red = (red > max) ? max : red;
+            red = (red < min) ? min : red;
+
+            float green = value.G;
+            green = (green > max) ? max : green;
+            green = (green < min) ? min : green;
+
+            float blue = value.B;
+            blue = (blue > max) ? max : blue;
+            blue = (blue < min) ? min : blue;
+
+            return new Color3(red, green, blue);
+        }
+
+        /// <summary>
+        /// Restricts each component of the current <see cref="Color3"/> to within the specified range.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        /// <param name="result">When the method completes, contains the clamped value.</param>
+        public void Clamp(float min, float max)
+        {
+            R = (R > max) ? max : R;
+            R = (R < min) ? min : R;
+            G = (G > max) ? max : G;
+            G = (G < min) ? min : G;
+            B = (B > max) ? max : B;
+            B = (B < min) ? min : B;
         }
 
         /// <summary>
@@ -454,6 +528,42 @@ namespace Molten
         }
 
         /// <summary>
+        /// Calculates the dot product of two <see cref="Color3"/>.
+        /// </summary>
+        /// <param name="c0">The first <see cref="Color3"/>.</param>
+        /// <param name="c1">The second <see cref="Color3"/>.</param>
+        /// <param name="result">The destination for the result.</param>
+        /// <returns></returns>
+        public static float Dot(Color3 c0,Color3 c1)
+        {
+            return c0.R * c1.R + c0.G * c1.G + c0.B * c1.B;
+        }
+
+        /// <summary>
+        /// Calculates the dot product of two <see cref="Color3"/>.
+        /// </summary>
+        /// <param name="c0">The first <see cref="Color3"/>.</param>
+        /// <param name="c1">The second <see cref="Color3"/>.</param>
+        /// <param name="result">The destination for the result.</param>
+        /// <returns></returns>
+        public static float Dot(ref Color3 c0, ref Color3 c1)
+        {
+            return c0.R * c1.R + c0.G * c1.G + c0.B * c1.B;
+        }
+
+        /// <summary>
+        /// Calculates the dot product of two <see cref="Color3"/>.
+        /// </summary>
+        /// <param name="c0">The first <see cref="Color3"/>.</param>
+        /// <param name="c1">The second <see cref="Color3"/>.</param>
+        /// <param name="result">The destination for the result.</param>
+        /// <returns></returns>
+        public static void Dot(ref Color3 c0,ref Color3  c1, out float result)
+        {
+            result = c0.R * c1.R + c0.G * c1.G + c0.B * c1.B;
+        }
+
+        /// <summary>
         /// Adjusts the contrast of a color.
         /// </summary>
         /// <param name="value">The color whose contrast is to be adjusted.</param>
@@ -475,9 +585,10 @@ namespace Molten
         public static Color3 AdjustContrast(Color3 value, float contrast)
         {
             return new Color3(
-                0.5F + contrast * (value.R - 0.5F),
-                0.5F + contrast * (value.G - 0.5F),
-                0.5F + contrast * (value.B - 0.5F));
+			    0.5F + contrast * (value.R - 0.5F),
+			    0.5F + contrast * (value.G - 0.5F),
+			    0.5F + contrast * (value.B - 0.5F)
+            );
         }
 
         /// <summary>
@@ -488,7 +599,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the adjusted color.</param>
         public static void AdjustSaturation(ref Color3 value, float saturation, out Color3 result)
         {
-            float grey = value.R * 0.2125f + value.G * 0.7154f + value.B * 0.0721f;
+            float grey = value.R * 0.2125F + value.G * 0.7154F + value.B * 0.0721F;
 			result.R = grey + saturation * (value.R  - grey);
 			result.G = grey + saturation * (value.G  - grey);
 			result.B = grey + saturation * (value.B  - grey);
@@ -502,12 +613,13 @@ namespace Molten
         /// <returns>The adjusted color.</returns>
         public static Color3 AdjustSaturation(Color3 value, float saturation)
         {
-            float grey = value.R * 0.2125f + value.G * 0.7154f + value.B * 0.0721f;
+            float grey = value.R * 0.2125F + value.G * 0.7154F + value.B * 0.0721F;
 
             return new Color3(
-                grey + saturation * (value.R - grey),
-                grey + saturation * (value.G - grey),
-                grey + saturation * (value.B - grey));
+			    grey + saturation * (value.R - grey),
+			    grey + saturation * (value.G - grey),
+			    grey + saturation * (value.B - grey)
+            );
         }
 
         /// <summary>
@@ -637,15 +749,15 @@ namespace Molten
             return !left.Equals(ref right);
         }
 
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="Color3"/> to <see cref="Color4"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator Color4(Color3 value)
-        {
-            return new Color4(value.R, value.G, value.B, 1F);
-        }
+		public static explicit operator Color3D(Color3 value)
+		{
+			return new Color3D((double)value.R, (double)value.G, (double)value.B);
+		}
+
+		public static explicit operator Color4D(Color3 value)
+		{
+			return new Color4D((double)value.R, (double)value.G, (double)value.B, 1D);
+		}
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Color3"/> to <see cref="Vector3F"/>.
@@ -658,7 +770,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Vector3F"/> to <see cref="Color3"/>.
+        /// Performs an implicit conversion from Vector3F to <see cref="Color3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -726,10 +838,11 @@ namespace Molten
                 return ToString(formatProvider);
 
             return string.Format(formatProvider,
-                                 toStringFormat,
-                                 R.ToString(format, formatProvider),
-                                 G.ToString(format, formatProvider),
-                                 B.ToString(format, formatProvider));
+                toStringFormat,
+				R.ToString(format, formatProvider),
+				G.ToString(format, formatProvider),
+				B.ToString(format, formatProvider)
+            );
         }
 
         /// <summary>
@@ -743,8 +856,8 @@ namespace Molten
             unchecked
             {
                 var hashCode = R.GetHashCode();
-                hashCode = (hashCode * 397) ^ G.GetHashCode();
-                hashCode = (hashCode * 397) ^ B.GetHashCode();
+				hashCode = (hashCode * 397) ^ G.GetHashCode();
+				hashCode = (hashCode * 397) ^ B.GetHashCode();
                 return hashCode;
             }
         }
@@ -797,17 +910,17 @@ namespace Molten
         /// For example, a swizzle input of (2,2,3) on a <see cref="Color3"/> with RGBA values of 100,20,255, will return a <see cref="Color4"/> with values 20,20,255.
         /// </summary>
         /// <param name="col">The color to use as a source for values.</param>
-        /// <param name="rIndex">The axis index of the source color to use for the new red value.</param>
-        /// <param name="gIndex">The axis index of the source color to use for the new green value.</param>
-        /// <param name="bIndex">The axis index of the source color to use for the new blue value.</param>
+			/// <param name="rIndex">The component index of the source color to use for the new red value. This should be a value between 0 and 2.</param>
+			/// <param name="gIndex">The component index of the source color to use for the new green value. This should be a value between 0 and 2.</param>
+			/// <param name="bIndex">The component index of the source color to use for the new blue value. This should be a value between 0 and 2.</param>
         /// <returns></returns>
-        public static unsafe Color3 Swizzle(Color4 col, int rIndex, int gIndex, int bIndex)
+        public static unsafe Color3 Swizzle(Color3 col, int rIndex, int gIndex, int bIndex)
         {
             return new Color3()
             {
-                R = *(&col.R + (rIndex * sizeof(int))),
-                G = *(&col.G + (gIndex * sizeof(int))),
-                B = *(&col.B + (bIndex * sizeof(int))),
+				R = *(&col.R + (rIndex * sizeof(float))),
+				G = *(&col.G + (gIndex * sizeof(float))),
+				B = *(&col.B + (bIndex * sizeof(float))),
             };
         }
     }
