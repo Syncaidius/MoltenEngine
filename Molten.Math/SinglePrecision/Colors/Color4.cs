@@ -118,6 +118,14 @@ namespace Molten
 			B = b;
 			A = a;
 		}
+		///<summary>Creates a new instance of <see cref="Color4"/>, using a <see cref="Color3"/> to populate the first three components.</summary>
+		public Color4(Color3 vector, float a)
+		{
+			R = vector.R;
+			G = vector.G;
+			B = vector.B;
+			A = a;
+		}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Color4"/> struct.
@@ -236,7 +244,7 @@ namespace Molten
 
 		///<summary>Performs a add operation on two <see cref="Color4"/>.</summary>
 		///<param name="a">The first <see cref="Color4"/> to add.</param>
-		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Add(ref Color4 a, ref Color4 b, out Color4 result)
 		{
@@ -246,9 +254,20 @@ namespace Molten
 			result.A = a.A + b.A;
 		}
 
-		///<summary>Performs a subtract operation on two <see cref="Color4"/>.</summary>
+		///<summary>Performs a add operation on two <see cref="Color4"/>.</summary>
 		///<param name="a">The first <see cref="Color4"/> to add.</param>
 		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator +(Color4 a, Color4 b)
+		{
+			Add(ref a, ref b, out Color4 result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Subtract(ref Color4 a, ref Color4 b, out Color4 result)
 		{
@@ -258,9 +277,20 @@ namespace Molten
 			result.A = a.A - b.A;
 		}
 
-		///<summary>Performs a modulate operation on two <see cref="Color4"/>.</summary>
+		///<summary>Performs a subtract operation on two <see cref="Color4"/>.</summary>
 		///<param name="a">The first <see cref="Color4"/> to add.</param>
 		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator -(Color4 a, Color4 b)
+		{
+			Subtract(ref a, ref b, out Color4 result);
+			return result;
+		}
+
+		///<summary>Performs a modulate operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Modulate(ref Color4 a, ref Color4 b, out Color4 result)
 		{
@@ -270,9 +300,20 @@ namespace Molten
 			result.A = a.A * b.A;
 		}
 
-		///<summary>Performs a divide operation on two <see cref="Color4"/>.</summary>
+		///<summary>Performs a modulate operation on two <see cref="Color4"/>.</summary>
 		///<param name="a">The first <see cref="Color4"/> to add.</param>
 		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator *(Color4 a, Color4 b)
+		{
+			Modulate(ref a, ref b, out Color4 result);
+			return result;
+		}
+
+		///<summary>Performs a divide operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Divide(ref Color4 a, ref Color4 b, out Color4 result)
 		{
@@ -280,6 +321,17 @@ namespace Molten
 			result.G = a.G / b.G;
 			result.B = a.B / b.B;
 			result.A = a.A / b.A;
+		}
+
+		///<summary>Performs a divide operation on two <see cref="Color4"/>.</summary>
+		///<param name="a">The first <see cref="Color4"/> to add.</param>
+		///<param name="b">The second <see cref="Color4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator /(Color4 a, Color4 b)
+		{
+			Divide(ref a, ref b, out Color4 result);
+			return result;
 		}
 
         /// <summary>
@@ -670,15 +722,6 @@ namespace Molten
             return result;
         }
 
-		///<summary>Performs a Add operation on two <see cref="Color4"/>.</summary>
-		///<param name="a">The first <see cref="Color4"/> to add.</param>
-		///<param name="b">The second <see cref="Color4"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color4 operator +(Color4 a, Color4 b)
-		{
-			return new Color4(a.R + b.R, a.G + b.G, a.B + b.B, a.A + b.A);
-		}
-
         /// <summary>
         /// Assert a color (return it unchanged).
         /// </summary>
@@ -689,14 +732,6 @@ namespace Molten
             return value;
         }
 
-		///<summary>Performs a subtract operation on two <see cref="Color4"/>.</summary>
-		///<param name="a">The first <see cref="Color4"/> to add.</param>
-		///<param name="b">The second <see cref="Color4"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color4 operator -(Color4 a, Color4 b)
-		{
-			return new Color4(a.R - b.R, a.G - b.G, a.B - b.B, a.A - b.A);
-		}
 
         /// <summary>
         /// Negates a color.
@@ -730,24 +765,6 @@ namespace Molten
             return new Color4(value.R * scale, value.G * scale, value.B * scale, value.A * scale);
         }
 
-		///<summary>Performs a modulate operation on two <see cref="Color4"/>.</summary>
-		///<param name="a">The first <see cref="Color4"/> to add.</param>
-		///<param name="b">The second <see cref="Color4"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color4 operator *(Color4 a, Color4 b)
-		{
-			return new Color4(a.R * b.R, a.G * b.G, a.B * b.B, a.A * b.A);
-		}
-
-		///<summary>Performs a divide operation on two <see cref="Color4"/>.</summary>
-		///<param name="a">The first <see cref="Color4"/> to add.</param>
-		///<param name="b">The second <see cref="Color4"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color4 operator /(Color4 a, Color4 b)
-		{
-			return new Color4(a.R / b.R, a.G / b.G, a.B / b.B, a.A / b.A);
-		}
-
         /// <summary>
         /// Tests for equality between two objects.
         /// </summary>
@@ -772,6 +789,11 @@ namespace Molten
             return !left.Equals(ref right);
         }
 
+		public static explicit operator Color3(Color4 value)
+		{
+			return new Color3(value.R, value.G, value.B);
+		}
+
 		public static explicit operator Color3D(Color4 value)
 		{
 			return new Color3D((double)value.R, (double)value.G, (double)value.B);
@@ -783,7 +805,7 @@ namespace Molten
 		}
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Color4"/> to <see cref="Vector3F"/>.
+        /// Performs an implicit conversion from <see cref="Color4"/> to <see cref="Vector4F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>

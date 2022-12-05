@@ -89,6 +89,8 @@ public class TypeDef
 	public string Filename;
     public string SubNamespace;
     public string OutputPath;
+
+    public string GetName(int size) => DefName.Replace("{size}", size.ToString());
 }
 
 public class TypeGenerator
@@ -103,7 +105,7 @@ public class TypeGenerator
     List<DataType> _supportedDataTypes;
     Dictionary<string, DataType> _dataTypes;
 
-    public TypeGenerator(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string subFolder, string typeDefFileName, string filePostfix = "")
+    public TypeGenerator(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string typeDefFileName, string filePostfix = "")
     {
         _sb = genEnvironment;
         _host = host;
@@ -324,7 +326,7 @@ public class TypeGenerator
     public void GenerateStandardConstructors(int indent = 2)
     {
         // Single-value initialization parameter
-        Out(indent, $"/// <summary>Initializes a new instance of <see cref=\"{_curDef.Name}\"/>.</summary>");
+        Out(indent, $"/// <summary>Initializes a new instance of {See()}.</summary>");
         Out(indent, $"/// <param name=\"value\">The value that will be assigned to all components.</param>");
         Out(indent, $"public {_curDef.Name}({_curDef.DT} value)");
         Out(indent, $"{{");
@@ -333,7 +335,7 @@ public class TypeGenerator
         Out(indent, $"}}");
 
         // Array-value initialization parameter
-        Out(indent, $"/// <summary>Initializes a new instance of <see cref=\"{_curDef.Name}\"/> from an array.</summary>");
+        Out(indent, $"/// <summary>Initializes a new instance of {See()} from an array.</summary>");
         Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
         Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than four elements.</exception>");
@@ -350,7 +352,7 @@ public class TypeGenerator
         Out(indent, $"}}");
 
         // Span-based initialization parameter
-        Out(indent, $"/// <summary>Initializes a new instance of <see cref=\"{_curDef.Name}\"/> from a span.</summary>");
+        Out(indent, $"/// <summary>Initializes a new instance of {See()} from a span.</summary>");
         Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
         Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than four elements.</exception>");
@@ -367,7 +369,7 @@ public class TypeGenerator
         Out(indent, $"}}");
 
         // unsafee pointer-based initialization parameter
-        Out(indent, $"/// <summary>Initializes a new instance of <see cref=\"{_curDef.Name}\"/> from a an unsafe pointer.</summary>");
+        Out(indent, $"/// <summary>Initializes a new instance of {See()} from a an unsafe pointer.</summary>");
         Out(indent, $"/// <param name=\"ptrValues\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color.");
         Out(indent, $"/// <para>There must be at least {_def.SizeNames[_curDef.Size]} elements available or undefined behaviour will occur.</para></param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"ptrValues\"/> is <c>null</c>.</exception>");
@@ -384,7 +386,7 @@ public class TypeGenerator
 
         // Per-component initialization parameters
         Out(indent, $"/// <summary>");
-        Out(indent, $"/// Initializes a new instance of <see cref=\"{_curDef.Name}\"/>.");
+        Out(indent, $"/// Initializes a new instance of {See()}.");
         Out(indent, $"/// </summary>");
 
         for(int i = 0; i < _curDef.Size; i++)
@@ -397,6 +399,40 @@ public class TypeGenerator
         Out(indent, $"}}");
     } 
 
+    public void GenerateUpgradeConstructors(int indent = 2)
+    {
+        foreach(TypeDef other in _def.Types)
+        {
+            if(other.DT != _curDef.DT)
+                continue;
+
+            foreach(int otherSize in other.Sizes)
+            {
+                if(_curDef.Size > otherSize)
+                {
+                    string otherName = other.GetName(otherSize);
+                    string otherParams = "";
+                    for(int vp = otherSize; vp < _curDef.Size; vp++)
+                        otherParams += $"{_curDef.DT} {_def.ArgNames[vp]}{(vp < (_curDef.Size-1) ? ", " : "")}";
+
+                    Out(indent, $"///<summary>Creates a new instance of {See()}, using a <see cref=\"{otherName}\"/> to populate the first {_def.SizeNames[otherSize]} components.</summary>");
+		            Out(indent, $"public {_curDef.Name}({otherName} vector, {otherParams})");
+                    Out(indent, "{");
+
+		            for(int p = 0; p < otherSize; p++)
+			            Out(indent+1, $"{_def.FieldNames[p]} = vector.{_def.FieldNames[p]};");
+
+		            for(int p = otherSize; p < _curDef.Size; p++)
+			            Out(indent+1, $"{_def.FieldNames[p]} = {_def.ArgNames[p]};");
+
+                    
+                    Out(indent, "}");
+                    Out("");
+                }
+            }
+        }
+    }
+
     /// Generates cast operators from the current TypeDef to every other TypeDef in the same GeneratorDefinition.
     /// If there are not enough fields in the current TypeDef to populate the args of another type constructor, 
     /// the default value of the other TypeDefs can be retrieved via the otherDefault callback, to be used for population.
@@ -404,11 +440,11 @@ public class TypeGenerator
     {
         foreach(TypeDef other in _def.Types)
         {
-            if(other == _curDef)
-                continue;
-
             foreach(int otherSize in other.Sizes)
             {
+                if(other == _curDef && _curDef.Size == otherSize)
+                    continue;
+
                 string otherName = $"{other.DefName.Replace("{size}", otherSize.ToString())}";
                 string otherTypeCast = other.DT != _curDef.DT ? $"({other.DT})" : "";
                 string defaultValue = "";
@@ -430,34 +466,33 @@ public class TypeGenerator
 
     public void GenerateOperator(string op, string name, int indent = 2)
     {
-        Out(indent, $"///<summary>Performs a {name} operation on two <see cref=\"{_curDef.Name}\"/>.</summary>");
-        Out(indent, $"///<param name=\"a\">The first <see cref=\"{_curDef.Name}\"/> to add.</param>");
-        Out(indent, $"///<param name=\"b\">The second <see cref=\"{_curDef.Name}\"/> to add.</param>");
+        string capName = Capitalize(name);
+
+        Out(indent, $"///<summary>Performs a {name} operation on two {See()}.</summary>");
+        Out(indent, $"///<param name=\"a\">The first {See()} to add.</param>");
+        Out(indent, $"///<param name=\"b\">The second {See()}to add.</param>");
+        Out(indent, $"///<param name=\"result\">Output for the result of the operation.</param>");
+        Out(indent, $"public static void {capName}(ref {_curDef.Name} a, ref {_curDef.Name} b, out {_curDef.Name} result)");
+        Out(indent, "{");
+        for(int i = 0; i < _curDef.Size; i++){
+            if(_curDef.DT.IntType != _curDef.DT.ToString())
+                Out(indent+1, $"result.{_def.FieldNames[i]} = ({_curDef.DT})(a.{_def.FieldNames[i]} {op} b.{_def.FieldNames[i]});");
+            else
+                Out(indent+1, $"result.{_def.FieldNames[i]} = a.{_def.FieldNames[i]} {op} b.{_def.FieldNames[i]};");
+        }
+        Out(indent, "}");
+        Out("");
+
+        Out(indent, $"///<summary>Performs a {name} operation on two {See()}.</summary>");
+        Out(indent, $"///<param name=\"a\">The first {See()} to add.</param>");
+        Out(indent, $"///<param name=\"b\">The second {See()} to add.</param>");
         Out(indent, $"///<returns>The result of the operation.</returns>");
+        Out(indent, $"[MethodImpl(MethodImplOptions.AggressiveInlining)]");
         Out(indent, $"public static {_curDef.Name} operator {op}({_curDef.Name} a, {_curDef.Name} b)");
         Out(indent, "{");
-        Indent(indent + 1); Append($"return new {_curDef.Name}(");
-        for(int i = 0; i < _curDef.Size; i++)
-        {
-            if(i > 0)
-                Append(", ");
-
-            Append($"a.{_def.FieldNames[i]} {op} b.{_def.FieldNames[i]}");
-        }
-        Out(");");
-        Out(indent, "}");
-    }
-
-    public void GenerateRefOperator(string op, string name, int indent = 2)
-    {
-        Out(indent, $"///<summary>Performs a {name} operation on two <see cref=\"{_curDef.Name}\"/>.</summary>");
-        Out(indent, $"///<param name=\"a\">The first <see cref=\"{_curDef.Name}\"/> to add.</param>");
-        Out(indent, $"///<param name=\"b\">The second <see cref=\"{_curDef.Name}\"/> to add.</param>");
-        Out(indent, $"///<param name=\"result\">Output for the result of the operation.</param>");
-        Out(indent, $"public static void {Capitalize(name)}(ref {_curDef.Name} a, ref {_curDef.Name} b, out {_curDef.Name} result)");
-        Out(indent, "{");
-        for(int i = 0; i < _curDef.Size; i++)
-            Out(indent+1, $"result.{_def.FieldNames[i]} = a.{_def.FieldNames[i]} {op} b.{_def.FieldNames[i]};");
+        Out(indent+1, $"{capName}(ref a, ref b, out {_curDef.Name} result);");
+        Out(indent+1, $"return result;");
+        
         Out(indent, "}");
     }
 
@@ -492,8 +527,11 @@ public class TypeGenerator
         }
     }
 
-    public string See(string typeName)
+    public string See(string typeName = "")
     {
+        if(string.IsNullOrWhiteSpace(typeName))
+            typeName = _curDef.Name;
+
         return $"<see cref=\"{typeName}\"/>";
     }
 }

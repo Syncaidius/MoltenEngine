@@ -117,6 +117,14 @@ namespace Molten.DoublePrecision
 			B = b;
 			A = a;
 		}
+		///<summary>Creates a new instance of <see cref="Color4D"/>, using a <see cref="Color3D"/> to populate the first three components.</summary>
+		public Color4D(Color3D vector, double a)
+		{
+			R = vector.R;
+			G = vector.G;
+			B = vector.B;
+			A = a;
+		}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Color4D"/> struct.
@@ -235,7 +243,7 @@ namespace Molten.DoublePrecision
 
 		///<summary>Performs a add operation on two <see cref="Color4D"/>.</summary>
 		///<param name="a">The first <see cref="Color4D"/> to add.</param>
-		///<param name="b">The second <see cref="Color4D"/> to add.</param>
+		///<param name="b">The second <see cref="Color4D"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Add(ref Color4D a, ref Color4D b, out Color4D result)
 		{
@@ -245,9 +253,20 @@ namespace Molten.DoublePrecision
 			result.A = a.A + b.A;
 		}
 
-		///<summary>Performs a subtract operation on two <see cref="Color4D"/>.</summary>
+		///<summary>Performs a add operation on two <see cref="Color4D"/>.</summary>
 		///<param name="a">The first <see cref="Color4D"/> to add.</param>
 		///<param name="b">The second <see cref="Color4D"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4D operator +(Color4D a, Color4D b)
+		{
+			Add(ref a, ref b, out Color4D result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on two <see cref="Color4D"/>.</summary>
+		///<param name="a">The first <see cref="Color4D"/> to add.</param>
+		///<param name="b">The second <see cref="Color4D"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Subtract(ref Color4D a, ref Color4D b, out Color4D result)
 		{
@@ -257,9 +276,20 @@ namespace Molten.DoublePrecision
 			result.A = a.A - b.A;
 		}
 
-		///<summary>Performs a modulate operation on two <see cref="Color4D"/>.</summary>
+		///<summary>Performs a subtract operation on two <see cref="Color4D"/>.</summary>
 		///<param name="a">The first <see cref="Color4D"/> to add.</param>
 		///<param name="b">The second <see cref="Color4D"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4D operator -(Color4D a, Color4D b)
+		{
+			Subtract(ref a, ref b, out Color4D result);
+			return result;
+		}
+
+		///<summary>Performs a modulate operation on two <see cref="Color4D"/>.</summary>
+		///<param name="a">The first <see cref="Color4D"/> to add.</param>
+		///<param name="b">The second <see cref="Color4D"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Modulate(ref Color4D a, ref Color4D b, out Color4D result)
 		{
@@ -269,9 +299,20 @@ namespace Molten.DoublePrecision
 			result.A = a.A * b.A;
 		}
 
-		///<summary>Performs a divide operation on two <see cref="Color4D"/>.</summary>
+		///<summary>Performs a modulate operation on two <see cref="Color4D"/>.</summary>
 		///<param name="a">The first <see cref="Color4D"/> to add.</param>
 		///<param name="b">The second <see cref="Color4D"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4D operator *(Color4D a, Color4D b)
+		{
+			Modulate(ref a, ref b, out Color4D result);
+			return result;
+		}
+
+		///<summary>Performs a divide operation on two <see cref="Color4D"/>.</summary>
+		///<param name="a">The first <see cref="Color4D"/> to add.</param>
+		///<param name="b">The second <see cref="Color4D"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Divide(ref Color4D a, ref Color4D b, out Color4D result)
 		{
@@ -279,6 +320,17 @@ namespace Molten.DoublePrecision
 			result.G = a.G / b.G;
 			result.B = a.B / b.B;
 			result.A = a.A / b.A;
+		}
+
+		///<summary>Performs a divide operation on two <see cref="Color4D"/>.</summary>
+		///<param name="a">The first <see cref="Color4D"/> to add.</param>
+		///<param name="b">The second <see cref="Color4D"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4D operator /(Color4D a, Color4D b)
+		{
+			Divide(ref a, ref b, out Color4D result);
+			return result;
 		}
 
         /// <summary>
@@ -669,15 +721,6 @@ namespace Molten.DoublePrecision
             return result;
         }
 
-		///<summary>Performs a Add operation on two <see cref="Color4D"/>.</summary>
-		///<param name="a">The first <see cref="Color4D"/> to add.</param>
-		///<param name="b">The second <see cref="Color4D"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color4D operator +(Color4D a, Color4D b)
-		{
-			return new Color4D(a.R + b.R, a.G + b.G, a.B + b.B, a.A + b.A);
-		}
-
         /// <summary>
         /// Assert a color (return it unchanged).
         /// </summary>
@@ -688,14 +731,6 @@ namespace Molten.DoublePrecision
             return value;
         }
 
-		///<summary>Performs a subtract operation on two <see cref="Color4D"/>.</summary>
-		///<param name="a">The first <see cref="Color4D"/> to add.</param>
-		///<param name="b">The second <see cref="Color4D"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color4D operator -(Color4D a, Color4D b)
-		{
-			return new Color4D(a.R - b.R, a.G - b.G, a.B - b.B, a.A - b.A);
-		}
 
         /// <summary>
         /// Negates a color.
@@ -728,24 +763,6 @@ namespace Molten.DoublePrecision
         {
             return new Color4D(value.R * scale, value.G * scale, value.B * scale, value.A * scale);
         }
-
-		///<summary>Performs a modulate operation on two <see cref="Color4D"/>.</summary>
-		///<param name="a">The first <see cref="Color4D"/> to add.</param>
-		///<param name="b">The second <see cref="Color4D"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color4D operator *(Color4D a, Color4D b)
-		{
-			return new Color4D(a.R * b.R, a.G * b.G, a.B * b.B, a.A * b.A);
-		}
-
-		///<summary>Performs a divide operation on two <see cref="Color4D"/>.</summary>
-		///<param name="a">The first <see cref="Color4D"/> to add.</param>
-		///<param name="b">The second <see cref="Color4D"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color4D operator /(Color4D a, Color4D b)
-		{
-			return new Color4D(a.R / b.R, a.G / b.G, a.B / b.B, a.A / b.A);
-		}
 
         /// <summary>
         /// Tests for equality between two objects.
@@ -781,8 +798,13 @@ namespace Molten.DoublePrecision
 			return new Color4((float)value.R, (float)value.G, (float)value.B, (float)value.A);
 		}
 
+		public static explicit operator Color3D(Color4D value)
+		{
+			return new Color3D(value.R, value.G, value.B);
+		}
+
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Color4D"/> to <see cref="Vector3F"/>.
+        /// Performs an implicit conversion from <see cref="Color4D"/> to <see cref="Vector4D"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>

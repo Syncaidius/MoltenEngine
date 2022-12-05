@@ -19,6 +19,8 @@ namespace Molten.HalfPrecision
 		///<summary>A Vector3S with every component set to (short)1.</summary>
 		public static readonly Vector3S One = new Vector3S((short)1, (short)1, (short)1);
 
+        static readonly string toStringFormat = "X:{0} Y:{1} Z:{2}";
+
 		/// <summary>The X unit <see cref="Vector3S"/>.</summary>
 		public static readonly Vector3S UnitX = new Vector3S((short)1, (short)0, (short)0);
 
@@ -62,7 +64,7 @@ namespace Molten.HalfPrecision
 			Z = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector3S"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least three elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least three elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
 		public Vector3S(short[] values)
@@ -77,7 +79,7 @@ namespace Molten.HalfPrecision
 			Z = values[2];
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector3S"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least three elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least three elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
 		public Vector3S(Span<short> values)
@@ -92,7 +94,7 @@ namespace Molten.HalfPrecision
 			Z = values[2];
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector3S"/> from a an unsafe pointer.</summary>
-		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <param name="ptrValues">The values to assign to the X, Y, Z components of the color.
 		/// <para>There must be at least three elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
@@ -117,18 +119,19 @@ namespace Molten.HalfPrecision
 			Y = y;
 			Z = z;
 		}
-        ///<summary>Creates a new instance of <see cref = "Vector3S"/>, using a <see cref="Vector2S"/> to populate the first two components.</summary>
+		///<summary>Creates a new instance of <see cref="Vector3S"/>, using a <see cref="Vector2S"/> to populate the first two components.</summary>
 		public Vector3S(Vector2S vector, short z)
 		{
 			X = vector.X;
 			Y = vector.Y;
 			Z = z;
 		}
+
 #endregion
 
 #region Instance Methods
         /// <summary>
-        /// Determines whether the specified <see cref="Vector3S"/> is equal to this instance.
+        /// Determines whether the specified <see cref = "Vector3S"/> is equal to this instance.
         /// </summary>
         /// <param name="other">The <see cref="Vector3S"/> to compare with this instance.</param>
         /// <returns>
@@ -205,7 +208,7 @@ namespace Molten.HalfPrecision
         /// <returns>A three-element array containing the components of the vector.</returns>
         public short[] ToArray()
         {
-            return new short[] { X, Y, Z};
+            return new short[] { X, Y, Z };
         }
 		/// <summary>
         /// Reverses the direction of the current <see cref="Vector3S"/>.
@@ -247,7 +250,6 @@ namespace Molten.HalfPrecision
 #endregion
 
 #region To-String
-
 		/// <summary>
         /// Returns a <see cref="System.String"/> that represents this <see cref="Vector3S"/>.
         /// </summary>
@@ -260,8 +262,7 @@ namespace Molten.HalfPrecision
             if (format == null)
                 return ToString();
 
-            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2}", 
-			X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture), Z.ToString(format, CultureInfo.CurrentCulture));
+            return string.Format(CultureInfo.CurrentCulture, format, X, Y, Z);
         }
 
 		/// <summary>
@@ -273,7 +274,7 @@ namespace Molten.HalfPrecision
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2}", X, Y, Z);
+            return string.Format(formatProvider, toStringFormat, X, Y, Z);
         }
 
 		/// <summary>
@@ -284,7 +285,7 @@ namespace Molten.HalfPrecision
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2}", X, Y, Z);
+            return string.Format(CultureInfo.CurrentCulture, toStringFormat, X, Y, Z);
         }
 
 		/// <summary>
@@ -300,17 +301,37 @@ namespace Molten.HalfPrecision
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider), Z.ToString(format, formatProvider));
+            return string.Format(formatProvider,
+                toStringFormat,
+				X.ToString(format, formatProvider),
+				Y.ToString(format, formatProvider),
+				Z.ToString(format, formatProvider)
+            );
         }
 #endregion
 
 #region Add operators
-        public static void Add(ref Vector3S left, ref Vector3S right, out Vector3S result)
-        {
-			result.X = (short)(left.X + right.X);
-			result.Y = (short)(left.Y + right.Y);
-			result.Z = (short)(left.Z + right.Z);
-        }
+		///<summary>Performs a add operation on two <see cref="Vector3S"/>.</summary>
+		///<param name="a">The first <see cref="Vector3S"/> to add.</param>
+		///<param name="b">The second <see cref="Vector3S"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector3S a, ref Vector3S b, out Vector3S result)
+		{
+			result.X = (short)(a.X + b.X);
+			result.Y = (short)(a.Y + b.Y);
+			result.Z = (short)(a.Z + b.Z);
+		}
+
+		///<summary>Performs a add operation on two <see cref="Vector3S"/>.</summary>
+		///<param name="a">The first <see cref="Vector3S"/> to add.</param>
+		///<param name="b">The second <see cref="Vector3S"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator +(Vector3S a, Vector3S b)
+		{
+			Add(ref a, ref b, out Vector3S result);
+			return result;
+		}
 
         public static void Add(ref Vector3S left, short right, out Vector3S result)
         {
@@ -318,12 +339,6 @@ namespace Molten.HalfPrecision
 			result.Y = (short)(left.Y + right);
 			result.Z = (short)(left.Z + right);
         }
-
-		public static Vector3S operator +(Vector3S left, Vector3S right)
-		{
-			Add(ref left, ref right, out Vector3S result);
-            return result;
-		}
 
 		public static Vector3S operator +(Vector3S left, short right)
 		{
@@ -349,12 +364,27 @@ namespace Molten.HalfPrecision
 #endregion
 
 #region Subtract operators
-		public static void Subtract(ref Vector3S left, ref Vector3S right, out Vector3S result)
-        {
-			result.X = (short)(left.X - right.X);
-			result.Y = (short)(left.Y - right.Y);
-			result.Z = (short)(left.Z - right.Z);
-        }
+		///<summary>Performs a subtract operation on two <see cref="Vector3S"/>.</summary>
+		///<param name="a">The first <see cref="Vector3S"/> to add.</param>
+		///<param name="b">The second <see cref="Vector3S"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector3S a, ref Vector3S b, out Vector3S result)
+		{
+			result.X = (short)(a.X - b.X);
+			result.Y = (short)(a.Y - b.Y);
+			result.Z = (short)(a.Z - b.Z);
+		}
+
+		///<summary>Performs a subtract operation on two <see cref="Vector3S"/>.</summary>
+		///<param name="a">The first <see cref="Vector3S"/> to add.</param>
+		///<param name="b">The second <see cref="Vector3S"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator -(Vector3S a, Vector3S b)
+		{
+			Subtract(ref a, ref b, out Vector3S result);
+			return result;
+		}
 
         public static void Subtract(ref Vector3S left, short right, out Vector3S result)
         {
@@ -362,12 +392,6 @@ namespace Molten.HalfPrecision
 			result.Y = (short)(left.Y - right);
 			result.Z = (short)(left.Z - right);
         }
-
-		public static Vector3S operator -(Vector3S left, Vector3S right)
-		{
-			Subtract(ref left, ref right, out Vector3S result);
-            return result;
-		}
 
 		public static Vector3S operator -(Vector3S left, short right)
 		{
@@ -407,12 +431,27 @@ namespace Molten.HalfPrecision
 #endregion
 
 #region division operators
-		public static void Divide(ref Vector3S left, ref Vector3S right, out Vector3S result)
-        {
-			result.X = (short)(left.X / right.X);
-			result.Y = (short)(left.Y / right.Y);
-			result.Z = (short)(left.Z / right.Z);
-        }
+		///<summary>Performs a divide operation on two <see cref="Vector3S"/>.</summary>
+		///<param name="a">The first <see cref="Vector3S"/> to add.</param>
+		///<param name="b">The second <see cref="Vector3S"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector3S a, ref Vector3S b, out Vector3S result)
+		{
+			result.X = (short)(a.X / b.X);
+			result.Y = (short)(a.Y / b.Y);
+			result.Z = (short)(a.Z / b.Z);
+		}
+
+		///<summary>Performs a divide operation on two <see cref="Vector3S"/>.</summary>
+		///<param name="a">The first <see cref="Vector3S"/> to add.</param>
+		///<param name="b">The second <see cref="Vector3S"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator /(Vector3S a, Vector3S b)
+		{
+			Divide(ref a, ref b, out Vector3S result);
+			return result;
+		}
 
         public static void Divide(ref Vector3S left, short right, out Vector3S result)
         {
@@ -420,12 +459,6 @@ namespace Molten.HalfPrecision
 			result.Y = (short)(left.Y / right);
 			result.Z = (short)(left.Z / right);
         }
-
-		public static Vector3S operator /(Vector3S left, Vector3S right)
-		{
-			Divide(ref left, ref right, out Vector3S result);
-            return result;
-		}
 
 		public static Vector3S operator /(Vector3S left, short right)
 		{
@@ -441,12 +474,27 @@ namespace Molten.HalfPrecision
 #endregion
 
 #region Multiply operators
-		public static void Multiply(ref Vector3S left, ref Vector3S right, out Vector3S result)
-        {
-			result.X = (short)(left.X * right.X);
-			result.Y = (short)(left.Y * right.Y);
-			result.Z = (short)(left.Z * right.Z);
-        }
+		///<summary>Performs a multiply operation on two <see cref="Vector3S"/>.</summary>
+		///<param name="a">The first <see cref="Vector3S"/> to add.</param>
+		///<param name="b">The second <see cref="Vector3S"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector3S a, ref Vector3S b, out Vector3S result)
+		{
+			result.X = (short)(a.X * b.X);
+			result.Y = (short)(a.Y * b.Y);
+			result.Z = (short)(a.Z * b.Z);
+		}
+
+		///<summary>Performs a multiply operation on two <see cref="Vector3S"/>.</summary>
+		///<param name="a">The first <see cref="Vector3S"/> to add.</param>
+		///<param name="b">The second <see cref="Vector3S"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator *(Vector3S a, Vector3S b)
+		{
+			Multiply(ref a, ref b, out Vector3S result);
+			return result;
+		}
 
         public static void Multiply(ref Vector3S left, short right, out Vector3S result)
         {
@@ -454,12 +502,6 @@ namespace Molten.HalfPrecision
 			result.Y = (short)(left.Y * right);
 			result.Z = (short)(left.Z * right);
         }
-
-		public static Vector3S operator *(Vector3S left, Vector3S right)
-		{
-			Multiply(ref left, ref right, out Vector3S result);
-            return result;
-		}
 
 		public static Vector3S operator *(Vector3S left, short right)
 		{
@@ -498,21 +540,6 @@ namespace Molten.HalfPrecision
         {
             return !left.Equals(ref right);
         }
-#endregion
-
-#region Operators - Cast
-        ///<summary>Casts a <see cref="Vector3S"/> to a <see cref="Vector2S"/>.</summary>
-        public static explicit operator Vector2S(Vector3S value)
-        {
-            return new Vector2S(value.X, value.Y);
-        }
-
-        ///<summary>Casts a <see cref="Vector3S"/> to a <see cref="Vector4S"/>.</summary>
-        public static explicit operator Vector4S(Vector3S value)
-        {
-            return new Vector4S(value.X, value.Y, value.Z, (short)0);
-        }
-
 #endregion
 
 #region Static Methods
@@ -929,8 +956,8 @@ namespace Molten.HalfPrecision
 		/// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of the X, Y or Z component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>  
 		public short this[int index]
@@ -960,104 +987,150 @@ namespace Molten.HalfPrecision
 #endregion
 
 #region Casts - vectors
-        ///<summary>Casts a <see cref="Vector3S"/> to a <see cref="SByte3"/>.</summary>
-        public static explicit operator SByte3(Vector3S val)
-        {
-            return new SByte3()
-            {
-                X = (sbyte)val.X,
-                Y = (sbyte)val.Y,
-                Z = (sbyte)val.Z,
-            };
-        }
+		public static explicit operator SByte2(Vector3S value)
+		{
+			return new SByte2((sbyte)value.X, (sbyte)value.Y);
+		}
 
-        ///<summary>Casts a <see cref="Vector3S"/> to a <see cref="Byte3"/>.</summary>
-        public static explicit operator Byte3(Vector3S val)
-        {
-            return new Byte3()
-            {
-                X = (byte)val.X,
-                Y = (byte)val.Y,
-                Z = (byte)val.Z,
-            };
-        }
+		public static explicit operator SByte3(Vector3S value)
+		{
+			return new SByte3((sbyte)value.X, (sbyte)value.Y, (sbyte)value.Z);
+		}
 
-        ///<summary>Casts a <see cref="Vector3S"/> to a <see cref="Vector3I"/>.</summary>
-        public static explicit operator Vector3I(Vector3S val)
-        {
-            return new Vector3I()
-            {
-                X = val.X,
-                Y = val.Y,
-                Z = val.Z,
-            };
-        }
+		public static explicit operator SByte4(Vector3S value)
+		{
+			return new SByte4((sbyte)value.X, (sbyte)value.Y, (sbyte)value.Z, (sbyte)1);
+		}
 
-        ///<summary>Casts a <see cref="Vector3S"/> to a <see cref="Vector3UI"/>.</summary>
-        public static explicit operator Vector3UI(Vector3S val)
-        {
-            return new Vector3UI()
-            {
-                X = (uint)val.X,
-                Y = (uint)val.Y,
-                Z = (uint)val.Z,
-            };
-        }
+		public static explicit operator Byte2(Vector3S value)
+		{
+			return new Byte2((byte)value.X, (byte)value.Y);
+		}
 
-        ///<summary>Casts a <see cref="Vector3S"/> to a <see cref="Vector3US"/>.</summary>
-        public static explicit operator Vector3US(Vector3S val)
-        {
-            return new Vector3US()
-            {
-                X = (ushort)val.X,
-                Y = (ushort)val.Y,
-                Z = (ushort)val.Z,
-            };
-        }
+		public static explicit operator Byte3(Vector3S value)
+		{
+			return new Byte3((byte)value.X, (byte)value.Y, (byte)value.Z);
+		}
 
-        ///<summary>Casts a <see cref="Vector3S"/> to a <see cref="Vector3L"/>.</summary>
-        public static explicit operator Vector3L(Vector3S val)
-        {
-            return new Vector3L()
-            {
-                X = val.X,
-                Y = val.Y,
-                Z = val.Z,
-            };
-        }
+		public static explicit operator Byte4(Vector3S value)
+		{
+			return new Byte4((byte)value.X, (byte)value.Y, (byte)value.Z, (byte)1);
+		}
 
-        ///<summary>Casts a <see cref="Vector3S"/> to a <see cref="Vector3UL"/>.</summary>
-        public static explicit operator Vector3UL(Vector3S val)
-        {
-            return new Vector3UL()
-            {
-                X = (ulong)val.X,
-                Y = (ulong)val.Y,
-                Z = (ulong)val.Z,
-            };
-        }
+		public static explicit operator Vector2I(Vector3S value)
+		{
+			return new Vector2I((int)value.X, (int)value.Y);
+		}
 
-        ///<summary>Casts a <see cref="Vector3S"/> to a <see cref="Vector3F"/>.</summary>
-        public static explicit operator Vector3F(Vector3S val)
-        {
-            return new Vector3F()
-            {
-                X = (float)val.X,
-                Y = (float)val.Y,
-                Z = (float)val.Z,
-            };
-        }
+		public static explicit operator Vector3I(Vector3S value)
+		{
+			return new Vector3I((int)value.X, (int)value.Y, (int)value.Z);
+		}
 
-        ///<summary>Casts a <see cref="Vector3S"/> to a <see cref="Vector3D"/>.</summary>
-        public static explicit operator Vector3D(Vector3S val)
-        {
-            return new Vector3D()
-            {
-                X = (double)val.X,
-                Y = (double)val.Y,
-                Z = (double)val.Z,
-            };
-        }
+		public static explicit operator Vector4I(Vector3S value)
+		{
+			return new Vector4I((int)value.X, (int)value.Y, (int)value.Z, 1);
+		}
+
+		public static explicit operator Vector2UI(Vector3S value)
+		{
+			return new Vector2UI((uint)value.X, (uint)value.Y);
+		}
+
+		public static explicit operator Vector3UI(Vector3S value)
+		{
+			return new Vector3UI((uint)value.X, (uint)value.Y, (uint)value.Z);
+		}
+
+		public static explicit operator Vector4UI(Vector3S value)
+		{
+			return new Vector4UI((uint)value.X, (uint)value.Y, (uint)value.Z, 1U);
+		}
+
+		public static explicit operator Vector2S(Vector3S value)
+		{
+			return new Vector2S(value.X, value.Y);
+		}
+
+		public static explicit operator Vector4S(Vector3S value)
+		{
+			return new Vector4S(value.X, value.Y, value.Z, (short)1);
+		}
+
+		public static explicit operator Vector2US(Vector3S value)
+		{
+			return new Vector2US((ushort)value.X, (ushort)value.Y);
+		}
+
+		public static explicit operator Vector3US(Vector3S value)
+		{
+			return new Vector3US((ushort)value.X, (ushort)value.Y, (ushort)value.Z);
+		}
+
+		public static explicit operator Vector4US(Vector3S value)
+		{
+			return new Vector4US((ushort)value.X, (ushort)value.Y, (ushort)value.Z, (ushort)1);
+		}
+
+		public static explicit operator Vector2L(Vector3S value)
+		{
+			return new Vector2L((long)value.X, (long)value.Y);
+		}
+
+		public static explicit operator Vector3L(Vector3S value)
+		{
+			return new Vector3L((long)value.X, (long)value.Y, (long)value.Z);
+		}
+
+		public static explicit operator Vector4L(Vector3S value)
+		{
+			return new Vector4L((long)value.X, (long)value.Y, (long)value.Z, 1L);
+		}
+
+		public static explicit operator Vector2UL(Vector3S value)
+		{
+			return new Vector2UL((ulong)value.X, (ulong)value.Y);
+		}
+
+		public static explicit operator Vector3UL(Vector3S value)
+		{
+			return new Vector3UL((ulong)value.X, (ulong)value.Y, (ulong)value.Z);
+		}
+
+		public static explicit operator Vector4UL(Vector3S value)
+		{
+			return new Vector4UL((ulong)value.X, (ulong)value.Y, (ulong)value.Z, 1UL);
+		}
+
+		public static explicit operator Vector2F(Vector3S value)
+		{
+			return new Vector2F((float)value.X, (float)value.Y);
+		}
+
+		public static explicit operator Vector3F(Vector3S value)
+		{
+			return new Vector3F((float)value.X, (float)value.Y, (float)value.Z);
+		}
+
+		public static explicit operator Vector4F(Vector3S value)
+		{
+			return new Vector4F((float)value.X, (float)value.Y, (float)value.Z, 1F);
+		}
+
+		public static explicit operator Vector2D(Vector3S value)
+		{
+			return new Vector2D((double)value.X, (double)value.Y);
+		}
+
+		public static explicit operator Vector3D(Vector3S value)
+		{
+			return new Vector3D((double)value.X, (double)value.Y, (double)value.Z);
+		}
+
+		public static explicit operator Vector4D(Vector3S value)
+		{
+			return new Vector4D((double)value.X, (double)value.Y, (double)value.Z, 1D);
+		}
 
 #endregion
 	}

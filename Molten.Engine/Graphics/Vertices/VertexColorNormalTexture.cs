@@ -6,8 +6,8 @@ namespace Molten.Graphics
     /// <summary>A vertex type containing position, color, normal and UV data.</summary>
     public struct VertexColorNormalTexture : IVertexType
     {
+        /// <summary>The position as a Vector4</summary>
         [VertexElement(VertexElementType.Vector4, VertexElementUsage.Position, 0)]
-        /// <summary>Gets or sets the position as a Vector4</summary>
         Vector4F Position4;
 
         [VertexElement(VertexElementType.Color, VertexElementUsage.Color, 0)]

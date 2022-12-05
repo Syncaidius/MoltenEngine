@@ -19,6 +19,8 @@ namespace Molten
 		///<summary>A Vector4F with every component set to 1F.</summary>
 		public static readonly Vector4F One = new Vector4F(1F, 1F, 1F, 1F);
 
+        static readonly string toStringFormat = "X:{0} Y:{1} Z:{2} W:{3}";
+
 		/// <summary>The X unit <see cref="Vector4F"/>.</summary>
 		public static readonly Vector4F UnitX = new Vector4F(1F, 0F, 0F, 0F);
 
@@ -130,7 +132,7 @@ namespace Molten
 			Z = z;
 			W = w;
 		}
-        ///<summary>Creates a new instance of <see cref = "Vector4F"/>, using a <see cref="Vector2F"/> to populate the first two components.</summary>
+		///<summary>Creates a new instance of <see cref="Vector4F"/>, using a <see cref="Vector2F"/> to populate the first two components.</summary>
 		public Vector4F(Vector2F vector, float z, float w)
 		{
 			X = vector.X;
@@ -138,7 +140,8 @@ namespace Molten
 			Z = z;
 			W = w;
 		}
-        ///<summary>Creates a new instance of <see cref = "Vector4F"/>, using a <see cref="Vector3F"/> to populate the first three components.</summary>
+
+		///<summary>Creates a new instance of <see cref="Vector4F"/>, using a <see cref="Vector3F"/> to populate the first three components.</summary>
 		public Vector4F(Vector3F vector, float w)
 		{
 			X = vector.X;
@@ -146,11 +149,12 @@ namespace Molten
 			Z = vector.Z;
 			W = w;
 		}
+
 #endregion
 
 #region Instance Methods
         /// <summary>
-        /// Determines whether the specified <see cref="Vector4F"/> is equal to this instance.
+        /// Determines whether the specified <see cref = "Vector4F"/> is equal to this instance.
         /// </summary>
         /// <param name="other">The <see cref="Vector4F"/> to compare with this instance.</param>
         /// <returns>
@@ -228,7 +232,7 @@ namespace Molten
         /// <returns>A four-element array containing the components of the vector.</returns>
         public float[] ToArray()
         {
-            return new float[] { X, Y, Z, W};
+            return new float[] { X, Y, Z, W };
         }
 		/// <summary>
         /// Reverses the direction of the current <see cref="Vector4F"/>.
@@ -272,7 +276,6 @@ namespace Molten
 #endregion
 
 #region To-String
-
 		/// <summary>
         /// Returns a <see cref="System.String"/> that represents this <see cref="Vector4F"/>.
         /// </summary>
@@ -285,8 +288,7 @@ namespace Molten
             if (format == null)
                 return ToString();
 
-            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2} W:{3}", 
-			X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture), Z.ToString(format, CultureInfo.CurrentCulture), W.ToString(format, CultureInfo.CurrentCulture));
+            return string.Format(CultureInfo.CurrentCulture, format, X, Y, Z, W);
         }
 
 		/// <summary>
@@ -298,7 +300,7 @@ namespace Molten
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2} W:{3}", X, Y, Z, W);
+            return string.Format(formatProvider, toStringFormat, X, Y, Z, W);
         }
 
 		/// <summary>
@@ -309,7 +311,7 @@ namespace Molten
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2} W:{3}", X, Y, Z, W);
+            return string.Format(CultureInfo.CurrentCulture, toStringFormat, X, Y, Z, W);
         }
 
 		/// <summary>
@@ -325,18 +327,39 @@ namespace Molten
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2} W:{3}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider), Z.ToString(format, formatProvider), W.ToString(format, formatProvider));
+            return string.Format(formatProvider,
+                toStringFormat,
+				X.ToString(format, formatProvider),
+				Y.ToString(format, formatProvider),
+				Z.ToString(format, formatProvider),
+				W.ToString(format, formatProvider)
+            );
         }
 #endregion
 
 #region Add operators
-        public static void Add(ref Vector4F left, ref Vector4F right, out Vector4F result)
-        {
-			result.X = (left.X + right.X);
-			result.Y = (left.Y + right.Y);
-			result.Z = (left.Z + right.Z);
-			result.W = (left.W + right.W);
-        }
+		///<summary>Performs a add operation on two <see cref="Vector4F"/>.</summary>
+		///<param name="a">The first <see cref="Vector4F"/> to add.</param>
+		///<param name="b">The second <see cref="Vector4F"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector4F a, ref Vector4F b, out Vector4F result)
+		{
+			result.X = a.X + b.X;
+			result.Y = a.Y + b.Y;
+			result.Z = a.Z + b.Z;
+			result.W = a.W + b.W;
+		}
+
+		///<summary>Performs a add operation on two <see cref="Vector4F"/>.</summary>
+		///<param name="a">The first <see cref="Vector4F"/> to add.</param>
+		///<param name="b">The second <see cref="Vector4F"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4F operator +(Vector4F a, Vector4F b)
+		{
+			Add(ref a, ref b, out Vector4F result);
+			return result;
+		}
 
         public static void Add(ref Vector4F left, float right, out Vector4F result)
         {
@@ -345,12 +368,6 @@ namespace Molten
 			result.Z = (left.Z + right);
 			result.W = (left.W + right);
         }
-
-		public static Vector4F operator +(Vector4F left, Vector4F right)
-		{
-			Add(ref left, ref right, out Vector4F result);
-            return result;
-		}
 
 		public static Vector4F operator +(Vector4F left, float right)
 		{
@@ -376,13 +393,28 @@ namespace Molten
 #endregion
 
 #region Subtract operators
-		public static void Subtract(ref Vector4F left, ref Vector4F right, out Vector4F result)
-        {
-			result.X = (left.X - right.X);
-			result.Y = (left.Y - right.Y);
-			result.Z = (left.Z - right.Z);
-			result.W = (left.W - right.W);
-        }
+		///<summary>Performs a subtract operation on two <see cref="Vector4F"/>.</summary>
+		///<param name="a">The first <see cref="Vector4F"/> to add.</param>
+		///<param name="b">The second <see cref="Vector4F"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector4F a, ref Vector4F b, out Vector4F result)
+		{
+			result.X = a.X - b.X;
+			result.Y = a.Y - b.Y;
+			result.Z = a.Z - b.Z;
+			result.W = a.W - b.W;
+		}
+
+		///<summary>Performs a subtract operation on two <see cref="Vector4F"/>.</summary>
+		///<param name="a">The first <see cref="Vector4F"/> to add.</param>
+		///<param name="b">The second <see cref="Vector4F"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4F operator -(Vector4F a, Vector4F b)
+		{
+			Subtract(ref a, ref b, out Vector4F result);
+			return result;
+		}
 
         public static void Subtract(ref Vector4F left, float right, out Vector4F result)
         {
@@ -391,12 +423,6 @@ namespace Molten
 			result.Z = (left.Z - right);
 			result.W = (left.W - right);
         }
-
-		public static Vector4F operator -(Vector4F left, Vector4F right)
-		{
-			Subtract(ref left, ref right, out Vector4F result);
-            return result;
-		}
 
 		public static Vector4F operator -(Vector4F left, float right)
 		{
@@ -437,13 +463,28 @@ namespace Molten
 #endregion
 
 #region division operators
-		public static void Divide(ref Vector4F left, ref Vector4F right, out Vector4F result)
-        {
-			result.X = (left.X / right.X);
-			result.Y = (left.Y / right.Y);
-			result.Z = (left.Z / right.Z);
-			result.W = (left.W / right.W);
-        }
+		///<summary>Performs a divide operation on two <see cref="Vector4F"/>.</summary>
+		///<param name="a">The first <see cref="Vector4F"/> to add.</param>
+		///<param name="b">The second <see cref="Vector4F"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector4F a, ref Vector4F b, out Vector4F result)
+		{
+			result.X = a.X / b.X;
+			result.Y = a.Y / b.Y;
+			result.Z = a.Z / b.Z;
+			result.W = a.W / b.W;
+		}
+
+		///<summary>Performs a divide operation on two <see cref="Vector4F"/>.</summary>
+		///<param name="a">The first <see cref="Vector4F"/> to add.</param>
+		///<param name="b">The second <see cref="Vector4F"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4F operator /(Vector4F a, Vector4F b)
+		{
+			Divide(ref a, ref b, out Vector4F result);
+			return result;
+		}
 
         public static void Divide(ref Vector4F left, float right, out Vector4F result)
         {
@@ -452,12 +493,6 @@ namespace Molten
 			result.Z = (left.Z / right);
 			result.W = (left.W / right);
         }
-
-		public static Vector4F operator /(Vector4F left, Vector4F right)
-		{
-			Divide(ref left, ref right, out Vector4F result);
-            return result;
-		}
 
 		public static Vector4F operator /(Vector4F left, float right)
 		{
@@ -473,13 +508,28 @@ namespace Molten
 #endregion
 
 #region Multiply operators
-		public static void Multiply(ref Vector4F left, ref Vector4F right, out Vector4F result)
-        {
-			result.X = (left.X * right.X);
-			result.Y = (left.Y * right.Y);
-			result.Z = (left.Z * right.Z);
-			result.W = (left.W * right.W);
-        }
+		///<summary>Performs a multiply operation on two <see cref="Vector4F"/>.</summary>
+		///<param name="a">The first <see cref="Vector4F"/> to add.</param>
+		///<param name="b">The second <see cref="Vector4F"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector4F a, ref Vector4F b, out Vector4F result)
+		{
+			result.X = a.X * b.X;
+			result.Y = a.Y * b.Y;
+			result.Z = a.Z * b.Z;
+			result.W = a.W * b.W;
+		}
+
+		///<summary>Performs a multiply operation on two <see cref="Vector4F"/>.</summary>
+		///<param name="a">The first <see cref="Vector4F"/> to add.</param>
+		///<param name="b">The second <see cref="Vector4F"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4F operator *(Vector4F a, Vector4F b)
+		{
+			Multiply(ref a, ref b, out Vector4F result);
+			return result;
+		}
 
         public static void Multiply(ref Vector4F left, float right, out Vector4F result)
         {
@@ -488,12 +538,6 @@ namespace Molten
 			result.Z = (left.Z * right);
 			result.W = (left.W * right);
         }
-
-		public static Vector4F operator *(Vector4F left, Vector4F right)
-		{
-			Multiply(ref left, ref right, out Vector4F result);
-            return result;
-		}
 
 		public static Vector4F operator *(Vector4F left, float right)
 		{
@@ -532,21 +576,6 @@ namespace Molten
         {
             return !left.Equals(ref right);
         }
-#endregion
-
-#region Operators - Cast
-        ///<summary>Casts a <see cref="Vector4F"/> to a <see cref="Vector2F"/>.</summary>
-        public static explicit operator Vector2F(Vector4F value)
-        {
-            return new Vector2F(value.X, value.Y);
-        }
-
-        ///<summary>Casts a <see cref="Vector4F"/> to a <see cref="Vector3F"/>.</summary>
-        public static explicit operator Vector3F(Vector4F value)
-        {
-            return new Vector3F(value.X, value.Y, value.Z);
-        }
-
 #endregion
 
 #region Static Methods
@@ -980,8 +1009,8 @@ namespace Molten
 		/// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of the X, Y, Z or W component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 3</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>  
 		public float this[int index]
@@ -1013,113 +1042,150 @@ namespace Molten
 #endregion
 
 #region Casts - vectors
-        ///<summary>Casts a <see cref="Vector4F"/> to a <see cref="SByte4"/>.</summary>
-        public static explicit operator SByte4(Vector4F val)
-        {
-            return new SByte4()
-            {
-                X = (sbyte)val.X,
-                Y = (sbyte)val.Y,
-                Z = (sbyte)val.Z,
-                W = (sbyte)val.W,
-            };
-        }
+		public static explicit operator SByte2(Vector4F value)
+		{
+			return new SByte2((sbyte)value.X, (sbyte)value.Y);
+		}
 
-        ///<summary>Casts a <see cref="Vector4F"/> to a <see cref="Byte4"/>.</summary>
-        public static explicit operator Byte4(Vector4F val)
-        {
-            return new Byte4()
-            {
-                X = (byte)val.X,
-                Y = (byte)val.Y,
-                Z = (byte)val.Z,
-                W = (byte)val.W,
-            };
-        }
+		public static explicit operator SByte3(Vector4F value)
+		{
+			return new SByte3((sbyte)value.X, (sbyte)value.Y, (sbyte)value.Z);
+		}
 
-        ///<summary>Casts a <see cref="Vector4F"/> to a <see cref="Vector4I"/>.</summary>
-        public static explicit operator Vector4I(Vector4F val)
-        {
-            return new Vector4I()
-            {
-                X = (int)val.X,
-                Y = (int)val.Y,
-                Z = (int)val.Z,
-                W = (int)val.W,
-            };
-        }
+		public static explicit operator SByte4(Vector4F value)
+		{
+			return new SByte4((sbyte)value.X, (sbyte)value.Y, (sbyte)value.Z, (sbyte)value.W);
+		}
 
-        ///<summary>Casts a <see cref="Vector4F"/> to a <see cref="Vector4UI"/>.</summary>
-        public static explicit operator Vector4UI(Vector4F val)
-        {
-            return new Vector4UI()
-            {
-                X = (uint)val.X,
-                Y = (uint)val.Y,
-                Z = (uint)val.Z,
-                W = (uint)val.W,
-            };
-        }
+		public static explicit operator Byte2(Vector4F value)
+		{
+			return new Byte2((byte)value.X, (byte)value.Y);
+		}
 
-        ///<summary>Casts a <see cref="Vector4F"/> to a <see cref="Vector4S"/>.</summary>
-        public static explicit operator Vector4S(Vector4F val)
-        {
-            return new Vector4S()
-            {
-                X = (short)val.X,
-                Y = (short)val.Y,
-                Z = (short)val.Z,
-                W = (short)val.W,
-            };
-        }
+		public static explicit operator Byte3(Vector4F value)
+		{
+			return new Byte3((byte)value.X, (byte)value.Y, (byte)value.Z);
+		}
 
-        ///<summary>Casts a <see cref="Vector4F"/> to a <see cref="Vector4US"/>.</summary>
-        public static explicit operator Vector4US(Vector4F val)
-        {
-            return new Vector4US()
-            {
-                X = (ushort)val.X,
-                Y = (ushort)val.Y,
-                Z = (ushort)val.Z,
-                W = (ushort)val.W,
-            };
-        }
+		public static explicit operator Byte4(Vector4F value)
+		{
+			return new Byte4((byte)value.X, (byte)value.Y, (byte)value.Z, (byte)value.W);
+		}
 
-        ///<summary>Casts a <see cref="Vector4F"/> to a <see cref="Vector4L"/>.</summary>
-        public static explicit operator Vector4L(Vector4F val)
-        {
-            return new Vector4L()
-            {
-                X = (long)val.X,
-                Y = (long)val.Y,
-                Z = (long)val.Z,
-                W = (long)val.W,
-            };
-        }
+		public static explicit operator Vector2I(Vector4F value)
+		{
+			return new Vector2I((int)value.X, (int)value.Y);
+		}
 
-        ///<summary>Casts a <see cref="Vector4F"/> to a <see cref="Vector4UL"/>.</summary>
-        public static explicit operator Vector4UL(Vector4F val)
-        {
-            return new Vector4UL()
-            {
-                X = (ulong)val.X,
-                Y = (ulong)val.Y,
-                Z = (ulong)val.Z,
-                W = (ulong)val.W,
-            };
-        }
+		public static explicit operator Vector3I(Vector4F value)
+		{
+			return new Vector3I((int)value.X, (int)value.Y, (int)value.Z);
+		}
 
-        ///<summary>Casts a <see cref="Vector4F"/> to a <see cref="Vector4D"/>.</summary>
-        public static explicit operator Vector4D(Vector4F val)
-        {
-            return new Vector4D()
-            {
-                X = val.X,
-                Y = val.Y,
-                Z = val.Z,
-                W = val.W,
-            };
-        }
+		public static explicit operator Vector4I(Vector4F value)
+		{
+			return new Vector4I((int)value.X, (int)value.Y, (int)value.Z, (int)value.W);
+		}
+
+		public static explicit operator Vector2UI(Vector4F value)
+		{
+			return new Vector2UI((uint)value.X, (uint)value.Y);
+		}
+
+		public static explicit operator Vector3UI(Vector4F value)
+		{
+			return new Vector3UI((uint)value.X, (uint)value.Y, (uint)value.Z);
+		}
+
+		public static explicit operator Vector4UI(Vector4F value)
+		{
+			return new Vector4UI((uint)value.X, (uint)value.Y, (uint)value.Z, (uint)value.W);
+		}
+
+		public static explicit operator Vector2S(Vector4F value)
+		{
+			return new Vector2S((short)value.X, (short)value.Y);
+		}
+
+		public static explicit operator Vector3S(Vector4F value)
+		{
+			return new Vector3S((short)value.X, (short)value.Y, (short)value.Z);
+		}
+
+		public static explicit operator Vector4S(Vector4F value)
+		{
+			return new Vector4S((short)value.X, (short)value.Y, (short)value.Z, (short)value.W);
+		}
+
+		public static explicit operator Vector2US(Vector4F value)
+		{
+			return new Vector2US((ushort)value.X, (ushort)value.Y);
+		}
+
+		public static explicit operator Vector3US(Vector4F value)
+		{
+			return new Vector3US((ushort)value.X, (ushort)value.Y, (ushort)value.Z);
+		}
+
+		public static explicit operator Vector4US(Vector4F value)
+		{
+			return new Vector4US((ushort)value.X, (ushort)value.Y, (ushort)value.Z, (ushort)value.W);
+		}
+
+		public static explicit operator Vector2L(Vector4F value)
+		{
+			return new Vector2L((long)value.X, (long)value.Y);
+		}
+
+		public static explicit operator Vector3L(Vector4F value)
+		{
+			return new Vector3L((long)value.X, (long)value.Y, (long)value.Z);
+		}
+
+		public static explicit operator Vector4L(Vector4F value)
+		{
+			return new Vector4L((long)value.X, (long)value.Y, (long)value.Z, (long)value.W);
+		}
+
+		public static explicit operator Vector2UL(Vector4F value)
+		{
+			return new Vector2UL((ulong)value.X, (ulong)value.Y);
+		}
+
+		public static explicit operator Vector3UL(Vector4F value)
+		{
+			return new Vector3UL((ulong)value.X, (ulong)value.Y, (ulong)value.Z);
+		}
+
+		public static explicit operator Vector4UL(Vector4F value)
+		{
+			return new Vector4UL((ulong)value.X, (ulong)value.Y, (ulong)value.Z, (ulong)value.W);
+		}
+
+		public static explicit operator Vector2F(Vector4F value)
+		{
+			return new Vector2F(value.X, value.Y);
+		}
+
+		public static explicit operator Vector3F(Vector4F value)
+		{
+			return new Vector3F(value.X, value.Y, value.Z);
+		}
+
+		public static explicit operator Vector2D(Vector4F value)
+		{
+			return new Vector2D((double)value.X, (double)value.Y);
+		}
+
+		public static explicit operator Vector3D(Vector4F value)
+		{
+			return new Vector3D((double)value.X, (double)value.Y, (double)value.Z);
+		}
+
+		public static explicit operator Vector4D(Vector4F value)
+		{
+			return new Vector4D((double)value.X, (double)value.Y, (double)value.Z, (double)value.W);
+		}
 
 #endregion
 	}

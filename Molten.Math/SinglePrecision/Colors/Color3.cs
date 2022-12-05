@@ -108,7 +108,6 @@ namespace Molten
 			G = g;
 			B = b;
 		}
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>
@@ -225,7 +224,7 @@ namespace Molten
 
 		///<summary>Performs a add operation on two <see cref="Color3"/>.</summary>
 		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/> to add.</param>
+		///<param name="b">The second <see cref="Color3"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Add(ref Color3 a, ref Color3 b, out Color3 result)
 		{
@@ -234,9 +233,20 @@ namespace Molten
 			result.B = a.B + b.B;
 		}
 
-		///<summary>Performs a subtract operation on two <see cref="Color3"/>.</summary>
+		///<summary>Performs a add operation on two <see cref="Color3"/>.</summary>
 		///<param name="a">The first <see cref="Color3"/> to add.</param>
 		///<param name="b">The second <see cref="Color3"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator +(Color3 a, Color3 b)
+		{
+			Add(ref a, ref b, out Color3 result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on two <see cref="Color3"/>.</summary>
+		///<param name="a">The first <see cref="Color3"/> to add.</param>
+		///<param name="b">The second <see cref="Color3"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Subtract(ref Color3 a, ref Color3 b, out Color3 result)
 		{
@@ -245,9 +255,20 @@ namespace Molten
 			result.B = a.B - b.B;
 		}
 
-		///<summary>Performs a modulate operation on two <see cref="Color3"/>.</summary>
+		///<summary>Performs a subtract operation on two <see cref="Color3"/>.</summary>
 		///<param name="a">The first <see cref="Color3"/> to add.</param>
 		///<param name="b">The second <see cref="Color3"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator -(Color3 a, Color3 b)
+		{
+			Subtract(ref a, ref b, out Color3 result);
+			return result;
+		}
+
+		///<summary>Performs a modulate operation on two <see cref="Color3"/>.</summary>
+		///<param name="a">The first <see cref="Color3"/> to add.</param>
+		///<param name="b">The second <see cref="Color3"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Modulate(ref Color3 a, ref Color3 b, out Color3 result)
 		{
@@ -256,15 +277,37 @@ namespace Molten
 			result.B = a.B * b.B;
 		}
 
-		///<summary>Performs a divide operation on two <see cref="Color3"/>.</summary>
+		///<summary>Performs a modulate operation on two <see cref="Color3"/>.</summary>
 		///<param name="a">The first <see cref="Color3"/> to add.</param>
 		///<param name="b">The second <see cref="Color3"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator *(Color3 a, Color3 b)
+		{
+			Modulate(ref a, ref b, out Color3 result);
+			return result;
+		}
+
+		///<summary>Performs a divide operation on two <see cref="Color3"/>.</summary>
+		///<param name="a">The first <see cref="Color3"/> to add.</param>
+		///<param name="b">The second <see cref="Color3"/>to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Divide(ref Color3 a, ref Color3 b, out Color3 result)
 		{
 			result.R = a.R / b.R;
 			result.G = a.G / b.G;
 			result.B = a.B / b.B;
+		}
+
+		///<summary>Performs a divide operation on two <see cref="Color3"/>.</summary>
+		///<param name="a">The first <see cref="Color3"/> to add.</param>
+		///<param name="b">The second <see cref="Color3"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator /(Color3 a, Color3 b)
+		{
+			Divide(ref a, ref b, out Color3 result);
+			return result;
 		}
 
         /// <summary>
@@ -633,15 +676,6 @@ namespace Molten
             return result;
         }
 
-		///<summary>Performs a Add operation on two <see cref="Color3"/>.</summary>
-		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color3 operator +(Color3 a, Color3 b)
-		{
-			return new Color3(a.R + b.R, a.G + b.G, a.B + b.B);
-		}
-
         /// <summary>
         /// Assert a color (return it unchanged).
         /// </summary>
@@ -652,14 +686,6 @@ namespace Molten
             return value;
         }
 
-		///<summary>Performs a subtract operation on two <see cref="Color3"/>.</summary>
-		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color3 operator -(Color3 a, Color3 b)
-		{
-			return new Color3(a.R - b.R, a.G - b.G, a.B - b.B);
-		}
 
         /// <summary>
         /// Negates a color.
@@ -693,24 +719,6 @@ namespace Molten
             return new Color3(value.R * scale, value.G * scale, value.B * scale);
         }
 
-		///<summary>Performs a modulate operation on two <see cref="Color3"/>.</summary>
-		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color3 operator *(Color3 a, Color3 b)
-		{
-			return new Color3(a.R * b.R, a.G * b.G, a.B * b.B);
-		}
-
-		///<summary>Performs a divide operation on two <see cref="Color3"/>.</summary>
-		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/> to add.</param>
-		///<returns>The result of the operation.</returns>
-		public static Color3 operator /(Color3 a, Color3 b)
-		{
-			return new Color3(a.R / b.R, a.G / b.G, a.B / b.B);
-		}
-
         /// <summary>
         /// Tests for equality between two objects.
         /// </summary>
@@ -734,6 +742,11 @@ namespace Molten
         {
             return !left.Equals(ref right);
         }
+
+		public static explicit operator Color4(Color3 value)
+		{
+			return new Color4(value.R, value.G, value.B, 1F);
+		}
 
 		public static explicit operator Color3D(Color3 value)
 		{

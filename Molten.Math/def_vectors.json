@@ -1,52 +1,59 @@
-[
-  {
-    "Name": "SByte",
-    "Postfix": "",
-    "DataTypeName": "sbyte"
-  },
-  {
-    "Name": "Byte",
-    "Postfix": "",
-    "DataTypeName": "byte"
-  },
-  {
-    "Name": "Vector",
-    "Postfix": "I",
-    "DataTypeName": "int"
-  },
-  {
-    "Name": "Vector",
-    "Postfix": "UI",
-    "DataTypeName": "uint"
-  },
-  {
-    "Name": "Vector",
-    "Postfix": "S",
-    "DataTypeName": "short"
-  },
-  {
-    "Name": "Vector",
-    "Postfix": "US",
-    "DataTypeName": "ushort"
-  },
-  {
-    "Name": "Vector",
-    "Postfix": "L",
-    "DataTypeName": "long"
-  },
-  {
-    "Name": "Vector",
-    "Postfix": "UL",
-    "DataTypeName": "ulong"
-  },
-  {
-    "Name": "Vector",
-    "Postfix": "F",
-    "DataTypeName": "float"
-  },
-  {
-    "Name": "Vector",
-    "Postfix": "D",
-    "DataTypeName": "double"
-  }
-]
+{
+  "FieldNames": [ "X", "Y", "Z", "W" ],
+  "FieldLabels": [ "X", "Y", "Z", "W" ],
+  "ArgNames": [ "x", "y", "z", "w" ],
+  "SubFolder": "Vectors",
+
+  "Types": [
+    {
+      "DefName": "SByte{size}",
+      "DataTypeName": "sbyte",
+      "Sizes": [ 2, 3, 4 ]
+    },
+    {
+      "DefName": "Byte{size}",
+      "DataTypeName": "byte",
+      "Sizes": [ 2, 3, 4 ]
+    },
+    {
+      "DefName": "Vector{size}I",
+      "DataTypeName": "int",
+      "Sizes": [ 2, 3, 4 ]
+    },
+    {
+      "DefName": "Vector{size}UI",
+      "DataTypeName": "uint",
+      "Sizes": [ 2, 3, 4 ]
+    },
+    {
+      "DefName": "Vector{size}S",
+      "DataTypeName": "short",
+      "Sizes": [ 2, 3, 4 ]
+    },
+    {
+      "DefName": "Vector{size}US",
+      "DataTypeName": "ushort",
+      "Sizes": [ 2, 3, 4 ]
+    },
+    {
+      "DefName": "Vector{size}L",
+      "DataTypeName": "long",
+      "Sizes": [ 2, 3, 4 ]
+    },
+    {
+      "DefName": "Vector{size}UL",
+      "DataTypeName": "ulong",
+      "Sizes": [ 2, 3, 4 ]
+    },
+    {
+      "DefName": "Vector{size}F",
+      "DataTypeName": "float",
+      "Sizes": [ 2, 3, 4 ]
+    },
+    {
+      "DefName": "Vector{size}D",
+      "DataTypeName": "double",
+      "Sizes": [ 2, 3, 4 ]
+    }
+  ]
+}

@@ -10,7 +10,7 @@
 
 <#
 string[] vecFieldNames = new string[]{"X", "Y", "Z", "W"};
-TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "Colors", "def_colors.json");
+TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "def_colors.json");
 
 gen.Generate(null, (d, def) =>
 {
@@ -61,9 +61,9 @@ namespace Molten<#=d.SubNamespace#>
 
 <#=gen.GenerateFields()#>
 <#gen.GenerateStandardConstructors();#>
-
+<#gen.GenerateUpgradeConstructors();#>
         /// <summary>
-        /// Initializes a new instance of the <see cref="<#=d.Name#>"/> struct.
+        /// Initializes a new instance of the <#=gen.See()#> struct.
         /// </summary>
         /// <param name="value">The <#=gen.FieldsToArgs(def.FieldNames)#> components of the color.</param>
         public <#=d.Name#>(<#=vectorName#> value)
@@ -74,7 +74,7 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="<#=d.Name#>"/> struct.
+        /// Initializes a new instance of the <#=gen.See()#> struct.
         /// </summary>
         /// <param name="rgb">A packed integer containing all three color components in <#=gen.FieldsToArgs(def.FieldNames)#> order.
         /// The alpha component is ignored.</param>
@@ -176,13 +176,13 @@ namespace Molten<#=d.SubNamespace#>
             return new <#=d.DT#>[] { <#=gen.FieldsToArgs(def.FieldNames)#> };
         }
 
-<#gen.GenerateRefOperator("+", "add");#>
+<#gen.GenerateOperator("+", "add");#>
 
-<#gen.GenerateRefOperator("-", "subtract");#>
+<#gen.GenerateOperator("-", "subtract");#>
 
-<#gen.GenerateRefOperator("*", "modulate");#>
+<#gen.GenerateOperator("*", "modulate");#>
 
-<#gen.GenerateRefOperator("/", "divide");#>
+<#gen.GenerateOperator("/", "divide");#>
 
         /// <summary>
         /// Scales a color.
@@ -252,7 +252,7 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Restricts the current <see cref="<#=d.Name#>"/> to within the component ranges of the specified min and max colors.
+        /// Restricts the current <#=gen.See()#> to within the component ranges of the specified min and max colors.
         /// </summary>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
@@ -309,7 +309,7 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Restricts each component of the current <see cref="<#=d.Name#>"/> to within the specified range.
+        /// Restricts each component of the current <#=gen.See()#> to within the specified range.
         /// </summary>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
@@ -431,10 +431,10 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Calculates the dot product of two <see cref="<#=d.Name#>"/>.
+        /// Calculates the dot product of two <#=gen.See()#>.
         /// </summary>
-        /// <param name="c0">The first <see cref="<#=d.Name#>"/>.</param>
-        /// <param name="c1">The second <see cref="<#=d.Name#>"/>.</param>
+        /// <param name="c0">The first <#=gen.See()#>.</param>
+        /// <param name="c1">The second <#=gen.See()#>.</param>
         /// <param name="result">The destination for the result.</param>
         /// <returns></returns>
         public static <#=d.DT#> Dot(<#=d.Name#> c0,<#=d.Name#> c1)
@@ -443,10 +443,10 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Calculates the dot product of two <see cref="<#=d.Name#>"/>.
+        /// Calculates the dot product of two <#=gen.See()#>.
         /// </summary>
-        /// <param name="c0">The first <see cref="<#=d.Name#>"/>.</param>
-        /// <param name="c1">The second <see cref="<#=d.Name#>"/>.</param>
+        /// <param name="c0">The first <#=gen.See()#>.</param>
+        /// <param name="c1">The second <#=gen.See()#>.</param>
         /// <param name="result">The destination for the result.</param>
         /// <returns></returns>
         public static <#=d.DT#> Dot(ref <#=d.Name#> c0, ref <#=d.Name#> c1)
@@ -455,10 +455,10 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Calculates the dot product of two <see cref="<#=d.Name#>"/>.
+        /// Calculates the dot product of two <#=gen.See()#>.
         /// </summary>
-        /// <param name="c0">The first <see cref="<#=d.Name#>"/>.</param>
-        /// <param name="c1">The second <see cref="<#=d.Name#>"/>.</param>
+        /// <param name="c0">The first <#=gen.See()#>.</param>
+        /// <param name="c1">The second <#=gen.See()#>.</param>
         /// <param name="result">The destination for the result.</param>
         /// <returns></returns>
         public static void Dot(ref <#=d.Name#> c0,ref <#=d.Name#>  c1, out <#=d.DT#> result)
@@ -540,8 +540,6 @@ namespace Molten<#=d.SubNamespace#>
             return result;
         }
 
-<#gen.GenerateOperator("+", "Add");#>
-
         /// <summary>
         /// Assert a color (return it unchanged).
         /// </summary>
@@ -552,7 +550,6 @@ namespace Molten<#=d.SubNamespace#>
             return value;
         }
 
-<#gen.GenerateOperator("-", "subtract");#>
 
         /// <summary>
         /// Negates a color.
@@ -586,10 +583,6 @@ namespace Molten<#=d.SubNamespace#>
             return new <#=d.Name#>(<#=gen.FieldsToArgs(def.FieldNames, "value.", " * scale")#>);
         }
 
-<#gen.GenerateOperator("*", "modulate");#>
-
-<#gen.GenerateOperator("/", "divide");#>
-
         /// <summary>
         /// Tests for equality between two objects.
         /// </summary>
@@ -616,7 +609,7 @@ namespace Molten<#=d.SubNamespace#>
 
 <#gen.GenerateCasts((other) => other.DT.One);#>
         /// <summary>
-        /// Performs an implicit conversion from <see cref="<#=d.Name#>"/> to <see cref="Vector3F"/>.
+        /// Performs an implicit conversion from <#=gen.See()#> to <#=gen.See(vectorName)#>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -626,7 +619,7 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <#=vectorName#> to <see cref="<#=d.Name#>"/>.
+        /// Performs an implicit conversion from <#=vectorName#> to <#=gen.See()#>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -636,7 +629,7 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="System.Int32"/> to <see cref="<#=d.Name#>"/>.
+        /// Performs an explicit conversion from <see cref="System.Int32"/> to <#=gen.See()#>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -716,11 +709,11 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="<#=d.Name#>"/> is equal to this instance.
+        /// Determines whether the specified <#=gen.See()#> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="<#=d.Name#>"/> to compare with this instance.</param>
+        /// <param name="other">The <#=gen.See()#> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="<#=d.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <#=gen.See()#> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref <#=d.Name#> other)
@@ -729,11 +722,11 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="<#=d.Name#>"/> is equal to this instance.
+        /// Determines whether the specified <#=gen.See()#> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="<#=d.Name#>"/> to compare with this instance.</param>
+        /// <param name="other">The <#=gen.See()#> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="<#=d.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <#=gen.See()#> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(<#=d.Name#> other)
@@ -759,8 +752,8 @@ namespace Molten<#=d.SubNamespace#>
 
 
         /// <summary>
-        /// Returns a new <see cref="<#=d.Name#>"/> with the values of the provided color's components assigned based on their index.<para/>
-        /// For example, a swizzle input of (2,2,3) on a <see cref="<#=d.Name#>"/> with RGBA values of 100,20,255, will return a <see cref="Color4"/> with values 20,20,255.
+        /// Returns a new <#=gen.See()#> with the values of the provided color's components assigned based on their index.<para/>
+        /// For example, a swizzle input of (2,2,3) on a <#=gen.See()#> with RGBA values of 100,20,255, will return a <see cref="Color4"/> with values 20,20,255.
         /// </summary>
         /// <param name="col">The color to use as a source for values.</param>
 <#gen.IterateFields((i, field) => $"/// <param name=\"{def.ArgNames[i]}Index\">The component index of the source color to use for the new {def.FieldLabels[i]} value. This should be a value between 0 and {d.Size - 1}.</param>");#>

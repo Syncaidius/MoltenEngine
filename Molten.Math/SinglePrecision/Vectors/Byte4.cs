@@ -19,6 +19,8 @@ namespace Molten
 		///<summary>A Byte4 with every component set to (byte)1.</summary>
 		public static readonly Byte4 One = new Byte4((byte)1, (byte)1, (byte)1, (byte)1);
 
+        static readonly string toStringFormat = "X:{0} Y:{1} Z:{2} W:{3}";
+
 		/// <summary>The X unit <see cref="Byte4"/>.</summary>
 		public static readonly Byte4 UnitX = new Byte4((byte)1, (byte)0, (byte)0, (byte)0);
 
@@ -130,7 +132,7 @@ namespace Molten
 			Z = z;
 			W = w;
 		}
-        ///<summary>Creates a new instance of <see cref = "Byte4"/>, using a <see cref="Byte2"/> to populate the first two components.</summary>
+		///<summary>Creates a new instance of <see cref="Byte4"/>, using a <see cref="Byte2"/> to populate the first two components.</summary>
 		public Byte4(Byte2 vector, byte z, byte w)
 		{
 			X = vector.X;
@@ -138,7 +140,8 @@ namespace Molten
 			Z = z;
 			W = w;
 		}
-        ///<summary>Creates a new instance of <see cref = "Byte4"/>, using a <see cref="Byte3"/> to populate the first three components.</summary>
+
+		///<summary>Creates a new instance of <see cref="Byte4"/>, using a <see cref="Byte3"/> to populate the first three components.</summary>
 		public Byte4(Byte3 vector, byte w)
 		{
 			X = vector.X;
@@ -146,11 +149,12 @@ namespace Molten
 			Z = vector.Z;
 			W = w;
 		}
+
 #endregion
 
 #region Instance Methods
         /// <summary>
-        /// Determines whether the specified <see cref="Byte4"/> is equal to this instance.
+        /// Determines whether the specified <see cref = "Byte4"/> is equal to this instance.
         /// </summary>
         /// <param name="other">The <see cref="Byte4"/> to compare with this instance.</param>
         /// <returns>
@@ -228,7 +232,7 @@ namespace Molten
         /// <returns>A four-element array containing the components of the vector.</returns>
         public byte[] ToArray()
         {
-            return new byte[] { X, Y, Z, W};
+            return new byte[] { X, Y, Z, W };
         }
 		
 
@@ -264,7 +268,6 @@ namespace Molten
 #endregion
 
 #region To-String
-
 		/// <summary>
         /// Returns a <see cref="System.String"/> that represents this <see cref="Byte4"/>.
         /// </summary>
@@ -277,8 +280,7 @@ namespace Molten
             if (format == null)
                 return ToString();
 
-            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2} W:{3}", 
-			X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture), Z.ToString(format, CultureInfo.CurrentCulture), W.ToString(format, CultureInfo.CurrentCulture));
+            return string.Format(CultureInfo.CurrentCulture, format, X, Y, Z, W);
         }
 
 		/// <summary>
@@ -290,7 +292,7 @@ namespace Molten
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2} W:{3}", X, Y, Z, W);
+            return string.Format(formatProvider, toStringFormat, X, Y, Z, W);
         }
 
 		/// <summary>
@@ -301,7 +303,7 @@ namespace Molten
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2} W:{3}", X, Y, Z, W);
+            return string.Format(CultureInfo.CurrentCulture, toStringFormat, X, Y, Z, W);
         }
 
 		/// <summary>
@@ -317,18 +319,39 @@ namespace Molten
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2} W:{3}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider), Z.ToString(format, formatProvider), W.ToString(format, formatProvider));
+            return string.Format(formatProvider,
+                toStringFormat,
+				X.ToString(format, formatProvider),
+				Y.ToString(format, formatProvider),
+				Z.ToString(format, formatProvider),
+				W.ToString(format, formatProvider)
+            );
         }
 #endregion
 
 #region Add operators
-        public static void Add(ref Byte4 left, ref Byte4 right, out Byte4 result)
-        {
-			result.X = (byte)(left.X + right.X);
-			result.Y = (byte)(left.Y + right.Y);
-			result.Z = (byte)(left.Z + right.Z);
-			result.W = (byte)(left.W + right.W);
-        }
+		///<summary>Performs a add operation on two <see cref="Byte4"/>.</summary>
+		///<param name="a">The first <see cref="Byte4"/> to add.</param>
+		///<param name="b">The second <see cref="Byte4"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Byte4 a, ref Byte4 b, out Byte4 result)
+		{
+			result.X = (byte)(a.X + b.X);
+			result.Y = (byte)(a.Y + b.Y);
+			result.Z = (byte)(a.Z + b.Z);
+			result.W = (byte)(a.W + b.W);
+		}
+
+		///<summary>Performs a add operation on two <see cref="Byte4"/>.</summary>
+		///<param name="a">The first <see cref="Byte4"/> to add.</param>
+		///<param name="b">The second <see cref="Byte4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte4 operator +(Byte4 a, Byte4 b)
+		{
+			Add(ref a, ref b, out Byte4 result);
+			return result;
+		}
 
         public static void Add(ref Byte4 left, byte right, out Byte4 result)
         {
@@ -337,12 +360,6 @@ namespace Molten
 			result.Z = (byte)(left.Z + right);
 			result.W = (byte)(left.W + right);
         }
-
-		public static Byte4 operator +(Byte4 left, Byte4 right)
-		{
-			Add(ref left, ref right, out Byte4 result);
-            return result;
-		}
 
 		public static Byte4 operator +(Byte4 left, byte right)
 		{
@@ -368,13 +385,28 @@ namespace Molten
 #endregion
 
 #region Subtract operators
-		public static void Subtract(ref Byte4 left, ref Byte4 right, out Byte4 result)
-        {
-			result.X = (byte)(left.X - right.X);
-			result.Y = (byte)(left.Y - right.Y);
-			result.Z = (byte)(left.Z - right.Z);
-			result.W = (byte)(left.W - right.W);
-        }
+		///<summary>Performs a subtract operation on two <see cref="Byte4"/>.</summary>
+		///<param name="a">The first <see cref="Byte4"/> to add.</param>
+		///<param name="b">The second <see cref="Byte4"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Byte4 a, ref Byte4 b, out Byte4 result)
+		{
+			result.X = (byte)(a.X - b.X);
+			result.Y = (byte)(a.Y - b.Y);
+			result.Z = (byte)(a.Z - b.Z);
+			result.W = (byte)(a.W - b.W);
+		}
+
+		///<summary>Performs a subtract operation on two <see cref="Byte4"/>.</summary>
+		///<param name="a">The first <see cref="Byte4"/> to add.</param>
+		///<param name="b">The second <see cref="Byte4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte4 operator -(Byte4 a, Byte4 b)
+		{
+			Subtract(ref a, ref b, out Byte4 result);
+			return result;
+		}
 
         public static void Subtract(ref Byte4 left, byte right, out Byte4 result)
         {
@@ -383,12 +415,6 @@ namespace Molten
 			result.Z = (byte)(left.Z - right);
 			result.W = (byte)(left.W - right);
         }
-
-		public static Byte4 operator -(Byte4 left, Byte4 right)
-		{
-			Subtract(ref left, ref right, out Byte4 result);
-            return result;
-		}
 
 		public static Byte4 operator -(Byte4 left, byte right)
 		{
@@ -405,13 +431,28 @@ namespace Molten
 #endregion
 
 #region division operators
-		public static void Divide(ref Byte4 left, ref Byte4 right, out Byte4 result)
-        {
-			result.X = (byte)(left.X / right.X);
-			result.Y = (byte)(left.Y / right.Y);
-			result.Z = (byte)(left.Z / right.Z);
-			result.W = (byte)(left.W / right.W);
-        }
+		///<summary>Performs a divide operation on two <see cref="Byte4"/>.</summary>
+		///<param name="a">The first <see cref="Byte4"/> to add.</param>
+		///<param name="b">The second <see cref="Byte4"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Byte4 a, ref Byte4 b, out Byte4 result)
+		{
+			result.X = (byte)(a.X / b.X);
+			result.Y = (byte)(a.Y / b.Y);
+			result.Z = (byte)(a.Z / b.Z);
+			result.W = (byte)(a.W / b.W);
+		}
+
+		///<summary>Performs a divide operation on two <see cref="Byte4"/>.</summary>
+		///<param name="a">The first <see cref="Byte4"/> to add.</param>
+		///<param name="b">The second <see cref="Byte4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte4 operator /(Byte4 a, Byte4 b)
+		{
+			Divide(ref a, ref b, out Byte4 result);
+			return result;
+		}
 
         public static void Divide(ref Byte4 left, byte right, out Byte4 result)
         {
@@ -420,12 +461,6 @@ namespace Molten
 			result.Z = (byte)(left.Z / right);
 			result.W = (byte)(left.W / right);
         }
-
-		public static Byte4 operator /(Byte4 left, Byte4 right)
-		{
-			Divide(ref left, ref right, out Byte4 result);
-            return result;
-		}
 
 		public static Byte4 operator /(Byte4 left, byte right)
 		{
@@ -441,13 +476,28 @@ namespace Molten
 #endregion
 
 #region Multiply operators
-		public static void Multiply(ref Byte4 left, ref Byte4 right, out Byte4 result)
-        {
-			result.X = (byte)(left.X * right.X);
-			result.Y = (byte)(left.Y * right.Y);
-			result.Z = (byte)(left.Z * right.Z);
-			result.W = (byte)(left.W * right.W);
-        }
+		///<summary>Performs a multiply operation on two <see cref="Byte4"/>.</summary>
+		///<param name="a">The first <see cref="Byte4"/> to add.</param>
+		///<param name="b">The second <see cref="Byte4"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Byte4 a, ref Byte4 b, out Byte4 result)
+		{
+			result.X = (byte)(a.X * b.X);
+			result.Y = (byte)(a.Y * b.Y);
+			result.Z = (byte)(a.Z * b.Z);
+			result.W = (byte)(a.W * b.W);
+		}
+
+		///<summary>Performs a multiply operation on two <see cref="Byte4"/>.</summary>
+		///<param name="a">The first <see cref="Byte4"/> to add.</param>
+		///<param name="b">The second <see cref="Byte4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte4 operator *(Byte4 a, Byte4 b)
+		{
+			Multiply(ref a, ref b, out Byte4 result);
+			return result;
+		}
 
         public static void Multiply(ref Byte4 left, byte right, out Byte4 result)
         {
@@ -456,12 +506,6 @@ namespace Molten
 			result.Z = (byte)(left.Z * right);
 			result.W = (byte)(left.W * right);
         }
-
-		public static Byte4 operator *(Byte4 left, Byte4 right)
-		{
-			Multiply(ref left, ref right, out Byte4 result);
-            return result;
-		}
 
 		public static Byte4 operator *(Byte4 left, byte right)
 		{
@@ -500,21 +544,6 @@ namespace Molten
         {
             return !left.Equals(ref right);
         }
-#endregion
-
-#region Operators - Cast
-        ///<summary>Casts a <see cref="Byte4"/> to a <see cref="Byte2"/>.</summary>
-        public static explicit operator Byte2(Byte4 value)
-        {
-            return new Byte2(value.X, value.Y);
-        }
-
-        ///<summary>Casts a <see cref="Byte4"/> to a <see cref="Byte3"/>.</summary>
-        public static explicit operator Byte3(Byte4 value)
-        {
-            return new Byte3(value.X, value.Y, value.Z);
-        }
-
 #endregion
 
 #region Static Methods
@@ -948,8 +977,8 @@ namespace Molten
 		/// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of the X, Y, Z or W component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 3</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>  
 		public byte this[int index]
@@ -981,113 +1010,150 @@ namespace Molten
 #endregion
 
 #region Casts - vectors
-        ///<summary>Casts a <see cref="Byte4"/> to a <see cref="SByte4"/>.</summary>
-        public static explicit operator SByte4(Byte4 val)
-        {
-            return new SByte4()
-            {
-                X = (sbyte)val.X,
-                Y = (sbyte)val.Y,
-                Z = (sbyte)val.Z,
-                W = (sbyte)val.W,
-            };
-        }
+		public static explicit operator SByte2(Byte4 value)
+		{
+			return new SByte2((sbyte)value.X, (sbyte)value.Y);
+		}
 
-        ///<summary>Casts a <see cref="Byte4"/> to a <see cref="Vector4I"/>.</summary>
-        public static explicit operator Vector4I(Byte4 val)
-        {
-            return new Vector4I()
-            {
-                X = (int)val.X,
-                Y = (int)val.Y,
-                Z = (int)val.Z,
-                W = (int)val.W,
-            };
-        }
+		public static explicit operator SByte3(Byte4 value)
+		{
+			return new SByte3((sbyte)value.X, (sbyte)value.Y, (sbyte)value.Z);
+		}
 
-        ///<summary>Casts a <see cref="Byte4"/> to a <see cref="Vector4UI"/>.</summary>
-        public static explicit operator Vector4UI(Byte4 val)
-        {
-            return new Vector4UI()
-            {
-                X = val.X,
-                Y = val.Y,
-                Z = val.Z,
-                W = val.W,
-            };
-        }
+		public static explicit operator SByte4(Byte4 value)
+		{
+			return new SByte4((sbyte)value.X, (sbyte)value.Y, (sbyte)value.Z, (sbyte)value.W);
+		}
 
-        ///<summary>Casts a <see cref="Byte4"/> to a <see cref="Vector4S"/>.</summary>
-        public static explicit operator Vector4S(Byte4 val)
-        {
-            return new Vector4S()
-            {
-                X = (short)val.X,
-                Y = (short)val.Y,
-                Z = (short)val.Z,
-                W = (short)val.W,
-            };
-        }
+		public static explicit operator Byte2(Byte4 value)
+		{
+			return new Byte2(value.X, value.Y);
+		}
 
-        ///<summary>Casts a <see cref="Byte4"/> to a <see cref="Vector4US"/>.</summary>
-        public static explicit operator Vector4US(Byte4 val)
-        {
-            return new Vector4US()
-            {
-                X = val.X,
-                Y = val.Y,
-                Z = val.Z,
-                W = val.W,
-            };
-        }
+		public static explicit operator Byte3(Byte4 value)
+		{
+			return new Byte3(value.X, value.Y, value.Z);
+		}
 
-        ///<summary>Casts a <see cref="Byte4"/> to a <see cref="Vector4L"/>.</summary>
-        public static explicit operator Vector4L(Byte4 val)
-        {
-            return new Vector4L()
-            {
-                X = (long)val.X,
-                Y = (long)val.Y,
-                Z = (long)val.Z,
-                W = (long)val.W,
-            };
-        }
+		public static explicit operator Vector2I(Byte4 value)
+		{
+			return new Vector2I((int)value.X, (int)value.Y);
+		}
 
-        ///<summary>Casts a <see cref="Byte4"/> to a <see cref="Vector4UL"/>.</summary>
-        public static explicit operator Vector4UL(Byte4 val)
-        {
-            return new Vector4UL()
-            {
-                X = val.X,
-                Y = val.Y,
-                Z = val.Z,
-                W = val.W,
-            };
-        }
+		public static explicit operator Vector3I(Byte4 value)
+		{
+			return new Vector3I((int)value.X, (int)value.Y, (int)value.Z);
+		}
 
-        ///<summary>Casts a <see cref="Byte4"/> to a <see cref="Vector4F"/>.</summary>
-        public static explicit operator Vector4F(Byte4 val)
-        {
-            return new Vector4F()
-            {
-                X = (float)val.X,
-                Y = (float)val.Y,
-                Z = (float)val.Z,
-                W = (float)val.W,
-            };
-        }
+		public static explicit operator Vector4I(Byte4 value)
+		{
+			return new Vector4I((int)value.X, (int)value.Y, (int)value.Z, (int)value.W);
+		}
 
-        ///<summary>Casts a <see cref="Byte4"/> to a <see cref="Vector4D"/>.</summary>
-        public static explicit operator Vector4D(Byte4 val)
-        {
-            return new Vector4D()
-            {
-                X = (double)val.X,
-                Y = (double)val.Y,
-                Z = (double)val.Z,
-                W = (double)val.W,
-            };
-        }
+		public static explicit operator Vector2UI(Byte4 value)
+		{
+			return new Vector2UI((uint)value.X, (uint)value.Y);
+		}
+
+		public static explicit operator Vector3UI(Byte4 value)
+		{
+			return new Vector3UI((uint)value.X, (uint)value.Y, (uint)value.Z);
+		}
+
+		public static explicit operator Vector4UI(Byte4 value)
+		{
+			return new Vector4UI((uint)value.X, (uint)value.Y, (uint)value.Z, (uint)value.W);
+		}
+
+		public static explicit operator Vector2S(Byte4 value)
+		{
+			return new Vector2S((short)value.X, (short)value.Y);
+		}
+
+		public static explicit operator Vector3S(Byte4 value)
+		{
+			return new Vector3S((short)value.X, (short)value.Y, (short)value.Z);
+		}
+
+		public static explicit operator Vector4S(Byte4 value)
+		{
+			return new Vector4S((short)value.X, (short)value.Y, (short)value.Z, (short)value.W);
+		}
+
+		public static explicit operator Vector2US(Byte4 value)
+		{
+			return new Vector2US((ushort)value.X, (ushort)value.Y);
+		}
+
+		public static explicit operator Vector3US(Byte4 value)
+		{
+			return new Vector3US((ushort)value.X, (ushort)value.Y, (ushort)value.Z);
+		}
+
+		public static explicit operator Vector4US(Byte4 value)
+		{
+			return new Vector4US((ushort)value.X, (ushort)value.Y, (ushort)value.Z, (ushort)value.W);
+		}
+
+		public static explicit operator Vector2L(Byte4 value)
+		{
+			return new Vector2L((long)value.X, (long)value.Y);
+		}
+
+		public static explicit operator Vector3L(Byte4 value)
+		{
+			return new Vector3L((long)value.X, (long)value.Y, (long)value.Z);
+		}
+
+		public static explicit operator Vector4L(Byte4 value)
+		{
+			return new Vector4L((long)value.X, (long)value.Y, (long)value.Z, (long)value.W);
+		}
+
+		public static explicit operator Vector2UL(Byte4 value)
+		{
+			return new Vector2UL((ulong)value.X, (ulong)value.Y);
+		}
+
+		public static explicit operator Vector3UL(Byte4 value)
+		{
+			return new Vector3UL((ulong)value.X, (ulong)value.Y, (ulong)value.Z);
+		}
+
+		public static explicit operator Vector4UL(Byte4 value)
+		{
+			return new Vector4UL((ulong)value.X, (ulong)value.Y, (ulong)value.Z, (ulong)value.W);
+		}
+
+		public static explicit operator Vector2F(Byte4 value)
+		{
+			return new Vector2F((float)value.X, (float)value.Y);
+		}
+
+		public static explicit operator Vector3F(Byte4 value)
+		{
+			return new Vector3F((float)value.X, (float)value.Y, (float)value.Z);
+		}
+
+		public static explicit operator Vector4F(Byte4 value)
+		{
+			return new Vector4F((float)value.X, (float)value.Y, (float)value.Z, (float)value.W);
+		}
+
+		public static explicit operator Vector2D(Byte4 value)
+		{
+			return new Vector2D((double)value.X, (double)value.Y);
+		}
+
+		public static explicit operator Vector3D(Byte4 value)
+		{
+			return new Vector3D((double)value.X, (double)value.Y, (double)value.Z);
+		}
+
+		public static explicit operator Vector4D(Byte4 value)
+		{
+			return new Vector4D((double)value.X, (double)value.Y, (double)value.Z, (double)value.W);
+		}
 
 #endregion
 	}
