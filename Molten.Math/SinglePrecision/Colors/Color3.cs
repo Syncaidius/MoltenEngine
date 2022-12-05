@@ -340,10 +340,8 @@ namespace Molten
         /// <summary>
         /// Restricts the current <see cref="Color3"/> to within the component ranges of the specified min and max colors.
         /// </summary>
-        /// <param name="value">The value to clamp.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
-        /// <param name="result">When the method completes, contains the clamped value.</param>
         public void Clamp(ref Color3 min, ref Color3 max)
         {
             R = (R > max.R) ? max.R : R;
@@ -384,30 +382,18 @@ namespace Molten
         /// <param name="value">The value to clamp.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color3 Clamp(ref Color3 value, float min, float max)
         {
-            float red = value.R;
-            red = (red > max) ? max : red;
-            red = (red < min) ? min : red;
-
-            float green = value.G;
-            green = (green > max) ? max : green;
-            green = (green < min) ? min : green;
-
-            float blue = value.B;
-            blue = (blue > max) ? max : blue;
-            blue = (blue < min) ? min : blue;
-
-            return new Color3(red, green, blue);
+            Clamp(ref value, min, max, out Color3 result);
+            return result;
         }
 
         /// <summary>
         /// Restricts each component of the current <see cref="Color3"/> to within the specified range.
         /// </summary>
-        /// <param name="value">The value to clamp.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
-        /// <param name="result">When the method completes, contains the clamped value.</param>
         public void Clamp(float min, float max)
         {
             R = (R > max) ? max : R;

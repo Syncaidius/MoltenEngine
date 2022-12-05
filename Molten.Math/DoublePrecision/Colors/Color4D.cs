@@ -360,10 +360,8 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Restricts the current <see cref="Color4D"/> to within the component ranges of the specified min and max colors.
         /// </summary>
-        /// <param name="value">The value to clamp.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
-        /// <param name="result">When the method completes, contains the clamped value.</param>
         public void Clamp(ref Color4D min, ref Color4D max)
         {
             R = (R > max.R) ? max.R : R;
@@ -410,34 +408,18 @@ namespace Molten.DoublePrecision
         /// <param name="value">The value to clamp.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color4D Clamp(ref Color4D value, double min, double max)
         {
-            double red = value.R;
-            red = (red > max) ? max : red;
-            red = (red < min) ? min : red;
-
-            double green = value.G;
-            green = (green > max) ? max : green;
-            green = (green < min) ? min : green;
-
-            double blue = value.B;
-            blue = (blue > max) ? max : blue;
-            blue = (blue < min) ? min : blue;
-
-            double alpha = value.A;
-            alpha = (alpha > max) ? max : alpha;
-            alpha = (alpha < min) ? min : alpha;
-
-            return new Color4D(red, green, blue, alpha);
+            Clamp(ref value, min, max, out Color4D result);
+            return result;
         }
 
         /// <summary>
         /// Restricts each component of the current <see cref="Color4D"/> to within the specified range.
         /// </summary>
-        /// <param name="value">The value to clamp.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
-        /// <param name="result">When the method completes, contains the clamped value.</param>
         public void Clamp(double min, double max)
         {
             R = (R > max) ? max : R;

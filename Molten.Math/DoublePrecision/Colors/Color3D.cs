@@ -339,10 +339,8 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Restricts the current <see cref="Color3D"/> to within the component ranges of the specified min and max colors.
         /// </summary>
-        /// <param name="value">The value to clamp.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
-        /// <param name="result">When the method completes, contains the clamped value.</param>
         public void Clamp(ref Color3D min, ref Color3D max)
         {
             R = (R > max.R) ? max.R : R;
@@ -383,30 +381,18 @@ namespace Molten.DoublePrecision
         /// <param name="value">The value to clamp.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color3D Clamp(ref Color3D value, double min, double max)
         {
-            double red = value.R;
-            red = (red > max) ? max : red;
-            red = (red < min) ? min : red;
-
-            double green = value.G;
-            green = (green > max) ? max : green;
-            green = (green < min) ? min : green;
-
-            double blue = value.B;
-            blue = (blue > max) ? max : blue;
-            blue = (blue < min) ? min : blue;
-
-            return new Color3D(red, green, blue);
+            Clamp(ref value, min, max, out Color3D result);
+            return result;
         }
 
         /// <summary>
         /// Restricts each component of the current <see cref="Color3D"/> to within the specified range.
         /// </summary>
-        /// <param name="value">The value to clamp.</param>
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
-        /// <param name="result">When the method completes, contains the clamped value.</param>
         public void Clamp(double min, double max)
         {
             R = (R > max) ? max : R;
