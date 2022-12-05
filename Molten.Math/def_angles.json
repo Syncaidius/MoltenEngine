@@ -1,12 +1,19 @@
-[
-  {
-    "Name": "Angle",
-    "Postfix": "F",
-    "DataTypeName": "float"
-  },
-  {
-    "Name": "Angle",
-    "Postfix": "D",
-    "DataTypeName": "double"
-  }
-]
+{
+  "FieldNames": [ "Radians" ],
+  "FieldLabels": [ "radians" ],
+  "ArgNames": [ "radians" ],
+  "SubFolder": "",
+
+  "Types": [
+    {
+      "DefName": "AngleF",
+      "DataTypeName": "float",
+      "Sizes": [ 1 ]
+    },
+    {
+      "DefName": "AngleD",
+      "DataTypeName": "double",
+      "Sizes": [ 1 ]
+    }
+  ]
+}

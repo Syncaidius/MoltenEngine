@@ -106,6 +106,7 @@ namespace Molten.HalfPrecision
 			X = x;
 			Y = y;
 		}
+
 #endregion
 
 #region Instance Methods

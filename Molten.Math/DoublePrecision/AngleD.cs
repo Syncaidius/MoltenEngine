@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace Molten.DoublePrecision
 {
 	///<summary>Represents a four dimensional mathematical AngleD.</summary>
-	[StructLayout(LayoutKind.Explicit)]
+	[StructLayout(LayoutKind.Sequential, Pack = 8)]
     [Serializable]
 	public partial struct AngleD : IFormattable, IEquatable<AngleD>
 	{
@@ -41,16 +41,11 @@ namespace Molten.DoublePrecision
         /// </summary>
         public const double Gradian = 0.0025D;
 
-         /// <summary>
-        /// The internal representation of the angle.
-        /// </summary>
-        [FieldOffset(0)]
-        [DataMember]
-        double radians;
+		/// <summary>The radians component.</summary>
+		[DataMember]
+		public double Radians;
 
-        [FieldOffset(0)]
-        [DataMember]
-        private int radiansInt;
+
 
          /// <summary>
         /// Initializes a new instance of the <see cref="AngleD"/> structure with the
@@ -60,27 +55,26 @@ namespace Molten.DoublePrecision
         /// <param name="type">The type of unit the angle argument is.</param>
         public AngleD(double angle, AngleType type)
         {
-            radiansInt = 0;
             switch (type)
             {
                 case AngleType.Revolution:
-                    radians = MathHelper.RevolutionsToRadians(angle);
+                    Radians = MathHelper.RevolutionsToRadians(angle);
                     break;
 
                 case AngleType.Degree:
-                    radians = MathHelper.DegreesToRadians(angle);
+                    Radians = MathHelper.DegreesToRadians(angle);
                     break;
 
                 case AngleType.Radian:
-                    radians = angle;
+                    Radians = angle;
                     break;
 
                 case AngleType.Gradian:
-                    radians = MathHelper.GradiansToRadians(angle);
+                    Radians = MathHelper.GradiansToRadians(angle);
                     break;
 
                 default:
-                    radians = 0D;
+                    Radians = 0D;
                     break;
             }
         }
@@ -93,8 +87,7 @@ namespace Molten.DoublePrecision
         /// <param name="radius">The radius of the circle.</param>
         public AngleD(double arcLength, double radius)
         {
-            radiansInt = 0;
-            radians = arcLength / radius;
+            Radians = arcLength / radius;
         }
 
         /// <summary>
@@ -102,7 +95,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public void Wrap()
         {
-            radians = MathHelper.WrapAngle(radians);
+            Radians = MathHelper.WrapAngle(Radians);
         }
 
         /// <summary>
@@ -110,12 +103,12 @@ namespace Molten.DoublePrecision
         /// </summary>
         public void WrapPositive()
         {
-            double newangle = radians % double.Tau;
+            double newangle = Radians % double.Tau;
 
-            if (newangle < 0.0)
+            if (newangle < 0D)
                 newangle += double.Tau;
 
-            radians = newangle;
+            Radians = newangle;
         }
 
         /// <summary>
@@ -123,8 +116,8 @@ namespace Molten.DoublePrecision
         /// </summary>
         public double Revolutions
         {
-            get => MathHelper.RadiansToRevolutions(radians);
-            set => radians = MathHelper.RevolutionsToRadians(value);
+            get => MathHelper.RadiansToRevolutions(Radians);
+            set => Radians = MathHelper.RevolutionsToRadians(value);
         }
 
         /// <summary>
@@ -132,8 +125,8 @@ namespace Molten.DoublePrecision
         /// </summary>
         public double Degrees
         {
-            get => MathHelper.RadiansToDegrees(radians);
-            set => radians = MathHelper.DegreesToRadians(value);
+            get => MathHelper.RadiansToDegrees(Radians);
+            set => Radians = MathHelper.DegreesToRadians(value);
         }
 
         /// <summary>
@@ -146,7 +139,7 @@ namespace Molten.DoublePrecision
         {
             get
             {
-                double degrees = MathHelper.RadiansToDegrees(radians);
+                double degrees = MathHelper.RadiansToDegrees(Radians);
 
                 if (degrees < 0)
                 {
@@ -161,11 +154,11 @@ namespace Molten.DoublePrecision
             }
             set
             {
-                double degrees = MathHelper.RadiansToDegrees(radians);
+                double degrees = MathHelper.RadiansToDegrees(Radians);
                 double degreesfloor = Math.Floor(degrees);
 
                 degreesfloor += value / 60.0D;
-                radians = MathHelper.DegreesToRadians(degreesfloor);
+                Radians = MathHelper.DegreesToRadians(degreesfloor);
             }
         }
 
@@ -179,7 +172,7 @@ namespace Molten.DoublePrecision
         {
             get
             {
-                double degrees = MathHelper.RadiansToDegrees(radians);
+                double degrees = MathHelper.RadiansToDegrees(Radians);
 
                 if (degrees < 0)
                 {
@@ -202,7 +195,7 @@ namespace Molten.DoublePrecision
             }
             set
             {
-                double degrees = MathHelper.RadiansToDegrees(radians);
+                double degrees = MathHelper.RadiansToDegrees(Radians);
                 double degreesfloor = Math.Floor(degrees);
 
                 double minutes = (degrees - degreesfloor) * 60.0D;
@@ -210,17 +203,8 @@ namespace Molten.DoublePrecision
 
                 minutesfloor += value / 60.0D;
                 degreesfloor += minutesfloor / 60.0D;
-                radians = MathHelper.DegreesToRadians(degreesfloor);
+                Radians = MathHelper.DegreesToRadians(degreesfloor);
             }
-        }
-        
-        /// <summary>
-        /// Gets or sets the total number of radians this <see cref="AngleD"/> represents.
-        /// </summary>
-        public double Radians
-        {
-            get => radians;
-            set => radians = value;
         }
 
         /// <summary>
@@ -229,8 +213,8 @@ namespace Molten.DoublePrecision
         /// </summary>
         public double Milliradians
         {
-            get => radians / (Milliradian * double.Tau);
-            set => radians = value * (Milliradian * double.Tau);
+            get => Radians / (Milliradian * double.Tau);
+            set => Radians = value * (Milliradian * double.Tau);
         }
 
         /// <summary>
@@ -238,61 +222,61 @@ namespace Molten.DoublePrecision
         /// </summary>
         public double Gradians
         {
-            get => MathHelper.RadiansToGradians(radians);
-            set => radians = MathHelper.RadiansToGradians(value);
+            get => MathHelper.RadiansToGradians(Radians);
+            set => Radians = MathHelper.RadiansToGradians(value);
         }
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is a right angle (i.e. 90° or π/2).
         /// </summary>
-        public bool IsRight => radians == MathHelper.Constants<double>.PiOverTwo; 
+        public bool IsRight => Radians == MathHelper.Constants<double>.PiOverTwo; 
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is a straight angle (i.e. 180° or π).
         /// </summary>
-        public bool IsStraight => radians == double.Pi;
+        public bool IsStraight => Radians == double.Pi;
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is a full rotation angle (i.e. 360° or 2π).
         /// </summary>
-        public bool IsFullRotation => radians == double.Tau;
+        public bool IsFullRotation => Radians == double.Tau;
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is an oblique angle (i.e. is not 90° or a multiple of 90°).
         /// </summary>
-        public bool IsOblique => WrapPositive(this).radians != MathHelper.Constants<double>.PiOverTwo; 
+        public bool IsOblique => WrapPositive(this).Radians != MathHelper.Constants<double>.PiOverTwo; 
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is an acute angle (i.e. less than 90° but greater than 0°).
         /// </summary>
-        public bool IsAcute => radians > 0.0 && radians < MathHelper.Constants<double>.PiOverTwo;
+        public bool IsAcute => Radians > 0.0 && Radians < MathHelper.Constants<double>.PiOverTwo;
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is an obtuse angle (i.e. greater than 90° but less than 180°).
         /// </summary>
-        public bool IsObtuse => radians > MathHelper.Constants<double>.PiOverTwo && radians < double.Pi;
+        public bool IsObtuse => Radians > MathHelper.Constants<double>.PiOverTwo && Radians < double.Pi;
 
         /// <summary>
         /// Gets a System.Boolean that determines whether this <see cref="AngleD"/>
         /// is a reflex angle (i.e. greater than 180° but less than 360°).
         /// </summary>
-        public bool IsReflex => radians > double.Pi && radians < double.Tau;
+        public bool IsReflex => Radians > double.Pi && Radians < double.Tau;
 
         /// <summary>
         /// Gets a <see cref="AngleD"/> instance that complements this angle (i.e. the two angles add to 90°).
         /// </summary>
-        public AngleD Complement => new AngleD(MathHelper.Constants<double>.PiOverTwo - radians, AngleType.Radian);
+        public AngleD Complement => new AngleD(MathHelper.Constants<double>.PiOverTwo - Radians, AngleType.Radian);
 
         /// <summary>
         /// Gets a <see cref="AngleD"/> instance that supplements this angle (i.e. the two angles add to 180°).
         /// </summary>
-        public AngleD Supplement => new AngleD(double.Pi - radians, AngleType.Radian);
+        public AngleD Supplement => new AngleD(double.Pi - Radians, AngleType.Radian);
 
         /// <summary>
         /// Wraps the <see cref="AngleD"/> given in the value argument to be in the range [π, -π].
@@ -335,7 +319,7 @@ namespace Molten.DoublePrecision
         /// <returns>The smaller of the two given <see cref="AngleD"/> instances.</returns>
         public static AngleD Min(ref AngleD left, ref AngleD right)
         {
-            if (left.radians < right.radians)
+            if (left.Radians < right.Radians)
                 return left;
 
             return right;
@@ -349,7 +333,7 @@ namespace Molten.DoublePrecision
         /// <returns>The smaller of the two given <see cref="AngleD"/> instances.</returns>
         public static AngleD Min(AngleD left, AngleD right)
         {
-            if (left.radians < right.radians)
+            if (left.Radians < right.Radians)
                 return left;
 
             return right;
@@ -363,7 +347,7 @@ namespace Molten.DoublePrecision
         /// <returns>The greater of the two given <see cref="AngleD"/> instances.</returns>
         public static AngleD Max(ref AngleD left, ref AngleD right)
         {
-            if (left.radians > right.radians)
+            if (left.Radians > right.Radians)
                 return left;
 
             return right;
@@ -377,7 +361,7 @@ namespace Molten.DoublePrecision
         /// <returns>The greater of the two given <see cref="AngleD"/> instances.</returns>
         public static AngleD Max(AngleD left, AngleD right)
         {
-            if (left.radians > right.radians)
+            if (left.Radians > right.Radians)
                 return left;
 
             return right;
@@ -391,7 +375,7 @@ namespace Molten.DoublePrecision
         /// <returns>The value of the two objects added together.</returns>
         public static AngleD Add(ref AngleD left, ref AngleD right)
         {
-            return new AngleD(left.radians + right.radians, AngleType.Radian);
+            return new AngleD(left.Radians + right.Radians, AngleType.Radian);
         }
 
         /// <summary>
@@ -402,7 +386,7 @@ namespace Molten.DoublePrecision
         /// <returns>The value of the two objects subtracted.</returns>
         public static AngleD Subtract(ref AngleD left, ref AngleD right)
         {
-            return new AngleD(left.radians - right.radians, AngleType.Radian);
+            return new AngleD(left.Radians - right.Radians, AngleType.Radian);
         }
 
         /// <summary>
@@ -413,7 +397,7 @@ namespace Molten.DoublePrecision
         /// <returns>The value of the two objects multiplied together.</returns>
         public static AngleD Multiply(ref AngleD left, ref AngleD right)
         {
-            return new AngleD(left.radians * right.radians, AngleType.Radian);
+            return new AngleD(left.Radians * right.Radians, AngleType.Radian);
         }
 
         /// <summary>
@@ -424,7 +408,7 @@ namespace Molten.DoublePrecision
         /// <returns>The value of the two objects divided.</returns>
         public static AngleD Divide(ref AngleD left, ref AngleD right)
         {
-            return new AngleD(left.radians / right.radians, AngleType.Radian);
+            return new AngleD(left.Radians / right.Radians, AngleType.Radian);
         }
 
         /// <summary>
@@ -456,7 +440,7 @@ namespace Molten.DoublePrecision
         /// <returns>True if the left and right parameters have the same value; otherwise, false.</returns>
         public static bool operator ==(AngleD left, AngleD right)
         {
-            return left.radians == right.radians;
+            return left.Radians == right.Radians;
         }
 
         /// <summary>
@@ -468,7 +452,7 @@ namespace Molten.DoublePrecision
         /// <returns>True if the left and right parameters do not have the same value; otherwise, false.</returns>
         public static bool operator !=(AngleD left, AngleD right)
         {
-            return left.radians != right.radians;
+            return left.Radians != right.Radians;
         }
 
         /// <summary>
@@ -480,7 +464,7 @@ namespace Molten.DoublePrecision
         /// <returns>True if left is less than right; otherwise, false.</returns>
         public static bool operator <(AngleD left, AngleD right)
         {
-            return left.radians < right.radians;
+            return left.Radians < right.Radians;
         }
 
         /// <summary>
@@ -492,7 +476,7 @@ namespace Molten.DoublePrecision
         /// <returns>True if left is greater than right; otherwise, false.</returns>
         public static bool operator >(AngleD left, AngleD right)
         {
-            return left.radians > right.radians;
+            return left.Radians > right.Radians;
         }
 
         /// <summary>
@@ -504,7 +488,7 @@ namespace Molten.DoublePrecision
         /// <returns>True if left is less than or equal to right; otherwise, false.</returns>
         public static bool operator <=(AngleD left, AngleD right)
         {
-            return left.radians <= right.radians;
+            return left.Radians <= right.Radians;
         }
 
         /// <summary>
@@ -516,7 +500,7 @@ namespace Molten.DoublePrecision
         /// <returns>True if left is greater than or equal to right; otherwise, false.</returns>
         public static bool operator >=(AngleD left, AngleD right)
         {
-            return left.radians >= right.radians;
+            return left.Radians >= right.Radians;
         }
 
         /// <summary>
@@ -537,7 +521,7 @@ namespace Molten.DoublePrecision
         /// <returns>The negated value of the value parameter.</returns>
         public static AngleD operator -(AngleD value)
         {
-            return new AngleD(-value.radians, AngleType.Radian);
+            return new AngleD(-value.Radians, AngleType.Radian);
         }
 
         /// <summary>
@@ -548,7 +532,7 @@ namespace Molten.DoublePrecision
         /// <returns>The value of the two objects added together.</returns>
         public static AngleD operator +(AngleD left, AngleD right)
         {
-            return new AngleD(left.radians + right.radians, AngleType.Radian);
+            return new AngleD(left.Radians + right.Radians, AngleType.Radian);
         }
 
         /// <summary>
@@ -559,7 +543,7 @@ namespace Molten.DoublePrecision
         /// <returns>The value of the two objects subtracted.</returns>
         public static AngleD operator -(AngleD left, AngleD right)
         {
-            return new AngleD(left.radians - right.radians, AngleType.Radian);
+            return new AngleD(left.Radians - right.Radians, AngleType.Radian);
         }
 
         /// <summary>
@@ -570,7 +554,7 @@ namespace Molten.DoublePrecision
         /// <returns>The value of the two objects multiplied together.</returns>
         public static AngleD operator *(AngleD left, AngleD right)
         {
-            return new AngleD(left.radians * right.radians, AngleType.Radian);
+            return new AngleD(left.Radians * right.Radians, AngleType.Radian);
         }
 
         /// <summary>
@@ -581,7 +565,7 @@ namespace Molten.DoublePrecision
         /// <returns>The value of the two objects divided.</returns>
         public static AngleD operator /(AngleD left, AngleD right)
         {
-            return new AngleD(left.radians / right.radians, AngleType.Radian);
+            return new AngleD(left.Radians / right.Radians, AngleType.Radian);
         }
 
         /// <summary>
@@ -605,12 +589,12 @@ namespace Molten.DoublePrecision
             if (!(other is AngleD))
                 throw new ArgumentException("Argument must be of type Angle.", "other");
 
-            double radians = ((AngleD)other).radians;
+            double rad = ((AngleD)other).Radians;
 
-            if (this.radians > radians)
+            if (this.Radians > rad)
                 return 1;
 
-            if (this.radians < radians)
+            if (this.Radians < rad)
                 return -1;
 
             return 0;
@@ -631,10 +615,10 @@ namespace Molten.DoublePrecision
         /// </returns>
         public int CompareTo(AngleD other)
         {
-            if (this.radians > other.radians)
+            if (this.Radians > other.Radians)
                 return 1;
 
-            if (this.radians < other.radians)
+            if (this.Radians < other.Radians)
                 return -1;
 
             return 0;
@@ -662,7 +646,7 @@ namespace Molten.DoublePrecision
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, MathHelper.RadiansToDegrees(radians).ToString("0.##°"));
+            return string.Format(CultureInfo.CurrentCulture, MathHelper.RadiansToDegrees(Radians).ToString("0.##°"));
         }
 
         /// <summary>
@@ -677,7 +661,7 @@ namespace Molten.DoublePrecision
             if (format == null)
                 return ToString();
 
-            return string.Format(CultureInfo.CurrentCulture, "{0}°", MathHelper.RadiansToDegrees(radians).ToString(format, CultureInfo.CurrentCulture));
+            return string.Format(CultureInfo.CurrentCulture, "{0}°", MathHelper.RadiansToDegrees(Radians).ToString(format, CultureInfo.CurrentCulture));
         }
 
         /// <summary>
@@ -689,7 +673,7 @@ namespace Molten.DoublePrecision
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, MathHelper.RadiansToDegrees(radians).ToString("0.##°"));
+            return string.Format(formatProvider, MathHelper.RadiansToDegrees(Radians).ToString("0.##°"));
         }
 
         /// <summary>
@@ -705,16 +689,17 @@ namespace Molten.DoublePrecision
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider, "{0}°", MathHelper.RadiansToDegrees(radians).ToString(format, CultureInfo.CurrentCulture));
+            return string.Format(formatProvider, "{0}°", MathHelper.RadiansToDegrees(Radians).ToString(format, CultureInfo.CurrentCulture));
         }
 
         /// <summary>
         /// Returns a hash code for this <see cref="AngleD"/> instance.
         /// </summary>
         /// <returns>A 32-bit signed integer hash code.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetHashCode()
         {
-            return radiansInt;
+            return Radians.GetHashCode();
         }
 
         /// <summary>

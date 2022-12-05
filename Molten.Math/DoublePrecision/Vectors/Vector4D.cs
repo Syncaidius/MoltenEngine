@@ -132,6 +132,7 @@ namespace Molten.DoublePrecision
 			Z = z;
 			W = w;
 		}
+
 		///<summary>Creates a new instance of <see cref="Vector4D"/>, using a <see cref="Vector2D"/> to populate the first two components.</summary>
 		public Vector4D(Vector2D vector, double z, double w)
 		{

@@ -132,6 +132,7 @@ namespace Molten.HalfPrecision
 			Z = z;
 			W = w;
 		}
+
 		///<summary>Creates a new instance of <see cref="Vector4US"/>, using a <see cref="Vector2US"/> to populate the first two components.</summary>
 		public Vector4US(Vector2US vector, ushort z, ushort w)
 		{

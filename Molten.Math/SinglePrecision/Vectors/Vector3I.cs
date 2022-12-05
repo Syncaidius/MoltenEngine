@@ -119,6 +119,7 @@ namespace Molten
 			Y = y;
 			Z = z;
 		}
+
 		///<summary>Creates a new instance of <see cref="Vector3I"/>, using a <see cref="Vector2I"/> to populate the first two components.</summary>
 		public Vector3I(Vector2I vector, int z)
 		{

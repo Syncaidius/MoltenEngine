@@ -59,6 +59,7 @@ namespace Molten<#=d.SubNamespace#>
 
 #region Constructors
 <#gen.GenerateStandardConstructors();#>
+
 <#gen.GenerateUpgradeConstructors();#>
 #endregion
 

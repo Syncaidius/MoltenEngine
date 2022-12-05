@@ -106,6 +106,7 @@ namespace Molten.DoublePrecision
 			X = x;
 			Y = y;
 		}
+
 #endregion
 
 #region Instance Methods

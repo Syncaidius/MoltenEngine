@@ -132,6 +132,7 @@ namespace Molten
 			Z = z;
 			W = w;
 		}
+
 		///<summary>Creates a new instance of <see cref="Byte4"/>, using a <see cref="Byte2"/> to populate the first two components.</summary>
 		public Byte4(Byte2 vector, byte z, byte w)
 		{

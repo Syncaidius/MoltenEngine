@@ -119,6 +119,7 @@ namespace Molten.DoublePrecision
 			Y = y;
 			Z = z;
 		}
+
 		///<summary>Creates a new instance of <see cref="Vector3D"/>, using a <see cref="Vector2D"/> to populate the first two components.</summary>
 		public Vector3D(Vector2D vector, double z)
 		{
