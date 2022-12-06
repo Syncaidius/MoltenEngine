@@ -87,6 +87,7 @@ namespace Molten
         /// Converts the <see cref="Vector2F"/> into a unit vector.
         /// </summary>
         /// <param name="value">The <see cref="Vector2F"/> to normalize.</param>
+        /// <param name="allowZero">If true, zero values are allowed.</param>
         /// <returns>The normalized <see cref="Vector2F"/>.</returns>
         public static Vector2F Normalize(Vector2F value, bool allowZero = false)
         {
@@ -97,24 +98,25 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
+        /// <param name="allowZero">If true, zero values are allowed.</param>
         public Vector2F GetNormalized(bool allowZero = false)
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inverse = 1.0F / length;
+                float inverse = 1F / length;
                 return new Vector2F()
                 {
-			        X = this.X * inverse,
-			        Y = this.Y * inverse,
+					X = this.X * inverse,
+					Y = this.Y * inverse
                 };
             }
             else
             {
                 return new Vector2F()
                 {
-                    X = 0,
-                    Y = allowZero ? 1 : 0,
+					X = 0,
+					Y = allowZero ? 1 : 0
                 };
             }
         }
@@ -122,19 +124,20 @@ namespace Molten
         /// <summary>
         /// Converts the vector into a unit vector.
         /// </summary>
+        /// <param name="allowZero">If true, zero values are allowed.</param>
         public void Normalize(bool allowZero = false)
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inverse = 1.0F / length;
-			    X = (float)(X * inverse);
-			    Y = (float)(Y * inverse);
+                float inverse = 1F / length;
+				X = (float)(X * inverse);
+				Y = (float)(Y * inverse);
             }
             else
             {
-                X = 0;
-                Y = allowZero ? 1 : 0;
+				X = 0;
+				Y = allowZero ? 1 : 0;
             }
         }
 
@@ -156,7 +159,7 @@ namespace Molten
             return new Vector2F()
             {
 				X = MathF.Pow(vec.X, power),
-				Y = MathF.Pow(vec.Y, power),
+				Y = MathF.Pow(vec.Y, power)
             };
         }
 
@@ -241,7 +244,6 @@ namespace Molten
         {
 			float x = value1.X - value2.X;
 			float y = value1.Y - value2.Y;
-
             return MathF.Sqrt((x * x) + (y * y));
         }
 
@@ -299,7 +301,7 @@ namespace Molten
         {
             float squared = amount * amount;
             float cubed = amount * squared;
-            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
+            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1F;
             float part2 = (-2.0F * cubed) + (3.0F * squared);
             float part3 = (cubed - (2.0F * squared)) + amount;
             float part4 = cubed - squared;
@@ -334,7 +336,7 @@ namespace Molten
             return new Vector2F()
             {
 				X = (MathF.Abs(value.X) - 0.0001F < 0) ? 0 : value.X,
-				Y = (MathF.Abs(value.Y) - 0.0001F < 0) ? 0 : value.X,
+				Y = (MathF.Abs(value.Y) - 0.0001F < 0) ? 0 : value.X
             };
         }
 #endregion

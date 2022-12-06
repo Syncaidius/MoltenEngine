@@ -5,7 +5,7 @@ namespace Molten.DoublePrecision
 	///<summary>A <see cref = "long"/> vector comprised of 3 components.</summary>
 	public partial struct Vector3L
 	{
-           /// <summary>
+        /// <summary>
         /// A unit <see cref="Vector3L"/> designating up (0, 1, 0).
         /// </summary>
         public static readonly Vector3L Up = new Vector3L(0L, 1L, 0L);

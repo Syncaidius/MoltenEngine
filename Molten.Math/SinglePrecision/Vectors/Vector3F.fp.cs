@@ -87,6 +87,7 @@ namespace Molten
         /// Converts the <see cref="Vector3F"/> into a unit vector.
         /// </summary>
         /// <param name="value">The <see cref="Vector3F"/> to normalize.</param>
+        /// <param name="allowZero">If true, zero values are allowed.</param>
         /// <returns>The normalized <see cref="Vector3F"/>.</returns>
         public static Vector3F Normalize(Vector3F value, bool allowZero = false)
         {
@@ -97,26 +98,27 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
+        /// <param name="allowZero">If true, zero values are allowed.</param>
         public Vector3F GetNormalized(bool allowZero = false)
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inverse = 1.0F / length;
+                float inverse = 1F / length;
                 return new Vector3F()
                 {
-			        X = this.X * inverse,
-			        Y = this.Y * inverse,
-			        Z = this.Z * inverse,
+					X = this.X * inverse,
+					Y = this.Y * inverse,
+					Z = this.Z * inverse
                 };
             }
             else
             {
                 return new Vector3F()
                 {
-                    X = 0,
-                    Y = allowZero ? 1 : 0,
-                    Z = 0,
+					X = 0,
+					Y = allowZero ? 1 : 0,
+					Z = 0
                 };
             }
         }
@@ -124,21 +126,22 @@ namespace Molten
         /// <summary>
         /// Converts the vector into a unit vector.
         /// </summary>
+        /// <param name="allowZero">If true, zero values are allowed.</param>
         public void Normalize(bool allowZero = false)
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inverse = 1.0F / length;
-			    X = (float)(X * inverse);
-			    Y = (float)(Y * inverse);
-			    Z = (float)(Z * inverse);
+                float inverse = 1F / length;
+				X = (float)(X * inverse);
+				Y = (float)(Y * inverse);
+				Z = (float)(Z * inverse);
             }
             else
             {
-                X = 0;
-                Y = allowZero ? 1 : 0;
-                Z = 0;
+				X = 0;
+				Y = allowZero ? 1 : 0;
+				Z = 0;
             }
         }
 
@@ -162,7 +165,7 @@ namespace Molten
             {
 				X = MathF.Pow(vec.X, power),
 				Y = MathF.Pow(vec.Y, power),
-				Z = MathF.Pow(vec.Z, power),
+				Z = MathF.Pow(vec.Z, power)
             };
         }
 
@@ -254,7 +257,6 @@ namespace Molten
 			float x = value1.X - value2.X;
 			float y = value1.Y - value2.Y;
 			float z = value1.Z - value2.Z;
-
             return MathF.Sqrt((x * x) + (y * y) + (z * z));
         }
 
@@ -317,7 +319,7 @@ namespace Molten
         {
             float squared = amount * amount;
             float cubed = amount * squared;
-            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
+            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1F;
             float part2 = (-2.0F * cubed) + (3.0F * squared);
             float part3 = (cubed - (2.0F * squared)) + amount;
             float part4 = cubed - squared;
@@ -354,7 +356,7 @@ namespace Molten
             {
 				X = (MathF.Abs(value.X) - 0.0001F < 0) ? 0 : value.X,
 				Y = (MathF.Abs(value.Y) - 0.0001F < 0) ? 0 : value.X,
-				Z = (MathF.Abs(value.Z) - 0.0001F < 0) ? 0 : value.X,
+				Z = (MathF.Abs(value.Z) - 0.0001F < 0) ? 0 : value.X
             };
         }
 #endregion

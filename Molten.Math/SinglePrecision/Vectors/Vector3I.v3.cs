@@ -5,7 +5,7 @@ namespace Molten
 	///<summary>A <see cref = "int"/> vector comprised of 3 components.</summary>
 	public partial struct Vector3I
 	{
-           /// <summary>
+        /// <summary>
         /// A unit <see cref="Vector3I"/> designating up (0, 1, 0).
         /// </summary>
         public static readonly Vector3I Up = new Vector3I(0, 1, 0);

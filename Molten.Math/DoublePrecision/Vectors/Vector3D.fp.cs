@@ -87,6 +87,7 @@ namespace Molten.DoublePrecision
         /// Converts the <see cref="Vector3D"/> into a unit vector.
         /// </summary>
         /// <param name="value">The <see cref="Vector3D"/> to normalize.</param>
+        /// <param name="allowZero">If true, zero values are allowed.</param>
         /// <returns>The normalized <see cref="Vector3D"/>.</returns>
         public static Vector3D Normalize(Vector3D value, bool allowZero = false)
         {
@@ -97,26 +98,27 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
+        /// <param name="allowZero">If true, zero values are allowed.</param>
         public Vector3D GetNormalized(bool allowZero = false)
         {
             double length = Length();
             if (!MathHelper.IsZero(length))
             {
-                double inverse = 1.0D / length;
+                double inverse = 1D / length;
                 return new Vector3D()
                 {
-			        X = this.X * inverse,
-			        Y = this.Y * inverse,
-			        Z = this.Z * inverse,
+					X = this.X * inverse,
+					Y = this.Y * inverse,
+					Z = this.Z * inverse
                 };
             }
             else
             {
                 return new Vector3D()
                 {
-                    X = 0,
-                    Y = allowZero ? 1 : 0,
-                    Z = 0,
+					X = 0,
+					Y = allowZero ? 1 : 0,
+					Z = 0
                 };
             }
         }
@@ -124,21 +126,22 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Converts the vector into a unit vector.
         /// </summary>
+        /// <param name="allowZero">If true, zero values are allowed.</param>
         public void Normalize(bool allowZero = false)
         {
             double length = Length();
             if (!MathHelper.IsZero(length))
             {
-                double inverse = 1.0D / length;
-			    X = (X * inverse);
-			    Y = (Y * inverse);
-			    Z = (Z * inverse);
+                double inverse = 1D / length;
+				X = (X * inverse);
+				Y = (Y * inverse);
+				Z = (Z * inverse);
             }
             else
             {
-                X = 0;
-                Y = allowZero ? 1 : 0;
-                Z = 0;
+				X = 0;
+				Y = allowZero ? 1 : 0;
+				Z = 0;
             }
         }
 
@@ -162,7 +165,7 @@ namespace Molten.DoublePrecision
             {
 				X = Math.Pow(vec.X, power),
 				Y = Math.Pow(vec.Y, power),
-				Z = Math.Pow(vec.Z, power),
+				Z = Math.Pow(vec.Z, power)
             };
         }
 
@@ -254,7 +257,6 @@ namespace Molten.DoublePrecision
 			double x = value1.X - value2.X;
 			double y = value1.Y - value2.Y;
 			double z = value1.Z - value2.Z;
-
             return Math.Sqrt((x * x) + (y * y) + (z * z));
         }
 
@@ -317,7 +319,7 @@ namespace Molten.DoublePrecision
         {
             double squared = amount * amount;
             double cubed = amount * squared;
-            double part1 = ((2.0D * cubed) - (3.0D * squared)) + 1.0D;
+            double part1 = ((2.0D * cubed) - (3.0D * squared)) + 1D;
             double part2 = (-2.0D * cubed) + (3.0D * squared);
             double part3 = (cubed - (2.0D * squared)) + amount;
             double part4 = cubed - squared;
@@ -354,7 +356,7 @@ namespace Molten.DoublePrecision
             {
 				X = (Math.Abs(value.X) - 0.0001D < 0) ? 0 : value.X,
 				Y = (Math.Abs(value.Y) - 0.0001D < 0) ? 0 : value.X,
-				Z = (Math.Abs(value.Z) - 0.0001D < 0) ? 0 : value.X,
+				Z = (Math.Abs(value.Z) - 0.0001D < 0) ? 0 : value.X
             };
         }
 #endregion

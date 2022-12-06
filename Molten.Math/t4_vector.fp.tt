@@ -9,25 +9,24 @@
 <#@ output extension=".txt" #>
 
 <#
-string pMap = "xyzw";
-string pMapUpper = "XYZW";
+TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "def_vectors.json", "fp");
 
-GenerateTypes(this.GenerationEnvironment, this.Host, "Vectors", "def_vectors.json", "fp", _vectorSizes, (d,md) => d.DT.IsFPType, (d, md, defs) =>
+gen.Generate((d) => d.DT.IsFPType, (d, def) =>
 {
 #>
 using System;
 
-namespace Molten<#=d.DT.SubNamespace#>
+namespace Molten<#=d.SubNamespace#>
 {
-	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=md.Size#> components.</summary>
-	public partial struct <#=md.Name#>
+	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=d.Size#> components.</summary>
+	public partial struct <#=d.Name#>
 	{
     	/// <summary>
         /// Gets a value indicting whether this instance is normalized.
         /// </summary>
         public bool IsNormalized
         {
-            get => MathHelper.IsOne(<#for(int p = 0; p < md.Size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
+            get => MathHelper.IsOne(<#for(int p = 0; p < d.Size; p++){#>(<#=def.FieldNames[p]#> * <#=def.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -46,7 +45,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Orthonormalize(<#=md.Name#>[] destination, params <#=md.Name#>[] source)
+        public static void Orthonormalize(<#=d.Name#>[] destination, params <#=d.Name#>[] source)
         {
             //Uses the modified Gram-Schmidt process.
             //Because we are making unit vectors, we can optimize the math for orthogonalization
@@ -66,7 +65,7 @@ namespace Molten<#=d.DT.SubNamespace#>
 
             for (int i = 0; i < source.Length; ++i)
             {
-                <#=md.Name#> newvector = source[i];
+                <#=d.Name#> newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
                     newvector -= Dot(destination[r], newvector) * destination[r];
@@ -83,7 +82,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="right">The right vector.</param>
         /// <param name="epsilon">The epsilon.</param>
         /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
-        public static bool NearEqual(<#=md.Name#> left, <#=md.Name#> right, <#=md.Name#> epsilon)
+        public static bool NearEqual(<#=d.Name#> left, <#=d.Name#> right, <#=d.Name#> epsilon)
         {
             return NearEqual(ref left, ref right, ref epsilon);
         }
@@ -95,17 +94,18 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="right">The right vector.</param>
         /// <param name="epsilon">The epsilon.</param>
         /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
-        public static bool NearEqual(ref <#=md.Name#> left, ref <#=md.Name#> right, ref <#=md.Name#> epsilon)
+        public static bool NearEqual(ref <#=d.Name#> left, ref <#=d.Name#> right, ref <#=d.Name#> epsilon)
         {
-            return <#for(int p = 0; p < md.Size; p++){#>MathHelper.WithinEpsilon(left.<#=pMapUpper[p]#>, right.<#=pMapUpper[p]#>, epsilon.<#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " && " : "")#><#}#>;
+            return <#for(int p = 0; p < d.Size; p++){#>MathHelper.WithinEpsilon(left.<#=def.FieldNames[p]#>, right.<#=def.FieldNames[p]#>, epsilon.<#=def.FieldNames[p]#>)<#=(p < (d.Size-1) ? " && " : "")#><#}#>;
         }
 
         /// <summary>
-        /// Converts the <#=See(md.Name)#> into a unit vector.
+        /// Converts the <#=gen.See()#> into a unit vector.
         /// </summary>
-        /// <param name="value">The <#=See(md.Name)#> to normalize.</param>
-        /// <returns>The normalized <#=See(md.Name)#>.</returns>
-        public static <#=md.Name#> Normalize(<#=md.Name#> value, bool allowZero = false)
+        /// <param name="value">The <#=gen.See()#> to normalize.</param>
+        /// <param name="allowZero">If true, zero values are allowed.</param>
+        /// <returns>The normalized <#=gen.See()#>.</returns>
+        public static <#=d.Name#> Normalize(<#=d.Name#> value, bool allowZero = false)
         {
             value.Normalize(allowZero);
             return value;
@@ -114,36 +114,23 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public <#=md.Name#> GetNormalized(bool allowZero = false)
+        /// <param name="allowZero">If true, zero values are allowed.</param>
+        public <#=d.Name#> GetNormalized(bool allowZero = false)
         {
             <#=d.FP#> length = Length();
             if (!MathHelper.IsZero(length))
             {
-                <#=d.FP#> inverse = 1.0<#=d.FP.Literal#> / length;
-                return new <#=md.Name#>()
+                <#=d.FP#> inverse = <#=d.FP.One#> / length;
+                return new <#=d.Name#>()
                 {
-<#
-		    for(int p = 0; p < md.Size; p++)
-		    {
-#>
-			        <#=pMapUpper[p]#> = this.<#=pMapUpper[p]#> * inverse,
-<#
-		    }
-#>
+<#gen.IterateFields((i, field) => $"\t\t{def.FieldNames[i]} = this.{def.FieldNames[i]} * inverse{(i < d.Size -1 ? "," : "")}", 0);#>
                 };
             }
             else
             {
-                return new <#=md.Name#>()
+                return new <#=d.Name#>()
                 {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-                    <#=pMapUpper[p]#> = <#=(p == 1 ? "allowZero ? 1 : 0" : "0")#>,
-<#
-		}
-#>
+<#gen.IterateFields((i, field) => $"\t\t{def.FieldNames[i]} = {(i == 1 ? "allowZero ? 1 : 0" : "0")}{(i < d.Size -1 ? "," : "")}", 0);#>
                 };
             }
         }
@@ -151,31 +138,18 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <summary>
         /// Converts the vector into a unit vector.
         /// </summary>
+        /// <param name="allowZero">If true, zero values are allowed.</param>
         public void Normalize(bool allowZero = false)
         {
             <#=d.DT#> length = Length();
             if (!MathHelper.IsZero(length))
             {
-                <#=d.FP#> inverse = 1.0<#=d.FP.Literal#> / length;
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			    <#=pMapUpper[p]#> = <#=d.DT.FPCast#>(<#=pMapUpper[p]#> * inverse);
-<#
-		}
-#>
+                <#=d.FP#> inverse = <#=d.FP.One#> / length;
+<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.FPCast}({def.FieldNames[i]} * inverse);", 0, 4);#>
             }
             else
             {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-                <#=pMapUpper[p]#> = <#=(p == 1 ? "allowZero ? 1 : 0" : "0")#>;
-<#
-		}
-#>
+<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {(i == 1 ? "allowZero ? 1 : 0" : "0")};", 0, 4);#>
             }
         }
 
@@ -184,100 +158,51 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         public void Saturate()
         {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=pMapUpper[p]#> = <#=pMapUpper[p]#> < <#=d.DT.Zero#> ? <#=d.DT.Zero#> : <#=pMapUpper[p]#> > <#=d.DT.One#> ? <#=d.DT.One#> : <#=pMapUpper[p]#>;
-<#
-		}
-#>
+<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {def.FieldNames[i]} < {d.DT.Zero} ? {d.DT.Zero} : {def.FieldNames[i]} > {d.DT.One} ? {d.DT.One} : {def.FieldNames[i]};", 0);#>
         }
 
         /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
         /// If so this method truncates that value to zero.</summary>
         /// <param name="power">The power.</param>
         /// <param name="vec">The vector.</param>
-        public static <#=md.Name#> Pow(<#=md.Name#> vec, <#=d.DT#> power)
+        public static <#=d.Name#> Pow(<#=d.Name#> vec, <#=d.DT#> power)
         {
-            return new <#=md.Name#>()
+            return new <#=d.Name#>()
             {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-				<#=pMapUpper[p]#> = <#=d.DT.Math#>.Pow(vec.<#=pMapUpper[p]#>, power),
-<#
-		}
-#>
+<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.Math}.Pow(vec.{def.FieldNames[i]}, power){(i < d.Size -1 ? "," : "")}", 0, 4);#>
             };
         }
 
 		/// <summary>Rounds all components down to the nearest unit.</summary>
         public void Floor()
         {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=pMapUpper[p]#> = <#=d.DT.Math#>.Floor(<#=pMapUpper[p]#>);
-<#
-		}
-#>
+<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.Math}.Floor({def.FieldNames[i]});", 0);#>
         }
 
         /// <summary>Rounds all components up to the nearest unit.</summary>
         public void Ceiling()
         {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=pMapUpper[p]#> = <#=d.DT.Math#>.Ceiling(<#=pMapUpper[p]#>);
-<#
-		}
-#>
+<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.Math}.Ceiling({def.FieldNames[i]});", 0);#>
         }
 
-        /// <summary>Removes the sign from each component of the current <see cref="<#=md.Name#>"/>.</summary>
+        /// <summary>Removes the sign from each component of the current <see cref="<#=d.Name#>"/>.</summary>
         public void Abs()
         {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=pMapUpper[p]#> = <#=d.DT.Math#>.Abs(<#=pMapUpper[p]#>);
-<#
-		}
-#>
+<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.Math}.Abs({def.FieldNames[i]});", 0);#>
         }
 
 
 		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
         public void Truncate()
         {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=pMapUpper[p]#> = (<#=d.DT.Math#>.Abs(<#=pMapUpper[p]#>) - 0.0001<#=d.FP.Literal#> < 0) ? 0 : <#=pMapUpper[p]#>;
-<#
-		}
-#>
+<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = ({d.DT.Math}.Abs({def.FieldNames[i]}) - 0.0001{d.FP.Literal} < 0) ? 0 : {def.FieldNames[i]};", 0);#>
         }
 
 		/// <summary>Updates the component values to the power of the specified value.</summary>
         /// <param name="power"></param>
         public void Pow(<#=d.DT#> power)
         {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=pMapUpper[p]#> = <#=d.DT.Math#>.Pow(<#=pMapUpper[p]#>, power);
-<#
-		}
-#>
+<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.Math}.Pow({def.FieldNames[i]}, power);", 0);#>
         }
 
         /// <summary>
@@ -290,7 +215,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </remarks>
         public <#=d.DT#> Length()
         {
-            return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < md.Size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
+            return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < d.Size; p++){#>(<#=def.FieldNames[p]#> * <#=def.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -300,20 +225,13 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="value2">The second vector.</param>
         /// <returns>The distance between the two vectors.</returns>
         /// <remarks>
-        /// <see cref="<#=md.Name#>.DistanceSquared(<#=md.Name#>, <#=md.Name#>)"/> may be preferred when only the relative distance is needed
+        /// <see cref="<#=d.Name#>.DistanceSquared(<#=d.Name#>, <#=d.Name#>)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
-        public static <#=d.DT#> Distance(ref <#=md.Name#> value1, ref <#=md.Name#> value2)
+        public static <#=d.DT#> Distance(ref <#=d.Name#> value1, ref <#=d.Name#> value2)
         {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=d.DT#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
-<#
-		}
-#>
-           return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < md.Size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
+<#gen.IterateFields((i, field) => $"{d.DT} {def.ArgNames[i]} = value1.{def.FieldNames[i]} - value2.{def.FieldNames[i]};", 0);#>
+           return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < d.Size; p++){#>(<#=def.ArgNames[p]#> * <#=def.ArgNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
         }
 
                 /// <summary>
@@ -323,21 +241,13 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="value2">The second vector.</param>
         /// <returns>The distance between the two vectors.</returns>
         /// <remarks>
-        /// <see cref="<#=md.Name#>.DistanceSquared(<#=md.Name#>, <#=md.Name#>)"/> may be preferred when only the relative distance is needed
+        /// <see cref="<#=d.Name#>.DistanceSquared(<#=d.Name#>, <#=d.Name#>)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
-        public static <#=d.DT#> Distance(<#=md.Name#> value1, <#=md.Name#> value2)
+        public static <#=d.DT#> Distance(<#=d.Name#> value1, <#=d.Name#> value2)
         {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-			<#=d.DT#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
-<#
-		}
-#>
-
-            return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < md.Size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (md.Size-1) ? " + " : "")#><#}#>);
+<#gen.IterateFields((i, field) => $"{d.DT} {def.ArgNames[i]} = value1.{def.FieldNames[i]} - value2.{def.FieldNames[i]};", 0);#>
+            return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < d.Size; p++){#>(<#=def.ArgNames[p]#> * <#=def.ArgNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -348,21 +258,21 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="value3">The third position in the interpolation.</param>
         /// <param name="value4">The fourth position in the interpolation.</param>
         /// <param name="amount">Weighting factor.</param>
-        public static <#=md.Name#> CatmullRom(ref <#=md.Name#> value1, ref <#=md.Name#> value2, ref <#=md.Name#> value3, ref <#=md.Name#> value4, <#=d.DT#> amount)
+        public static <#=d.Name#> CatmullRom(ref <#=d.Name#> value1, ref <#=d.Name#> value2, ref <#=d.Name#> value3, ref <#=d.Name#> value4, <#=d.DT#> amount)
         {
             <#=d.FP#> squared = amount * amount;
             <#=d.FP#> cubed = amount * squared;
 
-            return new <#=md.Name#>()
+            return new <#=d.Name#>()
             {
 <#
-				for(int p = 0; p < md.Size; p++)
+				for(int p = 0; p < d.Size; p++)
 				{
 #>
-				<#=pMapUpper[p]#> = <#=d.DT.FPCast#>(0.5<#=d.FP.Literal#> * ((((2<#=d.FP.Literal#> * value2.<#=pMapUpper[p]#>) + 
-                ((-value1.<#=pMapUpper[p]#> + value3.<#=pMapUpper[p]#>) * amount)) + 
-                (((((2<#=d.FP.Literal#> * value1.<#=pMapUpper[p]#>) - (5<#=d.FP.Literal#> * value2.<#=pMapUpper[p]#>)) + (4<#=d.FP.Literal#> * value3.<#=pMapUpper[p]#>)) - value4.<#=pMapUpper[p]#>) * squared)) +
-                ((((-value1.<#=pMapUpper[p]#> + (3<#=d.FP.Literal#> * value2.<#=pMapUpper[p]#>)) - (3<#=d.FP.Literal#> * value3.<#=pMapUpper[p]#>)) + value4.<#=pMapUpper[p]#>) * cubed))),
+				<#=def.FieldNames[p]#> = <#=d.DT.FPCast#>(0.5<#=d.FP.Literal#> * ((((2<#=d.FP.Literal#> * value2.<#=def.FieldNames[p]#>) + 
+                ((-value1.<#=def.FieldNames[p]#> + value3.<#=def.FieldNames[p]#>) * amount)) + 
+                (((((2<#=d.FP.Literal#> * value1.<#=def.FieldNames[p]#>) - (5<#=d.FP.Literal#> * value2.<#=def.FieldNames[p]#>)) + (4<#=d.FP.Literal#> * value3.<#=def.FieldNames[p]#>)) - value4.<#=def.FieldNames[p]#>) * squared)) +
+                ((((-value1.<#=def.FieldNames[p]#> + (3<#=d.FP.Literal#> * value2.<#=def.FieldNames[p]#>)) - (3<#=d.FP.Literal#> * value3.<#=def.FieldNames[p]#>)) + value4.<#=def.FieldNames[p]#>) * cubed))),
 
 <#
 			    }
@@ -379,7 +289,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="value4">The fourth position in the interpolation.</param>
         /// <param name="amount">Weighting factor.</param>
         /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
-        public static <#=md.Name#> CatmullRom(<#=md.Name#> value1, <#=md.Name#> value2, <#=md.Name#> value3, <#=md.Name#> value4, <#=d.DT#> amount)
+        public static <#=d.Name#> CatmullRom(<#=d.Name#> value1, <#=d.Name#> value2, <#=d.Name#> value3, <#=d.Name#> value4, <#=d.DT#> amount)
         {
             return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
         }
@@ -387,35 +297,35 @@ namespace Molten<#=d.DT.SubNamespace#>
         		/// <summary>
         /// Performs a Hermite spline interpolation.
         /// </summary>
-        /// <param name="value1">First source position <#=See(md.Name)#> vector.</param>
-        /// <param name="tangent1">First source tangent <#=See(md.Name)#> vector.</param>
-        /// <param name="value2">Second source position <#=See(md.Name)#> vector.</param>
-        /// <param name="tangent2">Second source tangent <#=See(md.Name)#> vector.</param>
+        /// <param name="value1">First source position <#=gen.See()#> vector.</param>
+        /// <param name="tangent1">First source tangent <#=gen.See()#> vector.</param>
+        /// <param name="value2">Second source position <#=gen.See()#> vector.</param>
+        /// <param name="tangent2">Second source tangent <#=gen.See()#> vector.</param>
         /// <param name="amount">Weighting factor.</param>
-        public static <#=md.Name#> Hermite(ref <#=md.Name#> value1, ref <#=md.Name#> tangent1, ref <#=md.Name#> value2, ref <#=md.Name#> tangent2, <#=d.DT#> amount)
+        public static <#=d.Name#> Hermite(ref <#=d.Name#> value1, ref <#=d.Name#> tangent1, ref <#=d.Name#> value2, ref <#=d.Name#> tangent2, <#=d.DT#> amount)
         {
             <#=d.FP#> squared = amount * amount;
             <#=d.FP#> cubed = amount * squared;
-            <#=d.FP#> part1 = ((2.0<#=d.FP.Literal#> * cubed) - (3.0<#=d.FP.Literal#> * squared)) + 1.0<#=d.FP.Literal#>;
+            <#=d.FP#> part1 = ((2.0<#=d.FP.Literal#> * cubed) - (3.0<#=d.FP.Literal#> * squared)) + <#=d.FP.One#>;
             <#=d.FP#> part2 = (-2.0<#=d.FP.Literal#> * cubed) + (3.0<#=d.FP.Literal#> * squared);
             <#=d.FP#> part3 = (cubed - (2.0<#=d.FP.Literal#> * squared)) + amount;
             <#=d.FP#> part4 = cubed - squared;
 
-			return new <#=md.Name#>()
+			return new <#=d.Name#>()
 			{
 <#
-		for(int p = 0; p < md.Size; p++)
+		for(int p = 0; p < d.Size; p++)
 		{
 			if(d.DT == d.FP)
 			{
 #>
-				<#=pMapUpper[p]#> = (((value1.<#=pMapUpper[p]#> * part1) + (value2.<#=pMapUpper[p]#> * part2)) + (tangent1.<#=pMapUpper[p]#> * part3)) + (tangent2.<#=pMapUpper[p]#> * part4),
+				<#=def.FieldNames[p]#> = (((value1.<#=def.FieldNames[p]#> * part1) + (value2.<#=def.FieldNames[p]#> * part2)) + (tangent1.<#=def.FieldNames[p]#> * part3)) + (tangent2.<#=def.FieldNames[p]#> * part4),
 <#
 			}
 			else
 			{
 #>
-				<#=pMapUpper[p]#> = <#=d.DT.FPCast#>((((value1.<#=pMapUpper[p]#> * part1) + (value2.<#=pMapUpper[p]#> * part2)) + (tangent1.<#=pMapUpper[p]#> * part3)) + (tangent2.<#=pMapUpper[p]#> * part4)),
+				<#=def.FieldNames[p]#> = <#=d.DT.FPCast#>((((value1.<#=def.FieldNames[p]#> * part1) + (value2.<#=def.FieldNames[p]#> * part2)) + (tangent1.<#=def.FieldNames[p]#> * part3)) + (tangent2.<#=def.FieldNames[p]#> * part4)),
 <#
 			}
 		}
@@ -426,33 +336,26 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <summary>
         /// Performs a Hermite spline interpolation.
         /// </summary>
-        /// <param name="value1">First source position <#=See(md.Name)#>.</param>
-        /// <param name="tangent1">First source tangent <#=See(md.Name)#>.</param>
-        /// <param name="value2">Second source position <#=See(md.Name)#>.</param>
-        /// <param name="tangent2">Second source tangent <#=See(md.Name)#>.</param>
+        /// <param name="value1">First source position <#=gen.See()#>.</param>
+        /// <param name="tangent1">First source tangent <#=gen.See()#>.</param>
+        /// <param name="value2">Second source position <#=gen.See()#>.</param>
+        /// <param name="tangent2">Second source tangent <#=gen.See()#>.</param>
         /// <param name="amount">Weighting factor.</param>
         /// <returns>The result of the Hermite spline interpolation.</returns>
-        public static <#=md.Name#> Hermite(<#=md.Name#> value1, <#=md.Name#> tangent1, <#=md.Name#> value2, <#=md.Name#> tangent2, <#=d.DT#> amount)
+        public static <#=d.Name#> Hermite(<#=d.Name#> value1, <#=d.Name#> tangent1, <#=d.Name#> value2, <#=d.Name#> tangent2, <#=d.DT#> amount)
         {
             return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
         }
 
 #region Static Methods
 		/// <summary>Truncate each near-zero component of a vector towards zero.</summary>
-        /// <param name="value">The <#=md.Name#> to be truncated.</param>
+        /// <param name="value">The <#=d.Name#> to be truncated.</param>
         /// <returns></returns>
-        public static <#=md.Name#> Truncate(<#=md.Name#> value)
+        public static <#=d.Name#> Truncate(<#=d.Name#> value)
         {
-            return new <#=md.Name#>()
+            return new <#=d.Name#>()
             {
-<#
-		for(int p = 0; p < md.Size; p++)
-		{
-#>
-				<#=pMapUpper[p]#> = (<#=d.DT.Math#>.Abs(value.<#=pMapUpper[p]#>) - 0.0001<#=d.FP.Literal#> < 0) ? 0 : value.X,
-<#
-		}
-#>
+<#gen.IterateFields((i, field) => $"\t{def.FieldNames[i]} = ({d.DT.Math}.Abs(value.{def.FieldNames[i]}) - 0.0001{d.FP.Literal} < 0) ? 0 : value.X{(i < d.Size -1 ? "," : "")}", 0);#>
             };
         }
 #endregion
