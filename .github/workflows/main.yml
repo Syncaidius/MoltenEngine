@@ -20,7 +20,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: ${{ github.event.inputs.fetch_depth }}
-    - uses: BobAnkh/auto-generate-changelog@v1
+    - uses: BobAnkh/auto-generate-changelog@v1.2.3
       with:
         REPO_NAME: 'Syncaidius/MoltenEngine'
         BRANCH: 'master'
