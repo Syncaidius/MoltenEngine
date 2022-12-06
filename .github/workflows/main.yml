@@ -23,7 +23,7 @@ jobs:
       with:
         REPO_NAME: 'Syncaidius/MoltenEngine'
         BRANCH: 'master'
-        ACCESS_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        ACCESS_TOKEN: ${{secrets.ACCESSTOKEN}}
         PATH: 'CHANGELOG_${{ github.event.inputs.release_version }}.md'
         COMMIT_MESSAGE: 'docs(CHANGELOG): Updated ${{ github.event.inputs.release_version }} release notes'
         TYPE: 'feat:Feature,fix:Bug Fixes,docs:Documentation,refactor:Refactor,perf:Performance Improvements'
