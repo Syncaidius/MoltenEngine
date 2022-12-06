@@ -12,35 +12,28 @@ namespace Molten
     [Serializable]
 	public partial struct RectangleUI : IFormattable, IEquatable<RectangleUI>
 	{
-		/// <summary>
-        /// The left.
-        /// </summary>
-        [DataMember]
-        public uint Left;
-
-        /// <summary>
-        /// The top.
-        /// </summary>
-        [DataMember]
-        public uint Top;
-
-        /// <summary>
-        /// The right.
-        /// </summary>
-        [DataMember]
-        public uint Right;
-
-        /// <summary>
-        /// The bottom.
-        /// </summary>
-        [DataMember]
-        public uint Bottom;
-
         /// <summary>
         /// An empty rectangle.
         /// </summary>
         public static readonly RectangleUI Empty = new RectangleUI();
 
+		/// <summary>The Left component.</summary>
+		[DataMember]
+		public uint Left;
+
+		/// <summary>The Top component.</summary>
+		[DataMember]
+		public uint Top;
+
+		/// <summary>The Right component.</summary>
+		[DataMember]
+		public uint Right;
+
+		/// <summary>The Bottom component.</summary>
+		[DataMember]
+		public uint Bottom;
+
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="Rectangle"/> struct.
         /// </summary>
@@ -67,6 +60,55 @@ namespace Molten
             Top = y;
             Right = x + width;
             Bottom = y + height;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
+        /// </summary>
+        /// <param name="values">The values to populate the rectangle with. These should be ordered as X, Y, Width and Height.</param>
+        public RectangleUI(uint[] values)
+        {
+            if(values == null)
+                throw new ArgumentNullException("values");
+
+            if(values.Length < 4)
+                throw new Exception("RectangleUI expects at least 4 values to populate X, Y, Width and Height.");
+
+            Left = values[0];
+            Top = values[1];
+            Right = Left + values[2];
+            Bottom = Top + values[3];
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
+        /// </summary>
+        /// <param name="values">The values to populate the rectangle with. These should be ordered as X, Y, Width and Height.</param>
+        public RectangleUI(Span<uint> values)
+        {
+            if(values == null)
+                throw new ArgumentNullException("values");
+
+            if(values.Length < 4)
+                throw new Exception("RectangleUI expects at least 4 values to populate X, Y, Width and Height.");
+
+            Left = values[0];
+            Top = values[1];
+            Right = Left + values[2];
+            Bottom = Top + values[3];
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
+        /// </summary>
+        /// <param name="values">The <see cref="uint"/> values to populate the rectangle with. These should be ordered as X, Y, Width and Height.
+        /// <para>If the pointer does not contain at least 4 values of the expected type, undefined behaviour will occur.</para></param>
+        public unsafe RectangleUI(uint* values)
+        {
+            Left = values[0];
+            Top = values[1];
+            Right = Left + values[2];
+            Bottom = Top + values[3];
         }
 
         /// <summary>
@@ -541,56 +583,36 @@ namespace Molten
         #endregion
 
         #region Rectangle Cast Operators
-        public static explicit operator Rectangle(RectangleUI rect)
-        {
-            return new Rectangle()
-            {
-                Left = (int)rect.Left,
-                Top = (int)rect.Top,
-                Right = (int)rect.Right,
-                Bottom = (int)rect.Bottom,
-            };
-        }
-        public static explicit operator RectangleL(RectangleUI rect)
-        {
-            return new RectangleL()
-            {
-                Left = (long)rect.Left,
-                Top = (long)rect.Top,
-                Right = (long)rect.Right,
-                Bottom = (long)rect.Bottom,
-            };
-        }
-        public static explicit operator RectangleUL(RectangleUI rect)
-        {
-            return new RectangleUL()
-            {
-                Left = (ulong)rect.Left,
-                Top = (ulong)rect.Top,
-                Right = (ulong)rect.Right,
-                Bottom = (ulong)rect.Bottom,
-            };
-        }
-        public static explicit operator RectangleF(RectangleUI rect)
-        {
-            return new RectangleF()
-            {
-                Left = (float)rect.Left,
-                Top = (float)rect.Top,
-                Right = (float)rect.Right,
-                Bottom = (float)rect.Bottom,
-            };
-        }
-        public static explicit operator RectangleD(RectangleUI rect)
-        {
-            return new RectangleD()
-            {
-                Left = (double)rect.Left,
-                Top = (double)rect.Top,
-                Right = (double)rect.Right,
-                Bottom = (double)rect.Bottom,
-            };
-        }
+		///<summary>Casts a <see cref="RectangleUI"/> to a <see cref="Rectangle"/>.</summary>
+		public static explicit operator Rectangle(RectangleUI value)
+		{
+			return new Rectangle((int)value.Left, (int)value.Top, (int)value.Width, (int)value.Height);
+		}
+
+		///<summary>Casts a <see cref="RectangleUI"/> to a <see cref="RectangleL"/>.</summary>
+		public static explicit operator RectangleL(RectangleUI value)
+		{
+			return new RectangleL((long)value.Left, (long)value.Top, (long)value.Width, (long)value.Height);
+		}
+
+		///<summary>Casts a <see cref="RectangleUI"/> to a <see cref="RectangleUL"/>.</summary>
+		public static explicit operator RectangleUL(RectangleUI value)
+		{
+			return new RectangleUL((ulong)value.Left, (ulong)value.Top, (ulong)value.Width, (ulong)value.Height);
+		}
+
+		///<summary>Casts a <see cref="RectangleUI"/> to a <see cref="RectangleF"/>.</summary>
+		public static explicit operator RectangleF(RectangleUI value)
+		{
+			return new RectangleF((float)value.Left, (float)value.Top, (float)value.Width, (float)value.Height);
+		}
+
+		///<summary>Casts a <see cref="RectangleUI"/> to a <see cref="RectangleD"/>.</summary>
+		public static explicit operator RectangleD(RectangleUI value)
+		{
+			return new RectangleD((double)value.Left, (double)value.Top, (double)value.Width, (double)value.Height);
+		}
+
         #endregion
 	}
 }

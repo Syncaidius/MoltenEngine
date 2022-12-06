@@ -789,16 +789,19 @@ namespace Molten
             return !left.Equals(ref right);
         }
 
+		///<summary>Casts a <see cref="Color4"/> to a <see cref="Color3"/>.</summary>
 		public static explicit operator Color3(Color4 value)
 		{
 			return new Color3(value.R, value.G, value.B);
 		}
 
+		///<summary>Casts a <see cref="Color4"/> to a <see cref="Color3D"/>.</summary>
 		public static explicit operator Color3D(Color4 value)
 		{
 			return new Color3D((double)value.R, (double)value.G, (double)value.B);
 		}
 
+		///<summary>Casts a <see cref="Color4"/> to a <see cref="Color4D"/>.</summary>
 		public static explicit operator Color4D(Color4 value)
 		{
 			return new Color4D((double)value.R, (double)value.G, (double)value.B, (double)value.A);

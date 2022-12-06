@@ -1,32 +1,39 @@
-[
-  {
-    "Name": "Rectangle",
-    "Postfix": "",
-    "DataTypeName": "int"
-  },
-  {
-    "Name": "Rectangle",
-    "Postfix": "UI",
-    "DataTypeName": "uint"
-  },
-  {
-    "Name": "Rectangle",
-    "Postfix": "L",
-    "DataTypeName": "long"
-  },
-  {
-    "Name": "Rectangle",
-    "Postfix": "UL",
-    "DataTypeName": "ulong"
-  },
-  {
-    "Name": "Rectangle",
-    "Postfix": "F",
-    "DataTypeName": "float"
-  },
-  {
-    "Name": "Rectangle",
-    "Postfix": "D",
-    "DataTypeName": "double"
-  }
-]
+{
+  "FieldNames": [ "Left", "Top", "Right", "Bottom" ],
+  "FieldLabels": [ "Left", "Top", "Right", "Bottom" ],
+  "ArgNames": [ "left", "top", "right", "bottom" ],
+  "SubFolder": "Rectangles",
+
+  "Types": [
+    {
+      "DefName": "Rectangle",
+      "DataTypeName": "int",
+      "Sizes": [ 4 ]
+    },
+    {
+      "DefName": "RectangleUI",
+      "DataTypeName": "uint",
+      "Sizes": [ 4 ]
+    },
+    {
+      "DefName": "RectangleL",
+      "DataTypeName": "long",
+      "Sizes": [ 4 ]
+    },
+    {
+      "DefName": "RectangleUL",
+      "DataTypeName": "ulong",
+      "Sizes": [ 4 ]
+    },
+    {
+      "DefName": "RectangleF",
+      "DataTypeName": "float",
+      "Sizes": [ 4 ]
+    },
+    {
+      "DefName": "RectangleD",
+      "DataTypeName": "double",
+      "Sizes": [ 4 ]
+    }
+  ]
+}

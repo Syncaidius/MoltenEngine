@@ -259,15 +259,16 @@ public class TypeGenerator
         return r;
     }
 
-    public string GenerateFields(int indentLevel = 2)
+    public string GenerateFields(string name = "", int indentLevel = 2)
     {
+        name = string.IsNullOrWhiteSpace(name) ? "component" : name;
         string r = "";
         string indent = indentLevel > 0 ? new string('\t', indentLevel) : "";
         string n = Environment.NewLine;
 
         for(int i = 0; i < _curDef.Size; i++)
         {
-            r += $"{indent}/// <summary>The {_def.FieldLabels[i]} component.</summary>{n}";
+            r += $"{indent}/// <summary>The {_def.FieldLabels[i]} {name}.</summary>{n}";
             r += $"{indent}[DataMember]{n}";
             r += $"{indent}public {_curDef.DT} {_def.FieldNames[i]};{n}{n}";
         }
@@ -436,8 +437,10 @@ public class TypeGenerator
     /// Generates cast operators from the current TypeDef to every other TypeDef in the same GeneratorDefinition.
     /// If there are not enough fields in the current TypeDef to populate the args of another type constructor, 
     /// the default value of the other TypeDefs can be retrieved via the otherDefault callback, to be used for population.
-    public void GenerateCasts(Func<TypeDef, string> otherDefault = null, int indent = 2)
+    public void GenerateCasts(Func<TypeDef, string> otherDefault = null, string[] argNames = null, int indent = 2)
     {
+        argNames = argNames ?? _def.FieldNames;
+
         foreach(TypeDef other in _def.Types)
         {
             foreach(int otherSize in other.Sizes)
@@ -445,7 +448,7 @@ public class TypeGenerator
                 if(other == _curDef && _curDef.Size == otherSize)
                     continue;
 
-                string otherName = $"{other.DefName.Replace("{size}", otherSize.ToString())}";
+                string otherName = $"{other.GetName(otherSize)}";
                 string otherTypeCast = other.DT != _curDef.DT ? $"({other.DT})" : "";
                 string defaultValue = "";
                 if(otherDefault != null)
@@ -453,8 +456,9 @@ public class TypeGenerator
                 else
                     defaultValue = $"{otherTypeCast}{_curDef.DT.Zero}";
 
-                string castArgs = FieldsToArgs(_def.FieldNames, $"{otherTypeCast}value.", "", _curDef.Size, otherSize, defaultValue);
+                string castArgs = FieldsToArgs(argNames, $"{otherTypeCast}value.", "", _curDef.Size, otherSize, defaultValue);
 
+                Out(indent, $"///<summary>Casts a {See()} to a {See(otherName)}.</summary>");
                 Out(indent, $"public static explicit operator {otherName}({_curDef.Name} value)");
                 Out(indent, "{");
                 Out(indent+1, $"return new {otherName}({castArgs});");

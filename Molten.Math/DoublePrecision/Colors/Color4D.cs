@@ -788,16 +788,19 @@ namespace Molten.DoublePrecision
             return !left.Equals(ref right);
         }
 
+		///<summary>Casts a <see cref="Color4D"/> to a <see cref="Color3"/>.</summary>
 		public static explicit operator Color3(Color4D value)
 		{
 			return new Color3((float)value.R, (float)value.G, (float)value.B);
 		}
 
+		///<summary>Casts a <see cref="Color4D"/> to a <see cref="Color4"/>.</summary>
 		public static explicit operator Color4(Color4D value)
 		{
 			return new Color4((float)value.R, (float)value.G, (float)value.B, (float)value.A);
 		}
 
+		///<summary>Casts a <see cref="Color4D"/> to a <see cref="Color3D"/>.</summary>
 		public static explicit operator Color3D(Color4D value)
 		{
 			return new Color3D(value.R, value.G, value.B);

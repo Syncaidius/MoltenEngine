@@ -957,146 +957,175 @@ namespace Molten.HalfPrecision
 #endregion
 
 #region Casts - vectors
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="SByte2"/>.</summary>
 		public static explicit operator SByte2(Vector3US value)
 		{
 			return new SByte2((sbyte)value.X, (sbyte)value.Y);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="SByte3"/>.</summary>
 		public static explicit operator SByte3(Vector3US value)
 		{
 			return new SByte3((sbyte)value.X, (sbyte)value.Y, (sbyte)value.Z);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="SByte4"/>.</summary>
 		public static explicit operator SByte4(Vector3US value)
 		{
 			return new SByte4((sbyte)value.X, (sbyte)value.Y, (sbyte)value.Z, (sbyte)1);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Byte2"/>.</summary>
 		public static explicit operator Byte2(Vector3US value)
 		{
 			return new Byte2((byte)value.X, (byte)value.Y);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Byte3"/>.</summary>
 		public static explicit operator Byte3(Vector3US value)
 		{
 			return new Byte3((byte)value.X, (byte)value.Y, (byte)value.Z);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Byte4"/>.</summary>
 		public static explicit operator Byte4(Vector3US value)
 		{
 			return new Byte4((byte)value.X, (byte)value.Y, (byte)value.Z, (byte)1);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector2I"/>.</summary>
 		public static explicit operator Vector2I(Vector3US value)
 		{
 			return new Vector2I((int)value.X, (int)value.Y);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector3I"/>.</summary>
 		public static explicit operator Vector3I(Vector3US value)
 		{
 			return new Vector3I((int)value.X, (int)value.Y, (int)value.Z);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector4I"/>.</summary>
 		public static explicit operator Vector4I(Vector3US value)
 		{
 			return new Vector4I((int)value.X, (int)value.Y, (int)value.Z, 1);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector2UI"/>.</summary>
 		public static explicit operator Vector2UI(Vector3US value)
 		{
 			return new Vector2UI((uint)value.X, (uint)value.Y);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector3UI"/>.</summary>
 		public static explicit operator Vector3UI(Vector3US value)
 		{
 			return new Vector3UI((uint)value.X, (uint)value.Y, (uint)value.Z);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector4UI"/>.</summary>
 		public static explicit operator Vector4UI(Vector3US value)
 		{
 			return new Vector4UI((uint)value.X, (uint)value.Y, (uint)value.Z, 1U);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector2S"/>.</summary>
 		public static explicit operator Vector2S(Vector3US value)
 		{
 			return new Vector2S((short)value.X, (short)value.Y);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector3S"/>.</summary>
 		public static explicit operator Vector3S(Vector3US value)
 		{
 			return new Vector3S((short)value.X, (short)value.Y, (short)value.Z);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector4S"/>.</summary>
 		public static explicit operator Vector4S(Vector3US value)
 		{
 			return new Vector4S((short)value.X, (short)value.Y, (short)value.Z, (short)1);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector2US"/>.</summary>
 		public static explicit operator Vector2US(Vector3US value)
 		{
 			return new Vector2US(value.X, value.Y);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector4US"/>.</summary>
 		public static explicit operator Vector4US(Vector3US value)
 		{
 			return new Vector4US(value.X, value.Y, value.Z, (ushort)1);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector2L"/>.</summary>
 		public static explicit operator Vector2L(Vector3US value)
 		{
 			return new Vector2L((long)value.X, (long)value.Y);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector3L"/>.</summary>
 		public static explicit operator Vector3L(Vector3US value)
 		{
 			return new Vector3L((long)value.X, (long)value.Y, (long)value.Z);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector4L"/>.</summary>
 		public static explicit operator Vector4L(Vector3US value)
 		{
 			return new Vector4L((long)value.X, (long)value.Y, (long)value.Z, 1L);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector2UL"/>.</summary>
 		public static explicit operator Vector2UL(Vector3US value)
 		{
 			return new Vector2UL((ulong)value.X, (ulong)value.Y);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector3UL"/>.</summary>
 		public static explicit operator Vector3UL(Vector3US value)
 		{
 			return new Vector3UL((ulong)value.X, (ulong)value.Y, (ulong)value.Z);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector4UL"/>.</summary>
 		public static explicit operator Vector4UL(Vector3US value)
 		{
 			return new Vector4UL((ulong)value.X, (ulong)value.Y, (ulong)value.Z, 1UL);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector2F"/>.</summary>
 		public static explicit operator Vector2F(Vector3US value)
 		{
 			return new Vector2F((float)value.X, (float)value.Y);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector3F"/>.</summary>
 		public static explicit operator Vector3F(Vector3US value)
 		{
 			return new Vector3F((float)value.X, (float)value.Y, (float)value.Z);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector4F"/>.</summary>
 		public static explicit operator Vector4F(Vector3US value)
 		{
 			return new Vector4F((float)value.X, (float)value.Y, (float)value.Z, 1F);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector2D"/>.</summary>
 		public static explicit operator Vector2D(Vector3US value)
 		{
 			return new Vector2D((double)value.X, (double)value.Y);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector3D"/>.</summary>
 		public static explicit operator Vector3D(Vector3US value)
 		{
 			return new Vector3D((double)value.X, (double)value.Y, (double)value.Z);
 		}
 
+		///<summary>Casts a <see cref="Vector3US"/> to a <see cref="Vector4D"/>.</summary>
 		public static explicit operator Vector4D(Vector3US value)
 		{
 			return new Vector4D((double)value.X, (double)value.Y, (double)value.Z, 1D);
