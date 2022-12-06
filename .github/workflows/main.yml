@@ -1,11 +1,5 @@
 name: Generate changelog
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
-  # Optionally you can use `workflow_dispatch` to run Changelog CI Manually
   workflow_dispatch:
     inputs:
       release_version:
