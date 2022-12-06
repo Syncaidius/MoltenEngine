@@ -1,5 +1,4 @@
-name: Changelog
-
+name: Generate changelog
 on:
   pull_request:
     types: [ opened ]
@@ -10,36 +9,22 @@ on:
       release_version:
         description: 'Set Release Version'
         required: true
+      fetch_depth:
+        description: 'Changelog commit depth'
+        required: true
 
 jobs:
-  build:
+  generate-changelog:
     runs-on: ubuntu-latest
-
     steps:
-      # Checks-out your repository
-      - uses: actions/checkout@v2
-
-      - name: Run Changelog CI
-        uses: saadmk11/changelog-ci@v1.1.0
-        with:
-          # Optional, you can provide any name for your changelog file,
-          # We currently support Markdown (.md) and reStructuredText (.rst) files
-          # defaults to `CHANGELOG.md` if not provided.
-          changelog_filename: CHANGELOG.md
-          # Optional, only required when you want more customization
-          # e.g: group your changelog by labels with custom titles,
-          # different version prefix, pull request title and version number regex etc.
-          # config file can be in JSON or YAML format.
-          config_file: changelog-ci-config.json
-          # Optional, This will be used to configure git
-          # defaults to `github-actions[bot]` if not provided.
-          # committer_username: 'test'
-          # committer_email: 'test@test.com'
-          # Optional, only required when you want to run Changelog CI 
-          # on an event other than `pull_request` event.
-          # In this example `release_version` is fetched from `workflow_dispatch` events input.
-          # You can use any other method to fetch the release version
-          # such as environment variable or from output of another action
-          release_version: ${{ github.event.inputs.release_version }}
-          # Optional
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: ${{ github.event.inputs.fetch_depth }}
+    - uses: BobAnkh/auto-generate-changelog@v1
+      with:
+        REPO_NAME: 'Syncaidius/MoltenEngine'
+        BRANCH: 'master'
+        ACCESS_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        PATH: 'CHANGELOG_{{ github.event.inputs.release_version }}.md'
+        COMMIT_MESSAGE: 'docs(CHANGELOG): Updated {{ github.event.inputs.release_version }} release notes'
+        TYPE: 'feat:Feature,fix:Bug Fixes,docs:Documentation,refactor:Refactor,perf:Performance Improvements'
