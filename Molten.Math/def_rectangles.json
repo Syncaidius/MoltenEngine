@@ -1,7 +1,6 @@
 {
   "FieldNames": [ "Left", "Top", "Right", "Bottom" ],
   "FieldLabels": [ "Left", "Top", "Right", "Bottom" ],
-  "ArgNames": [ "left", "top", "right", "bottom" ],
   "SubFolder": "Rectangles",
 
   "Types": [

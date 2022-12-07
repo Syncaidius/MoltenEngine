@@ -162,6 +162,10 @@ public class TypeGenerator
         string json = File.ReadAllText(Path.Combine(_outputPath, typeDefFileName.Trim()));
         _def = JsonConvert.DeserializeObject<GeneratorDefinition>(json);
 
+        _def.ArgNames = new string[_def.FieldNames.Length];
+        for(int i = 0; i < _def.ArgNames.Length; i++)
+            _def.ArgNames[i] = _def.FieldNames[i].ToLower();
+
         foreach(TypeDef t in _def.Types)
         {
             if(!_dataTypes.ContainsKey(t.DataTypeName))

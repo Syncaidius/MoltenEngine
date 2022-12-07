@@ -1,7 +1,6 @@
 {
   "FieldNames": [ "X", "Y", "Z", "W" ],
   "FieldLabels": [ "X", "Y", "Z", "W" ],
-  "ArgNames": [ "x", "y", "z", "w" ],
   "SubFolder": "Vectors",
 
   "Types": [
