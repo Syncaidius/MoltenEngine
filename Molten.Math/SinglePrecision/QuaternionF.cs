@@ -31,21 +31,23 @@ namespace Molten
         /// </summary>
         public static readonly QuaternionF Identity = new QuaternionF(0F, 0F, 0F, 0F);
 
-		///<summary>The X component of the QuaternionF.</summary>
-        [DataMember]
+		/// <summary>The X component.</summary>
+		[DataMember]
 		public float X;
 
-        ///<summary>The Y component of the QuaternionF.</summary>
-        [DataMember]
+		/// <summary>The Y component.</summary>
+		[DataMember]
 		public float Y;
 
-        ///<summary>The Z component of the QuaternionF.</summary>
-        [DataMember]
+		/// <summary>The Z component.</summary>
+		[DataMember]
 		public float Z;
 
-        ///<summary>The W component of the QuaternionF.</summary>
-        [DataMember]
+		/// <summary>The W component.</summary>
+		[DataMember]
 		public float W;
+
+
 
         /// <summary>
         /// Gets a value indicting whether this  <see cref="QuaternionF"/> is normalized.
@@ -86,6 +88,76 @@ namespace Molten
         }
 
 #region Constructors
+		/// <summary>Initializes a new instance of <see cref="QuaternionF"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public QuaternionF(float value)
+		{
+			X = value;
+			Y = value;
+			Z = value;
+			W = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionF"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public QuaternionF(float[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for QuaternionF.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionF"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public QuaternionF(Span<float> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for QuaternionF.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionF"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		public unsafe QuaternionF(float* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			X = ptrValues[0];
+			Y = ptrValues[1];
+			Z = ptrValues[2];
+			W = ptrValues[3];
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="QuaternionF"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		/// <param name="z">The Z component.</param>
+		/// <param name="w">The W component.</param>
+		public QuaternionF(float x, float y, float z, float w)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+			W = w;
+		}
         /// <summary>
         /// Initializes a new instance of the <see cref="QuaternionF"/> struct.
         /// </summary>
@@ -124,52 +196,6 @@ namespace Molten
             Z = z;
             W = w;
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuaternionF"/> struct.
-        /// </summary>
-        /// <param name="x">Initial value for the X component of the <see cref="QuaternionF"/>.</param>
-        /// <param name="y">Initial value for the Y component of the <see cref="QuaternionF"/>.</param>
-        /// <param name="z">Initial value for the Z component of the <see cref="QuaternionF"/>.</param>
-        /// <param name="w">Initial value for the W component of the <see cref="QuaternionF"/>.</param>
-        public QuaternionF(float x, float y, float z, float w)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-            W = w;
-        }
-
-        
-        /// <summary>
-        /// Initializes a new instance of the  <see cref="QuaternionF"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X, Y, Z, and W components of the quaternion. This must be an array with four elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-        public QuaternionF(float[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for QuaternionF.");
-
-            X = values[0];
-            Y = values[1];
-            Z = values[2];
-            W = values[3];
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuaternionF"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
-        /// </summary>
-        public unsafe QuaternionF(float* ptr)
-		{
-            X = ptr[0];
-            Y = ptr[1];
-            Z = ptr[2];
-            W = ptr[3];
-		}
 #endregion
 
 #region Instance Methods
@@ -1112,12 +1138,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Multiplies a quaternion by another.
+        /// Multiplies a QuaternionF by another QuaternionF.
         /// </summary>
-        /// <param name="left">The first quaternion to multiply.</param>
-        /// <param name="right">The second quaternion to multiply.</param>
-        /// <returns>The multiplied quaternion.</returns>
-        public static QuaternionF operator *(QuaternionF left, QuaternionF right)
+        /// <param name="left">A reference to the first QuaternionF to multiply.</param>
+        /// <param name="right">A reference to the second QuaternionF to multiply.</param>
+        /// <returns>The multiplied QuaternionF.</returns>
+        public static void Multiply(ref QuaternionF left, ref QuaternionF right, out QuaternionF result)
         {
             float lx = left.X;
             float ly = left.Y;
@@ -1132,33 +1158,49 @@ namespace Molten
             float c = (lx * ry - ly * rx);
             float d = (lx * rx + ly * ry + lz * rz);
 
-            return new QuaternionF()
-            {
-                X = (lx * rw + rx * lw) + a,
-                Y = (ly * rw + ry * lw) + b,
-                Z = (lz * rw + rz * lw) + c,
-                W = lw * rw - d
-            };
+            result.X = (lx * rw + rx * lw) + a;
+            result.Y = (ly * rw + ry * lw) + b;
+            result.Z = (lz * rw + rz * lw) + c;
+            result.W = lw * rw - d;
+        }
+
+        /// <summary>
+        /// Multiplies a QuaternionF by another QuaternionF.
+        /// </summary>
+        /// <param name="left">The first QuaternionF to multiply.</param>
+        /// <param name="right">The second QuaternionF to multiply.</param>
+        /// <returns>The multiplied QuaternionF.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QuaternionF operator *(QuaternionF left, QuaternionF right)
+        {
+            Multiply(ref left, ref right, out QuaternionF result);
+            return result;
         }
 #endregion
 
 #region Operators - Subtract
-        /// <summary>
-        /// Subtracts two quaternions.
-        /// </summary>
-        /// <param name="left">The first quaternion to subtract.</param>
-        /// <param name="right">The second quaternion to subtract.</param>
-        /// <returns>The difference of the two quaternions.</returns>
-        public static QuaternionF operator -(QuaternionF left, QuaternionF right)
-        {
-            return new QuaternionF()
-            {
-            X = left.X - right.X,
-            Y = left.Y - right.Y,
-            Z = left.Z - right.Z,
-            W = left.W - right.W
-            };
-        }
+		///<summary>Performs a Subtract operation on two <see cref="QuaternionF"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionF"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionF"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref QuaternionF a, ref QuaternionF b, out QuaternionF result)
+		{
+			result.X = a.X - b.X;
+			result.Y = a.Y - b.Y;
+			result.Z = a.Z - b.Z;
+			result.W = a.W - b.W;
+		}
+
+		///<summary>Performs a Subtract operation on two <see cref="QuaternionF"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionF"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionF"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionF operator -(QuaternionF a, QuaternionF b)
+		{
+			Subtract(ref a, ref b, out QuaternionF result);
+			return result;
+		}
 
         /// <summary>
         /// Reverses the direction of a given quaternion.
@@ -1178,39 +1220,53 @@ namespace Molten
 #endregion
 
 #region Operators - Division
-        /// <summary>
-        /// Divides two quaternions.
-        /// </summary>
-        /// <param name="left">The first <see cref="QuaternionF"/> to divide.</param>
-        /// <param name="right">The second <see cref="QuaternionF"/> to divide.</param>
-        /// <returns>The sum of the two <see cref="QuaternionF"/>.</returns>
-        public static QuaternionF operator /(QuaternionF left, QuaternionF right)
-        {
-            return new QuaternionF()
-            {
-                X = left.X / right.X,
-                Y = left.Y / right.Y,
-                Z = left.Z / right.Z,
-                W = left.W / right.W
-            };
-        }
+		///<summary>Performs a Division operation on two <see cref="QuaternionF"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionF"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionF"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Division(ref QuaternionF a, ref QuaternionF b, out QuaternionF result)
+		{
+			result.X = a.X / b.X;
+			result.Y = a.Y / b.Y;
+			result.Z = a.Z / b.Z;
+			result.W = a.W / b.W;
+		}
 
-        /// <summary>
-        /// Adds two quaternions.
-        /// </summary>
-        /// <param name="left">The first <see cref="QuaternionF"/> to add.</param>
-        /// <param name="right">The second <see cref="QuaternionF"/> to add.</param>
-        /// <returns>The sum of the two <see cref="QuaternionF"/>.</returns>
-        public static QuaternionF operator +(QuaternionF left, QuaternionF right)
-        {
-            return new QuaternionF()
-            {
-                X = left.X + right.X,
-                Y = left.Y + right.Y,
-                Z = left.Z + right.Z,
-                W = left.W + right.W
-            };
-        }
+		///<summary>Performs a Division operation on two <see cref="QuaternionF"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionF"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionF"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionF operator /(QuaternionF a, QuaternionF b)
+		{
+			Division(ref a, ref b, out QuaternionF result);
+			return result;
+		}
+#endregion
+
+#region Operators - Add
+		///<summary>Performs a Add operation on two <see cref="QuaternionF"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionF"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionF"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref QuaternionF a, ref QuaternionF b, out QuaternionF result)
+		{
+			result.X = a.X + b.X;
+			result.Y = a.Y + b.Y;
+			result.Z = a.Z + b.Z;
+			result.W = a.W + b.W;
+		}
+
+		///<summary>Performs a Add operation on two <see cref="QuaternionF"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionF"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionF"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionF operator +(QuaternionF a, QuaternionF b)
+		{
+			Add(ref a, ref b, out QuaternionF result);
+			return result;
+		}
 #endregion
 
 #region Operators - Equality

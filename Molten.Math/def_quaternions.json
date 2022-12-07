@@ -1,12 +1,18 @@
-[
-  {
-    "Name": "Quaternion",
-    "Postfix": "F",
-    "DataTypeName": "float"
-  },
-  {
-    "Name": "Quaternion",
-    "Postfix": "D",
-    "DataTypeName": "double"
-  }
-]
+{
+  "FieldNames": [ "X", "Y", "Z", "W" ],
+  "FieldLabels": [ "X", "Y", "Z", "W" ],
+  "SubFolder": "",
+
+  "Types": [
+    {
+      "DefName": "QuaternionF",
+      "DataTypeName": "float",
+      "Sizes": [ 4 ]
+    },
+    {
+      "DefName": "QuaternionD",
+      "DataTypeName": "double",
+      "Sizes": [ 4 ]
+    }
+  ]
+}

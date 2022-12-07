@@ -31,21 +31,23 @@ namespace Molten.DoublePrecision
         /// </summary>
         public static readonly QuaternionD Identity = new QuaternionD(0D, 0D, 0D, 0D);
 
-		///<summary>The X component of the QuaternionD.</summary>
-        [DataMember]
+		/// <summary>The X component.</summary>
+		[DataMember]
 		public double X;
 
-        ///<summary>The Y component of the QuaternionD.</summary>
-        [DataMember]
+		/// <summary>The Y component.</summary>
+		[DataMember]
 		public double Y;
 
-        ///<summary>The Z component of the QuaternionD.</summary>
-        [DataMember]
+		/// <summary>The Z component.</summary>
+		[DataMember]
 		public double Z;
 
-        ///<summary>The W component of the QuaternionD.</summary>
-        [DataMember]
+		/// <summary>The W component.</summary>
+		[DataMember]
 		public double W;
+
+
 
         /// <summary>
         /// Gets a value indicting whether this  <see cref="QuaternionD"/> is normalized.
@@ -86,6 +88,76 @@ namespace Molten.DoublePrecision
         }
 
 #region Constructors
+		/// <summary>Initializes a new instance of <see cref="QuaternionD"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public QuaternionD(double value)
+		{
+			X = value;
+			Y = value;
+			Z = value;
+			W = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionD"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public QuaternionD(double[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for QuaternionD.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionD"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		public QuaternionD(Span<double> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for QuaternionD.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionD"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		public unsafe QuaternionD(double* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			X = ptrValues[0];
+			Y = ptrValues[1];
+			Z = ptrValues[2];
+			W = ptrValues[3];
+		}
+		/// <summary>
+		/// Initializes a new instance of <see cref="QuaternionD"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		/// <param name="z">The Z component.</param>
+		/// <param name="w">The W component.</param>
+		public QuaternionD(double x, double y, double z, double w)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+			W = w;
+		}
         /// <summary>
         /// Initializes a new instance of the <see cref="QuaternionD"/> struct.
         /// </summary>
@@ -124,52 +196,6 @@ namespace Molten.DoublePrecision
             Z = z;
             W = w;
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuaternionD"/> struct.
-        /// </summary>
-        /// <param name="x">Initial value for the X component of the <see cref="QuaternionD"/>.</param>
-        /// <param name="y">Initial value for the Y component of the <see cref="QuaternionD"/>.</param>
-        /// <param name="z">Initial value for the Z component of the <see cref="QuaternionD"/>.</param>
-        /// <param name="w">Initial value for the W component of the <see cref="QuaternionD"/>.</param>
-        public QuaternionD(double x, double y, double z, double w)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-            W = w;
-        }
-
-        
-        /// <summary>
-        /// Initializes a new instance of the  <see cref="QuaternionD"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X, Y, Z, and W components of the quaternion. This must be an array with four elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-        public QuaternionD(double[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for QuaternionD.");
-
-            X = values[0];
-            Y = values[1];
-            Z = values[2];
-            W = values[3];
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuaternionD"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
-        /// </summary>
-        public unsafe QuaternionD(double* ptr)
-		{
-            X = ptr[0];
-            Y = ptr[1];
-            Z = ptr[2];
-            W = ptr[3];
-		}
 #endregion
 
 #region Instance Methods
@@ -1112,12 +1138,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Multiplies a quaternion by another.
+        /// Multiplies a QuaternionD by another QuaternionD.
         /// </summary>
-        /// <param name="left">The first quaternion to multiply.</param>
-        /// <param name="right">The second quaternion to multiply.</param>
-        /// <returns>The multiplied quaternion.</returns>
-        public static QuaternionD operator *(QuaternionD left, QuaternionD right)
+        /// <param name="left">A reference to the first QuaternionD to multiply.</param>
+        /// <param name="right">A reference to the second QuaternionD to multiply.</param>
+        /// <returns>The multiplied QuaternionD.</returns>
+        public static void Multiply(ref QuaternionD left, ref QuaternionD right, out QuaternionD result)
         {
             double lx = left.X;
             double ly = left.Y;
@@ -1132,33 +1158,49 @@ namespace Molten.DoublePrecision
             double c = (lx * ry - ly * rx);
             double d = (lx * rx + ly * ry + lz * rz);
 
-            return new QuaternionD()
-            {
-                X = (lx * rw + rx * lw) + a,
-                Y = (ly * rw + ry * lw) + b,
-                Z = (lz * rw + rz * lw) + c,
-                W = lw * rw - d
-            };
+            result.X = (lx * rw + rx * lw) + a;
+            result.Y = (ly * rw + ry * lw) + b;
+            result.Z = (lz * rw + rz * lw) + c;
+            result.W = lw * rw - d;
+        }
+
+        /// <summary>
+        /// Multiplies a QuaternionD by another QuaternionD.
+        /// </summary>
+        /// <param name="left">The first QuaternionD to multiply.</param>
+        /// <param name="right">The second QuaternionD to multiply.</param>
+        /// <returns>The multiplied QuaternionD.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QuaternionD operator *(QuaternionD left, QuaternionD right)
+        {
+            Multiply(ref left, ref right, out QuaternionD result);
+            return result;
         }
 #endregion
 
 #region Operators - Subtract
-        /// <summary>
-        /// Subtracts two quaternions.
-        /// </summary>
-        /// <param name="left">The first quaternion to subtract.</param>
-        /// <param name="right">The second quaternion to subtract.</param>
-        /// <returns>The difference of the two quaternions.</returns>
-        public static QuaternionD operator -(QuaternionD left, QuaternionD right)
-        {
-            return new QuaternionD()
-            {
-            X = left.X - right.X,
-            Y = left.Y - right.Y,
-            Z = left.Z - right.Z,
-            W = left.W - right.W
-            };
-        }
+		///<summary>Performs a Subtract operation on two <see cref="QuaternionD"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionD"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref QuaternionD a, ref QuaternionD b, out QuaternionD result)
+		{
+			result.X = a.X - b.X;
+			result.Y = a.Y - b.Y;
+			result.Z = a.Z - b.Z;
+			result.W = a.W - b.W;
+		}
+
+		///<summary>Performs a Subtract operation on two <see cref="QuaternionD"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionD"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionD operator -(QuaternionD a, QuaternionD b)
+		{
+			Subtract(ref a, ref b, out QuaternionD result);
+			return result;
+		}
 
         /// <summary>
         /// Reverses the direction of a given quaternion.
@@ -1178,39 +1220,53 @@ namespace Molten.DoublePrecision
 #endregion
 
 #region Operators - Division
-        /// <summary>
-        /// Divides two quaternions.
-        /// </summary>
-        /// <param name="left">The first <see cref="QuaternionD"/> to divide.</param>
-        /// <param name="right">The second <see cref="QuaternionD"/> to divide.</param>
-        /// <returns>The sum of the two <see cref="QuaternionD"/>.</returns>
-        public static QuaternionD operator /(QuaternionD left, QuaternionD right)
-        {
-            return new QuaternionD()
-            {
-                X = left.X / right.X,
-                Y = left.Y / right.Y,
-                Z = left.Z / right.Z,
-                W = left.W / right.W
-            };
-        }
+		///<summary>Performs a Division operation on two <see cref="QuaternionD"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionD"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Division(ref QuaternionD a, ref QuaternionD b, out QuaternionD result)
+		{
+			result.X = a.X / b.X;
+			result.Y = a.Y / b.Y;
+			result.Z = a.Z / b.Z;
+			result.W = a.W / b.W;
+		}
 
-        /// <summary>
-        /// Adds two quaternions.
-        /// </summary>
-        /// <param name="left">The first <see cref="QuaternionD"/> to add.</param>
-        /// <param name="right">The second <see cref="QuaternionD"/> to add.</param>
-        /// <returns>The sum of the two <see cref="QuaternionD"/>.</returns>
-        public static QuaternionD operator +(QuaternionD left, QuaternionD right)
-        {
-            return new QuaternionD()
-            {
-                X = left.X + right.X,
-                Y = left.Y + right.Y,
-                Z = left.Z + right.Z,
-                W = left.W + right.W
-            };
-        }
+		///<summary>Performs a Division operation on two <see cref="QuaternionD"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionD"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionD operator /(QuaternionD a, QuaternionD b)
+		{
+			Division(ref a, ref b, out QuaternionD result);
+			return result;
+		}
+#endregion
+
+#region Operators - Add
+		///<summary>Performs a Add operation on two <see cref="QuaternionD"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionD"/>to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref QuaternionD a, ref QuaternionD b, out QuaternionD result)
+		{
+			result.X = a.X + b.X;
+			result.Y = a.Y + b.Y;
+			result.Z = a.Z + b.Z;
+			result.W = a.W + b.W;
+		}
+
+		///<summary>Performs a Add operation on two <see cref="QuaternionD"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
+		///<param name="b">The second <see cref="QuaternionD"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionD operator +(QuaternionD a, QuaternionD b)
+		{
+			Add(ref a, ref b, out QuaternionD result);
+			return result;
+		}
 #endregion
 
 #region Operators - Equality
