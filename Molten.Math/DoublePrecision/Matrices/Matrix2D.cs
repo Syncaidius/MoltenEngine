@@ -16,29 +16,22 @@ namespace Molten.DoublePrecision
         /// </summary>
         public static readonly Matrix2D Identity = new Matrix2D(1, 0, 0, 1);
 
-        /// <summary>
-        /// Value at row 1, column 1 of the matrix.
-        /// </summary>
-        [DataMember]
-        public double M11;
+		/// <summary>The value at row 1, column 1 of the matrix.</summary>
+		[DataMember]
+		public double M11;
 
-        /// <summary>
-        /// Value at row 1, column 2 of the matrix.
-        /// </summary>
-        [DataMember]
-        public double M12;
+		/// <summary>The value at row 1, column 2 of the matrix.</summary>
+		[DataMember]
+		public double M12;
 
-        /// <summary>
-        /// Value at row 2, column 1 of the matrix.
-        /// </summary>
-        [DataMember]
-        public double M21;
+		/// <summary>The value at row 2, column 1 of the matrix.</summary>
+		[DataMember]
+		public double M21;
 
-        /// <summary>
-        /// Value at row 2, column 2 of the matrix.
-        /// </summary>
-        [DataMember]
-        public double M22;
+		/// <summary>The value at row 2, column 2 of the matrix.</summary>
+		[DataMember]
+		public double M22;
+
 
         /// <summary>
         /// Constructs a new 2 row, 2 column matrix.

@@ -72,101 +72,71 @@ namespace Molten
         /// </summary>
         public static readonly Matrix4F Identity = new Matrix4F() { M11 = 1F, M22 = 1F, M33 = 1F, M44 = 1F };
 
-        /// <summary>
-        /// Value at row 1 column 1 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M11;
+		/// <summary>The value at row 1, column 1 of the matrix.</summary>
+		[DataMember]
+		public float M11;
 
-        /// <summary>
-        /// Value at row 1 column 2 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M12;
+		/// <summary>The value at row 1, column 2 of the matrix.</summary>
+		[DataMember]
+		public float M12;
 
-        /// <summary>
-        /// Value at row 1 column 3 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M13;
+		/// <summary>The value at row 1, column 3 of the matrix.</summary>
+		[DataMember]
+		public float M13;
 
-        /// <summary>
-        /// Value at row 1 column 4 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M14;
+		/// <summary>The value at row 1, column 4 of the matrix.</summary>
+		[DataMember]
+		public float M14;
 
-        /// <summary>
-        /// Value at row 2 column 1 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M21;
+		/// <summary>The value at row 2, column 1 of the matrix.</summary>
+		[DataMember]
+		public float M21;
 
-        /// <summary>
-        /// Value at row 2 column 2 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M22;
+		/// <summary>The value at row 2, column 2 of the matrix.</summary>
+		[DataMember]
+		public float M22;
 
-        /// <summary>
-        /// Value at row 2 column 3 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M23;
+		/// <summary>The value at row 2, column 3 of the matrix.</summary>
+		[DataMember]
+		public float M23;
 
-        /// <summary>
-        /// Value at row 2 column 4 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M24;
+		/// <summary>The value at row 2, column 4 of the matrix.</summary>
+		[DataMember]
+		public float M24;
 
-        /// <summary>
-        /// Value at row 3 column 1 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M31;
+		/// <summary>The value at row 3, column 1 of the matrix.</summary>
+		[DataMember]
+		public float M31;
 
-        /// <summary>
-        /// Value at row 3 column 2 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M32;
+		/// <summary>The value at row 3, column 2 of the matrix.</summary>
+		[DataMember]
+		public float M32;
 
-        /// <summary>
-        /// Value at row 3 column 3 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M33;
+		/// <summary>The value at row 3, column 3 of the matrix.</summary>
+		[DataMember]
+		public float M33;
 
-        /// <summary>
-        /// Value at row 3 column 4 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M34;
+		/// <summary>The value at row 3, column 4 of the matrix.</summary>
+		[DataMember]
+		public float M34;
 
-        /// <summary>
-        /// Value at row 4 column 1 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M41;
+		/// <summary>The value at row 4, column 1 of the matrix.</summary>
+		[DataMember]
+		public float M41;
 
-        /// <summary>
-        /// Value at row 4 column 2 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M42;
+		/// <summary>The value at row 4, column 2 of the matrix.</summary>
+		[DataMember]
+		public float M42;
 
-        /// <summary>
-        /// Value at row 4 column 3 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M43;
+		/// <summary>The value at row 4, column 3 of the matrix.</summary>
+		[DataMember]
+		public float M43;
 
-        /// <summary>
-        /// Value at row 4 column 4 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M44;
+		/// <summary>The value at row 4, column 4 of the matrix.</summary>
+		[DataMember]
+		public float M44;
+
+
      
         /// <summary>
         /// Gets or sets the up <see cref="Vector3F"/> of the matrix; that is M21, M22, and M23.

@@ -35,30 +35,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         public static readonly <#=d.Name#> Identity = new <#=d.Name#>(1, 0, 0, 1);
 
-        /// <summary>
-        /// Value at row 1, column 1 of the matrix.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M11;
-
-        /// <summary>
-        /// Value at row 1, column 2 of the matrix.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M12;
-
-        /// <summary>
-        /// Value at row 2, column 1 of the matrix.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M21;
-
-        /// <summary>
-        /// Value at row 2, column 2 of the matrix.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M22;
-
+<#=gen.GenerateFields((field) => $"The value at row {field[1]}, column {field[2]} of the matrix.")#>
         /// <summary>
         /// Constructs a new 2 row, 2 column matrix.
         /// </summary>

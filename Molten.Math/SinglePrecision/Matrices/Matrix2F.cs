@@ -16,29 +16,22 @@ namespace Molten
         /// </summary>
         public static readonly Matrix2F Identity = new Matrix2F(1, 0, 0, 1);
 
-        /// <summary>
-        /// Value at row 1, column 1 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M11;
+		/// <summary>The value at row 1, column 1 of the matrix.</summary>
+		[DataMember]
+		public float M11;
 
-        /// <summary>
-        /// Value at row 1, column 2 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M12;
+		/// <summary>The value at row 1, column 2 of the matrix.</summary>
+		[DataMember]
+		public float M12;
 
-        /// <summary>
-        /// Value at row 2, column 1 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M21;
+		/// <summary>The value at row 2, column 1 of the matrix.</summary>
+		[DataMember]
+		public float M21;
 
-        /// <summary>
-        /// Value at row 2, column 2 of the matrix.
-        /// </summary>
-        [DataMember]
-        public float M22;
+		/// <summary>The value at row 2, column 2 of the matrix.</summary>
+		[DataMember]
+		public float M22;
+
 
         /// <summary>
         /// Constructs a new 2 row, 2 column matrix.

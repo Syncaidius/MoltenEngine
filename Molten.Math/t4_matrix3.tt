@@ -91,61 +91,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         public static readonly <#=d.Name#> Identity = new <#=d.Name#>() { M11 = 1.0<#=d.FP.Literal#>, M22 = 1.0<#=d.FP.Literal#>, M33 = 1.0<#=d.FP.Literal#> };
 
-        /// <summary>
-        /// Value at row 1 column 1 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M11;
-
-        /// <summary>
-        /// Value at row 1 column 2 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M12;
-
-        /// <summary>
-        /// Value at row 1 column 3 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M13;
-
-        /// <summary>
-        /// Value at row 2 column 1 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M21;
-
-        /// <summary>
-        /// Value at row 2 column 2 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M22;
-
-        /// <summary>
-        /// Value at row 2 column 3 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M23;
-
-        /// <summary>
-        /// Value at row 3 column 1 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M31;
-
-        /// <summary>
-        /// Value at row 3 column 2 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M32;
-
-        /// <summary>
-        /// Value at row 3 column 3 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public <#=d.DT#> M33;
-
-
+<#=gen.GenerateFields((field) => $"The value at row {field[1]}, column {field[2]} of the matrix.")#>
         /// <summary>
         /// Initializes a new instance of the <see cref="<#=d.Name#>"/> struct.
         /// </summary>

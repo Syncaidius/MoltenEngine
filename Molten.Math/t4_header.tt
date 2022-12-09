@@ -293,16 +293,16 @@ public class TypeGenerator
         return r;
     }
 
-    public string GenerateFields(string name = "", int indentLevel = 2)
+    public string GenerateFields(Func<string, string> summaryCallback = null, int indentLevel = 2)
     {
-        name = string.IsNullOrWhiteSpace(name) ? "component" : name;
         string r = "";
         string indent = indentLevel > 0 ? new string('\t', indentLevel) : "";
         string n = Environment.NewLine;
 
-        for(int i = 0; i < _curDef.Size; i++)
+        for(int i = 0; i < _curDef.FieldNames.Length; i++)
         {
-            r += $"{indent}/// <summary>The {_curDef.FieldLabels[i]} {name}.</summary>{n}";
+            string summary = summaryCallback?.Invoke(_curDef.FieldLabels[i]) ?? $"The {_curDef.FieldLabels[i]} component.";
+            r += $"{indent}/// <summary>{summary}</summary>{n}";
             r += $"{indent}[DataMember]{n}";
             r += $"{indent}public {_curDef.DT} {_curDef.FieldNames[i]};{n}{n}";
         }
@@ -459,7 +459,6 @@ public class TypeGenerator
 
 		            for(int p = otherSize; p < _curDef.Size; p++)
 			            Out(indent+1, $"{_curDef.FieldNames[p]} = {_curDef.ArgNames[p]};");
-
                     
                     Out(indent, "}");
                     Out("");

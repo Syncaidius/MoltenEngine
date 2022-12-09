@@ -72,59 +72,41 @@ namespace Molten
         /// </summary>
         public static readonly Matrix3F Identity = new Matrix3F() { M11 = 1.0F, M22 = 1.0F, M33 = 1.0F };
 
-        /// <summary>
-        /// Value at row 1 column 1 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public float M11;
+		/// <summary>The value at row 1, column 1 of the matrix.</summary>
+		[DataMember]
+		public float M11;
 
-        /// <summary>
-        /// Value at row 1 column 2 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public float M12;
+		/// <summary>The value at row 1, column 2 of the matrix.</summary>
+		[DataMember]
+		public float M12;
 
-        /// <summary>
-        /// Value at row 1 column 3 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public float M13;
+		/// <summary>The value at row 1, column 3 of the matrix.</summary>
+		[DataMember]
+		public float M13;
 
-        /// <summary>
-        /// Value at row 2 column 1 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public float M21;
+		/// <summary>The value at row 2, column 1 of the matrix.</summary>
+		[DataMember]
+		public float M21;
 
-        /// <summary>
-        /// Value at row 2 column 2 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public float M22;
+		/// <summary>The value at row 2, column 2 of the matrix.</summary>
+		[DataMember]
+		public float M22;
 
-        /// <summary>
-        /// Value at row 2 column 3 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public float M23;
+		/// <summary>The value at row 2, column 3 of the matrix.</summary>
+		[DataMember]
+		public float M23;
 
-        /// <summary>
-        /// Value at row 3 column 1 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public float M31;
+		/// <summary>The value at row 3, column 1 of the matrix.</summary>
+		[DataMember]
+		public float M31;
 
-        /// <summary>
-        /// Value at row 3 column 2 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public float M32;
+		/// <summary>The value at row 3, column 2 of the matrix.</summary>
+		[DataMember]
+		public float M32;
 
-        /// <summary>
-        /// Value at row 3 column 3 of the Matrix3x3.
-        /// </summary>
-        [DataMember]
-        public float M33;
+		/// <summary>The value at row 3, column 3 of the matrix.</summary>
+		[DataMember]
+		public float M33;
 
 
         /// <summary>
