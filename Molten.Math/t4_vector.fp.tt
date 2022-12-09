@@ -26,7 +26,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         public bool IsNormalized
         {
-            get => MathHelper.IsOne(<#for(int p = 0; p < d.Size; p++){#>(<#=def.FieldNames[p]#> * <#=def.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
+            get => MathHelper.IsOne(<#for(int p = 0; p < d.Size; p++){#>(<#=d.FieldNames[p]#> * <#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
         public static bool NearEqual(ref <#=d.Name#> left, ref <#=d.Name#> right, ref <#=d.Name#> epsilon)
         {
-            return <#for(int p = 0; p < d.Size; p++){#>MathHelper.WithinEpsilon(left.<#=def.FieldNames[p]#>, right.<#=def.FieldNames[p]#>, epsilon.<#=def.FieldNames[p]#>)<#=(p < (d.Size-1) ? " && " : "")#><#}#>;
+            return <#for(int p = 0; p < d.Size; p++){#>MathHelper.WithinEpsilon(left.<#=d.FieldNames[p]#>, right.<#=d.FieldNames[p]#>, epsilon.<#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " && " : "")#><#}#>;
         }
 
         /// <summary>
@@ -123,14 +123,14 @@ namespace Molten<#=d.SubNamespace#>
                 <#=d.FP#> inverse = <#=d.FP.One#> / length;
                 return new <#=d.Name#>()
                 {
-<#gen.IterateFields((i, field) => $"\t\t{def.FieldNames[i]} = this.{def.FieldNames[i]} * inverse{(i < d.Size -1 ? "," : "")}", 0);#>
+<#gen.IterateFields((i, field) => $"\t\t{d.FieldNames[i]} = this.{d.FieldNames[i]} * inverse{(i < d.Size -1 ? "," : "")}", 0);#>
                 };
             }
             else
             {
                 return new <#=d.Name#>()
                 {
-<#gen.IterateFields((i, field) => $"\t\t{def.FieldNames[i]} = {(i == 1 ? "allowZero ? 1 : 0" : "0")}{(i < d.Size -1 ? "," : "")}", 0);#>
+<#gen.IterateFields((i, field) => $"\t\t{d.FieldNames[i]} = {(i == 1 ? "allowZero ? 1 : 0" : "0")}{(i < d.Size -1 ? "," : "")}", 0);#>
                 };
             }
         }
@@ -145,11 +145,11 @@ namespace Molten<#=d.SubNamespace#>
             if (!MathHelper.IsZero(length))
             {
                 <#=d.FP#> inverse = <#=d.FP.One#> / length;
-<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.FPCast}({def.FieldNames[i]} * inverse);", 0, 4);#>
+<#gen.IterateFields((i, field) => $"{d.FieldNames[i]} = {d.DT.FPCast}({d.FieldNames[i]} * inverse);", 0, 4);#>
             }
             else
             {
-<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {(i == 1 ? "allowZero ? 1 : 0" : "0")};", 0, 4);#>
+<#gen.IterateFields((i, field) => $"{d.FieldNames[i]} = {(i == 1 ? "allowZero ? 1 : 0" : "0")};", 0, 4);#>
             }
         }
 
@@ -158,7 +158,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         public void Saturate()
         {
-<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {def.FieldNames[i]} < {d.DT.Zero} ? {d.DT.Zero} : {def.FieldNames[i]} > {d.DT.One} ? {d.DT.One} : {def.FieldNames[i]};", 0);#>
+<#gen.IterateFields((i, field) => $"{d.FieldNames[i]} = {d.FieldNames[i]} < {d.DT.Zero} ? {d.DT.Zero} : {d.FieldNames[i]} > {d.DT.One} ? {d.DT.One} : {d.FieldNames[i]};", 0);#>
         }
 
         /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
@@ -169,40 +169,40 @@ namespace Molten<#=d.SubNamespace#>
         {
             return new <#=d.Name#>()
             {
-<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.Math}.Pow(vec.{def.FieldNames[i]}, power){(i < d.Size -1 ? "," : "")}", 0, 4);#>
+<#gen.IterateFields((i, field) => $"{d.FieldNames[i]} = {d.DT.Math}.Pow(vec.{d.FieldNames[i]}, power){(i < d.Size -1 ? "," : "")}", 0, 4);#>
             };
         }
 
 		/// <summary>Rounds all components down to the nearest unit.</summary>
         public void Floor()
         {
-<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.Math}.Floor({def.FieldNames[i]});", 0);#>
+<#gen.IterateFields((i, field) => $"{d.FieldNames[i]} = {d.DT.Math}.Floor({d.FieldNames[i]});", 0);#>
         }
 
         /// <summary>Rounds all components up to the nearest unit.</summary>
         public void Ceiling()
         {
-<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.Math}.Ceiling({def.FieldNames[i]});", 0);#>
+<#gen.IterateFields((i, field) => $"{d.FieldNames[i]} = {d.DT.Math}.Ceiling({d.FieldNames[i]});", 0);#>
         }
 
         /// <summary>Removes the sign from each component of the current <see cref="<#=d.Name#>"/>.</summary>
         public void Abs()
         {
-<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.Math}.Abs({def.FieldNames[i]});", 0);#>
+<#gen.IterateFields((i, field) => $"{d.FieldNames[i]} = {d.DT.Math}.Abs({d.FieldNames[i]});", 0);#>
         }
 
 
 		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
         public void Truncate()
         {
-<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = ({d.DT.Math}.Abs({def.FieldNames[i]}) - 0.0001{d.FP.Literal} < 0) ? 0 : {def.FieldNames[i]};", 0);#>
+<#gen.IterateFields((i, field) => $"{d.FieldNames[i]} = ({d.DT.Math}.Abs({d.FieldNames[i]}) - 0.0001{d.FP.Literal} < 0) ? 0 : {d.FieldNames[i]};", 0);#>
         }
 
 		/// <summary>Updates the component values to the power of the specified value.</summary>
         /// <param name="power"></param>
         public void Pow(<#=d.DT#> power)
         {
-<#gen.IterateFields((i, field) => $"{def.FieldNames[i]} = {d.DT.Math}.Pow({def.FieldNames[i]}, power);", 0);#>
+<#gen.IterateFields((i, field) => $"{d.FieldNames[i]} = {d.DT.Math}.Pow({d.FieldNames[i]}, power);", 0);#>
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </remarks>
         public <#=d.DT#> Length()
         {
-            return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < d.Size; p++){#>(<#=def.FieldNames[p]#> * <#=def.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
+            return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < d.Size; p++){#>(<#=d.FieldNames[p]#> * <#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -230,8 +230,8 @@ namespace Molten<#=d.SubNamespace#>
         /// </remarks>
         public static <#=d.DT#> Distance(ref <#=d.Name#> value1, ref <#=d.Name#> value2)
         {
-<#gen.IterateFields((i, field) => $"{d.DT} {def.ArgNames[i]} = value1.{def.FieldNames[i]} - value2.{def.FieldNames[i]};", 0);#>
-           return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < d.Size; p++){#>(<#=def.ArgNames[p]#> * <#=def.ArgNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
+<#gen.IterateFields((i, field) => $"{d.DT} {d.ArgNames[i]} = value1.{d.FieldNames[i]} - value2.{d.FieldNames[i]};", 0);#>
+           return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < d.Size; p++){#>(<#=d.ArgNames[p]#> * <#=d.ArgNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
         }
 
                 /// <summary>
@@ -246,8 +246,8 @@ namespace Molten<#=d.SubNamespace#>
         /// </remarks>
         public static <#=d.DT#> Distance(<#=d.Name#> value1, <#=d.Name#> value2)
         {
-<#gen.IterateFields((i, field) => $"{d.DT} {def.ArgNames[i]} = value1.{def.FieldNames[i]} - value2.{def.FieldNames[i]};", 0);#>
-            return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < d.Size; p++){#>(<#=def.ArgNames[p]#> * <#=def.ArgNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
+<#gen.IterateFields((i, field) => $"{d.DT} {d.ArgNames[i]} = value1.{d.FieldNames[i]} - value2.{d.FieldNames[i]};", 0);#>
+            return <#=d.DT.Math#>.Sqrt(<#for(int p = 0; p < d.Size; p++){#>(<#=d.ArgNames[p]#> * <#=d.ArgNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -269,10 +269,10 @@ namespace Molten<#=d.SubNamespace#>
 				for(int p = 0; p < d.Size; p++)
 				{
 #>
-				<#=def.FieldNames[p]#> = <#=d.DT.FPCast#>(0.5<#=d.FP.Literal#> * ((((2<#=d.FP.Literal#> * value2.<#=def.FieldNames[p]#>) + 
-                ((-value1.<#=def.FieldNames[p]#> + value3.<#=def.FieldNames[p]#>) * amount)) + 
-                (((((2<#=d.FP.Literal#> * value1.<#=def.FieldNames[p]#>) - (5<#=d.FP.Literal#> * value2.<#=def.FieldNames[p]#>)) + (4<#=d.FP.Literal#> * value3.<#=def.FieldNames[p]#>)) - value4.<#=def.FieldNames[p]#>) * squared)) +
-                ((((-value1.<#=def.FieldNames[p]#> + (3<#=d.FP.Literal#> * value2.<#=def.FieldNames[p]#>)) - (3<#=d.FP.Literal#> * value3.<#=def.FieldNames[p]#>)) + value4.<#=def.FieldNames[p]#>) * cubed))),
+				<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>(0.5<#=d.FP.Literal#> * ((((2<#=d.FP.Literal#> * value2.<#=d.FieldNames[p]#>) + 
+                ((-value1.<#=d.FieldNames[p]#> + value3.<#=d.FieldNames[p]#>) * amount)) + 
+                (((((2<#=d.FP.Literal#> * value1.<#=d.FieldNames[p]#>) - (5<#=d.FP.Literal#> * value2.<#=d.FieldNames[p]#>)) + (4<#=d.FP.Literal#> * value3.<#=d.FieldNames[p]#>)) - value4.<#=d.FieldNames[p]#>) * squared)) +
+                ((((-value1.<#=d.FieldNames[p]#> + (3<#=d.FP.Literal#> * value2.<#=d.FieldNames[p]#>)) - (3<#=d.FP.Literal#> * value3.<#=d.FieldNames[p]#>)) + value4.<#=d.FieldNames[p]#>) * cubed))),
 
 <#
 			    }
@@ -319,13 +319,13 @@ namespace Molten<#=d.SubNamespace#>
 			if(d.DT == d.FP)
 			{
 #>
-				<#=def.FieldNames[p]#> = (((value1.<#=def.FieldNames[p]#> * part1) + (value2.<#=def.FieldNames[p]#> * part2)) + (tangent1.<#=def.FieldNames[p]#> * part3)) + (tangent2.<#=def.FieldNames[p]#> * part4),
+				<#=d.FieldNames[p]#> = (((value1.<#=d.FieldNames[p]#> * part1) + (value2.<#=d.FieldNames[p]#> * part2)) + (tangent1.<#=d.FieldNames[p]#> * part3)) + (tangent2.<#=d.FieldNames[p]#> * part4),
 <#
 			}
 			else
 			{
 #>
-				<#=def.FieldNames[p]#> = <#=d.DT.FPCast#>((((value1.<#=def.FieldNames[p]#> * part1) + (value2.<#=def.FieldNames[p]#> * part2)) + (tangent1.<#=def.FieldNames[p]#> * part3)) + (tangent2.<#=def.FieldNames[p]#> * part4)),
+				<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((((value1.<#=d.FieldNames[p]#> * part1) + (value2.<#=d.FieldNames[p]#> * part2)) + (tangent1.<#=d.FieldNames[p]#> * part3)) + (tangent2.<#=d.FieldNames[p]#> * part4)),
 <#
 			}
 		}
@@ -355,7 +355,7 @@ namespace Molten<#=d.SubNamespace#>
         {
             return new <#=d.Name#>()
             {
-<#gen.IterateFields((i, field) => $"\t{def.FieldNames[i]} = ({d.DT.Math}.Abs(value.{def.FieldNames[i]}) - 0.0001{d.FP.Literal} < 0) ? 0 : value.X{(i < d.Size -1 ? "," : "")}", 0);#>
+<#gen.IterateFields((i, field) => $"\t{d.FieldNames[i]} = ({d.DT.Math}.Abs(value.{d.FieldNames[i]}) - 0.0001{d.FP.Literal} < 0) ? 0 : value.X{(i < d.Size -1 ? "," : "")}", 0);#>
             };
         }
 #endregion
