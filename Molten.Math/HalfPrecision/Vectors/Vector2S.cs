@@ -308,24 +308,38 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Add(ref Vector2S left, short right, out Vector2S result)
-        {
-			result.X = (short)(left.X + right);
-			result.Y = (short)(left.Y + right);
-        }
-
-		public static Vector2S operator +(Vector2S left, short right)
+		///<summary>Performs a add operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector2S"/> to add.</param>
+		///<param name="b">The <see cref="short"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector2S a, short b, out Vector2S result)
 		{
-            Add(ref left, right, out Vector2S result);
-            return result;
+			result.X = (short)(a.X + b);
+			result.Y = (short)(a.Y + b);
 		}
 
-        public static Vector2S operator +(short left, Vector2S right)
+		///<summary>Performs a add operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector2S"/> to add.</param>
+		///<param name="b">The <see cref="short"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2S operator +(Vector2S a, short b)
 		{
-            Add(ref right, left, out Vector2S result);
-            return result;
+			Add(ref a, b, out Vector2S result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="short"/> and a $<see cref="Vector2S"/>.</summary>
+		///<param name="a">The <see cref="short"/> to add.</param>
+		///<param name="b">The <see cref="Vector2S"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2S operator +(short a, Vector2S b)
+		{
+			Add(ref b, a, out Vector2S result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Vector2S"/> (return it unchanged).
@@ -360,24 +374,38 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Subtract(ref Vector2S left, short right, out Vector2S result)
-        {
-			result.X = (short)(left.X - right);
-			result.Y = (short)(left.Y - right);
-        }
-
-		public static Vector2S operator -(Vector2S left, short right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector2S"/> to subtract.</param>
+		///<param name="b">The <see cref="short"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector2S a, short b, out Vector2S result)
 		{
-            Subtract(ref left, right, out Vector2S result);
-            return result;
+			result.X = (short)(a.X - b);
+			result.Y = (short)(a.Y - b);
 		}
 
-        public static Vector2S operator -(short left, Vector2S right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector2S"/> to subtract.</param>
+		///<param name="b">The <see cref="short"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2S operator -(Vector2S a, short b)
 		{
-            Subtract(ref right, left, out Vector2S result);
-            return result;
+			Subtract(ref a, b, out Vector2S result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="short"/> and a $<see cref="Vector2S"/>.</summary>
+		///<param name="a">The <see cref="short"/> to subtract.</param>
+		///<param name="b">The <see cref="Vector2S"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2S operator -(short a, Vector2S b)
+		{
+			Subtract(ref b, a, out Vector2S result);
+			return result;
+		}
+
 
         /// <summary>
         /// Negate/reverse the direction of a <see cref="Vector3D"/>.
@@ -425,24 +453,38 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Divide(ref Vector2S left, short right, out Vector2S result)
-        {
-			result.X = (short)(left.X / right);
-			result.Y = (short)(left.Y / right);
-        }
-
-		public static Vector2S operator /(Vector2S left, short right)
+		///<summary>Performs a divide operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector2S"/> to divide.</param>
+		///<param name="b">The <see cref="short"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector2S a, short b, out Vector2S result)
 		{
-            Divide(ref left, right, out Vector2S result);
-            return result;
+			result.X = (short)(a.X / b);
+			result.Y = (short)(a.Y / b);
 		}
 
-        public static Vector2S operator /(short left, Vector2S right)
+		///<summary>Performs a divide operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector2S"/> to divide.</param>
+		///<param name="b">The <see cref="short"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2S operator /(Vector2S a, short b)
 		{
-            Divide(ref right, left, out Vector2S result);
-            return result;
+			Divide(ref a, b, out Vector2S result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="short"/> and a $<see cref="Vector2S"/>.</summary>
+		///<param name="a">The <see cref="short"/> to divide.</param>
+		///<param name="b">The <see cref="Vector2S"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2S operator /(short a, Vector2S b)
+		{
+			Divide(ref b, a, out Vector2S result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -467,24 +509,38 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Multiply(ref Vector2S left, short right, out Vector2S result)
-        {
-			result.X = (short)(left.X * right);
-			result.Y = (short)(left.Y * right);
-        }
-
-		public static Vector2S operator *(Vector2S left, short right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector2S"/> to multiply.</param>
+		///<param name="b">The <see cref="short"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector2S a, short b, out Vector2S result)
 		{
-            Multiply(ref left, right, out Vector2S result);
-            return result;
+			result.X = (short)(a.X * b);
+			result.Y = (short)(a.Y * b);
 		}
 
-        public static Vector2S operator *(short left, Vector2S right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector2S"/> to multiply.</param>
+		///<param name="b">The <see cref="short"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2S operator *(Vector2S a, short b)
 		{
-            Multiply(ref right, left, out Vector2S result);
-            return result;
+			Multiply(ref a, b, out Vector2S result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="short"/> and a $<see cref="Vector2S"/>.</summary>
+		///<param name="a">The <see cref="short"/> to multiply.</param>
+		///<param name="b">The <see cref="Vector2S"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2S operator *(short a, Vector2S b)
+		{
+			Multiply(ref b, a, out Vector2S result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

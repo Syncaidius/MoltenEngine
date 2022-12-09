@@ -279,30 +279,7 @@ namespace Molten<#=d.SubNamespace#>
 
 #region Add operators
 <#gen.GenerateOperator("+", "add");#>
-
-        public static void Add(ref <#=d.Name#> left, <#=d.DT#> right, out <#=d.Name#> result)
-        {
-<#
-		for(int p = 0; p < d.Size; p++)
-		{
-#>
-			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=d.FieldNames[p]#> + right);
-<#
-		}
-#>
-        }
-
-		public static <#=d.Name#> operator +(<#=d.Name#> left, <#=d.DT#> right)
-		{
-            Add(ref left, right, out <#=d.Name#> result);
-            return result;
-		}
-
-        public static <#=d.Name#> operator +(<#=d.DT#> left, <#=d.Name#> right)
-		{
-            Add(ref right, left, out <#=d.Name#> result);
-            return result;
-		}
+<#gen.GenerateOperator("+", "add", d.DT.Name);#>
 
 		/// <summary>
         /// Assert a <#=gen.See()#> (return it unchanged).
@@ -317,30 +294,7 @@ namespace Molten<#=d.SubNamespace#>
 
 #region Subtract operators
 <#gen.GenerateOperator("-", "subtract");#>
-
-        public static void Subtract(ref <#=d.Name#> left, <#=d.DT#> right, out <#=d.Name#> result)
-        {
-<#
-		for(int p = 0; p < d.Size; p++)
-		{
-#>
-			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=d.FieldNames[p]#> - right);
-<#
-		}
-#>
-        }
-
-		public static <#=d.Name#> operator -(<#=d.Name#> left, <#=d.DT#> right)
-		{
-            Subtract(ref left, right, out <#=d.Name#> result);
-            return result;
-		}
-
-        public static <#=d.Name#> operator -(<#=d.DT#> left, <#=d.Name#> right)
-		{
-            Subtract(ref right, left, out <#=d.Name#> result);
-            return result;
-		}
+<#gen.GenerateOperator("-", "subtract", d.DT.Name);#>
 
 <#
         if(!d.DT.IsUnsigned)
@@ -380,58 +334,12 @@ namespace Molten<#=d.SubNamespace#>
 
 #region division operators
 <#gen.GenerateOperator("/", "divide");#>
-
-        public static void Divide(ref <#=d.Name#> left, <#=d.DT#> right, out <#=d.Name#> result)
-        {
-<#
-		for(int p = 0; p < d.Size; p++)
-		{
-#>
-			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=d.FieldNames[p]#> / right);
-<#
-		}
-#>
-        }
-
-		public static <#=d.Name#> operator /(<#=d.Name#> left, <#=d.DT#> right)
-		{
-            Divide(ref left, right, out <#=d.Name#> result);
-            return result;
-		}
-
-        public static <#=d.Name#> operator /(<#=d.DT#> left, <#=d.Name#> right)
-		{
-            Divide(ref right, left, out <#=d.Name#> result);
-            return result;
-		}
+<#gen.GenerateOperator("/", "divide", d.DT.Name);#>
 #endregion
 
 #region Multiply operators
 <#gen.GenerateOperator("*", "multiply");#>
-
-        public static void Multiply(ref <#=d.Name#> left, <#=d.DT#> right, out <#=d.Name#> result)
-        {
-<#
-		for(int p = 0; p < d.Size; p++)
-		{
-#>
-			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=d.FieldNames[p]#> * right);
-<#
-		}
-#>
-        }
-
-		public static <#=d.Name#> operator *(<#=d.Name#> left, <#=d.DT#> right)
-		{
-            Multiply(ref left, right, out <#=d.Name#> result);
-            return result;
-		}
-
-        public static <#=d.Name#> operator *(<#=d.DT#> left, <#=d.Name#> right)
-		{
-            Multiply(ref right, left, out <#=d.Name#> result);
-            return result;
-		}
+<#gen.GenerateOperator("*", "multiply", d.DT.Name);#>
 #endregion
 
 #region Operators - Equality

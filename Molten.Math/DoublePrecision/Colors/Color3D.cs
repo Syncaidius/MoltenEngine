@@ -243,6 +243,39 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
+		///<summary>Performs a add operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Color3D"/> to add.</param>
+		///<param name="b">The <see cref="double"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Color3D a, double b, out Color3D result)
+		{
+			result.R = a.R + b;
+			result.G = a.G + b;
+			result.B = a.B + b;
+		}
+
+		///<summary>Performs a add operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Color3D"/> to add.</param>
+		///<param name="b">The <see cref="double"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3D operator +(Color3D a, double b)
+		{
+			Add(ref a, b, out Color3D result);
+			return result;
+		}
+
+		///<summary>Performs a add operation on a $<see cref="double"/> and a $<see cref="Color3D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to add.</param>
+		///<param name="b">The <see cref="Color3D"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3D operator +(double a, Color3D b)
+		{
+			Add(ref b, a, out Color3D result);
+			return result;
+		}
+
 
 		///<summary>Performs a subtract operation on two <see cref="Color3D"/>.</summary>
 		///<param name="a">The first <see cref="Color3D"/> to subtract.</param>
@@ -263,6 +296,39 @@ namespace Molten.DoublePrecision
 		public static Color3D operator -(Color3D a, Color3D b)
 		{
 			Subtract(ref a, ref b, out Color3D result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Color3D"/> to subtract.</param>
+		///<param name="b">The <see cref="double"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Color3D a, double b, out Color3D result)
+		{
+			result.R = a.R - b;
+			result.G = a.G - b;
+			result.B = a.B - b;
+		}
+
+		///<summary>Performs a subtract operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Color3D"/> to subtract.</param>
+		///<param name="b">The <see cref="double"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3D operator -(Color3D a, double b)
+		{
+			Subtract(ref a, b, out Color3D result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on a $<see cref="double"/> and a $<see cref="Color3D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to subtract.</param>
+		///<param name="b">The <see cref="Color3D"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3D operator -(double a, Color3D b)
+		{
+			Subtract(ref b, a, out Color3D result);
 			return result;
 		}
 
@@ -289,6 +355,39 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
+		///<summary>Performs a modulate operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Color3D"/> to modulate.</param>
+		///<param name="b">The <see cref="double"/> to modulate.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Modulate(ref Color3D a, double b, out Color3D result)
+		{
+			result.R = a.R * b;
+			result.G = a.G * b;
+			result.B = a.B * b;
+		}
+
+		///<summary>Performs a modulate operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Color3D"/> to modulate.</param>
+		///<param name="b">The <see cref="double"/> to modulate.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3D operator *(Color3D a, double b)
+		{
+			Modulate(ref a, b, out Color3D result);
+			return result;
+		}
+
+		///<summary>Performs a modulate operation on a $<see cref="double"/> and a $<see cref="Color3D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to modulate.</param>
+		///<param name="b">The <see cref="Color3D"/> to modulate.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3D operator *(double a, Color3D b)
+		{
+			Modulate(ref b, a, out Color3D result);
+			return result;
+		}
+
 
 		///<summary>Performs a divide operation on two <see cref="Color3D"/>.</summary>
 		///<param name="a">The first <see cref="Color3D"/> to divide.</param>
@@ -309,6 +408,39 @@ namespace Molten.DoublePrecision
 		public static Color3D operator /(Color3D a, Color3D b)
 		{
 			Divide(ref a, ref b, out Color3D result);
+			return result;
+		}
+
+		///<summary>Performs a divide operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Color3D"/> to divide.</param>
+		///<param name="b">The <see cref="double"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Color3D a, double b, out Color3D result)
+		{
+			result.R = a.R / b;
+			result.G = a.G / b;
+			result.B = a.B / b;
+		}
+
+		///<summary>Performs a divide operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Color3D"/> to divide.</param>
+		///<param name="b">The <see cref="double"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3D operator /(Color3D a, double b)
+		{
+			Divide(ref a, b, out Color3D result);
+			return result;
+		}
+
+		///<summary>Performs a divide operation on a $<see cref="double"/> and a $<see cref="Color3D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to divide.</param>
+		///<param name="b">The <see cref="Color3D"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3D operator /(double a, Color3D b)
+		{
+			Divide(ref b, a, out Color3D result);
 			return result;
 		}
 
@@ -698,28 +830,6 @@ namespace Molten.DoublePrecision
         public static Color3D operator -(Color3D value)
         {
             return new Color3D(-value.R, -value.G, -value.B);
-        }
-
-        /// <summary>
-        /// Scales a color.
-        /// </summary>
-        /// <param name="scale">The factor by which to scale the color.</param>
-        /// <param name="value">The color to scale.</param>
-        /// <returns>The scaled color.</returns>
-        public static Color3D operator *(double scale, Color3D value)
-        {
-            return new Color3D(value.R * scale, value.G * scale, value.B * scale);
-        }
-
-        /// <summary>
-        /// Scales a color.
-        /// </summary>
-        /// <param name="value">The factor by which to scale the color.</param>
-        /// <param name="scale">The color to scale.</param>
-        /// <returns>The scaled color.</returns>
-        public static Color3D operator *(Color3D value, double scale)
-        {
-            return new Color3D(value.R * scale, value.G * scale, value.B * scale);
         }
 
         /// <summary>

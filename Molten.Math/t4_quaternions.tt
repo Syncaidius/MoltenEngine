@@ -1117,7 +1117,8 @@ namespace Molten<#=d.SubNamespace#>
 #endregion
 
 #region Operators - Subtract
-<#gen.GenerateOperator("-", "Subtract");#>
+<#gen.GenerateOperator("-", "subtract");#>
+<#gen.GenerateOperator("-", "subtract", d.DT.Name);#>
 
         /// <summary>
         /// Reverses the direction of a given quaternion.
@@ -1137,11 +1138,13 @@ namespace Molten<#=d.SubNamespace#>
 #endregion
 
 #region Operators - Division
-<#gen.GenerateOperator("/", "Division");#>
+<#gen.GenerateOperator("/", "divide");#>
+<#gen.GenerateOperator("/", "divide", d.DT.Name);#>
 #endregion
 
 #region Operators - Add
-<#gen.GenerateOperator("+", "Add");#>
+<#gen.GenerateOperator("+", "add");#>
+<#gen.GenerateOperator("+", "add", d.DT.Name);#>
 #endregion
 
 #region Operators - Equality

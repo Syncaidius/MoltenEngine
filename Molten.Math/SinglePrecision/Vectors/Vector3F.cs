@@ -334,25 +334,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Add(ref Vector3F left, float right, out Vector3F result)
-        {
-			result.X = (left.X + right);
-			result.Y = (left.Y + right);
-			result.Z = (left.Z + right);
-        }
-
-		public static Vector3F operator +(Vector3F left, float right)
+		///<summary>Performs a add operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector3F"/> to add.</param>
+		///<param name="b">The <see cref="float"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector3F a, float b, out Vector3F result)
 		{
-            Add(ref left, right, out Vector3F result);
-            return result;
+			result.X = a.X + b;
+			result.Y = a.Y + b;
+			result.Z = a.Z + b;
 		}
 
-        public static Vector3F operator +(float left, Vector3F right)
+		///<summary>Performs a add operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector3F"/> to add.</param>
+		///<param name="b">The <see cref="float"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3F operator +(Vector3F a, float b)
 		{
-            Add(ref right, left, out Vector3F result);
-            return result;
+			Add(ref a, b, out Vector3F result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="float"/> and a $<see cref="Vector3F"/>.</summary>
+		///<param name="a">The <see cref="float"/> to add.</param>
+		///<param name="b">The <see cref="Vector3F"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3F operator +(float a, Vector3F b)
+		{
+			Add(ref b, a, out Vector3F result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Vector3F"/> (return it unchanged).
@@ -388,25 +402,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Subtract(ref Vector3F left, float right, out Vector3F result)
-        {
-			result.X = (left.X - right);
-			result.Y = (left.Y - right);
-			result.Z = (left.Z - right);
-        }
-
-		public static Vector3F operator -(Vector3F left, float right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector3F"/> to subtract.</param>
+		///<param name="b">The <see cref="float"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector3F a, float b, out Vector3F result)
 		{
-            Subtract(ref left, right, out Vector3F result);
-            return result;
+			result.X = a.X - b;
+			result.Y = a.Y - b;
+			result.Z = a.Z - b;
 		}
 
-        public static Vector3F operator -(float left, Vector3F right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector3F"/> to subtract.</param>
+		///<param name="b">The <see cref="float"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3F operator -(Vector3F a, float b)
 		{
-            Subtract(ref right, left, out Vector3F result);
-            return result;
+			Subtract(ref a, b, out Vector3F result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="float"/> and a $<see cref="Vector3F"/>.</summary>
+		///<param name="a">The <see cref="float"/> to subtract.</param>
+		///<param name="b">The <see cref="Vector3F"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3F operator -(float a, Vector3F b)
+		{
+			Subtract(ref b, a, out Vector3F result);
+			return result;
+		}
+
 
         /// <summary>
         /// Negate/reverse the direction of a <see cref="Vector3D"/>.
@@ -456,25 +484,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Divide(ref Vector3F left, float right, out Vector3F result)
-        {
-			result.X = (left.X / right);
-			result.Y = (left.Y / right);
-			result.Z = (left.Z / right);
-        }
-
-		public static Vector3F operator /(Vector3F left, float right)
+		///<summary>Performs a divide operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector3F"/> to divide.</param>
+		///<param name="b">The <see cref="float"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector3F a, float b, out Vector3F result)
 		{
-            Divide(ref left, right, out Vector3F result);
-            return result;
+			result.X = a.X / b;
+			result.Y = a.Y / b;
+			result.Z = a.Z / b;
 		}
 
-        public static Vector3F operator /(float left, Vector3F right)
+		///<summary>Performs a divide operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector3F"/> to divide.</param>
+		///<param name="b">The <see cref="float"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3F operator /(Vector3F a, float b)
 		{
-            Divide(ref right, left, out Vector3F result);
-            return result;
+			Divide(ref a, b, out Vector3F result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="float"/> and a $<see cref="Vector3F"/>.</summary>
+		///<param name="a">The <see cref="float"/> to divide.</param>
+		///<param name="b">The <see cref="Vector3F"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3F operator /(float a, Vector3F b)
+		{
+			Divide(ref b, a, out Vector3F result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -500,25 +542,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Multiply(ref Vector3F left, float right, out Vector3F result)
-        {
-			result.X = (left.X * right);
-			result.Y = (left.Y * right);
-			result.Z = (left.Z * right);
-        }
-
-		public static Vector3F operator *(Vector3F left, float right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector3F"/> to multiply.</param>
+		///<param name="b">The <see cref="float"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector3F a, float b, out Vector3F result)
 		{
-            Multiply(ref left, right, out Vector3F result);
-            return result;
+			result.X = a.X * b;
+			result.Y = a.Y * b;
+			result.Z = a.Z * b;
 		}
 
-        public static Vector3F operator *(float left, Vector3F right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector3F"/> to multiply.</param>
+		///<param name="b">The <see cref="float"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3F operator *(Vector3F a, float b)
 		{
-            Multiply(ref right, left, out Vector3F result);
-            return result;
+			Multiply(ref a, b, out Vector3F result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="float"/> and a $<see cref="Vector3F"/>.</summary>
+		///<param name="a">The <see cref="float"/> to multiply.</param>
+		///<param name="b">The <see cref="Vector3F"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3F operator *(float a, Vector3F b)
+		{
+			Multiply(ref b, a, out Vector3F result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

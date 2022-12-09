@@ -1180,9 +1180,9 @@ namespace Molten.DoublePrecision
 #endregion
 
 #region Operators - Subtract
-		///<summary>Performs a Subtract operation on two <see cref="QuaternionD"/>.</summary>
-		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
-		///<param name="b">The second <see cref="QuaternionD"/>to add.</param>
+		///<summary>Performs a subtract operation on two <see cref="QuaternionD"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionD"/> to subtract.</param>
+		///<param name="b">The second <see cref="QuaternionD"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Subtract(ref QuaternionD a, ref QuaternionD b, out QuaternionD result)
 		{
@@ -1192,9 +1192,9 @@ namespace Molten.DoublePrecision
 			result.W = a.W - b.W;
 		}
 
-		///<summary>Performs a Subtract operation on two <see cref="QuaternionD"/>.</summary>
-		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
-		///<param name="b">The second <see cref="QuaternionD"/> to add.</param>
+		///<summary>Performs a subtract operation on two <see cref="QuaternionD"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionD"/> to subtract.</param>
+		///<param name="b">The second <see cref="QuaternionD"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static QuaternionD operator -(QuaternionD a, QuaternionD b)
@@ -1202,6 +1202,41 @@ namespace Molten.DoublePrecision
 			Subtract(ref a, ref b, out QuaternionD result);
 			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="QuaternionD"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="QuaternionD"/> to subtract.</param>
+		///<param name="b">The <see cref="double"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref QuaternionD a, double b, out QuaternionD result)
+		{
+			result.X = a.X - b;
+			result.Y = a.Y - b;
+			result.Z = a.Z - b;
+			result.W = a.W - b;
+		}
+
+		///<summary>Performs a subtract operation on a $<see cref="QuaternionD"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="QuaternionD"/> to subtract.</param>
+		///<param name="b">The <see cref="double"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionD operator -(QuaternionD a, double b)
+		{
+			Subtract(ref a, b, out QuaternionD result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on a $<see cref="double"/> and a $<see cref="QuaternionD"/>.</summary>
+		///<param name="a">The <see cref="double"/> to subtract.</param>
+		///<param name="b">The <see cref="QuaternionD"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionD operator -(double a, QuaternionD b)
+		{
+			Subtract(ref b, a, out QuaternionD result);
+			return result;
+		}
+
 
         /// <summary>
         /// Reverses the direction of a given quaternion.
@@ -1221,11 +1256,11 @@ namespace Molten.DoublePrecision
 #endregion
 
 #region Operators - Division
-		///<summary>Performs a Division operation on two <see cref="QuaternionD"/>.</summary>
-		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
-		///<param name="b">The second <see cref="QuaternionD"/>to add.</param>
+		///<summary>Performs a divide operation on two <see cref="QuaternionD"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionD"/> to divide.</param>
+		///<param name="b">The second <see cref="QuaternionD"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
-		public static void Division(ref QuaternionD a, ref QuaternionD b, out QuaternionD result)
+		public static void Divide(ref QuaternionD a, ref QuaternionD b, out QuaternionD result)
 		{
 			result.X = a.X / b.X;
 			result.Y = a.Y / b.Y;
@@ -1233,22 +1268,57 @@ namespace Molten.DoublePrecision
 			result.W = a.W / b.W;
 		}
 
-		///<summary>Performs a Division operation on two <see cref="QuaternionD"/>.</summary>
-		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
-		///<param name="b">The second <see cref="QuaternionD"/> to add.</param>
+		///<summary>Performs a divide operation on two <see cref="QuaternionD"/>.</summary>
+		///<param name="a">The first <see cref="QuaternionD"/> to divide.</param>
+		///<param name="b">The second <see cref="QuaternionD"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static QuaternionD operator /(QuaternionD a, QuaternionD b)
 		{
-			Division(ref a, ref b, out QuaternionD result);
+			Divide(ref a, ref b, out QuaternionD result);
 			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="QuaternionD"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="QuaternionD"/> to divide.</param>
+		///<param name="b">The <see cref="double"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref QuaternionD a, double b, out QuaternionD result)
+		{
+			result.X = a.X / b;
+			result.Y = a.Y / b;
+			result.Z = a.Z / b;
+			result.W = a.W / b;
+		}
+
+		///<summary>Performs a divide operation on a $<see cref="QuaternionD"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="QuaternionD"/> to divide.</param>
+		///<param name="b">The <see cref="double"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionD operator /(QuaternionD a, double b)
+		{
+			Divide(ref a, b, out QuaternionD result);
+			return result;
+		}
+
+		///<summary>Performs a divide operation on a $<see cref="double"/> and a $<see cref="QuaternionD"/>.</summary>
+		///<param name="a">The <see cref="double"/> to divide.</param>
+		///<param name="b">The <see cref="QuaternionD"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionD operator /(double a, QuaternionD b)
+		{
+			Divide(ref b, a, out QuaternionD result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Add
-		///<summary>Performs a Add operation on two <see cref="QuaternionD"/>.</summary>
+		///<summary>Performs a add operation on two <see cref="QuaternionD"/>.</summary>
 		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
-		///<param name="b">The second <see cref="QuaternionD"/>to add.</param>
+		///<param name="b">The second <see cref="QuaternionD"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Add(ref QuaternionD a, ref QuaternionD b, out QuaternionD result)
 		{
@@ -1258,7 +1328,7 @@ namespace Molten.DoublePrecision
 			result.W = a.W + b.W;
 		}
 
-		///<summary>Performs a Add operation on two <see cref="QuaternionD"/>.</summary>
+		///<summary>Performs a add operation on two <see cref="QuaternionD"/>.</summary>
 		///<param name="a">The first <see cref="QuaternionD"/> to add.</param>
 		///<param name="b">The second <see cref="QuaternionD"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -1268,6 +1338,41 @@ namespace Molten.DoublePrecision
 			Add(ref a, ref b, out QuaternionD result);
 			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="QuaternionD"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="QuaternionD"/> to add.</param>
+		///<param name="b">The <see cref="double"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref QuaternionD a, double b, out QuaternionD result)
+		{
+			result.X = a.X + b;
+			result.Y = a.Y + b;
+			result.Z = a.Z + b;
+			result.W = a.W + b;
+		}
+
+		///<summary>Performs a add operation on a $<see cref="QuaternionD"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="QuaternionD"/> to add.</param>
+		///<param name="b">The <see cref="double"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionD operator +(QuaternionD a, double b)
+		{
+			Add(ref a, b, out QuaternionD result);
+			return result;
+		}
+
+		///<summary>Performs a add operation on a $<see cref="double"/> and a $<see cref="QuaternionD"/>.</summary>
+		///<param name="a">The <see cref="double"/> to add.</param>
+		///<param name="b">The <see cref="QuaternionD"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static QuaternionD operator +(double a, QuaternionD b)
+		{
+			Add(ref b, a, out QuaternionD result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

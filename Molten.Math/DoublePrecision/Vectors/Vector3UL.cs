@@ -326,25 +326,39 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Add(ref Vector3UL left, ulong right, out Vector3UL result)
-        {
-			result.X = (left.X + right);
-			result.Y = (left.Y + right);
-			result.Z = (left.Z + right);
-        }
-
-		public static Vector3UL operator +(Vector3UL left, ulong right)
+		///<summary>Performs a add operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector3UL"/> to add.</param>
+		///<param name="b">The <see cref="ulong"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector3UL a, ulong b, out Vector3UL result)
 		{
-            Add(ref left, right, out Vector3UL result);
-            return result;
+			result.X = a.X + b;
+			result.Y = a.Y + b;
+			result.Z = a.Z + b;
 		}
 
-        public static Vector3UL operator +(ulong left, Vector3UL right)
+		///<summary>Performs a add operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector3UL"/> to add.</param>
+		///<param name="b">The <see cref="ulong"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UL operator +(Vector3UL a, ulong b)
 		{
-            Add(ref right, left, out Vector3UL result);
-            return result;
+			Add(ref a, b, out Vector3UL result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="ulong"/> and a $<see cref="Vector3UL"/>.</summary>
+		///<param name="a">The <see cref="ulong"/> to add.</param>
+		///<param name="b">The <see cref="Vector3UL"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UL operator +(ulong a, Vector3UL b)
+		{
+			Add(ref b, a, out Vector3UL result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Vector3UL"/> (return it unchanged).
@@ -380,25 +394,39 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Subtract(ref Vector3UL left, ulong right, out Vector3UL result)
-        {
-			result.X = (left.X - right);
-			result.Y = (left.Y - right);
-			result.Z = (left.Z - right);
-        }
-
-		public static Vector3UL operator -(Vector3UL left, ulong right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector3UL"/> to subtract.</param>
+		///<param name="b">The <see cref="ulong"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector3UL a, ulong b, out Vector3UL result)
 		{
-            Subtract(ref left, right, out Vector3UL result);
-            return result;
+			result.X = a.X - b;
+			result.Y = a.Y - b;
+			result.Z = a.Z - b;
 		}
 
-        public static Vector3UL operator -(ulong left, Vector3UL right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector3UL"/> to subtract.</param>
+		///<param name="b">The <see cref="ulong"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UL operator -(Vector3UL a, ulong b)
 		{
-            Subtract(ref right, left, out Vector3UL result);
-            return result;
+			Subtract(ref a, b, out Vector3UL result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="ulong"/> and a $<see cref="Vector3UL"/>.</summary>
+		///<param name="a">The <see cref="ulong"/> to subtract.</param>
+		///<param name="b">The <see cref="Vector3UL"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UL operator -(ulong a, Vector3UL b)
+		{
+			Subtract(ref b, a, out Vector3UL result);
+			return result;
+		}
+
 
 #endregion
 
@@ -425,25 +453,39 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Divide(ref Vector3UL left, ulong right, out Vector3UL result)
-        {
-			result.X = (left.X / right);
-			result.Y = (left.Y / right);
-			result.Z = (left.Z / right);
-        }
-
-		public static Vector3UL operator /(Vector3UL left, ulong right)
+		///<summary>Performs a divide operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector3UL"/> to divide.</param>
+		///<param name="b">The <see cref="ulong"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector3UL a, ulong b, out Vector3UL result)
 		{
-            Divide(ref left, right, out Vector3UL result);
-            return result;
+			result.X = a.X / b;
+			result.Y = a.Y / b;
+			result.Z = a.Z / b;
 		}
 
-        public static Vector3UL operator /(ulong left, Vector3UL right)
+		///<summary>Performs a divide operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector3UL"/> to divide.</param>
+		///<param name="b">The <see cref="ulong"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UL operator /(Vector3UL a, ulong b)
 		{
-            Divide(ref right, left, out Vector3UL result);
-            return result;
+			Divide(ref a, b, out Vector3UL result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="ulong"/> and a $<see cref="Vector3UL"/>.</summary>
+		///<param name="a">The <see cref="ulong"/> to divide.</param>
+		///<param name="b">The <see cref="Vector3UL"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UL operator /(ulong a, Vector3UL b)
+		{
+			Divide(ref b, a, out Vector3UL result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -469,25 +511,39 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Multiply(ref Vector3UL left, ulong right, out Vector3UL result)
-        {
-			result.X = (left.X * right);
-			result.Y = (left.Y * right);
-			result.Z = (left.Z * right);
-        }
-
-		public static Vector3UL operator *(Vector3UL left, ulong right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector3UL"/> to multiply.</param>
+		///<param name="b">The <see cref="ulong"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector3UL a, ulong b, out Vector3UL result)
 		{
-            Multiply(ref left, right, out Vector3UL result);
-            return result;
+			result.X = a.X * b;
+			result.Y = a.Y * b;
+			result.Z = a.Z * b;
 		}
 
-        public static Vector3UL operator *(ulong left, Vector3UL right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector3UL"/> to multiply.</param>
+		///<param name="b">The <see cref="ulong"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UL operator *(Vector3UL a, ulong b)
 		{
-            Multiply(ref right, left, out Vector3UL result);
-            return result;
+			Multiply(ref a, b, out Vector3UL result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="ulong"/> and a $<see cref="Vector3UL"/>.</summary>
+		///<param name="a">The <see cref="ulong"/> to multiply.</param>
+		///<param name="b">The <see cref="Vector3UL"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UL operator *(ulong a, Vector3UL b)
+		{
+			Multiply(ref b, a, out Vector3UL result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

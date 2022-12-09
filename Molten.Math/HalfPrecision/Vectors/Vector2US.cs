@@ -300,24 +300,38 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Add(ref Vector2US left, ushort right, out Vector2US result)
-        {
-			result.X = (ushort)(left.X + right);
-			result.Y = (ushort)(left.Y + right);
-        }
-
-		public static Vector2US operator +(Vector2US left, ushort right)
+		///<summary>Performs a add operation on a $<see cref="Vector2US"/> and a $<see cref="ushort"/>.</summary>
+		///<param name="a">The <see cref="Vector2US"/> to add.</param>
+		///<param name="b">The <see cref="ushort"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector2US a, ushort b, out Vector2US result)
 		{
-            Add(ref left, right, out Vector2US result);
-            return result;
+			result.X = (ushort)(a.X + b);
+			result.Y = (ushort)(a.Y + b);
 		}
 
-        public static Vector2US operator +(ushort left, Vector2US right)
+		///<summary>Performs a add operation on a $<see cref="Vector2US"/> and a $<see cref="ushort"/>.</summary>
+		///<param name="a">The <see cref="Vector2US"/> to add.</param>
+		///<param name="b">The <see cref="ushort"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2US operator +(Vector2US a, ushort b)
 		{
-            Add(ref right, left, out Vector2US result);
-            return result;
+			Add(ref a, b, out Vector2US result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="ushort"/> and a $<see cref="Vector2US"/>.</summary>
+		///<param name="a">The <see cref="ushort"/> to add.</param>
+		///<param name="b">The <see cref="Vector2US"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2US operator +(ushort a, Vector2US b)
+		{
+			Add(ref b, a, out Vector2US result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Vector2US"/> (return it unchanged).
@@ -352,24 +366,38 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Subtract(ref Vector2US left, ushort right, out Vector2US result)
-        {
-			result.X = (ushort)(left.X - right);
-			result.Y = (ushort)(left.Y - right);
-        }
-
-		public static Vector2US operator -(Vector2US left, ushort right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector2US"/> and a $<see cref="ushort"/>.</summary>
+		///<param name="a">The <see cref="Vector2US"/> to subtract.</param>
+		///<param name="b">The <see cref="ushort"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector2US a, ushort b, out Vector2US result)
 		{
-            Subtract(ref left, right, out Vector2US result);
-            return result;
+			result.X = (ushort)(a.X - b);
+			result.Y = (ushort)(a.Y - b);
 		}
 
-        public static Vector2US operator -(ushort left, Vector2US right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector2US"/> and a $<see cref="ushort"/>.</summary>
+		///<param name="a">The <see cref="Vector2US"/> to subtract.</param>
+		///<param name="b">The <see cref="ushort"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2US operator -(Vector2US a, ushort b)
 		{
-            Subtract(ref right, left, out Vector2US result);
-            return result;
+			Subtract(ref a, b, out Vector2US result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="ushort"/> and a $<see cref="Vector2US"/>.</summary>
+		///<param name="a">The <see cref="ushort"/> to subtract.</param>
+		///<param name="b">The <see cref="Vector2US"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2US operator -(ushort a, Vector2US b)
+		{
+			Subtract(ref b, a, out Vector2US result);
+			return result;
+		}
+
 
 #endregion
 
@@ -395,24 +423,38 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Divide(ref Vector2US left, ushort right, out Vector2US result)
-        {
-			result.X = (ushort)(left.X / right);
-			result.Y = (ushort)(left.Y / right);
-        }
-
-		public static Vector2US operator /(Vector2US left, ushort right)
+		///<summary>Performs a divide operation on a $<see cref="Vector2US"/> and a $<see cref="ushort"/>.</summary>
+		///<param name="a">The <see cref="Vector2US"/> to divide.</param>
+		///<param name="b">The <see cref="ushort"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector2US a, ushort b, out Vector2US result)
 		{
-            Divide(ref left, right, out Vector2US result);
-            return result;
+			result.X = (ushort)(a.X / b);
+			result.Y = (ushort)(a.Y / b);
 		}
 
-        public static Vector2US operator /(ushort left, Vector2US right)
+		///<summary>Performs a divide operation on a $<see cref="Vector2US"/> and a $<see cref="ushort"/>.</summary>
+		///<param name="a">The <see cref="Vector2US"/> to divide.</param>
+		///<param name="b">The <see cref="ushort"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2US operator /(Vector2US a, ushort b)
 		{
-            Divide(ref right, left, out Vector2US result);
-            return result;
+			Divide(ref a, b, out Vector2US result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="ushort"/> and a $<see cref="Vector2US"/>.</summary>
+		///<param name="a">The <see cref="ushort"/> to divide.</param>
+		///<param name="b">The <see cref="Vector2US"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2US operator /(ushort a, Vector2US b)
+		{
+			Divide(ref b, a, out Vector2US result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -437,24 +479,38 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Multiply(ref Vector2US left, ushort right, out Vector2US result)
-        {
-			result.X = (ushort)(left.X * right);
-			result.Y = (ushort)(left.Y * right);
-        }
-
-		public static Vector2US operator *(Vector2US left, ushort right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector2US"/> and a $<see cref="ushort"/>.</summary>
+		///<param name="a">The <see cref="Vector2US"/> to multiply.</param>
+		///<param name="b">The <see cref="ushort"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector2US a, ushort b, out Vector2US result)
 		{
-            Multiply(ref left, right, out Vector2US result);
-            return result;
+			result.X = (ushort)(a.X * b);
+			result.Y = (ushort)(a.Y * b);
 		}
 
-        public static Vector2US operator *(ushort left, Vector2US right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector2US"/> and a $<see cref="ushort"/>.</summary>
+		///<param name="a">The <see cref="Vector2US"/> to multiply.</param>
+		///<param name="b">The <see cref="ushort"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2US operator *(Vector2US a, ushort b)
 		{
-            Multiply(ref right, left, out Vector2US result);
-            return result;
+			Multiply(ref a, b, out Vector2US result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="ushort"/> and a $<see cref="Vector2US"/>.</summary>
+		///<param name="a">The <see cref="ushort"/> to multiply.</param>
+		///<param name="b">The <see cref="Vector2US"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2US operator *(ushort a, Vector2US b)
+		{
+			Multiply(ref b, a, out Vector2US result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

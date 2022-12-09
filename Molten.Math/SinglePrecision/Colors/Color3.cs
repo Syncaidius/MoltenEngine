@@ -244,6 +244,39 @@ namespace Molten
 			return result;
 		}
 
+		///<summary>Performs a add operation on a $<see cref="Color3"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color3"/> to add.</param>
+		///<param name="b">The <see cref="float"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Color3 a, float b, out Color3 result)
+		{
+			result.R = a.R + b;
+			result.G = a.G + b;
+			result.B = a.B + b;
+		}
+
+		///<summary>Performs a add operation on a $<see cref="Color3"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color3"/> to add.</param>
+		///<param name="b">The <see cref="float"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator +(Color3 a, float b)
+		{
+			Add(ref a, b, out Color3 result);
+			return result;
+		}
+
+		///<summary>Performs a add operation on a $<see cref="float"/> and a $<see cref="Color3"/>.</summary>
+		///<param name="a">The <see cref="float"/> to add.</param>
+		///<param name="b">The <see cref="Color3"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator +(float a, Color3 b)
+		{
+			Add(ref b, a, out Color3 result);
+			return result;
+		}
+
 
 		///<summary>Performs a subtract operation on two <see cref="Color3"/>.</summary>
 		///<param name="a">The first <see cref="Color3"/> to subtract.</param>
@@ -264,6 +297,39 @@ namespace Molten
 		public static Color3 operator -(Color3 a, Color3 b)
 		{
 			Subtract(ref a, ref b, out Color3 result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on a $<see cref="Color3"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color3"/> to subtract.</param>
+		///<param name="b">The <see cref="float"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Color3 a, float b, out Color3 result)
+		{
+			result.R = a.R - b;
+			result.G = a.G - b;
+			result.B = a.B - b;
+		}
+
+		///<summary>Performs a subtract operation on a $<see cref="Color3"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color3"/> to subtract.</param>
+		///<param name="b">The <see cref="float"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator -(Color3 a, float b)
+		{
+			Subtract(ref a, b, out Color3 result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on a $<see cref="float"/> and a $<see cref="Color3"/>.</summary>
+		///<param name="a">The <see cref="float"/> to subtract.</param>
+		///<param name="b">The <see cref="Color3"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator -(float a, Color3 b)
+		{
+			Subtract(ref b, a, out Color3 result);
 			return result;
 		}
 
@@ -290,6 +356,39 @@ namespace Molten
 			return result;
 		}
 
+		///<summary>Performs a modulate operation on a $<see cref="Color3"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color3"/> to modulate.</param>
+		///<param name="b">The <see cref="float"/> to modulate.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Modulate(ref Color3 a, float b, out Color3 result)
+		{
+			result.R = a.R * b;
+			result.G = a.G * b;
+			result.B = a.B * b;
+		}
+
+		///<summary>Performs a modulate operation on a $<see cref="Color3"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color3"/> to modulate.</param>
+		///<param name="b">The <see cref="float"/> to modulate.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator *(Color3 a, float b)
+		{
+			Modulate(ref a, b, out Color3 result);
+			return result;
+		}
+
+		///<summary>Performs a modulate operation on a $<see cref="float"/> and a $<see cref="Color3"/>.</summary>
+		///<param name="a">The <see cref="float"/> to modulate.</param>
+		///<param name="b">The <see cref="Color3"/> to modulate.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator *(float a, Color3 b)
+		{
+			Modulate(ref b, a, out Color3 result);
+			return result;
+		}
+
 
 		///<summary>Performs a divide operation on two <see cref="Color3"/>.</summary>
 		///<param name="a">The first <see cref="Color3"/> to divide.</param>
@@ -310,6 +409,39 @@ namespace Molten
 		public static Color3 operator /(Color3 a, Color3 b)
 		{
 			Divide(ref a, ref b, out Color3 result);
+			return result;
+		}
+
+		///<summary>Performs a divide operation on a $<see cref="Color3"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color3"/> to divide.</param>
+		///<param name="b">The <see cref="float"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Color3 a, float b, out Color3 result)
+		{
+			result.R = a.R / b;
+			result.G = a.G / b;
+			result.B = a.B / b;
+		}
+
+		///<summary>Performs a divide operation on a $<see cref="Color3"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color3"/> to divide.</param>
+		///<param name="b">The <see cref="float"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator /(Color3 a, float b)
+		{
+			Divide(ref a, b, out Color3 result);
+			return result;
+		}
+
+		///<summary>Performs a divide operation on a $<see cref="float"/> and a $<see cref="Color3"/>.</summary>
+		///<param name="a">The <see cref="float"/> to divide.</param>
+		///<param name="b">The <see cref="Color3"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color3 operator /(float a, Color3 b)
+		{
+			Divide(ref b, a, out Color3 result);
 			return result;
 		}
 
@@ -699,28 +831,6 @@ namespace Molten
         public static Color3 operator -(Color3 value)
         {
             return new Color3(-value.R, -value.G, -value.B);
-        }
-
-        /// <summary>
-        /// Scales a color.
-        /// </summary>
-        /// <param name="scale">The factor by which to scale the color.</param>
-        /// <param name="value">The color to scale.</param>
-        /// <returns>The scaled color.</returns>
-        public static Color3 operator *(float scale, Color3 value)
-        {
-            return new Color3(value.R * scale, value.G * scale, value.B * scale);
-        }
-
-        /// <summary>
-        /// Scales a color.
-        /// </summary>
-        /// <param name="value">The factor by which to scale the color.</param>
-        /// <param name="scale">The color to scale.</param>
-        /// <returns>The scaled color.</returns>
-        public static Color3 operator *(Color3 value, float scale)
-        {
-            return new Color3(value.R * scale, value.G * scale, value.B * scale);
         }
 
         /// <summary>

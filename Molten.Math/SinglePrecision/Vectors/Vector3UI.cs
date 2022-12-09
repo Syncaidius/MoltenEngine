@@ -326,25 +326,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Add(ref Vector3UI left, uint right, out Vector3UI result)
-        {
-			result.X = (left.X + right);
-			result.Y = (left.Y + right);
-			result.Z = (left.Z + right);
-        }
-
-		public static Vector3UI operator +(Vector3UI left, uint right)
+		///<summary>Performs a add operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<param name="a">The <see cref="Vector3UI"/> to add.</param>
+		///<param name="b">The <see cref="uint"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector3UI a, uint b, out Vector3UI result)
 		{
-            Add(ref left, right, out Vector3UI result);
-            return result;
+			result.X = a.X + b;
+			result.Y = a.Y + b;
+			result.Z = a.Z + b;
 		}
 
-        public static Vector3UI operator +(uint left, Vector3UI right)
+		///<summary>Performs a add operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<param name="a">The <see cref="Vector3UI"/> to add.</param>
+		///<param name="b">The <see cref="uint"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UI operator +(Vector3UI a, uint b)
 		{
-            Add(ref right, left, out Vector3UI result);
-            return result;
+			Add(ref a, b, out Vector3UI result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="uint"/> and a $<see cref="Vector3UI"/>.</summary>
+		///<param name="a">The <see cref="uint"/> to add.</param>
+		///<param name="b">The <see cref="Vector3UI"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UI operator +(uint a, Vector3UI b)
+		{
+			Add(ref b, a, out Vector3UI result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Vector3UI"/> (return it unchanged).
@@ -380,25 +394,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Subtract(ref Vector3UI left, uint right, out Vector3UI result)
-        {
-			result.X = (left.X - right);
-			result.Y = (left.Y - right);
-			result.Z = (left.Z - right);
-        }
-
-		public static Vector3UI operator -(Vector3UI left, uint right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<param name="a">The <see cref="Vector3UI"/> to subtract.</param>
+		///<param name="b">The <see cref="uint"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector3UI a, uint b, out Vector3UI result)
 		{
-            Subtract(ref left, right, out Vector3UI result);
-            return result;
+			result.X = a.X - b;
+			result.Y = a.Y - b;
+			result.Z = a.Z - b;
 		}
 
-        public static Vector3UI operator -(uint left, Vector3UI right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<param name="a">The <see cref="Vector3UI"/> to subtract.</param>
+		///<param name="b">The <see cref="uint"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UI operator -(Vector3UI a, uint b)
 		{
-            Subtract(ref right, left, out Vector3UI result);
-            return result;
+			Subtract(ref a, b, out Vector3UI result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="uint"/> and a $<see cref="Vector3UI"/>.</summary>
+		///<param name="a">The <see cref="uint"/> to subtract.</param>
+		///<param name="b">The <see cref="Vector3UI"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UI operator -(uint a, Vector3UI b)
+		{
+			Subtract(ref b, a, out Vector3UI result);
+			return result;
+		}
+
 
 #endregion
 
@@ -425,25 +453,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Divide(ref Vector3UI left, uint right, out Vector3UI result)
-        {
-			result.X = (left.X / right);
-			result.Y = (left.Y / right);
-			result.Z = (left.Z / right);
-        }
-
-		public static Vector3UI operator /(Vector3UI left, uint right)
+		///<summary>Performs a divide operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<param name="a">The <see cref="Vector3UI"/> to divide.</param>
+		///<param name="b">The <see cref="uint"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector3UI a, uint b, out Vector3UI result)
 		{
-            Divide(ref left, right, out Vector3UI result);
-            return result;
+			result.X = a.X / b;
+			result.Y = a.Y / b;
+			result.Z = a.Z / b;
 		}
 
-        public static Vector3UI operator /(uint left, Vector3UI right)
+		///<summary>Performs a divide operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<param name="a">The <see cref="Vector3UI"/> to divide.</param>
+		///<param name="b">The <see cref="uint"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UI operator /(Vector3UI a, uint b)
 		{
-            Divide(ref right, left, out Vector3UI result);
-            return result;
+			Divide(ref a, b, out Vector3UI result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="uint"/> and a $<see cref="Vector3UI"/>.</summary>
+		///<param name="a">The <see cref="uint"/> to divide.</param>
+		///<param name="b">The <see cref="Vector3UI"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UI operator /(uint a, Vector3UI b)
+		{
+			Divide(ref b, a, out Vector3UI result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -469,25 +511,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Multiply(ref Vector3UI left, uint right, out Vector3UI result)
-        {
-			result.X = (left.X * right);
-			result.Y = (left.Y * right);
-			result.Z = (left.Z * right);
-        }
-
-		public static Vector3UI operator *(Vector3UI left, uint right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<param name="a">The <see cref="Vector3UI"/> to multiply.</param>
+		///<param name="b">The <see cref="uint"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector3UI a, uint b, out Vector3UI result)
 		{
-            Multiply(ref left, right, out Vector3UI result);
-            return result;
+			result.X = a.X * b;
+			result.Y = a.Y * b;
+			result.Z = a.Z * b;
 		}
 
-        public static Vector3UI operator *(uint left, Vector3UI right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<param name="a">The <see cref="Vector3UI"/> to multiply.</param>
+		///<param name="b">The <see cref="uint"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UI operator *(Vector3UI a, uint b)
 		{
-            Multiply(ref right, left, out Vector3UI result);
-            return result;
+			Multiply(ref a, b, out Vector3UI result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="uint"/> and a $<see cref="Vector3UI"/>.</summary>
+		///<param name="a">The <see cref="uint"/> to multiply.</param>
+		///<param name="b">The <see cref="Vector3UI"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3UI operator *(uint a, Vector3UI b)
+		{
+			Multiply(ref b, a, out Vector3UI result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

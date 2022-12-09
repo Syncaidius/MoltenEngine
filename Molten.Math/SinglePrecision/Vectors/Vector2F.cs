@@ -308,24 +308,38 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Add(ref Vector2F left, float right, out Vector2F result)
-        {
-			result.X = (left.X + right);
-			result.Y = (left.Y + right);
-        }
-
-		public static Vector2F operator +(Vector2F left, float right)
+		///<summary>Performs a add operation on a $<see cref="Vector2F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector2F"/> to add.</param>
+		///<param name="b">The <see cref="float"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector2F a, float b, out Vector2F result)
 		{
-            Add(ref left, right, out Vector2F result);
-            return result;
+			result.X = a.X + b;
+			result.Y = a.Y + b;
 		}
 
-        public static Vector2F operator +(float left, Vector2F right)
+		///<summary>Performs a add operation on a $<see cref="Vector2F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector2F"/> to add.</param>
+		///<param name="b">The <see cref="float"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2F operator +(Vector2F a, float b)
 		{
-            Add(ref right, left, out Vector2F result);
-            return result;
+			Add(ref a, b, out Vector2F result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="float"/> and a $<see cref="Vector2F"/>.</summary>
+		///<param name="a">The <see cref="float"/> to add.</param>
+		///<param name="b">The <see cref="Vector2F"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2F operator +(float a, Vector2F b)
+		{
+			Add(ref b, a, out Vector2F result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Vector2F"/> (return it unchanged).
@@ -360,24 +374,38 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Subtract(ref Vector2F left, float right, out Vector2F result)
-        {
-			result.X = (left.X - right);
-			result.Y = (left.Y - right);
-        }
-
-		public static Vector2F operator -(Vector2F left, float right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector2F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector2F"/> to subtract.</param>
+		///<param name="b">The <see cref="float"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector2F a, float b, out Vector2F result)
 		{
-            Subtract(ref left, right, out Vector2F result);
-            return result;
+			result.X = a.X - b;
+			result.Y = a.Y - b;
 		}
 
-        public static Vector2F operator -(float left, Vector2F right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector2F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector2F"/> to subtract.</param>
+		///<param name="b">The <see cref="float"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2F operator -(Vector2F a, float b)
 		{
-            Subtract(ref right, left, out Vector2F result);
-            return result;
+			Subtract(ref a, b, out Vector2F result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="float"/> and a $<see cref="Vector2F"/>.</summary>
+		///<param name="a">The <see cref="float"/> to subtract.</param>
+		///<param name="b">The <see cref="Vector2F"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2F operator -(float a, Vector2F b)
+		{
+			Subtract(ref b, a, out Vector2F result);
+			return result;
+		}
+
 
         /// <summary>
         /// Negate/reverse the direction of a <see cref="Vector3D"/>.
@@ -425,24 +453,38 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Divide(ref Vector2F left, float right, out Vector2F result)
-        {
-			result.X = (left.X / right);
-			result.Y = (left.Y / right);
-        }
-
-		public static Vector2F operator /(Vector2F left, float right)
+		///<summary>Performs a divide operation on a $<see cref="Vector2F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector2F"/> to divide.</param>
+		///<param name="b">The <see cref="float"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector2F a, float b, out Vector2F result)
 		{
-            Divide(ref left, right, out Vector2F result);
-            return result;
+			result.X = a.X / b;
+			result.Y = a.Y / b;
 		}
 
-        public static Vector2F operator /(float left, Vector2F right)
+		///<summary>Performs a divide operation on a $<see cref="Vector2F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector2F"/> to divide.</param>
+		///<param name="b">The <see cref="float"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2F operator /(Vector2F a, float b)
 		{
-            Divide(ref right, left, out Vector2F result);
-            return result;
+			Divide(ref a, b, out Vector2F result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="float"/> and a $<see cref="Vector2F"/>.</summary>
+		///<param name="a">The <see cref="float"/> to divide.</param>
+		///<param name="b">The <see cref="Vector2F"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2F operator /(float a, Vector2F b)
+		{
+			Divide(ref b, a, out Vector2F result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -467,24 +509,38 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Multiply(ref Vector2F left, float right, out Vector2F result)
-        {
-			result.X = (left.X * right);
-			result.Y = (left.Y * right);
-        }
-
-		public static Vector2F operator *(Vector2F left, float right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector2F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector2F"/> to multiply.</param>
+		///<param name="b">The <see cref="float"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector2F a, float b, out Vector2F result)
 		{
-            Multiply(ref left, right, out Vector2F result);
-            return result;
+			result.X = a.X * b;
+			result.Y = a.Y * b;
 		}
 
-        public static Vector2F operator *(float left, Vector2F right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector2F"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Vector2F"/> to multiply.</param>
+		///<param name="b">The <see cref="float"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2F operator *(Vector2F a, float b)
 		{
-            Multiply(ref right, left, out Vector2F result);
-            return result;
+			Multiply(ref a, b, out Vector2F result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="float"/> and a $<see cref="Vector2F"/>.</summary>
+		///<param name="a">The <see cref="float"/> to multiply.</param>
+		///<param name="b">The <see cref="Vector2F"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2F operator *(float a, Vector2F b)
+		{
+			Multiply(ref b, a, out Vector2F result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

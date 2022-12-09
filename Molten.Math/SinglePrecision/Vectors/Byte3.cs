@@ -326,25 +326,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Add(ref Byte3 left, byte right, out Byte3 result)
-        {
-			result.X = (byte)(left.X + right);
-			result.Y = (byte)(left.Y + right);
-			result.Z = (byte)(left.Z + right);
-        }
-
-		public static Byte3 operator +(Byte3 left, byte right)
+		///<summary>Performs a add operation on a $<see cref="Byte3"/> and a $<see cref="byte"/>.</summary>
+		///<param name="a">The <see cref="Byte3"/> to add.</param>
+		///<param name="b">The <see cref="byte"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Byte3 a, byte b, out Byte3 result)
 		{
-            Add(ref left, right, out Byte3 result);
-            return result;
+			result.X = (byte)(a.X + b);
+			result.Y = (byte)(a.Y + b);
+			result.Z = (byte)(a.Z + b);
 		}
 
-        public static Byte3 operator +(byte left, Byte3 right)
+		///<summary>Performs a add operation on a $<see cref="Byte3"/> and a $<see cref="byte"/>.</summary>
+		///<param name="a">The <see cref="Byte3"/> to add.</param>
+		///<param name="b">The <see cref="byte"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte3 operator +(Byte3 a, byte b)
 		{
-            Add(ref right, left, out Byte3 result);
-            return result;
+			Add(ref a, b, out Byte3 result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="byte"/> and a $<see cref="Byte3"/>.</summary>
+		///<param name="a">The <see cref="byte"/> to add.</param>
+		///<param name="b">The <see cref="Byte3"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte3 operator +(byte a, Byte3 b)
+		{
+			Add(ref b, a, out Byte3 result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Byte3"/> (return it unchanged).
@@ -380,25 +394,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Subtract(ref Byte3 left, byte right, out Byte3 result)
-        {
-			result.X = (byte)(left.X - right);
-			result.Y = (byte)(left.Y - right);
-			result.Z = (byte)(left.Z - right);
-        }
-
-		public static Byte3 operator -(Byte3 left, byte right)
+		///<summary>Performs a subtract operation on a $<see cref="Byte3"/> and a $<see cref="byte"/>.</summary>
+		///<param name="a">The <see cref="Byte3"/> to subtract.</param>
+		///<param name="b">The <see cref="byte"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Byte3 a, byte b, out Byte3 result)
 		{
-            Subtract(ref left, right, out Byte3 result);
-            return result;
+			result.X = (byte)(a.X - b);
+			result.Y = (byte)(a.Y - b);
+			result.Z = (byte)(a.Z - b);
 		}
 
-        public static Byte3 operator -(byte left, Byte3 right)
+		///<summary>Performs a subtract operation on a $<see cref="Byte3"/> and a $<see cref="byte"/>.</summary>
+		///<param name="a">The <see cref="Byte3"/> to subtract.</param>
+		///<param name="b">The <see cref="byte"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte3 operator -(Byte3 a, byte b)
 		{
-            Subtract(ref right, left, out Byte3 result);
-            return result;
+			Subtract(ref a, b, out Byte3 result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="byte"/> and a $<see cref="Byte3"/>.</summary>
+		///<param name="a">The <see cref="byte"/> to subtract.</param>
+		///<param name="b">The <see cref="Byte3"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte3 operator -(byte a, Byte3 b)
+		{
+			Subtract(ref b, a, out Byte3 result);
+			return result;
+		}
+
 
 #endregion
 
@@ -425,25 +453,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Divide(ref Byte3 left, byte right, out Byte3 result)
-        {
-			result.X = (byte)(left.X / right);
-			result.Y = (byte)(left.Y / right);
-			result.Z = (byte)(left.Z / right);
-        }
-
-		public static Byte3 operator /(Byte3 left, byte right)
+		///<summary>Performs a divide operation on a $<see cref="Byte3"/> and a $<see cref="byte"/>.</summary>
+		///<param name="a">The <see cref="Byte3"/> to divide.</param>
+		///<param name="b">The <see cref="byte"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Byte3 a, byte b, out Byte3 result)
 		{
-            Divide(ref left, right, out Byte3 result);
-            return result;
+			result.X = (byte)(a.X / b);
+			result.Y = (byte)(a.Y / b);
+			result.Z = (byte)(a.Z / b);
 		}
 
-        public static Byte3 operator /(byte left, Byte3 right)
+		///<summary>Performs a divide operation on a $<see cref="Byte3"/> and a $<see cref="byte"/>.</summary>
+		///<param name="a">The <see cref="Byte3"/> to divide.</param>
+		///<param name="b">The <see cref="byte"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte3 operator /(Byte3 a, byte b)
 		{
-            Divide(ref right, left, out Byte3 result);
-            return result;
+			Divide(ref a, b, out Byte3 result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="byte"/> and a $<see cref="Byte3"/>.</summary>
+		///<param name="a">The <see cref="byte"/> to divide.</param>
+		///<param name="b">The <see cref="Byte3"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte3 operator /(byte a, Byte3 b)
+		{
+			Divide(ref b, a, out Byte3 result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -469,25 +511,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Multiply(ref Byte3 left, byte right, out Byte3 result)
-        {
-			result.X = (byte)(left.X * right);
-			result.Y = (byte)(left.Y * right);
-			result.Z = (byte)(left.Z * right);
-        }
-
-		public static Byte3 operator *(Byte3 left, byte right)
+		///<summary>Performs a multiply operation on a $<see cref="Byte3"/> and a $<see cref="byte"/>.</summary>
+		///<param name="a">The <see cref="Byte3"/> to multiply.</param>
+		///<param name="b">The <see cref="byte"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Byte3 a, byte b, out Byte3 result)
 		{
-            Multiply(ref left, right, out Byte3 result);
-            return result;
+			result.X = (byte)(a.X * b);
+			result.Y = (byte)(a.Y * b);
+			result.Z = (byte)(a.Z * b);
 		}
 
-        public static Byte3 operator *(byte left, Byte3 right)
+		///<summary>Performs a multiply operation on a $<see cref="Byte3"/> and a $<see cref="byte"/>.</summary>
+		///<param name="a">The <see cref="Byte3"/> to multiply.</param>
+		///<param name="b">The <see cref="byte"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte3 operator *(Byte3 a, byte b)
 		{
-            Multiply(ref right, left, out Byte3 result);
-            return result;
+			Multiply(ref a, b, out Byte3 result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="byte"/> and a $<see cref="Byte3"/>.</summary>
+		///<param name="a">The <see cref="byte"/> to multiply.</param>
+		///<param name="b">The <see cref="Byte3"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Byte3 operator *(byte a, Byte3 b)
+		{
+			Multiply(ref b, a, out Byte3 result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

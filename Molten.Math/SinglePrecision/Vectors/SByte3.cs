@@ -334,25 +334,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Add(ref SByte3 left, sbyte right, out SByte3 result)
-        {
-			result.X = (sbyte)(left.X + right);
-			result.Y = (sbyte)(left.Y + right);
-			result.Z = (sbyte)(left.Z + right);
-        }
-
-		public static SByte3 operator +(SByte3 left, sbyte right)
+		///<summary>Performs a add operation on a $<see cref="SByte3"/> and a $<see cref="sbyte"/>.</summary>
+		///<param name="a">The <see cref="SByte3"/> to add.</param>
+		///<param name="b">The <see cref="sbyte"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref SByte3 a, sbyte b, out SByte3 result)
 		{
-            Add(ref left, right, out SByte3 result);
-            return result;
+			result.X = (sbyte)(a.X + b);
+			result.Y = (sbyte)(a.Y + b);
+			result.Z = (sbyte)(a.Z + b);
 		}
 
-        public static SByte3 operator +(sbyte left, SByte3 right)
+		///<summary>Performs a add operation on a $<see cref="SByte3"/> and a $<see cref="sbyte"/>.</summary>
+		///<param name="a">The <see cref="SByte3"/> to add.</param>
+		///<param name="b">The <see cref="sbyte"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SByte3 operator +(SByte3 a, sbyte b)
 		{
-            Add(ref right, left, out SByte3 result);
-            return result;
+			Add(ref a, b, out SByte3 result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="sbyte"/> and a $<see cref="SByte3"/>.</summary>
+		///<param name="a">The <see cref="sbyte"/> to add.</param>
+		///<param name="b">The <see cref="SByte3"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SByte3 operator +(sbyte a, SByte3 b)
+		{
+			Add(ref b, a, out SByte3 result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="SByte3"/> (return it unchanged).
@@ -388,25 +402,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Subtract(ref SByte3 left, sbyte right, out SByte3 result)
-        {
-			result.X = (sbyte)(left.X - right);
-			result.Y = (sbyte)(left.Y - right);
-			result.Z = (sbyte)(left.Z - right);
-        }
-
-		public static SByte3 operator -(SByte3 left, sbyte right)
+		///<summary>Performs a subtract operation on a $<see cref="SByte3"/> and a $<see cref="sbyte"/>.</summary>
+		///<param name="a">The <see cref="SByte3"/> to subtract.</param>
+		///<param name="b">The <see cref="sbyte"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref SByte3 a, sbyte b, out SByte3 result)
 		{
-            Subtract(ref left, right, out SByte3 result);
-            return result;
+			result.X = (sbyte)(a.X - b);
+			result.Y = (sbyte)(a.Y - b);
+			result.Z = (sbyte)(a.Z - b);
 		}
 
-        public static SByte3 operator -(sbyte left, SByte3 right)
+		///<summary>Performs a subtract operation on a $<see cref="SByte3"/> and a $<see cref="sbyte"/>.</summary>
+		///<param name="a">The <see cref="SByte3"/> to subtract.</param>
+		///<param name="b">The <see cref="sbyte"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SByte3 operator -(SByte3 a, sbyte b)
 		{
-            Subtract(ref right, left, out SByte3 result);
-            return result;
+			Subtract(ref a, b, out SByte3 result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="sbyte"/> and a $<see cref="SByte3"/>.</summary>
+		///<param name="a">The <see cref="sbyte"/> to subtract.</param>
+		///<param name="b">The <see cref="SByte3"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SByte3 operator -(sbyte a, SByte3 b)
+		{
+			Subtract(ref b, a, out SByte3 result);
+			return result;
+		}
+
 
         /// <summary>
         /// Negate/reverse the direction of a <see cref="Vector3D"/>.
@@ -456,25 +484,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Divide(ref SByte3 left, sbyte right, out SByte3 result)
-        {
-			result.X = (sbyte)(left.X / right);
-			result.Y = (sbyte)(left.Y / right);
-			result.Z = (sbyte)(left.Z / right);
-        }
-
-		public static SByte3 operator /(SByte3 left, sbyte right)
+		///<summary>Performs a divide operation on a $<see cref="SByte3"/> and a $<see cref="sbyte"/>.</summary>
+		///<param name="a">The <see cref="SByte3"/> to divide.</param>
+		///<param name="b">The <see cref="sbyte"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref SByte3 a, sbyte b, out SByte3 result)
 		{
-            Divide(ref left, right, out SByte3 result);
-            return result;
+			result.X = (sbyte)(a.X / b);
+			result.Y = (sbyte)(a.Y / b);
+			result.Z = (sbyte)(a.Z / b);
 		}
 
-        public static SByte3 operator /(sbyte left, SByte3 right)
+		///<summary>Performs a divide operation on a $<see cref="SByte3"/> and a $<see cref="sbyte"/>.</summary>
+		///<param name="a">The <see cref="SByte3"/> to divide.</param>
+		///<param name="b">The <see cref="sbyte"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SByte3 operator /(SByte3 a, sbyte b)
 		{
-            Divide(ref right, left, out SByte3 result);
-            return result;
+			Divide(ref a, b, out SByte3 result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="sbyte"/> and a $<see cref="SByte3"/>.</summary>
+		///<param name="a">The <see cref="sbyte"/> to divide.</param>
+		///<param name="b">The <see cref="SByte3"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SByte3 operator /(sbyte a, SByte3 b)
+		{
+			Divide(ref b, a, out SByte3 result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -500,25 +542,39 @@ namespace Molten
 			return result;
 		}
 
-
-        public static void Multiply(ref SByte3 left, sbyte right, out SByte3 result)
-        {
-			result.X = (sbyte)(left.X * right);
-			result.Y = (sbyte)(left.Y * right);
-			result.Z = (sbyte)(left.Z * right);
-        }
-
-		public static SByte3 operator *(SByte3 left, sbyte right)
+		///<summary>Performs a multiply operation on a $<see cref="SByte3"/> and a $<see cref="sbyte"/>.</summary>
+		///<param name="a">The <see cref="SByte3"/> to multiply.</param>
+		///<param name="b">The <see cref="sbyte"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref SByte3 a, sbyte b, out SByte3 result)
 		{
-            Multiply(ref left, right, out SByte3 result);
-            return result;
+			result.X = (sbyte)(a.X * b);
+			result.Y = (sbyte)(a.Y * b);
+			result.Z = (sbyte)(a.Z * b);
 		}
 
-        public static SByte3 operator *(sbyte left, SByte3 right)
+		///<summary>Performs a multiply operation on a $<see cref="SByte3"/> and a $<see cref="sbyte"/>.</summary>
+		///<param name="a">The <see cref="SByte3"/> to multiply.</param>
+		///<param name="b">The <see cref="sbyte"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SByte3 operator *(SByte3 a, sbyte b)
 		{
-            Multiply(ref right, left, out SByte3 result);
-            return result;
+			Multiply(ref a, b, out SByte3 result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="sbyte"/> and a $<see cref="SByte3"/>.</summary>
+		///<param name="a">The <see cref="sbyte"/> to multiply.</param>
+		///<param name="b">The <see cref="SByte3"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SByte3 operator *(sbyte a, SByte3 b)
+		{
+			Multiply(ref b, a, out SByte3 result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

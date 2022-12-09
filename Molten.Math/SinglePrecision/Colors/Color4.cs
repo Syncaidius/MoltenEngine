@@ -265,6 +265,40 @@ namespace Molten
 			return result;
 		}
 
+		///<summary>Performs a add operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color4"/> to add.</param>
+		///<param name="b">The <see cref="float"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Color4 a, float b, out Color4 result)
+		{
+			result.R = a.R + b;
+			result.G = a.G + b;
+			result.B = a.B + b;
+			result.A = a.A + b;
+		}
+
+		///<summary>Performs a add operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color4"/> to add.</param>
+		///<param name="b">The <see cref="float"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator +(Color4 a, float b)
+		{
+			Add(ref a, b, out Color4 result);
+			return result;
+		}
+
+		///<summary>Performs a add operation on a $<see cref="float"/> and a $<see cref="Color4"/>.</summary>
+		///<param name="a">The <see cref="float"/> to add.</param>
+		///<param name="b">The <see cref="Color4"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator +(float a, Color4 b)
+		{
+			Add(ref b, a, out Color4 result);
+			return result;
+		}
+
 
 		///<summary>Performs a subtract operation on two <see cref="Color4"/>.</summary>
 		///<param name="a">The first <see cref="Color4"/> to subtract.</param>
@@ -286,6 +320,40 @@ namespace Molten
 		public static Color4 operator -(Color4 a, Color4 b)
 		{
 			Subtract(ref a, ref b, out Color4 result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color4"/> to subtract.</param>
+		///<param name="b">The <see cref="float"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Color4 a, float b, out Color4 result)
+		{
+			result.R = a.R - b;
+			result.G = a.G - b;
+			result.B = a.B - b;
+			result.A = a.A - b;
+		}
+
+		///<summary>Performs a subtract operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color4"/> to subtract.</param>
+		///<param name="b">The <see cref="float"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator -(Color4 a, float b)
+		{
+			Subtract(ref a, b, out Color4 result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on a $<see cref="float"/> and a $<see cref="Color4"/>.</summary>
+		///<param name="a">The <see cref="float"/> to subtract.</param>
+		///<param name="b">The <see cref="Color4"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator -(float a, Color4 b)
+		{
+			Subtract(ref b, a, out Color4 result);
 			return result;
 		}
 
@@ -313,6 +381,40 @@ namespace Molten
 			return result;
 		}
 
+		///<summary>Performs a modulate operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color4"/> to modulate.</param>
+		///<param name="b">The <see cref="float"/> to modulate.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Modulate(ref Color4 a, float b, out Color4 result)
+		{
+			result.R = a.R * b;
+			result.G = a.G * b;
+			result.B = a.B * b;
+			result.A = a.A * b;
+		}
+
+		///<summary>Performs a modulate operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color4"/> to modulate.</param>
+		///<param name="b">The <see cref="float"/> to modulate.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator *(Color4 a, float b)
+		{
+			Modulate(ref a, b, out Color4 result);
+			return result;
+		}
+
+		///<summary>Performs a modulate operation on a $<see cref="float"/> and a $<see cref="Color4"/>.</summary>
+		///<param name="a">The <see cref="float"/> to modulate.</param>
+		///<param name="b">The <see cref="Color4"/> to modulate.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator *(float a, Color4 b)
+		{
+			Modulate(ref b, a, out Color4 result);
+			return result;
+		}
+
 
 		///<summary>Performs a divide operation on two <see cref="Color4"/>.</summary>
 		///<param name="a">The first <see cref="Color4"/> to divide.</param>
@@ -334,6 +436,40 @@ namespace Molten
 		public static Color4 operator /(Color4 a, Color4 b)
 		{
 			Divide(ref a, ref b, out Color4 result);
+			return result;
+		}
+
+		///<summary>Performs a divide operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color4"/> to divide.</param>
+		///<param name="b">The <see cref="float"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Color4 a, float b, out Color4 result)
+		{
+			result.R = a.R / b;
+			result.G = a.G / b;
+			result.B = a.B / b;
+			result.A = a.A / b;
+		}
+
+		///<summary>Performs a divide operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Color4"/> to divide.</param>
+		///<param name="b">The <see cref="float"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator /(Color4 a, float b)
+		{
+			Divide(ref a, b, out Color4 result);
+			return result;
+		}
+
+		///<summary>Performs a divide operation on a $<see cref="float"/> and a $<see cref="Color4"/>.</summary>
+		///<param name="a">The <see cref="float"/> to divide.</param>
+		///<param name="b">The <see cref="Color4"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Color4 operator /(float a, Color4 b)
+		{
+			Divide(ref b, a, out Color4 result);
 			return result;
 		}
 
@@ -745,28 +881,6 @@ namespace Molten
         public static Color4 operator -(Color4 value)
         {
             return new Color4(-value.R, -value.G, -value.B, -value.A);
-        }
-
-        /// <summary>
-        /// Scales a color.
-        /// </summary>
-        /// <param name="scale">The factor by which to scale the color.</param>
-        /// <param name="value">The color to scale.</param>
-        /// <returns>The scaled color.</returns>
-        public static Color4 operator *(float scale, Color4 value)
-        {
-            return new Color4(value.R * scale, value.G * scale, value.B * scale, value.A * scale);
-        }
-
-        /// <summary>
-        /// Scales a color.
-        /// </summary>
-        /// <param name="value">The factor by which to scale the color.</param>
-        /// <param name="scale">The color to scale.</param>
-        /// <returns>The scaled color.</returns>
-        public static Color4 operator *(Color4 value, float scale)
-        {
-            return new Color4(value.R * scale, value.G * scale, value.B * scale, value.A * scale);
         }
 
         /// <summary>

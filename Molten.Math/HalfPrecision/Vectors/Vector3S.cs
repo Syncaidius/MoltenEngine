@@ -334,25 +334,39 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Add(ref Vector3S left, short right, out Vector3S result)
-        {
-			result.X = (short)(left.X + right);
-			result.Y = (short)(left.Y + right);
-			result.Z = (short)(left.Z + right);
-        }
-
-		public static Vector3S operator +(Vector3S left, short right)
+		///<summary>Performs a add operation on a $<see cref="Vector3S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector3S"/> to add.</param>
+		///<param name="b">The <see cref="short"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector3S a, short b, out Vector3S result)
 		{
-            Add(ref left, right, out Vector3S result);
-            return result;
+			result.X = (short)(a.X + b);
+			result.Y = (short)(a.Y + b);
+			result.Z = (short)(a.Z + b);
 		}
 
-        public static Vector3S operator +(short left, Vector3S right)
+		///<summary>Performs a add operation on a $<see cref="Vector3S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector3S"/> to add.</param>
+		///<param name="b">The <see cref="short"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator +(Vector3S a, short b)
 		{
-            Add(ref right, left, out Vector3S result);
-            return result;
+			Add(ref a, b, out Vector3S result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="short"/> and a $<see cref="Vector3S"/>.</summary>
+		///<param name="a">The <see cref="short"/> to add.</param>
+		///<param name="b">The <see cref="Vector3S"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator +(short a, Vector3S b)
+		{
+			Add(ref b, a, out Vector3S result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Vector3S"/> (return it unchanged).
@@ -388,25 +402,39 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Subtract(ref Vector3S left, short right, out Vector3S result)
-        {
-			result.X = (short)(left.X - right);
-			result.Y = (short)(left.Y - right);
-			result.Z = (short)(left.Z - right);
-        }
-
-		public static Vector3S operator -(Vector3S left, short right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector3S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector3S"/> to subtract.</param>
+		///<param name="b">The <see cref="short"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector3S a, short b, out Vector3S result)
 		{
-            Subtract(ref left, right, out Vector3S result);
-            return result;
+			result.X = (short)(a.X - b);
+			result.Y = (short)(a.Y - b);
+			result.Z = (short)(a.Z - b);
 		}
 
-        public static Vector3S operator -(short left, Vector3S right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector3S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector3S"/> to subtract.</param>
+		///<param name="b">The <see cref="short"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator -(Vector3S a, short b)
 		{
-            Subtract(ref right, left, out Vector3S result);
-            return result;
+			Subtract(ref a, b, out Vector3S result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="short"/> and a $<see cref="Vector3S"/>.</summary>
+		///<param name="a">The <see cref="short"/> to subtract.</param>
+		///<param name="b">The <see cref="Vector3S"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator -(short a, Vector3S b)
+		{
+			Subtract(ref b, a, out Vector3S result);
+			return result;
+		}
+
 
         /// <summary>
         /// Negate/reverse the direction of a <see cref="Vector3D"/>.
@@ -456,25 +484,39 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Divide(ref Vector3S left, short right, out Vector3S result)
-        {
-			result.X = (short)(left.X / right);
-			result.Y = (short)(left.Y / right);
-			result.Z = (short)(left.Z / right);
-        }
-
-		public static Vector3S operator /(Vector3S left, short right)
+		///<summary>Performs a divide operation on a $<see cref="Vector3S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector3S"/> to divide.</param>
+		///<param name="b">The <see cref="short"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector3S a, short b, out Vector3S result)
 		{
-            Divide(ref left, right, out Vector3S result);
-            return result;
+			result.X = (short)(a.X / b);
+			result.Y = (short)(a.Y / b);
+			result.Z = (short)(a.Z / b);
 		}
 
-        public static Vector3S operator /(short left, Vector3S right)
+		///<summary>Performs a divide operation on a $<see cref="Vector3S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector3S"/> to divide.</param>
+		///<param name="b">The <see cref="short"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator /(Vector3S a, short b)
 		{
-            Divide(ref right, left, out Vector3S result);
-            return result;
+			Divide(ref a, b, out Vector3S result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="short"/> and a $<see cref="Vector3S"/>.</summary>
+		///<param name="a">The <see cref="short"/> to divide.</param>
+		///<param name="b">The <see cref="Vector3S"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator /(short a, Vector3S b)
+		{
+			Divide(ref b, a, out Vector3S result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -500,25 +542,39 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-
-        public static void Multiply(ref Vector3S left, short right, out Vector3S result)
-        {
-			result.X = (short)(left.X * right);
-			result.Y = (short)(left.Y * right);
-			result.Z = (short)(left.Z * right);
-        }
-
-		public static Vector3S operator *(Vector3S left, short right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector3S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector3S"/> to multiply.</param>
+		///<param name="b">The <see cref="short"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector3S a, short b, out Vector3S result)
 		{
-            Multiply(ref left, right, out Vector3S result);
-            return result;
+			result.X = (short)(a.X * b);
+			result.Y = (short)(a.Y * b);
+			result.Z = (short)(a.Z * b);
 		}
 
-        public static Vector3S operator *(short left, Vector3S right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector3S"/> and a $<see cref="short"/>.</summary>
+		///<param name="a">The <see cref="Vector3S"/> to multiply.</param>
+		///<param name="b">The <see cref="short"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator *(Vector3S a, short b)
 		{
-            Multiply(ref right, left, out Vector3S result);
-            return result;
+			Multiply(ref a, b, out Vector3S result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="short"/> and a $<see cref="Vector3S"/>.</summary>
+		///<param name="a">The <see cref="short"/> to multiply.</param>
+		///<param name="b">The <see cref="Vector3S"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3S operator *(short a, Vector3S b)
+		{
+			Multiply(ref b, a, out Vector3S result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

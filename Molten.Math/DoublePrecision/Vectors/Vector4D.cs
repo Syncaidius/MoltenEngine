@@ -362,26 +362,40 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Add(ref Vector4D left, double right, out Vector4D result)
-        {
-			result.X = (left.X + right);
-			result.Y = (left.Y + right);
-			result.Z = (left.Z + right);
-			result.W = (left.W + right);
-        }
-
-		public static Vector4D operator +(Vector4D left, double right)
+		///<summary>Performs a add operation on a $<see cref="Vector4D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector4D"/> to add.</param>
+		///<param name="b">The <see cref="double"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector4D a, double b, out Vector4D result)
 		{
-            Add(ref left, right, out Vector4D result);
-            return result;
+			result.X = a.X + b;
+			result.Y = a.Y + b;
+			result.Z = a.Z + b;
+			result.W = a.W + b;
 		}
 
-        public static Vector4D operator +(double left, Vector4D right)
+		///<summary>Performs a add operation on a $<see cref="Vector4D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector4D"/> to add.</param>
+		///<param name="b">The <see cref="double"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4D operator +(Vector4D a, double b)
 		{
-            Add(ref right, left, out Vector4D result);
-            return result;
+			Add(ref a, b, out Vector4D result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="double"/> and a $<see cref="Vector4D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to add.</param>
+		///<param name="b">The <see cref="Vector4D"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4D operator +(double a, Vector4D b)
+		{
+			Add(ref b, a, out Vector4D result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Vector4D"/> (return it unchanged).
@@ -418,26 +432,40 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Subtract(ref Vector4D left, double right, out Vector4D result)
-        {
-			result.X = (left.X - right);
-			result.Y = (left.Y - right);
-			result.Z = (left.Z - right);
-			result.W = (left.W - right);
-        }
-
-		public static Vector4D operator -(Vector4D left, double right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector4D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector4D"/> to subtract.</param>
+		///<param name="b">The <see cref="double"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector4D a, double b, out Vector4D result)
 		{
-            Subtract(ref left, right, out Vector4D result);
-            return result;
+			result.X = a.X - b;
+			result.Y = a.Y - b;
+			result.Z = a.Z - b;
+			result.W = a.W - b;
 		}
 
-        public static Vector4D operator -(double left, Vector4D right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector4D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector4D"/> to subtract.</param>
+		///<param name="b">The <see cref="double"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4D operator -(Vector4D a, double b)
 		{
-            Subtract(ref right, left, out Vector4D result);
-            return result;
+			Subtract(ref a, b, out Vector4D result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="double"/> and a $<see cref="Vector4D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to subtract.</param>
+		///<param name="b">The <see cref="Vector4D"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4D operator -(double a, Vector4D b)
+		{
+			Subtract(ref b, a, out Vector4D result);
+			return result;
+		}
+
 
         /// <summary>
         /// Negate/reverse the direction of a <see cref="Vector3D"/>.
@@ -489,26 +517,40 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Divide(ref Vector4D left, double right, out Vector4D result)
-        {
-			result.X = (left.X / right);
-			result.Y = (left.Y / right);
-			result.Z = (left.Z / right);
-			result.W = (left.W / right);
-        }
-
-		public static Vector4D operator /(Vector4D left, double right)
+		///<summary>Performs a divide operation on a $<see cref="Vector4D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector4D"/> to divide.</param>
+		///<param name="b">The <see cref="double"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector4D a, double b, out Vector4D result)
 		{
-            Divide(ref left, right, out Vector4D result);
-            return result;
+			result.X = a.X / b;
+			result.Y = a.Y / b;
+			result.Z = a.Z / b;
+			result.W = a.W / b;
 		}
 
-        public static Vector4D operator /(double left, Vector4D right)
+		///<summary>Performs a divide operation on a $<see cref="Vector4D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector4D"/> to divide.</param>
+		///<param name="b">The <see cref="double"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4D operator /(Vector4D a, double b)
 		{
-            Divide(ref right, left, out Vector4D result);
-            return result;
+			Divide(ref a, b, out Vector4D result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="double"/> and a $<see cref="Vector4D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to divide.</param>
+		///<param name="b">The <see cref="Vector4D"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4D operator /(double a, Vector4D b)
+		{
+			Divide(ref b, a, out Vector4D result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -535,26 +577,40 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Multiply(ref Vector4D left, double right, out Vector4D result)
-        {
-			result.X = (left.X * right);
-			result.Y = (left.Y * right);
-			result.Z = (left.Z * right);
-			result.W = (left.W * right);
-        }
-
-		public static Vector4D operator *(Vector4D left, double right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector4D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector4D"/> to multiply.</param>
+		///<param name="b">The <see cref="double"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector4D a, double b, out Vector4D result)
 		{
-            Multiply(ref left, right, out Vector4D result);
-            return result;
+			result.X = a.X * b;
+			result.Y = a.Y * b;
+			result.Z = a.Z * b;
+			result.W = a.W * b;
 		}
 
-        public static Vector4D operator *(double left, Vector4D right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector4D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector4D"/> to multiply.</param>
+		///<param name="b">The <see cref="double"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4D operator *(Vector4D a, double b)
 		{
-            Multiply(ref right, left, out Vector4D result);
-            return result;
+			Multiply(ref a, b, out Vector4D result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="double"/> and a $<see cref="Vector4D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to multiply.</param>
+		///<param name="b">The <see cref="Vector4D"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4D operator *(double a, Vector4D b)
+		{
+			Multiply(ref b, a, out Vector4D result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

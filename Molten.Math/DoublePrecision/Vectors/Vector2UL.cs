@@ -300,24 +300,38 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Add(ref Vector2UL left, ulong right, out Vector2UL result)
-        {
-			result.X = (left.X + right);
-			result.Y = (left.Y + right);
-        }
-
-		public static Vector2UL operator +(Vector2UL left, ulong right)
+		///<summary>Performs a add operation on a $<see cref="Vector2UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector2UL"/> to add.</param>
+		///<param name="b">The <see cref="ulong"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector2UL a, ulong b, out Vector2UL result)
 		{
-            Add(ref left, right, out Vector2UL result);
-            return result;
+			result.X = a.X + b;
+			result.Y = a.Y + b;
 		}
 
-        public static Vector2UL operator +(ulong left, Vector2UL right)
+		///<summary>Performs a add operation on a $<see cref="Vector2UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector2UL"/> to add.</param>
+		///<param name="b">The <see cref="ulong"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2UL operator +(Vector2UL a, ulong b)
 		{
-            Add(ref right, left, out Vector2UL result);
-            return result;
+			Add(ref a, b, out Vector2UL result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="ulong"/> and a $<see cref="Vector2UL"/>.</summary>
+		///<param name="a">The <see cref="ulong"/> to add.</param>
+		///<param name="b">The <see cref="Vector2UL"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2UL operator +(ulong a, Vector2UL b)
+		{
+			Add(ref b, a, out Vector2UL result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Vector2UL"/> (return it unchanged).
@@ -352,24 +366,38 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Subtract(ref Vector2UL left, ulong right, out Vector2UL result)
-        {
-			result.X = (left.X - right);
-			result.Y = (left.Y - right);
-        }
-
-		public static Vector2UL operator -(Vector2UL left, ulong right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector2UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector2UL"/> to subtract.</param>
+		///<param name="b">The <see cref="ulong"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector2UL a, ulong b, out Vector2UL result)
 		{
-            Subtract(ref left, right, out Vector2UL result);
-            return result;
+			result.X = a.X - b;
+			result.Y = a.Y - b;
 		}
 
-        public static Vector2UL operator -(ulong left, Vector2UL right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector2UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector2UL"/> to subtract.</param>
+		///<param name="b">The <see cref="ulong"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2UL operator -(Vector2UL a, ulong b)
 		{
-            Subtract(ref right, left, out Vector2UL result);
-            return result;
+			Subtract(ref a, b, out Vector2UL result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="ulong"/> and a $<see cref="Vector2UL"/>.</summary>
+		///<param name="a">The <see cref="ulong"/> to subtract.</param>
+		///<param name="b">The <see cref="Vector2UL"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2UL operator -(ulong a, Vector2UL b)
+		{
+			Subtract(ref b, a, out Vector2UL result);
+			return result;
+		}
+
 
 #endregion
 
@@ -395,24 +423,38 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Divide(ref Vector2UL left, ulong right, out Vector2UL result)
-        {
-			result.X = (left.X / right);
-			result.Y = (left.Y / right);
-        }
-
-		public static Vector2UL operator /(Vector2UL left, ulong right)
+		///<summary>Performs a divide operation on a $<see cref="Vector2UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector2UL"/> to divide.</param>
+		///<param name="b">The <see cref="ulong"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector2UL a, ulong b, out Vector2UL result)
 		{
-            Divide(ref left, right, out Vector2UL result);
-            return result;
+			result.X = a.X / b;
+			result.Y = a.Y / b;
 		}
 
-        public static Vector2UL operator /(ulong left, Vector2UL right)
+		///<summary>Performs a divide operation on a $<see cref="Vector2UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector2UL"/> to divide.</param>
+		///<param name="b">The <see cref="ulong"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2UL operator /(Vector2UL a, ulong b)
 		{
-            Divide(ref right, left, out Vector2UL result);
-            return result;
+			Divide(ref a, b, out Vector2UL result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="ulong"/> and a $<see cref="Vector2UL"/>.</summary>
+		///<param name="a">The <see cref="ulong"/> to divide.</param>
+		///<param name="b">The <see cref="Vector2UL"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2UL operator /(ulong a, Vector2UL b)
+		{
+			Divide(ref b, a, out Vector2UL result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -437,24 +479,38 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Multiply(ref Vector2UL left, ulong right, out Vector2UL result)
-        {
-			result.X = (left.X * right);
-			result.Y = (left.Y * right);
-        }
-
-		public static Vector2UL operator *(Vector2UL left, ulong right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector2UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector2UL"/> to multiply.</param>
+		///<param name="b">The <see cref="ulong"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector2UL a, ulong b, out Vector2UL result)
 		{
-            Multiply(ref left, right, out Vector2UL result);
-            return result;
+			result.X = a.X * b;
+			result.Y = a.Y * b;
 		}
 
-        public static Vector2UL operator *(ulong left, Vector2UL right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector2UL"/> and a $<see cref="ulong"/>.</summary>
+		///<param name="a">The <see cref="Vector2UL"/> to multiply.</param>
+		///<param name="b">The <see cref="ulong"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2UL operator *(Vector2UL a, ulong b)
 		{
-            Multiply(ref right, left, out Vector2UL result);
-            return result;
+			Multiply(ref a, b, out Vector2UL result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="ulong"/> and a $<see cref="Vector2UL"/>.</summary>
+		///<param name="a">The <see cref="ulong"/> to multiply.</param>
+		///<param name="b">The <see cref="Vector2UL"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2UL operator *(ulong a, Vector2UL b)
+		{
+			Multiply(ref b, a, out Vector2UL result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

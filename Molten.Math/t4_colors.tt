@@ -177,12 +177,16 @@ namespace Molten<#=d.SubNamespace#>
         }
 
 <#gen.GenerateOperator("+", "add");#>
+<#gen.GenerateOperator("+", "add", d.DT.Name);#>
 
 <#gen.GenerateOperator("-", "subtract");#>
+<#gen.GenerateOperator("-", "subtract", d.DT.Name);#>
 
 <#gen.GenerateOperator("*", "modulate");#>
+<#gen.GenerateOperator("*", "modulate", d.DT.Name);#>
 
 <#gen.GenerateOperator("/", "divide");#>
+<#gen.GenerateOperator("/", "divide", d.DT.Name);#>
 
         /// <summary>
         /// Scales a color.
@@ -559,28 +563,6 @@ namespace Molten<#=d.SubNamespace#>
         public static <#=d.Name#> operator -(<#=d.Name#> value)
         {
             return new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldNames, "-value.")#>);
-        }
-
-        /// <summary>
-        /// Scales a color.
-        /// </summary>
-        /// <param name="scale">The factor by which to scale the color.</param>
-        /// <param name="value">The color to scale.</param>
-        /// <returns>The scaled color.</returns>
-        public static <#=d.Name#> operator *(<#=d.DT#> scale, <#=d.Name#> value)
-        {
-            return new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldNames, "value.", " * scale")#>);
-        }
-
-        /// <summary>
-        /// Scales a color.
-        /// </summary>
-        /// <param name="value">The factor by which to scale the color.</param>
-        /// <param name="scale">The color to scale.</param>
-        /// <returns>The scaled color.</returns>
-        public static <#=d.Name#> operator *(<#=d.Name#> value, <#=d.DT#> scale)
-        {
-            return new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldNames, "value.", " * scale")#>);
         }
 
         /// <summary>

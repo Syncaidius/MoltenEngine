@@ -308,24 +308,38 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Add(ref Vector2D left, double right, out Vector2D result)
-        {
-			result.X = (left.X + right);
-			result.Y = (left.Y + right);
-        }
-
-		public static Vector2D operator +(Vector2D left, double right)
+		///<summary>Performs a add operation on a $<see cref="Vector2D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector2D"/> to add.</param>
+		///<param name="b">The <see cref="double"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector2D a, double b, out Vector2D result)
 		{
-            Add(ref left, right, out Vector2D result);
-            return result;
+			result.X = a.X + b;
+			result.Y = a.Y + b;
 		}
 
-        public static Vector2D operator +(double left, Vector2D right)
+		///<summary>Performs a add operation on a $<see cref="Vector2D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector2D"/> to add.</param>
+		///<param name="b">The <see cref="double"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2D operator +(Vector2D a, double b)
 		{
-            Add(ref right, left, out Vector2D result);
-            return result;
+			Add(ref a, b, out Vector2D result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="double"/> and a $<see cref="Vector2D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to add.</param>
+		///<param name="b">The <see cref="Vector2D"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2D operator +(double a, Vector2D b)
+		{
+			Add(ref b, a, out Vector2D result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Vector2D"/> (return it unchanged).
@@ -360,24 +374,38 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Subtract(ref Vector2D left, double right, out Vector2D result)
-        {
-			result.X = (left.X - right);
-			result.Y = (left.Y - right);
-        }
-
-		public static Vector2D operator -(Vector2D left, double right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector2D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector2D"/> to subtract.</param>
+		///<param name="b">The <see cref="double"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector2D a, double b, out Vector2D result)
 		{
-            Subtract(ref left, right, out Vector2D result);
-            return result;
+			result.X = a.X - b;
+			result.Y = a.Y - b;
 		}
 
-        public static Vector2D operator -(double left, Vector2D right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector2D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector2D"/> to subtract.</param>
+		///<param name="b">The <see cref="double"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2D operator -(Vector2D a, double b)
 		{
-            Subtract(ref right, left, out Vector2D result);
-            return result;
+			Subtract(ref a, b, out Vector2D result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="double"/> and a $<see cref="Vector2D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to subtract.</param>
+		///<param name="b">The <see cref="Vector2D"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2D operator -(double a, Vector2D b)
+		{
+			Subtract(ref b, a, out Vector2D result);
+			return result;
+		}
+
 
         /// <summary>
         /// Negate/reverse the direction of a <see cref="Vector3D"/>.
@@ -425,24 +453,38 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Divide(ref Vector2D left, double right, out Vector2D result)
-        {
-			result.X = (left.X / right);
-			result.Y = (left.Y / right);
-        }
-
-		public static Vector2D operator /(Vector2D left, double right)
+		///<summary>Performs a divide operation on a $<see cref="Vector2D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector2D"/> to divide.</param>
+		///<param name="b">The <see cref="double"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector2D a, double b, out Vector2D result)
 		{
-            Divide(ref left, right, out Vector2D result);
-            return result;
+			result.X = a.X / b;
+			result.Y = a.Y / b;
 		}
 
-        public static Vector2D operator /(double left, Vector2D right)
+		///<summary>Performs a divide operation on a $<see cref="Vector2D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector2D"/> to divide.</param>
+		///<param name="b">The <see cref="double"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2D operator /(Vector2D a, double b)
 		{
-            Divide(ref right, left, out Vector2D result);
-            return result;
+			Divide(ref a, b, out Vector2D result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="double"/> and a $<see cref="Vector2D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to divide.</param>
+		///<param name="b">The <see cref="Vector2D"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2D operator /(double a, Vector2D b)
+		{
+			Divide(ref b, a, out Vector2D result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -467,24 +509,38 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Multiply(ref Vector2D left, double right, out Vector2D result)
-        {
-			result.X = (left.X * right);
-			result.Y = (left.Y * right);
-        }
-
-		public static Vector2D operator *(Vector2D left, double right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector2D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector2D"/> to multiply.</param>
+		///<param name="b">The <see cref="double"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector2D a, double b, out Vector2D result)
 		{
-            Multiply(ref left, right, out Vector2D result);
-            return result;
+			result.X = a.X * b;
+			result.Y = a.Y * b;
 		}
 
-        public static Vector2D operator *(double left, Vector2D right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector2D"/> and a $<see cref="double"/>.</summary>
+		///<param name="a">The <see cref="Vector2D"/> to multiply.</param>
+		///<param name="b">The <see cref="double"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2D operator *(Vector2D a, double b)
 		{
-            Multiply(ref right, left, out Vector2D result);
-            return result;
+			Multiply(ref a, b, out Vector2D result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="double"/> and a $<see cref="Vector2D"/>.</summary>
+		///<param name="a">The <see cref="double"/> to multiply.</param>
+		///<param name="b">The <see cref="Vector2D"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2D operator *(double a, Vector2D b)
+		{
+			Multiply(ref b, a, out Vector2D result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality

@@ -334,25 +334,39 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Add(ref Vector3L left, long right, out Vector3L result)
-        {
-			result.X = (left.X + right);
-			result.Y = (left.Y + right);
-			result.Z = (left.Z + right);
-        }
-
-		public static Vector3L operator +(Vector3L left, long right)
+		///<summary>Performs a add operation on a $<see cref="Vector3L"/> and a $<see cref="long"/>.</summary>
+		///<param name="a">The <see cref="Vector3L"/> to add.</param>
+		///<param name="b">The <see cref="long"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Vector3L a, long b, out Vector3L result)
 		{
-            Add(ref left, right, out Vector3L result);
-            return result;
+			result.X = a.X + b;
+			result.Y = a.Y + b;
+			result.Z = a.Z + b;
 		}
 
-        public static Vector3L operator +(long left, Vector3L right)
+		///<summary>Performs a add operation on a $<see cref="Vector3L"/> and a $<see cref="long"/>.</summary>
+		///<param name="a">The <see cref="Vector3L"/> to add.</param>
+		///<param name="b">The <see cref="long"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3L operator +(Vector3L a, long b)
 		{
-            Add(ref right, left, out Vector3L result);
-            return result;
+			Add(ref a, b, out Vector3L result);
+			return result;
 		}
+
+		///<summary>Performs a add operation on a $<see cref="long"/> and a $<see cref="Vector3L"/>.</summary>
+		///<param name="a">The <see cref="long"/> to add.</param>
+		///<param name="b">The <see cref="Vector3L"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3L operator +(long a, Vector3L b)
+		{
+			Add(ref b, a, out Vector3L result);
+			return result;
+		}
+
 
 		/// <summary>
         /// Assert a <see cref="Vector3L"/> (return it unchanged).
@@ -388,25 +402,39 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Subtract(ref Vector3L left, long right, out Vector3L result)
-        {
-			result.X = (left.X - right);
-			result.Y = (left.Y - right);
-			result.Z = (left.Z - right);
-        }
-
-		public static Vector3L operator -(Vector3L left, long right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector3L"/> and a $<see cref="long"/>.</summary>
+		///<param name="a">The <see cref="Vector3L"/> to subtract.</param>
+		///<param name="b">The <see cref="long"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Vector3L a, long b, out Vector3L result)
 		{
-            Subtract(ref left, right, out Vector3L result);
-            return result;
+			result.X = a.X - b;
+			result.Y = a.Y - b;
+			result.Z = a.Z - b;
 		}
 
-        public static Vector3L operator -(long left, Vector3L right)
+		///<summary>Performs a subtract operation on a $<see cref="Vector3L"/> and a $<see cref="long"/>.</summary>
+		///<param name="a">The <see cref="Vector3L"/> to subtract.</param>
+		///<param name="b">The <see cref="long"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3L operator -(Vector3L a, long b)
 		{
-            Subtract(ref right, left, out Vector3L result);
-            return result;
+			Subtract(ref a, b, out Vector3L result);
+			return result;
 		}
+
+		///<summary>Performs a subtract operation on a $<see cref="long"/> and a $<see cref="Vector3L"/>.</summary>
+		///<param name="a">The <see cref="long"/> to subtract.</param>
+		///<param name="b">The <see cref="Vector3L"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3L operator -(long a, Vector3L b)
+		{
+			Subtract(ref b, a, out Vector3L result);
+			return result;
+		}
+
 
         /// <summary>
         /// Negate/reverse the direction of a <see cref="Vector3D"/>.
@@ -456,25 +484,39 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Divide(ref Vector3L left, long right, out Vector3L result)
-        {
-			result.X = (left.X / right);
-			result.Y = (left.Y / right);
-			result.Z = (left.Z / right);
-        }
-
-		public static Vector3L operator /(Vector3L left, long right)
+		///<summary>Performs a divide operation on a $<see cref="Vector3L"/> and a $<see cref="long"/>.</summary>
+		///<param name="a">The <see cref="Vector3L"/> to divide.</param>
+		///<param name="b">The <see cref="long"/> to divide.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Divide(ref Vector3L a, long b, out Vector3L result)
 		{
-            Divide(ref left, right, out Vector3L result);
-            return result;
+			result.X = a.X / b;
+			result.Y = a.Y / b;
+			result.Z = a.Z / b;
 		}
 
-        public static Vector3L operator /(long left, Vector3L right)
+		///<summary>Performs a divide operation on a $<see cref="Vector3L"/> and a $<see cref="long"/>.</summary>
+		///<param name="a">The <see cref="Vector3L"/> to divide.</param>
+		///<param name="b">The <see cref="long"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3L operator /(Vector3L a, long b)
 		{
-            Divide(ref right, left, out Vector3L result);
-            return result;
+			Divide(ref a, b, out Vector3L result);
+			return result;
 		}
+
+		///<summary>Performs a divide operation on a $<see cref="long"/> and a $<see cref="Vector3L"/>.</summary>
+		///<param name="a">The <see cref="long"/> to divide.</param>
+		///<param name="b">The <see cref="Vector3L"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3L operator /(long a, Vector3L b)
+		{
+			Divide(ref b, a, out Vector3L result);
+			return result;
+		}
+
 #endregion
 
 #region Multiply operators
@@ -500,25 +542,39 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-
-        public static void Multiply(ref Vector3L left, long right, out Vector3L result)
-        {
-			result.X = (left.X * right);
-			result.Y = (left.Y * right);
-			result.Z = (left.Z * right);
-        }
-
-		public static Vector3L operator *(Vector3L left, long right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector3L"/> and a $<see cref="long"/>.</summary>
+		///<param name="a">The <see cref="Vector3L"/> to multiply.</param>
+		///<param name="b">The <see cref="long"/> to multiply.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Multiply(ref Vector3L a, long b, out Vector3L result)
 		{
-            Multiply(ref left, right, out Vector3L result);
-            return result;
+			result.X = a.X * b;
+			result.Y = a.Y * b;
+			result.Z = a.Z * b;
 		}
 
-        public static Vector3L operator *(long left, Vector3L right)
+		///<summary>Performs a multiply operation on a $<see cref="Vector3L"/> and a $<see cref="long"/>.</summary>
+		///<param name="a">The <see cref="Vector3L"/> to multiply.</param>
+		///<param name="b">The <see cref="long"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3L operator *(Vector3L a, long b)
 		{
-            Multiply(ref right, left, out Vector3L result);
-            return result;
+			Multiply(ref a, b, out Vector3L result);
+			return result;
 		}
+
+		///<summary>Performs a multiply operation on a $<see cref="long"/> and a $<see cref="Vector3L"/>.</summary>
+		///<param name="a">The <see cref="long"/> to multiply.</param>
+		///<param name="b">The <see cref="Vector3L"/> to multiply.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3L operator *(long a, Vector3L b)
+		{
+			Multiply(ref b, a, out Vector3L result);
+			return result;
+		}
+
 #endregion
 
 #region Operators - Equality
