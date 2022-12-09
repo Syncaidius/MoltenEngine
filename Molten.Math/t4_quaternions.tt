@@ -1079,6 +1079,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         /// <param name="left">A reference to the first <#=d.Name#> to multiply.</param>
         /// <param name="right">A reference to the second <#=d.Name#> to multiply.</param>
+        /// <param name="result">An output to store the result.</param>
         /// <returns>The multiplied <#=d.Name#>.</returns>
         public static void Multiply(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
         {

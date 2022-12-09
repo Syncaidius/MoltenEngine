@@ -1,7 +1,10 @@
 {
-  "FieldNames": [ "X", "Y", "Z", "W" ],
-  "FieldLabels": [ "X", "Y", "Z", "W" ],
   "SubFolder": "",
+  "Fields": {
+    "0": {
+      "Names": [ "X", "Y", "Z", "W" ]
+    }
+  },
 
   "Types": [
     {

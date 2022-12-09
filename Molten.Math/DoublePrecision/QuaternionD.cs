@@ -1142,6 +1142,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="left">A reference to the first QuaternionD to multiply.</param>
         /// <param name="right">A reference to the second QuaternionD to multiply.</param>
+        /// <param name="result">An output to store the result.</param>
         /// <returns>The multiplied QuaternionD.</returns>
         public static void Multiply(ref QuaternionD left, ref QuaternionD right, out QuaternionD result)
         {

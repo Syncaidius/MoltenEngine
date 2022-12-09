@@ -1142,6 +1142,7 @@ namespace Molten
         /// </summary>
         /// <param name="left">A reference to the first QuaternionF to multiply.</param>
         /// <param name="right">A reference to the second QuaternionF to multiply.</param>
+        /// <param name="result">An output to store the result.</param>
         /// <returns>The multiplied QuaternionF.</returns>
         public static void Multiply(ref QuaternionF left, ref QuaternionF right, out QuaternionF result)
         {

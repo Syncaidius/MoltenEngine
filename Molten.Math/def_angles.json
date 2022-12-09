@@ -2,6 +2,12 @@
   "FieldNames": [ "Radians" ],
   "FieldLabels": [ "radians" ],
   "SubFolder": "",
+  "Fields": {
+    "0": {
+      "Names": [ "Radians" ],
+      "Labels": [ "radians" ]
+    }
+  },
 
   "Types": [
     {

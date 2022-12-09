@@ -14,11 +14,7 @@ public delegate bool GenerateTypeFilter(TypeDef d);
 
 public class GeneratorDefinition
 {
-    public string[] FieldNames;
-
-    public string[] FieldLabels;
-
-    public string[] ArgNames;
+    public Dictionary<string, FieldData> Fields;
 
     public string SubFolder;
 
@@ -27,6 +23,14 @@ public class GeneratorDefinition
     public string[] SizeNames = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
 }
 
+public class FieldData
+{
+    public string[] Names;
+
+    public string[] Labels;
+
+    public string[] Args;
+}
 
 public class DataType
 {
@@ -76,9 +80,12 @@ public class DataType
 public class TypeDef
 {
     public string DefName;              // Name
-    public string Postfix;              // Name post-fix
     public string DataTypeName;         // The name of the DataType to be used.
     public int[] Sizes = new int[]{1};  // The different sizes of this type that need to be defined, if any.
+
+    public string[] FieldNames;
+    public string[] FieldLabels;
+    public string[] ArgNames;
 
     public DataType FP => DT.FP;
     public DataType DT;                 // The underlying DataType definition.
@@ -162,9 +169,18 @@ public class TypeGenerator
         string json = File.ReadAllText(Path.Combine(_outputPath, typeDefFileName.Trim()));
         _def = JsonConvert.DeserializeObject<GeneratorDefinition>(json);
 
-        _def.ArgNames = new string[_def.FieldNames.Length];
-        for(int i = 0; i < _def.ArgNames.Length; i++)
-            _def.ArgNames[i] = _def.FieldNames[i].ToLower();
+        foreach(FieldData fd in _def.Fields.Values)
+        {
+            if(fd.Labels == null || fd.Labels.Length == 0)
+                fd.Labels = fd.Names;
+
+            if(fd.Args == null || fd.Args.Length == 0)
+            {
+                fd.Args = new string[fd.Names.Length];
+                for(int i = 0; i < fd.Args.Length; i++)
+                    fd.Args[i] = fd.Names[i].ToLower();
+            }
+        }
 
         foreach(TypeDef t in _def.Types)
         {
@@ -207,13 +223,27 @@ public class TypeGenerator
             foreach(int size in t.Sizes)
             {
                 t.Size = size;
-                _sb.Length = 0;
+                string strSize = size.ToString();
 
                 if(filter != null && !filter(t))
                     continue;
 
-                string defName = t.DefName.Replace("{size}", size.ToString());
-                t.Name = $"{defName}{t.Postfix}";
+                t.Name = t.DefName.Replace("{size}", size.ToString());
+                
+                FieldData fd;
+                if(_def.Fields.TryGetValue(strSize, out fd) || _def.Fields.TryGetValue("0", out fd))
+                {
+                    t.FieldNames = fd.Names;
+                    t.FieldLabels = fd.Labels;
+                    t.ArgNames = fd.Args;
+                }
+                else
+                {
+                    Console.WriteLine($"Unable to generate type {t.Name}");
+                    continue;
+                }
+
+                _sb.Length = 0;
 
                 _curDef = t;
                 callback(t, _def);
@@ -250,14 +280,14 @@ public class TypeGenerator
 
     public string GetConstructorArgs()
     {
-        if(_def.ArgNames.Length < _curDef.Size)
+        if(_curDef.ArgNames.Length < _curDef.Size)
             throw new Exception("Length of provided argument names list (ArgNames) is shorter than the size of the current type.");
         
         string r = "";
         for(int i = 0; i < _curDef.Size; i++)
         {
             if(i > 0) r += ", ";
-                r += $"{_curDef.DT.Name} {_def.ArgNames[i]}";
+                r += $"{_curDef.DT.Name} {_curDef.ArgNames[i]}";
         }
 
         return r;
@@ -272,9 +302,9 @@ public class TypeGenerator
 
         for(int i = 0; i < _curDef.Size; i++)
         {
-            r += $"{indent}/// <summary>The {_def.FieldLabels[i]} {name}.</summary>{n}";
+            r += $"{indent}/// <summary>The {_curDef.FieldLabels[i]} {name}.</summary>{n}";
             r += $"{indent}[DataMember]{n}";
-            r += $"{indent}public {_curDef.DT} {_def.FieldNames[i]};{n}{n}";
+            r += $"{indent}public {_curDef.DT} {_curDef.FieldNames[i]};{n}{n}";
         }
 
         return r;
@@ -336,12 +366,12 @@ public class TypeGenerator
         Out(indent, $"public {_curDef.Name}({_curDef.DT} value)");
         Out(indent, $"{{");
         for(int i = 0; i < _curDef.Size; i++)
-            Out(indent + 1, $"{_def.FieldNames[i]} = value;");
+            Out(indent + 1, $"{_curDef.FieldNames[i]} = value;");
         Out(indent, $"}}");
 
         // Array-value initialization parameter
         Out(indent, $"/// <summary>Initializes a new instance of {See()} from an array.</summary>");
-        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
+        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_curDef.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
         Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than four elements.</exception>");
         Out(indent, $"public {_curDef.Name}({_curDef.DT}[] values)");
@@ -353,12 +383,12 @@ public class TypeGenerator
         Out("");
 
         for(int i = 0; i < _curDef.Size; i++)
-            Out(indent + 1, $"{_def.FieldNames[i]} = values[{i}];");
+            Out(indent + 1, $"{_curDef.FieldNames[i]} = values[{i}];");
         Out(indent, $"}}");
 
         // Span-based initialization parameter
         Out(indent, $"/// <summary>Initializes a new instance of {See()} from a span.</summary>");
-        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
+        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_curDef.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
         Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than four elements.</exception>");
         Out(indent, $"public {_curDef.Name}(Span<{_curDef.DT}> values)");
@@ -370,12 +400,12 @@ public class TypeGenerator
         _sb.AppendLine("");
 
         for(int i = 0; i < _curDef.Size; i++)
-            Out(indent + 1, $"{_def.FieldNames[i]} = values[{i}];");
+            Out(indent + 1, $"{_curDef.FieldNames[i]} = values[{i}];");
         Out(indent, $"}}");
 
         // unsafee pointer-based initialization parameter
         Out(indent, $"/// <summary>Initializes a new instance of {See()} from a an unsafe pointer.</summary>");
-        Out(indent, $"/// <param name=\"ptrValues\">The values to assign to the {FieldsToArgs(_def.FieldNames)} components of the color.");
+        Out(indent, $"/// <param name=\"ptrValues\">The values to assign to the {FieldsToArgs(_curDef.FieldNames)} components of the color.");
         Out(indent, $"/// <para>There must be at least {_def.SizeNames[_curDef.Size]} elements available or undefined behaviour will occur.</para></param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"ptrValues\"/> is <c>null</c>.</exception>");
         Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"ptrValues\"/> contains more or less than four elements.</exception>");
@@ -386,7 +416,7 @@ public class TypeGenerator
         _sb.AppendLine("");
 
         for(int i = 0; i < _curDef.Size; i++)
-            Out(indent + 1, $"{_def.FieldNames[i]} = ptrValues[{i}];");
+            Out(indent + 1, $"{_curDef.FieldNames[i]} = ptrValues[{i}];");
         Out(indent, $"}}");
 
         // Per-component initialization parameters
@@ -395,12 +425,12 @@ public class TypeGenerator
         Out(indent, $"/// </summary>");
 
         for(int i = 0; i < _curDef.Size; i++)
-            Out(indent, $"/// <param name=\"{_def.ArgNames[i]}\">The {_def.FieldNames[i]} component.</param>");
+            Out(indent, $"/// <param name=\"{_curDef.ArgNames[i]}\">The {_curDef.FieldNames[i]} component.</param>");
 
         Out(indent, $"public {_curDef.Name}({GetConstructorArgs()})");
         Out(indent, $"{{");
         for(int i = 0; i < _curDef.Size; i++)
-            Out(indent + 1, $"{_def.FieldNames[i]} = {_def.ArgNames[i]};");
+            Out(indent + 1, $"{_curDef.FieldNames[i]} = {_curDef.ArgNames[i]};");
         Out(indent, $"}}");
     } 
 
@@ -418,17 +448,17 @@ public class TypeGenerator
                     string otherName = other.GetName(otherSize);
                     string otherParams = "";
                     for(int vp = otherSize; vp < _curDef.Size; vp++)
-                        otherParams += $"{_curDef.DT} {_def.ArgNames[vp]}{(vp < (_curDef.Size-1) ? ", " : "")}";
+                        otherParams += $"{_curDef.DT} {_curDef.ArgNames[vp]}{(vp < (_curDef.Size-1) ? ", " : "")}";
 
                     Out(indent, $"///<summary>Creates a new instance of {See()}, using a <see cref=\"{otherName}\"/> to populate the first {_def.SizeNames[otherSize]} components.</summary>");
 		            Out(indent, $"public {_curDef.Name}({otherName} vector, {otherParams})");
                     Out(indent, "{");
 
 		            for(int p = 0; p < otherSize; p++)
-			            Out(indent+1, $"{_def.FieldNames[p]} = vector.{_def.FieldNames[p]};");
+			            Out(indent+1, $"{_curDef.FieldNames[p]} = vector.{_curDef.FieldNames[p]};");
 
 		            for(int p = otherSize; p < _curDef.Size; p++)
-			            Out(indent+1, $"{_def.FieldNames[p]} = {_def.ArgNames[p]};");
+			            Out(indent+1, $"{_curDef.FieldNames[p]} = {_curDef.ArgNames[p]};");
 
                     
                     Out(indent, "}");
@@ -443,7 +473,7 @@ public class TypeGenerator
     /// the default value of the other TypeDefs can be retrieved via the otherDefault callback, to be used for population.
     public void GenerateCasts(Func<TypeDef, string> otherDefault = null, string[] argNames = null, int indent = 2)
     {
-        argNames = argNames ?? _def.FieldNames;
+        argNames = argNames ?? _curDef.FieldNames;
 
         foreach(TypeDef other in _def.Types)
         {
@@ -484,9 +514,9 @@ public class TypeGenerator
         Out(indent, "{");
         for(int i = 0; i < _curDef.Size; i++){
             if(_curDef.DT.IntType != _curDef.DT.ToString())
-                Out(indent+1, $"result.{_def.FieldNames[i]} = ({_curDef.DT})(a.{_def.FieldNames[i]} {op} b.{_def.FieldNames[i]});");
+                Out(indent+1, $"result.{_curDef.FieldNames[i]} = ({_curDef.DT})(a.{_curDef.FieldNames[i]} {op} b.{_curDef.FieldNames[i]});");
             else
-                Out(indent+1, $"result.{_def.FieldNames[i]} = a.{_def.FieldNames[i]} {op} b.{_def.FieldNames[i]};");
+                Out(indent+1, $"result.{_curDef.FieldNames[i]} = a.{_curDef.FieldNames[i]} {op} b.{_curDef.FieldNames[i]};");
         }
         Out(indent, "}");
         Out("");
@@ -519,7 +549,7 @@ public class TypeGenerator
     public void IterateFields(Func<int, string, string> callback, int startIndex = 0, int indent = 3)
     {
         for(int i = startIndex; i < _curDef.Size; i++)
-            Out(indent, callback?.Invoke(i, _def.FieldNames[i]));
+            Out(indent, callback?.Invoke(i, _curDef.FieldNames[i]));
     }
 
     private string Capitalize(string word)

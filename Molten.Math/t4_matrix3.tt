@@ -9,10 +9,13 @@
 <#@ output extension=".txt" #>
 
 <#
-GenerateTypes(this.GenerationEnvironment, this.Host, "Matrices", "def_matrices.json", null, new int[] {3}, null, (d, md, defs) =>
+TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "def_matrices.json");
+
+gen.Generate((d) => d.Size == 3, (d, def) =>
 {
-    string vectorName = $"Vector3{d.Postfix}";
-    string quartName = $"Quaternion{d.Postfix}";
+    string vectorName = $"Vector3{d.DT.Literal}";
+    string quartName = $"Quaternion{d.DT.Literal}";
+    string mat4Name = $"Matrix4{d.DT.Literal}";
 #>
 // James Yarwood - Updated for Molten Engine - MIT license
 
@@ -66,27 +69,27 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten<#=d.DT.SubNamespace#>
+namespace Molten<#=d.SubNamespace#>
 {
     /// <summary>Represents a <#=(d.DT.Bits > 32 ? "double" : "single")#>-precision 3x3 Matrix. Contains position, scale and rotation.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = <#=d.DT.Pack#>)]
     [Serializable]
-    public struct <#=md.Name#> : IEquatable<<#=md.Name#>>, IFormattable, ITransposedMatrix<<#=md.Name#>>
+    public struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable, ITransposedMatrix<<#=d.Name#>>
     {
         /// <summary>
-        /// The size of the <see cref="<#=md.Name#>"/> type, in bytes.
+        /// The size of the <see cref="<#=d.Name#>"/> type, in bytes.
         /// </summary>
         public static readonly int SizeInBytes = sizeof(<#=d.DT#>) * 9;
 
         /// <summary>
-        /// A <see cref="<#=md.Name#>"/> with all of its components set to zero.
+        /// A <see cref="<#=d.Name#>"/> with all of its components set to zero.
         /// </summary>
-        public static readonly <#=md.Name#> Zero = new <#=md.Name#>();
+        public static readonly <#=d.Name#> Zero = new <#=d.Name#>();
 
         /// <summary>
-        /// The identity <see cref="<#=md.Name#>"/>.
+        /// The identity <see cref="<#=d.Name#>"/>.
         /// </summary>
-        public static readonly <#=md.Name#> Identity = new <#=md.Name#>() { M11 = 1.0<#=d.FP.Literal#>, M22 = 1.0<#=d.FP.Literal#>, M33 = 1.0<#=d.FP.Literal#> };
+        public static readonly <#=d.Name#> Identity = new <#=d.Name#>() { M11 = 1.0<#=d.FP.Literal#>, M22 = 1.0<#=d.FP.Literal#>, M33 = 1.0<#=d.FP.Literal#> };
 
         /// <summary>
         /// Value at row 1 column 1 of the Matrix3x3.
@@ -144,10 +147,10 @@ namespace Molten<#=d.DT.SubNamespace#>
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="<#=md.Name#>"/> struct.
+        /// Initializes a new instance of the <see cref="<#=d.Name#>"/> struct.
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>
-        public <#=md.Name#>(<#=d.DT#> value)
+        public <#=d.Name#>(<#=d.DT#> value)
         {
             M11 = M12 = M13 =
             M21 = M22 = M23 =
@@ -155,7 +158,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="<#=md.Name#>"/> struct.
+        /// Initializes a new instance of the <see cref="<#=d.Name#>"/> struct.
         /// </summary>
         /// <param name="m11">The value to assign at row 1 column 1 of the Matrix3x3.</param>
         /// <param name="m12">The value to assign at row 1 column 2 of the Matrix3x3.</param>
@@ -166,7 +169,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="m31">The value to assign at row 3 column 1 of the Matrix3x3.</param>
         /// <param name="m32">The value to assign at row 3 column 2 of the Matrix3x3.</param>
         /// <param name="m33">The value to assign at row 3 column 3 of the Matrix3x3.</param>
-        public <#=md.Name#>(<#=d.DT#> m11, <#=d.DT#> m12, <#=d.DT#> m13,
+        public <#=d.Name#>(<#=d.DT#> m11, <#=d.DT#> m12, <#=d.DT#> m13,
             <#=d.DT#> m21, <#=d.DT#> m22, <#=d.DT#> m23,
             <#=d.DT#> m31, <#=d.DT#> m32, <#=d.DT#> m33)
         {
@@ -176,12 +179,12 @@ namespace Molten<#=d.DT.SubNamespace#>
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="<#=md.Name#>"/> struct.
+        /// Initializes a new instance of the <see cref="<#=d.Name#>"/> struct.
         /// </summary>
         /// <param name="values">The values to assign to the components of the Matrix3x3. This must be an array with sixteen elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than sixteen elements.</exception>
-        public <#=md.Name#>(<#=d.DT#>[] values)
+        public <#=d.Name#>(<#=d.DT#>[] values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
@@ -367,7 +370,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="matrix">Matrix to compute the adjugate transpose of.</param>
         /// <param name="result">Adjugate transpose of the input matrix.</param>
-        public static void AdjugateTranspose(ref <#=md.Name#> matrix, out <#=md.Name#> result)
+        public static void AdjugateTranspose(ref <#=d.Name#> matrix, out <#=d.Name#> result)
         {
             //Despite the relative obscurity of the operation, this is a fairly straightforward operation which is actually faster than a true invert (by virtue of cancellation).
             //Conceptually, this is implemented as transpose(det(M) * invert(M)), but that's perfectly acceptable:
@@ -408,9 +411,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="matrix">Matrix to compute the adjugate transpose of.</param>
         /// <returns>Adjugate transpose of the input matrix.</returns>
-        public static <#=md.Name#> AdjugateTranspose(<#=md.Name#> matrix)
+        public static <#=d.Name#> AdjugateTranspose(<#=d.Name#> matrix)
         {
-            <#=md.Name#> toReturn;
+            <#=d.Name#> toReturn;
             AdjugateTranspose(ref matrix, out toReturn);
             return toReturn;
         }
@@ -468,14 +471,14 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="Q">When the method completes, contains the orthonormalized Matrix3x3 of the decomposition.</param>
         /// <param name="R">When the method completes, contains the right triangular Matrix3x3 of the decomposition.</param>
-        public void DecomposeQR(out <#=md.Name#> Q, out <#=md.Name#> R)
+        public void DecomposeQR(out <#=d.Name#> Q, out <#=d.Name#> R)
         {
-            <#=md.Name#> temp = this;
+            <#=d.Name#> temp = this;
             temp.Transpose();
             Orthonormalize(ref temp, out Q);
             Q.Transpose();
 
-            R = new <#=md.Name#>();
+            R = new <#=d.Name#>();
             R.M11 = <#=vectorName#>.Dot(Q.Column1, Column1);
             R.M12 = <#=vectorName#>.Dot(Q.Column1, Column2);
             R.M13 = <#=vectorName#>.Dot(Q.Column1, Column3);
@@ -491,11 +494,11 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="L">When the method completes, contains the lower triangular Matrix3x3 of the decomposition.</param>
         /// <param name="Q">When the method completes, contains the orthonormalized Matrix3x3 of the decomposition.</param>
-        public void DecomposeLQ(out <#=md.Name#> L, out <#=md.Name#> Q)
+        public void DecomposeLQ(out <#=d.Name#> L, out <#=d.Name#> Q)
         {
             Orthonormalize(ref this, out Q);
 
-            L = new <#=md.Name#>();
+            L = new <#=d.Name#>();
             L.M11 = <#=vectorName#>.Dot(Q.Row1, Row1);
 
             L.M21 = <#=vectorName#>.Dot(Q.Row1, Row2);
@@ -534,7 +537,7 @@ namespace Molten<#=d.DT.SubNamespace#>
             }
 
             //The rotation is the left over Matrix3x3 after dividing out the scaling.
-            <#=md.Name#> rotationMatrix3x3 = new <#=md.Name#>();
+            <#=d.Name#> rotationMatrix3x3 = new <#=d.Name#>();
             rotationMatrix3x3.M11 = M11 / scale.X;
             rotationMatrix3x3.M12 = M12 / scale.X;
             rotationMatrix3x3.M13 = M13 / scale.X;
@@ -574,7 +577,7 @@ namespace Molten<#=d.DT.SubNamespace#>
             }
 
             //The rotation is the left over matrix after dividing out the scaling.
-            <#=md.Name#> rotationmatrix = new <#=md.Name#>();
+            <#=d.Name#> rotationmatrix = new <#=d.Name#>();
             rotationmatrix.M11 = M11 * inv_scale;
             rotationmatrix.M12 = M12 * inv_scale;
             rotationmatrix.M13 = M13 * inv_scale;
@@ -670,7 +673,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to add.</param>
         /// <param name="right">The second Matrix3x3 to add.</param>
         /// <param name="result">When the method completes, contains the sum of the two matrices.</param>
-        public static void Add(ref <#=md.Name#> left, ref <#=md.Name#> right, out <#=md.Name#> result)
+        public static void Add(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
         {
             result.M11 = left.M11 + right.M11;
             result.M12 = left.M12 + right.M12;
@@ -689,9 +692,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to add.</param>
         /// <param name="right">The second Matrix3x3 to add.</param>
         /// <returns>The sum of the two matrices.</returns>
-        public static <#=md.Name#> Add(<#=md.Name#> left, <#=md.Name#> right)
+        public static <#=d.Name#> Add(<#=d.Name#> left, <#=d.Name#> right)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Add(ref left, ref right, out result);
             return result;
         }
@@ -702,7 +705,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to subtract.</param>
         /// <param name="right">The second Matrix3x3 to subtract.</param>
         /// <param name="result">When the method completes, contains the difference between the two matrices.</param>
-        public static void Subtract(ref <#=md.Name#> left, ref <#=md.Name#> right, out <#=md.Name#> result)
+        public static void Subtract(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
         {
             result.M11 = left.M11 - right.M11;
             result.M12 = left.M12 - right.M12;
@@ -721,9 +724,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to subtract.</param>
         /// <param name="right">The second Matrix3x3 to subtract.</param>
         /// <returns>The difference between the two matrices.</returns>
-        public static <#=md.Name#> Subtract(<#=md.Name#> left, <#=md.Name#> right)
+        public static <#=d.Name#> Subtract(<#=d.Name#> left, <#=d.Name#> right)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Subtract(ref left, ref right, out result);
             return result;
         }
@@ -734,7 +737,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The Matrix3x3 to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
         /// <param name="result">When the method completes, contains the scaled Matrix3x3.</param>
-        public static void Multiply(ref <#=md.Name#> left, <#=d.DT#> right, out <#=md.Name#> result)
+        public static void Multiply(ref <#=d.Name#> left, <#=d.DT#> right, out <#=d.Name#> result)
         {
             result.M11 = left.M11 * right;
             result.M12 = left.M12 * right;
@@ -753,9 +756,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The Matrix3x3 to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
         /// <returns>The scaled Matrix3x3.</returns>
-        public static <#=md.Name#> Multiply(<#=md.Name#> left, <#=d.DT#> right)
+        public static <#=d.Name#> Multiply(<#=d.Name#> left, <#=d.DT#> right)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Multiply(ref left, right, out result);
             return result;
         }
@@ -766,9 +769,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to multiply.</param>
         /// <param name="right">The second Matrix3x3 to multiply.</param>
         /// <param name="result">The product of the two matrices.</param>
-        public static void Multiply(ref <#=md.Name#> left, ref <#=md.Name#> right, out <#=md.Name#> result)
+        public static void Multiply(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
         {
-            <#=md.Name#> temp = new <#=md.Name#>();
+            <#=d.Name#> temp = new <#=d.Name#>();
             temp.M11 = (left.M11 * right.M11) + (left.M12 * right.M21) + (left.M13 * right.M31);
             temp.M12 = (left.M11 * right.M12) + (left.M12 * right.M22) + (left.M13 * right.M32);
             temp.M13 = (left.M11 * right.M13) + (left.M12 * right.M23) + (left.M13 * right.M33);
@@ -787,9 +790,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to multiply.</param>
         /// <param name="right">The second Matrix3x3 to multiply.</param>
         /// <returns>The product of the two matrices.</returns>
-        public static <#=md.Name#> Multiply(<#=md.Name#> left, <#=md.Name#> right)
+        public static <#=d.Name#> Multiply(<#=d.Name#> left, <#=d.Name#> right)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Multiply(ref left, ref right, out result);
             return result;
         }
@@ -800,7 +803,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The Matrix3x3 to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
         /// <param name="result">When the method completes, contains the scaled Matrix3x3.</param>
-        public static void Divide(ref <#=md.Name#> left, <#=d.DT#> right, out <#=md.Name#> result)
+        public static void Divide(ref <#=d.Name#> left, <#=d.DT#> right, out <#=d.Name#> result)
         {
             <#=d.DT#> inv = 1.0<#=d.FP.Literal#> / right;
 
@@ -821,9 +824,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The Matrix3x3 to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
         /// <returns>The scaled Matrix3x3.</returns>
-        public static <#=md.Name#> Divide(<#=md.Name#> left, <#=d.DT#> right)
+        public static <#=d.Name#> Divide(<#=d.Name#> left, <#=d.DT#> right)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Divide(ref left, right, out result);
             return result;
         }
@@ -834,7 +837,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to divide.</param>
         /// <param name="right">The second Matrix3x3 to divide.</param>
         /// <param name="result">When the method completes, contains the quotient of the two matrices.</param>
-        public static void Divide(ref <#=md.Name#> left, ref <#=md.Name#> right, out <#=md.Name#> result)
+        public static void Divide(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
         {
             result.M11 = left.M11 / right.M11;
             result.M12 = left.M12 / right.M12;
@@ -853,9 +856,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to divide.</param>
         /// <param name="right">The second Matrix3x3 to divide.</param>
         /// <returns>The quotient of the two matrices.</returns>
-        public static <#=md.Name#> Divide(<#=md.Name#> left, <#=md.Name#> right)
+        public static <#=d.Name#> Divide(<#=d.Name#> left, <#=d.Name#> right)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Divide(ref left, ref right, out result);
             return result;
         }
@@ -865,7 +868,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="v">Vector to base the matrix on.</param>
         /// <param name="result">Skew-symmetric matrix result.</param>
-        public static void CrossProduct(ref <#=vectorName#> v, out <#=md.Name#> result)
+        public static void CrossProduct(ref <#=vectorName#> v, out <#=d.Name#> result)
         {
             result.M11 = 0;
             result.M12 = -v.Z;
@@ -884,7 +887,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="a">First vector.</param>
         /// <param name="b">Second vector.</param>
         /// <param name="result">Outer product result.</param>
-        public static void CreateOuterProduct(ref <#=vectorName#> a, ref <#=vectorName#> b, out <#=md.Name#> result)
+        public static void CreateOuterProduct(ref <#=vectorName#> a, ref <#=vectorName#> b, out <#=d.Name#> result)
         {
             result.M11 = a.X * b.X;
             result.M12 = a.X * b.Y;
@@ -906,7 +909,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="exponent">The exponent to raise the Matrix3x3 to.</param>
         /// <param name="result">When the method completes, contains the exponential Matrix3x3.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="exponent"/> is negative.</exception>
-        public static void Exponent(ref <#=md.Name#> value, int exponent, out <#=md.Name#> result)
+        public static void Exponent(ref <#=d.Name#> value, int exponent, out <#=d.Name#> result)
         {
             //Source: http://rosettacode.org
             //Reference: http://rosettacode.org/wiki/Matrix3x3-exponentiation_operator
@@ -916,7 +919,7 @@ namespace Molten<#=d.DT.SubNamespace#>
 
             if (exponent == 0)
             {
-                result = <#=md.Name#>.Identity;
+                result = <#=d.Name#>.Identity;
                 return;
             }
 
@@ -926,8 +929,8 @@ namespace Molten<#=d.DT.SubNamespace#>
                 return;
             }
 
-            <#=md.Name#> identity = <#=md.Name#>.Identity;
-            <#=md.Name#> temp = value;
+            <#=d.Name#> identity = <#=d.Name#>.Identity;
+            <#=d.Name#> temp = value;
 
             while (true)
             {
@@ -952,9 +955,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="exponent">The exponent to raise the Matrix3x3 to.</param>
         /// <returns>The exponential Matrix3x3.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="exponent"/> is negative.</exception>
-        public static <#=md.Name#> Exponent(<#=md.Name#> value, int exponent)
+        public static <#=d.Name#> Exponent(<#=d.Name#> value, int exponent)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Exponent(ref value, exponent, out result);
             return result;
         }
@@ -964,7 +967,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3 to be negated.</param>
         /// <param name="result">When the method completes, contains the negated Matrix3x3.</param>
-        public static void Negate(ref <#=md.Name#> value, out <#=md.Name#> result)
+        public static void Negate(ref <#=d.Name#> value, out <#=d.Name#> result)
         {
             result.M11 = -value.M11;
             result.M12 = -value.M12;
@@ -982,9 +985,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3 to be negated.</param>
         /// <returns>The negated Matrix3x3.</returns>
-        public static <#=md.Name#> Negate(<#=md.Name#> value)
+        public static <#=d.Name#> Negate(<#=d.Name#> value)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Negate(ref value, out result);
             return result;
         }
@@ -999,7 +1002,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref <#=md.Name#> start, ref <#=md.Name#> end, <#=d.DT#> amount, out <#=md.Name#> result)
+        public static void Lerp(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.DT#> amount, out <#=d.Name#> result)
         {
             result.M11 = MathHelper.Lerp(start.M11, end.M11, amount);
             result.M12 = MathHelper.Lerp(start.M12, end.M12, amount);
@@ -1022,9 +1025,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static <#=md.Name#> Lerp(<#=md.Name#> start, <#=md.Name#> end, <#=d.DT#> amount)
+        public static <#=d.Name#> Lerp(<#=d.Name#> start, <#=d.Name#> end, <#=d.DT#> amount)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Lerp(ref start, ref end, amount, out result);
             return result;
         }
@@ -1036,7 +1039,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="end">End Matrix3x3.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <param name="result">When the method completes, contains the cubic interpolation of the two matrices.</param>
-        public static void SmoothStep(ref <#=md.Name#> start, ref <#=md.Name#> end, <#=d.DT#> amount, out <#=md.Name#> result)
+        public static void SmoothStep(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.DT#> amount, out <#=d.Name#> result)
         {
             amount = MathHelper.SmoothStep(amount);
             Lerp(ref start, ref end, amount, out result);
@@ -1049,9 +1052,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="end">End Matrix3x3.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>The cubic interpolation of the two matrices.</returns>
-        public static <#=md.Name#> SmoothStep(<#=md.Name#> start, <#=md.Name#> end, <#=d.DT#> amount)
+        public static <#=d.Name#> SmoothStep(<#=d.Name#> start, <#=d.Name#> end, <#=d.DT#> amount)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             SmoothStep(ref start, ref end, amount, out result);
             return result;
         }
@@ -1069,7 +1072,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3Double whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified Matrix3x3.</param>
-        public void Transpose(out <#=md.Name#> result)
+        public void Transpose(out <#=d.Name#> result)
         {
             Transpose(ref this, out result);
         }
@@ -1079,9 +1082,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3Double whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified Matrix3x3.</param>
-        public static void Transpose(ref <#=md.Name#> value, out <#=md.Name#> result)
+        public static void Transpose(ref <#=d.Name#> value, out <#=d.Name#> result)
         {
-            <#=md.Name#> tmp;
+            <#=d.Name#> tmp;
             tmp.M11 = value.M11;
             tmp.M12 = value.M21;
             tmp.M13 = value.M31;
@@ -1099,7 +1102,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3 whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified Matrix3x3.</param>
-        public static void TransposeBy(ref <#=md.Name#> value, ref <#=md.Name#> result)
+        public static void TransposeBy(ref <#=d.Name#> value, ref <#=d.Name#> result)
         {
             result.M11 = value.M11;
             result.M12 = value.M21;
@@ -1118,7 +1121,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="v">Vector3 to transform.</param>
         /// <param name="matrix">Matrix to use as the transformation transpose.</param>
         /// <param name="result">Product of the transformation.</param>
-        public static void TransformTranspose(ref <#=vectorName#> v, ref <#=md.Name#> matrix, out <#=vectorName#> result)
+        public static void TransformTranspose(ref <#=vectorName#> v, ref <#=d.Name#> matrix, out <#=vectorName#> result)
         {
             <#=d.DT#> vX = v.X;
             <#=d.DT#> vY = v.Y;
@@ -1137,7 +1140,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="v">Vector3 to transform.</param>
         /// <param name="matrix">Matrix to use as the transformation transpose.</param>
         /// <returns>Product of the transformation.</returns>
-        public static <#=vectorName#> TransformTranspose(<#=vectorName#> v, <#=md.Name#> matrix)
+        public static <#=vectorName#> TransformTranspose(<#=vectorName#> v, <#=d.Name#> matrix)
         {
             <#=d.DT#> vX = v.X;
             <#=d.DT#> vY = v.Y;
@@ -1156,9 +1159,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3 whose transpose is to be calculated.</param>
         /// <returns>The transpose of the specified Matrix3x3.</returns>
-        public static <#=md.Name#> Transpose(<#=md.Name#> value)
+        public static <#=d.Name#> Transpose(<#=d.Name#> value)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Transpose(ref value, out result);
             return result;
         }
@@ -1168,7 +1171,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3 whose inverse is to be calculated.</param>
         /// <param name="result">When the method completes, contains the inverse of the specified Matrix3x3.</param>
-        public static void Invert(ref <#=md.Name#> value, out <#=md.Name#> result)
+        public static void Invert(ref <#=d.Name#> value, out <#=d.Name#> result)
         {
             <#=d.DT#> d11 = value.M22 * value.M33 + value.M23 * -value.M32;
             <#=d.DT#> d12 = value.M21 * value.M33 + value.M23 * -value.M31;
@@ -1177,7 +1180,7 @@ namespace Molten<#=d.DT.SubNamespace#>
             <#=d.DT#> det = value.M11 * d11 - value.M12 * d12 + value.M13 * d13;
             if (Math.Abs(det) == 0.0<#=d.FP.Literal#>)
             {
-                result = <#=md.Name#>.Zero;
+                result = <#=d.Name#>.Zero;
                 return;
             }
 
@@ -1201,7 +1204,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3 whose inverse is to be calculated.</param>
         /// <returns>The inverse of the specified Matrix3x3.</returns>
-        public static <#=md.Name#> Invert(<#=md.Name#> value)
+        public static <#=d.Name#> Invert(<#=d.Name#> value)
         {
             value.Invert();
             return value;
@@ -1223,7 +1226,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// If you wish for this operation to be performed on the columns, first transpose the
         /// input and than transpose the output.</para>
         /// </remarks>
-        public static void Orthogonalize(ref <#=md.Name#> value, out <#=md.Name#> result)
+        public static void Orthogonalize(ref <#=d.Name#> value, out <#=d.Name#> result)
         {
             //Uses the modified Gram-Schmidt process.
             //q1 = m1
@@ -1255,9 +1258,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// If you wish for this operation to be performed on the columns, first transpose the
         /// input and than transpose the output.</para>
         /// </remarks>
-        public static <#=md.Name#> Orthogonalize(<#=md.Name#> value)
+        public static <#=d.Name#> Orthogonalize(<#=d.Name#> value)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Orthogonalize(ref value, out result);
             return result;
         }
@@ -1280,7 +1283,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// If you wish for this operation to be performed on the columns, first transpose the
         /// input and than transpose the output.</para>
         /// </remarks>
-        public static void Orthonormalize(ref <#=md.Name#> value, out <#=md.Name#> result)
+        public static void Orthonormalize(ref <#=d.Name#> value, out <#=d.Name#> result)
         {
             //Uses the modified Gram-Schmidt process.
             //Because we are making unit vectors, we can optimize the math for orthonormalization
@@ -1320,9 +1323,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// If you wish for this operation to be performed on the columns, first transpose the
         /// input and than transpose the output.</para>
         /// </remarks>
-        public static <#=md.Name#> Orthonormalize(<#=md.Name#> value)
+        public static <#=d.Name#> Orthonormalize(<#=d.Name#> value)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             Orthonormalize(ref value, out result);
             return result;
         }
@@ -1338,7 +1341,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// of linear equations, than this often means that either no solution exists or an infinite
         /// number of solutions exist.
         /// </remarks>
-        public static void UpperTriangularForm(ref <#=md.Name#> value, out <#=md.Name#> result)
+        public static void UpperTriangularForm(ref <#=d.Name#> value, out <#=d.Name#> result)
         {
             //Adapted from the row echelon code.
             result = value;
@@ -1399,9 +1402,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// of linear equations, than this often means that either no solution exists or an infinite
         /// number of solutions exist.
         /// </remarks>
-        public static <#=md.Name#> UpperTriangularForm(<#=md.Name#> value)
+        public static <#=d.Name#> UpperTriangularForm(<#=d.Name#> value)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             UpperTriangularForm(ref value, out result);
             return result;
         }
@@ -1417,11 +1420,11 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// of linear equations, than this often means that either no solution exists or an infinite
         /// number of solutions exist.
         /// </remarks>
-        public static void LowerTriangularForm(ref <#=md.Name#> value, out <#=md.Name#> result)
+        public static void LowerTriangularForm(ref <#=d.Name#> value, out <#=d.Name#> result)
         {
             //Adapted from the row echelon code.
-            <#=md.Name#> temp = value;
-            <#=md.Name#>.Transpose(ref temp, out result);
+            <#=d.Name#> temp = value;
+            <#=d.Name#>.Transpose(ref temp, out result);
 
             int lead = 0;
             int rowcount = 3;
@@ -1468,7 +1471,7 @@ namespace Molten<#=d.DT.SubNamespace#>
                 lead++;
             }
 
-            <#=md.Name#>.Transpose(ref result, out result);
+            <#=d.Name#>.Transpose(ref result, out result);
         }
 
         /// <summary>
@@ -1482,9 +1485,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// of linear equations, than this often means that either no solution exists or an infinite
         /// number of solutions exist.
         /// </remarks>
-        public static <#=md.Name#> LowerTriangularForm(<#=md.Name#> value)
+        public static <#=d.Name#> LowerTriangularForm(<#=d.Name#> value)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             LowerTriangularForm(ref value, out result);
             return result;
         }
@@ -1494,7 +1497,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3 to put into row echelon form.</param>
         /// <param name="result">When the method completes, contains the row echelon form of the Matrix3x3.</param>
-        public static void RowEchelonForm(ref <#=md.Name#> value, out <#=md.Name#> result)
+        public static void RowEchelonForm(ref <#=d.Name#> value, out <#=d.Name#> result)
         {
             //Source: Wikipedia pseudo code
             //Reference: http://en.wikipedia.org/wiki/Row_echelon_form#Pseudocode
@@ -1554,9 +1557,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3 to put into row echelon form.</param>
         /// <returns>When the method completes, contains the row echelon form of the Matrix3x3.</returns>
-        public static <#=md.Name#> RowEchelonForm(<#=md.Name#> value)
+        public static <#=d.Name#> RowEchelonForm(<#=d.Name#> value)
         {
-            <#=md.Name#> result;
+            <#=d.Name#> result;
             RowEchelonForm(ref value, out result);
             return result;
         }
@@ -1568,7 +1571,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="cameraPosition">The position of the camera.</param>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
-        public static <#=md.Name#> BillboardLH(ref <#=vectorName#> objectPosition, ref <#=vectorName#> cameraPosition, ref <#=vectorName#> cameraUpVector, ref <#=vectorName#> cameraForwardVector)
+        public static <#=d.Name#> BillboardLH(ref <#=vectorName#> objectPosition, ref <#=vectorName#> cameraPosition, ref <#=vectorName#> cameraUpVector, ref <#=vectorName#> cameraForwardVector)
         {
             <#=vectorName#> difference = cameraPosition - objectPosition;
 
@@ -1582,7 +1585,7 @@ namespace Molten<#=d.DT.SubNamespace#>
             crossed.Normalize();
             <#=vectorName#> final = <#=vectorName#>.Cross(ref difference, ref crossed);
 
-            return new <#=md.Name#>()
+            return new <#=d.Name#>()
             {
                 M11 = crossed.X,
                 M12 = crossed.Y,
@@ -1604,7 +1607,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <returns>The created billboard Matrix3x3.</returns>
-        public static <#=md.Name#> BillboardLH(
+        public static <#=d.Name#> BillboardLH(
             <#=vectorName#> objectPosition, 
             <#=vectorName#> cameraPosition, 
             <#=vectorName#> cameraUpVector, 
@@ -1621,7 +1624,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <param name="result">When the method completes, contains the created billboard Matrix3x3.</param>
-        public static <#=md.Name#> BillboardRH(ref <#=vectorName#> objectPosition, ref <#=vectorName#> cameraPosition, ref <#=vectorName#> cameraUpVector, ref <#=vectorName#> cameraForwardVector)
+        public static <#=d.Name#> BillboardRH(ref <#=vectorName#> objectPosition, ref <#=vectorName#> cameraPosition, ref <#=vectorName#> cameraUpVector, ref <#=vectorName#> cameraForwardVector)
         {
             <#=vectorName#> difference = objectPosition - cameraPosition;
 
@@ -1635,7 +1638,7 @@ namespace Molten<#=d.DT.SubNamespace#>
             crossed.Normalize();
             <#=vectorName#> final = <#=vectorName#>.Cross(ref difference, ref crossed);
 
-            return new <#=md.Name#>()
+            return new <#=d.Name#>()
             {
                 M11 = crossed.X,
                 M12 = crossed.Y,
@@ -1657,7 +1660,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <returns>The created billboard Matrix3x3.</returns>
-        public static <#=md.Name#> BillboardRH(<#=vectorName#> objectPosition, <#=vectorName#> cameraPosition, <#=vectorName#> cameraUpVector, <#=vectorName#> cameraForwardVector)
+        public static <#=d.Name#> BillboardRH(<#=vectorName#> objectPosition, <#=vectorName#> cameraPosition, <#=vectorName#> cameraUpVector, <#=vectorName#> cameraForwardVector)
         {
             return BillboardRH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector);
         }
@@ -1668,7 +1671,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="eye">The position of the viewer's eye.</param>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
-        public static <#=md.Name#> LookAtLH(ref <#=vectorName#> eye, ref <#=vectorName#> target, ref <#=vectorName#> up)
+        public static <#=d.Name#> LookAtLH(ref <#=vectorName#> eye, ref <#=vectorName#> target, ref <#=vectorName#> up)
         {
             <#=vectorName#> zaxis = target - eye;
             zaxis.Normalize();
@@ -1678,7 +1681,7 @@ namespace Molten<#=d.DT.SubNamespace#>
 
             <#=vectorName#> yaxis = <#=vectorName#>.Cross(ref zaxis, ref xaxis);
 
-            <#=md.Name#> result = Identity;
+            <#=d.Name#> result = Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
@@ -1692,7 +1695,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <returns>The created look-at Matrix3x3.</returns>
-        public static <#=md.Name#> LookAtLH(<#=vectorName#> eye, <#=vectorName#> target, <#=vectorName#> up)
+        public static <#=d.Name#> LookAtLH(<#=vectorName#> eye, <#=vectorName#> target, <#=vectorName#> up)
         {
             return LookAtLH(ref eye, ref target, ref up);
         }
@@ -1703,7 +1706,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="eye">The position of the viewer's eye.</param>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
-        public static <#=md.Name#> LookAtRH(ref <#=vectorName#> eye, ref <#=vectorName#> target, ref <#=vectorName#> up)
+        public static <#=d.Name#> LookAtRH(ref <#=vectorName#> eye, ref <#=vectorName#> target, ref <#=vectorName#> up)
         {
             <#=vectorName#> zAxis = eye - target; 
             zAxis.Normalize();
@@ -1713,7 +1716,7 @@ namespace Molten<#=d.DT.SubNamespace#>
 
             <#=vectorName#> yAxis = <#=vectorName#>.Cross(ref zAxis, ref xAxis);
 
-            return new <#=md.Name#>()
+            return new <#=d.Name#>()
             {
                 M11 = xAxis.X,
                 M21 = xAxis.Y,
@@ -1734,7 +1737,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <returns>The created look-at Matrix3x3.</returns>
-        public static <#=md.Name#> LookAtRH(<#=vectorName#> eye, <#=vectorName#> target, <#=vectorName#> up)
+        public static <#=d.Name#> LookAtRH(<#=vectorName#> eye, <#=vectorName#> target, <#=vectorName#> up)
         {
             return LookAtRH(ref eye, ref target, ref up);
         }
@@ -1744,7 +1747,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="scale">Scaling factor for all three axes.</param>
         /// <param name="result">When the method completes, contains the created scaling Matrix3x3.</param>
-        public static void CreateScale(ref <#=vectorName#> scale, out <#=md.Name#> result)
+        public static void CreateScale(ref <#=vectorName#> scale, out <#=d.Name#> result)
         {
             CreateScale(scale.X, scale.Y, scale.Z, out result);
         }
@@ -1754,9 +1757,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="scale">Scaling factor for all three axes.</param>
         /// <returns>The created scaling Matrix3x3.</returns>
-        public static <#=md.Name#> CreateScale(<#=vectorName#> scale)
+        public static <#=d.Name#> CreateScale(<#=vectorName#> scale)
         {
-            CreateScale(ref scale, out <#=md.Name#> result);
+            CreateScale(ref scale, out <#=d.Name#> result);
             return result;
         }
 
@@ -1767,7 +1770,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="y">Scaling factor that is applied along the y-axis.</param>
         /// <param name="z">Scaling factor that is applied along the z-axis.</param>
         /// <param name="result">When the method completes, contains the created scaling Matrix3x3.</param>
-        public static void CreateScale(<#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> z, out <#=md.Name#> result)
+        public static void CreateScale(<#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> z, out <#=d.Name#> result)
         {
             result = Identity;
             result.M11 = x;
@@ -1782,9 +1785,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="y">Scaling factor that is applied along the y-axis.</param>
         /// <param name="z">Scaling factor that is applied along the z-axis.</param>
         /// <returns>The created scaling Matrix3x3.</returns>
-        public static <#=md.Name#> CreateScale(<#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> z)
+        public static <#=d.Name#> CreateScale(<#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> z)
         {
-            CreateScale(x, y, z, out <#=md.Name#> result);
+            CreateScale(x, y, z, out <#=d.Name#> result);
             return result;
         }
 
@@ -1793,7 +1796,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="scale">The uniform scale that is applied along all axis.</param>
         /// <param name="result">When the method completes, contains the created scaling Matrix3x3.</param>
-        public static void CreateScale(<#=d.DT#> scale, out <#=md.Name#> result)
+        public static void CreateScale(<#=d.DT#> scale, out <#=d.Name#> result)
         {
             result = Identity;
             result.M11 = result.M22 = result.M33 = scale;
@@ -1804,9 +1807,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="scale">The uniform scale that is applied along all axis.</param>
         /// <returns>The created scaling Matrix3x3.</returns>
-        public static <#=md.Name#> CreateScale(<#=d.DT#> scale)
+        public static <#=d.Name#> CreateScale(<#=d.DT#> scale)
         {
-            CreateScale(scale, out <#=md.Name#> result);
+            CreateScale(scale, out <#=d.Name#> result);
             return result;
         }
 
@@ -1815,7 +1818,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static void RotationX(<#=d.DT#> angle, out <#=md.Name#> result)
+        public static void RotationX(<#=d.DT#> angle, out <#=d.Name#> result)
         {
             <#=d.DT#> cos =  <#=d.DT#>.Cos(angle);
             <#=d.DT#> sin =  <#=d.DT#>.Sin(angle);
@@ -1832,9 +1835,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <returns>The created rotation Matrix3x3.</returns>
-        public static <#=md.Name#> RotationX(<#=d.DT#> angle)
+        public static <#=d.Name#> RotationX(<#=d.DT#> angle)
         {
-            RotationX(angle, out <#=md.Name#> result);
+            RotationX(angle, out <#=d.Name#> result);
             return result;
         }
 
@@ -1843,7 +1846,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static void RotationY(<#=d.DT#> angle, out <#=md.Name#> result)
+        public static void RotationY(<#=d.DT#> angle, out <#=d.Name#> result)
         {
             <#=d.DT#> cos =  <#=d.DT#>.Cos(angle);
             <#=d.DT#> sin =  <#=d.DT#>.Sin(angle);
@@ -1860,9 +1863,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <returns>The created rotation Matrix3x3.</returns>
-        public static <#=md.Name#> RotationY(<#=d.DT#> angle)
+        public static <#=d.Name#> RotationY(<#=d.DT#> angle)
         {
-            RotationY(angle, out <#=md.Name#> result);
+            RotationY(angle, out <#=d.Name#> result);
             return result;
         }
 
@@ -1871,7 +1874,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static void RotationZ(<#=d.DT#> angle, out <#=md.Name#> result)
+        public static void RotationZ(<#=d.DT#> angle, out <#=d.Name#> result)
         {
             <#=d.DT#> cos =  <#=d.DT#>.Cos(angle);
             <#=d.DT#> sin =  <#=d.DT#>.Sin(angle);
@@ -1888,9 +1891,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <returns>The created rotation Matrix3x3.</returns>
-        public static <#=md.Name#> RotationZ(<#=d.DT#> angle)
+        public static <#=d.Name#> RotationZ(<#=d.DT#> angle)
         {
-            RotationZ(angle, out <#=md.Name#> result);
+            RotationZ(angle, out <#=d.Name#> result);
             return result;
         }
 
@@ -1900,7 +1903,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="axis">The axis around which to rotate. This parameter is assumed to be normalized.</param>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static void RotationAxis(ref <#=vectorName#> axis, <#=d.DT#> angle, out <#=md.Name#> result)
+        public static void RotationAxis(ref <#=vectorName#> axis, <#=d.DT#> angle, out <#=d.Name#> result)
         {
             <#=d.DT#> x = axis.X;
             <#=d.DT#> y = axis.Y;
@@ -1932,9 +1935,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="axis">The axis around which to rotate. This parameter is assumed to be normalized.</param>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <returns>The created rotation Matrix3x3.</returns>
-        public static <#=md.Name#> RotationAxis(<#=vectorName#> axis, <#=d.DT#> angle)
+        public static <#=d.Name#> RotationAxis(<#=vectorName#> axis, <#=d.DT#> angle)
         {
-            RotationAxis(ref axis, angle, out <#=md.Name#> result);
+            RotationAxis(ref axis, angle, out <#=d.Name#> result);
             return result;
         }
 
@@ -1942,7 +1945,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// Creates a rotation Matrix3x3 from a quaternion.
         /// </summary>
         /// <param name="rotation">The quaternion to use to build the Matrix3x3.</param>
-        public static void FromQuaternion(ref <#=quartName#> rotation, out <#=md.Name#> result)
+        public static void FromQuaternion(ref <#=quartName#> rotation, out <#=d.Name#> result)
         {
             <#=d.DT#> xx = rotation.X * rotation.X;
             <#=d.DT#> yy = rotation.Y * rotation.Y;
@@ -1970,9 +1973,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="rotation">The quaternion to use to build the Matrix3x3.</param>
         /// <returns>The created rotation Matrix3x3.</returns>
-        public static <#=md.Name#> FromQuaternion(<#=quartName#> rotation)
+        public static <#=d.Name#> FromQuaternion(<#=quartName#> rotation)
         {
-            FromQuaternion(ref rotation, out <#=md.Name#> result);
+            FromQuaternion(ref rotation, out <#=d.Name#> result);
             return result;
         }
 
@@ -1983,7 +1986,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="pitch">Pitch around the x-axis, in radians.</param>
         /// <param name="roll">Roll around the z-axis, in radians.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static void RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll, out <#=md.Name#> result)
+        public static void RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll, out <#=d.Name#> result)
         {
             <#=quartName#> quaternion = <#=quartName#>.RotationYawPitchRoll(yaw, pitch, roll);
             FromQuaternion(ref quaternion, out result);
@@ -1996,10 +1999,10 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="pitch">Pitch around the x-axis, in radians.</param>
         /// <param name="roll">Roll around the z-axis, in radians.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static <#=md.Name#> RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll)
+        public static <#=d.Name#> RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll)
         {
             <#=quartName#> quaternion = <#=quartName#>.RotationYawPitchRoll(yaw, pitch, roll);
-            FromQuaternion(ref quaternion, out <#=md.Name#> result);
+            FromQuaternion(ref quaternion, out <#=d.Name#> result);
             return result;
         }
 
@@ -2009,7 +2012,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="matrix">Matrix to be multiplied.</param>
         /// <param name="transpose">Matrix to be transposed and multiplied.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void MultiplyTransposed(ref <#=md.Name#> transpose, ref <#=md.Name#> matrix, out <#=md.Name#> result)
+        public static void MultiplyTransposed(ref <#=d.Name#> transpose, ref <#=d.Name#> matrix, out <#=d.Name#> result)
         {
             <#=d.DT#> resultM11 = transpose.M11 * matrix.M11 + transpose.M21 * matrix.M21 + transpose.M31 * matrix.M31;
             <#=d.DT#> resultM12 = transpose.M11 * matrix.M12 + transpose.M21 * matrix.M22 + transpose.M31 * matrix.M32;
@@ -2042,7 +2045,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="matrix">Matrix to be multiplied.</param>
         /// <param name="transpose">Matrix to be transposed and multiplied.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void MultiplyByTransposed(ref <#=md.Name#> matrix, ref <#=md.Name#> transpose, out <#=md.Name#> result)
+        public static void MultiplyByTransposed(ref <#=d.Name#> matrix, ref <#=d.Name#> transpose, out <#=d.Name#> result)
         {
             <#=d.DT#> resultM11 = matrix.M11 * transpose.M11 + matrix.M12 * transpose.M12 + matrix.M13 * transpose.M13;
             <#=d.DT#> resultM12 = matrix.M11 * transpose.M21 + matrix.M12 * transpose.M22 + matrix.M13 * transpose.M23;
@@ -2074,7 +2077,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="matrix">Matrix to be inverted.</param>
         /// <param name="result">Inverted matrix.</param>
-        public static void AdaptiveInvert(ref <#=md.Name#> matrix, out <#=md.Name#> result)
+        public static void AdaptiveInvert(ref <#=d.Name#> matrix, out <#=d.Name#> result)
         {
             int submatrix;
             <#=d.DT#> determinantInverse = 1 / matrix.AdaptiveDeterminant(out submatrix);
@@ -2257,9 +2260,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to add.</param>
         /// <param name="right">The second Matrix3x3 to add.</param>
         /// <returns>The sum of the two matrices.</returns>
-        public static <#=md.Name#> operator +(<#=md.Name#> left, <#=md.Name#> right)
+        public static <#=d.Name#> operator +(<#=d.Name#> left, <#=d.Name#> right)
         {
-            Add(ref left, ref right, out <#=md.Name#> result);
+            Add(ref left, ref right, out <#=d.Name#> result);
             return result;
         }
 
@@ -2268,7 +2271,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3 to assert (unchanged).</param>
         /// <returns>The asserted (unchanged) Matrix3x3.</returns>
-        public static <#=md.Name#> operator +(<#=md.Name#> value)
+        public static <#=d.Name#> operator +(<#=d.Name#> value)
         {
             return value;
         }
@@ -2279,9 +2282,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to subtract.</param>
         /// <param name="right">The second Matrix3x3 to subtract.</param>
         /// <returns>The difference between the two matrices.</returns>
-        public static <#=md.Name#> operator -(<#=md.Name#> left, <#=md.Name#> right)
+        public static <#=d.Name#> operator -(<#=d.Name#> left, <#=d.Name#> right)
         {
-            Subtract(ref left, ref right, out <#=md.Name#> result);
+            Subtract(ref left, ref right, out <#=d.Name#> result);
             return result;
         }
 
@@ -2290,9 +2293,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="value">The Matrix3x3 to negate.</param>
         /// <returns>The negated Matrix3x3.</returns>
-        public static <#=md.Name#> operator -(<#=md.Name#> value)
+        public static <#=d.Name#> operator -(<#=d.Name#> value)
         {
-            Negate(ref value, out <#=md.Name#> result);
+            Negate(ref value, out <#=d.Name#> result);
             return result;
         }
 
@@ -2302,9 +2305,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="right">The Matrix3x3 to scale.</param>
         /// <param name="left">The amount by which to scale.</param>
         /// <returns>The scaled Matrix3x3.</returns>
-        public static <#=md.Name#> operator *(<#=d.DT#> left, <#=md.Name#> right)
+        public static <#=d.Name#> operator *(<#=d.DT#> left, <#=d.Name#> right)
         {
-            Multiply(ref right, left, out <#=md.Name#> result);
+            Multiply(ref right, left, out <#=d.Name#> result);
             return result;
         }
 
@@ -2314,9 +2317,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The Matrix3x3 to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
         /// <returns>The scaled Matrix3x3.</returns>
-        public static <#=md.Name#> operator *(<#=md.Name#> left, <#=d.DT#> right)
+        public static <#=d.Name#> operator *(<#=d.Name#> left, <#=d.DT#> right)
         {
-            Multiply(ref left, right, out <#=md.Name#> result);
+            Multiply(ref left, right, out <#=d.Name#> result);
             return result;
         }
 
@@ -2326,9 +2329,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to multiply.</param>
         /// <param name="right">The second Matrix3x3 to multiply.</param>
         /// <returns>The product of the two matrices.</returns>
-        public static <#=md.Name#> operator *(<#=md.Name#> left, <#=md.Name#> right)
+        public static <#=d.Name#> operator *(<#=d.Name#> left, <#=d.Name#> right)
         {
-            Multiply(ref left, ref right, out <#=md.Name#> result);
+            Multiply(ref left, ref right, out <#=d.Name#> result);
             return result;
         }
 
@@ -2338,9 +2341,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The Matrix3x3 to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
         /// <returns>The scaled Matrix3x3.</returns>
-        public static <#=md.Name#> operator /(<#=md.Name#> left, <#=d.DT#> right)
+        public static <#=d.Name#> operator /(<#=d.Name#> left, <#=d.DT#> right)
         {
-            Divide(ref left, right, out <#=md.Name#> result);
+            Divide(ref left, right, out <#=d.Name#> result);
             return result;
         }
 
@@ -2350,9 +2353,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="left">The first Matrix3x3 to divide.</param>
         /// <param name="right">The second Matrix3x3 to divide.</param>
         /// <returns>The quotient of the two matrices.</returns>
-        public static <#=md.Name#> operator /(<#=md.Name#> left, <#=md.Name#> right)
+        public static <#=d.Name#> operator /(<#=d.Name#> left, <#=d.Name#> right)
         {
-            Divide(ref left, ref right, out <#=md.Name#> result);
+            Divide(ref left, ref right, out <#=d.Name#> result);
             return result;
         }
 
@@ -2363,7 +2366,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(<#=md.Name#> left, <#=md.Name#> right)
+        public static bool operator ==(<#=d.Name#> left, <#=d.Name#> right)
         {
             return left.Equals(ref right);
         }
@@ -2375,7 +2378,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(<#=md.Name#> left, <#=md.Name#> right)
+        public static bool operator !=(<#=d.Name#> left, <#=d.Name#> right)
         {
             return !left.Equals(ref right);
         }
@@ -2385,7 +2388,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="a">3x3 matrix.</param>
         /// <param name="b">Created 4x4 matrix.</param>
-        public static void To4x4(ref <#=md.Name#> a, out Matrix4<#=d.Postfix#> b)
+        public static void To4x4(ref <#=d.Name#> a, out <#=mat4Name#> b)
         {
             b.M11 = a.M11;
             b.M12 = a.M12;
@@ -2413,9 +2416,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="a">3x3 matrix.</param>
         /// <returns>Created 4x4 matrix.</returns>
-        public static Matrix4<#=d.Postfix#> To4x4(<#=md.Name#> a)
+        public static <#=mat4Name#> To4x4(<#=d.Name#> a)
         {
-            Matrix4<#=d.Postfix#> b;
+            <#=mat4Name#> b;
 
             b.M11 = a.M11;
             b.M12 = a.M12;
@@ -2444,7 +2447,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="matrix4X4">Matrix to extract a 3x3 matrix from.</param>
         /// <param name="matrix3X3">Upper 3x3 matrix extracted from the matrix.</param>
-        public static void From4x4(ref Matrix4<#=d.Postfix#> matrix4X4, out <#=md.Name#> matrix3X3)
+        public static void From4x4(ref <#=mat4Name#> matrix4X4, out <#=d.Name#> matrix3X3)
         {
             matrix3X3.M11 = matrix4X4.M11;
             matrix3X3.M12 = matrix4X4.M12;
@@ -2464,9 +2467,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="matrix4X4">Matrix to extract a 3x3 matrix from.</param>
         /// <returns>Upper 3x3 matrix extracted from the matrix.</returns>
-        public static <#=md.Name#> From4x4(Matrix4<#=d.Postfix#> matrix4X4)
+        public static <#=d.Name#> From4x4(<#=mat4Name#> matrix4X4)
         {
-            <#=md.Name#> matrix3X3;
+            <#=d.Name#> matrix3X3;
             matrix3X3.M11 = matrix4X4.M11;
             matrix3X3.M12 = matrix4X4.M12;
             matrix3X3.M13 = matrix4X4.M13;
@@ -2485,9 +2488,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// Convert the 3x3 Matrix to a 4x4 Matrix.
         /// </summary>
         /// <returns>A 4x4 Matrix with zero translation and M44=1</returns>
-        public static explicit operator Matrix4<#=d.Postfix#>(<#=md.Name#> Value)
+        public static explicit operator <#=mat4Name#>(<#=d.Name#> Value)
         {
-            return new Matrix4<#=d.Postfix#>(
+            return new <#=mat4Name#>(
                 Value.M11, Value.M12, Value.M13, 0,
                 Value.M21, Value.M22, Value.M23, 0,
                 Value.M31, Value.M32, Value.M33, 0,
@@ -2499,9 +2502,9 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// Convert the 4x4 Matrix to a 3x3 Matrix.
         /// </summary>
         /// <returns>A 3x3 Matrix</returns>
-        public static explicit operator <#=md.Name#>(Matrix4<#=d.Postfix#> Value)
+        public static explicit operator <#=d.Name#>(<#=mat4Name#> Value)
         {
-            return new <#=md.Name#>(
+            return new <#=d.Name#>(
                 Value.M11, Value.M12, Value.M13,
                 Value.M21, Value.M22, Value.M23,
                 Value.M31, Value.M32, Value.M33
@@ -2596,13 +2599,13 @@ namespace Molten<#=d.DT.SubNamespace#>
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="<#=md.Name#>"/> is equal to this instance.
+        /// Determines whether the specified <see cref="<#=d.Name#>"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="<#=md.Name#>"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="<#=d.Name#>"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="<#=md.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="<#=d.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(ref <#=md.Name#> other)
+        public bool Equals(ref <#=d.Name#> other)
         {
             return (MathHelper.NearEqual(other.M11, M11) &&
                 MathHelper.NearEqual(other.M12, M12) &&
@@ -2616,22 +2619,22 @@ namespace Molten<#=d.DT.SubNamespace#>
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="<#=md.Name#>"/> is equal to this instance.
+        /// Determines whether the specified <see cref="<#=d.Name#>"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="<#=md.Name#>"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="<#=d.Name#>"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="<#=md.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="<#=d.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(<#=md.Name#> other)
+        public bool Equals(<#=d.Name#> other)
         {
             return Equals(ref other);
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="<#=md.Name#>"/> are equal.
+        /// Determines whether the specified <see cref="<#=d.Name#>"/> are equal.
         /// </summary>
-        public static bool Equals(ref <#=md.Name#> a, ref <#=md.Name#> b)
+        public static bool Equals(ref <#=d.Name#> a, ref <#=d.Name#> b)
         {
             return
                 MathHelper.NearEqual(a.M11, b.M11) &&
@@ -2657,10 +2660,10 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is <#=md.Name#>))
+            if (!(value is <#=d.Name#>))
                 return false;
 
-            var strongValue = (<#=md.Name#>)value;
+            var strongValue = (<#=d.Name#>)value;
             return Equals(ref strongValue);
         }
 

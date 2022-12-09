@@ -1,7 +1,16 @@
 {
-  "FieldNames": [ "X", "Y", "Z", "W" ],
-  "FieldLabels": [ "X", "Y", "Z", "W" ],
   "SubFolder": "Vectors",
+  "Fields": {
+    "2": {
+      "Names": [ "X", "Y" ]
+    },
+    "3": {
+      "Names": [ "X", "Y", "Z" ]
+    },
+    "4": {
+      "Names":  ["X", "Y", "Z", "W"]
+    }
+  },
 
   "Types": [
     {

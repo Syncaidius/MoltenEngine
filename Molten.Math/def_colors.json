@@ -1,7 +1,17 @@
 {
   "FieldNames": [ "R", "G", "B", "A" ],
   "FieldLabels": [ "red", "green", "blue", "alpha" ],
-  "SubFolder":  "Colors",
+  "SubFolder": "Colors",
+  "Fields": {
+    "3": {
+      "Names": [ "R", "G", "B" ],
+      "Labels": [ "red", "green", "blue" ]
+    },
+    "4": {
+      "Names": [ "R", "G", "B", "A" ],
+      "Labels": [ "red", "green", "blue", "alpha" ]
+    }
+  },
 
   "Types": [
     {

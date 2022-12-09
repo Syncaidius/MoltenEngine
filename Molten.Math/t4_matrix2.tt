@@ -9,9 +9,13 @@
 <#@ output extension=".txt" #>
 
 <#
-GenerateTypes(this.GenerationEnvironment, this.Host, "Matrices", "def_matrices.json", null, new int[] {2}, null, (d, md, defs) =>
+TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "def_matrices.json");
+
+gen.Generate((d) => d.Size == 2, (d, def) =>
 {
-    string vectorName = $"Vector2{d.Postfix}";
+    string vectorName = $"Vector2{d.DT.Literal}";
+    string mat4Name = $"Matrix4{d.DT.Literal}";
+    string mat3x2Name = $"Matrix3x2{d.DT.Literal}";
 #>
 using System;
 using System.Globalization;
@@ -19,17 +23,17 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten<#=d.DT.SubNamespace#>
+namespace Molten<#=d.SubNamespace#>
 {
     /// <summary>Represents a <#=(d.DT.Bits > 32 ? "double" : "single")#>-precision 2x2 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Sequential, Pack=<#=d.DT.Pack#>)]
     [Serializable]
-	public struct <#=md.Name#> : ITransposedMatrix<<#=md.Name#>>
+	public struct <#=d.Name#> : ITransposedMatrix<<#=d.Name#>>
     {
         /// <summary>
         /// A single-precision Matrix2x2 with values intialized to the identity of a 2 x 2 matrix
         /// </summary>
-        public static readonly <#=md.Name#> Identity = new <#=md.Name#>(1, 0, 0, 1);
+        public static readonly <#=d.Name#> Identity = new <#=d.Name#>(1, 0, 0, 1);
 
         /// <summary>
         /// Value at row 1, column 1 of the matrix.
@@ -62,7 +66,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="m12">Value at row 1, column 2 of the matrix.</param>
         /// <param name="m21">Value at row 2, column 1 of the matrix.</param>
         /// <param name="m22">Value at row 2, column 2 of the matrix.</param>
-        public <#=md.Name#>(<#=d.DT#> m11, <#=d.DT#> m12, <#=d.DT#> m21, <#=d.DT#> m22)
+        public <#=d.Name#>(<#=d.DT#> m11, <#=d.DT#> m12, <#=d.DT#> m21, <#=d.DT#> m22)
         {
             M11 = m11;
             M12 = m12;
@@ -76,7 +80,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="a">First matrix to add.</param>
         /// <param name="b">Second matrix to add.</param>
         /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref <#=md.Name#> a, ref <#=md.Name#> b, out <#=md.Name#> result)
+        public static void Add(ref <#=d.Name#> a, ref <#=d.Name#> b, out <#=d.Name#> result)
         {
             result.M11 = a.M11 + b.M11;
             result.M12 = a.M12 + b.M12;
@@ -90,7 +94,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="a">First matrix to add.</param>
         /// <param name="b">Second matrix to add.</param>
         /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref Matrix4<#=d.Postfix#> a, ref <#=md.Name#> b, out <#=md.Name#> result)
+        public static void Add(ref <#=mat4Name#> a, ref <#=d.Name#> b, out <#=d.Name#> result)
         {
             result.M11 = a.M11 + b.M11;
             result.M12 = a.M12 + b.M12;
@@ -104,7 +108,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="a">First matrix to add.</param>
         /// <param name="b">Second matrix to add.</param>
         /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref <#=md.Name#> a, ref Matrix4<#=d.Postfix#> b, out <#=md.Name#> result)
+        public static void Add(ref <#=d.Name#> a, ref <#=mat4Name#> b, out <#=d.Name#> result)
         {
             result.M11 = a.M11 + b.M11;
             result.M12 = a.M12 + b.M12;
@@ -118,7 +122,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="a">First matrix to add.</param>
         /// <param name="b">Second matrix to add.</param>
         /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref Matrix4<#=d.Postfix#> a, ref Matrix4<#=d.Postfix#> b, out <#=md.Name#> result)
+        public static void Add(ref <#=mat4Name#> a, ref <#=mat4Name#> b, out <#=d.Name#> result)
         {
             result.M11 = a.M11 + b.M11;
             result.M12 = a.M12 + b.M12;
@@ -131,7 +135,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="scale">Value to use in the diagonal.</param>
         /// <param name="matrix">Scaling matrix.</param>
-        public static void CreateScale(<#=d.DT#> scale, out <#=md.Name#> matrix)
+        public static void CreateScale(<#=d.DT#> scale, out <#=d.Name#> matrix)
         {
             matrix.M11 = scale;
             matrix.M22 = scale;
@@ -145,7 +149,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="matrix">Matrix to be inverted.</param>
         /// <param name="result">Inverted matrix.</param>
-        public static void Invert(ref <#=md.Name#> matrix, out <#=md.Name#> result)
+        public static void Invert(ref <#=d.Name#> matrix, out <#=d.Name#> result)
         {
             <#=d.DT#> determinantInverse = 1 / (matrix.M11 * matrix.M22 - matrix.M12 * matrix.M21);
             result.M11 = matrix.M22 * determinantInverse;
@@ -161,7 +165,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="a">First matrix to multiply.</param>
         /// <param name="b">Second matrix to multiply.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref <#=md.Name#> a, ref <#=md.Name#> b, out <#=md.Name#> result)
+        public static void Multiply(ref <#=d.Name#> a, ref <#=d.Name#> b, out <#=d.Name#> result)
         {
             result.M11 = a.M11 * b.M11 + a.M12 * b.M21;
             result.M12 = a.M11 * b.M12 + a.M12 * b.M22;
@@ -175,7 +179,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="a">First matrix to multiply.</param>
         /// <param name="b">Second matrix to multiply.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref <#=md.Name#> a, ref Matrix4<#=d.Postfix#> b, out <#=md.Name#> result)
+        public static void Multiply(ref <#=d.Name#> a, ref <#=mat4Name#> b, out <#=d.Name#> result)
         {
             result.M11 = a.M11 * b.M11 + a.M12 * b.M21;
             result.M12 = a.M11 * b.M12 + a.M12 * b.M22;
@@ -189,7 +193,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="a">First matrix to multiply.</param>
         /// <param name="b">Second matrix to multiply.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref Matrix4<#=d.Postfix#> a, ref <#=md.Name#> b, out <#=md.Name#> result)
+        public static void Multiply(ref <#=mat4Name#> a, ref <#=d.Name#> b, out <#=d.Name#> result)
         {
             result.M11 = a.M11 * b.M11 + a.M12 * b.M21;
             result.M12 = a.M11 * b.M12 + a.M12 * b.M22;
@@ -203,7 +207,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="a">First matrix to multiply.</param>
         /// <param name="b">Second matrix to multiply.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref Matrix2x3F a, ref Matrix3x2<#=d.Postfix#> b, out <#=md.Name#> result)
+        public static void Multiply(ref Matrix2x3F a, ref <#=mat3x2Name#> b, out <#=d.Name#> result)
         {
             result.M11 = a.M11 * b.M11 + a.M12 * b.M21 + a.M13 * b.M31;
             result.M12 = a.M11 * b.M12 + a.M12 * b.M22 + a.M13 * b.M32;
@@ -216,7 +220,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="matrix">Matrix to negate.</param>
         /// <param name="result">Negated matrix.</param>
-        public static void Negate(ref <#=md.Name#> matrix, out <#=md.Name#> result)
+        public static void Negate(ref <#=d.Name#> matrix, out <#=d.Name#> result)
         {
             result.M11 = -matrix.M11;
             result.M12 = -matrix.M12;
@@ -230,7 +234,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="a">First matrix to subtract.</param>
         /// <param name="b">Second matrix to subtract.</param>
         /// <param name="result">Difference of the two matrices.</param>
-        public static void Subtract(ref <#=md.Name#> a, ref <#=md.Name#> b, out <#=md.Name#> result)
+        public static void Subtract(ref <#=d.Name#> a, ref <#=d.Name#> b, out <#=d.Name#> result)
         {
             result.M11 = a.M11 - b.M11;
             result.M12 = a.M12 - b.M12;
@@ -245,7 +249,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// <param name="v">Vector2 to transform.</param>
         /// <param name="matrix">Matrix to use as the transformation.</param>
         /// <param name="result">Product of the transformation.</param>
-        public static void Transform(ref <#=vectorName#> v, ref <#=md.Name#> matrix, out <#=vectorName#> result)
+        public static void Transform(ref <#=vectorName#> v, ref <#=d.Name#> matrix, out <#=vectorName#> result)
         {
             <#=d.DT#> vX = v.X;
             <#=d.DT#> vY = v.Y;
@@ -259,7 +263,7 @@ namespace Molten<#=d.DT.SubNamespace#>
             return new[] { M11, M12, M21, M22 };
         }
 
-        public void Transpose(out <#=md.Name#> result)
+        public void Transpose(out <#=d.Name#> result)
         {
             result.M21 = M12;
             result.M12 = M21;
@@ -272,7 +276,7 @@ namespace Molten<#=d.DT.SubNamespace#>
         /// </summary>
         /// <param name="matrix">Matrix to transpose.</param>
         /// <param name="result">Transposed matrix.</param>
-        public static void Transpose(ref <#=md.Name#> matrix, out <#=md.Name#> result)
+        public static void Transpose(ref <#=d.Name#> matrix, out <#=d.Name#> result)
         {
             matrix.Transpose(out result);
         }
@@ -308,13 +312,13 @@ namespace Molten<#=d.DT.SubNamespace#>
 
         public override bool Equals(object obj)
         {
-            if (obj is <#=md.Name#> m)
+            if (obj is <#=d.Name#> m)
                 return this == m;
             else
                 return false;
         }
 
-        public static bool operator ==(<#=md.Name#> matrix1, <#=md.Name#> matrix2)
+        public static bool operator ==(<#=d.Name#> matrix1, <#=d.Name#> matrix2)
         {
             return MathHelper.NearEqual(matrix1.M11, matrix2.M11)
                 && MathHelper.NearEqual(matrix1.M21, matrix2.M21)
@@ -322,7 +326,7 @@ namespace Molten<#=d.DT.SubNamespace#>
                 && MathHelper.NearEqual(matrix1.M22, matrix2.M22);
         }
 
-        public static bool operator !=(<#=md.Name#> matrix1, <#=md.Name#> matrix2)
+        public static bool operator !=(<#=d.Name#> matrix1, <#=d.Name#> matrix2)
         {
             return !MathHelper.NearEqual(matrix1.M11, matrix2.M11)
                 || !MathHelper.NearEqual(matrix1.M21, matrix2.M21)
@@ -330,9 +334,9 @@ namespace Molten<#=d.DT.SubNamespace#>
                 || !MathHelper.NearEqual(matrix1.M22, matrix2.M22);
         }
 
-        public static <#=md.Name#> operator +(<#=md.Name#> matrix1, <#=md.Name#> matrix2)
+        public static <#=d.Name#> operator +(<#=d.Name#> matrix1, <#=d.Name#> matrix2)
         {
-            return new <#=md.Name#>()
+            return new <#=d.Name#>()
             {
                 M11 = matrix1.M11 + matrix2.M11,
                 M12 = matrix1.M12 + matrix2.M12,
@@ -341,9 +345,9 @@ namespace Molten<#=d.DT.SubNamespace#>
             };
         }
 
-        public static <#=md.Name#> operator -(<#=md.Name#> matrix1, <#=md.Name#> matrix2)
+        public static <#=d.Name#> operator -(<#=d.Name#> matrix1, <#=d.Name#> matrix2)
         {
-            return new <#=md.Name#>()
+            return new <#=d.Name#>()
             {
                 M11 = matrix1.M11 - matrix2.M11,
                 M12 = matrix1.M12 - matrix2.M12,
@@ -352,9 +356,9 @@ namespace Molten<#=d.DT.SubNamespace#>
             };
         }
 
-        public static <#=md.Name#> operator *(<#=md.Name#> matrix, <#=d.DT#> scalar)
+        public static <#=d.Name#> operator *(<#=d.Name#> matrix, <#=d.DT#> scalar)
         {
-            return new <#=md.Name#>()
+            return new <#=d.Name#>()
             {
                 M11 = matrix.M11 * scalar,
                 M12 = matrix.M12 * scalar,
@@ -363,9 +367,9 @@ namespace Molten<#=d.DT.SubNamespace#>
             };
         }
 
-        public static <#=md.Name#> operator *(<#=d.DT#> scalar, <#=md.Name#> matrix)
+        public static <#=d.Name#> operator *(<#=d.DT#> scalar, <#=d.Name#> matrix)
         {
-            return new <#=md.Name#>()
+            return new <#=d.Name#>()
             {
                 M11 = scalar * matrix.M11,
                 M12 = scalar * matrix.M12,
@@ -374,9 +378,9 @@ namespace Molten<#=d.DT.SubNamespace#>
             };
         }
 
-        public static <#=md.Name#> operator *(<#=md.Name#> matrix1, <#=md.Name#> matrix2)
+        public static <#=d.Name#> operator *(<#=d.Name#> matrix1, <#=d.Name#> matrix2)
         {
-            return new <#=md.Name#>()
+            return new <#=d.Name#>()
             {
                 M11 = matrix1.M11 * matrix2.M11 + matrix1.M21 * matrix2.M12,
                 M12 = matrix1.M12 * matrix2.M11 + matrix1.M22 * matrix2.M12,
@@ -384,9 +388,9 @@ namespace Molten<#=d.DT.SubNamespace#>
                 M22 = matrix1.M12 * matrix2.M21 + matrix1.M22 * matrix2.M22,
             };
         }
-        public static Matrix3x2<#=d.Postfix#> operator *(<#=md.Name#> matrix1, Matrix3x2<#=d.Postfix#> matrix2)
+        public static <#=mat3x2Name#> operator *(<#=d.Name#> matrix1, <#=mat3x2Name#> matrix2)
         {
-            return new Matrix3x2<#=d.Postfix#>()
+            return new <#=mat3x2Name#>()
             {
                 M11 = matrix1.M11 * matrix2.M11 + matrix1.M21 * matrix2.M12,
                 M21 = matrix1.M11 * matrix2.M21 + matrix1.M21 * matrix2.M22,

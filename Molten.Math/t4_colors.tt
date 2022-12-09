@@ -36,7 +36,7 @@ using Molten.DoublePrecision;
 namespace Molten<#=d.SubNamespace#>
 {
 	/// <summary>
-    /// Represents a color in the form of <#=gen.FieldsToArgs(def.FieldLabels)#>.
+    /// Represents a color in the form of <#=gen.FieldsToArgs(d.FieldLabels)#>.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = <#=d.DT.Pack#>)]
     [Serializable]
@@ -65,18 +65,18 @@ namespace Molten<#=d.SubNamespace#>
         /// <summary>
         /// Initializes a new instance of the <#=gen.See()#> struct.
         /// </summary>
-        /// <param name="value">The <#=gen.FieldsToArgs(def.FieldNames)#> components of the color.</param>
+        /// <param name="value">The <#=gen.FieldsToArgs(d.FieldNames)#> components of the color.</param>
         public <#=d.Name#>(<#=vectorName#> value)
         {
 <#for(int i = 0; i < d.Size; i++){#>
-            <#=def.FieldNames[i]#> = value.<#=vecFieldNames[i]#>;
+            <#=d.FieldNames[i]#> = value.<#=vecFieldNames[i]#>;
 <#}#>
         }
 
         /// <summary>
         /// Initializes a new instance of the <#=gen.See()#> struct.
         /// </summary>
-        /// <param name="rgb">A packed integer containing all three color components in <#=gen.FieldsToArgs(def.FieldNames)#> order.
+        /// <param name="rgb">A packed integer containing all three color components in <#=gen.FieldsToArgs(d.FieldNames)#> order.
         /// The alpha component is ignored.</param>
         public <#=d.Name#>(int packed)
         {
@@ -126,7 +126,7 @@ namespace Molten<#=d.SubNamespace#>
         /// The alpha channel is set to 255.</returns>
         public int PackRGBA()
         {
-<#gen.IterateFields((i, field) => $"uint {def.ArgNames[i]} = (uint)({field} * 255.0{d.DT.Literal}) & 255;");#>
+<#gen.IterateFields((i, field) => $"uint {d.ArgNames[i]} = (uint)({field} * 255.0{d.DT.Literal}) & 255;");#>
 <#if(d.Size < 4){#>
             uint a = 255;
 <#}#>
@@ -145,7 +145,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>A packed integer containing all <#=def.SizeNames[d.Size]#> color components.<#=(d.Size < 4 ? "The alpha channel is set to 255." : "")#></returns>
         public int PackBGRA()
         {
-<#gen.IterateFields((i, field) => $"uint {def.ArgNames[i]} = (uint)({field} * 255.0{d.DT.Literal}) & 255;");#>
+<#gen.IterateFields((i, field) => $"uint {d.ArgNames[i]} = (uint)({field} * 255.0{d.DT.Literal}) & 255;");#>
 <#if(d.Size < 4){#>
             uint a = 255;
 <#}#>
@@ -164,7 +164,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
         public <#=vectorName#> ToVector()
         {
-            return new <#=vectorName#>(<#=gen.FieldsToArgs(def.FieldNames)#>);
+            return new <#=vectorName#>(<#=gen.FieldsToArgs(d.FieldNames)#>);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>A three-element array containing the components of the color.</returns>
         public <#=d.DT#>[] ToArray()
         {
-            return new <#=d.DT#>[] { <#=gen.FieldsToArgs(def.FieldNames)#> };
+            return new <#=d.DT#>[] { <#=gen.FieldsToArgs(d.FieldNames)#> };
         }
 
 <#gen.GenerateOperator("+", "add");#>
@@ -203,7 +203,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The scaled color.</returns>
         public static <#=d.Name#> Scale(<#=d.Name#> value, <#=d.DT#> scale)
         {
-            return new <#=d.Name#>(<#=gen.FieldsToArgs(def.FieldNames, "value.", " * scale")#>);
+            return new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldNames, "value.", " * scale")#>);
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The negated color.</returns>
         public static <#=d.Name#> Negate(<#=d.Name#> value)
         {
-            return new <#=d.Name#>(<#=gen.FieldsToArgs(def.FieldNames, $"{d.DT.One} - value.")#>);
+            return new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldNames, $"{d.DT.One} - value.")#>);
         }
 
         /// <summary>
@@ -238,8 +238,8 @@ namespace Molten<#=d.SubNamespace#>
 <#
     for(int i = 0; i < d.Size; i++)
     {
-        string n = def.FieldLabels[i];
-        string p = def.FieldNames[i];
+        string n = d.FieldLabels[i];
+        string p = d.FieldNames[i];
 #>
             <#=d.DT#> <#=n#> = value.<#=p#>;
             <#=n#> = (<#=n#> > max.<#=p#>) ? max.<#=p#> : <#=n#>;
@@ -248,7 +248,7 @@ namespace Molten<#=d.SubNamespace#>
 <#
     }
 #>
-            result = new <#=d.Name#>(<#=gen.FieldsToArgs(def.FieldLabels)#>);
+            result = new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldLabels)#>);
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ namespace Molten<#=d.SubNamespace#>
 <#
     for(int i = 0; i < d.Size; i++)
     {
-        string p = def.FieldNames[i];
+        string p = d.FieldNames[i];
 #>
             <#=p#> = (<#=p#> > max.<#=p#>) ? max.<#=p#> : <#=p#>;
             <#=p#> = (<#=p#> < min.<#=p#>) ? min.<#=p#> : <#=p#>;
@@ -282,8 +282,8 @@ namespace Molten<#=d.SubNamespace#>
 <#
     for(int i = 0; i < d.Size; i++)
     {
-        string n = def.FieldLabels[i];
-        string p = def.FieldNames[i];
+        string n = d.FieldLabels[i];
+        string p = d.FieldNames[i];
 #>
             <#=d.DT#> <#=n#> = value.<#=p#>;
             <#=n#> = (<#=n#> > max) ? max : <#=n#>;
@@ -292,7 +292,7 @@ namespace Molten<#=d.SubNamespace#>
 <#
     }
 #>
-            result = new <#=d.Name#>(<#=gen.FieldsToArgs(def.FieldLabels)#>);
+            result = new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldLabels)#>);
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace Molten<#=d.SubNamespace#>
 <#
     for(int i = 0; i < d.Size; i++)
     {
-        string p = def.FieldNames[i];
+        string p = d.FieldNames[i];
 #>
             <#=p#> = (<#=p#> > max) ? max : <#=p#>;
             <#=p#> = (<#=p#> < min) ? min : <#=p#>;
@@ -558,7 +558,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>A negated color.</returns>
         public static <#=d.Name#> operator -(<#=d.Name#> value)
         {
-            return new <#=d.Name#>(<#=gen.FieldsToArgs(def.FieldNames, "-value.")#>);
+            return new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldNames, "-value.")#>);
         }
 
         /// <summary>
@@ -569,7 +569,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The scaled color.</returns>
         public static <#=d.Name#> operator *(<#=d.DT#> scale, <#=d.Name#> value)
         {
-            return new <#=d.Name#>(<#=gen.FieldsToArgs(def.FieldNames, "value.", " * scale")#>);
+            return new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldNames, "value.", " * scale")#>);
         }
 
         /// <summary>
@@ -580,7 +580,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The scaled color.</returns>
         public static <#=d.Name#> operator *(<#=d.Name#> value, <#=d.DT#> scale)
         {
-            return new <#=d.Name#>(<#=gen.FieldsToArgs(def.FieldNames, "value.", " * scale")#>);
+            return new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldNames, "value.", " * scale")#>);
         }
 
         /// <summary>
@@ -615,7 +615,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator <#=vectorName#>(<#=d.Name#> value)
         {
-            return new <#=vectorName#>(<#=gen.FieldsToArgs(def.FieldNames, "value.")#>);
+            return new <#=vectorName#>(<#=gen.FieldsToArgs(d.FieldNames, "value.")#>);
         }
 
         /// <summary>
@@ -670,7 +670,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, toStringFormat, <#=gen.FieldsToArgs(def.FieldNames)#>);
+            return string.Format(formatProvider, toStringFormat, <#=gen.FieldsToArgs(d.FieldNames)#>);
         }
 
         /// <summary>
@@ -756,13 +756,13 @@ namespace Molten<#=d.SubNamespace#>
         /// For example, a swizzle input of (2,2,3) on a <#=gen.See()#> with RGBA values of 100,20,255, will return a <see cref="Color4"/> with values 20,20,255.
         /// </summary>
         /// <param name="col">The color to use as a source for values.</param>
-<#gen.IterateFields((i, field) => $"/// <param name=\"{def.ArgNames[i]}Index\">The component index of the source color to use for the new {def.FieldLabels[i]} value. This should be a value between 0 and {d.Size - 1}.</param>");#>
+<#gen.IterateFields((i, field) => $"/// <param name=\"{d.ArgNames[i]}Index\">The component index of the source color to use for the new {d.FieldLabels[i]} value. This should be a value between 0 and {d.Size - 1}.</param>");#>
         /// <returns></returns>
-        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> col, <#=gen.FieldsToArgs(def.ArgNames, "int ", "Index")#>)
+        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> col, <#=gen.FieldsToArgs(d.ArgNames, "int ", "Index")#>)
         {
             return new <#=d.Name#>()
             {
-<#gen.IterateFields((i, field) => $"\t{field} = *(&col.{field} + ({def.ArgNames[i]}Index * sizeof({d.DT}))),");#>
+<#gen.IterateFields((i, field) => $"\t{field} = *(&col.{field} + ({d.ArgNames[i]}Index * sizeof({d.DT}))),");#>
             };
         }
     }

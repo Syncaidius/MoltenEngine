@@ -33,14 +33,14 @@ namespace Molten<#=d.SubNamespace#>
 		///<summary>A <#=d.Name#> with every component set to <#=d.DT.One#>.</summary>
 		public static readonly <#=d.Name#> One = new <#=d.Name#>(<#for(int p = 0; p < d.Size; p++){#><#=d.DT.One#><#=(p < (d.Size-1) ? ", " : "")#><#}#>);
 
-        static readonly string toStringFormat = "<#for(int i = 0; i < d.Size; i++){#><#=$"{def.FieldNames[i]}:{{{i}}}"#><#=(i < d.Size-1 ? " " : "")#><#}#>";
+        static readonly string toStringFormat = "<#for(int i = 0; i < d.Size; i++){#><#=$"{d.FieldNames[i]}:{{{i}}}"#><#=(i < d.Size-1 ? " " : "")#><#}#>";
 
 <#
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-		/// <summary>The <#=def.FieldNames[p]#> unit <#=gen.See()#>.</summary>
-		public static readonly <#=d.Name#> Unit<#=def.FieldNames[p]#> = new <#=d.Name#>(<#for(int u = 0; u < d.Size; u++){#><#=(u == p ? d.DT.One : d.DT.Zero)#><#=(u < (d.Size-1) ? ", " : "")#><#}#>);
+		/// <summary>The <#=d.FieldNames[p]#> unit <#=gen.See()#>.</summary>
+		public static readonly <#=d.Name#> Unit<#=d.FieldNames[p]#> = new <#=d.Name#>(<#for(int u = 0; u < d.Size; u++){#><#=(u == p ? d.DT.One : d.DT.Zero)#><#=(u < (d.Size-1) ? ", " : "")#><#}#>);
 
 <#
 		}
@@ -54,7 +54,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         public bool IsZero
         {
-            get => <#for(int p = 0; p < d.Size; p++){#><#=def.FieldNames[p]#> == <#=d.DT.Zero#><#=(p < (d.Size-1) ? " && " : "")#><#}#>;
+            get => <#for(int p = 0; p < d.Size; p++){#><#=d.FieldNames[p]#> == <#=d.DT.Zero#><#=(p < (d.Size-1) ? " && " : "")#><#}#>;
         }
 
 #region Constructors
@@ -78,13 +78,13 @@ namespace Molten<#=d.SubNamespace#>
         if(d.DT.IsFPType)
         {
 #>
-            return <#for(int p = 0; p < d.Size; p++){#>MathHelper.NearEqual(other.<#=def.FieldNames[p]#>, <#=def.FieldNames[p]#>)<#=(p < (d.Size-1) ? " && " : "")#><#}#>;
+            return <#for(int p = 0; p < d.Size; p++){#>MathHelper.NearEqual(other.<#=d.FieldNames[p]#>, <#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " && " : "")#><#}#>;
 <#
         }
         else
         {
 #>
-            return <#for(int p = 0; p < d.Size; p++){#>other.<#=def.FieldNames[p]#> == <#=def.FieldNames[p]#><#=(p < (d.Size-1) ? " && " : "")#><#}#>;
+            return <#for(int p = 0; p < d.Size; p++){#>other.<#=d.FieldNames[p]#> == <#=d.FieldNames[p]#><#=(p < (d.Size-1) ? " && " : "")#><#}#>;
 <#
         }
 #>
@@ -134,7 +134,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 1; p < d.Size; p++)
 		{
 #>
-                hashCode = (hashCode * 397) ^ <#=def.FieldNames[p]#>.GetHashCode();
+                hashCode = (hashCode * 397) ^ <#=d.FieldNames[p]#>.GetHashCode();
 <#
 		}
 #>
@@ -152,7 +152,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </remarks>
         public <#=d.DT#> LengthSquared()
         {
-            return <#=d.DT.TypeCast#>(<#for(int p = 0; p < d.Size; p++){#>(<#=def.FieldNames[p]#> * <#=def.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
+            return <#=d.DT.TypeCast#>(<#for(int p = 0; p < d.Size; p++){#>(<#=d.FieldNames[p]#> * <#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
         }
 
 		/// <summary>
@@ -161,7 +161,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>A <#=def.SizeNames[d.Size]#>-element array containing the components of the vector.</returns>
         public <#=d.DT#>[] ToArray()
         {
-            return new <#=d.DT#>[] { <#=gen.FieldsToArgs(def.FieldNames)#> };
+            return new <#=d.DT#>[] { <#=gen.FieldsToArgs(d.FieldNames)#> };
         }
 <#
     if(!d.DT.IsUnsigned)
@@ -173,7 +173,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>A <#=gen.See()#> facing the opposite direction.</returns>
 		public <#=d.Name#> Negate()
 		{
-			return new <#=d.Name#>(<#=gen.FieldsToArgs(def.FieldNames, $"{d.DT.TypeCast}-")#>);
+			return new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldNames, $"{d.DT.TypeCast}-")#>);
 		}
 <#
     }
@@ -188,7 +188,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-			<#=def.FieldNames[p]#> = <#=def.FieldNames[p]#> < min ? min : <#=def.FieldNames[p]#> > max ? max : <#=def.FieldNames[p]#>;
+			<#=d.FieldNames[p]#> = <#=d.FieldNames[p]#> < min ? min : <#=d.FieldNames[p]#> > max ? max : <#=d.FieldNames[p]#>;
 <#
 		}
 #>
@@ -211,7 +211,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-			<#=def.FieldNames[p]#> = <#=def.FieldNames[p]#> < min.<#=def.FieldNames[p]#> ? min.<#=def.FieldNames[p]#> : <#=def.FieldNames[p]#> > max.<#=def.FieldNames[p]#> ? max.<#=def.FieldNames[p]#> : <#=def.FieldNames[p]#>;
+			<#=d.FieldNames[p]#> = <#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : <#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : <#=d.FieldNames[p]#>;
 <#
 		}
 #>
@@ -231,7 +231,7 @@ namespace Molten<#=d.SubNamespace#>
             if (format == null)
                 return ToString();
 
-            return string.Format(CultureInfo.CurrentCulture, format, <#=gen.FieldsToArgs(def.FieldNames)#>);
+            return string.Format(CultureInfo.CurrentCulture, format, <#=gen.FieldsToArgs(d.FieldNames)#>);
         }
 
 		/// <summary>
@@ -243,7 +243,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, toStringFormat, <#=gen.FieldsToArgs(def.FieldNames)#>);
+            return string.Format(formatProvider, toStringFormat, <#=gen.FieldsToArgs(d.FieldNames)#>);
         }
 
 		/// <summary>
@@ -254,7 +254,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, toStringFormat, <#=gen.FieldsToArgs(def.FieldNames)#>);
+            return string.Format(CultureInfo.CurrentCulture, toStringFormat, <#=gen.FieldsToArgs(d.FieldNames)#>);
         }
 
 		/// <summary>
@@ -286,7 +286,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-			result.<#=def.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=def.FieldNames[p]#> + right);
+			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=d.FieldNames[p]#> + right);
 <#
 		}
 #>
@@ -324,7 +324,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-			result.<#=def.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=def.FieldNames[p]#> - right);
+			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=d.FieldNames[p]#> - right);
 <#
 		}
 #>
@@ -357,7 +357,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-			result.<#=def.FieldNames[p]#> = <#=d.DT.TypeCast#>-value.<#=def.FieldNames[p]#>;
+			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>-value.<#=d.FieldNames[p]#>;
 <#
 		}
 #>            
@@ -387,7 +387,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-			result.<#=def.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=def.FieldNames[p]#> / right);
+			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=d.FieldNames[p]#> / right);
 <#
 		}
 #>
@@ -415,7 +415,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-			result.<#=def.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=def.FieldNames[p]#> * right);
+			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>(left.<#=d.FieldNames[p]#> * right);
 <#
 		}
 #>
@@ -541,13 +541,13 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-		/// <param name="<#=def.ArgNames[p]#>Index">The axis index to use for the new <#=def.FieldNames[p]#> value.</param>
+		/// <param name="<#=d.ArgNames[p]#>Index">The axis index to use for the new <#=d.FieldNames[p]#> value.</param>
 <#
 		}
 #>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < d.Size; p++){#>int <#=def.ArgNames[p]#>Index<#=(p < (d.Size-1) ? ", " : "")#><#}#>)
+        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < d.Size; p++){#>int <#=d.ArgNames[p]#>Index<#=(p < (d.Size-1) ? ", " : "")#><#}#>)
         {
             return new <#=d.Name#>()
             {
@@ -555,7 +555,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-			   <#=def.FieldNames[p]#> = (&val.X)[<#=def.ArgNames[p]#>Index],
+			   <#=d.FieldNames[p]#> = (&val.X)[<#=d.ArgNames[p]#>Index],
 <#
 		}
 #>
@@ -564,7 +564,7 @@ namespace Molten<#=d.SubNamespace#>
 
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < d.Size; p++){#>uint <#=def.ArgNames[p]#>Index<#=(p < (d.Size-1) ? ", " : "")#><#}#>)
+        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < d.Size; p++){#>uint <#=d.ArgNames[p]#>Index<#=(p < (d.Size-1) ? ", " : "")#><#}#>)
         {
             return new <#=d.Name#>()
             {
@@ -572,7 +572,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-			    <#=def.FieldNames[p]#> = (&val.X)[<#=def.ArgNames[p]#>Index],
+			    <#=d.FieldNames[p]#> = (&val.X)[<#=d.ArgNames[p]#>Index],
 <#
 		}
 #>
@@ -587,7 +587,7 @@ namespace Molten<#=d.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=d.DT#> Dot(ref <#=d.Name#> left, ref <#=d.Name#> right)
         {
-			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < d.Size; p++){#>(<#=d.DT.TypeCast#>left.<#=def.FieldNames[p]#> * right.<#=def.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
+			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < d.Size; p++){#>(<#=d.DT.TypeCast#>left.<#=d.FieldNames[p]#> * right.<#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
         }
 
 		/// <summary>
@@ -598,7 +598,7 @@ namespace Molten<#=d.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=d.DT#> Dot(<#=d.Name#> left, <#=d.Name#> right)
         {
-			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < d.Size; p++){#>(left.<#=def.FieldNames[p]#> * right.<#=def.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
+			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < d.Size; p++){#>(left.<#=d.FieldNames[p]#> * right.<#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
         }
 
 		/// <summary>
@@ -616,7 +616,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-				<#=d.DT.TypeCast#>((value1.<#=def.FieldNames[p]#> + (amount1 * (value2.<#=def.FieldNames[p]#> - value1.<#=def.FieldNames[p]#>))) + (amount2 * (value3.<#=def.FieldNames[p]#> - value1.<#=def.FieldNames[p]#>)))<#=(p < (d.Size -1) ? ", " : "")#>
+				<#=d.DT.TypeCast#>((value1.<#=d.FieldNames[p]#> + (amount1 * (value2.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>))) + (amount2 * (value3.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>)))<#=(p < (d.Size -1) ? ", " : "")#>
 <#
 		}
 #>
@@ -640,7 +640,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-			result.<#=def.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=def.FieldNames[p]#> + amount * end.<#=def.FieldNames[p]#>);
+			result.<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>);
 <#
 		}
 #>
@@ -664,7 +664,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-				<#=def.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=def.FieldNames[p]#> + amount * end.<#=def.FieldNames[p]#>),
+				<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>),
 <#
 		}
 #>
@@ -689,7 +689,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-				<#=def.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=def.FieldNames[p]#> + amount * end.<#=def.FieldNames[p]#>),
+				<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>),
 <#
 		}
 #>
@@ -710,7 +710,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-				result.<#=def.FieldNames[p]#> = (left.<#=def.FieldNames[p]#> < right.<#=def.FieldNames[p]#>) ? left.<#=def.FieldNames[p]#> : right.<#=def.FieldNames[p]#>;
+				result.<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> < right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>;
 <#
 		}
 #>
@@ -744,7 +744,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-				<#=def.FieldNames[p]#> = (left.<#=def.FieldNames[p]#> < right.<#=def.FieldNames[p]#>) ? left.<#=def.FieldNames[p]#> : right.<#=def.FieldNames[p]#>,
+				<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> < right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>,
 <#
 		}
 #>
@@ -765,7 +765,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-				result.<#=def.FieldNames[p]#> = (left.<#=def.FieldNames[p]#> > right.<#=def.FieldNames[p]#>) ? left.<#=def.FieldNames[p]#> : right.<#=def.FieldNames[p]#>;
+				result.<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> > right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>;
 <#
 		}
 #>
@@ -799,7 +799,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-				<#=def.FieldNames[p]#> = (left.<#=def.FieldNames[p]#> > right.<#=def.FieldNames[p]#>) ? left.<#=def.FieldNames[p]#> : right.<#=def.FieldNames[p]#>,
+				<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> > right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>,
 <#
 		}
 #>
@@ -825,9 +825,9 @@ namespace Molten<#=d.SubNamespace#>
 			string r = "";
 			for(int p = 0; p < d.Size; p++)
 			{
-				r+= $"({def.ArgNames[p]} * {def.ArgNames[p]}){(p < (d.Size-1) ? " + " : "")}";
+				r+= $"({d.ArgNames[p]} * {d.ArgNames[p]}){(p < (d.Size-1) ? " + " : "")}";
 #>
-            <#=d.DT.IntType#> <#=def.ArgNames[p]#> = value1.<#=def.FieldNames[p]#> - value2.<#=def.FieldNames[p]#>;
+            <#=d.DT.IntType#> <#=d.ArgNames[p]#> = value1.<#=d.FieldNames[p]#> - value2.<#=d.FieldNames[p]#>;
 <#
 			}
 #>
@@ -854,9 +854,9 @@ namespace Molten<#=d.SubNamespace#>
 			r = "";
 			for(int p = 0; p < d.Size; p++)
 			{
-				r+= $"({def.ArgNames[p]} * {def.ArgNames[p]}){(p < (d.Size-1) ? " + " : "")}";
+				r+= $"({d.ArgNames[p]} * {d.ArgNames[p]}){(p < (d.Size-1) ? " + " : "")}";
 #>
-            <#=d.DT.IntType#> <#=def.ArgNames[p]#> = value1.<#=def.FieldNames[p]#> - value2.<#=def.FieldNames[p]#>;
+            <#=d.DT.IntType#> <#=d.ArgNames[p]#> = value1.<#=d.FieldNames[p]#> - value2.<#=d.FieldNames[p]#>;
 <#
 			}
 #>
@@ -877,7 +877,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-				<#=def.FieldNames[p]#> = value.<#=def.FieldNames[p]#> < min ? min : value.<#=def.FieldNames[p]#> > max ? max : value.<#=def.FieldNames[p]#>,
+				<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min ? min : value.<#=d.FieldNames[p]#> > max ? max : value.<#=d.FieldNames[p]#>,
 <#
 		}
 #>
@@ -896,7 +896,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-				result.<#=def.FieldNames[p]#> = value.<#=def.FieldNames[p]#> < min.<#=def.FieldNames[p]#> ? min.<#=def.FieldNames[p]#> : value.<#=def.FieldNames[p]#> > max.<#=def.FieldNames[p]#> ? max.<#=def.FieldNames[p]#> : value.<#=def.FieldNames[p]#>;
+				result.<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#>;
 <#
 		}
 #>
@@ -915,7 +915,7 @@ namespace Molten<#=d.SubNamespace#>
 		for(int p = 0; p < d.Size; p++)
 		{
 #>
-				<#=def.FieldNames[p]#> = value.<#=def.FieldNames[p]#> < min.<#=def.FieldNames[p]#> ? min.<#=def.FieldNames[p]#> : value.<#=def.FieldNames[p]#> > max.<#=def.FieldNames[p]#> ? max.<#=def.FieldNames[p]#> : value.<#=def.FieldNames[p]#>,
+				<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#>,
 <#
 		}
 #>
@@ -931,7 +931,7 @@ namespace Molten<#=d.SubNamespace#>
         /// whether the original vector was close enough to the surface to hit it.</remarks>
         public static <#=d.Name#> Reflect(ref <#=d.Name#> vector, ref <#=d.Name#> normal)
         {
-            <#=d.DT.IntType#> dot = <#for(int p = 0; p < d.Size; p++){#>(vector.<#=def.FieldNames[p]#> * normal.<#=def.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>;
+            <#=d.DT.IntType#> dot = <#for(int p = 0; p < d.Size; p++){#>(vector.<#=d.FieldNames[p]#> * normal.<#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>;
 
             return new <#=d.Name#>()
             {
@@ -939,7 +939,7 @@ namespace Molten<#=d.SubNamespace#>
 				for(int p = 0; p < d.Size; p++)
 				{
 #>
-				<#=def.FieldNames[p]#> = <#=d.DT.FPToTypeCast#>(vector.<#=def.FieldNames[p]#> - ((2 * dot) * normal.<#=def.FieldNames[p]#>)),
+				<#=d.FieldNames[p]#> = <#=d.DT.FPToTypeCast#>(vector.<#=d.FieldNames[p]#> - ((2 * dot) * normal.<#=d.FieldNames[p]#>)),
 <#
 			    }
 #>
@@ -950,12 +950,12 @@ namespace Molten<#=d.SubNamespace#>
 #region Tuples
         public static implicit operator (<#=gen.GetConstructorArgs()#>)(<#=d.Name#> val)
         {
-            return (<#for(int p = 0; p < d.Size; p++){#><#=(p > 0 ? ", " : "")#>val.<#=def.FieldNames[p]#><#}#>);
+            return (<#for(int p = 0; p < d.Size; p++){#><#=(p > 0 ? ", " : "")#>val.<#=d.FieldNames[p]#><#}#>);
         }
 
         public static implicit operator <#=d.Name#>((<#=gen.GetConstructorArgs()#>) val)
         {
-            return new <#=d.Name#>(<#for(int p = 0; p < d.Size; p++){#><#=(p > 0 ? ", " : "")#>val.<#=def.ArgNames[p]#><#}#>);
+            return new <#=d.Name#>(<#for(int p = 0; p < d.Size; p++){#><#=(p > 0 ? ", " : "")#>val.<#=d.ArgNames[p]#><#}#>);
         }
 #endregion
 
@@ -977,7 +977,7 @@ namespace Molten<#=d.SubNamespace#>
 					for(int p = 0; p < d.Size; p++)
 					{
 #>
-					case <#=p#>: return <#=def.FieldNames[p]#>;
+					case <#=p#>: return <#=d.FieldNames[p]#>;
 <#
 					}
 #>
@@ -993,7 +993,7 @@ namespace Molten<#=d.SubNamespace#>
 					for(int p = 0; p < d.Size; p++)
 					{
 #>
-					case <#=p#>: <#=def.FieldNames[p]#> = value; break;
+					case <#=p#>: <#=d.FieldNames[p]#> = value; break;
 <#
 					}
 #>

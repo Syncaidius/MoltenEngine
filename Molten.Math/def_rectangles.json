@@ -1,7 +1,10 @@
 {
-  "FieldNames": [ "Left", "Top", "Right", "Bottom" ],
-  "FieldLabels": [ "Left", "Top", "Right", "Bottom" ],
   "SubFolder": "Rectangles",
+  "Fields": {
+    "4": {
+      "Names": [ "Left", "Top", "Right", "Bottom" ]
+    }
+  },
 
   "Types": [
     {
