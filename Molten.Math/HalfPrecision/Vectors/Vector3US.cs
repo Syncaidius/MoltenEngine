@@ -306,7 +306,7 @@ namespace Molten.HalfPrecision
 #region Add operators
 		///<summary>Performs a add operation on two <see cref="Vector3US"/>.</summary>
 		///<param name="a">The first <see cref="Vector3US"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3US"/>to add.</param>
+		///<param name="b">The second <see cref="Vector3US"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Add(ref Vector3US a, ref Vector3US b, out Vector3US result)
 		{
@@ -325,6 +325,7 @@ namespace Molten.HalfPrecision
 			Add(ref a, ref b, out Vector3US result);
 			return result;
 		}
+
 
         public static void Add(ref Vector3US left, ushort right, out Vector3US result)
         {
@@ -358,8 +359,8 @@ namespace Molten.HalfPrecision
 
 #region Subtract operators
 		///<summary>Performs a subtract operation on two <see cref="Vector3US"/>.</summary>
-		///<param name="a">The first <see cref="Vector3US"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3US"/>to add.</param>
+		///<param name="a">The first <see cref="Vector3US"/> to subtract.</param>
+		///<param name="b">The second <see cref="Vector3US"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Subtract(ref Vector3US a, ref Vector3US b, out Vector3US result)
 		{
@@ -369,8 +370,8 @@ namespace Molten.HalfPrecision
 		}
 
 		///<summary>Performs a subtract operation on two <see cref="Vector3US"/>.</summary>
-		///<param name="a">The first <see cref="Vector3US"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3US"/> to add.</param>
+		///<param name="a">The first <see cref="Vector3US"/> to subtract.</param>
+		///<param name="b">The second <see cref="Vector3US"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3US operator -(Vector3US a, Vector3US b)
@@ -378,6 +379,7 @@ namespace Molten.HalfPrecision
 			Subtract(ref a, ref b, out Vector3US result);
 			return result;
 		}
+
 
         public static void Subtract(ref Vector3US left, ushort right, out Vector3US result)
         {
@@ -402,8 +404,8 @@ namespace Molten.HalfPrecision
 
 #region division operators
 		///<summary>Performs a divide operation on two <see cref="Vector3US"/>.</summary>
-		///<param name="a">The first <see cref="Vector3US"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3US"/>to add.</param>
+		///<param name="a">The first <see cref="Vector3US"/> to divide.</param>
+		///<param name="b">The second <see cref="Vector3US"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Divide(ref Vector3US a, ref Vector3US b, out Vector3US result)
 		{
@@ -413,8 +415,8 @@ namespace Molten.HalfPrecision
 		}
 
 		///<summary>Performs a divide operation on two <see cref="Vector3US"/>.</summary>
-		///<param name="a">The first <see cref="Vector3US"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3US"/> to add.</param>
+		///<param name="a">The first <see cref="Vector3US"/> to divide.</param>
+		///<param name="b">The second <see cref="Vector3US"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3US operator /(Vector3US a, Vector3US b)
@@ -422,6 +424,7 @@ namespace Molten.HalfPrecision
 			Divide(ref a, ref b, out Vector3US result);
 			return result;
 		}
+
 
         public static void Divide(ref Vector3US left, ushort right, out Vector3US result)
         {
@@ -445,8 +448,8 @@ namespace Molten.HalfPrecision
 
 #region Multiply operators
 		///<summary>Performs a multiply operation on two <see cref="Vector3US"/>.</summary>
-		///<param name="a">The first <see cref="Vector3US"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3US"/>to add.</param>
+		///<param name="a">The first <see cref="Vector3US"/> to multiply.</param>
+		///<param name="b">The second <see cref="Vector3US"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Multiply(ref Vector3US a, ref Vector3US b, out Vector3US result)
 		{
@@ -456,8 +459,8 @@ namespace Molten.HalfPrecision
 		}
 
 		///<summary>Performs a multiply operation on two <see cref="Vector3US"/>.</summary>
-		///<param name="a">The first <see cref="Vector3US"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3US"/> to add.</param>
+		///<param name="a">The first <see cref="Vector3US"/> to multiply.</param>
+		///<param name="b">The second <see cref="Vector3US"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3US operator *(Vector3US a, Vector3US b)
@@ -465,6 +468,7 @@ namespace Molten.HalfPrecision
 			Multiply(ref a, ref b, out Vector3US result);
 			return result;
 		}
+
 
         public static void Multiply(ref Vector3US left, ushort right, out Vector3US result)
         {

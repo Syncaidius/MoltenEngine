@@ -333,7 +333,7 @@ namespace Molten.DoublePrecision
 #region Add operators
 		///<summary>Performs a add operation on two <see cref="Vector4UL"/>.</summary>
 		///<param name="a">The first <see cref="Vector4UL"/> to add.</param>
-		///<param name="b">The second <see cref="Vector4UL"/>to add.</param>
+		///<param name="b">The second <see cref="Vector4UL"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Add(ref Vector4UL a, ref Vector4UL b, out Vector4UL result)
 		{
@@ -353,6 +353,7 @@ namespace Molten.DoublePrecision
 			Add(ref a, ref b, out Vector4UL result);
 			return result;
 		}
+
 
         public static void Add(ref Vector4UL left, ulong right, out Vector4UL result)
         {
@@ -387,8 +388,8 @@ namespace Molten.DoublePrecision
 
 #region Subtract operators
 		///<summary>Performs a subtract operation on two <see cref="Vector4UL"/>.</summary>
-		///<param name="a">The first <see cref="Vector4UL"/> to add.</param>
-		///<param name="b">The second <see cref="Vector4UL"/>to add.</param>
+		///<param name="a">The first <see cref="Vector4UL"/> to subtract.</param>
+		///<param name="b">The second <see cref="Vector4UL"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Subtract(ref Vector4UL a, ref Vector4UL b, out Vector4UL result)
 		{
@@ -399,8 +400,8 @@ namespace Molten.DoublePrecision
 		}
 
 		///<summary>Performs a subtract operation on two <see cref="Vector4UL"/>.</summary>
-		///<param name="a">The first <see cref="Vector4UL"/> to add.</param>
-		///<param name="b">The second <see cref="Vector4UL"/> to add.</param>
+		///<param name="a">The first <see cref="Vector4UL"/> to subtract.</param>
+		///<param name="b">The second <see cref="Vector4UL"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector4UL operator -(Vector4UL a, Vector4UL b)
@@ -408,6 +409,7 @@ namespace Molten.DoublePrecision
 			Subtract(ref a, ref b, out Vector4UL result);
 			return result;
 		}
+
 
         public static void Subtract(ref Vector4UL left, ulong right, out Vector4UL result)
         {
@@ -433,8 +435,8 @@ namespace Molten.DoublePrecision
 
 #region division operators
 		///<summary>Performs a divide operation on two <see cref="Vector4UL"/>.</summary>
-		///<param name="a">The first <see cref="Vector4UL"/> to add.</param>
-		///<param name="b">The second <see cref="Vector4UL"/>to add.</param>
+		///<param name="a">The first <see cref="Vector4UL"/> to divide.</param>
+		///<param name="b">The second <see cref="Vector4UL"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Divide(ref Vector4UL a, ref Vector4UL b, out Vector4UL result)
 		{
@@ -445,8 +447,8 @@ namespace Molten.DoublePrecision
 		}
 
 		///<summary>Performs a divide operation on two <see cref="Vector4UL"/>.</summary>
-		///<param name="a">The first <see cref="Vector4UL"/> to add.</param>
-		///<param name="b">The second <see cref="Vector4UL"/> to add.</param>
+		///<param name="a">The first <see cref="Vector4UL"/> to divide.</param>
+		///<param name="b">The second <see cref="Vector4UL"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector4UL operator /(Vector4UL a, Vector4UL b)
@@ -454,6 +456,7 @@ namespace Molten.DoublePrecision
 			Divide(ref a, ref b, out Vector4UL result);
 			return result;
 		}
+
 
         public static void Divide(ref Vector4UL left, ulong right, out Vector4UL result)
         {
@@ -478,8 +481,8 @@ namespace Molten.DoublePrecision
 
 #region Multiply operators
 		///<summary>Performs a multiply operation on two <see cref="Vector4UL"/>.</summary>
-		///<param name="a">The first <see cref="Vector4UL"/> to add.</param>
-		///<param name="b">The second <see cref="Vector4UL"/>to add.</param>
+		///<param name="a">The first <see cref="Vector4UL"/> to multiply.</param>
+		///<param name="b">The second <see cref="Vector4UL"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Multiply(ref Vector4UL a, ref Vector4UL b, out Vector4UL result)
 		{
@@ -490,8 +493,8 @@ namespace Molten.DoublePrecision
 		}
 
 		///<summary>Performs a multiply operation on two <see cref="Vector4UL"/>.</summary>
-		///<param name="a">The first <see cref="Vector4UL"/> to add.</param>
-		///<param name="b">The second <see cref="Vector4UL"/> to add.</param>
+		///<param name="a">The first <see cref="Vector4UL"/> to multiply.</param>
+		///<param name="b">The second <see cref="Vector4UL"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector4UL operator *(Vector4UL a, Vector4UL b)
@@ -499,6 +502,7 @@ namespace Molten.DoublePrecision
 			Multiply(ref a, ref b, out Vector4UL result);
 			return result;
 		}
+
 
         public static void Multiply(ref Vector4UL left, ulong right, out Vector4UL result)
         {

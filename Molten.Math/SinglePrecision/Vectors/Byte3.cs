@@ -306,7 +306,7 @@ namespace Molten
 #region Add operators
 		///<summary>Performs a add operation on two <see cref="Byte3"/>.</summary>
 		///<param name="a">The first <see cref="Byte3"/> to add.</param>
-		///<param name="b">The second <see cref="Byte3"/>to add.</param>
+		///<param name="b">The second <see cref="Byte3"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Add(ref Byte3 a, ref Byte3 b, out Byte3 result)
 		{
@@ -325,6 +325,7 @@ namespace Molten
 			Add(ref a, ref b, out Byte3 result);
 			return result;
 		}
+
 
         public static void Add(ref Byte3 left, byte right, out Byte3 result)
         {
@@ -358,8 +359,8 @@ namespace Molten
 
 #region Subtract operators
 		///<summary>Performs a subtract operation on two <see cref="Byte3"/>.</summary>
-		///<param name="a">The first <see cref="Byte3"/> to add.</param>
-		///<param name="b">The second <see cref="Byte3"/>to add.</param>
+		///<param name="a">The first <see cref="Byte3"/> to subtract.</param>
+		///<param name="b">The second <see cref="Byte3"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Subtract(ref Byte3 a, ref Byte3 b, out Byte3 result)
 		{
@@ -369,8 +370,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a subtract operation on two <see cref="Byte3"/>.</summary>
-		///<param name="a">The first <see cref="Byte3"/> to add.</param>
-		///<param name="b">The second <see cref="Byte3"/> to add.</param>
+		///<param name="a">The first <see cref="Byte3"/> to subtract.</param>
+		///<param name="b">The second <see cref="Byte3"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Byte3 operator -(Byte3 a, Byte3 b)
@@ -378,6 +379,7 @@ namespace Molten
 			Subtract(ref a, ref b, out Byte3 result);
 			return result;
 		}
+
 
         public static void Subtract(ref Byte3 left, byte right, out Byte3 result)
         {
@@ -402,8 +404,8 @@ namespace Molten
 
 #region division operators
 		///<summary>Performs a divide operation on two <see cref="Byte3"/>.</summary>
-		///<param name="a">The first <see cref="Byte3"/> to add.</param>
-		///<param name="b">The second <see cref="Byte3"/>to add.</param>
+		///<param name="a">The first <see cref="Byte3"/> to divide.</param>
+		///<param name="b">The second <see cref="Byte3"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Divide(ref Byte3 a, ref Byte3 b, out Byte3 result)
 		{
@@ -413,8 +415,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a divide operation on two <see cref="Byte3"/>.</summary>
-		///<param name="a">The first <see cref="Byte3"/> to add.</param>
-		///<param name="b">The second <see cref="Byte3"/> to add.</param>
+		///<param name="a">The first <see cref="Byte3"/> to divide.</param>
+		///<param name="b">The second <see cref="Byte3"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Byte3 operator /(Byte3 a, Byte3 b)
@@ -422,6 +424,7 @@ namespace Molten
 			Divide(ref a, ref b, out Byte3 result);
 			return result;
 		}
+
 
         public static void Divide(ref Byte3 left, byte right, out Byte3 result)
         {
@@ -445,8 +448,8 @@ namespace Molten
 
 #region Multiply operators
 		///<summary>Performs a multiply operation on two <see cref="Byte3"/>.</summary>
-		///<param name="a">The first <see cref="Byte3"/> to add.</param>
-		///<param name="b">The second <see cref="Byte3"/>to add.</param>
+		///<param name="a">The first <see cref="Byte3"/> to multiply.</param>
+		///<param name="b">The second <see cref="Byte3"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Multiply(ref Byte3 a, ref Byte3 b, out Byte3 result)
 		{
@@ -456,8 +459,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a multiply operation on two <see cref="Byte3"/>.</summary>
-		///<param name="a">The first <see cref="Byte3"/> to add.</param>
-		///<param name="b">The second <see cref="Byte3"/> to add.</param>
+		///<param name="a">The first <see cref="Byte3"/> to multiply.</param>
+		///<param name="b">The second <see cref="Byte3"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Byte3 operator *(Byte3 a, Byte3 b)
@@ -465,6 +468,7 @@ namespace Molten
 			Multiply(ref a, ref b, out Byte3 result);
 			return result;
 		}
+
 
         public static void Multiply(ref Byte3 left, byte right, out Byte3 result)
         {

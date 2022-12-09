@@ -281,7 +281,7 @@ namespace Molten
 #region Add operators
 		///<summary>Performs a add operation on two <see cref="Vector2UI"/>.</summary>
 		///<param name="a">The first <see cref="Vector2UI"/> to add.</param>
-		///<param name="b">The second <see cref="Vector2UI"/>to add.</param>
+		///<param name="b">The second <see cref="Vector2UI"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Add(ref Vector2UI a, ref Vector2UI b, out Vector2UI result)
 		{
@@ -299,6 +299,7 @@ namespace Molten
 			Add(ref a, ref b, out Vector2UI result);
 			return result;
 		}
+
 
         public static void Add(ref Vector2UI left, uint right, out Vector2UI result)
         {
@@ -331,8 +332,8 @@ namespace Molten
 
 #region Subtract operators
 		///<summary>Performs a subtract operation on two <see cref="Vector2UI"/>.</summary>
-		///<param name="a">The first <see cref="Vector2UI"/> to add.</param>
-		///<param name="b">The second <see cref="Vector2UI"/>to add.</param>
+		///<param name="a">The first <see cref="Vector2UI"/> to subtract.</param>
+		///<param name="b">The second <see cref="Vector2UI"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Subtract(ref Vector2UI a, ref Vector2UI b, out Vector2UI result)
 		{
@@ -341,8 +342,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a subtract operation on two <see cref="Vector2UI"/>.</summary>
-		///<param name="a">The first <see cref="Vector2UI"/> to add.</param>
-		///<param name="b">The second <see cref="Vector2UI"/> to add.</param>
+		///<param name="a">The first <see cref="Vector2UI"/> to subtract.</param>
+		///<param name="b">The second <see cref="Vector2UI"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2UI operator -(Vector2UI a, Vector2UI b)
@@ -350,6 +351,7 @@ namespace Molten
 			Subtract(ref a, ref b, out Vector2UI result);
 			return result;
 		}
+
 
         public static void Subtract(ref Vector2UI left, uint right, out Vector2UI result)
         {
@@ -373,8 +375,8 @@ namespace Molten
 
 #region division operators
 		///<summary>Performs a divide operation on two <see cref="Vector2UI"/>.</summary>
-		///<param name="a">The first <see cref="Vector2UI"/> to add.</param>
-		///<param name="b">The second <see cref="Vector2UI"/>to add.</param>
+		///<param name="a">The first <see cref="Vector2UI"/> to divide.</param>
+		///<param name="b">The second <see cref="Vector2UI"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Divide(ref Vector2UI a, ref Vector2UI b, out Vector2UI result)
 		{
@@ -383,8 +385,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a divide operation on two <see cref="Vector2UI"/>.</summary>
-		///<param name="a">The first <see cref="Vector2UI"/> to add.</param>
-		///<param name="b">The second <see cref="Vector2UI"/> to add.</param>
+		///<param name="a">The first <see cref="Vector2UI"/> to divide.</param>
+		///<param name="b">The second <see cref="Vector2UI"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2UI operator /(Vector2UI a, Vector2UI b)
@@ -392,6 +394,7 @@ namespace Molten
 			Divide(ref a, ref b, out Vector2UI result);
 			return result;
 		}
+
 
         public static void Divide(ref Vector2UI left, uint right, out Vector2UI result)
         {
@@ -414,8 +417,8 @@ namespace Molten
 
 #region Multiply operators
 		///<summary>Performs a multiply operation on two <see cref="Vector2UI"/>.</summary>
-		///<param name="a">The first <see cref="Vector2UI"/> to add.</param>
-		///<param name="b">The second <see cref="Vector2UI"/>to add.</param>
+		///<param name="a">The first <see cref="Vector2UI"/> to multiply.</param>
+		///<param name="b">The second <see cref="Vector2UI"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Multiply(ref Vector2UI a, ref Vector2UI b, out Vector2UI result)
 		{
@@ -424,8 +427,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a multiply operation on two <see cref="Vector2UI"/>.</summary>
-		///<param name="a">The first <see cref="Vector2UI"/> to add.</param>
-		///<param name="b">The second <see cref="Vector2UI"/> to add.</param>
+		///<param name="a">The first <see cref="Vector2UI"/> to multiply.</param>
+		///<param name="b">The second <see cref="Vector2UI"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2UI operator *(Vector2UI a, Vector2UI b)
@@ -433,6 +436,7 @@ namespace Molten
 			Multiply(ref a, ref b, out Vector2UI result);
 			return result;
 		}
+
 
         public static void Multiply(ref Vector2UI left, uint right, out Vector2UI result)
         {

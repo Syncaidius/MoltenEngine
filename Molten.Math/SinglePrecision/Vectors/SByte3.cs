@@ -314,7 +314,7 @@ namespace Molten
 #region Add operators
 		///<summary>Performs a add operation on two <see cref="SByte3"/>.</summary>
 		///<param name="a">The first <see cref="SByte3"/> to add.</param>
-		///<param name="b">The second <see cref="SByte3"/>to add.</param>
+		///<param name="b">The second <see cref="SByte3"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Add(ref SByte3 a, ref SByte3 b, out SByte3 result)
 		{
@@ -333,6 +333,7 @@ namespace Molten
 			Add(ref a, ref b, out SByte3 result);
 			return result;
 		}
+
 
         public static void Add(ref SByte3 left, sbyte right, out SByte3 result)
         {
@@ -366,8 +367,8 @@ namespace Molten
 
 #region Subtract operators
 		///<summary>Performs a subtract operation on two <see cref="SByte3"/>.</summary>
-		///<param name="a">The first <see cref="SByte3"/> to add.</param>
-		///<param name="b">The second <see cref="SByte3"/>to add.</param>
+		///<param name="a">The first <see cref="SByte3"/> to subtract.</param>
+		///<param name="b">The second <see cref="SByte3"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Subtract(ref SByte3 a, ref SByte3 b, out SByte3 result)
 		{
@@ -377,8 +378,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a subtract operation on two <see cref="SByte3"/>.</summary>
-		///<param name="a">The first <see cref="SByte3"/> to add.</param>
-		///<param name="b">The second <see cref="SByte3"/> to add.</param>
+		///<param name="a">The first <see cref="SByte3"/> to subtract.</param>
+		///<param name="b">The second <see cref="SByte3"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SByte3 operator -(SByte3 a, SByte3 b)
@@ -386,6 +387,7 @@ namespace Molten
 			Subtract(ref a, ref b, out SByte3 result);
 			return result;
 		}
+
 
         public static void Subtract(ref SByte3 left, sbyte right, out SByte3 result)
         {
@@ -433,8 +435,8 @@ namespace Molten
 
 #region division operators
 		///<summary>Performs a divide operation on two <see cref="SByte3"/>.</summary>
-		///<param name="a">The first <see cref="SByte3"/> to add.</param>
-		///<param name="b">The second <see cref="SByte3"/>to add.</param>
+		///<param name="a">The first <see cref="SByte3"/> to divide.</param>
+		///<param name="b">The second <see cref="SByte3"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Divide(ref SByte3 a, ref SByte3 b, out SByte3 result)
 		{
@@ -444,8 +446,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a divide operation on two <see cref="SByte3"/>.</summary>
-		///<param name="a">The first <see cref="SByte3"/> to add.</param>
-		///<param name="b">The second <see cref="SByte3"/> to add.</param>
+		///<param name="a">The first <see cref="SByte3"/> to divide.</param>
+		///<param name="b">The second <see cref="SByte3"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SByte3 operator /(SByte3 a, SByte3 b)
@@ -453,6 +455,7 @@ namespace Molten
 			Divide(ref a, ref b, out SByte3 result);
 			return result;
 		}
+
 
         public static void Divide(ref SByte3 left, sbyte right, out SByte3 result)
         {
@@ -476,8 +479,8 @@ namespace Molten
 
 #region Multiply operators
 		///<summary>Performs a multiply operation on two <see cref="SByte3"/>.</summary>
-		///<param name="a">The first <see cref="SByte3"/> to add.</param>
-		///<param name="b">The second <see cref="SByte3"/>to add.</param>
+		///<param name="a">The first <see cref="SByte3"/> to multiply.</param>
+		///<param name="b">The second <see cref="SByte3"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Multiply(ref SByte3 a, ref SByte3 b, out SByte3 result)
 		{
@@ -487,8 +490,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a multiply operation on two <see cref="SByte3"/>.</summary>
-		///<param name="a">The first <see cref="SByte3"/> to add.</param>
-		///<param name="b">The second <see cref="SByte3"/> to add.</param>
+		///<param name="a">The first <see cref="SByte3"/> to multiply.</param>
+		///<param name="b">The second <see cref="SByte3"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static SByte3 operator *(SByte3 a, SByte3 b)
@@ -496,6 +499,7 @@ namespace Molten
 			Multiply(ref a, ref b, out SByte3 result);
 			return result;
 		}
+
 
         public static void Multiply(ref SByte3 left, sbyte right, out SByte3 result)
         {

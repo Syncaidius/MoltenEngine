@@ -314,7 +314,7 @@ namespace Molten.DoublePrecision
 #region Add operators
 		///<summary>Performs a add operation on two <see cref="Vector3D"/>.</summary>
 		///<param name="a">The first <see cref="Vector3D"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3D"/>to add.</param>
+		///<param name="b">The second <see cref="Vector3D"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Add(ref Vector3D a, ref Vector3D b, out Vector3D result)
 		{
@@ -333,6 +333,7 @@ namespace Molten.DoublePrecision
 			Add(ref a, ref b, out Vector3D result);
 			return result;
 		}
+
 
         public static void Add(ref Vector3D left, double right, out Vector3D result)
         {
@@ -366,8 +367,8 @@ namespace Molten.DoublePrecision
 
 #region Subtract operators
 		///<summary>Performs a subtract operation on two <see cref="Vector3D"/>.</summary>
-		///<param name="a">The first <see cref="Vector3D"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3D"/>to add.</param>
+		///<param name="a">The first <see cref="Vector3D"/> to subtract.</param>
+		///<param name="b">The second <see cref="Vector3D"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Subtract(ref Vector3D a, ref Vector3D b, out Vector3D result)
 		{
@@ -377,8 +378,8 @@ namespace Molten.DoublePrecision
 		}
 
 		///<summary>Performs a subtract operation on two <see cref="Vector3D"/>.</summary>
-		///<param name="a">The first <see cref="Vector3D"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3D"/> to add.</param>
+		///<param name="a">The first <see cref="Vector3D"/> to subtract.</param>
+		///<param name="b">The second <see cref="Vector3D"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3D operator -(Vector3D a, Vector3D b)
@@ -386,6 +387,7 @@ namespace Molten.DoublePrecision
 			Subtract(ref a, ref b, out Vector3D result);
 			return result;
 		}
+
 
         public static void Subtract(ref Vector3D left, double right, out Vector3D result)
         {
@@ -433,8 +435,8 @@ namespace Molten.DoublePrecision
 
 #region division operators
 		///<summary>Performs a divide operation on two <see cref="Vector3D"/>.</summary>
-		///<param name="a">The first <see cref="Vector3D"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3D"/>to add.</param>
+		///<param name="a">The first <see cref="Vector3D"/> to divide.</param>
+		///<param name="b">The second <see cref="Vector3D"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Divide(ref Vector3D a, ref Vector3D b, out Vector3D result)
 		{
@@ -444,8 +446,8 @@ namespace Molten.DoublePrecision
 		}
 
 		///<summary>Performs a divide operation on two <see cref="Vector3D"/>.</summary>
-		///<param name="a">The first <see cref="Vector3D"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3D"/> to add.</param>
+		///<param name="a">The first <see cref="Vector3D"/> to divide.</param>
+		///<param name="b">The second <see cref="Vector3D"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3D operator /(Vector3D a, Vector3D b)
@@ -453,6 +455,7 @@ namespace Molten.DoublePrecision
 			Divide(ref a, ref b, out Vector3D result);
 			return result;
 		}
+
 
         public static void Divide(ref Vector3D left, double right, out Vector3D result)
         {
@@ -476,8 +479,8 @@ namespace Molten.DoublePrecision
 
 #region Multiply operators
 		///<summary>Performs a multiply operation on two <see cref="Vector3D"/>.</summary>
-		///<param name="a">The first <see cref="Vector3D"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3D"/>to add.</param>
+		///<param name="a">The first <see cref="Vector3D"/> to multiply.</param>
+		///<param name="b">The second <see cref="Vector3D"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Multiply(ref Vector3D a, ref Vector3D b, out Vector3D result)
 		{
@@ -487,8 +490,8 @@ namespace Molten.DoublePrecision
 		}
 
 		///<summary>Performs a multiply operation on two <see cref="Vector3D"/>.</summary>
-		///<param name="a">The first <see cref="Vector3D"/> to add.</param>
-		///<param name="b">The second <see cref="Vector3D"/> to add.</param>
+		///<param name="a">The first <see cref="Vector3D"/> to multiply.</param>
+		///<param name="b">The second <see cref="Vector3D"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3D operator *(Vector3D a, Vector3D b)
@@ -496,6 +499,7 @@ namespace Molten.DoublePrecision
 			Multiply(ref a, ref b, out Vector3D result);
 			return result;
 		}
+
 
         public static void Multiply(ref Vector3D left, double right, out Vector3D result)
         {

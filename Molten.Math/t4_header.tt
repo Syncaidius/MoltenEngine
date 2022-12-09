@@ -502,36 +502,57 @@ public class TypeGenerator
         }
     }
 
-    public void GenerateOperator(string op, string name, int indent = 2)
+    public void GenerateOperator(string op, string name, TypeDef other = null)
     {
-        string capName = Capitalize(name);
+        int indent = 2;
+        other = other ?? _curDef;
 
-        Out(indent, $"///<summary>Performs a {name} operation on two {See()}.</summary>");
-        Out(indent, $"///<param name=\"a\">The first {See()} to add.</param>");
-        Out(indent, $"///<param name=\"b\">The second {See()}to add.</param>");
+        string capName = Capitalize(name);
+        string first; 
+        string second;
+        string opDesc;
+
+        if(_curDef == other)
+        {
+            first = $"first {See()}";
+            second = $"second {See()}";
+            opDesc = $"two {See()}";
+        }
+        else
+        {
+            first = "";
+            second = "";
+            opDesc = $"a ${See()} and a ${See(other.GetName(_curDef.Size))}";
+        }
+
+        Out(indent, $"///<summary>Performs a {name} operation on {opDesc}.</summary>");
+        Out(indent, $"///<param name=\"a\">The {first} to {name}.</param>");
+        Out(indent, $"///<param name=\"b\">The {second} to {name}.</param>");
         Out(indent, $"///<param name=\"result\">Output for the result of the operation.</param>");
         Out(indent, $"public static void {capName}(ref {_curDef.Name} a, ref {_curDef.Name} b, out {_curDef.Name} result)");
         Out(indent, "{");
         for(int i = 0; i < _curDef.Size; i++){
+            string fieldName = _curDef.FieldNames[i];
+
             if(_curDef.DT.IntType != _curDef.DT.ToString())
-                Out(indent+1, $"result.{_curDef.FieldNames[i]} = ({_curDef.DT})(a.{_curDef.FieldNames[i]} {op} b.{_curDef.FieldNames[i]});");
+                Out(indent+1, $"result.{fieldName} = ({_curDef.DT})(a.{fieldName} {op} b.{fieldName});");
             else
-                Out(indent+1, $"result.{_curDef.FieldNames[i]} = a.{_curDef.FieldNames[i]} {op} b.{_curDef.FieldNames[i]};");
+                Out(indent+1, $"result.{fieldName} = a.{fieldName} {op} b.{fieldName};");
         }
         Out(indent, "}");
         Out("");
 
-        Out(indent, $"///<summary>Performs a {name} operation on two {See()}.</summary>");
-        Out(indent, $"///<param name=\"a\">The first {See()} to add.</param>");
-        Out(indent, $"///<param name=\"b\">The second {See()} to add.</param>");
+        Out(indent, $"///<summary>Performs a {name} operation on {opDesc}.</summary>");
+        Out(indent, $"///<param name=\"a\">The {first} to {name}.</param>");
+        Out(indent, $"///<param name=\"b\">The {second} to {name}.</param>");
         Out(indent, $"///<returns>The result of the operation.</returns>");
         Out(indent, $"[MethodImpl(MethodImplOptions.AggressiveInlining)]");
         Out(indent, $"public static {_curDef.Name} operator {op}({_curDef.Name} a, {_curDef.Name} b)");
         Out(indent, "{");
         Out(indent+1, $"{capName}(ref a, ref b, out {_curDef.Name} result);");
-        Out(indent+1, $"return result;");
-        
-        Out(indent, "}");
+        Out(indent+1, $"return result;");        
+        Out(indent, "}");   
+        Out("");
     }
 
     public string GetParamSentence(string[] pMap, int size, string delimiter = ", ", string finalDelimiter = "", string pPrefix = "", string pPostfix = "")

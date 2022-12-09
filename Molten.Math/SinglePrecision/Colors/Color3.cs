@@ -224,7 +224,7 @@ namespace Molten
 
 		///<summary>Performs a add operation on two <see cref="Color3"/>.</summary>
 		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/>to add.</param>
+		///<param name="b">The second <see cref="Color3"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Add(ref Color3 a, ref Color3 b, out Color3 result)
 		{
@@ -244,9 +244,10 @@ namespace Molten
 			return result;
 		}
 
+
 		///<summary>Performs a subtract operation on two <see cref="Color3"/>.</summary>
-		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/>to add.</param>
+		///<param name="a">The first <see cref="Color3"/> to subtract.</param>
+		///<param name="b">The second <see cref="Color3"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Subtract(ref Color3 a, ref Color3 b, out Color3 result)
 		{
@@ -256,8 +257,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a subtract operation on two <see cref="Color3"/>.</summary>
-		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/> to add.</param>
+		///<param name="a">The first <see cref="Color3"/> to subtract.</param>
+		///<param name="b">The second <see cref="Color3"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Color3 operator -(Color3 a, Color3 b)
@@ -266,9 +267,10 @@ namespace Molten
 			return result;
 		}
 
+
 		///<summary>Performs a modulate operation on two <see cref="Color3"/>.</summary>
-		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/>to add.</param>
+		///<param name="a">The first <see cref="Color3"/> to modulate.</param>
+		///<param name="b">The second <see cref="Color3"/> to modulate.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Modulate(ref Color3 a, ref Color3 b, out Color3 result)
 		{
@@ -278,8 +280,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a modulate operation on two <see cref="Color3"/>.</summary>
-		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/> to add.</param>
+		///<param name="a">The first <see cref="Color3"/> to modulate.</param>
+		///<param name="b">The second <see cref="Color3"/> to modulate.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Color3 operator *(Color3 a, Color3 b)
@@ -288,9 +290,10 @@ namespace Molten
 			return result;
 		}
 
+
 		///<summary>Performs a divide operation on two <see cref="Color3"/>.</summary>
-		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/>to add.</param>
+		///<param name="a">The first <see cref="Color3"/> to divide.</param>
+		///<param name="b">The second <see cref="Color3"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
 		public static void Divide(ref Color3 a, ref Color3 b, out Color3 result)
 		{
@@ -300,8 +303,8 @@ namespace Molten
 		}
 
 		///<summary>Performs a divide operation on two <see cref="Color3"/>.</summary>
-		///<param name="a">The first <see cref="Color3"/> to add.</param>
-		///<param name="b">The second <see cref="Color3"/> to add.</param>
+		///<param name="a">The first <see cref="Color3"/> to divide.</param>
+		///<param name="b">The second <see cref="Color3"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Color3 operator /(Color3 a, Color3 b)
@@ -309,6 +312,7 @@ namespace Molten
 			Divide(ref a, ref b, out Color3 result);
 			return result;
 		}
+
 
         /// <summary>
         /// Scales a color.
