@@ -240,7 +240,6 @@ namespace Molten.UI
             while (chunk != null)
             {
                 cBounds.Height = chunk.Height;
-
                 if (chunk.Pick(pos, ref cBounds, Caret.Start))
                     break;
 
@@ -263,7 +262,6 @@ namespace Molten.UI
             while (chunk != null)
             {
                 cBounds.Height = chunk.Height;
-
                 if (chunk.Pick(pos, ref cBounds, Caret.End))
                 {
                     Caret.CalculateSelected();
