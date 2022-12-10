@@ -232,31 +232,17 @@ namespace Molten.UI
             base.OnPressed(tracker);
 
             UITextChunk chunk = _firstChunk;
-
             Rectangle cBounds = _textBounds;
             Vector2I pos = (Vector2I)tracker.Position;
 
-            // If we've already picked a start and end point, clear caret and start again.
-            if(Caret.End.Line != null)
-                Caret.Clear();
+            Caret.Clear();
 
             while (chunk != null)
             {
                 cBounds.Height = chunk.Height;
 
-                if (Caret.Start.Line == null)
-                {
-                    if (chunk.Pick(pos, ref cBounds, Caret.Start))
-                        break;
-                }
-                else
-                {
-                    if (chunk.Pick(pos, ref cBounds, Caret.End))
-                    {
-                        Caret.CalculateSelected();
-                        break;
-                    }
-                }              
+                if (chunk.Pick(pos, ref cBounds, Caret.Start))
+                    break;
 
                 cBounds.Y += chunk.Height;
                 chunk = chunk.Next;
@@ -267,6 +253,26 @@ namespace Molten.UI
         {
             base.OnDragged(tracker);
 
+            if (Caret.Start.Chunk == null)
+                return;
+
+            UITextChunk chunk = _firstChunk;
+            Rectangle cBounds = _textBounds;
+            Vector2I pos = (Vector2I)tracker.Position;
+
+            while (chunk != null)
+            {
+                cBounds.Height = chunk.Height;
+
+                if (chunk.Pick(pos, ref cBounds, Caret.End))
+                {
+                    Caret.CalculateSelected();
+                    break;
+                }
+
+                cBounds.Y += chunk.Height;
+                chunk = chunk.Next;
+            }
         }
 
         protected override void OnRender(SpriteBatcher sb)
