@@ -69,6 +69,11 @@ namespace Molten.UI
             throw new NotImplementedException();
         }
 
+        public void OnDoublePressed(CameraInputTracker tracker)
+        {
+            throw new NotImplementedException();
+        }
+
         public void OnHeld(CameraInputTracker tracker)
         {
             throw new NotImplementedException();

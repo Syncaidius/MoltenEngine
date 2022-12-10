@@ -33,6 +33,11 @@ namespace Molten.UI
         public event UIElementPointerHandler Pressed;
 
         /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> is double-pressed by a <see cref="CameraInputTracker"/>.
+        /// </summary>
+        public event UIElementPointerHandler DoublePressed;
+
+        /// <summary>
         /// Invoked when the current <see cref="UIElement"/> is held by a <see cref="CameraInputTracker"/>.
         /// </summary>
         public event UIElementDeltaPositionHandler Held;
@@ -430,6 +435,17 @@ namespace Molten.UI
                 State = UIElementState.Pressed;
                 ParentWindow?.BringToFront();
                 Pressed?.Invoke(this, tracker);
+            }
+        }
+
+        public virtual void OnDoublePressed(CameraInputTracker tracker)
+        {
+            if (State == UIElementState.Pressed ||
+                State != UIElementState.Hovered ||
+                State != UIElementState.Active)
+            {
+                State = UIElementState.Pressed;
+                DoublePressed?.Invoke(this, tracker);
             }
         }
 

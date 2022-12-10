@@ -142,6 +142,7 @@ namespace Molten.Examples
                 ExampleAttribute att = t.GetCustomAttribute<ExampleAttribute>();
                 UIExampleListItem item = _lstExamples.Children.Add<UIExampleListItem>(new Rectangle(0, 0, 10, 25));
                 item.ExampleType = t;
+                item.DoublePressed += BtnStart_StartExample;
 
                 if (att != null)
                 {

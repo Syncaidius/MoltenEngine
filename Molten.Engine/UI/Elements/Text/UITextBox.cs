@@ -227,6 +227,7 @@ namespace Molten.UI
             return true;
         }
 
+        /// <inheritdoc/>
         public override void OnPressed(CameraInputTracker tracker)
         {
             base.OnPressed(tracker);
@@ -248,6 +249,7 @@ namespace Molten.UI
             }
         }
 
+        /// <inheritdoc/>
         public override void OnDragged(CameraInputTracker tracker)
         {
             base.OnDragged(tracker);
@@ -273,6 +275,7 @@ namespace Molten.UI
             }
         }
 
+        /// <inheritdoc/>
         protected override void OnRender(SpriteBatcher sb)
         {
             base.OnRender(sb);

@@ -11,6 +11,8 @@ namespace Molten.Input
 
     public abstract class PointingDevice: InputDevice<PointerState, PointerButton>
     {
+        const float MAX_DOUBLE_CLICK_DISTANCE = 10f; // Pixels.
+
         /// <summary>
         /// Invoked when any type of input event occurs for the current <see cref="PointingDevice{T}"/>.
         /// </summary>
@@ -33,11 +35,14 @@ namespace Molten.Input
 
         public event PointingDeviceHandler OnPressed;
 
+        public event PointingDeviceHandler OnDoublePressed;
+
         public event PointingDeviceHandler OnReleased;
 
         INativeSurface _surface;
         bool _wasInsideControl;
         SettingValue<float> _sensitivitySetting;
+        PointerState _lastPressed;
 
         protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
@@ -99,7 +104,6 @@ namespace Molten.Input
         protected override bool ProcessState(ref PointerState newState, ref PointerState prevState)
         {
             Delta = Vector2F.Zero;
-
             bool insideControl = false;
 
             if (_surface != null)
@@ -154,9 +158,7 @@ namespace Molten.Input
             }
 
             Position = newState.Position;
-
             CheckInside(insideControl, ref newState);
-
             OnEvent?.Invoke(this, newState);
 
             if (newState.UpdateID == prevState.UpdateID && newState.Action == prevState.Action)
@@ -173,7 +175,27 @@ namespace Molten.Input
                     break;
 
                 case InputAction.Pressed:
-                    OnPressed?.Invoke(this, newState);
+                    TimeSpan dPressTime = newState.PressTimestamp - _lastPressed.PressTimestamp;
+
+                    // Was a double-press detected?
+                    bool validDouble = false;
+                    if (dPressTime.TotalMilliseconds <= Service.Settings.Input.DoubleClickInterval.Value)
+                    {
+                        newState.Action = InputAction.DoublePressed;
+                        OnDoublePressed?.Invoke(this, newState);
+
+                        if (Vector2F.Distance(ref newState.Position, ref _lastPressed.Position) <= MAX_DOUBLE_CLICK_DISTANCE)
+                        {
+                            validDouble = true;
+                            _lastPressed.PressTimestamp = new DateTime();
+                        }
+                    }
+
+                    if(!validDouble)
+                    {
+                        OnPressed?.Invoke(this, newState);
+                        _lastPressed = newState;
+                    }
                     break;
 
                 case InputAction.Released:
@@ -208,13 +230,19 @@ namespace Molten.Input
             return state.Action == InputAction.Pressed && state.UpdateID == Service.UpdateID;
         }
 
+        protected override bool GetIsDoubleTapped(ref PointerState state)
+        {
+            return state.Action == InputAction.DoublePressed && state.UpdateID == Service.UpdateID;
+        }
+
         protected override bool GetIsDown(ref PointerState state)
         {
             if (state.Button != PointerButton.None)
             {
                 return state.Action == InputAction.Pressed ||
                     state.Action == InputAction.Held ||
-                    state.Action == InputAction.Moved;
+                    state.Action == InputAction.Moved || 
+                    state.Action == InputAction.DoublePressed;
             }
 
             return false;

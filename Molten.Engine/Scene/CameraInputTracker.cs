@@ -159,8 +159,7 @@ namespace Molten
 
         private void HandleLeftClick()
         {
-            // Handle mouse-specific actions, such as hovering
-            // Check if we're starting a new click
+
             if (Device.IsDown(Button, SetID))
             {
                 if (_pressed == null)
@@ -175,7 +174,11 @@ namespace Molten
 
                         // Trigger press-start event
                         _pressed.Focus();
-                        _pressed.OnPressed(this);
+
+                        if (Device.IsDoubleTapped(Button, SetID))
+                            _pressed?.OnDoublePressed(this);
+                        else
+                            _pressed.OnPressed(this);
                     }
 
                     _dragDistance = new Vector2F();

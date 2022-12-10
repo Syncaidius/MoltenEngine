@@ -42,6 +42,11 @@
             return state.Action == InputAction.Held;
         }
 
+        protected override bool GetIsDoubleTapped(ref GamepadButtonState state)
+        {
+            return state.Action == InputAction.DoublePressed;
+        }
+
         protected override bool GetIsTapped(ref GamepadButtonState state)
         {
             return state.Action == InputAction.Pressed;

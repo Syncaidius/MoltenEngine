@@ -450,6 +450,12 @@ namespace Molten.Input
             return GetIsDown(ref _states[setID][id]);
         }
 
+        public bool IsDoubleTapped(T stateID, int setID = 0)
+        {
+            int id = TranslateStateID(stateID);
+            return GetIsDoubleTapped(ref _states[setID][id]);
+        }
+
         public bool IsTapped(T stateID, int setID = 0)
         {
             int id = TranslateStateID(stateID);
@@ -487,6 +493,11 @@ namespace Molten.Input
         /// <param name="state">The input state to check.</param>
         /// <returns>Returns true if the input is down.</returns>
         protected abstract bool GetIsDown(ref S state);
+
+        /// <summary>Returns true if the spcified input was double pressed/tapped.</summary>
+        /// <param name="state">The button or key to check.</param>
+        /// <returns></returns>
+        protected abstract bool GetIsDoubleTapped(ref S state);
 
         /// <summary>Returns true if the spcified input was just pressed/down, but was not in the last update tick.</summary>
         /// <param name="state">The button or key to check.</param>

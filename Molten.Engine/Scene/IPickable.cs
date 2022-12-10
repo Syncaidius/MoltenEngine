@@ -51,7 +51,7 @@ namespace Molten
         /// Invoked when current <see cref="IPickable{T}"/> is double-pressed/clicked.
         /// </summary>
         /// <param name="tracker">THe <see cref="CameraInputTracker"/> which triggered the invocation.</param>
-        void OnDoublePress(CameraInputTracker tracker);
+        void OnDoublePressed(CameraInputTracker tracker);
 
         /// <summary>
         /// Invoked when current <see cref="IPickable{T}"/> is held.
@@ -98,6 +98,9 @@ namespace Molten
         /// </summary>
         bool IsFocused { get; set; }
 
+        /// <summary>
+        /// Gets the name of the current <see cref="IPickable{T}"/>.
+        /// </summary>
         string Name { get; }
     }
 }
