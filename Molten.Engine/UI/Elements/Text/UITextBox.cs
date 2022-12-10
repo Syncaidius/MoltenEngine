@@ -256,11 +256,17 @@ namespace Molten.UI
                         Caret.CalculateSelected();
                         break;
                     }
-                }               
+                }              
 
                 cBounds.Y += chunk.Height;
                 chunk = chunk.Next;
             }
+        }
+
+        public override void OnDragged(CameraInputTracker tracker)
+        {
+            base.OnDragged(tracker);
+
         }
 
         protected override void OnRender(SpriteBatcher sb)
@@ -354,6 +360,19 @@ namespace Molten.UI
                 return;
             }
 
+            UITextCaret.CaretPoint start, end;
+
+            if (Caret.EndBeforeStart)
+            {
+                start = Caret.End;
+                end = Caret.Start;
+            }
+            else
+            {
+                start = Caret.Start;
+                end = Caret.End;
+            }
+
             UITextSegment seg = line.FirstSegment;
             while (seg != null)
             {
@@ -362,17 +381,17 @@ namespace Molten.UI
 
                 if (seg.IsSelected)
                 {
-                    if (seg == Caret.Start.Segment)
+                    if (seg == start.Segment)
                     {
                         RectangleF eBounds = segBounds;
-                        eBounds.X += Caret.Start.Char.StartOffset;
-                        eBounds.Width = Caret.Start.Char.EndOffset;
+                        eBounds.X += start.Char.StartOffset;
+                        eBounds.Width = start.Char.EndOffset;
                         sb.Draw(eBounds, ref Caret.SelectedSegmentStyle);
                     }
-                    else if (seg == Caret.End.Segment)
+                    else if (seg == end.Segment)
                     {
                         RectangleF eBounds = segBounds;
-                        eBounds.Width = Caret.End.Char.StartOffset;
+                        eBounds.Width = end.Char.StartOffset;
                         sb.Draw(eBounds, ref Caret.SelectedSegmentStyle);
                     }
                     else
