@@ -8,7 +8,7 @@ using Molten.DoublePrecision;
 
 namespace Molten
 {
-	///<summary>A <see cref = "sbyte"/> vector comprised of three components.</summary>
+	///<summary>A <see cref="sbyte"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=1)]
     [Serializable]
 	public partial struct SByte3 : IFormattable, IVector<sbyte>
@@ -252,11 +252,11 @@ namespace Molten
 
 #region To-String
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <see cref="SByte3"/>.
+        /// Returns a <see cref="string"/> that represents this <see cref="SByte3"/>.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <see cref="SByte3"/>.
+        /// A <see cref="string"/> that represents this <see cref="SByte3"/>.
         /// </returns>
         public string ToString(string format)
         {
@@ -267,11 +267,11 @@ namespace Molten
         }
 
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <see cref="SByte3"/>.
+        /// Returns a <see cref="string"/> that represents this <see cref="SByte3"/>.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <see cref="SByte3"/>.
+        /// A <see cref="string"/> that represents this <see cref="SByte3"/>.
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
@@ -279,10 +279,10 @@ namespace Molten
         }
 
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <see cref="SByte3"/>.
+        /// Returns a <see cref="string"/> that represents this <see cref="SByte3"/>.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <see cref="SByte3"/>.
+        /// A <see cref="string"/> that represents this <see cref="SByte3"/>.
         /// </returns>
         public override string ToString()
         {
@@ -290,12 +290,12 @@ namespace Molten
         }
 
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <see cref="SByte3"/>.
+        /// Returns a <see cref="string"/> that represents this <see cref="SByte3"/>.
         /// </summary>
         /// <param name="format">The format string.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <see cref="SByte3"/>.
+        /// A <see cref="string"/> that represents this <see cref="SByte3"/>.
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {

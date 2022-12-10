@@ -1,0 +1,244 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageProjectUrl>https://github.com/Syncaidius/MoltenEngine</PackageProjectUrl>
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Molten.Math</Title>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>0.1.0</FileVersion>
+    <Description>The start of an open-source, cross-platform game engine, written in C#</Description>
+    <Copyright>Copyright © 2022 James Yarwood</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Syncaidius/MoltenEngine</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>game engine;cross platform;math;vectors;matrix;matrices;</PackageTags>
+    <PackageReleaseNotes>Initial release of Molten Engine.</PackageReleaseNotes>
+    <PackageIcon>logo_128.png</PackageIcon>
+    <Version>0.2.0</Version>
+    <Company>James Yarwood</Company>
+    <RootNamespace>Molten</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="t4_angles - Copy.cs" />
+    <Compile Remove="t4_quaternions - Copy.cs" />
+    <Compile Remove="t4_vector - Copy.cs" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <None Include="..\Images\logo_128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="t4_colors.cs">
+      <DependentUpon>t4_colors.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+    <None Include="t4_rectangles.cs">
+      <DependentUpon>t4_rectangles.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+    <None Include="t4_angles.cs">
+      <DependentUpon>t4_angles.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </None>
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;WINDOWS</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;WINDOWS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="t4_quaternions.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_quaternions.tt</DependentUpon>
+    </None>
+    <None Include="t4_vector.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector.tt</DependentUpon>
+    </None>
+    <None Include="t4_vector3.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector3.tt</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="t4_colors.tt">
+      <LastGenOutput>t4_colors.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="t4_matrix4.tt">
+      <LastGenOutput>t4_matrix4.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="t4_matrix3.tt">
+      <LastGenOutput>t4_matrix3.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="t4_matrix2.tt">
+      <LastGenOutput>t4_matrix2.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="t4_rectangles.tt">
+      <LastGenOutput>t4_rectangles.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="t4_angles.tt">
+      <LastGenOutput>t4_angles.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="t4_quaternions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_quaternions.cs</LastGenOutput>
+    </None>
+    <None Update="t4_header.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_header.cs</LastGenOutput>
+    </None>
+    <None Update="t4_vector.fp.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector.fp.cs</LastGenOutput>
+    </None>
+    <None Update="t4_vector.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector.cs</LastGenOutput>
+    </None>
+    <None Update="t4_vector2.fp.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector2.fp.cs</LastGenOutput>
+    </None>
+    <None Update="t4_vector2.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector2.cs</LastGenOutput>
+    </None>
+    <None Update="t4_vector3.fp.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector3.fp.cs</LastGenOutput>
+    </None>
+    <None Update="t4_vector3.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector3.cs</LastGenOutput>
+    </None>
+    <None Update="t4_vector4.fp.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector4.fp.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="t4_angles.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_angles.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_colors.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_colors.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_header.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_header.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_matrix.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_matrix.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_matrix2.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_matrix2.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_matrix4.cs">
+      <DependentUpon>t4_matrix4.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="t4_matrix3.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_matrix3.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_matrix4_fp.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_matrix4_fp.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_quaternions.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_quaternions.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_rectangles.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_rectangles.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_vector.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_vector.fp.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector.fp.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_vector2.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector2.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_vector2.fp.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector2.fp.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_vector3.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector3.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_vector3.fp.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector3.fp.tt</DependentUpon>
+    </Compile>
+    <Compile Update="t4_vector4.fp.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>t4_vector4.fp.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SinglePrecision\Vectors\" />
+  </ItemGroup>
+
+</Project>

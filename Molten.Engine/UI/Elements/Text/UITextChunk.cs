@@ -9,7 +9,6 @@ using Molten.Graphics;
 
 namespace Molten.UI
 {
-
     public class UITextChunk
     {
         const int CHUNK_CAPACITY = 128;

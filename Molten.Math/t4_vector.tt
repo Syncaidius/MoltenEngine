@@ -22,7 +22,7 @@ using Molten.DoublePrecision;
 
 namespace Molten<#=d.SubNamespace#>
 {
-	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=def.SizeNames[d.Size]#> components.</summary>
+	///<summary>A <#=gen.See(d.DT.Name)#> vector comprised of <#=def.SizeNames[d.Size]#> components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=<#=d.DT.Pack#>)]
     [Serializable]
 	public partial struct <#=d.Name#> : IFormattable, IVector<<#=d.DT#>>
@@ -220,11 +220,11 @@ namespace Molten<#=d.SubNamespace#>
 
 #region To-String
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <#=gen.See()#>.
+        /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <#=gen.See()#>.
+        /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
         /// </returns>
         public string ToString(string format)
         {
@@ -235,11 +235,11 @@ namespace Molten<#=d.SubNamespace#>
         }
 
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <#=gen.See()#>.
+        /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <#=gen.See()#>.
+        /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
@@ -247,10 +247,10 @@ namespace Molten<#=d.SubNamespace#>
         }
 
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <#=gen.See()#>.
+        /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <#=gen.See()#>.
+        /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
         /// </returns>
         public override string ToString()
         {
@@ -258,12 +258,12 @@ namespace Molten<#=d.SubNamespace#>
         }
 
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <#=gen.See()#>.
+        /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
         /// </summary>
         /// <param name="format">The format string.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <#=gen.See()#>.
+        /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {

@@ -8,7 +8,7 @@ using Molten.DoublePrecision;
 
 namespace Molten.DoublePrecision
 {
-	///<summary>A <see cref = "long"/> vector comprised of two components.</summary>
+	///<summary>A <see cref="long"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=8)]
     [Serializable]
 	public partial struct Vector2L : IFormattable, IVector<long>
@@ -228,11 +228,11 @@ namespace Molten.DoublePrecision
 
 #region To-String
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// Returns a <see cref="string"/> that represents this <see cref="Vector2L"/>.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// A <see cref="string"/> that represents this <see cref="Vector2L"/>.
         /// </returns>
         public string ToString(string format)
         {
@@ -243,11 +243,11 @@ namespace Molten.DoublePrecision
         }
 
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// Returns a <see cref="string"/> that represents this <see cref="Vector2L"/>.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// A <see cref="string"/> that represents this <see cref="Vector2L"/>.
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
@@ -255,10 +255,10 @@ namespace Molten.DoublePrecision
         }
 
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// Returns a <see cref="string"/> that represents this <see cref="Vector2L"/>.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// A <see cref="string"/> that represents this <see cref="Vector2L"/>.
         /// </returns>
         public override string ToString()
         {
@@ -266,12 +266,12 @@ namespace Molten.DoublePrecision
         }
 
 		/// <summary>
-        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// Returns a <see cref="string"/> that represents this <see cref="Vector2L"/>.
         /// </summary>
         /// <param name="format">The format string.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// A <see cref="string"/> that represents this <see cref="Vector2L"/>.
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {

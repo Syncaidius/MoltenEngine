@@ -39,6 +39,23 @@ namespace Molten.UI
                 Char.EndOffset = 0;
             }
 
+            internal void CopyTo(CaretPoint other)
+            {
+                other.Chunk = Chunk;
+                other.Line = Line;
+                other.Segment = Segment;
+                other.Char.Index = Char.Index;
+                other.Char.StartOffset = Char.StartOffset;
+                other.Char.EndOffset = Char.EndOffset;
+            }
+
+            internal void Swap(CaretPoint temp, CaretPoint other)
+            {
+                CopyTo(temp);
+                other.CopyTo(this);
+                temp.CopyTo(other);
+            }
+
             public UITextChunk Chunk { get; internal set; }
 
             public UITextLine Line { get; internal set; }
@@ -60,12 +77,14 @@ namespace Molten.UI
 
         TimeSpan _blinkTime;
         bool _blinkVisible;
+        CaretPoint _tempPoint;
 
         internal UITextCaret(UITextElement element)
         {
             Parent = element;
             Start = new CaretPoint();
             End = new CaretPoint();
+            _tempPoint = new CaretPoint();
         }
 
         private void ResetSelected()
@@ -81,44 +100,36 @@ namespace Molten.UI
         {
             ResetSelected();
 
-            CaretPoint start = Start;
-            CaretPoint end = End;
-            CaretPoint temp = null;
-
-            if (start.Chunk != null && end.Chunk != null)
+            if (Start.Chunk != null && End.Chunk != null)
             {
-                if (start.Chunk == end.Chunk)
+                if (Start.Chunk == End.Chunk)
                 {
-                    if (start.Line == end.Line)
-                        CheckSegmentOrder(ref start, ref end, ref temp);
+                    if (Start.Line == End.Line)
+                        CheckSegmentOrder();
                     else
-                        CheckLineOrder(ref start, ref end, ref temp);
+                        CheckLineOrder();
                 }
                 else
                 {
                     // Is the end chunk before the start chunk?
                     if (End.Chunk.StartLineNumber < Start.Chunk.StartLineNumber)
-                    {
-                        temp = start;
-                        start = end;
-                        end = temp;
-                    }
+                        Start.Swap(_tempPoint, End);
                 }
 
-                SelectChunkedSegments(start, end);
+                SelectChunkedSegments(Start, End);
             }
             else
             {
-                if (start.Line != null && end.Line != null)
+                if (Start.Line != null && End.Line != null)
                 {
-                    if (start.Line == end.Line)
-                        CheckSegmentOrder(ref start, ref end, ref temp);
+                    if (Start.Line == End.Line)
+                        CheckSegmentOrder();
                     else
-                        CheckLineOrder(ref start, ref end, ref temp);
+                        CheckLineOrder();
                 }
 
                 bool firstSegFound = false;
-                SelectSegments(start.Line, ref firstSegFound, start, end);
+                SelectSegments(Start.Line, ref firstSegFound, Start, End);
             }
         }
 
@@ -128,17 +139,17 @@ namespace Molten.UI
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <param name="temp"></param>
-        private void CheckLineOrder(ref CaretPoint start, ref CaretPoint end, ref CaretPoint temp)
+        private void CheckLineOrder()
         {
             // Iterate backwards to check if end is before start
-            UITextLine line = start.Line;
-            while(line != null)
+            UITextLine line = Start.Line;
+            CaretPoint temp = null;
+
+            while (line != null)
             {
-                if(line == end.Line)
+                if(line == End.Line)
                 {
-                    temp = start;
-                    start = end;
-                    end = temp;
+                    Start.Swap(_tempPoint, End);
                     break;
                 }
 
@@ -152,16 +163,17 @@ namespace Molten.UI
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <param name="temp"></param>
-        private void CheckSegmentOrder(ref CaretPoint start, ref CaretPoint end, ref CaretPoint temp)
+        private void CheckSegmentOrder()
         {
-            UITextSegment seg = start.Segment;
-            while(seg != null)
+            // Iterate backwards to check if end is before start
+            UITextSegment seg = Start.Segment; ;
+            CaretPoint temp = null;
+
+            while (seg != null)
             {
-                if(seg == end.Segment)
+                if(seg == End.Segment)
                 {
-                    temp = start;
-                    start = end;
-                    end = temp;
+                    Start.Swap(_tempPoint, End);
                     break;
                 }
 

@@ -1,6 +1,4 @@
 {
-  "FieldNames": [ "R", "G", "B", "A" ],
-  "FieldLabels": [ "red", "green", "blue", "alpha" ],
   "SubFolder": "Colors",
   "Fields": {
     "3": {
