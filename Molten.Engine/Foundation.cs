@@ -115,7 +115,12 @@ namespace Molten
                 if (RunState != GameRunState.Exiting)
                 {
                     if (Engine.Input != null && Engine.Input.State == EngineServiceState.Running)
-                        Engine.Scenes.HandleInput(_mouse, _touch, _keyboard, _gamepad, timing);
+                    {
+                        Engine.Scenes.HandleInput(_mouse, timing);
+                        Engine.Scenes.HandleInput(_touch, timing);
+                        Engine.Scenes.HandleInput(_keyboard, timing);
+                        Engine.Scenes.HandleInput(_gamepad, timing);
+                    }
 
                     OnUpdate(timing);
                 }

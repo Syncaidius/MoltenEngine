@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Molten.Graphics;
+using Molten.Input;
 
 namespace Molten
 {
@@ -12,10 +13,8 @@ namespace Molten
 
         internal List<SceneObject> Objects { get; }
 
-        internal List<IPickable<Vector2F>> Pickables2D { get; }
-        internal List<IPickable<Vector3F>> Pickables3D { get; }
 
-        internal List<IInputReceiver> InputHandlers { get; }
+        internal Dictionary<Type, ComponentTypeTracker> Trackers;
 
         /// <summary>
         /// Gets the layer's parent scene. This will only change (to null) in the event the layer is removed from it's parent scene.
@@ -25,9 +24,97 @@ namespace Molten
         internal SceneLayer()
         {
             Objects = new List<SceneObject>();
-            Pickables2D = new List<IPickable<Vector2F>>();
-            Pickables3D = new List<IPickable<Vector3F>>();
-            InputHandlers = new List<IInputReceiver>();
+            Trackers = new Dictionary<Type, ComponentTypeTracker>();
+            Track<IPickable<Vector2F>>();
+            Track<IPickable<Vector3F>>();
+            Track<IInputReceiver<KeyboardDevice>>();
+            Track<IInputReceiver<MouseDevice>>();
+            Track<IInputReceiver<GamepadDevice>>();
+            Track<IInputReceiver<TouchDevice>>();
+        }
+
+        /// <summary>
+        /// Starts tracking the add and removal of any <see cref="SceneComponent"/>s that derive/implement <typeparamref name="T"/>, for the current <see cref="SceneLayer"/>.
+        /// <para>If <typeparamref name="T"/> is already tracked, the provided callbacks (if any) will still be added to it's tracker, in addition to any existing callbacks.</para>
+        /// </summary>
+        /// <typeparam name="T">The type to start tracking.</typeparam>
+        /// <param name="addCallback">A callback to invoke each time a <typeparamref name="T"/> is added.</param>
+        /// <param name="removeCallback">A callback to invoke each time a <typeparamref name="T"/> is removed.</param>
+        /// <param name="includeExisting">If true, any existing components deriving or implementing <typeparamref name="T"/> will be added to the tracker, 
+        /// if the type isn't already active.</param>
+        public void Track<T>(Action<T> addCallback = null, Action<T> removeCallback = null, bool includeExisting = false)
+            where T : class
+        {
+            Type t = typeof(T);
+            if (!Trackers.TryGetValue(t, out ComponentTypeTracker tracker))
+            {
+                tracker = new ComponentTypeTracker<T>();
+                Trackers[t] = tracker;
+
+                // Scan for existing components of type T, if allowed.
+                if (includeExisting)
+                {
+                    foreach (SceneObject obj in Objects)
+                    {
+                        foreach (SceneComponent comp in obj.Components)
+                        {
+                            if (t.IsAssignableFrom(comp.GetType()))
+                                tracker.Add(comp);
+                        }
+                    }
+                }
+            }
+   
+            ComponentTypeTracker<T> cTracker = tracker as ComponentTypeTracker<T>;
+            cTracker.Unhook(addCallback, removeCallback);
+        }
+
+        /// <summary>
+        /// Gets a <see cref="IReadOnlyList{T}"/> for the tracked type <typeparamref name="T"/>, 
+        /// or null if <typeparamref name="T"/> is not tracked via <see cref="Track{T}(Action{T}, Action{T}, bool)"/>.
+        /// </summary>
+        /// <typeparam name="T">The tracked type list to be retrieved.</typeparam>
+        /// <returns></returns>
+        public IReadOnlyList<T> GetTracked<T>()
+            where T : class
+        {
+            if (Trackers.TryGetValue(typeof(T), out ComponentTypeTracker tracker))
+            {
+                ComponentTypeTracker<T> cTracker = tracker as ComponentTypeTracker<T>;
+                return cTracker.GetObjects();
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Removes the specified callbacks from the tracker of <typeparamref name="T"/>, if any.
+        /// </summary>
+        /// <param name="addCallback">The add callback to be removed.</param>
+        /// <param name="removeCallback">The remove callback to be removed.</param>
+        public void RemoveTrackCallbacks<T>(Action<T> addCallback = null, Action<T> removeCallback = null)
+            where T : class
+        {
+            if (Trackers.TryGetValue(typeof(T), out ComponentTypeTracker tracker))
+            {
+                ComponentTypeTracker<T> cTracker = tracker as ComponentTypeTracker<T>;
+                cTracker.Unhook(addCallback, removeCallback);
+            }            
+        }
+
+        /// <summary>
+        /// Stops tracking the add and removal of any <see cref="SceneComponent"/>s that derive/implement <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type to stop tracking.</typeparam>
+        public void Untrack<T>()
+            where T : class
+        {
+            Type t = typeof(T);
+            if (Trackers.TryGetValue(t, out ComponentTypeTracker tracker))
+            {
+                Trackers.Remove(t);
+                tracker.Clear();
+            }
         }
 
         /// <summary>

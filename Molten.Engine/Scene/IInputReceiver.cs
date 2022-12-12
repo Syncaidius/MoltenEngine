@@ -3,10 +3,11 @@
 namespace Molten
 {
     /// <summary>
-    /// Represents an object which implements custom input handling.
+    /// Represents an object which implements custom input handling for a <typeparamref name="T"/>.
     /// </summary>
-    public interface IInputReceiver
+    public interface IInputReceiver<T>
+        where T : InputDevice
     {
-        void HandleInput(MouseDevice mouse, TouchDevice touch, KeyboardDevice keyboard, GamepadDevice gamepad, Timing timing);
+        void HandleInput(T device, Timing timing);
     }
 }

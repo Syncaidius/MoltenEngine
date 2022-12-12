@@ -13,37 +13,21 @@
         }
         internal void RegisterOnLayer()
         {
-            switch (this)
+            Type t = GetType();
+            foreach(KeyValuePair<Type, ComponentTypeTracker> p in Object.Layer.Trackers)
             {
-                case IPickable<Vector2F> p2d:
-                    Object.Layer.Pickables2D.Add(p2d);
-                    break;
-
-                case IPickable<Vector3F> p3d:
-                    Object.Layer.Pickables3D.Add(p3d);
-                    break;
-
-                case IInputReceiver ih:
-                    Object.Layer.InputHandlers.Add(ih);
-                    break;
+                if (p.Key.IsAssignableFrom(t))
+                    p.Value.Add(this);
             }
         }
 
         internal void UnregisterFromLayer()
         {
-            switch (this)
+            Type t = GetType();
+            foreach (KeyValuePair<Type, ComponentTypeTracker> p in Object.Layer.Trackers)
             {
-                case IPickable<Vector2F> p2d:
-                    Object.Layer.Pickables2D.Remove(p2d);
-                    break;
-
-                case IPickable<Vector3F> p3d:
-                    Object.Layer.Pickables3D.Remove(p3d);
-                    break;
-
-                case IInputReceiver ih:
-                    Object.Layer.InputHandlers.Remove(ih);
-                    break;
+                if (p.Key.IsAssignableFrom(t))
+                    p.Value.Remove(this);
             }
         }
 

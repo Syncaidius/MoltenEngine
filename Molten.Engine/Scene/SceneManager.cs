@@ -38,7 +38,8 @@ namespace Molten
             _scenes.Clear();
         }
 
-        internal void HandleInput(MouseDevice mouse, TouchDevice touch, KeyboardDevice kb, GamepadDevice gamepad, Timing timing)
+        internal void HandleInput<T>(T device, Timing timing)
+            where T : InputDevice
         {
             for (int i = _scenes.Count - 1; i >= 0; i--)
             {
@@ -46,8 +47,12 @@ namespace Molten
                 for (int j = scene.Layers.Count - 1; j >= 0; j--)
                 {
                     SceneLayer layer = scene.Layers[j];
-                    for (int k = layer.InputHandlers.Count - 1; k >= 0; k--)
-                        layer.InputHandlers[k].HandleInput(mouse, touch, kb, gamepad, timing);
+                    IReadOnlyList<IInputReceiver<T>> handlers = layer.GetTracked<IInputReceiver<T>>();
+                    if (handlers == null)
+                        continue;
+
+                    for (int k = handlers.Count - 1; k >= 0; k--)
+                        handlers[k].HandleInput(device, timing);
                 }
             }
         }

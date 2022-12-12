@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Molten.Collections;
 using Molten.Graphics;
 using Molten.Input;
@@ -69,13 +67,11 @@ namespace Molten.UI
 
         UIScrollBar _vScroll;
         UIScrollBar _hScroll;
-
         UITextChunk _firstChunk;
         UITextChunk _lastChunk;
-
         LineMargin _margin;
+
         int _scrollbarWidth = 20;
-        int _lineSpacing = 5;
         int _lineHeight = 25;
         Rectangle _textBounds;
         Rectangle _textClipBounds;
