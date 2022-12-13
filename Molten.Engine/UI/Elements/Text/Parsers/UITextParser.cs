@@ -55,14 +55,14 @@ namespace Molten.UI
                 for (int t = 0; t < lineText.Length; t++)
                 {
                     char c = lineText[t];
-                    UITextSegment segSeparate = ParseRuleCharList(element, c, element.DefaultFont, _whitespace, UITextSegmentType.Whitespace);
+                    UITextSegment segSeparate = ParseRuleCharList(element, c, element.DefaultFont, _whitespace);
 
                     if (segSeparate == null)
-                        segSeparate = ParseRuleCharList(element, c, element.DefaultFont, _punctuation, UITextSegmentType.Punctuation);
+                        segSeparate = ParseRuleCharList(element, c, element.DefaultFont, _punctuation);
 
                     if (segSeparate != null)
                     {
-                        UITextSegment seg = new UITextSegment(segText, Color.White, element.DefaultFont, UITextSegmentType.Text);
+                        UITextSegment seg = new UITextSegment(segText, Color.White, element.DefaultFont);
                         line.AppendSegment(seg);
                         line.AppendSegment(segSeparate);
                         segText = "";
@@ -76,7 +76,7 @@ namespace Molten.UI
                 // Append the remaining text.
                 if(segText.Length > 0)
                 {
-                    UITextSegment seg = new UITextSegment(segText, Color.White, element.DefaultFont, UITextSegmentType.Text);
+                    UITextSegment seg = new UITextSegment(segText, Color.White, element.DefaultFont);
                     line.AppendSegment(seg);
                 }
             }
@@ -84,14 +84,14 @@ namespace Molten.UI
             element.Recalculate();
         }
 
-        private UITextSegment ParseRuleCharList(UITextElement element, char c, SpriteFont font, char[] list, UITextSegmentType type)
+        private UITextSegment ParseRuleCharList(UITextElement element, char c, SpriteFont font, char[] list)
         {
             // Check for whitespace character
             for (int w = 0; w < list.Length; w++)
             {
                 // Start new segment
                 if (c == list[w])
-                    return new UITextSegment(c.ToString(), Color.White, font, type);
+                    return new UITextSegment(c.ToString(), Color.White, font);
             }
 
             return null;

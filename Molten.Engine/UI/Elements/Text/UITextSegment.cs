@@ -19,12 +19,11 @@ namespace Molten.UI
             _text = "";
         }
 
-        public UITextSegment(string text, Color color, SpriteFont font, UITextSegmentType type)
+        public UITextSegment(string text, Color color, SpriteFont font)
         {
             Text = text;
             Color = color;
             Font = font;
-            Type = type;
 
             Measure();
         }
@@ -90,11 +89,6 @@ namespace Molten.UI
         public Color Color { get; set; } = Color.White;
 
         /// <summary>
-        /// Gets or sets the type of the current <see cref="UITextSegment"/>.
-        /// </summary>
-        public UITextSegmentType Type { get; set; }
-
-        /// <summary>
         /// Gets the measured size of <see cref="Text"/>.
         /// <para>If <see cref="Font"/> or <see cref="Text"/> are null/empty, size will equate to <see cref="Vector2F.Zero"/>.</para>
         /// </summary>
@@ -153,14 +147,5 @@ namespace Molten.UI
                 }
             }
         }
-    }
-
-    public enum UITextSegmentType
-    {
-        Text = 0,
-
-        Whitespace = 1,
-
-        Punctuation = 2,
     }
 }

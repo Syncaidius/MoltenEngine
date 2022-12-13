@@ -25,7 +25,7 @@ namespace Molten.UI
             Width = 0;
             _height = 0;
             HasText = false;
-            FirstSegment = new UITextSegment("", Color.White, null, UITextSegmentType.Text);
+            FirstSegment = new UITextSegment("", Color.White, null);
             LastSegment = FirstSegment;
         }
 
@@ -91,9 +91,9 @@ namespace Molten.UI
             return false;
         }
 
-        public UITextSegment NewSegment(string text, Color color, SpriteFont font, UITextSegmentType type)
+        public UITextSegment NewSegment(string text, Color color, SpriteFont font)
         {
-            UITextSegment segment = new UITextSegment(text, color, font, type);
+            UITextSegment segment = new UITextSegment(text, color, font);
             AppendSegment(segment);
             return segment;
         }
@@ -128,9 +128,9 @@ namespace Molten.UI
         /// <param name="font">The font of the new segment.</param>
         /// <param name="type">The type of the new segment.</param>
         /// <returns></returns>
-        public UITextSegment InsertSegment(UITextSegment seg, Color color, SpriteFont font, UITextSegmentType type)
+        public UITextSegment InsertSegment(UITextSegment seg, Color color, SpriteFont font)
         {
-            UITextSegment next = new UITextSegment("", Color.White, font, type);
+            UITextSegment next = new UITextSegment("", Color.White, font);
 
             // Do we need to insert before another "next" segment also?
             if (seg != null)

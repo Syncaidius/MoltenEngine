@@ -135,8 +135,28 @@ namespace Molten.UI
             }
             else
             {
-                charSize = DefaultFont.MeasureChar(state.Character);
-                // TODO create segment at the end of the line
+                UITextLine line = Caret.Start.Line;
+                if (line != null)
+                {
+                    Color col = Color.White; // TODO use textbox default color instead.
+                    SpriteFont font = DefaultFont;
+
+                    if (line.LastSegment != null)
+                    {
+                        col = line.LastSegment.Color;
+                        font = line.LastSegment.Font;
+                    }
+                    else if (line.Previous != null && line.Previous.LastSegment != null)
+                    {
+                        col = line.Previous.LastSegment.Color;
+                        font = line.Previous.LastSegment.Font;
+                    }
+
+                    charSize = font.MeasureChar(state.Character);
+                    Caret.Start.Segment = Caret.Start.Line.NewSegment(state.Character.ToString(), col, font);
+                    Caret.Start.Char.Index = 1;
+                    Caret.Start.Char.StartOffset += charSize.X;
+                }
             }
         }
 
