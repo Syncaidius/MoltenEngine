@@ -104,6 +104,16 @@ namespace Molten.UI
             throw new NotImplementedException();
         }
 
+        public void OnKeyboardInput(KeyboardDevice keyboard, Timing time)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnKeyboardChar(KeyboardDevice keyboard, ref KeyboardKeyState state)
+        {
+            throw new NotImplementedException();
+        }
+
         /*public void PointerHeld(UIPointerTracker tracker)
         {
             if (tracker.Button == PointerButton.Left)

@@ -1,4 +1,5 @@
 ﻿using Molten.Input;
+using Molten.UI;
 
 namespace Molten
 {
@@ -7,9 +8,9 @@ namespace Molten
     /// </summary>
     public interface IPickable<T>
         where T : IVector<float>
-    {        
+    {
         /// <summary>
-        /// Performs picking on the current <see cref="IPickable"/>. Returning null means no object was picked.
+        /// Performs picking on the current <see cref="IPickable{T}"/>. Returning null means no object was picked.
         /// </summary>
         /// <param name="pos">The position to be picked.</param>
         /// <param name="time">A timing instance.</param>
@@ -69,7 +70,22 @@ namespace Molten
         /// Invoked when a previous press action is released by a <see cref="CameraInputTracker"/>.
         /// </summary>
         /// <param name="tracker">THe <see cref="CameraInputTracker"/> which triggered the invocation.</param>
+        /// <param name="releasedOutside">If true, the release was performed outside the current <see cref="IPickable{T}"/>.</param>
         void OnReleased(CameraInputTracker tracker, bool releasedOutside);
+
+        /// <summary>
+        /// Invoked when the current <see cref="IPickable{T}"/> is receiving keyboard input.
+        /// </summary>
+        /// <param name="keyboard">The <see cref="KeyboardDevice"/> that is providing updates.</param>
+        /// <param name="time">A timing instance.</param>
+        void OnKeyboardInput(KeyboardDevice keyboard, Timing time);
+
+        /// <summary>
+        /// Invoked when the current <see cref="IPickable{T}"/> has focus and keyboard character input is received.
+        /// </summary>
+        /// <param name="keyboard">The <see cref="KeyboardDevice"/> that the input originated from.</param>
+        /// <param name="state">The <see cref="KeyboardKeyState"/> which triggered the invocation.</param>
+        void OnKeyboardChar(KeyboardDevice keyboard, ref KeyboardKeyState state);
 
         /// <summary>
         /// Checks if the current <see cref="IPickable{T}"/> contains the provided position.

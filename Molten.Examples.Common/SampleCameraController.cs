@@ -70,5 +70,23 @@ namespace Molten.Examples
         public bool AcceptInput { get; set; } = true;
 
         protected override void OnDispose() { }
+
+        public void InitializeInput(MouseDevice device, Timing timing) { }
+
+        public void DeinitializeInput(MouseDevice device, Timing timing) { }
+
+        public void InitializeInput(KeyboardDevice device, Timing timing) { }
+
+        public void DeinitializeInput(KeyboardDevice device, Timing timing) { }
+
+        public void InitializeInput(GamepadDevice device, Timing timing) { }
+
+        public void DeinitializeInput(GamepadDevice device, Timing timing) { }
+
+        public bool IsFirstInput(MouseDevice device) { return false; }
+
+        public bool IsFirstInput(KeyboardDevice device) { return false; }
+
+        public bool IsFirstInput(GamepadDevice device) { return false; }
     }
 }

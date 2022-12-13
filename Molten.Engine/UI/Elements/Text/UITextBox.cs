@@ -81,6 +81,7 @@ namespace Molten.UI
         bool _showLineNumbers;
         Vector2F _lineNumPos;
         Color _lineNumColor = new Color(52, 156, 181, 255);
+        KeyboardDevice _keyboard;
 
         /* TODO:
          *  - Allow segment to have OnPressed and OnReleased virtual methods to allow custom segment actions/types, such as:
@@ -107,6 +108,36 @@ namespace Molten.UI
             _hScroll.Direction = UIElementFlowDirection.Horizontal;
 
             Clear();
+        }
+
+        public override void OnKeyboardChar(KeyboardDevice keyboard, ref KeyboardKeyState state)
+        {
+            base.OnKeyboardChar(keyboard, ref state);
+
+            Vector2F charSize;
+
+            if (Caret.Start.Segment != null)
+            {
+                charSize = Caret.Start.Segment.Font.MeasureChar(state.Character);
+                int? charIndex = Caret.Start.Char.Index;
+                if (charIndex.HasValue)
+                {
+                    Caret.Start.Segment.Insert(charIndex.Value, state.Character.ToString());
+                    Caret.Start.Char.Index++;
+                    Caret.Start.Char.StartOffset += charSize.X;
+                }
+                else
+                {
+                    Caret.Start.Segment.Text += state.Character;
+                }
+
+                // TODO update caret position
+            }
+            else
+            {
+                charSize = DefaultFont.MeasureChar(state.Character);
+                // TODO create segment at the end of the line
+            }
         }
 
         private void ScrollChanged(UIScrollBar element)
@@ -269,6 +300,13 @@ namespace Molten.UI
                 cBounds.Y += chunk.Height;
                 chunk = chunk.Next;
             }
+        }
+
+        public override void OnKeyboardInput(KeyboardDevice keyboard, Timing time)
+        {
+            base.OnKeyboardInput(keyboard, time);
+
+            // TODO handle hotkeys.
         }
 
         /// <inheritdoc/>

@@ -50,16 +50,34 @@ namespace Molten.UI
                         if (!string.IsNullOrWhiteSpace(seg.Text))
                         {
                             float dist = 0;
+                            float prevDist = 0;
+                            float charDist = 0;
+                            float halfDist = 0;
+
                             for (int i = 0; i < seg.Text.Length; i++)
                             {
-                                dist += segFont.GetAdvanceWidth(seg.Text[i]);
+                                charDist = segFont.GetAdvanceWidth(seg.Text[i]);
+                                dist += charDist;
+                                halfDist = prevDist + (charDist / 2);
+
                                 if (pickPoint.X <= segBounds.Left + dist)
                                 {
-                                    caretPoint.Char.Index = i;
-                                    caretPoint.Char.StartOffset = dist;
-                                    caretPoint.Char.EndOffset = segBounds.Width - dist;
+                                    if (pickPoint.X >= segBounds.Left + halfDist)
+                                    {
+                                        caretPoint.Char.Index = i+1;
+                                        caretPoint.Char.StartOffset = dist;
+                                        caretPoint.Char.EndOffset = segBounds.Width - dist;
+                                    }
+                                    else
+                                    {
+                                        caretPoint.Char.Index = i;
+                                        caretPoint.Char.StartOffset = prevDist;
+                                        caretPoint.Char.EndOffset = segBounds.Width - prevDist;
+                                    }                                    
                                     break;
                                 }
+
+                                prevDist = dist;
                             }
                         } 
 

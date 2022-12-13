@@ -25,6 +25,7 @@ namespace Molten
         /// Initializes a new instance of the <see cref="Timing"/> class.
         /// </summary>
         /// <param name="callback">The callback to be run on each update invocation.</param>
+        /// <param name="targetUPS">The target frame/update rate.</param>
         public Timing(Action<Timing> callback, int targetUPS = 60)
         {
             _timer = new Stopwatch();

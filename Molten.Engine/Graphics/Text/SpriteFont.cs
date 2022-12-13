@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Molten.Font;
 using Newtonsoft.Json;
+using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
@@ -88,6 +89,31 @@ namespace Molten.Graphics
             result.Y *= Scale;
 
             return result;
+        }
+
+        /// <summary>
+        /// Measures the width and height of a single character in pixels, using the current <see cref="SpriteFont"/>.
+        /// </summary>
+        /// <param name="c">The character to measure.</param>
+        /// <returns></returns>
+        public Vector2F MeasureChar(char c)
+        {
+            SpriteFontGlyphBinding glyphBinding = _binding.GetCharacter(c);
+            return new Vector2F(
+                glyphBinding.AdvanceWidth * Scale,
+                glyphBinding.AdvanceHeight * Scale
+            );
+        }
+
+        /// <summary>
+        /// Measures the width of a single character in pixels, using the current <see cref="SpriteFont"/>.
+        /// </summary>
+        /// <param name="c">The character to measure.</param>
+        /// <returns></returns>
+        public float MeasureCharWidth(char c)
+        {
+            SpriteFontGlyphBinding glyphBinding = _binding.GetCharacter(c);
+            return glyphBinding.AdvanceWidth * Scale;
         }
 
         /// <summary>Measures part (or all) of the provided string and returns its width, in pixels.</summary>

@@ -1,7 +1,7 @@
 ﻿namespace Molten.Input
 {
     public delegate void KeyHandler(KeyboardDevice device, KeyboardKeyState state);
-    public delegate void KeyPressHandler(KeyboardKeyState state);
+    public delegate void KeyPressHandler(KeyboardDevice device, KeyboardKeyState state);
 
     public abstract class KeyboardDevice : InputDevice<KeyboardKeyState, KeyCode>
     {
@@ -52,7 +52,7 @@
                 if (newState.Action == InputAction.Pressed || 
                     newState.Action == InputAction.Held)
                 {
-                    OnCharacterKey?.Invoke(newState);
+                    OnCharacterKey?.Invoke(this, newState);
                 }
 
                 // Don't accept character key events as key states.

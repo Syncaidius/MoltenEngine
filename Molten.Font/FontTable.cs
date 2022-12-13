@@ -10,6 +10,9 @@ namespace Molten.Font
         TableHeader Header { get; }
     }
 
+    /// <summary>
+    /// See for full list of open-type tables: https://learn.microsoft.com/en-us/typography/opentype/spec/otff#font-tables
+    /// </summary>
     public abstract class FontTable : IFontTable
     {
         /// <summary>Gets a list of tags for tables that the parser depends on to parse it's own table type.</summary>

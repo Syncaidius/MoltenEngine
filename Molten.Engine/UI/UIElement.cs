@@ -488,6 +488,20 @@ namespace Molten.UI
         }
 
         /// <summary>
+        /// Invoked when the element is receiving keyboard input.
+        /// </summary>
+        /// <param name="keyboard"></param>
+        /// <param name="time"></param>
+        public virtual void OnKeyboardInput(KeyboardDevice keyboard, Timing time) { }
+
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> has focus and keyboard character input is received.
+        /// </summary>
+        /// <param name="keyboard">The <see cref="KeyboardDevice"/> that the input originated from.</param>
+        /// <param name="state">The <see cref="KeyboardKeyState"/> which triggered the invocation.</param>
+        public virtual void OnKeyboardChar(KeyboardDevice keyboard, ref KeyboardKeyState state) { }
+
+        /// <summary>
         /// Sends the current <see cref="UIElement"/> to the front of it's parents child stack, so it will be drawn on top of all other children.
         /// </summary>
         public void BringToFront()

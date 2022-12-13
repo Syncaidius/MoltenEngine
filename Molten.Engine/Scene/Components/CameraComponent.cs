@@ -5,7 +5,7 @@ using Molten.UI;
 namespace Molten
 {
     /// <summary>Provides a managed 'eye' through which to render and interact with a <see cref="Scene"/>.</summary>
-    public class CameraComponent : SceneComponent
+    public class CameraComponent : SceneComponent, IInputReceiver<KeyboardDevice>
     {
         public delegate void InputCameraSurfaceHandler(CameraComponent camera, IRenderSurface2D surface);
 
@@ -15,11 +15,12 @@ namespace Molten
 
         public event ObjectHandler<IPickable<Vector2F>> FocusedChanged;
 
+        static PointerButton[] _pButtons;
+
         RenderCamera _camera;
         bool _inScene = false; 
         IPickable<Vector2F> _focused;
-
-        static PointerButton[] _pButtons;
+        KeyboardDevice _keyboard;
 
         Dictionary<ulong, List<CameraInputTracker>> _trackers;
 
@@ -49,12 +50,66 @@ namespace Molten
             _camera.OnSurfaceResized += _camera_OnSurfaceResized;
         }
 
+        #region Keyboard input handling
+
+        /// <inheritdoc></inheritdoc>/>
+        public void InitializeInput(KeyboardDevice device, Timing timing)
+        {
+            if (_keyboard == null)
+            {
+                _keyboard = device;
+                device.OnConnected += OnKeyboardInitialized;
+                device.OnDisconnected += OnKeyboardDeinitialized;
+            }
+
+            OnKeyboardInitialized(device);
+        }
+
+        private void OnKeyboardDeinitialized(InputDevice o)
+        {
+            (o as KeyboardDevice).OnCharacterKey -= Device_OnCharacterKey;
+            // TODO release any current keyboard-reliant state.
+        }
+
+        private void OnKeyboardInitialized(InputDevice o)
+        {
+            (o as KeyboardDevice).OnCharacterKey += Device_OnCharacterKey;
+        }
+
+        private void Device_OnCharacterKey(KeyboardDevice device, KeyboardKeyState state)
+        {
+            FocusedPickable?.OnKeyboardChar(device, ref state);
+        }
+
+        /// <inheritdoc></inheritdoc>/>
+        public void DeinitializeInput(KeyboardDevice device, Timing timing)
+        {
+            device.OnDisconnected += OnKeyboardDeinitialized;
+        }
+
+        /// <inheritdoc/>
+        public void HandleInput(KeyboardDevice device, Timing time)
+        {
+            if (FocusedPickable != null)
+                FocusedPickable.OnKeyboardInput(device, time);
+        }
+        #endregion
+
         private void _camera_OnSurfaceResized(RenderCamera camera, IRenderSurface2D surface)
         {
             OnSurfaceResized?.Invoke(this, surface);
         }
 
-        protected override void OnDispose() { }
+        protected override void OnDispose() 
+        {
+            if (_keyboard == null)
+                return;
+
+            _keyboard.OnConnected -= OnKeyboardInitialized;
+            _keyboard.OnDisconnected -= OnKeyboardDeinitialized;
+            OnKeyboardDeinitialized(_keyboard);
+            _keyboard = null;
+        }
 
         private void _camera_OnOutputSurfaceChanged(RenderCamera camera, IRenderSurface2D oldSurface, IRenderSurface2D newSurface)
         {
@@ -118,6 +173,7 @@ namespace Molten
             RemoveFromScene(obj);
         }
 
+        /// <inheritdoc/>
         public override void OnUpdate(Timing time)
         {
             base.OnUpdate(time);
@@ -255,6 +311,11 @@ namespace Molten
         public bool HasFlags(RenderCameraFlags flags)
         {
             return _camera.HasFlags(flags);
+        }
+
+        public bool IsFirstInput(KeyboardDevice device)
+        {
+            return _keyboard == null;
         }
 
         /// <summary>

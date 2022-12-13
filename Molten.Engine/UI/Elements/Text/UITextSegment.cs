@@ -52,6 +52,38 @@ namespace Molten.UI
             }
         }
 
+        public void Append(string newText)
+        {
+            _text += newText;
+            Vector2F appendSize = Vector2F.Zero;
+
+            if (Font != null)
+                appendSize = Font.MeasureString(newText);
+            else if (ParentLine != null && ParentLine.Parent != null)
+                appendSize = ParentLine.Parent.DefaultFont.MeasureString(newText);
+
+            Size = new Vector2F(
+                Size.X + appendSize.X, 
+                MathF.Max(Size.Y, appendSize.Y)
+            );
+        }
+
+        public void Insert(int charIndex, string newText)
+        {
+            _text = _text.Insert(charIndex, newText);
+            Vector2F appendSize = Vector2F.Zero;
+
+            if (Font != null)
+                appendSize = Font.MeasureString(newText);
+            else if (ParentLine != null && ParentLine.Parent != null)
+                appendSize = ParentLine.Parent.DefaultFont.MeasureString(newText);
+
+            Size = new Vector2F(
+                Size.X + appendSize.X,
+                MathF.Max(Size.Y, appendSize.Y)
+            );
+        }
+
         /// <summary>
         /// Gets or sets the color of the segment's <see cref="Text"/>.
         /// </summary>

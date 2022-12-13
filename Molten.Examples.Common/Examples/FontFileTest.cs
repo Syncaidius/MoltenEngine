@@ -250,7 +250,7 @@ namespace Molten.Examples
                 GenerateChar('S');
         }
 
-        private void Keyboard_OnCharacterKey(KeyboardKeyState state)
+        private void Keyboard_OnCharacterKey(KeyboardDevice device, KeyboardKeyState state)
         {
             if (state.Action == InputAction.Pressed && _font2Test != null)
                 GenerateChar(state.Character, CHAR_CURVE_RESOLUTION);

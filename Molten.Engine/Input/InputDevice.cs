@@ -26,7 +26,7 @@ namespace Molten.Input
         }
 
         /// <summary>
-        /// Invoked when the device is connected.
+        /// Invoked when the device is (re)connected.
         /// </summary>
         public event MoltenEventHandler<InputDevice> OnConnected;
 
