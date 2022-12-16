@@ -497,6 +497,11 @@ namespace Molten.UI
             StartState(immediate ? UIWindowState.Closed : UIWindowState.Closing);
         }
 
+        void IWindow.Close()
+        {
+            Close(false);
+        }
+
         public void Minimize(bool immediate = false)
         {
             if (WindowState == UIWindowState.Closing || WindowState == UIWindowState.Closed)

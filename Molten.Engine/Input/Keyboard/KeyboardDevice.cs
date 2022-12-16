@@ -74,19 +74,14 @@
             return state.Action == InputAction.Pressed || state.Action == InputAction.Held;
         }
 
-        protected override bool GetIsDoubleTapped(ref KeyboardKeyState state)
-        {
-            return state.Action == InputAction.DoublePressed;
-        }
-
         protected override bool GetIsHeld(ref KeyboardKeyState state)
         {
             return state.Action == InputAction.Held;
         }
 
-        protected override bool GetIsTapped(ref KeyboardKeyState state)
+        protected override bool GetIsTapped(ref KeyboardKeyState state, InputActionType type)
         {
-            return state.Action == InputAction.Pressed && state.UpdateID == Service.UpdateID;
+            return (state.Action == InputAction.Pressed && state.ActionType == type) && state.UpdateID == Service.UpdateID;
         }
 
         /// <summary>

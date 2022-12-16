@@ -18,8 +18,10 @@ namespace Molten.Input
             public bool Pressed;
         }
 
+        /// <inheritdoc/>
         public override string DeviceName => "Windows Keyboard";
 
+        /// <inheritdoc/>
         protected override List<InputDeviceFeature> OnInitialize(InputService service)
         {
             List<InputDeviceFeature> baseFeatures = base.OnInitialize(service);
@@ -47,6 +49,7 @@ namespace Molten.Input
                 SetID = 0, // Keyboard only has one set of keys, always at ID 0.
                 KeyType = KeyboardKeyType.Normal,
                 Action = InputAction.Pressed,
+                ActionType = InputActionType.Single,
                 Character = char.MinValue,
             };
 
@@ -72,6 +75,7 @@ namespace Molten.Input
                         state.PressTimestamp = DateTime.UtcNow;
                         QueueKeyState(ref state, lParam);
                         break;
+
                     case WndProcMessageType.WM_KEYUP:
                         state.Key = (KeyCode)(wParam & 0xFFFF);
                         state.KeyType = ValidateKeyType(wParam);
@@ -93,11 +97,13 @@ namespace Molten.Input
                 QueueState(state);
         }
 
+        /// <inheritdoc/>
         protected override void OnBind(INativeSurface surface) { }
 
+        /// <inheritdoc/>
         protected override void OnUnbind(INativeSurface surface) { }
 
-
+        /// <inheritdoc/>
         protected override void OnClearState() { }
 
         private KeyboardKeyType ValidateKeyType(long wmChar)

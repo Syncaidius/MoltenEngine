@@ -11,6 +11,7 @@ namespace Molten.Input
         /// </summary>
         const int WHEEL_DELTA = 120;
 
+        /// <inheritdoc/>
         public override string DeviceName => "Windows Mouse";
 
         static WinMouseButtonFlags[] _winButtons = new WinMouseButtonFlags[]

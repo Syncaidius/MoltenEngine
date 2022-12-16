@@ -40,6 +40,11 @@
             OnHandleChanged?.Invoke(this);
         }
 
+        public void Close()
+        {
+            Control?.Close();
+        }
+
         protected override void SubscribeToControl(RenderForm control)
         {
             // Subscribe to all the needed form events

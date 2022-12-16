@@ -55,10 +55,19 @@ namespace Molten.Input
         /// </summary>
         public float Size;
 
-        public InputActionType ActionType;
+        /// <summary>
+        /// Gets the type of action produced. i.e. A single or double click.
+        /// </summary>
+        public InputActionType ActionType { get; set; }
 
+        /// <summary>
+        /// Gets the date/time at which the current <see cref="PointerState"/> was produced.
+        /// </summary>
         public DateTime PressTimestamp { get; set; }
 
+        /// <summary>
+        /// Gets the frame/update ID on which the current <see cref="PointerState"/> was produced.
+        /// </summary>
         public ulong UpdateID { get; set; }
     }
 }

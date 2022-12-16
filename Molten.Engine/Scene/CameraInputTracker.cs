@@ -178,10 +178,11 @@ namespace Molten
                         // Trigger press-start event
                         _pressed.Focus();
 
-                        if (Device.IsDoubleTapped(Button, SetID))
+                        // Register a double press event, but also register a normal pressed event, regardless.
+                        if (Device.IsTapped(Button, InputActionType.Double, SetID))
                             _pressed?.OnDoublePressed(this);
-                        else
-                            _pressed.OnPressed(this);
+                        
+                        _pressed.OnPressed(this);
                     }
 
                     _dragDistance = new Vector2F();

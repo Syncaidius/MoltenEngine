@@ -6,6 +6,8 @@
 
         public KeyboardKeyType KeyType;
 
+        public InputActionType ActionType { get; set; }
+
         public DateTime PressTimestamp { get; set; }
 
         public InputAction Action { get; set; }

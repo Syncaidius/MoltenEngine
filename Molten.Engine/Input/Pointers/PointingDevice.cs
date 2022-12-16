@@ -175,27 +175,7 @@ namespace Molten.Input
                     break;
 
                 case InputAction.Pressed:
-                    TimeSpan dPressTime = newState.PressTimestamp - _lastPressed.PressTimestamp;
-
-                    // Was a double-press detected?
-                    bool validDouble = false;
-                    if (dPressTime.TotalMilliseconds <= Service.Settings.Input.DoubleClickInterval.Value)
-                    {
-                        newState.Action = InputAction.DoublePressed;
-                        OnDoublePressed?.Invoke(this, newState);
-
-                        if (Vector2F.Distance(ref newState.Position, ref _lastPressed.Position) <= MAX_DOUBLE_CLICK_DISTANCE)
-                        {
-                            validDouble = true;
-                            _lastPressed.PressTimestamp = new DateTime();
-                        }
-                    }
-
-                    if(!validDouble)
-                    {
-                        OnPressed?.Invoke(this, newState);
-                        _lastPressed = newState;
-                    }
+                    OnPressed?.Invoke(this, newState);
                     break;
 
                 case InputAction.Released:
@@ -225,14 +205,9 @@ namespace Molten.Input
             return state.Action == InputAction.Held || state.Action == InputAction.Moved;
         }
 
-        protected override bool GetIsTapped(ref PointerState state)
+        protected override bool GetIsTapped(ref PointerState state, InputActionType type)
         {
-            return state.Action == InputAction.Pressed && state.UpdateID == Service.UpdateID;
-        }
-
-        protected override bool GetIsDoubleTapped(ref PointerState state)
-        {
-            return state.Action == InputAction.DoublePressed && state.UpdateID == Service.UpdateID;
+            return (state.Action == InputAction.Pressed && state.ActionType == type) && state.UpdateID == Service.UpdateID;
         }
 
         protected override bool GetIsDown(ref PointerState state)
@@ -241,8 +216,7 @@ namespace Molten.Input
             {
                 return state.Action == InputAction.Pressed ||
                     state.Action == InputAction.Held ||
-                    state.Action == InputAction.Moved || 
-                    state.Action == InputAction.DoublePressed;
+                    state.Action == InputAction.Moved;
             }
 
             return false;

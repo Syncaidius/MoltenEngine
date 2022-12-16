@@ -22,5 +22,10 @@
         /// Gets the current press state.
         /// </summary>
         InputAction Action { get; set; }
+
+        /// <summary>
+        /// Gets the type of the action.
+        /// </summary>
+        InputActionType ActionType { get; set; }
     }
 }
