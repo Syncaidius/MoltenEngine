@@ -63,7 +63,7 @@ namespace Molten.UI
         TimeSpan _blinkTime;
         bool _blinkVisible;
 
-        internal UITextCaret(UITextElement element)
+        internal UITextCaret(UITextBox element)
         {
             Parent = element;
             Start = new CaretPoint();
@@ -95,29 +95,27 @@ namespace Molten.UI
                 }
                 else
                 {
-                    // Is the end chunk before the start chunk?
-                    EndBeforeStart = End.Chunk.StartLineNumber < Start.Chunk.StartLineNumber;
+                    // Iterate backwards to check if end is before start
+                    UITextChunk chunk = Start.Chunk;
+
+                    while (chunk != null)
+                    {
+                        if (chunk == End.Chunk)
+                        {
+                            EndBeforeStart = true;
+                            break;
+                        }
+
+                        chunk = chunk.Previous;
+                    }
                 }
 
                 SelectChunkedSegments();
             }
-            else
-            {
-                if (Start.Line != null && End.Line != null)
-                {
-                    if (Start.Line == End.Line)
-                        CheckSegmentOrder();
-                    else
-                        CheckLineOrder();
-                }
-
-                bool firstSegFound = false;
-                SelectSegments(Start.Line, ref firstSegFound);
-            }
         }
 
         /// <summary>
-        /// Checks the line order of two lines within the same <see cref="UITextChunk"/> or chunkless <see cref="UITextElement"/>.
+        /// Checks the line order of two lines within the same <see cref="UITextChunk"/> or chunkless <see cref="UITextBox"/>.
         /// </summary>
         private void CheckLineOrder()
         {
@@ -270,9 +268,9 @@ namespace Molten.UI
         public CaretPoint End { get; }
 
         /// <summary>
-        /// Gets the parent <see cref="UITextElement"/> of the current <see cref="UITextCaret"/>.
+        /// Gets the parent <see cref="UITextBox"/> of the current <see cref="UITextCaret"/>.
         /// </summary>
-        public UITextElement Parent { get; }
+        public UITextBox Parent { get; }
 
         /// <summary>
         /// Gets or sets the blink interval of the caret.

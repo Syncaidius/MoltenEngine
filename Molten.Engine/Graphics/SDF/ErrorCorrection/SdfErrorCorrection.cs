@@ -285,11 +285,14 @@ namespace Molten.Graphics.SDF
                 {
                     // Interpolate median xm at t.
                     float xm = InterpolatedMedian(a, l, q, t[i]);
+
                     // Determine if xm deviates too much from medians of a, d.
                     int rangeFlags = artifactClassifier.RangeTest(0, 1, t[i], am, dm, xm);
+
                     // Additionally, check xm against the interpolated medians at the local extremes tEx0, tEx1.
                     double* tEnd = stackalloc double[2];
                     float* em = stackalloc float[2];
+
                     // tEx0
                     if (tEx0 > 0 && tEx0 < 1)
                     {
@@ -318,6 +321,7 @@ namespace Molten.Graphics.SDF
         public unsafe bool HasLinearArtifact(BaseArtifactClassifier artifactClassifier, float am, Color3* a, Color3* b)
         {
             float bm = MathHelper.Median(b->R, b->G, b->B);
+
             return (
                 // Out of the pair, only report artifacts for the texel further from the edge to minimize side effects.
                 Math.Abs(am - .5f) >= Math.Abs(bm - .5f) && (

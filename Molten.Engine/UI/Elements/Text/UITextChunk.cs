@@ -2,32 +2,76 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Collections;
+using Molten.Font;
 using Molten.Graphics;
 
 namespace Molten.UI
 {
+    public enum UITextInsertType
+    {
+        After = 0,
+
+        Before = 1
+    }
+
+
     public class UITextChunk
     {
         const int CHUNK_CAPACITY = 128;
 
         int _width;
         int _height;
-        int _startLineNumber;
 
-        internal UITextChunk(int firstLineNumber)
+        internal UITextChunk() { }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void LinkNext(UITextChunk next)
         {
-            _startLineNumber = firstLineNumber;
+            Next = next;
+
+            if(next != null)
+                next.Previous = this;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void LinkPrevious(UITextChunk prev)
+        {
+            Previous = prev;
+
+            if(prev != null)
+                prev.Next = this;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void UnlinkNext()
+        {
+            if (Next != null)
+            {
+                Next.Previous = null;
+                Next = null;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void UnlinkPrevious()
+        {
+            if (Previous != null)
+            {
+                Previous.Next = null;
+                Previous = null;
+            }
         }
 
         private void FastAppendLine(UITextLine line)
         {
             if (LastLine != null)
             {
-                LastLine.Next = line;
-                line.Previous = LastLine;
+                LastLine.LinkNext(line);
                 LastLine = line;
             }
             else
@@ -40,16 +84,15 @@ namespace Molten.UI
             LineCount++;
             _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
             _height += line.Height;
-
-            if (Next != null)
-                Next.StartLineNumber++;
         }
 
         private void FastInsertLine(UITextLine line, UITextLine insertAfter)
         {
             if (insertAfter != null)
             {
+                line.Next = insertAfter.Next;
                 insertAfter.Next = line;
+
                 line.Previous = insertAfter;
 
                 if (insertAfter == LastLine)
@@ -74,9 +117,6 @@ namespace Molten.UI
             LineCount++;
             _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
             _height += line.Height;
-
-            if (Next != null)
-                Next.StartLineNumber++;
         }
 
         internal UITextChunk AppendLine(UITextLine line)
@@ -97,67 +137,98 @@ namespace Molten.UI
             return this;
         }
 
-        internal UITextChunk InsertLine(UITextLine line, UITextLine insertAfter)
+        internal UITextChunk InsertLine(UITextLine line, UITextLine origin, UITextInsertType insertType = UITextInsertType.After)
         {
-            if (LineCount < CHUNK_CAPACITY)
+            UITextLine last = line.FindLast(out int insertCount);
+
+            // Insert all chained lines
+            if (insertType == UITextInsertType.Before)
             {
-                FastInsertLine(line, insertAfter);
+                origin.Previous?.LinkNext(line);
+                origin.LinkPrevious(last);
+
+                if (origin == FirstLine)
+                    FirstLine = line;
             }
             else
             {
-                if (insertAfter == FirstLine)
-                {
-                    if (Previous == null || Previous.Capacity == 0)
-                        NewPrevious();
+                origin.Next?.LinkPrevious(last);
+                origin.LinkNext(line);
 
-                    Previous.FastAppendLine(line);
-                    return Previous;
-                }
-                else if (insertAfter == LastLine)
-                {
-                    if (Next == null || Next.Capacity == 0)
-                        NewNext();
+                if (origin == LastLine)
+                    LastLine = last;
+            }
 
-                    // Directly insert line to avoid duplicated checks
-                    Next.FastInsertLine(line, insertAfter);
-                    return Next;
-                }
-                else
+            LineCount += insertCount;
+            int overCap = LineCount - CHUNK_CAPACITY;
+
+            // Over capacity?
+            if (overCap > 0)
+            {
+                // Offload what we can into neighbour chunks
+                if (Previous != null)
                 {
-                    Split(insertAfter);
-                    FastAppendLine(line);
+                    int max = Math.Min(Previous.Capacity, overCap);
+                    if (max > 0)
+                    {
+                        UITextLine.FindResult fResult = FirstLine.FindUntil(max);
+                        UITextLine capNext = fResult.End.Next;
+
+                        fResult.End.UnlinkNext();
+                        Previous.AppendLine(FirstLine); // TODO refactor append line to take into account chained lines (Line.Next).
+                        FirstLine = capNext;
+
+                        overCap -= fResult.Count;
+                    }
                 }
+
+                // Back-roll from the end of the chunk, inserting "next" chunks until capacity is fulfilled.
+                while(overCap > 0)
+                {
+                    int nextCap = Next != null ? Next.Capacity : 0;
+
+                    if (nextCap == 0)
+                    {
+                        InsertNextChunk();
+                        nextCap = CHUNK_CAPACITY;
+                    }
+
+                    int max = Math.Min(nextCap, overCap);
+
+                    UITextLine.FindResult fResult = LastLine.FindUntilReverse(max);
+                    UITextLine capPrev = fResult.End.Previous;
+                    fResult.End.UnlinkPrevious();
+
+                    if (Next.FirstLine != null)
+                    {
+                        Next.InsertLine(fResult.End, Next.FirstLine, UITextInsertType.Before);
+                    }
+                    else
+                    {
+                        Next.FirstLine = fResult.End;
+                        Next.LineCount += fResult.Count;
+                    }
+
+                    LastLine = capPrev;
+                    overCap -= fResult.Count;
+                }
+
+                LineCount = CHUNK_CAPACITY;
             }
 
             return this;
         }
 
         /// <summary>
-        /// Splits the current <see cref="UITextChunk"/>, moving all items from at and beyond the given index, into a new <see cref="UITextChunk"/>.
+        /// Inserts a new <see cref="UITextChunk"/> after the current chunk and before the next chunk, if one exists.
         /// </summary>
-        /// <param name="splitAt">All lines at and beyond the given <see cref="UITextLine"/> are cut off into a new chunk, added after the current one.</param>
-        private void Split(UITextLine splitAt)
+        /// <returns>The newly-created <see cref="UITextChunk"/>.</returns>
+        private UITextChunk InsertNextChunk()
         {
-            UITextLine line = splitAt;
-            UITextLine last = splitAt;
-
-            int moveCount = 0;
-            while (line != null)
-            {
-                moveCount++;
-                last = line;
-                line = line.Next;
-            }
-
-            if (Next == null || Next.Capacity < moveCount)
-                NewNext();
-
-            splitAt.Previous = null;
-            Next.LineCount += moveCount;
-            Next.LastLine = last;
-
-            CalculateSize();
-            Next.CalculateSize();
+            UITextChunk newChunk = new UITextChunk();
+            newChunk.LinkNext(Next);
+            LinkNext(newChunk);
+            return newChunk;
         }
 
         internal void CalculateSize()
@@ -174,23 +245,9 @@ namespace Molten.UI
             }
         }
 
-        private void NewPrevious()
-        {
-            UITextChunk prev = new UITextChunk(StartLineNumber - 1);
-
-            if (Previous != null)
-            {
-                Previous.Next = prev;
-                prev.Previous = Previous;
-            }
-
-            Previous = prev;
-            Previous.Next = this;
-        }
-
         private void NewNext()
         {
-            UITextChunk next = new UITextChunk(StartLineNumber + LineCount);
+            UITextChunk next = new UITextChunk();
 
             // Update the current "Next".
             if (Next != null)
@@ -255,23 +312,6 @@ namespace Molten.UI
         /// Gets the number of <see cref="UITextLine"/> held in the current <see cref="UITextChunk"/>.
         /// </summary>
         public int LineCount { get; private set; }
-
-        /// <summary>
-        /// Gets the line number/ID of the first <see cref="UITextLine"/> in the current <see cref="UITextChunk"/>.
-        /// </summary>
-        public int StartLineNumber
-        {
-            get => _startLineNumber;
-            internal set
-            {
-                if (_startLineNumber != value)
-                {
-                    _startLineNumber = value;
-                    if (Next != null)
-                        Next.StartLineNumber = StartLineNumber + LineCount;
-                }
-            }
-        }
 
         /// <summary>
         /// Gets the remaining line capacity of the current <see cref="UITextChunk"/>.

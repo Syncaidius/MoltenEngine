@@ -49,11 +49,12 @@ namespace Molten.Graphics.SDF
 
         static DoublePtrComparer _doubleComparer = new DoublePtrComparer();
 
-        static bool isCorner(Vector2D aDir, Vector2D bDir, double crossThreshold) {
+        static bool IsCorner(Vector2D aDir, Vector2D bDir, double crossThreshold)
+        {
             return Vector2D.Dot(ref aDir, ref bDir) <= 0 || Math.Abs(Vector2D.Cross(ref aDir, ref bDir)) > crossThreshold;
         }
 
-        static double estimateEdgeLength(Shape.Edge edge)
+        static double EstimateEdgeLength(Shape.Edge edge)
         {
             double len = 0;
             Vector2D prev = edge.Point(0);
@@ -66,7 +67,7 @@ namespace Molten.Graphics.SDF
             return len;
         }
 
-        static unsafe void switchColor(ref EdgeColor color, ref int seed, EdgeColor banned = EdgeColor.Black)
+        static unsafe void SwitchColor(ref EdgeColor color, ref int seed, EdgeColor banned = EdgeColor.Black)
         {
             EdgeColor combined = color & banned;
             if (combined == EdgeColor.Red || combined == EdgeColor.Green || combined == EdgeColor.Blue)
@@ -76,10 +77,7 @@ namespace Molten.Graphics.SDF
             }
             if (color == EdgeColor.Black || color == EdgeColor.White)
             {
-                EdgeColor* start = stackalloc EdgeColor[3];
-                start[0] = EdgeColor.Cyan;
-                start[1] = EdgeColor.Magenta;
-                start[2] = EdgeColor.Yellow;
+                EdgeColor* start = stackalloc[] { EdgeColor.Cyan, EdgeColor.Magenta, EdgeColor.Yellow };
                 color = start[seed % 3];
                 seed /= 3;
                 return;
@@ -89,7 +87,7 @@ namespace Molten.Graphics.SDF
             seed >>= 1;
         }
 
-        public static unsafe void edgeColoringSimple(Shape shape, double angleThreshold, int seed)
+        public static unsafe void EdgeColoringSimple(Shape shape, double angleThreshold, int seed)
         {
             double crossThreshold = Math.Sin(angleThreshold);
             List<int> corners = new List<int>();
@@ -104,7 +102,7 @@ namespace Molten.Graphics.SDF
                     int index = 0;
                     foreach (Shape.Edge edge in contour.Edges)
                     {
-                        if (isCorner(prevDirection.GetNormalized(), edge.GetDirection(0).GetNormalized(), crossThreshold))
+                        if (IsCorner(prevDirection.GetNormalized(), edge.GetDirection(0).GetNormalized(), crossThreshold))
                             corners.Add(index);
                         prevDirection = edge.GetDirection(1);
                     }
@@ -112,18 +110,17 @@ namespace Molten.Graphics.SDF
 
                 // Smooth contour
                 if (corners.Count == 0)
+                {
                     foreach (Shape.Edge edge in contour.Edges)
                         edge.Color = EdgeColor.White;
-                // "Teardrop" case
-                else if (corners.Count == 1)
+                }
+                else if (corners.Count == 1) // "Teardrop" case
                 {
-                    EdgeColor* colors = stackalloc EdgeColor[3];
-                    colors[0] = EdgeColor.White;
-                    colors[1] = EdgeColor.White;
-                    switchColor(ref colors[0], ref seed);
+                    EdgeColor* colors = stackalloc[] { EdgeColor.White, EdgeColor.White, EdgeColor.Black };
 
+                    SwitchColor(ref colors[0], ref seed);
                     colors[2] = colors[0];
-                    switchColor(ref colors[2], ref seed);
+                    SwitchColor(ref colors[2], ref seed);
                     int corner = corners[0];
                     if (contour.Edges.Count >= 3)
                     {
@@ -162,7 +159,7 @@ namespace Molten.Graphics.SDF
                     int start = corners[0];
                     int m = contour.Edges.Count;
                     EdgeColor color = EdgeColor.White;
-                    switchColor(ref color, ref seed);
+                    SwitchColor(ref color, ref seed);
                     EdgeColor initialColor = color;
                     for (int i = 0; i < m; ++i)
                     {
@@ -170,7 +167,7 @@ namespace Molten.Graphics.SDF
                         if (spline + 1 < cornerCount && corners[spline + 1] == index)
                         {
                             ++spline;
-                            switchColor(ref color, ref seed, (EdgeColor)((spline == cornerCount - 1 ? 1 : 0) * (int)initialColor));
+                            SwitchColor(ref color, ref seed, (EdgeColor)((spline == cornerCount - 1 ? 1 : 0) * (int)initialColor));
                         }
                         contour.Edges[index].Color = color;
                     }
@@ -178,7 +175,7 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        public static unsafe void edgeColoringInkTrap(Shape shape, double angleThreshold, int seed)
+        public static unsafe void EdgeColoringInkTrap(Shape shape, double angleThreshold, int seed)
         {
             double crossThreshold = Math.Sin(angleThreshold);
             List<EdgeColoringInkTrapCorner> corners = new List<EdgeColoringInkTrapCorner>();
@@ -188,38 +185,39 @@ namespace Molten.Graphics.SDF
                 // Identify corners
                 double splineLength = 0;
                 corners.Clear();
+
                 if (contour.Edges.Count > 0)
                 {
                     Vector2D prevDirection = contour.Edges.Last().GetDirection(1);
                     int index = 0;
                     foreach (Shape.Edge edge in contour.Edges)
                     {
-                        if (isCorner(prevDirection.GetNormalized(), edge.GetDirection(0).GetNormalized(), crossThreshold))
+                        if (IsCorner(prevDirection.GetNormalized(), edge.GetDirection(0).GetNormalized(), crossThreshold))
                         {
                             EdgeColoringInkTrapCorner corner = new EdgeColoringInkTrapCorner(index, splineLength);
                             corners.Add(corner);
                             splineLength = 0;
                         }
-                        splineLength += estimateEdgeLength(edge);
+
+                        splineLength += EstimateEdgeLength(edge);
                         prevDirection = edge.GetDirection(1);
                     }
                 }
 
                 // Smooth contour
-                if (corners.Count == 0) {
+                if (corners.Count == 0)
+                {
                     foreach (Shape.Edge edge in contour.Edges)
                         edge.Color = EdgeColor.White;
                 }
                 else if (corners.Count == 1) // "Teardrop" case
                 {
-                    EdgeColor* colors = stackalloc EdgeColor[3];
-                    colors[0] = EdgeColor.White;
-                    colors[1] = EdgeColor.White;
-                    colors[2] = EdgeColor.Black;
-                    switchColor(ref colors[0], ref seed);
+                    EdgeColor* colors = stackalloc[] { EdgeColor.White, EdgeColor.White, EdgeColor.Black };
 
+                    SwitchColor(ref colors[0], ref seed);
                     colors[2] = colors[0];
-                    switchColor(ref colors[2], ref seed);
+                    SwitchColor(ref colors[2], ref seed);
+
                     int corner = corners[0].index;
                     if (contour.Edges.Count >= 3)
                     {
@@ -272,17 +270,19 @@ namespace Molten.Graphics.SDF
                     }
                     EdgeColor color = EdgeColor.White;
                     EdgeColor initialColor = EdgeColor.Black;
+
                     for (int i = 0; i < cornerCount; ++i)
                     {
                         if (!corners[i].minor)
                         {
                             --majorCornerCount;
-                            switchColor(ref color, ref seed, (EdgeColor)(majorCornerCount == 0 ? 1 : 0 * (int)initialColor));
+                            SwitchColor(ref color, ref seed, (EdgeColor)(majorCornerCount == 0 ? 1 : 0 * (int)initialColor));
                             corners[i].color = color;
                             if (initialColor == 0)
                                 initialColor = color;
                         }
                     }
+
                     for (int i = 0; i < cornerCount; ++i)
                     {
                         if (corners[i].minor)
@@ -293,10 +293,12 @@ namespace Molten.Graphics.SDF
                         else
                             color = corners[i].color;
                     }
+
                     int spline = 0;
                     int start = corners[0].index;
                     color = corners[0].color;
                     int m = contour.Edges.Count;
+
                     for (int i = 0; i < m; ++i)
                     {
                         int index = (start + i) % m;
@@ -308,9 +310,14 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        // EDGE COLORING BY DISTANCE - EXPERIMENTAL IMPLEMENTATION - WORK IN PROGRESS
-
-        static double edgeToEdgeDistance(Shape.Edge a, Shape.Edge b, int precision)
+        /// <summary>
+        /// EDGE COLORING BY DISTANCE - EXPERIMENTAL IMPLEMENTATION - WORK IN PROGRESS
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="precision"></param>
+        /// <returns></returns>
+        static double EdgeToEdgeDistance(Shape.Edge a, Shape.Edge b, int precision)
         {
             if (a.Point(0) == b.Point(0) || a.Point(0) == b.Point(1) || a.Point(1) == b.Point(0) || a.Point(1) == b.Point(1))
                 return 0;
@@ -331,21 +338,21 @@ namespace Molten.Graphics.SDF
             return minDistance;
         }
 
-        static double splineToSplineDistance(List<Shape.Edge> edgeSegments, int aStart, int aEnd, int bStart, int bEnd, int precision)
+        static double SplineToSplineDistance(List<Shape.Edge> edgeSegments, int aStart, int aEnd, int bStart, int bEnd, int precision)
         {
             double minDistance = double.MaxValue;
             for (int ai = aStart; ai < aEnd; ++ai)
             {
                 for (int bi = bStart; bi < bEnd && minDistance != 0; ++bi)
                 {
-                    double d = edgeToEdgeDistance(edgeSegments[ai], edgeSegments[bi], precision);
+                    double d = EdgeToEdgeDistance(edgeSegments[ai], edgeSegments[bi], precision);
                     minDistance = Math.Min(minDistance, d);
                 }
             }
             return minDistance;
         }
 
-        static unsafe void colorSecondDegreeGraph(int* coloring, int** edgeMatrix, int vertexCount, int seed)
+        static unsafe void ColorSecondDegreeGraph(int* coloring, int** edgeMatrix, int vertexCount, int seed)
         {
             for (int i = 0; i < vertexCount; ++i)
             {
@@ -388,7 +395,7 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        static unsafe int vertexPossibleColors(int* coloring, int* edgeVector, int vertexCount)
+        static unsafe int VertexPossibleColors(int* coloring, int* edgeVector, int vertexCount)
         {
             int usedColors = 0;
             for (int i = 0; i < vertexCount; ++i)
@@ -397,7 +404,7 @@ namespace Molten.Graphics.SDF
             return 7 & ~usedColors;
         }
 
-        static unsafe void uncolorSameNeighbors(Queue<int> uncolored, int* coloring, int** edgeMatrix, int vertex, int vertexCount)
+        static unsafe void UncolorSameNeighbors(Queue<int> uncolored, int* coloring, int** edgeMatrix, int vertex, int vertexCount)
         {
             for (int i = vertex + 1; i < vertexCount; ++i)
             {
@@ -417,13 +424,13 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        static unsafe bool tryAddEdge(int* coloring, int** edgeMatrix, int vertexCount, int vertexA, int vertexB, int* coloringBuffer)
+        static unsafe bool TryAddEdge(int* coloring, int** edgeMatrix, int vertexCount, int vertexA, int vertexB, int* coloringBuffer)
         {
             edgeMatrix[vertexA][vertexB] = 1;
             edgeMatrix[vertexB][vertexA] = 1;
             if (coloring[vertexA] != coloring[vertexB])
                 return true;
-            int bPossibleColors = vertexPossibleColors(coloring, edgeMatrix[vertexB], vertexCount);
+            int bPossibleColors = VertexPossibleColors(coloring, edgeMatrix[vertexB], vertexCount);
             if (bPossibleColors != 0)
             {
                 coloring[vertexB] = FIRST_POSSIBLE_COLOR[bPossibleColors];
@@ -437,12 +444,12 @@ namespace Molten.Graphics.SDF
             {
                 int* subColoring = coloringBuffer;
                 subColoring[vertexB] = FIRST_POSSIBLE_COLOR[7 & ~(1 << subColoring[vertexA])];
-                uncolorSameNeighbors(uncolored, subColoring, edgeMatrix, vertexB, vertexCount);
+                UncolorSameNeighbors(uncolored, subColoring, edgeMatrix, vertexB, vertexCount);
                 int step = 0;
                 while (uncolored.Count == 0 && step < MAX_RECOLOR_STEPS)
                 {
                     int i = uncolored.Dequeue();
-                    int possibleColors = vertexPossibleColors(subColoring, edgeMatrix[i], vertexCount);
+                    int possibleColors = VertexPossibleColors(subColoring, edgeMatrix[i], vertexCount);
                     if (possibleColors != 0)
                     {
                         subColoring[i] = FIRST_POSSIBLE_COLOR[possibleColors];
@@ -452,7 +459,7 @@ namespace Molten.Graphics.SDF
                     {
                         subColoring[i] = step++ % 3;
                     } while (edgeMatrix[i][vertexA] != 0 && subColoring[i] == subColoring[vertexA]);
-                    uncolorSameNeighbors(uncolored, subColoring, edgeMatrix, i, vertexCount);
+                    UncolorSameNeighbors(uncolored, subColoring, edgeMatrix, i, vertexCount);
                 }
             }
             if (uncolored.Count != 0)
@@ -465,7 +472,7 @@ namespace Molten.Graphics.SDF
             return true;
         }
 
-        public static unsafe void edgeColoringByDistance(Shape shape, double angleThreshold, int seed)
+        public static unsafe void EdgeColoringByDistance(Shape shape, double angleThreshold, int seed)
         {
             List<Shape.Edge> edgeSegments = new List<Shape.Edge>();
             List<int> splineStarts = new List<int>();
@@ -481,19 +488,20 @@ namespace Molten.Graphics.SDF
                     int index = 0;
                     foreach (Shape.Edge edge in contour.Edges)
                     {
-                        if (isCorner(prevDirection.GetNormalized(), edge.GetDirection(0).GetNormalized(), crossThreshold))
+                        if (IsCorner(prevDirection.GetNormalized(), edge.GetDirection(0).GetNormalized(), crossThreshold))
                             corners.Add(index);
                         prevDirection = edge.GetDirection(1);
                     }
 
                     splineStarts.Add(edgeSegments.Count);
+
                     // Smooth contour
-                    if (corners.Count == 0) {
+                    if (corners.Count == 0)
+                    {
                         foreach (Shape.Edge edge in contour.Edges)
                             edgeSegments.Add(edge);
                     }
-                    // "Teardrop" case
-                    else if (corners.Count == 1)
+                    else if (corners.Count == 1) // "Teardrop" case
                     {
                         int corner = corners[0];
                         if (contour.Edges.Count >= 3)
@@ -502,7 +510,7 @@ namespace Molten.Graphics.SDF
                             for (int i = 0; i < m; ++i)
                             {
                                 if (i == m / 2)
-                                    splineStarts.Add((int)edgeSegments.Count);
+                                    splineStarts.Add(edgeSegments.Count);
                                 if ((int)(3 + 2.875 * i / (m - 1) - 1.4375 + .5) - 3 != 0)
                                     edgeSegments.Add(contour.Edges[(corner + i) % m]);
                                 else
@@ -520,7 +528,7 @@ namespace Molten.Graphics.SDF
                                 edgeSegments.Add(parts[0]);
                                 edgeSegments.Add(parts[1]);
                                 parts[2].Color = parts[3].Color = EdgeColor.White;
-                                splineStarts.Add((int)edgeSegments.Count);
+                                splineStarts.Add(edgeSegments.Count);
                                 edgeSegments.Add(parts[4]);
                                 edgeSegments.Add(parts[5]);
                             }
@@ -528,7 +536,7 @@ namespace Molten.Graphics.SDF
                             {
                                 edgeSegments.Add(parts[0]);
                                 parts[1].Color = EdgeColor.White;
-                                splineStarts.Add((int)edgeSegments.Count);
+                                splineStarts.Add(edgeSegments.Count);
                                 edgeSegments.Add(parts[2]);
                             }
                             contour.Edges.Clear();
@@ -536,13 +544,13 @@ namespace Molten.Graphics.SDF
                                 contour.Edges.Add(parts[i]);
                         }
                     }
-                    // Multiple corners
-                    else
+                    else // Multiple corners
                     {
                         int cornerCount = corners.Count;
                         int subSpline = 0;
                         int start = corners[0];
                         int m = contour.Edges.Count;
+
                         for (int i = 0; i < m; ++i)
                         {
                             int subIndex = (start + i) % m;
@@ -564,16 +572,17 @@ namespace Molten.Graphics.SDF
 
             double* distanceMatrixStorage = stackalloc double[splineCount * splineCount];
             double** distanceMatrix = stackalloc double*[splineCount];
+            double* distanceMatrixBase = &distanceMatrixStorage[0];
+
             for (int i = 0; i < splineCount; ++i)
                 distanceMatrix[i] = &distanceMatrixStorage[i * splineCount];
-            double* distanceMatrixBase = &distanceMatrixStorage[0];
 
             for (int i = 0; i < splineCount; ++i)
             {
                 distanceMatrix[i][i] = -1;
                 for (int j = i + 1; j < splineCount; ++j)
                 {
-                    double dist = splineToSplineDistance(edgeSegments, splineStarts[i], splineStarts[i + 1], splineStarts[j], splineStarts[j + 1], EDGE_DISTANCE_PRECISION);
+                    double dist = SplineToSplineDistance(edgeSegments, splineStarts[i], splineStarts[i + 1], splineStarts[j], splineStarts[j + 1], EDGE_DISTANCE_PRECISION);
                     distanceMatrix[i][j] = dist;
                     distanceMatrix[j][i] = dist;
                 }
@@ -581,17 +590,22 @@ namespace Molten.Graphics.SDF
 
             double*[] graphEdgeDistances = new double*[splineCount * (splineCount - 1) / 2];
             int graphEdgePos = 0;
-            for (int i = 0; i < splineCount; ++i) {
+
+            for (int i = 0; i < splineCount; ++i)
+            {
                 for (int j = i + 1; j < splineCount; ++j)
                     graphEdgeDistances[graphEdgePos++] = &distanceMatrix[i][j];
             }
+
             if (graphEdgePos > 0)
                 Array.Sort(graphEdgeDistances, 0, graphEdgePos, _doubleComparer);
 
             int* edgeMatrixStorage = stackalloc int[splineCount * splineCount];
             int** edgeMatrix = stackalloc int*[splineCount];
+
             for (int i = 0; i < splineCount; ++i)
                 edgeMatrix[i] = &edgeMatrixStorage[i * splineCount];
+
             int nextEdge = 0;
             for (; nextEdge < graphEdgePos && graphEdgeDistances[nextEdge] == null; ++nextEdge)
             {
@@ -603,17 +617,14 @@ namespace Molten.Graphics.SDF
             }
 
             int* coloring = stackalloc int[2 * splineCount];
-            colorSecondDegreeGraph(&coloring[0], &edgeMatrix[0], splineCount, seed);
+            ColorSecondDegreeGraph(&coloring[0], &edgeMatrix[0], splineCount, seed);
             for (; nextEdge < graphEdgePos; ++nextEdge)
             {
                 int elem = (int)(graphEdgeDistances[nextEdge] - distanceMatrixBase);
-                tryAddEdge(&coloring[0], &edgeMatrix[0], splineCount, elem / splineCount, elem % splineCount, &coloring[splineCount]);
+                TryAddEdge(&coloring[0], &edgeMatrix[0], splineCount, elem / splineCount, elem % splineCount, &coloring[splineCount]);
             }
 
-            EdgeColor* colors = stackalloc EdgeColor[3];
-            colors[0] = EdgeColor.Yellow;
-            colors[1] = EdgeColor.Cyan;
-            colors[2] = EdgeColor.Magenta;
+            EdgeColor* colors = stackalloc[] { EdgeColor.Yellow, EdgeColor.Cyan, EdgeColor.Magenta };
             int spline = -1;
             for (int i = 0; i < segmentCount; ++i)
             {
@@ -623,36 +634,62 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        public static void parseColoring(Shape shape, string edgeAssignment = "cmwyCMWY") {
+        public static void ParseColoring(Shape shape, string edgeAssignment = "cmwyCMWY")
+        {
             int c = 0, e = 0;
-            if (string.IsNullOrEmpty(edgeAssignment)) return;
+            if (string.IsNullOrEmpty(edgeAssignment)) 
+                return;
+
             Shape.Contour contour = shape.Contours[c];
             bool change = false;
             bool clear = true;
-            foreach (char cin in edgeAssignment) {
-                switch (cin) {
+
+            foreach (char cin in edgeAssignment)
+            {
+                switch (cin)
+                {
                     case ',':
                         if (change)
                             ++e;
+
                         if (clear)
-                            while (e < contour.Edges.Count) {
+                        {
+                            while (e < contour.Edges.Count)
+                            {
                                 contour.Edges[e].Color = EdgeColor.White;
                                 ++e;
                             }
-                        ++c; e = 0;
-                        if (shape.Contours.Count <= c) return;
+                        }
+
+                        ++c; 
+                        e = 0;
+
+                        if (shape.Contours.Count <= c)
+                            return;
+
                         contour = shape.Contours[c];
                         change = false;
                         clear = true;
                         break;
+
                     case '?':
                         clear = false;
                         break;
-                    case 'C': case 'M': case 'W': case 'Y': case 'c': case 'm': case 'w': case 'y':
-                        if (change) {
+
+                    case 'C':
+                    case 'M':
+                    case 'W':
+                    case 'Y':
+                    case 'c':
+                    case 'm':
+                    case 'w':
+                    case 'y':
+                        if (change)
+                        {
                             ++e;
                             change = false;
                         }
+
                         if (e < contour.Edges.Count)
                         {
                             contour.Edges[e].Color = (EdgeColor)(

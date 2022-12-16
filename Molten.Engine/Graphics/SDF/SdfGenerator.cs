@@ -41,13 +41,13 @@ namespace Molten.Graphics.SDF
 
             TextureSliceRef<Color3> sdfRef = sdf.GetReference<Color3>();
 
-            EdgeColouring.edgeColoringSimple(shape, DEFAULT_ANGLE_THRESHOLD, 0);
-            EdgeColouring.parseColoring(shape, edgeAssignment);
+            EdgeColouring.EdgeColoringSimple(shape, DEFAULT_ANGLE_THRESHOLD, 0);
+            EdgeColouring.ParseColoring(shape, edgeAssignment);
             GenerateMSDF(sdfRef, shape, projection, range, config);
 
             ErrorCorrection.MultiDistanceSignCorrection(sdfRef, shape, projection, fl);
             ErrorCorrection.MsdfErrorCorrection(sdfRef, shape, projection, range, postGenConfig);
- 
+
             return sdfRef;
         }
 
@@ -65,7 +65,7 @@ namespace Molten.Graphics.SDF
                 Format = GraphicsFormat.R8G8B8A8_UNorm
             });
 
-            fixed(Color* ptr = finalData)
+            fixed (Color* ptr = finalData)
             {
                 byte* pData = (byte*)ptr;
                 float* srcData = (float*)src.Data;

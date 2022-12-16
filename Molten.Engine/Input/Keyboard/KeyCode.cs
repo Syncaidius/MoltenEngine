@@ -4,7 +4,7 @@
     {
         Cancel = 0x03,
 
-        Back = 0x08,
+        Backspace = 0x08,
 
         Clear = 0x0C,
 

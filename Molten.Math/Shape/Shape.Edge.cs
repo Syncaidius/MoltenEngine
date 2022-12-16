@@ -19,6 +19,9 @@ namespace Molten
             /// </summary>
             public Vector2D[] P { get; protected init; }
 
+            /// <summary>
+            /// The color of the edge. Mainly used during multi-channel signed-distance field processing.
+            /// </summary>
             public EdgeColor Color;
 
             public Edge(EdgeColor color)

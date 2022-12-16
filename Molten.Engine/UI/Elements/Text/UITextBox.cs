@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Molten.Collections;
 using Molten.Graphics;
@@ -8,9 +9,10 @@ using Molten.Input;
 
 namespace Molten.UI
 {
-    public partial class UITextBox : UITextElement
+    public partial class UITextBox : UIElement
     {
         private delegate void LineRenderCallback(SpriteBatcher sb, ref RectangleF lineBounds, ref RectangleF segBounds, UITextLine line);
+
         internal class LineMargin
         {
             public event ObjectHandler<LineMargin> BoundsChanged;
@@ -67,9 +69,10 @@ namespace Molten.UI
 
         UIScrollBar _vScroll;
         UIScrollBar _hScroll;
-        UITextChunk _firstChunk;
-        UITextChunk _lastChunk;
         LineMargin _margin;
+
+        string _fontName;
+        UITextParser _parser;
 
         int _scrollbarWidth = 20;
         int _lineHeight = 25;
@@ -81,7 +84,6 @@ namespace Molten.UI
         bool _showLineNumbers;
         Vector2F _lineNumPos;
         Color _lineNumColor = new Color(52, 156, 181, 255);
-        KeyboardDevice _keyboard;
 
         /* TODO:
          *  - Allow segment to have OnPressed and OnReleased virtual methods to allow custom segment actions/types, such as:
@@ -94,6 +96,10 @@ namespace Molten.UI
         protected override void OnInitialize(Engine engine, UISettings settings)
         {
             base.OnInitialize(engine, settings);
+
+            Caret = new UITextCaret(this);
+            DefaultFontName = settings.DefaultFontName;
+            _parser = settings.DefaultTextParser ?? new UIDefaultTextParser();
 
             _margin = new LineMargin();
             _margin.PaddingChanged += OnMarginPaddingChanged;
@@ -116,22 +122,20 @@ namespace Molten.UI
 
             Vector2F charSize;
 
+            if (HandleSpecialCharacters(keyboard, ref state))
+                return;
+
             if (Caret.Start.Segment != null)
             {
                 charSize = Caret.Start.Segment.Font.MeasureChar(state.Character);
                 int? charIndex = Caret.Start.Char.Index;
                 if (charIndex.HasValue)
-                {
                     Caret.Start.Segment.Insert(charIndex.Value, state.Character.ToString());
-                    Caret.Start.Char.Index++;
-                    Caret.Start.Char.StartOffset += charSize.X;
-                }
                 else
-                {
                     Caret.Start.Segment.Text += state.Character;
-                }
 
-                // TODO update caret position
+                Caret.Start.Char.Index++;
+                Caret.Start.Char.StartOffset += charSize.X;
             }
             else
             {
@@ -160,6 +164,50 @@ namespace Molten.UI
             }
         }
 
+        private bool HandleSpecialCharacters(KeyboardDevice kb, ref KeyboardKeyState state)
+        {
+            switch (state.Character)
+            {
+                case '\b':
+
+                    return true;
+
+                case '\r':
+                    if (Caret.Start.Segment != null)
+                    {
+                        UITextLine curLine = Caret.Start.Line;
+                        UITextLine newLine = curLine.Split(Caret.Start.Segment, Caret.Start.Char.Index);
+                        if (curLine != newLine)
+                        {
+                            Caret.Start.Segment = Caret.Start.Line.FirstSegment;
+                            Caret.Start.Char.Index = 0;
+                            
+                            Caret.Start.Chunk = Caret.Start.Chunk.InsertLine(newLine, curLine);
+                            Caret.Start.Line = newLine;
+                        }
+                        else
+                        {
+                            UITextLine line = new UITextLine(this);
+                            Caret.Start.Chunk = Caret.Start.Chunk.InsertLine(line, curLine.Previous);
+                        }
+                    }
+                    else
+                    {
+                        // We're at the end of the current line, simply insert and go to the new line.
+                        Caret.Start.Line = InsertNewLine(Caret.Start.Line);
+                        Caret.Start.Segment = null;
+                        Caret.Start.Char.Index = null;
+                    }
+                    return true;
+
+                case '\t':
+
+                    return true;
+            }
+
+            return false;
+        }
+
         private void ScrollChanged(UIScrollBar element)
         {
             RenderOffset = new Vector2F(-_hScroll.Value, -_vScroll.Value);
@@ -170,49 +218,32 @@ namespace Molten.UI
             OnUpdateBounds();
         }
 
-        /// <inheritdoc/>
-        public override UITextLine NewLine()
+        /// <summary>
+        /// Sets the text of the current <see cref="UITextBox"/>. The string will be parsed by the <see cref="UITextParser"/> at <see cref="Parser"/>.
+        /// </summary>
+        /// <param name="text"></param>
+        public void SetText(string text)
         {
-            UITextLine line = new UITextLine(this);
-            _lastChunk = _lastChunk.AppendLine(line);
-            return line;
+            Clear();
+
+            if (MaxLength > 0 && text.Length > MaxLength)
+                text = text.Substring(0, MaxLength);
+
+            _parser.ParseText(this, text);
         }
 
-        /// <inheritdoc/>
-        public override void Clear()
-        {
-            _firstChunk = new UITextChunk(1);
-            _lastChunk = _firstChunk;
-            Recalculate();
-        }
-
-        /// <inheritdoc/>
-        public override void AppendLine(UITextLine line)
-        {
-            _lastChunk = _lastChunk.AppendLine(line);
-        }
-
-        /// <inheritdoc/>
-        public override void AppendSegment(UITextSegment segment)
-        {
-            _lastChunk.LastLine.AppendSegment(segment);
-        }
-
-        /// <inheritdoc/>
-        public override void InsertLine(UITextLine line, UITextLine insertAfter)
-        {
-            _lastChunk.InsertLine(line, insertAfter);
-        }
-
-        /// <inheritdoc/>
-        public override string GetText()
+        /// <summary>
+        /// Retrieves the full text string of the current <see cref="UITextBox"/>.
+        /// </summary>
+        /// <returns></returns>
+        public string GetText()
         {
             StringBuilder sb = new StringBuilder();
-            UITextChunk chunk = _firstChunk;
-            while(chunk != null)
+            UITextChunk chunk = FirstChunk;
+            while (chunk != null)
             {
                 UITextLine line = chunk.FirstLine;
-                while(line != null)
+                while (line != null)
                 {
                     line.GetText(sb);
                     line = line.Next;
@@ -224,7 +255,116 @@ namespace Molten.UI
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Inserts a blank new <see cref="UITextLine"/>.
+        /// </summary>
+        /// <returns></returns>
+        public UITextLine NewLine()
+        {
+            UITextLine line = new UITextLine(this);
+            LastChunk = LastChunk.AppendLine(line);
+            return line;
+        }
+
+
+        /// <summary>
+        /// Inserts the given <see cref="UITextLine"/> at the end of the current <see cref="UITextBox"/>'s text.
+        /// </summary>
+        /// <param name="line">The line to append to the end.</param>
+        public void AppendLine(UITextLine line)
+        {
+            LastChunk = LastChunk.AppendLine(line);
+        }
+
+        /// <summary>
+        /// Inserts the given <see cref="UITextSegment"/> to the end of the last <see cref="UITextLine"/>, in the current <see cref="UITextBox"/>.
+        /// </summary>
+        /// <param name="segment">The segment to append to the end.</param>
+        public void AppendSegment(UITextSegment segment)
+        {
+            LastChunk.LastLine.AppendSegment(segment);
+        }
+
+        /// <summary>
+        /// Inserts a <see cref="UITextLine"/> after the specified one.
+        /// </summary>
+        /// <param name="line">The line to be inserted.</param>
+        /// <param name="insertAfter">The line to insert <paramref name="line"/> after.</param>
+        public void InsertLine(UITextLine line, UITextLine insertAfter)
+        {
+            LastChunk.InsertLine(line, insertAfter);
+        }
+
+        /// <summary>
+        /// Inserts a new <see cref="UITextLine"/> after the specified one.
+        /// </summary>
+        /// <param name="insertAfter">The line to insert the new line after.</param>
+        /// <returns></returns>
+        public UITextLine InsertNewLine(UITextLine insertAfter)
+        {
+            UITextLine newLine = new UITextLine(this);
+            LastChunk.InsertLine(newLine, insertAfter);
+            return newLine;
+        }
+
+        /// <summary>
+        /// Clear all text from the current <see cref="UITextBox"/>.
+        /// </summary>
+        public void Clear()
+        {
+            FirstChunk = new UITextChunk();
+            LastChunk = FirstChunk;
+            Recalculate();
+        }
+
         /// <inheritdoc/>
+        public override void OnPressed(CameraInputTracker tracker)
+        {
+            base.OnPressed(tracker);
+
+            UITextChunk chunk = FirstChunk;
+            Rectangle cBounds = _textBounds;
+            Vector2I pos = (Vector2I)tracker.Position;
+
+            Caret.Clear();
+
+            while (chunk != null)
+            {
+                cBounds.Height = chunk.Height;
+                if (chunk.Pick(pos, ref cBounds, Caret.Start))
+                    break;
+
+                cBounds.Y += chunk.Height;
+                chunk = chunk.Next;
+            }
+        }
+
+        /// <inheritdoc/>
+        public override void OnDragged(CameraInputTracker tracker)
+        {
+            base.OnDragged(tracker);
+
+            if (Caret.Start.Chunk == null)
+                return;
+
+            UITextChunk chunk = FirstChunk;
+            Rectangle cBounds = _textBounds;
+            Vector2I pos = (Vector2I)tracker.Position;
+
+            while (chunk != null)
+            {
+                cBounds.Height = chunk.Height;
+                if (chunk.Pick(pos, ref cBounds, Caret.End))
+                {
+                    Caret.CalculateSelected();
+                    break;
+                }
+
+                cBounds.Y += chunk.Height;
+                chunk = chunk.Next;
+            }
+        }
+
         protected override void OnUpdateBounds()
         {
             base.OnUpdateBounds();
@@ -274,59 +414,10 @@ namespace Molten.UI
             return true;
         }
 
-        /// <inheritdoc/>
-        public override void OnPressed(CameraInputTracker tracker)
+        protected override void OnUpdate(Timing time)
         {
-            base.OnPressed(tracker);
-
-            UITextChunk chunk = _firstChunk;
-            Rectangle cBounds = _textBounds;
-            Vector2I pos = (Vector2I)tracker.Position;
-
-            Caret.Clear();
-
-            while (chunk != null)
-            {
-                cBounds.Height = chunk.Height;
-                if (chunk.Pick(pos, ref cBounds, Caret.Start))
-                    break;
-
-                cBounds.Y += chunk.Height;
-                chunk = chunk.Next;
-            }
-        }
-
-        /// <inheritdoc/>
-        public override void OnDragged(CameraInputTracker tracker)
-        {
-            base.OnDragged(tracker);
-
-            if (Caret.Start.Chunk == null)
-                return;
-
-            UITextChunk chunk = _firstChunk;
-            Rectangle cBounds = _textBounds;
-            Vector2I pos = (Vector2I)tracker.Position;
-
-            while (chunk != null)
-            {
-                cBounds.Height = chunk.Height;
-                if (chunk.Pick(pos, ref cBounds, Caret.End))
-                {
-                    Caret.CalculateSelected();
-                    break;
-                }
-
-                cBounds.Y += chunk.Height;
-                chunk = chunk.Next;
-            }
-        }
-
-        public override void OnKeyboardInput(KeyboardDevice keyboard, Timing time)
-        {
-            base.OnKeyboardInput(keyboard, time);
-
-            // TODO handle hotkeys.
+            base.OnUpdate(time);
+            Caret.Update(time);
         }
 
         /// <inheritdoc/>
@@ -341,7 +432,7 @@ namespace Molten.UI
             _margin.Render(sb);
 
             sb.PushClip(_textClipBounds);
-            UITextChunk chunk = _firstChunk;
+            UITextChunk chunk = FirstChunk;
             Rectangle cBounds = _textBounds;
 
             DrawLines(sb, chunk, cBounds, DrawLineSelection);
@@ -351,9 +442,10 @@ namespace Molten.UI
 
             if (_showLineNumbers)
             {
-                chunk = _firstChunk;
+                chunk = FirstChunk;
                 cBounds = _textBounds;
-                
+                int startLineNum = 1;
+
                 while (chunk != null)
                 {
                     cBounds.Height = chunk.Height;
@@ -363,9 +455,9 @@ namespace Molten.UI
                         Vector2F numPos = _lineNumPos;
                         numPos.Y = cBounds.Y;
                         UITextLine line = chunk.FirstLine;
-                        int lineNum = chunk.StartLineNumber;
+                        int lineNum = startLineNum;
 
-                        while(line != null)
+                        while (line != null)
                         {
                             string numString = lineNum.ToString(); // TODO cache line numbers in Chunk.
                             Vector2F numSize = DefaultFont.MeasureString(numString);
@@ -378,6 +470,7 @@ namespace Molten.UI
                         }
                     }
 
+                    startLineNum += chunk.LineCount;
                     cBounds.Y += chunk.Height;
                     chunk = chunk.Next;
                 }
@@ -497,12 +590,15 @@ namespace Molten.UI
             }
         }
 
-        public override void Recalculate()
+        /// <summary>
+        /// Forces the current <see cref="UITextBox"/> to recalculate any peripherial values, such as scrollbars or effects.
+        /// </summary>
+        public void Recalculate()
         {
             float distH = 0;
             float distV = 0;
 
-            UITextChunk chunk = _firstChunk;
+            UITextChunk chunk = FirstChunk;
             while(chunk != null)
             {
                 distH = Math.Max(distH, chunk.Width - _textBounds.Width);
@@ -564,7 +660,83 @@ namespace Molten.UI
             }
         }
 
-        /// <inheritdoc/>
-        public override bool IsMultiLine { get; } = true;
+        public UITextChunk FirstChunk { get; protected set; }
+
+        public UITextChunk LastChunk { get; protected set; }
+
+        /// <summary>
+        /// Gets the default <see cref="SpriteFont"/> for the current <see cref="UITextBox"/>. This is controlled by setting <see cref="DefaultFontName"/>
+        /// </summary>
+        public SpriteFont DefaultFont { get; private set; }
+
+        /// <summary>
+        /// Gets the default line height of the current <see cref="UITextBox"/>. 
+        /// <para>This is based off the <see cref="DefaultFont"/>, which is controlled by setting <see cref="DefaultFontName"/>.</para>
+        /// </summary>
+        public int DefaultLineHeight { get; private set; }
+
+        /// <summary>
+        /// Gets or sets whether the current <see cref="UITextBox"/> is a multi-line textbox. If false, any line breaks will be substituted with spaces.
+        /// </summary>
+        public bool IsMultiLine { get; } = true;
+
+        /// <summary>
+        /// Gets or sets the maximum number of characters that can be entered into the current <see cref="UITextBox"/>.
+        /// </summary>
+        public int MaxLength { get; set; } = 0;
+
+        /// <summary>
+        /// Gets the <see cref="UITextCaret"/> bound to the current <see cref="UITextBox"/>.
+        /// </summary>
+        public UITextCaret Caret { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the name of the default font for the current <see cref="UITextBox"/>. This will attempt to load/retrieve and populate <see cref="Font"/>.
+        /// </summary>
+        [UIThemeMember]
+        public string DefaultFontName
+        {
+            get => _fontName;
+            set
+            {
+                value = (value ?? string.Empty).ToLower();
+                if (_fontName != value)
+                {
+                    _fontName = value;
+                    if (!string.IsNullOrWhiteSpace(_fontName))
+                    {
+                        Engine.Content.LoadFont(_fontName, (font, isReload) =>
+                        {
+                            DefaultFont = font;
+                            DefaultLineHeight = (int)Math.Ceiling(DefaultFont.MeasureString(" ").Y);
+                        },
+                        new SpriteFontParameters()
+                        {
+                            FontSize = 16,
+                        });
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="UITextParser"/> of the current <see cref="UITextBox"/>.
+        /// </summary>
+        public UITextParser Parser
+        {
+            get => _parser;
+            set
+            {
+                value = value ?? Engine.Settings.UI.DefaultTextParser;
+                if (_parser != value)
+                {
+                    _parser = value;
+                    Clear();
+                    string text = GetText();
+                    _parser.ParseText(this, text);
+                }
+            }
+        }
+
     }
 }

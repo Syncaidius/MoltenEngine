@@ -14,16 +14,16 @@ namespace Molten.UI
     public abstract class UITextParser
     {
         /// <summary>
-        /// Invoked when the parser should populate the provided <see cref="UITextElement"/>.
+        /// Invoked when the parser should populate the provided <see cref="UITextBox"/>.
         /// </summary>
-        /// <param name="element">The <see cref="UITextElement"/> to be populated with parsed text.</param>
+        /// <param name="element">The <see cref="UITextBox"/> to be populated with parsed text.</param>
         /// <param name="text">The text to be parsed.</param>
-        internal void ParseText(UITextElement element, string text)
+        internal void ParseText(UITextBox element, string text)
         {
             OnParseText(element, text);
         }
 
-        protected abstract void OnParseText(UITextElement element, string text);
+        protected abstract void OnParseText(UITextBox element, string text);
     }
 
     public class UIDefaultTextParser : UITextParser
@@ -41,7 +41,7 @@ namespace Molten.UI
         static readonly string[] _newLineChars = { Environment.NewLine, "\r", "\n" };
 
         /// <inheritdoc/>
-        protected override void OnParseText(UITextElement element, string text)
+        protected override void OnParseText(UITextBox element, string text)
         {
             string[] lines = Regex.Split(text, "\r?\n");
 
@@ -84,7 +84,7 @@ namespace Molten.UI
             element.Recalculate();
         }
 
-        private UITextSegment ParseRuleCharList(UITextElement element, char c, SpriteFont font, char[] list)
+        private UITextSegment ParseRuleCharList(UITextBox element, char c, SpriteFont font, char[] list)
         {
             // Check for whitespace character
             for (int w = 0; w < list.Length; w++)

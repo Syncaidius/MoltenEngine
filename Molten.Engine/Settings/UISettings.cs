@@ -31,7 +31,7 @@ namespace Molten
         public SettingValue<string> DefaultFontName { get; }
 
         /// <summary>
-        /// Gets or sets the default <see cref="UITextParser"/> for <see cref="UITextElement"/>-based elements.
+        /// Gets or sets the default <see cref="UITextParser"/> for <see cref="UITextBox"/>-based elements.
         /// </summary>
         public UITextParser DefaultTextParser { get; set; } = new UIDefaultTextParser();
        
