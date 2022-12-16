@@ -181,19 +181,20 @@ namespace Molten.UI
                             Caret.Start.Segment = Caret.Start.Line.FirstSegment;
                             Caret.Start.Char.Index = 0;
                             
-                            Caret.Start.Chunk = Caret.Start.Chunk.InsertLine(newLine, curLine);
+                            Caret.Start.Chunk.InsertLine(newLine, curLine);
                             Caret.Start.Line = newLine;
                         }
                         else
                         {
                             UITextLine line = new UITextLine(this);
-                            Caret.Start.Chunk = Caret.Start.Chunk.InsertLine(line, curLine.Previous);
+                            Caret.Start.Chunk.InsertLine(line, curLine.Previous);
                         }
                     }
                     else
                     {
                         // We're at the end of the current line, simply insert and go to the new line.
-                        Caret.Start.Line = InsertNewLine(Caret.Start.Line);
+                        UITextLine newLine = new UITextLine(this);
+                        Caret.Start.Chunk.InsertLine(newLine, Caret.Start.Line);
                         Caret.Start.Segment = null;
                         Caret.Start.Char.Index = null;
                     }
@@ -292,18 +293,6 @@ namespace Molten.UI
         public void InsertLine(UITextLine line, UITextLine insertAfter)
         {
             LastChunk.InsertLine(line, insertAfter);
-        }
-
-        /// <summary>
-        /// Inserts a new <see cref="UITextLine"/> after the specified one.
-        /// </summary>
-        /// <param name="insertAfter">The line to insert the new line after.</param>
-        /// <returns></returns>
-        public UITextLine InsertNewLine(UITextLine insertAfter)
-        {
-            UITextLine newLine = new UITextLine(this);
-            LastChunk.InsertLine(newLine, insertAfter);
-            return newLine;
         }
 
         /// <summary>

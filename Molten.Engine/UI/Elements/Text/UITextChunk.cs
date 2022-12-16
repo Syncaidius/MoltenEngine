@@ -138,7 +138,7 @@ namespace Molten.UI
             return this;
         }
 
-        internal UITextChunk InsertLine(UITextLine line, UITextLine origin, UITextInsertType insertType = UITextInsertType.After)
+        internal void InsertLine(UITextLine line, UITextLine origin, UITextInsertType insertType = UITextInsertType.After)
         {
             UITextLine.FindResult fLast = line.FindLast();
 
@@ -225,8 +225,6 @@ namespace Molten.UI
                 _height += fLast.Height;
                 _width = Math.Max(_width, fLast.Width);
             }
-
-            return this;
         }
 
         /// <summary>
