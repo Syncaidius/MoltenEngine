@@ -25,12 +25,12 @@ namespace Molten.UI
             /// <summary>
             /// The total height of all lines in the result.
             /// </summary>
-            public float Height;
+            public int Height;
 
             /// <summary>
             /// The largest line width found.
             /// </summary>
-            public float Width;
+            public int Width;
 
             /// <summary>
             /// The number of lines that were found.
@@ -237,21 +237,22 @@ namespace Molten.UI
         /// </summary>
         /// <param name="count">Output for number of <see cref="UITextLine"/> found between the current and last <see cref="UITextLine"/>.</param>
         /// <returns></returns>
-        internal UITextLine FindLast(out int count)
+        internal FindResult FindLast()
         {
+            FindResult result = new FindResult(false, this);
             UITextLine line = this;
-            UITextLine last = line;
-            count = 0;
 
             while (line != null)
             {
-                count++;
+                result.Width = (int)float.Max(result.Width, line.Width);
+                result.Height += line.Height;
+                result.Count++;
 
-                last = line;
+                result.End = line;
                 line = line.Next;
             }
 
-            return last;
+            return result;
         }
 
         /// <summary>
@@ -268,7 +269,7 @@ namespace Molten.UI
 
             while (line != null)
             {
-                result.Width = float.Max(result.Width, line.Width);
+                result.Width = (int)float.Max(result.Width, line.Width);
                 result.Height += line.Height;
                 result.Count++;
 
@@ -299,7 +300,7 @@ namespace Molten.UI
 
             while (line != null)
             {
-                result.Width = float.Max(result.Width, line.Width);
+                result.Width = (int)float.Max(result.Width, line.Width);
                 result.Height += line.Height;
                 result.Count++;
 
@@ -325,7 +326,7 @@ namespace Molten.UI
 
             while (line != null)
             {
-                result.Width = float.Max(result.Width, line.Width);
+                result.Width = (int)float.Max(result.Width, line.Width);
                 result.Height += line.Height;
                 result.Count++;
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Molten.Collections;
 using Molten.Font;
 using Molten.Graphics;
+using Silk.NET.Core.Native;
 
 namespace Molten.UI
 {
@@ -139,27 +140,27 @@ namespace Molten.UI
 
         internal UITextChunk InsertLine(UITextLine line, UITextLine origin, UITextInsertType insertType = UITextInsertType.After)
         {
-            UITextLine last = line.FindLast(out int insertCount);
+            UITextLine.FindResult fLast = line.FindLast();
 
             // Insert all chained lines
             if (insertType == UITextInsertType.Before)
             {
                 origin.Previous?.LinkNext(line);
-                origin.LinkPrevious(last);
+                origin.LinkPrevious(fLast.End);
 
                 if (origin == FirstLine)
                     FirstLine = line;
             }
             else
             {
-                origin.Next?.LinkPrevious(last);
+                origin.Next?.LinkPrevious(fLast.End);
                 origin.LinkNext(line);
 
                 if (origin == LastLine)
-                    LastLine = last;
+                    LastLine = fLast.End;
             }
 
-            LineCount += insertCount;
+            LineCount += fLast.Count;
             int overCap = LineCount - CHUNK_CAPACITY;
 
             // Over capacity?
@@ -179,6 +180,8 @@ namespace Molten.UI
                         FirstLine = capNext;
 
                         overCap -= fResult.Count;
+                        Previous._height += fResult.Height;
+                        Previous._width = Math.Max(Previous._width, fResult.Width);
                     }
                 }
 
@@ -211,9 +214,16 @@ namespace Molten.UI
 
                     LastLine = capPrev;
                     overCap -= fResult.Count;
+                    Next._height += fResult.Height;
+                    Next._width = Math.Max(Next._width, fResult.Width);
                 }
 
                 LineCount = CHUNK_CAPACITY;
+            }
+            else // Resize the current chunk
+            {
+                _height += fLast.Height;
+                _width = Math.Max(_width, fLast.Width);
             }
 
             return this;
