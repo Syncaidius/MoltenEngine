@@ -85,7 +85,10 @@ namespace Molten.Examples
             Settings.Input.PointerSensitivity.Apply();
 
             if (engine.Input != null && engine.Input.State == EngineServiceState.Ready)
+            {
                 Engine.Input.Surface = Window;
+                HookWindow(Window);
+            }
 
             _loader = Engine.Content.GetLoadBatch();
             _loader.LoadFont("assets/FiraSans-Bold.ttf", (font, isReload) =>
@@ -106,6 +109,23 @@ namespace Molten.Examples
 
             _loader.OnCompleted += OnBaseContentLoaded;
             _loader.Dispatch();
+        }
+
+        private void HookWindow(INativeSurface surface)
+        {
+            surface.OnFocusGained += Window_OnFocusGained;
+            surface.OnClose += UnhookWindow;
+        }
+
+        private void UnhookWindow(INativeSurface surface)
+        {
+            surface.OnFocusGained -= Window_OnFocusGained;
+            surface.OnClose -= UnhookWindow;
+        }
+
+        private void Window_OnFocusGained(INativeSurface surface)
+        {
+            Engine.Input.Surface = surface;
         }
 
         private void UpdateUIRootBounds(CameraComponent camera, IRenderSurface2D surface)
@@ -212,7 +232,7 @@ namespace Molten.Examples
             foreach(ExampleBindings b in bindings)
             {
                 b.Window?.Close();
-                //b.NativeWindow?.Close();
+                b.NativeWindow?.Close();
             }
 
             _btnCloseAll.IsEnabled = false;
@@ -231,6 +251,8 @@ namespace Molten.Examples
             {
                 binding.NativeWindow = Engine.Renderer.Resources.CreateFormSurface(selected.Text, selected.Text.Replace(" ", ""));
                 Engine.Renderer.OutputSurfaces.Add(binding.NativeWindow);
+                HookWindow(binding.NativeWindow);
+
                 binding.NativeWindow.OnClose += (nativeSurface) =>
                 {
                     example.Close();

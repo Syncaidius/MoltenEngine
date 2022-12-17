@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Molten.Graphics;
 using Molten.Input;
 using Molten.UI;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Molten.Examples
 {
@@ -170,30 +169,6 @@ namespace Molten.Examples
                 return;
 
             OnDrawSprites(sb);
-
-            /*if (UI.Trackers.Count > 0)
-            {
-                Vector2F pos = new Vector2F(0, 45);
-                Vector2F tSize;
-                string text;
-
-                foreach (ulong deviceID in UI.Trackers.Keys)
-                {
-                    UIPointerTracker tracker = UI.Trackers[deviceID].First();
-                    text = $"Tracker: {tracker.Position} -- Mouse: {Mouse.Position}";
-                    tSize = Font.MeasureString(text);
-                    pos.X = (Window.RenderBounds.Width / 2) - (tSize.X / 2);
-
-                    sb.DrawString(Font, text, pos, Color.White);
-                    sb.DrawRect(new RectangleF(tracker.Position.X, tracker.Position.Y, 16,16), Color.White);
-                    pos.Y += 20;
-                }
-
-                text = $"Window Size: {Window.RenderBounds.Size}";
-                tSize = Font.MeasureString(text);
-                pos.X = (Window.RenderBounds.Width / 2) - (tSize.X / 2);
-                sb.DrawString(Font, text, pos, Color.White);
-            }*/
         }
 
         protected virtual void OnDrawSprites(SpriteBatcher sb) { }

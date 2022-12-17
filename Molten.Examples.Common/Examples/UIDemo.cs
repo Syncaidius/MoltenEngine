@@ -1040,6 +1040,11 @@ namespace Molten.UI
             };
 
             sb.DrawString(Font, text, pos, Color.White);
+
+            text = $"Mouse: {Mouse.Position}";
+            tSize = Font.MeasureString(text);
+            pos.Y += 20;
+            sb.DrawString(Font, text, pos, Color.White);
         }
     }
 }

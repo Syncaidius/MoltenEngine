@@ -39,7 +39,6 @@ namespace Molten
         /// 
         /// </summary>
         /// <param name="output"></param>
-        /// <param name="scale"></param>
         /// <param name="edgeResolution">The maximum number of points that are allowed to represent an edge. For bezier curves, this will affect the curve smoothness.</param>
         public void Triangulate(List<Vector2F> output, int edgeResolution = 3)
         {
@@ -54,10 +53,8 @@ namespace Molten
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="output"></param>
+        /// <summary>Triangulates the area inside the edge perimeter of the current <see cref="Shape"/>.</summary>
+        /// <param name="output">A list to output the <see cref="Triangle"/> ojects which make up the interior mesh.</param>
         /// <param name="edgeResolution">The maximum number of points that are allowed to represent an edge. For bezier curves, this will affect the curve smoothness.</param>
         public void Triangulate(List<Triangle> output, int edgeResolution = 3)
         {
