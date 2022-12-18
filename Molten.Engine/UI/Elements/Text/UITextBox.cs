@@ -648,8 +648,14 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets the first <see cref="UITextChunk"/> of the current <see cref="UITextBox"/>.
+        /// </summary>
         public UITextChunk FirstChunk { get; protected set; }
 
+        /// <summary>
+        /// Gets the last <see cref="UITextChunk"/> of the current <see cref="UITextBox"/>.
+        /// </summary>
         public UITextChunk LastChunk { get; protected set; }
 
         /// <summary>

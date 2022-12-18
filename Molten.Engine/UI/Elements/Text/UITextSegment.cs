@@ -83,6 +83,11 @@ namespace Molten.UI
             );
         }
 
+        public override string ToString()
+        {
+            return Text ?? "";
+        }
+
         /// <summary>
         /// Gets or sets the color of the segment's <see cref="Text"/>.
         /// </summary>

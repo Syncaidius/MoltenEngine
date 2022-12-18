@@ -135,27 +135,33 @@ namespace Molten.UI
             // Split the text behind the caret char-index, so that it can remain on the current line.
             if (charIndex.HasValue)
             {
-                string toStay = seg.Text.Substring(0, charIndex.Value);
-                if (toStay.Length > 0)
+                UITextSegment newSeg = null;
+
+                // Do we need to split the current segment off at a certain char index?
+                if (charIndex.Value > 0 && string.IsNullOrWhiteSpace(seg.Text))
                 {
+                    string toStay = seg.Text.Substring(0, charIndex.Value);
+
                     seg.Text = seg.Text.Remove(0, charIndex.Value);
-
-                    UITextSegment newSeg = new UITextSegment(toStay, seg.Color, seg.Font);
-
-                    if (seg.Previous != null)
-                    {
-                        seg.Previous.Next = newSeg;
-                        newSeg.Previous = seg.Previous;
-                    }
-
-                    LastSegment = newSeg;
-
-                    UITextLine newLine = new UITextLine(Parent);
-
-                    seg.Previous = null;
-                    newLine.AppendSegment(seg);
-                    return newLine;
+                    newSeg = new UITextSegment(toStay, seg.Color, seg.Font);
                 }
+
+                // If there's any split off remains to re-add to the current line, do so.
+                if (seg.Previous != null)
+                {
+                    seg.Previous.Next = newSeg;
+
+                    if(newSeg != null)
+                        newSeg.Previous = seg.Previous;
+                }
+
+                // Create the new line with the split-off segment and any following ones, if any.
+                LastSegment = newSeg;
+                UITextLine newLine = new UITextLine(Parent);
+
+                seg.Previous = null;
+                newLine.AppendSegment(seg);
+                return newLine;
             }
 
             return this;
@@ -383,6 +389,11 @@ namespace Molten.UI
             _height = Math.Max(_height, (int)Math.Ceiling(after.Size.Y));
 
             return next;
+        }
+
+        public override string ToString()
+        {
+            return $"First Segment: {FirstSegment?.ToString() ?? "[[None]]"}";
         }
 
         /// <summary>
