@@ -176,9 +176,10 @@ namespace Molten.UI
                     {
                         UITextLine curLine = Caret.Start.Line;
                         UITextLine newLine = curLine.Split(Caret.Start.Segment, Caret.Start.Char.Index);
+
                         if (curLine != newLine)
                         {
-                            Caret.Start.Segment = Caret.Start.Line.FirstSegment;
+                            Caret.Start.Segment = newLine.FirstSegment;
                             Caret.Start.Char.Index = 0;
                             
                             Caret.Start.Chunk.InsertLine(newLine, curLine);

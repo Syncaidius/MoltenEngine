@@ -138,7 +138,7 @@ namespace Molten.UI
                 UITextSegment newSeg = null;
 
                 // Do we need to split the current segment off at a certain char index?
-                if (charIndex.Value > 0 && string.IsNullOrWhiteSpace(seg.Text))
+                if (charIndex.Value > 0 && !string.IsNullOrWhiteSpace(seg.Text))
                 {
                     string toStay = seg.Text.Substring(0, charIndex.Value);
 
