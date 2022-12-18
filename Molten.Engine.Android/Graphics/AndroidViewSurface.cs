@@ -80,6 +80,11 @@ namespace Molten.Graphics
             OnHandleChanged?.Invoke(this);
         }
 
+        public void Close()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Present()
         {
             throw new NotImplementedException();
