@@ -68,100 +68,73 @@ namespace Molten.UI
             }
         }
 
-        private void FastAppendLine(UITextLine line)
-        {
-            if (LastLine != null)
-            {
-                LastLine.LinkNext(line);
-                LastLine = line;
-            }
-            else
-            {
-                // If there's no last line, there's also no first line. Set both.
-                LastLine = line;
-                FirstLine = line;
-            }
-
-            LineCount++;
-            _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
-            _height += line.Height;
-        }
-
-        private void FastInsertLine(UITextLine line, UITextLine insertAfter)
-        {
-            if (insertAfter != null)
-            {
-                line.Next = insertAfter.Next;
-                insertAfter.Next = line;
-
-                line.Previous = insertAfter;
-
-                if (insertAfter == LastLine)
-                    LastLine = line;
-            }
-            else
-            {
-                if (FirstLine != null)
-                {
-                    FirstLine.Previous = line;
-                    line.Next = FirstLine;
-                }
-                else
-                {
-                    // If there's no first line, there's also no last line. Set it.
-                    LastLine = line;
-                }
-
-                FirstLine = line;
-            }
-
-            LineCount++;
-            _width = Math.Max(_width, (int)Math.Ceiling(line.Width));
-            _height += line.Height;
-        }
-
         internal UITextChunk AppendLine(UITextLine line)
         {
-            if (LineCount < CHUNK_CAPACITY)
-            {
-                FastAppendLine(line);
-            }
-            else
-            {
-                if (Next == null || Next.Capacity == 0)
-                    NewNext();
-
-                Next.FastInsertLine(line, Next.FirstLine);
-                return Next;
-            }
-
-            return this;
+            return InsertLine(line, LastLine, UITextInsertType.After);
         }
 
-        internal void InsertLine(UITextLine line, UITextLine origin, UITextInsertType insertType = UITextInsertType.After)
+        internal UITextChunk InsertLine(UITextLine line, UITextLine origin, UITextInsertType insertType = UITextInsertType.After)
         {
             UITextLine.FindResult fLast = line.FindLast();
+            UITextChunk endChunk = this;
 
             // Insert all chained lines
             if (insertType == UITextInsertType.Before)
             {
-                origin.Previous?.LinkNext(line);
-                origin.LinkPrevious(fLast.End);
+                if (origin != null)
+                {
+                    origin.Previous?.LinkNext(line);
+                    origin.LinkPrevious(fLast.End);
 
-                if (origin == FirstLine)
-                    FirstLine = line;
+                    if (origin == FirstLine)
+                        FirstLine = line;
+                }
+                else // No origin?
+                {
+                    // Insert at the start of the chunk.
+                    if (FirstLine == null)
+                    {
+                        FirstLine = line;
+                        LastLine = fLast.End;
+                    }
+                    else
+                    {
+                        FirstLine.LinkPrevious(fLast.End);
+                        line.UnlinkPrevious();
+                        FirstLine = line;
+                    }
+                }
             }
             else
             {
-                origin.Next?.LinkPrevious(fLast.End);
-                origin.LinkNext(line);
+                if (origin != null)
+                {
+                    origin.Next?.LinkPrevious(fLast.End);
+                    origin.LinkNext(line);
 
-                if (origin == LastLine)
-                    LastLine = fLast.End;
+                    if (origin == LastLine)
+                        LastLine = fLast.End;
+                }
+                else
+                {
+                    // Insert at the end of the chunk
+                    if(LastLine == null)
+                    {
+                        FirstLine = line;
+                        LastLine = fLast.End;
+                    }
+                    else
+                    {
+                        LastLine.LinkNext(line);
+                        line.UnlinkNext();
+                        LastLine = fLast.End;
+                    }
+                }
             }
 
             LineCount += fLast.Count;
             int overCap = LineCount - CHUNK_CAPACITY;
+            int addCount = fLast.Count - overCap;
 
             // Over capacity?
             if (overCap > 0)
@@ -176,9 +149,17 @@ namespace Molten.UI
                         UITextLine capNext = fResult.End.Next;
 
                         fResult.End.UnlinkNext();
-                        Previous.AppendLine(FirstLine); // TODO refactor append line to take into account chained lines (Line.Next).
-                        FirstLine = capNext;
+                        if(Previous.LastLine != null)
+                        {
+                            Previous.LastLine.LinkNext(FirstLine);
+                        }
+                        else
+                        {
+                            Previous.FirstLine = FirstLine;
+                            Previous.LastLine = fResult.End;
+                        }
 
+                        FirstLine = capNext;
                         overCap -= fResult.Count;
                         Previous._height += fResult.Height;
                         Previous._width = Math.Max(Previous._width, fResult.Width);
@@ -209,22 +190,36 @@ namespace Molten.UI
                     else
                     {
                         Next.FirstLine = fResult.End;
+                        Next.LastLine = LastLine;
                         Next.LineCount += fResult.Count;
+                        Next._height += fResult.Height;
+                        Next._width = Math.Max(Next._width, fResult.Width);
                     }
 
                     LastLine = capPrev;
                     overCap -= fResult.Count;
-                    Next._height += fResult.Height;
-                    Next._width = Math.Max(Next._width, fResult.Width);
+                    endChunk = Next;
                 }
 
                 LineCount = CHUNK_CAPACITY;
+
+                // Calculate remaining width/height to be added
+                while(line != null && addCount > 0)
+                {
+                    _height += line.Height;
+                    _width = (int)Math.Max(_width, line.Width);
+
+                    addCount--;
+                    line = line.Next;
+                }
             }
             else // Resize the current chunk
             {
                 _height += fLast.Height;
                 _width = Math.Max(_width, fLast.Width);
             }
+
+            return endChunk;
         }
 
         /// <summary>
