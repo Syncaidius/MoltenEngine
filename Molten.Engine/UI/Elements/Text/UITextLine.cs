@@ -6,14 +6,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Graphics;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Molten.UI
 {
     /// <summary>
     /// Represents a line of text that is displayed by an implemented <see cref="UIElement"/>.
     /// </summary>
-    public class UITextLine
+    public class UITextLine : UITextLinkable<UITextLine>
     {
         public struct FindResult
         {
@@ -138,7 +137,7 @@ namespace Molten.UI
                 UITextSegment newSeg = null;
 
                 // Do we need to split the current segment off at a certain char index?
-                if (charIndex.Value > 0 && !string.IsNullOrWhiteSpace(seg.Text))
+                if (charIndex.Value > 0 && !string.IsNullOrEmpty(seg.Text))
                 {
                     string toStay = seg.Text.Substring(0, charIndex.Value);
 
@@ -147,27 +146,27 @@ namespace Molten.UI
                 }
 
                 // If there's any split off remains to re-add to the current line, do so.
-                if (seg.Previous != null)
-                {
-                    seg.Previous.Next = newSeg;
-
-                    if(newSeg != null)
-                        newSeg.Previous = seg.Previous;
-                }
+                seg.Previous?.LinkNext(newSeg);
 
                 // Create the new line with the split-off segment and any following ones, if any.
                 LastSegment = newSeg;
                 if (seg == FirstSegment)
                     FirstSegment = newSeg;
+            }
+            else
+            {
+                if (seg == FirstSegment)
+                    FirstSegment = seg.Next;
 
-                UITextLine newLine = new UITextLine(Parent);
+                if (seg == LastSegment)
+                    LastSegment = seg.Previous;
 
-                seg.Previous = null;
-                newLine.AppendSegment(seg);
-                return newLine;
+                seg.UnlinkPrevious();
             }
 
-            return this;
+            UITextLine newLine = new UITextLine(Parent);
+            newLine.AppendSegment(seg);
+            return newLine;
         }
 
         public UITextSegment NewSegment(string text, Color color, SpriteFont font)
@@ -196,57 +195,7 @@ namespace Molten.UI
                 Width += seg.Size.X;
                 _height = Math.Max(_height, (int)Math.Ceiling(seg.Size.Y));
             }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void LinkNext(UITextLine next)
-        {
-            if (next != null)
-            {
-                next.UnlinkPrevious();
-                next.Previous = this;
-            }
-
-            if (next == this)
-                throw new Exception();
-
-            Next = next;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void LinkPrevious(UITextLine prev)
-        {
-            if (prev != null)
-            {
-                prev.UnlinkNext();
-                prev.Next = this;
-            }
-
-            if (prev == this)
-                throw new Exception();
-
-            Previous = prev;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void UnlinkNext()
-        {
-            if (Next != null)
-            {
-                Next.Previous = null;
-                Next = null;
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void UnlinkPrevious()
-        {
-            if (Previous != null)
-            {
-                Previous.Next = null;
-                Previous = null;
-            }
-        }
+        }       
 
         /// <summary>
         /// Iterates over a chain of <see cref="UITextLine"/>, starting with the current <see cref="UITextLine"/> until the last one is found.
@@ -463,10 +412,6 @@ namespace Molten.UI
         /// Gets the last <see cref="UITextSegment"/> on the current <see cref="UITextLine"/>.
         /// </summary>
         public UITextSegment LastSegment { get; private set; }
-
-        public UITextLine Previous { get; internal set; }
-
-        public UITextLine Next { get; internal set; }
 
         /// <summary>
         /// Gets whether or not the current <see cref="UITextLine"/> contains text.

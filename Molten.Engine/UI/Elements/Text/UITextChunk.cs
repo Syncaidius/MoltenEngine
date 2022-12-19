@@ -21,7 +21,7 @@ namespace Molten.UI
     }
 
 
-    public class UITextChunk
+    public class UITextChunk : UITextLinkable<UITextChunk>
     {
         const int CHUNK_CAPACITY = 128;
 
@@ -29,57 +29,6 @@ namespace Molten.UI
         int _height;
 
         internal UITextChunk() { }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void LinkNext(UITextChunk next)
-        {
-            if (next != null)
-            {
-                next.UnlinkPrevious();
-                next.Previous = this;
-            }
-
-            if (next == this)
-                throw new Exception();
-
-            Next = next;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void LinkPrevious(UITextChunk prev)
-        {
-            if (prev != null)
-            {
-                prev.UnlinkNext();
-                prev.Next = this;
-            }
-
-            if (prev == this)
-                throw new Exception();
-
-            Previous = prev;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void UnlinkNext()
-        {
-            if (Next != null)
-            {
-                Next.Previous = null;
-                Next = null;
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void UnlinkPrevious()
-        {
-            if (Previous != null)
-            {
-                Previous.Next = null;
-                Previous = null;
-            }
-        }
 
         internal UITextChunk AppendLine(UITextLine line)
         {
@@ -303,16 +252,6 @@ namespace Molten.UI
 
             return false;
         }
-
-        /// <summary>
-        /// Gets the previous <see cref="UITextChunk"/>, or null if none.
-        /// </summary>
-        public UITextChunk Previous { get; internal set; }
-
-        /// <summary>
-        /// Gets the next <see cref="UITextChunk"/>, or null if none.
-        /// </summary>
-        public UITextChunk Next { get; internal set; }
 
         /// <summary>
         /// Gets the first <see cref="UITextLine"/> in the current <see cref="UITextChunk"/>, or null if none.

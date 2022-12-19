@@ -8,7 +8,7 @@ using Molten.Graphics;
 
 namespace Molten.UI
 {
-    public class UITextSegment
+    public class UITextSegment : UITextLinkable<UITextSegment>
     {
         string _text;
         SpriteFont _font;
@@ -98,16 +98,6 @@ namespace Molten.UI
         /// <para>If <see cref="Font"/> or <see cref="Text"/> are null/empty, size will equate to <see cref="Vector2F.Zero"/>.</para>
         /// </summary>
         public Vector2F Size { get; protected set; }
-
-        /// <summary>
-        /// Gets the previous <see cref="UITextSegment"/>, or null if none.
-        /// </summary>
-        public UITextSegment Previous { get; internal set; }
-
-        /// <summary>
-        /// Gets the next <see cref="UITextSegment"/>, or null if none.
-        /// </summary>
-        public UITextSegment Next { get; internal set; }
 
         internal bool IsSelected { get; set; }
 
