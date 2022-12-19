@@ -157,6 +157,9 @@ namespace Molten.UI
 
                 // Create the new line with the split-off segment and any following ones, if any.
                 LastSegment = newSeg;
+                if (seg == FirstSegment)
+                    FirstSegment = newSeg;
+
                 UITextLine newLine = new UITextLine(Parent);
 
                 seg.Previous = null;
@@ -198,30 +201,37 @@ namespace Molten.UI
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void LinkNext(UITextLine next)
         {
-            Next = next;
+            if (next != null)
+            {
+                next.UnlinkPrevious();
+                next.Previous = this;
+            }
 
             if (next == this)
-                throw new Exception("BLEH???!??!?!");
+                throw new Exception();
 
-            if (next != null)
-                next.Previous = this;
+            Next = next;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void LinkPrevious(UITextLine prev)
         {
-            Previous = prev;
-
-            if (Previous == this)
-                throw new Exception("BLEH???!??!?!");
             if (prev != null)
+            {
+                prev.UnlinkNext();
                 prev.Next = this;
+            }
+
+            if (prev == this)
+                throw new Exception();
+
+            Previous = prev;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void UnlinkNext()
         {
-            if(Next != null)
+            if (Next != null)
             {
                 Next.Previous = null;
                 Next = null;

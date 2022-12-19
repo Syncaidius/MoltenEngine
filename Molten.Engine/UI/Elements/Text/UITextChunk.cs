@@ -9,6 +9,7 @@ using Molten.Collections;
 using Molten.Font;
 using Molten.Graphics;
 using Silk.NET.Core.Native;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Molten.UI
 {
@@ -33,19 +34,31 @@ namespace Molten.UI
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void LinkNext(UITextChunk next)
         {
-            Next = next;
-
-            if(next != null)
+            if (next != null)
+            {
+                next.UnlinkPrevious();
                 next.Previous = this;
+            }
+
+            if (next == this)
+                throw new Exception();
+
+            Next = next;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void LinkPrevious(UITextChunk prev)
         {
-            Previous = prev;
-
-            if(prev != null)
+            if (prev != null)
+            {
+                prev.UnlinkNext();
                 prev.Next = this;
+            }
+
+            if (prev == this)
+                throw new Exception();
+
+            Previous = prev;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
