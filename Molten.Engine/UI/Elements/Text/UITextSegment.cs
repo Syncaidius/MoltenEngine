@@ -19,6 +19,12 @@ namespace Molten.UI
             _text = "";
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="UITextSegment"/>.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="color"></param>
+        /// <param name="font"></param>
         public UITextSegment(string text, Color color, SpriteFont font)
         {
             Text = text;
@@ -51,15 +57,19 @@ namespace Molten.UI
             }
         }
 
-        public void Append(string newText)
+        /// <summary>
+        /// Appends the provided text to the end of the current <see cref="UITextSegment"/>.
+        /// </summary>
+        /// <param name="text">The text to be appended.</param>
+        public void Append(string text)
         {
-            _text += newText;
+            _text += text;
             Vector2F appendSize = Vector2F.Zero;
 
             if (Font != null)
-                appendSize = Font.MeasureString(newText);
+                appendSize = Font.MeasureString(text);
             else if (ParentLine != null && ParentLine.Parent != null)
-                appendSize = ParentLine.Parent.DefaultFont.MeasureString(newText);
+                appendSize = ParentLine.Parent.DefaultFont.MeasureString(text);
 
             Size = new Vector2F(
                 Size.X + appendSize.X, 
@@ -67,15 +77,20 @@ namespace Molten.UI
             );
         }
 
-        public void Insert(int charIndex, string newText)
+        /// <summary>
+        /// Inserts the provided text at the specified character index of the current <see cref="UITextSegment"/>.
+        /// </summary>
+        /// <param name="charIndex">The character index at which to insert text.</param>
+        /// <param name="text">The text to be inserted.</param>
+        public void Insert(int charIndex, string text)
         {
-            _text = _text.Insert(charIndex, newText);
+            _text = _text.Insert(charIndex, text);
             Vector2F appendSize = Vector2F.Zero;
 
             if (Font != null)
-                appendSize = Font.MeasureString(newText);
+                appendSize = Font.MeasureString(text);
             else if (ParentLine != null && ParentLine.Parent != null)
-                appendSize = ParentLine.Parent.DefaultFont.MeasureString(newText);
+                appendSize = ParentLine.Parent.DefaultFont.MeasureString(text);
 
             Size = new Vector2F(
                 Size.X + appendSize.X,
@@ -83,6 +98,7 @@ namespace Molten.UI
             );
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return Text ?? "";
@@ -99,6 +115,9 @@ namespace Molten.UI
         /// </summary>
         public Vector2F Size { get; protected set; }
 
+        /// <summary>
+        /// Gets or sets whether the current <see cref="UITextSegment"/> is selected.
+        /// </summary>
         internal bool IsSelected { get; set; }
 
         /// <summary>
@@ -130,6 +149,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// The <see cref="UITextLine"/> that the current <see cref="UITextSegment"/> is part of.
+        /// </summary>
         public UITextLine ParentLine
         {
             get => _line;

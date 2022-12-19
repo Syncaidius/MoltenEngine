@@ -350,6 +350,7 @@ namespace Molten.UI
             return next;
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return $"First Segment: {FirstSegment?.ToString() ?? "[[None]]"}";

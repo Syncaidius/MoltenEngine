@@ -210,22 +210,6 @@ namespace Molten.UI
             }
         }
 
-        private void NewNext()
-        {
-            UITextChunk next = new UITextChunk();
-
-            // Update the current "Next".
-            if (Next != null)
-            {
-                Next.Previous = next;
-                next.Next = Next;
-            }
-
-            // Update the new "Next".
-            Next = next;
-            Next.Previous = this;
-        }
-
         internal bool Pick(Vector2I pos, ref Rectangle bounds, UITextCaret.CaretPoint point)
         {
             Rectangle lBounds = bounds;
