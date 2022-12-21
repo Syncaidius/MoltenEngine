@@ -67,10 +67,6 @@ namespace Molten.UI
                     _sprite.Data.ArraySlice,
                     _sprite.TargetSurfaceSlice);
             }
-            else
-            {
-                sb.DrawRect((RectangleF)GlobalBounds, Color.White, 0);
-            }
         }
 
         /// <summary>
