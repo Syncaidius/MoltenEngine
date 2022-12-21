@@ -181,7 +181,6 @@ namespace Molten.UI
                         {
                             Caret.Start.Segment = newLine.FirstSegment;
                             Caret.Start.Char.Index = 0;
-                            
                             Caret.Start.Chunk.InsertLine(newLine, curLine);
                             Caret.Start.Line = newLine;
                         }
@@ -190,6 +189,9 @@ namespace Molten.UI
                             UITextLine line = new UITextLine(this);
                             Caret.Start.Chunk.InsertLine(line, curLine.Previous);
                         }
+
+                        Caret.Start.Char.StartOffset = 0;
+                        Caret.Start.Char.EndOffset = Caret.Start.Segment.Size.X;
                     }
                     else
                     {
@@ -551,6 +553,8 @@ namespace Molten.UI
         private void DrawLineContent(SpriteBatcher sb, ref RectangleF lineBounds, ref RectangleF segBounds, UITextLine line)
         {
             UITextSegment seg = line.FirstSegment;
+            float segStartX = segBounds.X;
+
             while (seg != null)
             {
                 segBounds.Width = seg.Size.X;
@@ -576,6 +580,13 @@ namespace Molten.UI
 
                 segBounds.X += seg.Size.X;
                 seg = seg.Next;
+            }
+
+            if (Caret.Start.Line == line && Caret.Start.Segment == null)
+            {
+                RectangleF endBounds = lineBounds;
+                endBounds.Width = segBounds.X - segStartX;
+                Caret.Render(sb, endBounds.TopRight, endBounds.Height);
             }
         }
 
