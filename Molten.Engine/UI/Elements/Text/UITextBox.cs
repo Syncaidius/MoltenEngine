@@ -211,6 +211,23 @@ namespace Molten.UI
             return false;
         }
 
+        public override void OnKeyboardInput(KeyboardDevice kb, Timing time)
+        {
+            base.OnKeyboardInput(kb, time);
+
+            if (kb.IsTapped(KeyCode.Left))
+            {
+                if(Caret.Start.Chunk != null)
+                {
+                    // Move end selection or start selection?
+                    if (Caret.End.Chunk != null)
+                        Caret.Move(Caret.End, UITextCaret.MoveDirection.Left);
+                    else
+                        Caret.Move(Caret.Start, UITextCaret.MoveDirection.Left);
+                }
+            }
+        }
+
         private void ScrollChanged(UIScrollBar element)
         {
             RenderOffset = new Vector2F(-_hScroll.Value, -_vScroll.Value);

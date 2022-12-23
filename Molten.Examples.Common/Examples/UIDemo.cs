@@ -1042,7 +1042,14 @@ namespace Molten.UI
             sb.DrawString(Font, text, pos, Color.White);
 
             text = $"Mouse: {Mouse.Position}";
-            tSize = Font.MeasureString(text);
+            pos.Y += 20;
+            sb.DrawString(Font, text, pos, Color.White);
+
+            text = $"Caret Start: {_textbox.Caret.Start}";
+            pos.Y += 20;
+            sb.DrawString(Font, text, pos, Color.White);
+
+            text = $"Caret End: {_textbox.Caret.End}";
             pos.Y += 20;
             sb.DrawString(Font, text, pos, Color.White);
         }

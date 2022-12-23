@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Graphics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Molten.UI
 {
@@ -55,6 +56,16 @@ namespace Molten.UI
             {
                 Size = Vector2F.Zero;
             }
+        }
+
+        public float MeasureCharWidth(int index)
+        {
+            if (Font != null)
+                return Font.MeasureCharWidth(_text[index]);
+            else if (ParentLine != null && ParentLine.Parent != null)
+                return ParentLine.Parent.DefaultFont.MeasureCharWidth(_text[index]);
+
+            return 0;
         }
 
         /// <summary>
@@ -121,17 +132,22 @@ namespace Molten.UI
         internal bool IsSelected { get; set; }
 
         /// <summary>
-        /// Gets or sets the text of the current <see cref="UITextSegment"/>.
+        /// Gets or sets the text of the current <see cref="UITextSegment"/>. If set to null, it will be replaced with <see cref="string.Empty"/>.
         /// </summary>
         public string Text
         {
             get => _text;
             set
             {
-                _text = value;
+                _text = value ?? string.Empty;
                 Measure();                
             }
         }
+
+        /// <summary>
+        /// Gets the length of <see cref="Text"/>.
+        /// </summary>
+        public int Length => _text.Length;
 
         /// <summary>
         /// The font of the current <see cref="UITextSegment"/>. If null, the parent <see cref="UITextBox.DefaultFont"/> will be used for measuring <see cref="Text"/>.

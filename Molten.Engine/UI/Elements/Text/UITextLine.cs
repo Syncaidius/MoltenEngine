@@ -41,6 +41,11 @@ namespace Molten.UI
             /// </summary>
             public bool IsReverse;
 
+            /// <summary>
+            /// Creates a new instance of <see cref="FindResult"/>.
+            /// </summary>
+            /// <param name="isReverse">If true, find operation was done in reverse and <see cref="End"/> is the starting point.</param>
+            /// <param name="startLine"></param>
             public FindResult(bool isReverse, UITextLine startLine)
             {
                 Width = 0;

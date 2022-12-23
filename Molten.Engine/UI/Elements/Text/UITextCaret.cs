@@ -9,6 +9,19 @@ namespace Molten.UI
 {
     public class UITextCaret
     {
+        public enum MoveDirection
+        {
+            None = 0,
+
+            Left = 1,
+
+            Right = 2,
+
+            Up = 3,
+
+            Down = 4,
+        }
+
         public class CaretPoint
         {
             public class SelectedChar
@@ -27,6 +40,11 @@ namespace Molten.UI
                 /// The offset of the caret, from the end of the selected segment, in pixels.
                 /// </summary>
                 public float EndOffset { get; internal set; }
+
+                public override string ToString()
+                {
+                    return $"{{Index: {Index} -- Start Off: {StartOffset} -- End Off: {EndOffset}}}";
+                }
             }
 
             internal void Clear()
@@ -38,6 +56,11 @@ namespace Molten.UI
                 Char.StartOffset = 0;
                 Char.EndOffset = 0;
             }
+
+            public override string ToString()
+            {
+                return Line != null ? $"Line: {Line} -- Seg: {Segment} -- Char: {Char}" : "[[None]]";
+        }
 
             public UITextChunk Chunk { get; internal set; }
 
@@ -113,6 +136,43 @@ namespace Molten.UI
                 SelectChunkedSegments();
             }
         }
+
+        public void Move(CaretPoint p, MoveDirection dir)
+        {
+            switch (dir)
+            {
+                case MoveDirection.Left:
+                    if(p.Segment != null)
+                    {
+                        if (p.Char.Index.HasValue)
+                        {
+                            if (p.Char.Index == 0)
+                            {
+                                while (p.Segment.Previous != null)
+                                {
+                                    p.Segment = p.Segment.Previous;
+                                    if (p.Segment.Length > 0)
+                                    {
+                                        p.Char.Index = p.Segment.Text.Length - 1;
+                                        p.Char.EndOffset = p.Segment.MeasureCharWidth(p.Char.Index.Value);
+                                        p.Char.StartOffset = p.Segment.Size.X - p.Char.EndOffset;
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                p.Char.Index--;
+                                float width = p.Segment.MeasureCharWidth(p.Char.Index.Value);
+                                p.Char.StartOffset -= width;
+                                p.Char.EndOffset += width;
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+
 
         /// <summary>
         /// Checks the line order of two lines within the same <see cref="UITextChunk"/> or chunkless <see cref="UITextBox"/>.
