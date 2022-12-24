@@ -35,13 +35,22 @@ namespace Molten.UI
 
             public override string ToString()
             {
-                return Line != null ? $"Line: {Line} -- Seg: {Segment} -- Char: {CharIndex} -- Offset: {StartOffset}" : "[[None]]";
-        }
+                return Line != null ? $"Chunk: {Chunk} -- Line: {Line} -- Seg: {Segment} -- Char: {CharIndex} -- Offset: {StartOffset}" : "[[None]]";
+            }
 
+            /// <summary>
+            /// Gets the chunk that contains the caret.
+            /// </summary>
             public UITextChunk Chunk { get; internal set; }
 
+            /// <summary>
+            /// Gets the line that contains the caret, or null if none.
+            /// </summary>
             public UITextLine Line { get; internal set; }
 
+            /// <summary>
+            /// Gets the segment that contains the caret, or null if none.
+            /// </summary>
             public UITextSegment Segment { get; internal set; }
 
             /// <summary>
@@ -150,9 +159,27 @@ namespace Molten.UI
                         }
                         else
                         {
-                            p.Segment = p.Line.FirstSegment;
-                            p.CharIndex = 0;
-                            p.StartOffset = 0;
+                            if (p.Chunk.Previous != null)
+                            {
+                                p.Chunk = p.Chunk.Previous;
+                                p.Line = p.Chunk.LastLine;
+                                if (p.Line != null)
+                                {
+                                    p.Segment = FindPrevSegment(p.Line.LastSegment, p);
+                                }
+                                else
+                                {
+                                    p.Segment = null;
+                                    p.CharIndex = 0;
+                                    p.StartOffset = 0;
+                                }
+                            }
+                            else
+                            {
+                                p.Segment = p.Line.FirstSegment;
+                                p.CharIndex = 0;
+                                p.StartOffset = 0;
+                            }
                         }
                     }
                     break;

@@ -184,6 +184,12 @@ namespace Molten.UI
             return endChunk;
         }
 
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{{First: {FirstLine}}}";
+        }
+
         /// <summary>
         /// Inserts a new <see cref="UITextChunk"/> after the current chunk and before the next chunk, if one exists.
         /// </summary>
