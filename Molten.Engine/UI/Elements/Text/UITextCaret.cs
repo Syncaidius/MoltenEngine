@@ -24,42 +24,18 @@ namespace Molten.UI
 
         public class CaretPoint
         {
-            public class SelectedChar
-            {
-                /// <summary>
-                 /// The character index of the caret, within the selected segment's string.
-                 /// </summary>
-                public int? Index { get; internal set; }
-
-                /// <summary>
-                /// The offset of the caret, from the start of the selected segment, in pixels.
-                /// </summary>
-                public float StartOffset { get; internal set; }
-
-                /// <summary>
-                /// The offset of the caret, from the end of the selected segment, in pixels.
-                /// </summary>
-                public float EndOffset { get; internal set; }
-
-                public override string ToString()
-                {
-                    return $"{{Index: {Index} -- Start Off: {StartOffset} -- End Off: {EndOffset}}}";
-                }
-            }
-
             internal void Clear()
             {
                 Chunk = null;
                 Line = null;
                 Segment = null;
-                Char.Index = null;
-                Char.StartOffset = 0;
-                Char.EndOffset = 0;
+                CharIndex = 0;
+                StartOffset = 0;
             }
 
             public override string ToString()
             {
-                return Line != null ? $"Line: {Line} -- Seg: {Segment} -- Char: {Char}" : "[[None]]";
+                return Line != null ? $"Line: {Line} -- Seg: {Segment} -- Char: {CharIndex} -- Offset: {StartOffset}" : "[[None]]";
         }
 
             public UITextChunk Chunk { get; internal set; }
@@ -68,11 +44,15 @@ namespace Molten.UI
 
             public UITextSegment Segment { get; internal set; }
 
-            public SelectedChar Char { get; } = new SelectedChar();
+            /// <summary>
+            /// The character index of the caret, within the selected segment's string.
+            /// </summary>
+            public int CharIndex { get; internal set; }
 
-            public float CharSelectWidthOffset { get; internal set; }
-
-            public float CharSelectWidth { get; internal set; }
+            /// <summary>
+            /// The offset of the caret, from the start of the selected segment, in pixels.
+            /// </summary>
+            public float StartOffset { get; internal set; }
         }
 
         public RectStyle SelectedLineStyle = new RectStyle(new Color(60, 60, 60, 200), new Color(160, 160, 160, 255), 2);
@@ -137,40 +117,68 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Moves the caret by one index in the given <see cref="MoveDirection"/>. For left/right, the index is a character. For up/down, the index is a line.
+        /// </summary>
+        /// <param name="p">The <see cref="CaretPoint"/> to be moved.</param>
+        /// <param name="dir">The direction to move.</param>
         public void Move(CaretPoint p, MoveDirection dir)
         {
             switch (dir)
             {
                 case MoveDirection.Left:
-                    if(p.Segment != null)
+                    if (p.Segment != null)
                     {
-                        if (p.Char.Index.HasValue)
+                        if (p.CharIndex == 0)
                         {
-                            if (p.Char.Index == 0)
-                            {
-                                while (p.Segment.Previous != null)
-                                {
-                                    p.Segment = p.Segment.Previous;
-                                    if (p.Segment.Length > 0)
-                                    {
-                                        p.Char.Index = p.Segment.Text.Length - 1;
-                                        p.Char.EndOffset = p.Segment.MeasureCharWidth(p.Char.Index.Value);
-                                        p.Char.StartOffset = p.Segment.Size.X - p.Char.EndOffset;
-                                        break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                p.Char.Index--;
-                                float width = p.Segment.MeasureCharWidth(p.Char.Index.Value);
-                                p.Char.StartOffset -= width;
-                                p.Char.EndOffset += width;
-                            }
+                            p.Segment = FindPrevSegment(p.Segment, p);
+                        }
+                        else
+                        {
+                            p.CharIndex--;
+                            p.StartOffset -= p.Segment.MeasureCharWidth(p.CharIndex);
+                        }
+                    }
+
+                    // Get to previous Line
+                    if (p.Segment == null)
+                    {
+                        if (p.Line.Previous != null)
+                        {
+                            p.Line = p.Line.Previous;
+                            p.Segment = FindPrevSegment(p.Line.LastSegment, p);
+                        }
+                        else
+                        {
+                            p.Segment = p.Line.FirstSegment;
+                            p.CharIndex = 0;
+                            p.StartOffset = 0;
                         }
                     }
                     break;
             }
+        }
+
+        private UITextSegment FindPrevSegment(UITextSegment seg, CaretPoint p)
+        {
+            if (seg == null)
+                return seg;
+
+            seg = seg.Previous;
+
+            while (seg != null)
+            {
+                if (seg.Length > 0)
+                {
+                    p.CharIndex = seg.Text.Length - 1;
+                    p.StartOffset = seg.Size.X - seg.MeasureCharWidth(p.CharIndex);
+                    break;
+                }
+
+                seg = seg.Previous;
+            }
+
+            return seg;
         }
 
 

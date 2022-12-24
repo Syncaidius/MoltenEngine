@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -127,14 +128,14 @@ namespace Molten.UI
             if (Caret.Start.Segment != null)
             {
                 charSize = Caret.Start.Segment.Font.MeasureChar(state.Character);
-                int? charIndex = Caret.Start.Char.Index;
+                int? charIndex = Caret.Start.CharIndex;
                 if (charIndex.HasValue)
                     Caret.Start.Segment.Insert(charIndex.Value, state.Character.ToString());
                 else
                     Caret.Start.Segment.Text += state.Character;
 
-                Caret.Start.Char.Index++;
-                Caret.Start.Char.StartOffset += charSize.X;
+                Caret.Start.CharIndex++;
+                Caret.Start.StartOffset += charSize.X;
             }
             else
             {
@@ -157,8 +158,8 @@ namespace Molten.UI
 
                     charSize = font.MeasureChar(state.Character);
                     Caret.Start.Segment = Caret.Start.Line.NewSegment(state.Character.ToString(), col, font);
-                    Caret.Start.Char.Index = 1;
-                    Caret.Start.Char.StartOffset += charSize.X;
+                    Caret.Start.CharIndex = 1;
+                    Caret.Start.StartOffset += charSize.X;
                 }
             }
         }
@@ -175,12 +176,12 @@ namespace Molten.UI
                     if (Caret.Start.Segment != null)
                     {
                         UITextLine curLine = Caret.Start.Line;
-                        UITextLine newLine = curLine.Split(Caret.Start.Segment, Caret.Start.Char.Index);
+                        UITextLine newLine = curLine.Split(Caret.Start.Segment, Caret.Start.CharIndex);
 
                         if (curLine != newLine)
                         {
                             Caret.Start.Segment = newLine.FirstSegment;
-                            Caret.Start.Char.Index = 0;
+                            Caret.Start.CharIndex = 0;
                             Caret.Start.Chunk.InsertLine(newLine, curLine);
                             Caret.Start.Line = newLine;
                         }
@@ -190,8 +191,7 @@ namespace Molten.UI
                             Caret.Start.Chunk.InsertLine(line, curLine.Previous);
                         }
 
-                        Caret.Start.Char.StartOffset = 0;
-                        Caret.Start.Char.EndOffset = Caret.Start.Segment.Size.X;
+                        Caret.Start.StartOffset = 0;
                     }
                     else
                     {
@@ -199,7 +199,7 @@ namespace Molten.UI
                         UITextLine newLine = new UITextLine(this);
                         Caret.Start.Chunk.InsertLine(newLine, Caret.Start.Line);
                         Caret.Start.Segment = null;
-                        Caret.Start.Char.Index = null;
+                        Caret.Start.CharIndex = 0;
                     }
                     return true;
 
@@ -546,14 +546,14 @@ namespace Molten.UI
                     if (seg == start.Segment)
                     {
                         RectangleF eBounds = segBounds;
-                        eBounds.X += start.Char.StartOffset;
-                        eBounds.Width = start.Char.EndOffset;
+                        eBounds.X += start.StartOffset;
+                        eBounds.Width = start.Segment.Size.X - start.StartOffset;
                         sb.Draw(eBounds, ref Caret.SelectedSegmentStyle);
                     }
                     else if (seg == end.Segment)
                     {
                         RectangleF eBounds = segBounds;
-                        eBounds.Width = end.Char.StartOffset;
+                        eBounds.Width = end.StartOffset;
                         sb.Draw(eBounds, ref Caret.SelectedSegmentStyle);
                     }
                     else
@@ -583,15 +583,15 @@ namespace Molten.UI
                     if (Caret.End.Line == null)
                     {
                         RectangleF eBounds = segBounds;
-                        eBounds.X += Caret.Start.Char.StartOffset;
-                        eBounds.Width = Caret.Start.Char.EndOffset;
+                        eBounds.X += Caret.Start.StartOffset;
+                        eBounds.Width = Caret.Start.Segment.Size.X - Caret.Start.StartOffset;
                         Caret.Render(sb, eBounds.TopLeft, eBounds.Height);
                     }
                 }
                 else if (seg == Caret.End.Segment)
                 {
                     RectangleF eBounds = segBounds;
-                    eBounds.X += Caret.End.Char.StartOffset;
+                    eBounds.X += Caret.End.StartOffset;
                     Caret.Render(sb, eBounds.TopLeft, eBounds.Height);
                 }
 

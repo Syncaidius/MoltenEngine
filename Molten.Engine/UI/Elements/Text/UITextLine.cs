@@ -107,15 +107,13 @@ namespace Molten.UI
                                 {
                                     if (pickPoint.X >= segBounds.Left + halfDist)
                                     {
-                                        caretPoint.Char.Index = i+1;
-                                        caretPoint.Char.StartOffset = dist;
-                                        caretPoint.Char.EndOffset = segBounds.Width - dist;
+                                        caretPoint.CharIndex = i+1;
+                                        caretPoint.StartOffset = dist;
                                     }
                                     else
                                     {
-                                        caretPoint.Char.Index = i;
-                                        caretPoint.Char.StartOffset = prevDist;
-                                        caretPoint.Char.EndOffset = segBounds.Width - prevDist;
+                                        caretPoint.CharIndex = i;
+                                        caretPoint.StartOffset = prevDist;
                                     }                                    
                                     break;
                                 }

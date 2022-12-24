@@ -62,8 +62,6 @@
                 OnKeyDown?.Invoke(this, newState);
             }
 
-            Console.WriteLine($"Key State: {newState.Key} -- Action: {newState.Action} -- Time: {newState.PressTimestamp}");
-
             if (newState.Action != InputAction.None && prevState.Action != InputAction.None && 
                 prevState.Action != InputAction.Released)
             {
@@ -72,11 +70,8 @@
 
             if(newState.KeyType == KeyboardKeyType.Character)
             {
-                if (newState.Action == InputAction.Pressed || 
-                    newState.Action == InputAction.Held)
-                {
+                if (newState.Action == InputAction.Pressed || newState.Action == InputAction.Held)
                     OnCharacterKey?.Invoke(this, newState);
-                }
 
                 // Don't accept character key events as key states.
                 return false;
