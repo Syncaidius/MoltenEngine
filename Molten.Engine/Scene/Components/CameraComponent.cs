@@ -67,13 +67,30 @@ namespace Molten
 
         private void OnKeyboardDeinitialized(InputDevice o)
         {
-            (o as KeyboardDevice).OnCharacterKey -= Device_OnCharacterKey;
+            KeyboardDevice kb = o as KeyboardDevice;
+            kb.OnCharacterKey -= Device_OnCharacterKey;
+            kb.OnKeyDown -= Kb_OnKeyDown;
+            kb.OnKeyUp -= Kb_OnKeyUp;
+
             // TODO release any current keyboard-reliant state.
         }
 
         private void OnKeyboardInitialized(InputDevice o)
         {
-            (o as KeyboardDevice).OnCharacterKey += Device_OnCharacterKey;
+            KeyboardDevice kb = o as KeyboardDevice;
+            kb.OnCharacterKey += Device_OnCharacterKey;
+            kb.OnKeyDown += Kb_OnKeyDown;
+            kb.OnKeyUp += Kb_OnKeyUp;
+        }
+
+        private void Kb_OnKeyUp(KeyboardDevice device, KeyboardKeyState state)
+        {
+            FocusedPickable?.OnKeyUp(device, ref state);
+        }
+
+        private void Kb_OnKeyDown(KeyboardDevice device, KeyboardKeyState state)
+        {
+            FocusedPickable?.OnKeyDown(device, ref state);
         }
 
         private void Device_OnCharacterKey(KeyboardDevice device, KeyboardKeyState state)

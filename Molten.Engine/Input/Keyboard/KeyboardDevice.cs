@@ -5,6 +5,26 @@
 
     public abstract class KeyboardDevice : InputDevice<KeyboardKeyState, KeyCode>
     {
+        /// <summary>
+        /// Occurs when a character key is pressed.
+        /// </summary>
+        public event KeyPressHandler OnCharacterKey;
+
+        /// <summary>
+        /// Occurs when any type of key is pressed.
+        /// </summary>
+        public event KeyHandler OnKeyDown;
+
+        /// <summary>
+        /// Occurs when a previously-pressed key (of any type) is released.
+        /// </summary>
+        public event KeyHandler OnKeyUp;
+
+        /// <summary>
+        /// Occurs when a previous-down key is held down long enough to trigger another key event.
+        /// </summary>
+        public event KeyHandler OnKeyHeld;
+
         protected override SettingValue<int> GetBufferSizeSetting(InputSettings settings)
         {
             return settings.KeyboardBufferSize;
@@ -39,7 +59,10 @@
                 newState.Action = InputAction.Held;
                 newState.PressTimestamp = prevState.PressTimestamp;
                 OnKeyHeld?.Invoke(this, newState);
+                OnKeyDown?.Invoke(this, newState);
             }
+
+            Console.WriteLine($"Key State: {newState.Key} -- Action: {newState.Action} -- Time: {newState.PressTimestamp}");
 
             if (newState.Action != InputAction.None && prevState.Action != InputAction.None && 
                 prevState.Action != InputAction.Released)
@@ -83,25 +106,5 @@
         {
             return (state.Action == InputAction.Pressed && state.ActionType == type) && state.UpdateID == Service.UpdateID;
         }
-
-        /// <summary>
-        /// Occurs when a character key is pressed.
-        /// </summary>
-        public event KeyPressHandler OnCharacterKey;
-
-        /// <summary>
-        /// Occurs when any type of key is pressed.
-        /// </summary>
-        public event KeyHandler OnKeyDown;
-
-        /// <summary>
-        /// Occurs when a previously-pressed key (of any type) is released.
-        /// </summary>
-        public event KeyHandler OnKeyUp;
-
-        /// <summary>
-        /// Occurs when a previous-down key is held down long enough to trigger another key event.
-        /// </summary>
-        public event KeyHandler OnKeyHeld;
     }
 }

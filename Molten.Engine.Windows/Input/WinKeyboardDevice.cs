@@ -79,6 +79,7 @@ namespace Molten.Input
                     case WndProcMessageType.WM_KEYUP:
                         state.Key = (KeyCode)(wParam & 0xFFFF);
                         state.KeyType = ValidateKeyType(wParam);
+                        state.PressTimestamp = DateTime.UtcNow;
                         state.Action = InputAction.Released;
 
                         QueueKeyState(ref state, lParam);

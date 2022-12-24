@@ -88,6 +88,20 @@ namespace Molten
         void OnKeyboardChar(KeyboardDevice keyboard, ref KeyboardKeyState state);
 
         /// <summary>
+        /// Invoked when the current <see cref="IPickable{T}"/> has focus and a keyboard key press is detected.
+        /// </summary>
+        /// <param name="keyboard">The <see cref="KeyboardDevice"/> that the input originated from.</param>
+        /// <param name="state">The <see cref="KeyboardKeyState"/> which triggered the invocation.</param>
+        void OnKeyDown(KeyboardDevice keyboard, ref KeyboardKeyState state);
+
+        /// <summary>
+        /// Invoked when the current <see cref="IPickable{T}"/> has focus and a keyboard key release is detected.
+        /// </summary>
+        /// <param name="keyboard">The <see cref="KeyboardDevice"/> that the input originated from.</param>
+        /// <param name="state">The <see cref="KeyboardKeyState"/> which triggered the invocation.</param>
+        void OnKeyUp(KeyboardDevice keyboard, ref KeyboardKeyState state);
+
+        /// <summary>
         /// Checks if the current <see cref="IPickable{T}"/> contains the provided position.
         /// </summary>
         /// <param name="pos">The position.</param>

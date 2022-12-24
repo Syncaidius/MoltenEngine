@@ -211,13 +211,13 @@ namespace Molten.UI
             return false;
         }
 
-        public override void OnKeyboardInput(KeyboardDevice kb, Timing time)
+        public override void OnKeyDown(KeyboardDevice keyboard, ref KeyboardKeyState state)
         {
-            base.OnKeyboardInput(kb, time);
+            base.OnKeyDown(keyboard, ref state);
 
-            if (kb.IsTapped(KeyCode.Left))
+            if (state.Key == KeyCode.Left)
             {
-                if(Caret.Start.Chunk != null)
+                if (Caret.Start.Chunk != null)
                 {
                     // Move end selection or start selection?
                     if (Caret.End.Chunk != null)

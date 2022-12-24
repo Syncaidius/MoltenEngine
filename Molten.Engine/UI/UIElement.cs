@@ -502,6 +502,20 @@ namespace Molten.UI
         public virtual void OnKeyboardChar(KeyboardDevice keyboard, ref KeyboardKeyState state) { }
 
         /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> has focus and keyboard key is pressed.
+        /// </summary>
+        /// <param name="keyboard">The <see cref="KeyboardDevice"/> that the input originated from.</param>
+        /// <param name="state">The <see cref="KeyboardKeyState"/> which triggered the invocation.</param>
+        public virtual void OnKeyDown(KeyboardDevice keyboard, ref KeyboardKeyState state) { }
+
+        /// <summary>
+        /// Invoked when the current <see cref="UIElement"/> has focus and keyboard key is released.
+        /// </summary>
+        /// <param name="keyboard">The <see cref="KeyboardDevice"/> that the input originated from.</param>
+        /// <param name="state">The <see cref="KeyboardKeyState"/> which triggered the invocation.</param>
+        public virtual void OnKeyUp(KeyboardDevice keyboard, ref KeyboardKeyState state) { }
+
+        /// <summary>
         /// Sends the current <see cref="UIElement"/> to the front of it's parents child stack, so it will be drawn on top of all other children.
         /// </summary>
         public void BringToFront()
