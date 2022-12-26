@@ -129,6 +129,48 @@ namespace Molten.UI
             );
         }
 
+        /// <summary>
+        /// Attempts to move up or down the segment chain by a given delta, using the current <see cref="UITextSegment"/> as the origin.
+        /// </summary>
+        /// <param name="delta">The number of <see cref="UITextSegment"/> to move along in the chain.</param>
+        /// <param name="seg">An output for the <see cref="UITextSegment"/> at the end of the seek.</param>
+        /// <returns>The number of segments the seek call has actually moved. 
+        /// <para>If there were less segments available than requested, this number will be less than <paramref name="delta"/>.</para></returns>
+        public int Seek(int delta, out UITextSegment seg)
+        {
+            seg = this;
+            int moved = 0;
+
+            if (delta > 0)
+            {
+                while(moved < delta)
+                {
+                    if (seg.Next == null)
+                        break;
+
+                    seg = seg.Next;
+
+                    if (seg.Length > 0)
+                        moved++;
+                } 
+            }
+            else
+            {
+                while(moved > delta)
+                {
+                    if (seg.Previous == null)
+                        break;
+
+                    seg = seg.Previous;
+
+                    if (seg.Length > 0)
+                        moved--;
+                }
+            }
+
+            return moved;
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {

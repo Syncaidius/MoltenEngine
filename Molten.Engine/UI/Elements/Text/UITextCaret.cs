@@ -140,7 +140,7 @@ namespace Molten.UI
                     {
                         if (p.CharIndex == 0)
                         {
-                            p.Segment = FindPrevSegment(p.Segment, p);
+                            p.Segment = FindSegment(p.Segment, p, -1);
                         }
                         else
                         {
@@ -155,7 +155,7 @@ namespace Molten.UI
                         if (p.Line.Previous != null)
                         {
                             p.Line = p.Line.Previous;
-                            p.Segment = FindPrevSegment(p.Line.LastSegment, p);
+                            p.Segment = FindSegment(p.Line.LastSegment, p, -1);
                         }
                         else
                         {
@@ -165,7 +165,7 @@ namespace Molten.UI
                                 p.Line = p.Chunk.LastLine;
                                 if (p.Line != null)
                                 {
-                                    p.Segment = FindPrevSegment(p.Line.LastSegment, p);
+                                    p.Segment = FindSegment(p.Line.LastSegment, p, -1);
                                 }
                                 else
                                 {
@@ -189,7 +189,7 @@ namespace Molten.UI
                     {
                         if (p.CharIndex >= p.Segment.Length -1)
                         {
-                            p.Segment = FindNextSegment(p.Segment, p);
+                            p.Segment = FindSegment(p.Segment, p, 1);
                         }
                         else
                         {
@@ -205,7 +205,7 @@ namespace Molten.UI
                         if (p.Line.Next != null)
                         {
                             p.Line = p.Line.Next;
-                            p.Segment = FindNextSegment(p.Line.FirstSegment, p);
+                            p.Segment = FindSegment(p.Line.FirstSegment, p, 1);
                         }
                         else
                         {
@@ -215,7 +215,7 @@ namespace Molten.UI
                                 p.Line = p.Chunk.FirstLine;
                                 if (p.Line != null)
                                 {
-                                    p.Segment = FindNextSegment(p.Line.FirstSegment, p);
+                                    p.Segment = FindSegment(p.Line.FirstSegment, p, 1);
                                 }
                                 else
                                 {
@@ -244,50 +244,42 @@ namespace Molten.UI
             }
         }
 
-        private UITextSegment FindPrevSegment(UITextSegment seg, CaretPoint p)
+        private UITextSegment FindSegment(UITextSegment seg, CaretPoint p, int delta)
         {
             if (seg == null)
                 return seg;
 
-            seg = seg.Previous;
+            int moved = seg.Seek(delta, out seg);
 
-            while (seg != null)
+            if(moved == 0)
+            {
+                p.CharIndex = 0;
+                p.StartOffset = 0;
+                return null;
+            }
+
+            while (moved != 0)
             {
                 if (seg.Length > 0)
                 {
-                    p.CharIndex = seg.Text.Length - 1;
-                    p.StartOffset = seg.Size.X - seg.MeasureCharWidth(p.CharIndex);
+                    if (delta < 0)
+                    {
+                        p.CharIndex = seg.Text.Length - 1;
+                        p.StartOffset = seg.Size.X - seg.MeasureCharWidth(p.CharIndex);
+                    }
+                    else
+                    {
+                        p.CharIndex = 0;
+                        p.StartOffset = 0;
+                    }
                     break;
                 }
 
-                seg = seg.Previous;
+                moved = seg.Seek(delta, out seg);
             }
 
             return seg;
         }
-
-        private UITextSegment FindNextSegment(UITextSegment seg, CaretPoint p)
-        {
-            if (seg == null)
-                return seg;
-
-            seg = seg.Next;
-
-            while (seg != null)
-            {
-                if (seg.Length > 0)
-                {
-                    p.CharIndex = 0;
-                    p.StartOffset = 0;
-                    break;
-                }
-
-                seg = seg.Next;
-            }
-
-            return seg;
-        }
-
 
         /// <summary>
         /// Checks the line order of two lines within the same <see cref="UITextChunk"/> or chunkless <see cref="UITextBox"/>.
