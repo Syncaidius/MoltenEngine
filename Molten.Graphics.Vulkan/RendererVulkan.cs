@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
@@ -34,7 +35,7 @@ namespace Molten.Graphics
             {
                 SType = StructureType.ApplicationInfo,
                 EngineVersion = 1,
-                ApiVersion = MakeVersion(0,1,0,0)
+                ApiVersion = MakeVersion(0,1,0,0),
             };
 
             InstanceCreateInfo instanceInfo = new InstanceCreateInfo()
@@ -42,11 +43,76 @@ namespace Molten.Graphics
                 SType = StructureType.InstanceCreateInfo,
                 PApplicationInfo = &appInfo,
                 EnabledLayerCount = 0,
-                EnabledExtensionCount = 0
+                EnabledExtensionCount = 0,
             };
+
+            if (settings.Graphics.EnableDebugLayer.Value == true)
+            {
+                EnableValidationLayers(out instanceInfo.EnabledLayerCount, out instanceInfo.PpEnabledLayerNames, "VK_LAYER_KHRONOS_validation");
+                    Log.Warning("Vulkan debug layer(s) requested, but not available");
+            }
 
             _vkInstance = EngineUtil.Alloc<Instance>();
             Result r = _vk.CreateInstance(&instanceInfo, null, _vkInstance);
+            LogResult(r);
+
+            SilkMarshal.FreeString((nint)instanceInfo.PpEnabledLayerNames, NativeStringEncoding.UTF8);
+        }
+
+        internal bool LogResult(Result r, string msg = "")
+        {
+            if (r != Result.Success)
+            {
+                if (string.IsNullOrWhiteSpace(msg))
+                    Log.Error($"Vulkan error: {r}");
+                else
+                    Log.Error($"Vulkan error: {r} -- {msg}");
+
+                return false;
+            }
+
+            return true;
+        }
+
+        private void EnableValidationLayers(out uint enabledCount, out byte** pEnabledNames, params string[] layerNames)
+        {
+            uint lCount = 0;
+            pEnabledNames = null;
+
+            Result r = _vk.EnumerateInstanceLayerProperties(&lCount, null);
+            List<string> enabledNames = new List<string>();
+
+            if (LogResult(r))
+            {
+                LayerProperties* layerInfo = EngineUtil.AllocArray<LayerProperties>(lCount);
+                r = _vk.EnumerateInstanceLayerProperties(&lCount, layerInfo);
+
+                for (uint i = 0; i < lCount; i++)
+                {
+                    string name = SilkMarshal.PtrToString((nint)layerInfo, NativeStringEncoding.UTF8);
+
+                    // Compare name
+                    foreach(string layerName in layerNames)
+                    {
+                        if (name == layerName)
+                        {
+                            enabledNames.Add(layerName);
+                            if (enabledNames.Count == layerNames.Length)
+                                goto Recode;
+
+                            break;
+                        }
+                    }
+
+                    layerInfo++;
+                }
+
+                EngineUtil.Free(ref layerInfo);
+            }
+
+            Recode:
+            enabledCount = (uint)enabledNames.Count;
+            pEnabledNames = (byte**)SilkMarshal.StringArrayToPtr(enabledNames.AsReadOnly(), NativeStringEncoding.UTF8);
         }
 
         public override IDisplayManager DisplayManager => _displayManager;
