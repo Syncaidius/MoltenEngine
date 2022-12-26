@@ -3,40 +3,65 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal class RendererVK : RenderService
+    public unsafe class RendererVK : RenderService
     {
+        Vk _vk;
+        Instance* _vkInstance;
         DisplayManagerVK _displayManager;
 
         public RendererVK()
         {
+            _vk = Vk.GetApi();
             _displayManager = new DisplayManagerVK();
+        }
+
+        internal static uint MakeVersion(uint variant, uint major, uint minor, uint patch)
+        {
+            return (((variant) << 29) | ((major) << 22) | ((minor) << 12) | (patch));
+        }
+
+        protected override void OnInitialize(EngineSettings settings)
+        {
+            base.OnInitialize(settings);
+
+            ApplicationInfo appInfo = new ApplicationInfo()
+            {
+                SType = StructureType.ApplicationInfo,
+                EngineVersion = 1,
+                ApiVersion = MakeVersion(0,1,0,0)
+            };
+
+            InstanceCreateInfo instanceInfo = new InstanceCreateInfo()
+            {
+                SType = StructureType.InstanceCreateInfo,
+                PApplicationInfo = &appInfo,
+                EnabledLayerCount = 0,
+                EnabledExtensionCount = 0
+            };
+
+            _vkInstance = EngineUtil.Alloc<Instance>();
+            Result r = _vk.CreateInstance(&instanceInfo, null, _vkInstance);
         }
 
         public override IDisplayManager DisplayManager => _displayManager;
 
-        public override ResourceFactory Resources => throw new NotImplementedException();
+        public override ResourceFactory Resources { get; }
 
-        public override IComputeManager Compute => throw new NotImplementedException();
+        public override IComputeManager Compute { get; }
 
         protected override IRenderChain GetRenderChain()
         {
-            throw new NotImplementedException();
+            return new RenderChainVK();
         }
 
         protected override SceneRenderData OnCreateRenderData()
         {
             throw new NotImplementedException();
-        }
-
-        protected override void OnDisposeBeforeRender()
-        {
-            throw new NotImplementedException();
-        }
-
-        
+        }        
 
         protected override void OnPostPresent(Timing time)
         {
@@ -71,6 +96,19 @@ namespace Molten.Graphics
         protected override void OnRebuildSurfaces(uint requiredWidth, uint requiredHeight)
         {
             throw new NotImplementedException();
+        }
+
+        protected override void OnDisposeBeforeRender()
+        {
+            _displayManager.Dispose();
+
+            if (_vkInstance != null)
+            {
+                _vk.DestroyInstance(*_vkInstance, null);
+                EngineUtil.Free(ref _vkInstance);
+            }
+
+            _vk.Dispose();
         }
     }
 }

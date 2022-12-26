@@ -28,10 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Renderer\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\Images\logo_128.png" Link="logo_128.png">
       <PackagePath>\</PackagePath>
       <Pack>True</Pack>

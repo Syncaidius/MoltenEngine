@@ -25,8 +25,10 @@ namespace Molten.Graphics
 
         public RendererDX11()
         {
+            _api = D3D11.GetApi();
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
+
             Surfaces = new SurfaceManager(this);
             _displayManager = new DisplayManagerDXGI();
         }
@@ -37,7 +39,6 @@ namespace Molten.Graphics
 
             Assembly includeAssembly = this.GetType().Assembly;
 
-            _api = D3D11.GetApi();
             Device = new Device(_api, Log, settings.Graphics, _displayManager);
             ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _resFactory = new ResourceFactoryDX11(this);
@@ -175,7 +176,7 @@ namespace Molten.Graphics
             Surfaces.Dispose();
 
             _resFactory.Dispose();
-            _displayManager?.Dispose();
+            _displayManager.Dispose();
             SpriteBatcher.Dispose();
 
             StaticVertexBuffer.Dispose();
