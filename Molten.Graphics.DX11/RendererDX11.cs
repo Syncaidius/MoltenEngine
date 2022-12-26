@@ -8,6 +8,7 @@ namespace Molten.Graphics
     public class RendererDX11 : RenderService
     {
         D3D11 _api;
+        RenderChain _chain;
         DisplayManagerDXGI _displayManager;
         ResourceFactoryDX11 _resFactory;
         ComputeManager _compute;
@@ -30,6 +31,7 @@ namespace Molten.Graphics
             _stepList = new List<RenderStepBase>();
 
             Surfaces = new SurfaceManager(this);
+            _chain = new RenderChain(this);
             _displayManager = new DisplayManagerDXGI();
         }
 
@@ -81,11 +83,6 @@ namespace Molten.Graphics
         protected override SceneRenderData OnCreateRenderData()
         {
             return new SceneRenderData<Renderable>();
-        }
-
-        protected override IRenderChain GetRenderChain()
-        {
-            return new RenderChain(this);
         }
 
         protected override void OnPrePresent(Timing time)
@@ -193,6 +190,8 @@ namespace Molten.Graphics
         internal Device Device { get; private set; }
 
         public override IComputeManager Compute => _compute;
+
+        protected override IRenderChain Chain => _chain;
 
         internal FxcCompiler ShaderCompiler { get; private set; }
 

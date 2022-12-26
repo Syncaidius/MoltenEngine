@@ -12,7 +12,6 @@ namespace Molten.Graphics
     {
         public static readonly Matrix4F DefaultView3D = Matrix4F.LookAtLH(new Vector3F(0, 0, -5), new Vector3F(0, 0, 0), Vector3F.UnitY);
 
-        IRenderChain _chain;
         bool _disposeRequested;
         bool _shouldPresent;
         bool _surfaceResizeRequired;
@@ -25,26 +24,7 @@ namespace Molten.Graphics
         public RenderService()
         {
             Overlay = new OverlayProvider();
-            Type test = this.GetType();
             Log.WriteLine("Acquiring render chain");
-
-            try
-            {
-                _chain = GetRenderChain();
-                if (_chain != null)
-                    Log.WriteLine("Render chain acquired");
-                else
-                {
-                    Log.Error("Render chain acquisition failed: Null chain");
-                    throw new NullReferenceException("The provided render chain was null.");
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Error("Render chain acquisition failed. See exception details below");
-                Log.Error(e, true);
-                throw e;
-            }
         }
 
         protected override ThreadingMode OnStart(ThreadManager threadManager)
@@ -205,8 +185,8 @@ namespace Molten.Graphics
                         if ((camera.LayerMask & layerBitVal) == layerBitVal)
                             continue;
 
-                        _chain.Build(sceneData, layer, camera);
-                        _chain.Render(sceneData, layer, camera, time);
+                        Chain.Build(sceneData, layer, camera);
+                        Chain.Render(sceneData, layer, camera, time);
                     }
 
                     camera.Profiler.End(time);
@@ -237,6 +217,23 @@ namespace Molten.Graphics
         /// <param name="settings"></param>
         protected override void OnInitialize(EngineSettings settings)
         {
+            try
+            {
+                if (Chain != null)
+                    Log.WriteLine("Render chain acquired");
+                else
+                {
+                    Log.Error("Render chain acquisition failed: Null chain");
+                    throw new NullReferenceException("The provided render chain was null.");
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Render chain acquisition failed. See exception details below");
+                Log.Error(e, true);
+                throw e;
+            }
+
             try
             {
                 DisplayManager.Initialize(Log, settings.Graphics);
@@ -280,8 +277,6 @@ namespace Molten.Graphics
         {
             Tasks.Enqueue(task);
         }
-
-        protected abstract IRenderChain GetRenderChain();
 
         /// <summary>
         /// Occurs when the render engine detects changes which usually require render surfaces to be rebuilt, such as the game window being resized, or certain graphics settings being changed.
@@ -354,6 +349,11 @@ namespace Molten.Graphics
         /// Gets the compute manager attached to the current renderer.
         /// </summary>
         public abstract IComputeManager Compute { get; }
+
+        /// <summary>
+        /// Gets the implemented <see cref="IRenderChain"/> instance for the current <see cref="RenderService"/>.
+        /// </summary>
+        protected abstract IRenderChain Chain { get; }
 
         /// <summary>
         /// Gets a list of all the output <see cref="ISwapChainSurface"/> instances attached to the renderer. These are automatically presented to the graphics device by the renderer, if active.

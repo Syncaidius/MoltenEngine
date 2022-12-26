@@ -11,12 +11,14 @@ namespace Molten.Graphics
     {
         Vk _vk;
         Instance* _vkInstance;
+        RenderChainVK _chain;
         DisplayManagerVK _displayManager;
 
         public RendererVK()
         {
             _vk = Vk.GetApi();
             _displayManager = new DisplayManagerVK();
+            _chain = new RenderChainVK(this);
         }
 
         internal static uint MakeVersion(uint variant, uint major, uint minor, uint patch)
@@ -52,11 +54,6 @@ namespace Molten.Graphics
         public override ResourceFactory Resources { get; }
 
         public override IComputeManager Compute { get; }
-
-        protected override IRenderChain GetRenderChain()
-        {
-            return new RenderChainVK();
-        }
 
         protected override SceneRenderData OnCreateRenderData()
         {
@@ -97,6 +94,8 @@ namespace Molten.Graphics
         {
             throw new NotImplementedException();
         }
+
+        protected override IRenderChain Chain => _chain;
 
         protected override void OnDisposeBeforeRender()
         {

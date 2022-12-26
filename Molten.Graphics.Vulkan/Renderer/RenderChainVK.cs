@@ -8,6 +8,12 @@ namespace Molten.Graphics
 {
     public class RenderChainVK : IRenderChain
     {
+        RendererVK _renderer;
+        internal RenderChainVK(RendererVK renderer)
+        {
+            _renderer = renderer;
+        }
+
         public void Build(SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera)
         {
             

@@ -11,7 +11,6 @@ namespace Molten.Graphics
         RenderService _renderer;
         ShaderCompiler _compiler;
 
-
         public ResourceFactory(RenderService renderer, ShaderCompiler sCompiler)
         {
             _renderer = renderer;
