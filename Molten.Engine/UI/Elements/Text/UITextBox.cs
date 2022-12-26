@@ -230,6 +230,41 @@ namespace Molten.UI
                     Caret.Move(p, dir);
                 }
             }
+            else
+            {
+                switch (state.Key)
+                {
+                    case KeyCode.Home:
+                        if (Caret.Start.Line == null && Caret.Start.Chunk != null)
+                            Caret.Start.Line = Caret.Start.Chunk.FirstLine;
+
+                        if (Caret.Start.Line != null)
+                            Caret.Start.Segment = Caret.Start.Line.FirstSegment;
+
+                        Caret.Start.CharIndex = 0;
+                        Caret.Start.StartOffset = 0;
+                        break;
+
+                    case KeyCode.End:
+                        if (Caret.Start.Line == null && Caret.Start.Chunk != null)
+                            Caret.Start.Line = Caret.Start.Chunk.FirstLine;
+
+                        if (Caret.Start.Line != null)
+                            Caret.Start.Segment = Caret.Start.Line.LastSegment;
+
+                        if (Caret.Start.Segment != null)
+                        {
+                            Caret.Start.CharIndex = Caret.Start.Segment.Length -1;
+                            Caret.Start.StartOffset = Caret.Start.Segment.Size.X;
+                        }
+                        else
+                        {
+                            Caret.Start.CharIndex = 0;
+                            Caret.Start.StartOffset = 0;
+                        }
+                        break;
+                }
+            }
         }
 
         private void ScrollChanged(UIScrollBar element)

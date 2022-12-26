@@ -187,7 +187,7 @@ namespace Molten.UI
                 case MoveDirection.Right:
                     if (p.Segment != null)
                     {
-                        if (p.CharIndex == p.Segment.Length -1)
+                        if (p.CharIndex >= p.Segment.Length -1)
                         {
                             p.Segment = FindNextSegment(p.Segment, p);
                         }

@@ -31,6 +31,12 @@ namespace Molten.UI
             CalculuateSize();
         }
 
+        /// <summary>
+        /// Invoked when the current <see cref="UITextSegment"/> should render its content.
+        /// </summary>
+        /// <param name="sb">The <see cref="SpriteBatcher"/> that will render the segment content.</param>
+        /// <param name="owner">The parent <see cref="UITextBox"/> element.</param>
+        /// <param name="bounds">The render bounds of the current <see cref="UITextSegment"/>.</param>
         public virtual void Render(SpriteBatcher sb, UITextBox owner, ref RectangleF bounds)
         {
             if (string.IsNullOrWhiteSpace(Text) || Color.A == 0)
