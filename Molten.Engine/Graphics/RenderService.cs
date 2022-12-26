@@ -232,12 +232,6 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Occurs when a graphics adapter needs to be acquired, before the renderer is initialized.
-        /// </summary>
-        /// <param name="settings"></param>
-        protected abstract void OnInitializeAdapter(GraphicsSettings settings);
-
-        /// <summary>
         /// Occurs when the renderer is being initialized.
         /// </summary>
         /// <param name="settings"></param>
@@ -245,8 +239,8 @@ namespace Molten.Graphics
         {
             try
             {
-                OnInitializeAdapter(settings.Graphics);
-                Log.WriteLine($"Initialized adapter");
+                DisplayManager.Initialize(Log, settings.Graphics);
+                Log.WriteLine($"Initialized display manager");
             }
             catch (Exception ex)
             {

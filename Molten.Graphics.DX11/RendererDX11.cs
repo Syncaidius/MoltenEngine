@@ -28,12 +28,7 @@ namespace Molten.Graphics
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
             Surfaces = new SurfaceManager(this);
-        }
-
-        protected override void OnInitializeAdapter(GraphicsSettings settings)
-        {
             _displayManager = new DisplayManagerDXGI();
-            _displayManager.Initialize(Log, settings);
         }
 
         protected override void OnInitialize(EngineSettings settings)

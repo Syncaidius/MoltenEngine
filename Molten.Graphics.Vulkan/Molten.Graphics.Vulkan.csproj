@@ -3,12 +3,50 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <PackageProjectUrl>https://github.com/Syncaidius/MoltenEngine</PackageProjectUrl>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Molten.Graphics.Vulkan</Title>
+    <AssemblyVersion>0.3.0</AssemblyVersion>
+    <FileVersion>0.3.0</FileVersion>
+    <Description>The start of an open-source, cross-platform game engine, written in C#</Description>
+    <Copyright>Copyright © 2022 James Yarwood</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Syncaidius/MoltenEngine</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>game engine;cross platform;vulkan;</PackageTags>
+    <PackageReleaseNotes>Initial release of Molten Engine.</PackageReleaseNotes>
+    <PackageIcon>logo_128.png</PackageIcon>
     <Version>0.3.0</Version>
+    <Authors>James Yarwood</Authors>
+    <RootNamespace>Molten.Graphics</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Silk.NET.Vulkan" Version="2.16.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Renderer\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Images\logo_128.png" Link="logo_128.png">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Include="..\README.md" Link="README.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj" />
+    <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />
+    <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
+    <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
   </ItemGroup>
 
 </Project>

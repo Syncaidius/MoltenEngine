@@ -2,9 +2,13 @@
 {
     public delegate void DisplayManagerEvent(IDisplayManager manager);
 
+    /// <summary>
+    /// Represents an implementation of a graphics device, adapter and/or display manager.
+    /// </summary>
     public interface IDisplayManager : IDisposable
     {
         /// <summary>Initializes the display manager using the provided <see cref="GraphicsSettings"/>.</summary>
+        /// <param name="logger">The logger that the current <see cref="IDisplayManager"/> should output information to.</param>
         /// <param name="settings">An instance of <see cref="GraphicsSettings"/>. This is used to help configure the display manager.</param>
         void Initialize(Logger logger, GraphicsSettings settings);
 
