@@ -1,0 +1,3 @@
+git log --pretty="[%h]
+%s 
+%b" --after="01/11/2022" > CHANGELOG_0_2.md
