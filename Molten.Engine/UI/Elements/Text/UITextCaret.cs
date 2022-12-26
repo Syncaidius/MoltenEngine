@@ -183,6 +183,64 @@ namespace Molten.UI
                         }
                     }
                     break;
+
+                case MoveDirection.Right:
+                    if (p.Segment != null)
+                    {
+                        if (p.CharIndex == p.Segment.Length -1)
+                        {
+                            p.Segment = FindNextSegment(p.Segment, p);
+                        }
+                        else
+                        {
+                            p.StartOffset += p.Segment.MeasureCharWidth(p.CharIndex);
+                            p.CharIndex++;
+
+                        }
+                    }
+
+                    // Get to previous Line
+                    if (p.Segment == null)
+                    {
+                        if (p.Line.Next != null)
+                        {
+                            p.Line = p.Line.Next;
+                            p.Segment = FindNextSegment(p.Line.FirstSegment, p);
+                        }
+                        else
+                        {
+                            if (p.Chunk.Next != null)
+                            {
+                                p.Chunk = p.Chunk.Next;
+                                p.Line = p.Chunk.FirstLine;
+                                if (p.Line != null)
+                                {
+                                    p.Segment = FindNextSegment(p.Line.FirstSegment, p);
+                                }
+                                else
+                                {
+                                    p.Segment = null;
+                                    p.CharIndex = 0;
+                                    p.StartOffset = 0;
+                                }
+                            }
+                            else
+                            {
+                                p.Segment = p.Line.LastSegment;
+                                if (p.Segment != null)
+                                {
+                                    p.CharIndex = p.Segment.Length - 1;
+                                    p.StartOffset = p.Segment.Size.X;
+                                }
+                                else
+                                {
+                                    p.CharIndex = 0;
+                                    p.StartOffset = 0;
+                                }
+                            }
+                        }
+                    }
+                    break;
             }
         }
 
@@ -203,6 +261,28 @@ namespace Molten.UI
                 }
 
                 seg = seg.Previous;
+            }
+
+            return seg;
+        }
+
+        private UITextSegment FindNextSegment(UITextSegment seg, CaretPoint p)
+        {
+            if (seg == null)
+                return seg;
+
+            seg = seg.Next;
+
+            while (seg != null)
+            {
+                if (seg.Length > 0)
+                {
+                    p.CharIndex = 0;
+                    p.StartOffset = 0;
+                    break;
+                }
+
+                seg = seg.Next;
             }
 
             return seg;

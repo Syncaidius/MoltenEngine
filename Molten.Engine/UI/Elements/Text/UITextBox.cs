@@ -13,6 +13,12 @@ namespace Molten.UI
     {
         private delegate void LineRenderCallback(SpriteBatcher sb, ref RectangleF lineBounds, ref RectangleF segBounds, UITextLine line);
 
+        static readonly Dictionary<KeyCode, UITextCaret.MoveDirection> _caretDirections = new Dictionary<KeyCode, UITextCaret.MoveDirection>()
+        {
+            [KeyCode.Left] = UITextCaret.MoveDirection.Left,
+            [KeyCode.Right] = UITextCaret.MoveDirection.Right,
+        };
+
         internal class LineMargin
         {
             public event ObjectHandler<LineMargin> BoundsChanged;
@@ -215,15 +221,13 @@ namespace Molten.UI
         {
             base.OnKeyDown(keyboard, ref state);
 
-            if (state.Key == KeyCode.Left)
+            if (_caretDirections.TryGetValue(state.Key, out UITextCaret.MoveDirection dir))
             {
                 if (Caret.Start.Chunk != null)
                 {
                     // Move end selection or start selection?
-                    if (Caret.End.Chunk != null)
-                        Caret.Move(Caret.End, UITextCaret.MoveDirection.Left);
-                    else
-                        Caret.Move(Caret.Start, UITextCaret.MoveDirection.Left);
+                    UITextCaret.CaretPoint p = Caret.End.Chunk != null ? Caret.End : Caret.Start;
+                    Caret.Move(p, dir);
                 }
             }
         }

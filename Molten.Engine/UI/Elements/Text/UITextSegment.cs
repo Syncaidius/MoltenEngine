@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Molten.Graphics;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Molten.UI
 {
@@ -32,7 +28,7 @@ namespace Molten.UI
             Color = color;
             Font = font;
 
-            Measure();
+            CalculuateSize();
         }
 
         public virtual void Render(SpriteBatcher sb, UITextBox owner, ref RectangleF bounds)
@@ -43,14 +39,29 @@ namespace Molten.UI
             sb.DrawString(Font ?? owner.DefaultFont, Text, bounds.TopLeft, Color, null, 0);
         }
 
-        private void Measure()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool GetFont(out SpriteFont font)
+        {
+            font = Font;
+
+            if (font != null)
+                return true;
+
+            if (ParentLine != null && ParentLine.Parent != null)
+            {
+                font = ParentLine.Parent.DefaultFont;
+                return true;
+            }
+
+            return false;
+        }
+
+        private void CalculuateSize()
         {
             if (!string.IsNullOrEmpty(_text))
             {
-                if (Font != null)
-                    Size = Font.MeasureString(_text);
-                else if (ParentLine != null && ParentLine.Parent != null)
-                    Size = ParentLine.Parent.DefaultFont.MeasureString(_text);
+                if (GetFont(out SpriteFont font))
+                    Size = font.MeasureString(_text);
             }
             else
             {
@@ -58,12 +69,15 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Measures the width of a character in <see cref="Text"/> at the given index, in pixels.
+        /// </summary>
+        /// <param name="index">The index of the character in <see cref="Text"/> to be measured.</param>
+        /// <returns></returns>
         public float MeasureCharWidth(int index)
         {
-            if (Font != null)
-                return Font.MeasureCharWidth(_text[index]);
-            else if (ParentLine != null && ParentLine.Parent != null)
-                return ParentLine.Parent.DefaultFont.MeasureCharWidth(_text[index]);
+            if (GetFont(out SpriteFont font))
+                return font.MeasureCharWidth(_text[index]);
 
             return 0;
         }
@@ -140,7 +154,7 @@ namespace Molten.UI
             set
             {
                 _text = value ?? string.Empty;
-                Measure();                
+                CalculuateSize();                
             }
         }
 
@@ -160,7 +174,7 @@ namespace Molten.UI
                 if(_font != value)
                 {
                     _font = value;
-                    Measure();
+                    CalculuateSize();
                 }
             }
         }
@@ -176,7 +190,7 @@ namespace Molten.UI
                 if(_line != value)
                 {
                     _line = value;
-                    Measure();
+                    CalculuateSize();
                 }
             }
         }
