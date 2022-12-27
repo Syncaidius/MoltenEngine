@@ -41,8 +41,10 @@ namespace Molten.Graphics
                         GraphicsCapabilities cap = new GraphicsCapabilities();
                         PopulateCapabilityLimits(cap, ref dProperties.Limits);
 
-                        // TODO refactor capabilities system so that we can populate a GraphicsCapabilities instance
-                        //      in GraphicsSettings and compare it to one populated here
+                        PhysicalDeviceFeatures dFeatures;
+                        _renderer.VK.GetPhysicalDeviceFeatures(*devices, &dFeatures);
+                        PopulateCapabilityFeatures(cap, ref dFeatures);
+
                         devices++;
                     }
                 }
@@ -55,6 +57,14 @@ namespace Molten.Graphics
             cap.MaxTexture2DDimension = limits.MaxImageDimension2D;
             cap.MaxTexture3DDimension = limits.MaxImageDimension3D;
             cap.MaxTextureCubeDimension = limits.MaxImageDimensionCube;
+        }
+
+        private void PopulateCapabilityFeatures(GraphicsCapabilities cap, ref PhysicalDeviceFeatures features)
+        {
+            cap.HullShader.IsSupported = features.TessellationShader;
+            cap.DomainShader.IsSupported = features.TessellationShader;
+            cap.GeometryShader.IsSupported = features.GeometryShader;
+         
         }
 
         public void Dispose()

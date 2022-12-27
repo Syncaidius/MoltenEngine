@@ -4,7 +4,7 @@ using Feature = Silk.NET.Direct3D11.Feature;
 
 namespace Molten.Graphics
 {
-    public class GraphicsComputeFeatures
+    public class GraphicsComputeFeatures : ShaderStageCapabilities
     {
         DeviceFeaturesDX11 _features;
 

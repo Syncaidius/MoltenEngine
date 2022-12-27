@@ -18,7 +18,6 @@ namespace Molten.Graphics
             FeatureLevel = _device->GetFeatureLevel();
 
             Compute = new GraphicsComputeFeatures(this);
-            Shaders = new GraphicsShaderFeatures(this);
             MiscFeatures = GetFeatureSupport<FeatureDataD3D11Options>(Feature.D3D11Options);
 
             CounterInfo cInfo = new CounterInfo();
@@ -55,11 +54,44 @@ namespace Molten.Graphics
                     break;
             }
 
+            DetectShaderPrecisionSupport();
+
             FeatureDataThreading fThreadData = GetFeatureSupport<FeatureDataThreading>(Feature.Threading);
             ConcurrentResources = fThreadData.DriverConcurrentCreates > 0;
             CommandListSupport = fThreadData.DriverCommandLists > 0 ? 
                 DX11CommandListSupport.Supported : 
                 DX11CommandListSupport.Emulated;
+        }
+
+        private void DetectShaderPrecisionSupport()
+        {
+            FeatureDataDoubles fData = GetFeatureSupport<FeatureDataDoubles>(Feature.Doubles);
+            bool dp = fData.DoublePrecisionFloatShaderOps > 0;
+
+            ShaderMinPrecisionSupport all = ShaderMinPrecisionSupport.None;
+            ShaderMinPrecisionSupport pixel = ShaderMinPrecisionSupport.None;
+
+            // DirectX 11.1 or higher precision features
+            if (FeatureLevel >= D3DFeatureLevel.Level111)
+            {
+                FeatureDataShaderMinPrecisionSupport mData = GetFeatureSupport<FeatureDataShaderMinPrecisionSupport>(Feature.ShaderMinPrecisionSupport);
+                all = (ShaderMinPrecisionSupport)mData.AllOtherShaderStagesMinPrecision;
+                pixel = (ShaderMinPrecisionSupport)mData.PixelShaderMinPrecision;
+            }
+
+            SetShaderPrecision(VertexShader, all, dp);
+            SetShaderPrecision(GeometryShader, all, dp);
+            SetShaderPrecision(HullShader, all, dp);
+            SetShaderPrecision(DomainShader, all, dp);
+            SetShaderPrecision(Compute, all, dp);
+            SetShaderPrecision(PixelShader, pixel, dp);
+        }
+
+        private void SetShaderPrecision(ShaderStageCapabilities sCap, ShaderMinPrecisionSupport minPrecision, bool float64)
+        {
+            sCap.Float10 = (minPrecision & ShaderMinPrecisionSupport.Precision10Bit) == ShaderMinPrecisionSupport.Precision10Bit;
+            sCap.Float16 = (minPrecision & ShaderMinPrecisionSupport.Precision16Bit) == ShaderMinPrecisionSupport.Precision16Bit;
+            sCap.Float64 = float64;
         }
 
         internal void GetFeatureSupport<T>(Feature feature, T* pData) where T : unmanaged
@@ -127,8 +159,6 @@ namespace Molten.Graphics
 
         /// <summary>Gets an instance of <see cref="GraphicsComputeFeatures"/> which contains the supported compute features of a <see cref="DeviceDX11"/>.</summary>
         internal GraphicsComputeFeatures Compute { get; private set; }
-
-        internal GraphicsShaderFeatures Shaders { get; private set; }
 
         internal FeatureDataD3D11Options MiscFeatures { get; private set; }
 
