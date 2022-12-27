@@ -32,7 +32,7 @@
             _matCompose.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             _orthoCamera.Surface = camera.Surface;
 

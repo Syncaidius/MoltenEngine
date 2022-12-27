@@ -33,7 +33,7 @@ namespace Molten.Graphics
             _matDebugPoint.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             RenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
             DepthStencilSurface sDepth = renderer.Surfaces.GetDepth();

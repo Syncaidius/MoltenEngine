@@ -6,7 +6,7 @@ namespace Molten.Graphics
     {
         public override void Dispose() { }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             RenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];

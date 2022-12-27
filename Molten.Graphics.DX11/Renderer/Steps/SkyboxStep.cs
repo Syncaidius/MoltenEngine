@@ -32,7 +32,7 @@
             _sphereMesh.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             // No skybox texture or we're not on the first layer.
             if (context.Scene.SkyboxTexture == null || context.Scene.Layers.First() != context.Layer)
