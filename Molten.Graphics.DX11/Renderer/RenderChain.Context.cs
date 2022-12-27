@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal partial class RenderChainContext : IPoolable
+    internal class RenderChainContext : IPoolable
     {
         internal SceneRenderData<Renderable> Scene;
         internal LayerRenderData<Renderable> Layer;
@@ -14,8 +14,8 @@ namespace Molten.Graphics
         {
             _composition = new RenderSurface2D[]
             {
-                    renderer.Surfaces[MainSurfaceType.Composition1],
-                    renderer.Surfaces[MainSurfaceType.Composition2]
+                renderer.Surfaces[MainSurfaceType.Composition1],
+                renderer.Surfaces[MainSurfaceType.Composition2]
             };
         }
 
