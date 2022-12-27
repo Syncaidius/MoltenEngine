@@ -48,8 +48,8 @@ namespace Molten.Graphics
 
             if (settings.Graphics.EnableDebugLayer.Value == true)
             {
-                EnableValidationLayers(out instanceInfo.EnabledLayerCount, out instanceInfo.PpEnabledLayerNames, "VK_LAYER_KHRONOS_validation");
-                    Log.Warning("Vulkan debug layer(s) requested, but not available");
+                EnableValidationLayers(out instanceInfo.EnabledLayerCount, out instanceInfo.PpEnabledLayerNames, 
+                    "VK_LAYER_KHRONOS_validation");
             }
 
             _vkInstance = EngineUtil.Alloc<Instance>();
@@ -97,10 +97,12 @@ namespace Molten.Graphics
                         if (name == layerName)
                         {
                             enabledNames.Add(layerName);
+                            Log.WriteLine($"Enabled validation layer: {name}");
+
                             if (enabledNames.Count == layerNames.Length)
                                 goto Recode;
-
-                            break;
+                            else
+                                break;
                         }
                     }
 

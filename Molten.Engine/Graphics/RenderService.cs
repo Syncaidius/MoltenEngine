@@ -245,7 +245,7 @@ namespace Molten.Graphics
                 Log.Error(ex, true);
             }
 
-            settings.Log(Log, "Graphics");
+            settings.Graphics.Log(Log, "Graphics");
             MsaaLevel = _requestedMultiSampleLevel = MsaaLevel;
             settings.Graphics.MSAA.OnChanged += MSAA_OnChanged;
         }
