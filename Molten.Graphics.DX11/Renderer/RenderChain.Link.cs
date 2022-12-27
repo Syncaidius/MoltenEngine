@@ -75,7 +75,7 @@ namespace Molten.Graphics
                 link._chain.LinkPool.Recycle(link);
             }
 
-            internal void Run(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
+            internal void Run(RendererDX11 renderer, RenderCamera camera, Context context, Timing time)
             {
                 bool canStart = true;
 

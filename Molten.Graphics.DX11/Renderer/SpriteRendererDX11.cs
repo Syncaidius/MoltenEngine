@@ -2,7 +2,7 @@
 {
     public class SpriteRendererDX11 : Renderable, ISpriteRenderer
     {
-        internal SpriteRendererDX11(DeviceDX11 device, Action<SpriteBatcher> callback) : base(device)
+        internal SpriteRendererDX11(Device device, Action<SpriteBatcher> callback) : base(device)
         {
             Callback = callback;
         }

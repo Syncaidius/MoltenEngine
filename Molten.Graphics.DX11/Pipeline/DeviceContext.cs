@@ -33,7 +33,7 @@ namespace Molten.Graphics
             _defaultProfiler = _profiler = new RenderProfiler();
         }
 
-        internal void Initialize(Logger log, DeviceDX11 device, ID3D11DeviceContext* context)
+        internal void Initialize(Logger log, Device device, ID3D11DeviceContext* context)
         {
             _context = context;
             Device = device;
@@ -369,7 +369,7 @@ namespace Molten.Graphics
         /// <summary>Gets the current <see cref="Graphics.DeviceContext"/> type. This value will not change during the context's life.</summary>
         public GraphicsContextType Type { get; private set; }
 
-        internal DeviceDX11 Device { get; private set; }
+        internal Device Device { get; private set; }
 
         internal ID3D11DeviceContext* Native => _context;
 

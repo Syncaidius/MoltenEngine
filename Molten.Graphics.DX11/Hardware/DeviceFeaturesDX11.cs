@@ -125,7 +125,7 @@ namespace Molten.Graphics
 
         internal D3DFeatureLevel MaxFeatureLevel { get; }
 
-        /// <summary>Gets an instance of <see cref="GraphicsComputeFeatures"/> which contains the supported compute features of a <see cref="DeviceDX11"/>.</summary>
+        /// <summary>Gets an instance of <see cref="GraphicsComputeFeatures"/> which contains the supported compute features of a <see cref="Device"/>.</summary>
         internal GraphicsComputeFeatures Compute { get; private set; }
 
         internal GraphicsShaderFeatures Shaders { get; private set; }

@@ -8,11 +8,11 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class ContextBindable : ContextObject
     {
-        internal ContextBindable(DeviceDX11 device, ContextBindTypeFlags bindFlags) : base(device)
+        internal ContextBindable(Device device, ContextBindTypeFlags bindFlags) : base(device)
         {
             BoundTo = new List<ContextSlot>();
             BindFlags = bindFlags;
-            LastUsedFrameID = device.Context.Profiler.FrameID;
+            LastUsedFrameID = device.Profiler.FrameID;
         }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Molten.Graphics
         /// <param name="context">The <see cref="DeviceContext"/> that the current <see cref="ContextBindable"/> is to be bound to.</param>
         internal void Apply(DeviceContext context)
         {
-            LastUsedFrameID = context.Profiler.FrameID;
+            LastUsedFrameID = context.Device.Profiler.FrameID;
             OnApply(context);
         }
 
@@ -54,7 +54,7 @@ namespace Molten.Graphics
     public unsafe abstract class ContextBindable<T> : ContextBindable
         where T : unmanaged
     {
-        internal ContextBindable(DeviceDX11 device, ContextBindTypeFlags bindFlags) : 
+        internal ContextBindable(Device device, ContextBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
 

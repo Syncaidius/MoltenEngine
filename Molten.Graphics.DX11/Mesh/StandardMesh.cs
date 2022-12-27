@@ -29,7 +29,7 @@
             mat.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
             ApplyResources(mat);
-            renderer.Device.Context.Draw(mat, VertexCount, Topology);
+            renderer.Device.Draw(mat, VertexCount, Topology);
         }
     }
 }

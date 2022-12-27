@@ -2,7 +2,7 @@
 {
     internal class SamplerBank : GraphicsStateBank<ShaderSampler, SamplerPreset>
     {
-        internal SamplerBank(DeviceDX11 device)
+        internal SamplerBank(Device device)
         {
             AddPreset(SamplerPreset.Default, new ShaderSampler(device)
             {

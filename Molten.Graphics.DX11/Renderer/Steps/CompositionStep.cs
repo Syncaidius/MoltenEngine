@@ -32,34 +32,36 @@
             _matCompose.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext cxt, Timing time)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
             _orthoCamera.Surface = camera.Surface;
+
             RectangleF vpBounds = camera.Surface.Viewport.Bounds;
+            Device device = renderer.Device;
 
-            cxt.CompositionSurface.Clear(cxt.Scene.BackgroundColor);
-            cxt.Context.State.ResetRenderSurfaces();
-            cxt.Context.State.SetRenderSurface(cxt.CompositionSurface, 0);
-            cxt.Context.State.DepthSurface.Value = null;
-            cxt.Context.State.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
-            cxt.Context.State.SetViewports(camera.Surface.Viewport);
-            cxt.Context.State.SetScissorRectangle((Rectangle)vpBounds);
+            context.CompositionSurface.Clear(context.Scene.BackgroundColor);
+            device.State.ResetRenderSurfaces();
+            device.State.SetRenderSurface(context.CompositionSurface, 0);
+            device.State.DepthSurface.Value = null;
+            device.State.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
+            device.State.SetViewports(camera.Surface.Viewport);
+            device.State.SetScissorRectangle((Rectangle)vpBounds);
 
-            StateConditions conditions = cxt.BaseStateConditions | StateConditions.ScissorTest;
+            StateConditions conditions = context.BaseStateConditions | StateConditions.ScissorTest;
 
             _valLighting.Value = _surfaceLighting;
             _valEmissive.Value = _surfaceEmissive;
 
-            ITexture2D sourceSurface = cxt.HasComposed ? cxt.PreviousComposition : _surfaceScene;
+            ITexture2D sourceSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
 
             RectStyle style = RectStyle.Default;
 
-            cxt.Context.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
+            renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
             renderer.SpriteBatcher.Draw(sourceSurface, vpBounds, Vector2F.Zero, vpBounds.Size, 0, Vector2F.Zero, ref style, _matCompose, 0, 0);
-            renderer.SpriteBatcher.Flush(cxt.Context, _orthoCamera, _dummyData);
-            cxt.Context.EndDraw();
+            renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
+            renderer.Device.EndDraw();
 
-            cxt.SwapComposition();
+            context.SwapComposition();
         }
     }
 }

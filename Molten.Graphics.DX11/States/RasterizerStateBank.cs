@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal class RasterizerStateBank : GraphicsStateBank<GraphicsRasterizerState, RasterizerPreset>
     {
-        internal RasterizerStateBank(DeviceDX11 device)
+        internal RasterizerStateBank(Device device)
         {
             AddPreset(RasterizerPreset.Default, new GraphicsRasterizerState(device));
 

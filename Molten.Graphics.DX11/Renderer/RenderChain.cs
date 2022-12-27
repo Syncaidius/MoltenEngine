@@ -7,13 +7,13 @@ namespace Molten.Graphics
         Link _first;
         RendererDX11 _renderer;
         internal readonly ObjectPool<Link> LinkPool;
-        internal readonly ObjectPool<RenderChainContext> ContextPool;
+        internal readonly ObjectPool<Context> ContextPool;
 
         internal RenderChain(RendererDX11 renderer)
         {
             _renderer = renderer;
             LinkPool = new ObjectPool<Link>(() => new Link(this));
-            ContextPool = new ObjectPool<RenderChainContext>(() => new RenderChainContext(_renderer));
+            ContextPool = new ObjectPool<Context>(() => new Context(_renderer));
         }
 
         public void Build(SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
@@ -29,10 +29,9 @@ namespace Molten.Graphics
 
         public void Render(SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera, Timing time)
         {
-            RenderChainContext context = ContextPool.GetInstance();
+            Context context = ContextPool.GetInstance();
             context.Layer = layerData as LayerRenderData<Renderable>;
             context.Scene = sceneData as SceneRenderData<Renderable>;
-            context.Context = _renderer.Device.Context; // TODO for now, the immediate context will process all chain steps.
 
             _renderer.Surfaces.MultiSampleLevel = camera.MultiSampleLevel;
 

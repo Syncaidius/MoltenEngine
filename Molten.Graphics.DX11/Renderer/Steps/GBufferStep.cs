@@ -1,30 +1,30 @@
-﻿using Molten.Font;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     internal class GBufferStep : RenderStepBase
     {
         public override void Dispose() { }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext cxt, Timing time)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
             RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             RenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
             RenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
 
-            cxt.Context.State.SetRenderSurface(sScene, 0);
-            cxt.Context.State.SetRenderSurface(sNormals, 1);
-            cxt.Context.State.SetRenderSurface(sEmissive, 2);
-            cxt.Context.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
+            Device device = renderer.Device;
+
+            device.State.SetRenderSurface(sScene, 0);
+            device.State.SetRenderSurface(sNormals, 1);
+            device.State.SetRenderSurface(sEmissive, 2);
+            device.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
 
             SetMaterialCommon(renderer.StandardMeshMaterial, camera, sScene);
             SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, sScene);
 
-            cxt.Context.State.SetViewports(camera.Surface.Viewport);
+            device.State.SetViewports(camera.Surface.Viewport);
 
-            cxt.Context.BeginDraw(cxt.BaseStateConditions);
-            renderer.RenderSceneLayer(cxt.Context, cxt.Layer, camera);
-            cxt.Context.EndDraw();
+            device.BeginDraw(context.BaseStateConditions);
+            renderer.RenderSceneLayer(device, context.Layer, camera);
+            device.EndDraw();
         }
 
         private void SetMaterialCommon(Material material, RenderCamera camera, RenderSurface2D gBufferScene)

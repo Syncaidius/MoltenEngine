@@ -8,9 +8,9 @@ namespace Molten.Graphics
         ThreadedList<ComputeTask> _computeTasks = new ThreadedList<ComputeTask>();
         ConcurrentDictionary<string, ComputeTask> _computeByName = new ConcurrentDictionary<string, ComputeTask>();
 
-        DeviceDX11 _device;
+        Device _device;
 
-        internal ComputeManager(DeviceDX11 device)
+        internal ComputeManager(Device device)
         {
             _device = device;
         }
@@ -23,7 +23,7 @@ namespace Molten.Graphics
 
         public void Dispatch(IComputeTask task, uint x, uint y, uint z)
         {
-            _device.Context.Dispatch(task as ComputeTask, x, y, z);
+            _device.Dispatch(task as ComputeTask, x, y, z);
         }
 
         public IComputeTask this[string name] => _computeByName[name.ToLower()];

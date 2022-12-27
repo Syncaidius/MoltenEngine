@@ -10,7 +10,7 @@ namespace Molten.Graphics
         /// <summary>Gets the <see cref="ID3D11ShaderResourceView"/> attached to the object.</summary>
         internal SRView SRV { get; }
 
-        internal ContextBindableResource(DeviceDX11 device, ContextBindTypeFlags bindFlags) : 
+        internal ContextBindableResource(Device device, ContextBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
             SRV = new SRView(device);
@@ -27,7 +27,7 @@ namespace Molten.Graphics
     internal unsafe abstract class ContextBindableResource<T> : ContextBindableResource
         where T : unmanaged
     {
-        internal ContextBindableResource(DeviceDX11 device, ContextBindTypeFlags bindFlags) : 
+        internal ContextBindableResource(Device device, ContextBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
         }

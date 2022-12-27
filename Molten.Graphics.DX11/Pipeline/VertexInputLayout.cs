@@ -11,7 +11,7 @@ namespace Molten.Graphics
         bool _isInstanced = false;
         ulong[] _expectedFormatIDs;
 
-        internal VertexInputLayout(DeviceDX11 device, 
+        internal VertexInputLayout(Device device, 
             ContextSlotGroup<BufferSegment> vbSlots, 
             ID3D10Blob* vertexBytecode,
             ShaderIOStructure io) : base(device, ContextBindTypeFlags.Input)

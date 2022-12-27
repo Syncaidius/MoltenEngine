@@ -32,31 +32,31 @@
             _sphereMesh.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext cxt, Timing time)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
             // No skybox texture or we're not on the first layer.
-            if (cxt.Scene.SkyboxTexture == null || cxt.Scene.Layers.First() != cxt.Layer)
+            if (context.Scene.SkyboxTexture == null || context.Scene.Layers.First() != context.Layer)
                 return;
 
             Rectangle bounds = (Rectangle)camera.Surface.Viewport.Bounds;
-            DeviceDX11 device = renderer.Device;
+            Device device = renderer.Device;
 
-            _sphereMesh.SetResource(cxt.Scene.SkyboxTexture, 0);
+            _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 
             // We want to add to the previous composition, rather than completely overwrite it.
-            RenderSurface2D destSurface = cxt.HasComposed ? cxt.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
+            RenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
 
-            cxt.Context.State.ResetRenderSurfaces();
-            cxt.Context.State.SetRenderSurface(destSurface, 0);
-            cxt.Context.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
-            cxt.Context.State.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
-            cxt.Context.State.SetViewports(camera.Surface.Viewport);
-            cxt.Context.State.SetScissorRectangle(bounds);
+            device.State.ResetRenderSurfaces();
+            device.State.SetRenderSurface(destSurface, 0);
+            device.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
+            device.State.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
+            device.State.SetViewports(camera.Surface.Viewport);
+            device.State.SetScissorRectangle(bounds);
 
-            cxt.Context.BeginDraw(cxt.BaseStateConditions);
+            renderer.Device.BeginDraw(context.BaseStateConditions);
             _skyboxData.RenderTransform = Matrix4F.Scaling(camera.MaxDrawDistance) * Matrix4F.CreateTranslation(camera.Position);
-            _sphereMesh.Render(cxt.Context, renderer, camera, _skyboxData);
-            cxt.Context.EndDraw();
+            _sphereMesh.Render(device, renderer, camera, _skyboxData);
+            renderer.Device.EndDraw();
         }
 
         private void MakeSphere(int LatLines, int LongLines, out Vertex[] vertices, out int[] indices)

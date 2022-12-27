@@ -46,7 +46,7 @@ namespace Molten.Graphics
         /// <summary>If true, the segment is not used.</summary>
         internal bool IsFree;
 
-        internal BufferSegment(DeviceDX11 device) : base(device, ContextBindTypeFlags.None) { }
+        internal BufferSegment(Device device) : base(device, ContextBindTypeFlags.None) { }
 
         internal void SetVertexFormat<T>() where T: struct, IVertexType
         {
