@@ -28,6 +28,11 @@ namespace Molten
             EnableDebugLayer = AddSetting<bool>("renderer_debug");
         }
 
+        /// <summary>
+        /// Gets the minimum capabilities required by any detected GPUs, for them to be available for use by the game engine.
+        /// </summary>
+        public GraphicsCapabilities MinimumCapabilities { get; set; } = new GraphicsCapabilities();
+
         /// <summary>Gets or sets the UID of the <see cref="IDisplayAdapter"/> that was last used.</summary>
         [DataMember]
         public SettingValue<int> GraphicsAdapterID { get; }

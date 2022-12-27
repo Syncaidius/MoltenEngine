@@ -6,7 +6,7 @@ using Feature = Silk.NET.Direct3D11.Feature;
 namespace Molten.Graphics
 {
 
-    internal unsafe class DeviceFeaturesDX11
+    internal unsafe class DeviceFeaturesDX11 : GraphicsCapabilities
     {
         ID3D11Device* _device;
 
@@ -30,9 +30,12 @@ namespace Molten.Graphics
             {
                 default:
                 case D3DFeatureLevel.D3DFeatureLevel110:
+                    MaxTexture1DDimension = 16384;
+                    MaxTexture2DDimension = 16384;
+                    MaxTexture3DDimension = 16384;
+                    MaxTextureCubeDimension = 16384;
+
                     SimultaneousRenderSurfaces = 8;
-                    MaxTextureDimension = 16384;
-                    MaxCubeMapDimension = 16384;
                     MaxVolumeExtent = 2048;
                     MaxTextureRepeat = 16384;
                     MaxAnisotropy = 16;
@@ -48,10 +51,7 @@ namespace Molten.Graphics
                     MaxUnorderedAccessViews = 8;
                     MaxIndexBufferSlots = 1;
                     MaxVertexBufferSlots = 32;
-                    MaxConstantBufferSlots = 15;
-
-
-                    
+                    MaxConstantBufferSlots = 15;                    
                     break;
             }
 
@@ -188,17 +188,9 @@ namespace Molten.Graphics
         /// object creation on separate threads with low risk of a frame rate stutter.</summary>
         internal DX11CommandListSupport CommandListSupport { get; private set; }
 
-        /// <summary>Gets the maximum size of a single texture dimension i.e 2048 
-        /// would mean the max texture size is 2048x2048.</summary>
-        internal uint MaxTextureDimension { get; private protected set; }
-
         /// <summary>
         /// Gets the maximum number of render targets (draw buffers) a fragment shader can output to simultaneously.
         /// </summary>
         internal uint SimultaneousRenderSurfaces { get; private protected set; }
-
-        /// <summary>Gets the maximum size of a single cube map dimension i.e 2048 would mean 
-        /// the max map size is 2048x2048.</summary>
-        internal uint MaxCubeMapDimension { get; private protected set; }
     }
 }

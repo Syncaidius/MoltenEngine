@@ -3,16 +3,59 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.Graphics.Hardware;
+using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal class DisplayManagerVK : IDisplayManager
+    internal unsafe class DisplayManagerVK : IDisplayManager
     {
         public int AdapterCount => throw new NotImplementedException();
 
         public IDisplayAdapter DefaultAdapter => throw new NotImplementedException();
 
         public IDisplayAdapter SelectedAdapter { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        RendererVK _renderer;
+
+        internal DisplayManagerVK(RendererVK renderer)
+        {
+            _renderer = renderer;
+        }
+
+        public void Initialize(Logger logger, GraphicsSettings settings)
+        {
+            uint deviceCount = 0;
+            Result r = _renderer.VK.EnumeratePhysicalDevices(*_renderer.Ptr, &deviceCount, null);
+
+            if (_renderer.LogResult(r))
+            {
+                PhysicalDevice* devices = EngineUtil.AllocArray<PhysicalDevice>(deviceCount);
+                r = _renderer.VK.EnumeratePhysicalDevices(*_renderer.Ptr, &deviceCount, devices);
+                if (_renderer.LogResult(r))
+                {
+                    for (int i = 0; i < deviceCount; i++)
+                    {
+                        PhysicalDeviceProperties dProperties;
+                        _renderer.VK.GetPhysicalDeviceProperties(*devices, &dProperties);
+                        GraphicsCapabilities cap = new GraphicsCapabilities();
+                        PopulateCapabilityLimits(cap, ref dProperties.Limits);
+
+                        // TODO refactor capabilities system so that we can populate a GraphicsCapabilities instance
+                        //      in GraphicsSettings and compare it to one populated here
+                        devices++;
+                    }
+                }
+            }
+        }
+
+        private void PopulateCapabilityLimits(GraphicsCapabilities cap, ref PhysicalDeviceLimits limits)
+        {
+            cap.MaxTexture1DDimension = limits.MaxImageDimension1D;
+            cap.MaxTexture2DDimension = limits.MaxImageDimension2D;
+            cap.MaxTexture3DDimension = limits.MaxImageDimension3D;
+            cap.MaxTextureCubeDimension = limits.MaxImageDimensionCube;
+        }
 
         public void Dispose()
         {
@@ -30,11 +73,6 @@ namespace Molten.Graphics
         }
 
         public void GetAdaptersWithOutputs(List<IDisplayAdapter> output)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Initialize(Logger logger, GraphicsSettings settings)
         {
             throw new NotImplementedException();
         }

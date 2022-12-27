@@ -217,6 +217,8 @@ namespace Molten.Graphics
         /// <param name="settings"></param>
         protected override void OnInitialize(EngineSettings settings)
         {
+            OnInitializeApi(settings.Graphics);
+
             try
             {
                 if (Chain != null)
@@ -277,6 +279,12 @@ namespace Molten.Graphics
         {
             Tasks.Enqueue(task);
         }
+
+        /// <summary>
+        /// Invoked during the first stage of service initialization to allow any api-related objects to be created/initialized prior to renderer initialization.
+        /// </summary>
+        /// <param name="settings">The <see cref="GraphicsSettings"/> bound to the current engine instance.</param>
+        protected abstract void OnInitializeApi(GraphicsSettings settings);
 
         /// <summary>
         /// Occurs when the render engine detects changes which usually require render surfaces to be rebuilt, such as the game window being resized, or certain graphics settings being changed.

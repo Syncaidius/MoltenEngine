@@ -26,13 +26,17 @@ namespace Molten.Graphics
 
         public RendererDX11()
         {
-            _api = D3D11.GetApi();
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
+            _displayManager = new DisplayManagerDXGI();
 
             Surfaces = new SurfaceManager(this);
+        }
+
+        protected override void OnInitializeApi(GraphicsSettings settings)
+        {
+            _api = D3D11.GetApi();
             _chain = new RenderChain(this);
-            _displayManager = new DisplayManagerDXGI();
         }
 
         protected override void OnInitialize(EngineSettings settings)
