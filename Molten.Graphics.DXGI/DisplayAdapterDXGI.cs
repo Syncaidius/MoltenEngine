@@ -7,9 +7,7 @@ namespace Molten.Graphics.Dxgi
     {
         /// <summary>Gets the native DXGI adapter that this instance represents.</summary>
         public IDXGIAdapter1* Native;
-
         AdapterDesc1* _desc;
-
         DisplayOutputDXGI[] _connectedOutputs;
         List<DisplayOutputDXGI> _activeOutputs;
         IDisplayManager _manager;

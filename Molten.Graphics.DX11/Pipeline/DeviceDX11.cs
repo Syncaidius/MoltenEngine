@@ -126,7 +126,7 @@ namespace Molten.Graphics
         /// <returns></returns>
         internal DeviceContext GetDeferredContext()
         {
-            ID3D11DeviceContext* dc = null;
+            ID3D11DeviceContext* dc = EngineUtil.Alloc<ID3D11DeviceContext>();
             NativeDevice->CreateDeferredContext(0, &dc);
 
             DeviceContext context = new DeviceContext();
