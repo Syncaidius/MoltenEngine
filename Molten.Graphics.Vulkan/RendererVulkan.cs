@@ -48,15 +48,18 @@ namespace Molten.Graphics
 
             if (settings.Graphics.EnableDebugLayer.Value == true)
             {
-                EnableValidationLayers(out instanceInfo.EnabledLayerCount, out instanceInfo.PpEnabledLayerNames, 
-                    "VK_LAYER_KHRONOS_validation");
+                List<string> enabledNames = EnableValidationLayers("VK_LAYER_KHRONOS_validation");
+
+                instanceInfo.EnabledLayerCount = (uint)enabledNames.Count;
+                instanceInfo.PpEnabledLayerNames = (byte**)SilkMarshal.StringArrayToPtr(enabledNames.AsReadOnly(), NativeStringEncoding.UTF8);
             }
 
             _vkInstance = EngineUtil.Alloc<Instance>();
             Result r = _vk.CreateInstance(&instanceInfo, null, _vkInstance);
             LogResult(r);
 
-            SilkMarshal.FreeString((nint)instanceInfo.PpEnabledLayerNames, NativeStringEncoding.UTF8);
+            if (settings.Graphics.EnableDebugLayer.Value == true)
+                SilkMarshal.FreeString((nint)instanceInfo.PpEnabledLayerNames, NativeStringEncoding.UTF8);
         }
 
         internal bool LogResult(Result r, string msg = "")
@@ -74,10 +77,9 @@ namespace Molten.Graphics
             return true;
         }
 
-        private void EnableValidationLayers(out uint enabledCount, out byte** pEnabledNames, params string[] layerNames)
+        private List<string> EnableValidationLayers(params string[] layerNames)
         {
             uint lCount = 0;
-            pEnabledNames = null;
 
             Result r = _vk.EnumerateInstanceLayerProperties(&lCount, null);
             List<string> enabledNames = new List<string>();
@@ -100,9 +102,9 @@ namespace Molten.Graphics
                             Log.WriteLine($"Enabled validation layer: {name}");
 
                             if (enabledNames.Count == layerNames.Length)
-                                goto Recode;
-                            else
-                                break;
+                                return enabledNames;
+                                
+                            break;
                         }
                     }
 
@@ -112,9 +114,7 @@ namespace Molten.Graphics
                 EngineUtil.Free(ref layerInfo);
             }
 
-            Recode:
-            enabledCount = (uint)enabledNames.Count;
-            pEnabledNames = (byte**)SilkMarshal.StringArrayToPtr(enabledNames.AsReadOnly(), NativeStringEncoding.UTF8);
+            return enabledNames;
         }
 
         public override IDisplayManager DisplayManager => _displayManager;
