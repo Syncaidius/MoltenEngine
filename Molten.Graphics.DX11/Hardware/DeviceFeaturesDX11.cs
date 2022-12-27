@@ -29,15 +29,16 @@ namespace Molten.Graphics
             {
                 default:
                 case D3DFeatureLevel.D3DFeatureLevel110:
-                    MaxTexture1DDimension = 16384;
-                    MaxTexture2DDimension = 16384;
-                    MaxTexture3DDimension = 16384;
-                    MaxTextureCubeDimension = 16384;
+                    MaxTexture1DSize = 16384;
+                    MaxTexture2DSize = 16384;
+                    MaxTexture3DSize = 16384;
+                    MaxTextureCubeSize = 16384;
+
+                    Sampler.MaxAnisotropy = 16;
 
                     SimultaneousRenderSurfaces = 8;
                     MaxVolumeExtent = 2048;
                     MaxTextureRepeat = 16384;
-                    MaxAnisotropy = 16;
                     MaxPrimitiveCount = (uint)(Math.Pow(2, 32) - 1);
                     MaxInputResourceSlots = 128;
                     MaxSamplerSlots = 16;
@@ -168,8 +169,6 @@ namespace Molten.Graphics
         /// <summary>The maximum number of times a texture is allowed to repeat.</summary>
         internal uint MaxTextureRepeat { get; private set; }
 
-        /// <summary>The maximum anisotropy level that the device supports.</summary>
-        internal uint MaxAnisotropy { get; private set; }
 
         /// <summary>Gets the maximum number of primitives (triangles) the device can render in a single draw call.</summary>
         internal uint MaxPrimitiveCount { get; private set; }

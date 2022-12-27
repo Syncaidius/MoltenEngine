@@ -4,11 +4,13 @@ namespace Molten.Graphics.Dxgi
 {
     public unsafe class DisplayManagerDXGI : EngineObject, IDisplayManager
     {
+        const uint DXGI_CREATE_FACTORY_NODEBUG = 0x0;
+        const uint DXGI_CREATE_FACTORY_DEBUG = 0x01;
+
         DXGI _api;
-        IDXGIFactory2* _dxgiFactory;
+        IDXGIFactory7* _dxgiFactory;
         List<int> _usable;
         List<DisplayAdapterDXGI> _adapters;
-        Logger _log;
         int _defaultID = -1;
         int _selectedID = -1;
 
@@ -32,18 +34,42 @@ namespace Molten.Graphics.Dxgi
         {
             _usable = new List<int>();
             _adapters = new List<DisplayAdapterDXGI>();
-            _log = logger;
+            Log = logger;
 
             // Create factory
             Guid factoryGuid = IDXGIFactory2.Guid;
             void* ptrFactory = null;
-            _api.CreateDXGIFactory1(&factoryGuid, &ptrFactory);
-            _dxgiFactory = (IDXGIFactory2*)ptrFactory;
+            uint debugFlag = settings.EnableDebugLayer ? DXGI_CREATE_FACTORY_DEBUG : DXGI_CREATE_FACTORY_NODEBUG;
+
+            int r = _api.CreateDXGIFactory2(debugFlag, &factoryGuid, &ptrFactory);
+            DxgiError err = DXGIHelper.ErrorFromResult(r);
+            if (err != DxgiError.Ok)
+            {
+                logger.Error($"Failed to initialize DXGI: {err}");
+                return;
+            }
+
+            IDXGIFactory2* tmp = (IDXGIFactory2*)ptrFactory;
+            Guid factory7Guid = IDXGIFactory7.Guid;
+
+            r = tmp->QueryInterface(&factory7Guid, &ptrFactory);
+            err = DXGIHelper.ErrorFromResult(r);
+            if (err != DxgiError.Ok)
+            {
+                logger.Error($"Failed to query DXGI 1.6 factory: {err}");
+                return;
+            }
+
+            _dxgiFactory = (IDXGIFactory7*)ptrFactory;
 
             // Detect adapters.
-            IDXGIAdapter1*[] detected = DXGIHelper.EnumArray((uint index, ref IDXGIAdapter1* ptrOutput) =>
+            IDXGIAdapter4*[] detected = DXGIHelper.EnumArray((uint index, ref IDXGIAdapter4* ptrOutput) =>
             {
-                return _dxgiFactory->EnumAdapters1(index, ref ptrOutput);
+                IDXGIAdapter1* ptr1 = null;
+                int r = _dxgiFactory->EnumAdapters1(index, ref ptr1);
+                ptrOutput = (IDXGIAdapter4*)ptr1;
+
+                return r;
             });
 
             for (int i = 0; i < detected.Length; i++)
@@ -65,14 +91,14 @@ namespace Molten.Graphics.Dxgi
             }
 
             // Output detection info into renderer log.
-            _log.WriteLine($"Detected {_adapters.Count} adapters:");
+            Log.WriteLine($"Detected {_adapters.Count} adapters:");
             List<IDisplayOutput> displays = new List<IDisplayOutput>();
             for (int i = 0; i < _adapters.Count; i++)
             {
-                _log.WriteLine($"   Adapter {i}: {_adapters[i].Name}{(_usable.Contains(i) ? " (usable)" : "")}");
+                Log.WriteLine($"   Adapter {i}: {_adapters[i].Name}{(_usable.Contains(i) ? " (usable)" : "")}");
                 _adapters[i].GetAttachedOutputs(displays);
                 for (int d = 0; d < displays.Count; d++)
-                    _log.WriteLine($"       Display {d}: {displays[d].Name}");
+                    Log.WriteLine($"       Display {d}: {displays[d].Name}");
                 displays.Clear();
             }
 
@@ -102,10 +128,10 @@ namespace Molten.Graphics.Dxgi
                 preferredAdapter.AddActiveOutput(preferredAdapter.GetOutput(id));
 
             // Log preferred adapter stats
-            _log.WriteLine($"Chosen {preferredAdapter.Name}");
-            _log.WriteLine($"    Dedicated VRAM: {preferredAdapter.DedicatedVideoMemory:N2} MB");
-            _log.WriteLine($"    System RAM dedicated to video: {preferredAdapter.DedicatedSystemMemory:N2} MB");
-            _log.WriteLine($"    Shared system RAM: {preferredAdapter.SharedSystemMemory:N2} MB");
+            Log.WriteLine($"Chosen {preferredAdapter.Name}");
+            Log.WriteLine($"    Dedicated VRAM: {preferredAdapter.DedicatedVideoMemory:N2} MB");
+            Log.WriteLine($"    System RAM dedicated to video: {preferredAdapter.DedicatedSystemMemory:N2} MB");
+            Log.WriteLine($"    Shared system RAM: {preferredAdapter.SharedSystemMemory:N2} MB");
         }
 
         /// <summary>
@@ -170,6 +196,11 @@ namespace Molten.Graphics.Dxgi
         }
 
         /// <summary>Gets the DXGI factory.</summary>
-        public IDXGIFactory2* DxgiFactory => _dxgiFactory;
+        public IDXGIFactory7* DxgiFactory => _dxgiFactory;
+
+        /// <summary>
+        /// Gets the <see cref="Logger"/> attached to the current <see cref="DisplayManagerDXGI"/> instance.
+        /// </summary>
+        internal Logger Log { get; private set; }
     }
 }

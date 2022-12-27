@@ -5,16 +5,17 @@ namespace Molten.Graphics.Dxgi
 {
     public unsafe class DisplayOutputDXGI : EngineObject, IDisplayOutput
     {
-        internal IDXGIOutput1* Native;
-        OutputDesc* _desc;
+        internal IDXGIOutput6* Native;
+        OutputDesc1* _desc;
         DisplayAdapterDXGI _adapter;
 
-        internal DisplayOutputDXGI(DisplayAdapterDXGI adapter, IDXGIOutput1* output)
+        internal DisplayOutputDXGI(DisplayAdapterDXGI adapter, IDXGIOutput6* output)
         {
             _adapter = adapter;
             Native = output;
-            _desc = EngineUtil.Alloc<OutputDesc>();
-            Native->GetDesc(_desc);
+
+            _desc = EngineUtil.Alloc<OutputDesc1>();
+            Native->GetDesc1(_desc);
 
             Name = SilkMarshal.PtrToString((nint)_desc->DeviceName, NativeStringEncoding.LPWStr);
             Name = Name.Replace("\0", string.Empty);

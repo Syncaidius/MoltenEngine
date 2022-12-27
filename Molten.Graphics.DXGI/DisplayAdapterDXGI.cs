@@ -6,11 +6,11 @@ namespace Molten.Graphics.Dxgi
     public unsafe class DisplayAdapterDXGI : EngineObject, IDisplayAdapter
     {
         /// <summary>Gets the native DXGI adapter that this instance represents.</summary>
-        public IDXGIAdapter1* Native;
-        AdapterDesc1* _desc;
+        public IDXGIAdapter4* Native;
+        AdapterDesc3* _desc;
         DisplayOutputDXGI[] _connectedOutputs;
         List<DisplayOutputDXGI> _activeOutputs;
-        IDisplayManager _manager;
+        DisplayManagerDXGI _manager;
 
 
         /// <summary> Occurs when an <see cref="T:Molten.IDisplayOutput" /> is connected to the current <see cref="T:Molten.IDisplayAdapter" />.</summary>
@@ -19,14 +19,14 @@ namespace Molten.Graphics.Dxgi
         /// <summary>Occurs when an <see cref="T:Molten.IDisplayOutput" /> is disconnected from the current <see cref="T:Molten.IDisplayAdapter" />. </summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
-        public DisplayAdapterDXGI(IDisplayManager manager, IDXGIAdapter1* adapter, int id)
+        public DisplayAdapterDXGI(DisplayManagerDXGI manager, IDXGIAdapter4* adapter, int id)
         {
             _manager = manager;
             Native = adapter;
             _activeOutputs = new List<DisplayOutputDXGI>();
             ID = id;
-            _desc = EngineUtil.Alloc<AdapterDesc1>();
-            adapter->GetDesc1(_desc);
+            _desc = EngineUtil.Alloc<AdapterDesc3>();
+            adapter->GetDesc3(_desc);
 
             Name = SilkMarshal.PtrToString((nint)_desc->Description, NativeStringEncoding.LPWStr);
 
@@ -45,9 +45,18 @@ namespace Molten.Graphics.Dxgi
             });
 
             _connectedOutputs = new DisplayOutputDXGI[outputs.Length];
+            Guid o6Guid = IDXGIOutput6.Guid;
 
             for (int i = 0; i < _connectedOutputs.Length; i++)
-                _connectedOutputs[i] = new DisplayOutputDXGI(this, outputs[i]);
+            {
+                void* ptr6 = null;
+                int r = outputs[i]->QueryInterface(&o6Guid, &ptr6);
+                DxgiError err = DXGIHelper.ErrorFromResult(r);
+                if (err != DxgiError.Ok)
+                    _manager.Log.Error($"Error while querying adapter '{Name}' output IDXGIOutput1 for IDXGIOutput6 interface");
+
+                _connectedOutputs[i] = new DisplayOutputDXGI(this, (IDXGIOutput6*)ptr6);
+            }
         }
 
         protected override void OnDispose()

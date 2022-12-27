@@ -54,10 +54,12 @@ namespace Molten.Graphics
                 flags |= DeviceCreationFlags.Debug;
             }
 
-            D3DFeatureLevel* featureLevels = stackalloc D3DFeatureLevel[1];
-            featureLevels[0] = D3DFeatureLevel.Level110;
+            D3DFeatureLevel* featureLevels = stackalloc D3DFeatureLevel[]
+            {
+                D3DFeatureLevel.Level111,
+                D3DFeatureLevel.Level110
+            };
 
-            D3DFeatureLevel highestFeatureLevel = D3DFeatureLevel.Level110;
             IDXGIAdapter* adapter = (IDXGIAdapter*)_adapter.Native;
             ID3D11Device* ptrDevice = null;
             ID3D11DeviceContext* ptrContext = null;
