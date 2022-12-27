@@ -33,19 +33,19 @@ namespace Molten.Graphics
             _matDebugPoint.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext cxt, Timing time)
         {
             RenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
             DepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            Device device = renderer.Device;
+            DeviceDX11 device = renderer.Device;
 
-            _surfaceLighting.Clear(renderer.Device, context.Scene.AmbientLightColor);
-            device.State.ResetRenderSurfaces();
-            device.State.SetRenderSurface(_surfaceLighting, 0);
-            device.State.DepthSurface.Value = sDepth;
-            device.State.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
-            RenderPointLights(renderer, device, camera, context.Scene, sDepth);
+            _surfaceLighting.Clear(cxt.Context, cxt.Scene.AmbientLightColor);
+            cxt.Context.State.ResetRenderSurfaces();
+            cxt.Context.State.SetRenderSurface(_surfaceLighting, 0);
+            cxt.Context.State.DepthSurface.Value = sDepth;
+            cxt.Context.State.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
+            RenderPointLights(renderer, cxt.Context, camera, cxt.Scene, sDepth);
         }
 
         private void RenderPointLights(RendererDX11 renderer, DeviceContext context, RenderCamera camera, SceneRenderData scene, DepthStencilSurface dsSurface)

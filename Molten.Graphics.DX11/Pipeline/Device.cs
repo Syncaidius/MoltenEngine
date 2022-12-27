@@ -7,15 +7,12 @@ using Silk.NET.DXGI;
 namespace Molten.Graphics
 {
     /// <summary>A Direct3D 11 graphics device.</summary>
-    /// <seealso cref="DeviceContext" />
-    public unsafe class Device : DeviceContext
+    public unsafe class DeviceDX11 : EngineObject
     {
         internal ID3D11Device* NativeDevice;
-        internal ID3D11DeviceContext* ImmediateContext;
 
         D3D11 _api;
         DisplayAdapterDXGI _adapter;
-
         List<DeviceContext> _contexts;
 
         Logger _log;
@@ -33,7 +30,7 @@ namespace Molten.Graphics
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
-        internal Device(D3D11 api, Logger log, GraphicsSettings settings, DisplayManagerDXGI manager)
+        internal DeviceDX11(D3D11 api, Logger log, GraphicsSettings settings, DisplayManagerDXGI manager)
         {
             _api = api;
             _log = log;
@@ -57,7 +54,6 @@ namespace Molten.Graphics
             D3DFeatureLevel* featureLevels = stackalloc D3DFeatureLevel[1];
             featureLevels[0] = D3DFeatureLevel.Level110;
 
-            D3DFeatureLevel highestFeatureLevel = D3DFeatureLevel.Level110;
             IDXGIAdapter* adapter = (IDXGIAdapter*)_adapter.Native;
             ID3D11Device* ptrDevice = null;
             ID3D11DeviceContext* ptrContext = null;
@@ -73,15 +69,15 @@ namespace Molten.Graphics
                 &ptrContext);
 
             NativeDevice = ptrDevice;
-            ImmediateContext = ptrContext;
-
             Features = new DeviceFeaturesDX11(NativeDevice);
+
+            Context = new DeviceContext();
+            Context.Initialize(log, this, ptrContext);
+
             _rasterizerBank = new RasterizerStateBank(this);
             _blendBank = new BlendStateBank(this);
             _depthBank = new DepthStateBank(this);
             _samplerBank = new SamplerBank(this);
-
-            Initialize(_log, this, ImmediateContext);
         }
 
         internal BufferSegment GetBufferSegment()
@@ -137,9 +133,6 @@ namespace Molten.Graphics
 
         internal void RemoveDeferredContext(DeviceContext context)
         {
-            if(context == this)
-                throw new GraphicsContextException("Cannot remove the graphics device from itself.");
-
             if (context.Device != this)
                 throw new GraphicsContextException("Graphics pipe is owned by another device.");
 
@@ -158,7 +151,7 @@ namespace Molten.Graphics
             // TODO add the context's profiler stats to the device's main profiler.
         }
 
-        /// <summary>Disposes of the <see cref="Device"/> and any deferred contexts and resources bound to it.</summary>
+        /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
             for (int i = _contexts.Count - 1; i >= 0; i--)
@@ -171,14 +164,13 @@ namespace Molten.Graphics
             DepthBank.Dispose();
             SamplerBank.Dispose();
 
-            SilkUtil.ReleasePtr(ref ImmediateContext);
             SilkUtil.ReleasePtr(ref NativeDevice);
             _api.Dispose();
 
             _bufferSegmentPool.Dispose();
             DisposeMarkedObjects();
 
-            base.OnDispose();
+            Context.Dispose();
         }
 
         internal IReadOnlyCollection<DeviceContext> Contexts { get; }
@@ -213,5 +205,12 @@ namespace Molten.Graphics
         /// Gets the device's texture sampler bank.
         /// </summary>
         internal SamplerBank SamplerBank => _samplerBank;
+
+        /// <summary>
+        /// Gets the immediate device context.
+        /// </summary>
+        internal DeviceContext Context { get; }
+
+        internal Logger Log => _log;
     }
 }

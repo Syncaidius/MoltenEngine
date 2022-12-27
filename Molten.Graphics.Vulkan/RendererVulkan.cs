@@ -18,7 +18,7 @@ namespace Molten.Graphics
         public RendererVK()
         {
             _vk = Vk.GetApi();
-            _displayManager = new DisplayManagerVK();
+            _displayManager = new DisplayManagerVK(this);
             _chain = new RenderChainVK(this);
         }
 

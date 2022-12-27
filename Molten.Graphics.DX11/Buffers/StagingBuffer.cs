@@ -8,7 +8,7 @@
         /// <param name="device">The graphics device to bind the buffer to.</param>
         /// <param name="stride">The expected size of 1 element, in bytes.</param>
         /// <param name="capacity">The number of elements the buffer should be able to hold.</param>
-        internal StagingBuffer(Device device, StagingBufferFlags bufferType, uint capacity)
+        internal StagingBuffer(DeviceDX11 device, StagingBufferFlags bufferType, uint capacity)
             : base(device, BufferMode.Default, 0, capacity, 0, bufferType)
         {
             _stageType = bufferType;

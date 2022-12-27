@@ -18,7 +18,7 @@ namespace Molten.Graphics
         BufferSegment _firstSegment;
         List<BufferSegment> _freeSegments;
 
-        internal GraphicsBuffer(Device device,
+        internal GraphicsBuffer(DeviceDX11 device,
             BufferMode mode,
             BindFlag bindFlags,
             uint byteCapacity,

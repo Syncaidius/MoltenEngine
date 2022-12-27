@@ -26,7 +26,7 @@
         /// </summary>
         internal ShaderStateBank<GraphicsDepthState> DepthState = new ShaderStateBank<GraphicsDepthState>();
 
-        internal HlslFoundation(Device device) : base(device, ContextBindTypeFlags.Input)
+        internal HlslFoundation(DeviceDX11 device) : base(device, ContextBindTypeFlags.Input)
         {
             Samplers = new ShaderStateBank<ShaderSampler>[0];
             Parent = this;

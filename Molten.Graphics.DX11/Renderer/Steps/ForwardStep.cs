@@ -5,26 +5,23 @@
     /// </summary>
     internal class ForwardStep : RenderStepBase
     {
-        public override void Dispose()
-        { }
+        public override void Dispose() { }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext cxt, Timing time)
         {
             RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
-
-            Device device = renderer.Device;
             sScene.Clear(Color.Transparent);
 
-            device.State.SetRenderSurface(sScene, 0);
-            device.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
-            device.State.SetViewports(camera.Surface.Viewport);
-            device.State.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
+            cxt.Context.State.SetRenderSurface(sScene, 0);
+            cxt.Context.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
+            cxt.Context.State.SetViewports(camera.Surface.Viewport);
+            cxt.Context.State.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
 
-            StateConditions conditions = context.BaseStateConditions | StateConditions.ScissorTest;
+            StateConditions conditions = cxt.BaseStateConditions | StateConditions.ScissorTest;
 
-            device.BeginDraw(conditions);
-            renderer.RenderSceneLayer(device, context.Layer, camera);
-            device.EndDraw();
+            cxt.Context.BeginDraw(conditions);
+            renderer.RenderSceneLayer(cxt.Context, cxt.Layer, camera);
+            cxt.Context.EndDraw();
         }
     }
 }

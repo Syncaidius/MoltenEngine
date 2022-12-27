@@ -30,7 +30,7 @@
             mat.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
             ApplyResources(mat);
-            renderer.Device.DrawIndexed(mat, _indexCount, Topology);
+            context.DrawIndexed(mat, _indexCount, Topology);
         }
     }
 }

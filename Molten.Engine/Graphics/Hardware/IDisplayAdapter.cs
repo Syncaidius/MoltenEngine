@@ -1,5 +1,8 @@
 ﻿namespace Molten.Graphics
 {
+    /// <summary>
+    /// Represents the implementation of a display or graphics adapter, commonly known as a GPU.
+    /// </summary>
     public interface IDisplayAdapter
     {
         /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is activated on the current <see cref="IDisplayAdapter"/>.</summary>

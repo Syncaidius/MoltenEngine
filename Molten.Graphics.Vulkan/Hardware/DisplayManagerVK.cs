@@ -3,16 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal class DisplayManagerVK : IDisplayManager
+    internal unsafe class DisplayManagerVK : IDisplayManager
     {
         public int AdapterCount => throw new NotImplementedException();
 
         public IDisplayAdapter DefaultAdapter => throw new NotImplementedException();
 
         public IDisplayAdapter SelectedAdapter { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        internal DisplayManagerVK(RendererVK renderer)
+        {
+
+        }
 
         public void Dispose()
         {

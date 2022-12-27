@@ -2,7 +2,7 @@
 {
     public abstract class ContextObject : EngineObject
     {
-        internal ContextObject(Device device)
+        internal ContextObject(DeviceDX11 device)
         {
             Device = device; 
         }
@@ -15,8 +15,8 @@
         internal abstract void PipelineRelease();
 
         /// <summary>
-        /// Gets the <see cref="Graphics.Device"/> that the current <see cref="ContextObject"/> is bound to.
+        /// Gets the <see cref="Graphics.DeviceDX11"/> that the current <see cref="ContextObject"/> is bound to.
         /// </summary>
-        public Device Device { get; }
+        public DeviceDX11 Device { get; }
     }
 }

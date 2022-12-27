@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal class DepthStateBank : GraphicsStateBank<GraphicsDepthState, DepthStencilPreset>
     {
-        internal DepthStateBank(Device device)
+        internal DepthStateBank(DeviceDX11 device)
         {
             AddPreset(DepthStencilPreset.Default, new GraphicsDepthState(device)
             {

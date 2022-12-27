@@ -167,7 +167,7 @@ namespace Molten.Graphics
 
         public void Clear(DepthClearFlags flags, float depth = 1.0f, byte stencil = 0)
         {
-            Clear(Device, (ClearFlag)flags, depth, stencil);
+            Clear(Device.Context, (ClearFlag)flags, depth, stencil);
         }
 
         internal override void PipelineRelease()

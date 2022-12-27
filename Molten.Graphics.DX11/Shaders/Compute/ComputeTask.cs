@@ -5,7 +5,7 @@
         internal RWVariable[] UAVs;
         internal CSComposition Composition;
 
-        internal ComputeTask(Device device, string filename = null) :
+        internal ComputeTask(DeviceDX11 device, string filename = null) :
             base(device, filename)
         {
             UAVs = new RWVariable[0];
