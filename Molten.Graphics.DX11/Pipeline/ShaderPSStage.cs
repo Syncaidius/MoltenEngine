@@ -13,9 +13,9 @@ namespace Molten.Graphics
             Context.Native->PSSetConstantBuffers(startSlot, numBuffers, buffers);
         }
 
-        internal override unsafe void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** views)
+        internal override unsafe void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView1** views)
         {
-            Context.Native->PSSetShaderResources(startSlot, numViews, views);
+            Context.Native->PSSetShaderResources(startSlot, numViews, (ID3D11ShaderResourceView**)views);
         }
 
         internal override unsafe void SetSamplers(uint startSlot, uint numSamplers, ID3D11SamplerState** states)

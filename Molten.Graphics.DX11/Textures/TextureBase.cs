@@ -169,9 +169,9 @@ namespace Molten.Graphics
             IsValid = _native != null;
         }
 
-        protected abstract void SetUAVDescription(ref ShaderResourceViewDesc srvDesc, ref UnorderedAccessViewDesc desc);
+        protected abstract void SetUAVDescription(ref ShaderResourceViewDesc1 srvDesc, ref UnorderedAccessViewDesc1 desc);
 
-        protected abstract void SetSRVDescription(ref ShaderResourceViewDesc desc);
+        protected abstract void SetSRVDescription(ref ShaderResourceViewDesc1 desc);
 
         protected virtual void OnDisposeForRecreation()
         {
@@ -204,7 +204,7 @@ namespace Molten.Graphics
         internal void GenerateMipMaps(DeviceContext pipe)
         {
             if (SRV != null)
-                pipe.Native->GenerateMips(SRV.Ptr);
+                pipe.Native->GenerateMips(SRV);
         }
 
         public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0)

@@ -88,7 +88,7 @@ namespace Molten.Graphics
 
             if (HasFlags(BindFlag.ShaderResource))
             {
-                srv.Desc = new ShaderResourceViewDesc()
+                srv.Desc = new ShaderResourceViewDesc1()
                 {
                     BufferEx = new BufferexSrv()
                     {

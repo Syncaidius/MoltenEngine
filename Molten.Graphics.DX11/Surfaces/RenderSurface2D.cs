@@ -25,7 +25,7 @@ namespace Molten.Graphics
             Name = $"Surface_{name ?? GetType().Name}";
             RTV = new RenderTargetView(renderer.Device)
             {
-                Desc = new RenderTargetViewDesc()
+                Desc = new RenderTargetViewDesc1()
                 {
                     Format = DxgiFormat,
                 }
@@ -39,7 +39,7 @@ namespace Molten.Graphics
             if (RTV.Ptr != null)
             {
                 Color4 c4 = color;
-                pipe.Native->ClearRenderTargetView(RTV.Ptr, (float*)&c4);
+                pipe.Native->ClearRenderTargetView((ID3D11RenderTargetView*)RTV.Ptr, (float*)&c4);
             }
         }
 
@@ -62,11 +62,12 @@ namespace Molten.Graphics
             else
             {
                 RTV.Desc.ViewDimension = RtvDimension.Texture2Darray;
-                RTV.Desc.Texture2DArray = new Tex2DArrayRtv()
+                RTV.Desc.Texture2DArray = new Tex2DArrayRtv1()
                 {
                     ArraySize = _description.ArraySize,
                     MipSlice = 0,
                     FirstArraySlice = 0,
+                    PlaneSlice = 0,
                 };
             }
 
@@ -74,7 +75,7 @@ namespace Molten.Graphics
             return resource;
         }
 
-        protected virtual void SetRTVDescription(ref RenderTargetViewDesc desc) { }
+        protected virtual void SetRTVDescription(ref RenderTargetViewDesc1 desc) { }
 
         protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {

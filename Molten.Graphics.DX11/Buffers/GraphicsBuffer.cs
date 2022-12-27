@@ -394,7 +394,7 @@ namespace Molten.Graphics
         {
             if (HasFlags(BindFlag.ShaderResource))
             {
-                srv.Desc = new ShaderResourceViewDesc()
+                srv.Desc = new ShaderResourceViewDesc1()
                 {
                     Buffer = new BufferSrv()
                     {
@@ -410,7 +410,7 @@ namespace Molten.Graphics
 
             if (HasFlags(BindFlag.UnorderedAccess))
             {
-                uav.Desc = new UnorderedAccessViewDesc()
+                uav.Desc = new UnorderedAccessViewDesc1()
                 {
                     Format = Format.FormatUnknown,
                     ViewDimension = UavDimension.Buffer,

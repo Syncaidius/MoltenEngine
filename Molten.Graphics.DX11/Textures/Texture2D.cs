@@ -6,8 +6,8 @@ namespace Molten.Graphics
 {
     public unsafe class Texture2D : TextureBase, ITexture2D
     {
-        internal ID3D11Texture2D* NativeTexture;
-        protected Texture2DDesc _description;
+        internal ID3D11Texture2D1* NativeTexture;
+        protected Texture2DDesc1 _description;
 
         /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
@@ -37,7 +37,7 @@ namespace Molten.Graphics
             MSAAQuality msaa = MSAAQuality.Default)
             : base(renderer, width, height, 1, mipCount, arraySize, aaLevel, msaa, format, flags)
         {
-            _description = new Texture2DDesc()
+            _description = new Texture2DDesc1()
             {
                 Width = Math.Max(width, 1),
                 Height = Math.Max(height, 1),
@@ -53,6 +53,7 @@ namespace Molten.Graphics
                 },
                 Usage = GetUsageFlags(),
                 MiscFlags = (uint)GetResourceFlags(),
+                TextureLayout = TextureLayout.None
             };
         }
 
@@ -73,11 +74,11 @@ namespace Molten.Graphics
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
             SubresourceData* subData = null;
-            Device.NativeDevice->CreateTexture2D(ref _description, subData, ref NativeTexture);
+            Device.NativeDevice->CreateTexture2D1(ref _description, subData, ref NativeTexture);
             return (ID3D11Resource*)NativeTexture;
         }
 
-        protected override void SetSRVDescription(ref ShaderResourceViewDesc desc)
+        protected override void SetSRVDescription(ref ShaderResourceViewDesc1 desc)
         {
             if (_description.SampleDesc.Count > 1)
             {
@@ -91,26 +92,28 @@ namespace Molten.Graphics
             else
             {
                 desc.ViewDimension = D3DSrvDimension.D3DSrvDimensionTexture2Darray;
-                desc.Texture2DArray = new Tex2DArraySrv()
+                desc.Texture2DArray = new Tex2DArraySrv1()
                 {
                     ArraySize = _description.ArraySize,
                     MipLevels = _description.MipLevels,
                     MostDetailedMip = 0,
                     FirstArraySlice = 0,
+                    PlaneSlice = 0,
                 };
             }
         }
 
-        protected override void SetUAVDescription(ref ShaderResourceViewDesc srvDesc, ref UnorderedAccessViewDesc desc)
+        protected override void SetUAVDescription(ref ShaderResourceViewDesc1 srvDesc, ref UnorderedAccessViewDesc1 desc)
         {
             desc.Format = srvDesc.Format;
             desc.ViewDimension = UavDimension.Texture2Darray;
             
-            desc.Texture2DArray = new Tex2DArrayUav()
+            desc.Texture2DArray = new Tex2DArrayUav1()
             {
                 ArraySize = _description.ArraySize,
                 FirstArraySlice = srvDesc.Texture2DArray.FirstArraySlice,
                 MipSlice = 0,
+                PlaneSlice = 0
             };
 
             desc.Buffer = new BufferUav()

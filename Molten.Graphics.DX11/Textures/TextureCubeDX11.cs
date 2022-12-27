@@ -6,8 +6,8 @@ namespace Molten.Graphics
 {
     public unsafe class TextureCubeDX11 : TextureBase, ITextureCube
     {
-        internal ID3D11Texture2D* NativeTexture;
-        Texture2DDesc _description;
+        internal ID3D11Texture2D1* NativeTexture;
+        Texture2DDesc1 _description;
 
         internal TextureCubeDX11(RendererDX11 renderer, uint width,
             uint height, Format format = Format.FormatR8G8B8A8Unorm, uint mipCount = 1, 
@@ -15,7 +15,7 @@ namespace Molten.Graphics
             : base(renderer, width, height, 1, mipCount, 6, AntiAliasLevel.None, MSAAQuality.Default, format, flags)
         {
             CubeCount = cubeCount;
-            _description = new Texture2DDesc()
+            _description = new Texture2DDesc1()
             {
                 Width = width,
                 Height = height,
@@ -31,10 +31,11 @@ namespace Molten.Graphics
                 },
                 Usage = GetUsageFlags(),
                 MiscFlags = (uint)(GetResourceFlags() | ResourceMiscFlag.Texturecube),
+                TextureLayout = TextureLayout.None
             };
         }
 
-        protected override void SetSRVDescription(ref ShaderResourceViewDesc desc)
+        protected override void SetSRVDescription(ref ShaderResourceViewDesc1 desc)
         {
             desc.Format = DxgiFormat;
             desc.ViewDimension = D3DSrvDimension.D3DSrvDimensionTexturecubearray;
@@ -47,16 +48,17 @@ namespace Molten.Graphics
             };
         }
 
-        protected override void SetUAVDescription(ref ShaderResourceViewDesc srvDesc, ref UnorderedAccessViewDesc desc)
+        protected override void SetUAVDescription(ref ShaderResourceViewDesc1 srvDesc, ref UnorderedAccessViewDesc1 desc)
         {
             desc.Format = srvDesc.Format;
             desc.ViewDimension = UavDimension.Texture2Darray;
 
-            desc.Texture2DArray = new Tex2DArrayUav()
+            desc.Texture2DArray = new Tex2DArrayUav1()
             {
                 ArraySize = _description.ArraySize,
                 FirstArraySlice = srvDesc.Texture2DArray.FirstArraySlice,
                 MipSlice = 0,
+                PlaneSlice = 0
             };
 
             desc.Buffer = new BufferUav()
@@ -69,7 +71,7 @@ namespace Molten.Graphics
         protected override ID3D11Resource* CreateResource(bool resize)
         {
             SubresourceData* subData = null;
-            Device.NativeDevice->CreateTexture2D(ref _description, subData, ref NativeTexture);
+            Device.NativeDevice->CreateTexture2D1(ref _description, subData, ref NativeTexture);
             return (ID3D11Resource*)NativeTexture;
         }
 
@@ -102,7 +104,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets information about the texture.</summary>
-        internal ref Texture2DDesc Description => ref _description;
+        internal ref Texture2DDesc1 Description => ref _description;
 
         /// <summary>Gets the number of cube maps stored in the texture. This is greater than 1 if the texture is a cube-map array.</summary>
         public uint CubeCount { get; private set; }

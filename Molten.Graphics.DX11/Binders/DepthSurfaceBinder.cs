@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics
+﻿using Silk.NET.Direct3D11;
+
+namespace Molten.Graphics
 {
     internal unsafe class DepthSurfaceBinder : ContextSlotBinder<DepthStencilSurface>
     {
@@ -11,7 +13,7 @@
         {
             uint maxRTs = slot.Context.Device.Features.SimultaneousRenderSurfaces;
             slot.Context.State.DSV = null;
-            slot.Context.Native->OMSetRenderTargets(maxRTs, slot.Context.State.RTVs, slot.Context.State.DSV);
+            slot.Context.Native->OMSetRenderTargets(maxRTs, (ID3D11RenderTargetView**)slot.Context.State.RTVs, slot.Context.State.DSV);
         }
     }
 }

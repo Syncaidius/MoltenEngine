@@ -65,7 +65,7 @@ namespace Molten.Graphics
 
         internal abstract void SetSamplers(uint startSlot, uint numSamplers, ID3D11SamplerState** states);
 
-        internal abstract void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** views);
+        internal abstract void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView1** views);
 
         internal abstract void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** buffers);
 

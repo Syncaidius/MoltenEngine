@@ -2,13 +2,13 @@
 
 namespace Molten.Graphics
 {
-    internal class RenderTargetView : ResourceView<ID3D11RenderTargetView, RenderTargetViewDesc>
+    internal class RenderTargetView : ResourceView<ID3D11RenderTargetView1, RenderTargetViewDesc1>
     {
         internal RenderTargetView(DeviceDX11 device) : base(device) { }
 
-        protected override unsafe void OnCreateView(ID3D11Resource* resource, ref RenderTargetViewDesc desc, ref ID3D11RenderTargetView* view)
+        protected override unsafe void OnCreateView(ID3D11Resource* resource, ref RenderTargetViewDesc1 desc, ref ID3D11RenderTargetView1* view)
         {
-            Device.NativeDevice->CreateRenderTargetView(resource, ref desc, ref view);
+            Device.NativeDevice->CreateRenderTargetView1(resource, ref desc, ref view);
         }
     }
 }

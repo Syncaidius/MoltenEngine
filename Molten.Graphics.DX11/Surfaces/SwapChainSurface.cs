@@ -10,7 +10,7 @@ namespace Molten.Graphics
     /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
     public unsafe abstract class SwapChainSurface : RenderSurface2D, ISwapChainSurface
     {
-        protected internal IDXGISwapChain1* NativeSwapChain;
+        protected internal IDXGISwapChain4* NativeSwapChain;
 
         PresentParameters* _presentParams;
         SwapChainDesc1 _swapDesc;
@@ -42,11 +42,17 @@ namespace Molten.Graphics
                 AlphaMode = AlphaMode.Ignore // TODO implement this correctly
             };
 
-            WinHResult hr = Device.DisplayManager.DxgiFactory->CreateSwapChainForHwnd((IUnknown*)Device.NativeDevice, controlHandle, ref _swapDesc, null, null, ref NativeSwapChain);
+            IDXGISwapChain1* ptrSwap1 = null;
+            WinHResult hr = Device.DisplayManager.DxgiFactory->CreateSwapChainForHwnd((IUnknown*)Device.NativeDevice, controlHandle, ref _swapDesc, null, null, ref ptrSwap1);
             DxgiError de = hr.ToEnum<DxgiError>();
 
             if (de != DxgiError.Ok)
                 Renderer.Log.Error($"Creation of swapchain failed with result: {de}");
+
+            Guid swap4Guid = IDXGISwapChain4.Guid;
+            void* nativeSwap = null;
+            int r = ptrSwap1->QueryInterface(&swap4Guid, &nativeSwap);
+            NativeSwapChain = (IDXGISwapChain4*)nativeSwap;
         }
 
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
@@ -70,14 +76,14 @@ namespace Molten.Graphics
 
             void* ppSurface = null;
             ID3D11Resource* res = null;
-            Guid riid = ID3D11Texture2D.Guid;
+            Guid riid = ID3D11Texture2D1.Guid;
             WinHResult hr = NativeSwapChain->GetBuffer(0, &riid, &ppSurface);
             DxgiError err = hr.ToEnum<DxgiError>();
             if (err == DxgiError.Ok)
             {
-                NativeTexture = (ID3D11Texture2D*)ppSurface;
+                NativeTexture = (ID3D11Texture2D1*)ppSurface;
 
-                RTV.Desc = new RenderTargetViewDesc()
+                RTV.Desc = new RenderTargetViewDesc1()
                 {
                     Format = _swapDesc.Format,
                     ViewDimension = RtvDimension.Texture2D,

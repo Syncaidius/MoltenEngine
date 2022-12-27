@@ -26,7 +26,7 @@ namespace Molten.Graphics
 
         GraphicsDepthWritePermission _boundDepthMode = GraphicsDepthWritePermission.Enabled;
 
-        internal ID3D11RenderTargetView** RTVs;
+        internal ID3D11RenderTargetView1** RTVs;
         uint _numRTVs;
         internal ID3D11DepthStencilView* DSV;
 
@@ -60,7 +60,7 @@ namespace Molten.Graphics
             Depth = RegisterSlot<GraphicsDepthState, DepthStencilBinder>(ContextBindTypeFlags.Output, "Depth-Stencil State", 0);
             Rasterizer = RegisterSlot<GraphicsRasterizerState, RasterizerBinder>(ContextBindTypeFlags.Output, "Rasterizer State", 0);
 
-            RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView>(maxRTs);
+            RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
 
             Surfaces = RegisterSlotGroup<RenderSurface2D, SurfaceGroupBinder>(ContextBindTypeFlags.Output, "Render Surface", maxRTs);
             DepthSurface = RegisterSlot<DepthStencilSurface, DepthSurfaceBinder>(ContextBindTypeFlags.Output, "Depth Surface", 0);
@@ -184,7 +184,7 @@ namespace Molten.Graphics
                     _boundDepthMode = depthWriteMode;
                 }
 
-                Context.Native->OMSetRenderTargets(_numRTVs, RTVs, DSV);
+                Context.Native->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)RTVs, DSV);
                 Context.Profiler.Current.SurfaceBindings++;
             }
 

@@ -68,7 +68,7 @@ namespace Molten.Graphics
             UpdateViewport();
         }
 
-        protected override void SetSRVDescription(ref ShaderResourceViewDesc desc)
+        protected override void SetSRVDescription(ref ShaderResourceViewDesc1 desc)
         {
             base.SetSRVDescription(ref desc);
 
@@ -135,7 +135,7 @@ namespace Molten.Graphics
             _description.Height = Math.Max(1, _description.Height);
 
             // Create render target texture
-            NativeTexture = (ID3D11Texture2D*)base.CreateResource(resize);
+            NativeTexture = (ID3D11Texture2D1*)base.CreateResource(resize);
 
             _depthDesc.Flags = 0; // DsvFlag.None;
             SubresourceData* subData = null;

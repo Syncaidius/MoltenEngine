@@ -12,7 +12,7 @@ namespace Molten.Graphics
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
             GraphicsBlendState template = foundation.Device.BlendBank.GetPreset(BlendPreset.Default);
-            RenderTargetBlendDesc rtBlendDesc = template.GetSurfaceBlendState(0); // Use the default preset's first (0) RT blend description.
+            RenderTargetBlendDesc1 rtBlendDesc = template.GetSurfaceBlendState(0); // Use the default preset's first (0) RT blend description.
 
             if(node.ValueType == ShaderHeaderValueType.Preset)
             {

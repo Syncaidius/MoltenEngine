@@ -4,10 +4,10 @@ namespace Molten.Graphics
 {
     public unsafe abstract class ContextBindableResource : ContextBindable<ID3D11Resource>
     {
-        /// <summary>Gets or sets the <see cref="ID3D11UnorderedAccessView"/> attached to the object.</summary>
+        /// <summary>Gets or sets the <see cref="ID3D11UnorderedAccessView1"/> attached to the object.</summary>
         internal UAView UAV { get; }
 
-        /// <summary>Gets the <see cref="ID3D11ShaderResourceView"/> attached to the object.</summary>
+        /// <summary>Gets the <see cref="ID3D11ShaderResourceView1"/> attached to the object.</summary>
         internal SRView SRV { get; }
 
         internal ContextBindableResource(DeviceDX11 device, ContextBindTypeFlags bindFlags) : 

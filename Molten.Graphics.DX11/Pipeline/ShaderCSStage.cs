@@ -23,9 +23,9 @@ namespace Molten.Graphics
             Context.Native->CSSetConstantBuffers(startSlot, numBuffers, buffers);
         }
 
-        internal override unsafe void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** views)
+        internal override unsafe void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView1** views)
         {
-            Context.Native->CSSetShaderResources(startSlot, numViews, views);
+            Context.Native->CSSetShaderResources(startSlot, numViews, (ID3D11ShaderResourceView**)views);
         }
 
         internal override unsafe void SetSamplers(uint startSlot, uint numSamplers, ID3D11SamplerState** states)
@@ -38,9 +38,9 @@ namespace Molten.Graphics
             Context.Native->CSSetShader((ID3D11ComputeShader*)shader, classInstances, numClassInstances);
         }
 
-        internal unsafe void SetUnorderedAccessViews(uint startSlot, uint numUAVs, ID3D11UnorderedAccessView** ppUnorderedAccessViews, uint* pUAVInitialCounts)
+        internal unsafe void SetUnorderedAccessViews(uint startSlot, uint numUAVs, ID3D11UnorderedAccessView1** ppUnorderedAccessViews, uint* pUAVInitialCounts)
         {
-            Context.Native->CSSetUnorderedAccessViews(startSlot, numUAVs, ppUnorderedAccessViews, pUAVInitialCounts);
+            Context.Native->CSSetUnorderedAccessViews(startSlot, numUAVs, (ID3D11UnorderedAccessView**)ppUnorderedAccessViews, pUAVInitialCounts);
         }
 
         internal ContextSlotGroup<ContextBindableResource> UAVs { get; }

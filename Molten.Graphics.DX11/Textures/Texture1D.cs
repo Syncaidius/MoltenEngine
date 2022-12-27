@@ -34,7 +34,7 @@ namespace Molten.Graphics
             };
         }
 
-        protected override void SetSRVDescription(ref ShaderResourceViewDesc desc)
+        protected override void SetSRVDescription(ref ShaderResourceViewDesc1 desc)
         {
             desc.Format = DxgiFormat;
             desc.ViewDimension = D3DSrvDimension.D3DSrvDimensionTexture1Darray;
@@ -47,7 +47,7 @@ namespace Molten.Graphics
             };
         }
 
-        protected override void SetUAVDescription(ref ShaderResourceViewDesc srvDesc, ref UnorderedAccessViewDesc desc)
+        protected override void SetUAVDescription(ref ShaderResourceViewDesc1 srvDesc, ref UnorderedAccessViewDesc1 desc)
         {
             desc.Format = srvDesc.Format;
             desc.ViewDimension = UavDimension.Texture1Darray;

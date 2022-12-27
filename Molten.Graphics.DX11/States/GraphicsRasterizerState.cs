@@ -1,21 +1,22 @@
-﻿using Silk.NET.Direct3D11;
+﻿using System.Reflection.Metadata.Ecma335;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
     /// <summary>Stores a rasterizer state for use with a <see cref="DeviceContext"/>.</summary>
-    internal unsafe class GraphicsRasterizerState : ContextBindable<ID3D11RasterizerState>
+    internal unsafe class GraphicsRasterizerState : ContextBindable<ID3D11RasterizerState2>
     {
-        static RasterizerDesc _defaultDesc;
+        static RasterizerDesc2 _defaultDesc;
 
-        internal override unsafe ID3D11RasterizerState* NativePtr => _native;
+        internal override unsafe ID3D11RasterizerState2* NativePtr => _native;
 
-        ID3D11RasterizerState* _native;
-        RasterizerDesc _desc;
+        ID3D11RasterizerState2* _native;
+        RasterizerDesc2 _desc;
         bool _dirty;
 
         static GraphicsRasterizerState()
         {
-            _defaultDesc = new RasterizerDesc()
+            _defaultDesc = new RasterizerDesc2()
             {
                 FillMode = FillMode.Solid,
                 CullMode = CullMode.Back,
@@ -26,7 +27,9 @@ namespace Molten.Graphics
                 DepthClipEnable = 1,
                 ScissorEnable = 0,
                 MultisampleEnable = 0,
-                AntialiasedLineEnable = 0
+                AntialiasedLineEnable = 0,
+                ConservativeRaster = ConservativeRasterizationMode.Off,
+                ForcedSampleCount = 0
             };
         }
 
@@ -65,7 +68,9 @@ namespace Molten.Graphics
                 _desc.FrontCounterClockwise == other._desc.FrontCounterClockwise &&
                 _desc.MultisampleEnable == other._desc.MultisampleEnable &&
                 _desc.ScissorEnable == other._desc.ScissorEnable &&
-                _desc.SlopeScaledDepthBias == other._desc.SlopeScaledDepthBias;
+                _desc.SlopeScaledDepthBias == other._desc.SlopeScaledDepthBias &&
+                _desc.ConservativeRaster == other._desc.ConservativeRaster &&
+                _desc.ForcedSampleCount == other._desc.ForcedSampleCount;
         }
 
         protected override void OnApply(DeviceContext pipe)
@@ -76,7 +81,7 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 //create new state
-                Device.NativeDevice->CreateRasterizerState(ref _desc, ref _native);
+                Device.NativeDevice->CreateRasterizerState2(ref _desc, ref _native);
             }
         }
 
@@ -85,9 +90,14 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _native);
         }
 
-        public static implicit operator ID3D11RasterizerState* (GraphicsRasterizerState state)
+        public static implicit operator ID3D11RasterizerState2* (GraphicsRasterizerState state)
         {
             return state._native;
+        }
+
+        public static implicit operator ID3D11RasterizerState*(GraphicsRasterizerState state)
+        {
+            return (ID3D11RasterizerState*)state._native;
         }
 
         public CullMode CullMode
@@ -186,6 +196,26 @@ namespace Molten.Graphics
             set
             {
                 _desc.SlopeScaledDepthBias = value;
+                _dirty = true;
+            }
+        }
+
+        public ConservativeRasterizationMode ConservativeRaster
+        {
+            get => _desc.ConservativeRaster;
+            set
+            {
+                _desc.ConservativeRaster = value;
+                _dirty = true;
+            }
+        }
+
+        public uint ForcedSampleCount
+        {
+            get => _desc.ForcedSampleCount;
+            set
+            {
+                _desc.ForcedSampleCount = value;
                 _dirty = true;
             }
         }

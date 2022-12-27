@@ -6,8 +6,8 @@ namespace Molten.Graphics
 {
     public unsafe class Texture3D : TextureBase, ITexture3D
     {
-        internal ID3D11Texture3D* NativeTexture;
-        protected Texture3DDesc _description;
+        internal ID3D11Texture3D1* NativeTexture;
+        protected Texture3DDesc1 _description;
 
         /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
@@ -35,7 +35,7 @@ namespace Molten.Graphics
             TextureFlags flags = TextureFlags.None)
             : base(renderer, width, height, depth, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags)
         {
-            _description = new Texture3DDesc()
+            _description = new Texture3DDesc1()
             {
                 Width = Math.Max(width, 1),
                 Height = Math.Max(height, 1),
@@ -65,11 +65,11 @@ namespace Molten.Graphics
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
             SubresourceData* subData = null;
-            Device.NativeDevice->CreateTexture3D(ref _description, subData, ref NativeTexture);
+            Device.NativeDevice->CreateTexture3D1(ref _description, subData, ref NativeTexture);
             return (ID3D11Resource*)NativeTexture;
         }
 
-        protected override void SetSRVDescription(ref ShaderResourceViewDesc desc)
+        protected override void SetSRVDescription(ref ShaderResourceViewDesc1 desc)
         {
                 desc.ViewDimension = D3DSrvDimension.D3D101SrvDimensionTexture3D;
                 desc.Texture3D = new Tex3DSrv()
@@ -79,7 +79,7 @@ namespace Molten.Graphics
                 };
         }
 
-        protected override void SetUAVDescription(ref ShaderResourceViewDesc srvDesc, ref UnorderedAccessViewDesc desc)
+        protected override void SetUAVDescription(ref ShaderResourceViewDesc1 srvDesc, ref UnorderedAccessViewDesc1 desc)
         {
             desc.Format = srvDesc.Format;
             desc.ViewDimension = UavDimension.Texture2Darray;

@@ -3,9 +3,9 @@
 namespace Molten.Graphics
 {
     /// <summary>Stores a blend state for use with a <see cref="DeviceContext"/>.</summary>
-    internal unsafe class GraphicsBlendState : ContextBindable<ID3D11BlendState>, IEquatable<GraphicsBlendState>
+    internal unsafe class GraphicsBlendState : ContextBindable<ID3D11BlendState1>, IEquatable<GraphicsBlendState>
     {
-        public static readonly BlendDesc _defaultDesc;
+        public static readonly BlendDesc1 _defaultDesc;
 
         /// <summary>
         /// Gets or sets the blend sample mask.
@@ -19,13 +19,13 @@ namespace Molten.Graphics
 
         static GraphicsBlendState()
         {
-            _defaultDesc = new BlendDesc()
+            _defaultDesc = new BlendDesc1()
             {
                 AlphaToCoverageEnable = 0,
                 IndependentBlendEnable = 0,
             };
 
-            _defaultDesc.RenderTarget[0] = new RenderTargetBlendDesc()
+            _defaultDesc.RenderTarget[0] = new RenderTargetBlendDesc1()
             {
                 SrcBlend = Blend.One,
                 DestBlend = Blend.Zero,
@@ -34,14 +34,16 @@ namespace Molten.Graphics
                 DestBlendAlpha = Blend.Zero,
                 BlendOpAlpha = BlendOp.Add,
                 RenderTargetWriteMask = (byte)ColorWriteEnable.All,
-                BlendEnable = 1
+                BlendEnable = 1,
+                LogicOp = LogicOp.Noop,
+                LogicOpEnable = 0,
             };
         }
 
-        internal override unsafe ID3D11BlendState* NativePtr => _native;
+        internal override unsafe ID3D11BlendState1* NativePtr => _native;
 
-        ID3D11BlendState* _native;
-        BlendDesc _desc;
+        ID3D11BlendState1* _native;
+        BlendDesc1 _desc;
 
         bool _dirty;
 
@@ -59,7 +61,7 @@ namespace Molten.Graphics
             BlendSampleMask = 0xffffffff;
         }
 
-        internal GraphicsBlendState(DeviceDX11 device, RenderTargetBlendDesc rtDesc) : base(device, ContextBindTypeFlags.Input)
+        internal GraphicsBlendState(DeviceDX11 device, RenderTargetBlendDesc1 rtDesc) : base(device, ContextBindTypeFlags.Input)
         {
             _desc = _defaultDesc;
             _desc.RenderTarget[0] = rtDesc;
@@ -67,7 +69,7 @@ namespace Molten.Graphics
             BlendSampleMask = 0xffffffff;
         }
 
-        internal RenderTargetBlendDesc GetSurfaceBlendState(int index)
+        internal RenderTargetBlendDesc1 GetSurfaceBlendState(int index)
         {
             return _desc.RenderTarget[index];
         }
@@ -91,8 +93,8 @@ namespace Molten.Graphics
             // Equality check against all RT blend states
             for(int i = 0; i < Device.Features.SimultaneousRenderSurfaces; i++)
             {
-                RenderTargetBlendDesc rt = _desc.RenderTarget[i];
-                RenderTargetBlendDesc otherRt = other._desc.RenderTarget[i];
+                RenderTargetBlendDesc1 rt = _desc.RenderTarget[i];
+                RenderTargetBlendDesc1 otherRt = other._desc.RenderTarget[i];
 
                 if (rt.BlendOpAlpha != otherRt.BlendOpAlpha ||
                     rt.BlendOp != otherRt.BlendOp ||
@@ -117,13 +119,18 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 // Create new state
-                Device.NativeDevice->CreateBlendState(ref _desc, ref _native);
+                Device.NativeDevice->CreateBlendState1(ref _desc, ref _native);
             }
+        }
+
+        public static implicit operator ID3D11BlendState1*(GraphicsBlendState state)
+        {
+            return state._native;
         }
 
         public static implicit operator ID3D11BlendState*(GraphicsBlendState state)
         {
-            return state._native;
+            return (ID3D11BlendState*)state._native;
         }
 
         internal override void PipelineRelease()
@@ -156,7 +163,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="rtIndex">The render target/surface blend index.</param>
         /// <returns></returns>
-        internal RenderTargetBlendDesc this[int rtIndex]
+        internal RenderTargetBlendDesc1 this[int rtIndex]
         {
             get => _desc.RenderTarget[rtIndex];
             set

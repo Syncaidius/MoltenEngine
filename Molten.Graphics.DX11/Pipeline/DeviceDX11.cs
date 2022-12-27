@@ -10,8 +10,8 @@ namespace Molten.Graphics
     /// <seealso cref="DeviceContext" />
     public unsafe class DeviceDX11 : DeviceContext
     {
-        internal ID3D11Device* NativeDevice;
-        internal ID3D11DeviceContext* ImmediateContext;
+        internal ID3D11Device5* NativeDevice;
+        internal ID3D11DeviceContext4* ImmediateContext;
 
         D3D11 _api;
         DisplayAdapterDXGI _adapter;
@@ -68,14 +68,21 @@ namespace Molten.Graphics
                 D3DDriverType.Unknown,
                 0,
                 (uint)flags,
-                featureLevels, 1,
+                featureLevels, 2,
                 D3D11.SdkVersion,
                 &ptrDevice,
                 null,
                 &ptrContext);
 
-            NativeDevice = ptrDevice;
-            ImmediateContext = ptrContext;
+            Guid dev5Guid = ID3D11Device5.Guid;
+            void* ptrDevice5 = null;
+            ptrDevice->QueryInterface(&dev5Guid, &ptrDevice5);
+            NativeDevice = (ID3D11Device5*)ptrDevice5;
+
+            Guid cxt4Guid = ID3D11DeviceContext4.Guid;
+            void* ptrCxt4 = null;
+            ptrContext->QueryInterface(&cxt4Guid, &ptrCxt4);
+            ImmediateContext = (ID3D11DeviceContext4*)ptrCxt4;
 
             Features = new DeviceFeaturesDX11(NativeDevice);
             _rasterizerBank = new RasterizerStateBank(this);
@@ -128,11 +135,15 @@ namespace Molten.Graphics
         /// <returns></returns>
         internal DeviceContext GetDeferredContext()
         {
-            ID3D11DeviceContext* dc = EngineUtil.Alloc<ID3D11DeviceContext>();
+            ID3D11DeviceContext* dc = null;
             NativeDevice->CreateDeferredContext(0, &dc);
 
+            Guid cxt4Guid = ID3D11DeviceContext4.Guid;
+            void* ptr4 = null;
+            dc->QueryInterface(&cxt4Guid, &ptr4);
+
             DeviceContext context = new DeviceContext();
-            context.Initialize(_log, this, dc);
+            context.Initialize(_log, this, (ID3D11DeviceContext4*)ptr4);
             _contexts.Add(context);
             return context;
         }

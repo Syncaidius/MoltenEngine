@@ -21,7 +21,7 @@ namespace Molten.Graphics
             }
         }
 
-        ID3D11DeviceContext* _context;
+        ID3D11DeviceContext4* _context;
         ContextStateStack _stateStack;
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
@@ -33,7 +33,7 @@ namespace Molten.Graphics
             _defaultProfiler = _profiler = new RenderProfiler();
         }
 
-        internal void Initialize(Logger log, DeviceDX11 device, ID3D11DeviceContext* context)
+        internal void Initialize(Logger log, DeviceDX11 device, ID3D11DeviceContext4* context)
         {
             _context = context;
             Device = device;
@@ -371,7 +371,7 @@ namespace Molten.Graphics
 
         internal DeviceDX11 Device { get; private set; }
 
-        internal ID3D11DeviceContext* Native => _context;
+        internal ID3D11DeviceContext4* Native => _context;
 
         internal Logger Log { get; private set; }
 

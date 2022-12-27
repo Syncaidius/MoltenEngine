@@ -14,7 +14,7 @@ namespace Molten.Graphics
         internal override void Bind(ContextSlotGroup<ContextBindableResource> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             // Set unordered access resources
-            ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[(int)numChanged];
+            ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[(int)numChanged];
             uint* pInitialCounts = stackalloc uint[(int)numChanged];
 
             uint sid = startIndex;
@@ -30,7 +30,7 @@ namespace Molten.Graphics
 
         internal override void Bind(ContextSlot<ContextBindableResource> slot, ContextBindableResource value)
         {
-            ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[1];
+            ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[1];
             uint* pInitialCounts = stackalloc uint[1];
             pUavs[0] = slot.BoundValue != null ? slot.BoundValue.UAV.Ptr : null;
             pInitialCounts[0] = 0;
@@ -40,7 +40,7 @@ namespace Molten.Graphics
         internal override void Unbind(ContextSlotGroup<ContextBindableResource> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             // Set unordered access resources
-            ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[(int)numChanged];
+            ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[(int)numChanged];
             uint* pInitialCounts = stackalloc uint[(int)numChanged];
 
             uint sid = startIndex;
@@ -55,7 +55,7 @@ namespace Molten.Graphics
 
         internal override void Unbind(ContextSlot<ContextBindableResource> slot, ContextBindableResource value)
         {
-            ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[1];
+            ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[1];
             uint* pInitialCounts = stackalloc uint[1];
             pUavs[0] = null;
             pInitialCounts[0] = 0;

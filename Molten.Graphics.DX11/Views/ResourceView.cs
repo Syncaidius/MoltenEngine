@@ -33,6 +33,11 @@ namespace Molten.Graphics
 
         protected abstract void OnCreateView(ID3D11Resource* resource, ref D desc, ref V* view);
 
+        public static implicit operator V*(ResourceView<V, D> view)
+        {
+            return view._native;
+        }
+
         internal void Release()
         {
             SilkUtil.ReleasePtr(ref _native);

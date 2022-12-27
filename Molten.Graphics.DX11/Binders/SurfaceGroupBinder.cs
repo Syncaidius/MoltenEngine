@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics
+﻿using Silk.NET.Direct3D11;
+
+namespace Molten.Graphics
 {
     internal unsafe class SurfaceGroupBinder : ContextGroupBinder<RenderSurface2D>
     {
@@ -19,14 +21,14 @@
             for (uint i = 0; i < numRTs; i++)
                 rtvs[i] = null;
 
-            grp.Context.Native->OMSetRenderTargets(numRTs, rtvs, grp.Context.State.DSV);
+            grp.Context.Native->OMSetRenderTargets(numRTs, (ID3D11RenderTargetView**)rtvs, grp.Context.State.DSV);
         }
 
         internal override void Unbind(ContextSlot<RenderSurface2D> slot, RenderSurface2D value)
         {
             var rtvs = slot.Context.State.RTVs;
             rtvs[slot.SlotIndex] = null;
-            slot.Context.Native->OMSetRenderTargets(1, rtvs, slot.Context.State.DSV);
+            slot.Context.Native->OMSetRenderTargets(1, (ID3D11RenderTargetView**)rtvs, slot.Context.State.DSV);
         }
     }
 }
