@@ -14,7 +14,7 @@ namespace Molten.Graphics
         V* _native;
         D _desc;
 
-        internal ResourceView(Device device)
+        internal ResourceView(DeviceDX11 device)
         {
             Device = device;
         }
@@ -23,7 +23,7 @@ namespace Molten.Graphics
 
         internal ref D Desc => ref _desc;
 
-        internal Device Device { get; }
+        internal DeviceDX11 Device { get; }
 
         internal void Create(ID3D11Resource* resource)
         {

@@ -41,7 +41,7 @@ namespace Molten.Graphics
 
             Assembly includeAssembly = this.GetType().Assembly;
 
-            Device = new Device(_api, Log, settings.Graphics, _displayManager);
+            Device = new DeviceDX11(_api, Log, settings.Graphics, _displayManager);
             ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _resFactory = new ResourceFactoryDX11(this);
             _compute = new ComputeManager(this.Device);
@@ -187,7 +187,7 @@ namespace Molten.Graphics
         /// </summary>
         public override IDisplayManager DisplayManager => _displayManager;
 
-        internal Device Device { get; private set; }
+        internal DeviceDX11 Device { get; private set; }
 
         public override IComputeManager Compute => _compute;
 

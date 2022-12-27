@@ -37,7 +37,7 @@
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF vpBounds = camera.Surface.Viewport.Bounds;
-            Device device = renderer.Device;
+            DeviceDX11 device = renderer.Device;
 
             context.CompositionSurface.Clear(context.Scene.BackgroundColor);
             device.State.ResetRenderSurfaces();

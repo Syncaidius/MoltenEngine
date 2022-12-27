@@ -39,7 +39,7 @@
                 return;
 
             Rectangle bounds = (Rectangle)camera.Surface.Viewport.Bounds;
-            Device device = renderer.Device;
+            DeviceDX11 device = renderer.Device;
 
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 

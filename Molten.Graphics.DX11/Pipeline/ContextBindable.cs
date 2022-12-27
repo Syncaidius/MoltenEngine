@@ -8,7 +8,7 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class ContextBindable : ContextObject
     {
-        internal ContextBindable(Device device, ContextBindTypeFlags bindFlags) : base(device)
+        internal ContextBindable(DeviceDX11 device, ContextBindTypeFlags bindFlags) : base(device)
         {
             BoundTo = new List<ContextSlot>();
             BindFlags = bindFlags;
@@ -54,7 +54,7 @@ namespace Molten.Graphics
     public unsafe abstract class ContextBindable<T> : ContextBindable
         where T : unmanaged
     {
-        internal ContextBindable(Device device, ContextBindTypeFlags bindFlags) : 
+        internal ContextBindable(DeviceDX11 device, ContextBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
 

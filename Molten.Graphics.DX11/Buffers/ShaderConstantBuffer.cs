@@ -16,7 +16,7 @@ namespace Molten.Graphics
         internal int Hash;
         byte* _constData;
 
-        internal ShaderConstantBuffer(Device device, BufferMode flags, 
+        internal ShaderConstantBuffer(DeviceDX11 device, BufferMode flags, 
             ID3D11ShaderReflectionConstantBuffer* srConstBuffer, ref ShaderBufferDesc desc)
             : base(device, flags, BindFlag.ConstantBuffer, desc.Size)
         {

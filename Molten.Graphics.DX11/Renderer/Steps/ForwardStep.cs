@@ -12,7 +12,7 @@
         {
             RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
 
-            Device device = renderer.Device;
+            DeviceDX11 device = renderer.Device;
             sScene.Clear(Color.Transparent);
 
             device.State.SetRenderSurface(sScene, 0);

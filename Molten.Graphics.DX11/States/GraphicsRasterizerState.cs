@@ -34,13 +34,13 @@ namespace Molten.Graphics
         /// 
         /// </summary>
         /// <param name="source">An existing <see cref="GraphicsRasterizerState"/> instance from which to copy settings."/></param>
-        internal GraphicsRasterizerState(Device device, GraphicsRasterizerState source) : base(device, ContextBindTypeFlags.Input)
+        internal GraphicsRasterizerState(DeviceDX11 device, GraphicsRasterizerState source) : base(device, ContextBindTypeFlags.Input)
         {
             _desc = source._desc;
             _dirty = true;
         }
 
-        internal GraphicsRasterizerState(Device device) : base(device, ContextBindTypeFlags.Input)
+        internal GraphicsRasterizerState(DeviceDX11 device) : base(device, ContextBindTypeFlags.Input)
         {
             _desc = _defaultDesc;
             _dirty = true;

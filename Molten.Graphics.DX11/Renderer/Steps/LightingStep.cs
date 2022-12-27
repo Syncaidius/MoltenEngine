@@ -38,7 +38,7 @@ namespace Molten.Graphics
             RenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
             DepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            Device device = renderer.Device;
+            DeviceDX11 device = renderer.Device;
 
             _surfaceLighting.Clear(renderer.Device, context.Scene.AmbientLightColor);
             device.State.ResetRenderSurfaces();

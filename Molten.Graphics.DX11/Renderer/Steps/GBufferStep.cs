@@ -10,7 +10,7 @@
             RenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
             RenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
 
-            Device device = renderer.Device;
+            DeviceDX11 device = renderer.Device;
 
             device.State.SetRenderSurface(sScene, 0);
             device.State.SetRenderSurface(sNormals, 1);

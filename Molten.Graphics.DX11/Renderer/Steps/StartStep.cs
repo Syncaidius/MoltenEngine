@@ -13,7 +13,7 @@ namespace Molten.Graphics
             RenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
             DepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            Device device = renderer.Device;
+            DeviceDX11 device = renderer.Device;
 
             device.State.SetRenderSurfaces(null);
             bool newSurface = renderer.ClearIfFirstUse(device, sScene, context.Scene.BackgroundColor);

@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal unsafe class UAView : ResourceView<ID3D11UnorderedAccessView, UnorderedAccessViewDesc>
     {
-        internal UAView(Device device) : base(device) { }
+        internal UAView(DeviceDX11 device) : base(device) { }
 
         protected override unsafe void OnCreateView(ID3D11Resource* resource, ref UnorderedAccessViewDesc desc, ref ID3D11UnorderedAccessView* view)
         {

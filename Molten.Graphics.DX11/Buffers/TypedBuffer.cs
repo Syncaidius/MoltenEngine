@@ -39,7 +39,7 @@ namespace Molten.Graphics
         /// <param name="flags"></param>
         /// <param name="unorderedAccess">If true, the buffer is given Read-Write access and a UAV is created for it. This is known as an RWStructuredBuffer in HLSL.</param>
         public TypedBuffer(
-            Device device, 
+            DeviceDX11 device, 
             BufferMode flags, 
             uint capacity, 
             bool unorderedAccess = false, 
@@ -58,7 +58,7 @@ namespace Molten.Graphics
         /// <param name="device">The graphics device to bind the buffer to.</param>
         /// <param name="stride">The expected size of 1 element, in bytes.</param>
         /// <param name="capacity">The number of elements the buffer should be able to hold.</param>
-        public TypedBuffer(Device device, BufferMode mode, uint stride, uint capacity)
+        public TypedBuffer(DeviceDX11 device, BufferMode mode, uint stride, uint capacity)
             : base(device, 
                   mode, 
                   BindFlag.ShaderResource, 
