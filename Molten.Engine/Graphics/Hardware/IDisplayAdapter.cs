@@ -48,5 +48,10 @@
 
         /// <summary>Gets the <see cref="IDisplayManager"/> that spawned the adapter.</summary>
         IDisplayManager Manager { get; }
+
+        /// <summary>
+        /// Gets the capabilities of the current <see cref="IDisplayAdapter"/>.
+        /// </summary>
+        GraphicsCapabilities Capabilities { get; }
     }
 }

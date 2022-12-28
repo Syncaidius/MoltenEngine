@@ -38,7 +38,27 @@ namespace Molten.Graphics
         /// </summary>
         public bool Float64 { get; set; }
 
-        public bool Compatible(ShaderStageCapabilities other)
+        /// <summary>
+        /// Gets or sets the maximum number of input slots/registers for the shader stage.
+        /// </summary>
+        public uint MaxInRegisters { get; set; }
+
+        /// <summary>
+        /// Gets the maximum number of input buffers, textures and other resources supported by the shader stage.
+        /// </summary>
+        public uint MaxInResources { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of output slots/registers for the shader stage.
+        /// </summary>
+        public uint MaxOutRegisters { get; set; }
+
+        /// <summary>
+        /// Gets the maximum number of output buffers or surfaces supported by the shader stage.
+        /// </summary>
+        public uint MaxOutResources { get; set; }
+
+        public virtual bool Compatible(ShaderStageCapabilities other)
         {
             // TODO compare current to other. Current must have at least everything 'other' specifies.
 

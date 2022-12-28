@@ -1,5 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Graphics.Dxgi;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using System.Reflection;
 
@@ -8,8 +9,9 @@ namespace Molten.Graphics
     public class RendererDX11 : RenderService
     {
         D3D11 _api;
-        RenderChain _chain;
         DisplayManagerDXGI _displayManager;
+        DeviceBuilderDX11 _deviceBuilder;
+        RenderChain _chain;
         ResourceFactoryDX11 _resFactory;
         ComputeManager _compute;
         HashSet<Texture2D> _clearedSurfaces;
@@ -28,7 +30,6 @@ namespace Molten.Graphics
         {
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
-            _displayManager = new DisplayManagerDXGI();
 
             Surfaces = new SurfaceManager(this);
         }
@@ -37,6 +38,8 @@ namespace Molten.Graphics
         {
             _api = D3D11.GetApi();
             _chain = new RenderChain(this);
+            _deviceBuilder = new DeviceBuilderDX11(_api, this, D3DFeatureLevel.Level111, D3DFeatureLevel.Level110);
+            _displayManager = new DisplayManagerDXGI(_deviceBuilder.GetCapabilities);
         }
 
         protected override void OnInitialize(EngineSettings settings)
@@ -45,7 +48,7 @@ namespace Molten.Graphics
 
             Assembly includeAssembly = this.GetType().Assembly;
 
-            Device = new DeviceDX11(_api, Log, settings.Graphics, _displayManager);
+            Device = new DeviceDX11(_deviceBuilder, Log, settings.Graphics, _displayManager);
             ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _resFactory = new ResourceFactoryDX11(this);
             _compute = new ComputeManager(this.Device);

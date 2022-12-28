@@ -91,7 +91,7 @@ namespace Molten.Graphics
                 return false;
 
             // Equality check against all RT blend states
-            for(int i = 0; i < Device.Features.SimultaneousRenderSurfaces; i++)
+            for(int i = 0; i < Device.Adapter.Capabilities.PixelShader.MaxOutResources; i++)
             {
                 RenderTargetBlendDesc1 rt = _desc.RenderTarget[i];
                 RenderTargetBlendDesc1 otherRt = other._desc.RenderTarget[i];

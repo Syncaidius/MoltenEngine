@@ -21,11 +21,11 @@
         public GraphicsPipeState(DeviceContext context)
         {
             _context = context;
-            uint maxSurfaces = _context.Device.Features.SimultaneousRenderSurfaces;
+            uint maxSurfaces = _context.Device.Adapter.Capabilities.PixelShader.MaxOutResources;
 
             _surfaces = new RenderSurface2D[maxSurfaces];
             _viewports = new ViewportF[maxSurfaces];
-            _vSegments = new BufferSegment[_context.Device.Features.MaxVertexBufferSlots];
+            _vSegments = new BufferSegment[_context.Device.Adapter.Capabilities.VertexBuffers.MaxSlots];
         }
 
         public void Capture()

@@ -13,9 +13,8 @@ namespace Molten.Graphics
         internal ID3D11Device5* NativeDevice;
         internal ID3D11DeviceContext4* ImmediateContext;
 
-        D3D11 _api;
+        DeviceBuilderDX11 _builder;
         DisplayAdapterDXGI _adapter;
-
         List<DeviceContext> _contexts;
 
         Logger _log;
@@ -33,9 +32,9 @@ namespace Molten.Graphics
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
-        internal DeviceDX11(D3D11 api, Logger log, GraphicsSettings settings, DisplayManagerDXGI manager)
+        internal DeviceDX11(DeviceBuilderDX11 builder, Logger log, GraphicsSettings settings, DisplayManagerDXGI manager)
         {
-            _api = api;
+            _builder = builder;
             _log = log;
             _displayManager = manager;
             _adapter = _displayManager.SelectedAdapter as DisplayAdapterDXGI;
@@ -54,37 +53,8 @@ namespace Molten.Graphics
                 flags |= DeviceCreationFlags.Debug;
             }
 
-            D3DFeatureLevel* featureLevels = stackalloc D3DFeatureLevel[]
-            {
-                D3DFeatureLevel.Level111,
-                D3DFeatureLevel.Level110
-            };
+            HResult r = _builder.CreateDevice(_adapter, flags, out NativeDevice, out ImmediateContext);
 
-            IDXGIAdapter* adapter = (IDXGIAdapter*)_adapter.Native;
-            ID3D11Device* ptrDevice = null;
-            ID3D11DeviceContext* ptrContext = null;
-
-            HResult r = _api.CreateDevice(adapter,
-                D3DDriverType.Unknown,
-                0,
-                (uint)flags,
-                featureLevels, 2,
-                D3D11.SdkVersion,
-                &ptrDevice,
-                null,
-                &ptrContext);
-
-            Guid dev5Guid = ID3D11Device5.Guid;
-            void* ptrDevice5 = null;
-            ptrDevice->QueryInterface(&dev5Guid, &ptrDevice5);
-            NativeDevice = (ID3D11Device5*)ptrDevice5;
-
-            Guid cxt4Guid = ID3D11DeviceContext4.Guid;
-            void* ptrCxt4 = null;
-            ptrContext->QueryInterface(&cxt4Guid, &ptrCxt4);
-            ImmediateContext = (ID3D11DeviceContext4*)ptrCxt4;
-
-            Features = new DeviceFeaturesDX11(NativeDevice);
             _rasterizerBank = new RasterizerStateBank(this);
             _blendBank = new BlendStateBank(this);
             _depthBank = new DepthStateBank(this);
@@ -135,8 +105,8 @@ namespace Molten.Graphics
         /// <returns></returns>
         internal DeviceContext GetDeferredContext()
         {
-            ID3D11DeviceContext* dc = null;
-            NativeDevice->CreateDeferredContext(0, &dc);
+            ID3D11DeviceContext3* dc = null;
+            NativeDevice->CreateDeferredContext3(0, &dc);
 
             Guid cxt4Guid = ID3D11DeviceContext4.Guid;
             void* ptr4 = null;
@@ -186,7 +156,6 @@ namespace Molten.Graphics
 
             SilkUtil.ReleasePtr(ref ImmediateContext);
             SilkUtil.ReleasePtr(ref NativeDevice);
-            _api.Dispose();
 
             _bufferSegmentPool.Dispose();
             DisposeMarkedObjects();
@@ -196,10 +165,9 @@ namespace Molten.Graphics
 
         internal IReadOnlyCollection<DeviceContext> Contexts { get; }
 
-        /// <summary>Gets an instance of <see cref="DeviceFeaturesDX11"/> which provides access to feature support details for the current graphics device.</summary>
-        internal DeviceFeaturesDX11 Features { get; private set; }
-
         internal DisplayManagerDXGI DisplayManager => _displayManager;
+
+        internal DisplayAdapterDXGI Adapter => _adapter;
 
         internal GraphicsSettings Settings => _settings;
 

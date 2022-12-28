@@ -320,35 +320,26 @@ namespace Molten.Graphics
             }
             else
             {
-                // Ensure dispatch is within supported range.
-                int maxZ = Device.Features.Compute.MaxDispatchZDimension;
-                int maxXY = Device.Features.Compute.MaxDispatchXYDimension;
+                ComputeCapabilities comCap = Device.Adapter.Capabilities.Compute;
 
-                if (groupsZ > maxZ)
+                if (groupsZ > comCap.MaxGroupCountZ)
                 {
-#if DEBUG
-                    Log.Write("Unable to dispatch compute shader. Z dimension (" + groupsZ + ") is greater than supported (" + maxZ + ").");
-#endif
+                    Log.Error($"Unable to dispatch compute shader. Z dimension ({groupsZ}) is greater than supported ({comCap.MaxGroupCountZ}).");
                     return;
                 }
-                else if (groupsX > maxXY)
+                else if (groupsX > comCap.MaxGroupCountX)
                 {
-#if DEBUG
-                    Log.Write("Unable to dispatch compute shader. X dimension (" + groupsX + ") is greater than supported (" + maxXY + ").");
-#endif
+                    Log.Error($"Unable to dispatch compute shader. X dimension ({groupsX}) is greater than supported ({comCap.MaxGroupCountX}).");
                     return;
                 }
-                else if (groupsY > maxXY)
+                else if (groupsY > comCap.MaxGroupCountY)
                 {
-#if DEBUG
-                    Log.Write("Unable to dispatch compute shader. Y dimension (" + groupsY + ") is greater than supported (" + maxXY + ").");
-#endif
+                    Log.Error($"Unable to dispatch compute shader. Y dimension ({groupsY}) is greater than supported ({comCap.MaxGroupCountY}).");
                     return;
                 }
 
                 // TODO have this processed during the presentation call of each graphics context.
-
-               
+                // 
                 Native->Dispatch(groupsX, groupsY, groupsZ);
             }
         }

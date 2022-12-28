@@ -2,6 +2,8 @@
 
 namespace Molten.Graphics.Dxgi
 {
+    public delegate GraphicsCapabilities DXGIDetectCapabilitiesCallback(DisplayAdapterDXGI adapter);
+
     public unsafe class DisplayManagerDXGI : EngineObject, IDisplayManager
     {
         const uint DXGI_CREATE_FACTORY_NODEBUG = 0x0;
@@ -13,10 +15,12 @@ namespace Molten.Graphics.Dxgi
         List<DisplayAdapterDXGI> _adapters;
         int _defaultID = -1;
         int _selectedID = -1;
+        DXGIDetectCapabilitiesCallback _capabilitiesCallback;
 
-        public DisplayManagerDXGI()
+        public DisplayManagerDXGI(DXGIDetectCapabilitiesCallback capabilitiesCallback)
         {
             _api = DXGI.GetApi();
+            _capabilitiesCallback = capabilitiesCallback;
         }
 
         protected override void OnDispose()
@@ -75,18 +79,27 @@ namespace Molten.Graphics.Dxgi
             for (int i = 0; i < detected.Length; i++)
             {
                 DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, detected[i], i);
-                _adapters.Add(adapter);
+                adapter.Capabilities = _capabilitiesCallback(adapter);
 
-                if (adapter.OutputCount > 0)
+                if (adapter.Capabilities.HasCapabilities(settings.MinimumCapabilities))
                 {
-                    _usable.Add(i);
+                    _adapters.Add(adapter);
 
-                    // Set default if needed
-                    if (_defaultID == -1)
+                    if (adapter.OutputCount > 0)
                     {
-                        _defaultID = i;
-                        _selectedID = i;
+                        _usable.Add(i);
+
+                        // Set default if needed
+                        if (_defaultID == -1)
+                        {
+                            _defaultID = i;
+                            _selectedID = i;
+                        }
                     }
+                }
+                else
+                {
+                    adapter.Capabilities.LogIncompatibility(logger, settings.MinimumCapabilities);
                 }
             }
 

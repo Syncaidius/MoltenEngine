@@ -12,7 +12,6 @@ namespace Molten.Graphics.Dxgi
         List<DisplayOutputDXGI> _activeOutputs;
         DisplayManagerDXGI _manager;
 
-
         /// <summary> Occurs when an <see cref="T:Molten.IDisplayOutput" /> is connected to the current <see cref="T:Molten.IDisplayAdapter" />.</summary>
         public event DisplayOutputChanged OnOutputActivated;
 
@@ -169,5 +168,7 @@ namespace Molten.Graphics.Dxgi
         /// Gets the <see cref="IDisplayManager" /> that spawned the adapter.
         /// </summary>
         public IDisplayManager Manager => _manager;
+
+        public GraphicsCapabilities Capabilities { get; internal set; }
     }
 }

@@ -10,15 +10,12 @@ namespace Molten.Graphics
             Context = state.Context;
             Type = type;
 
-            uint maxSamplers = Context.Device.Features.MaxSamplerSlots;
-            Samplers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_Sampler", maxSamplers, new SamplerGroupBinder<T>(this));
-
-            uint maxResources = Context.Device.Features.MaxInputResourceSlots;
-            Resources = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_Resource", maxResources, new ResourceGroupBinder<T>(this));
-
-            uint maxCBuffers = Context.Device.Features.MaxConstantBufferSlots;
-            ConstantBuffers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_C-Buffer", maxCBuffers, new CBufferGroupBinder<T>(this));
-
+            GraphicsCapabilities cap = Context.Device.Adapter.Capabilities;
+            ShaderStageCapabilities shaderCap = cap[type];
+            
+            Samplers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_Sampler", cap.MaxShaderSamplers, new SamplerGroupBinder<T>(this));
+            Resources = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_Resource", shaderCap.MaxInResources, new ResourceGroupBinder<T>(this));
+            ConstantBuffers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_C-Buffer", cap.ConstantBuffers.MaxSlots, new CBufferGroupBinder<T>(this));
             Shader = state.RegisterSlot(ContextBindTypeFlags.Input, $"{type}_Shader", 0, new ShaderSlotBinder<T>(this));
         }
 

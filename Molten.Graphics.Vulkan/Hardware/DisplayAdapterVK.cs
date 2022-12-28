@@ -66,5 +66,7 @@ namespace Molten.Graphics.Hardware
         public int OutputCount { get; }
 
         public IDisplayManager Manager => _manager;
+
+        public GraphicsCapabilities Capabilities { get; internal set; }
     }
 }

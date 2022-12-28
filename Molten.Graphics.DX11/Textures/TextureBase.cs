@@ -39,7 +39,7 @@ namespace Molten.Graphics
             ValidateFlagCombination();
 
             _pendingChanges = new ThreadedQueue<ITextureTask>();
-            MSAASupport msaaSupport = _renderer.Device.Features.GetMSAASupport(format, aaLevel);
+            MSAASupport msaaSupport = MSAASupport.NotSupported; // TODO re-support. _renderer.Device.Features.GetMSAASupport(format, aaLevel);
 
             Width = width;
             Height = height;

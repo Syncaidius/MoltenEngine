@@ -37,12 +37,12 @@ namespace Molten.Graphics
             AllSlots = _slots.AsReadOnly();
             _nullViewport = new ViewportF[1];
 
-            uint maxRTs = context.Device.Features.SimultaneousRenderSurfaces;
+            uint maxRTs = context.Device.Adapter.Capabilities.PixelShader.MaxOutResources;
             _scissorRects = new Rectangle[maxRTs];
             _viewports = new ViewportF[maxRTs];
             _apiViewports = new Silk.NET.Direct3D11.Viewport[maxRTs];
 
-            uint maxVBuffers = Context.Device.Features.MaxVertexBufferSlots;
+            uint maxVBuffers = Context.Device.Adapter.Capabilities.VertexBuffers.MaxSlots;
             VertexBuffers = RegisterSlotGroup<BufferSegment, VertexBufferGroupBinder>(ContextBindTypeFlags.Input, "V-Buffer", maxVBuffers);
             IndexBuffer = RegisterSlot<BufferSegment, IndexBufferBinder>(ContextBindTypeFlags.Input, "I-Buffer", 0);
             _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(ContextBindTypeFlags.Input, "Vertex Input Layout", 0);

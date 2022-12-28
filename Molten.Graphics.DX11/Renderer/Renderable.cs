@@ -13,7 +13,7 @@
 
         public void SetResource(IShaderResource resource, uint slot)
         {
-            if (slot >= Device.Features.MaxInputResourceSlots)
+            if (slot >= Device.Adapter.Capabilities.PixelShader.MaxInResources)
                 throw new IndexOutOfRangeException("The maximum slot number must be less than the maximum supported by the graphics device.");
 
             if (slot >= _resources.Length)
