@@ -30,8 +30,10 @@ namespace Molten.Graphics
             cap.ApiVersion = $"{variant}.{major}.{minor}.{patch}";
             if (major == 1)
                 cap.Api = GraphicsApi.Vulkan1_0 + (int)minor;
-            else
+            else if (major > 1)
                 cap.Api = GraphicsApi.Vulkan1_3; // For now, default to the highest known vulkan version.
+            else
+                cap.Api = GraphicsApi.Unsupported;
 
             cap.SetShaderCap(nameof(ShaderStageCapabilities.Float64), features.ShaderFloat64);
             cap.SetShaderCap(nameof(ShaderStageCapabilities.Int16), features.ShaderInt16);

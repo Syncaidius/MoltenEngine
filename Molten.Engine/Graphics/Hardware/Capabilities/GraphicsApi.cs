@@ -9,9 +9,9 @@ namespace Molten.Graphics
     public enum GraphicsApi
     {
         /// <summary>
-        /// The graphics API is known.
+        /// The graphics API is either unsupported or not-known.
         /// </summary>
-        Unknown = 0,
+        Unsupported = 0,
 
         /// <summary>
         /// DirectX 11.0.
