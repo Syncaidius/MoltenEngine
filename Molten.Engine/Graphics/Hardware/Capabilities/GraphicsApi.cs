@@ -32,5 +32,20 @@ namespace Molten.Graphics
         /// Vulkan 1.0.
         /// </summary>
         Vulkan1_0 = 32,
+
+        /// <summary>
+        /// Vulkan 1.1.
+        /// </summary>
+        Vulkan1_1 = 33,
+
+        /// <summary>
+        /// Vulkan 1.2.
+        /// </summary>
+        Vulkan1_2 = 34,
+
+        /// <summary>
+        /// Vulkan 1.3.
+        /// </summary>
+        Vulkan1_3 = 35,
     }
 }

@@ -80,6 +80,11 @@ namespace Molten.Graphics
         /// </summary>
         public GraphicsApi Api { get; set; }
 
+        /// <summary>
+        /// Gets or sets the graphics API capability.
+        /// </summary>
+        public string ApiVersion { get; set; }
+
         /// <summary>Gets the maximum size of a 1D texture. A size of 2048 would mean a maximum 1D texture size of 1 x 2048.</summary>
         public uint MaxTexture1DSize { get; set; }
 

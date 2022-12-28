@@ -26,6 +26,14 @@ namespace Molten.Graphics
             return (((variant) << 29) | ((major) << 22) | ((minor) << 12) | (patch));
         }
 
+        internal static void UnpackVersion(uint value, out uint variant, out uint major, out uint minor, out uint patch)
+        {
+            variant = (value >> 29);
+            major = (value >> 22) & 0x7FU;
+            minor = (value >> 12) & 0x3FFU;
+            patch = value & 0xFFFU;
+        }
+
         protected override void OnInitializeApi(GraphicsSettings settings)
         {
             ApplicationInfo appInfo = new ApplicationInfo()

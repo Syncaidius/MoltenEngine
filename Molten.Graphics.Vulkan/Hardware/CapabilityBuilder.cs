@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal class CapabilityBuilder
     {
-        internal unsafe GraphicsCapabilities Build(ref PhysicalDeviceLimits limits, ref PhysicalDeviceFeatures features)
+        internal unsafe GraphicsCapabilities Build(ref PhysicalDeviceProperties properties, ref PhysicalDeviceLimits limits, ref PhysicalDeviceFeatures features)
         {
             GraphicsCapabilities cap = new GraphicsCapabilities();
 
@@ -23,6 +23,15 @@ namespace Molten.Graphics
             cap.PixelShader.MaxOutResources = limits.MaxFragmentOutputAttachments;
             cap.BlendLogicOp = features.LogicOp;
             cap.MaxAllocatedSamplers = limits.MaxSamplerAllocationCount;
+
+            uint variant, major, minor, patch;
+            RendererVK.UnpackVersion(properties.ApiVersion, out variant, out major, out minor, out patch);
+
+            cap.ApiVersion = $"{variant}.{major}.{minor}.{patch}";
+            if (major == 1)
+                cap.Api = GraphicsApi.Vulkan1_0 + (int)minor;
+            else
+                cap.Api = GraphicsApi.Vulkan1_3; // For now, default to the highest known vulkan version.
 
             cap.SetShaderCap(nameof(ShaderStageCapabilities.Float64), features.ShaderFloat64);
             cap.SetShaderCap(nameof(ShaderStageCapabilities.Int16), features.ShaderInt16);

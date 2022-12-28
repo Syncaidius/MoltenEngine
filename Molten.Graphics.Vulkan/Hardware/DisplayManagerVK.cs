@@ -44,7 +44,7 @@ namespace Molten.Graphics
                         PhysicalDeviceFeatures dFeatures;
                         _renderer.VK.GetPhysicalDeviceFeatures(*devices, &dFeatures);
 
-                        GraphicsCapabilities cap = capBuilder.Build(ref dProperties.Limits, ref dFeatures);
+                        GraphicsCapabilities cap = capBuilder.Build(ref dProperties, ref dProperties.Limits, ref dFeatures);
                         devices++;
                     }
                 }
