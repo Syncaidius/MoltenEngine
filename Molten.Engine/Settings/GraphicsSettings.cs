@@ -20,7 +20,7 @@ namespace Molten
 
         public GraphicsSettings()
         {
-            GraphicsAdapterID = AddSetting<int>("adapter_id", -1);
+            AdapterID = AddSetting<DeviceID>("adapter_id", new DeviceID());
             DisplayOutputIds = AddSettingList<int>("display_id");
             VSync = AddSetting<bool>("vsync", true);
             MSAA = AddSetting<AntiAliasLevel>("msaa", 0);
@@ -35,9 +35,9 @@ namespace Molten
 
         /// <summary>Gets or sets the UID of the <see cref="IDisplayAdapter"/> that was last used.</summary>
         [DataMember]
-        public SettingValue<int> GraphicsAdapterID { get; }
+        public SettingValue<DeviceID> AdapterID { get; }
 
-        /// <summary>Gets or sets the UID of the <see cref="IDisplayOutput"/> that was last used on the last used <see cref="GraphicsAdapterID"/>.</summary>
+        /// <summary>Gets or sets the UID of the <see cref="IDisplayOutput"/> that was last used on the last used <see cref="AdapterID"/>.</summary>
         [DataMember]
         public SettingValueList<int> DisplayOutputIds { get; }
 

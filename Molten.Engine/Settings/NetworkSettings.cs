@@ -6,7 +6,7 @@ namespace Molten
     [DataContract]
     public class NetworkSettings : SettingBank
     {
-        internal NetworkSettings()
+        public NetworkSettings()
         {
             Port = AddSetting<int>("net_port", 6113);
         }

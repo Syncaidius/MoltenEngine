@@ -6,7 +6,7 @@ namespace Molten
     [DataContract]
     public class AudioSettings : SettingBank
     {
-        internal AudioSettings()
+        public AudioSettings()
         {
             MasterVolume = AddSetting("vol_master", 100f);
             SfxVolume = AddSetting("vol_sfx", 100f);

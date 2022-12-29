@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -23,7 +24,7 @@ namespace Molten
             JToken obj = JToken.Load(reader);
             Type settingType = objectType.GenericTypeArguments[0];
 
-            // If it's the old type of settings file/json, grab the value out of the "Value(s)" probably
+            // If it's the old type of settings file/json, grab the value out of the "Value(s)" property
             if (typeof(SettingValueList<>).MakeGenericType(settingType) == objectType)
             {
                 PropertyInfo valueProperty = objectType.GetProperty("Values");
@@ -52,18 +53,34 @@ namespace Molten
             }
             else
             {
-                // Old style with 'Value' property?
+
                 if (obj.Type == JTokenType.Object)
                 {
                     existingValue = obj.ToObject(objectType);
                 }
-                else
+                else // Old style with 'Value' property?
                 {
                     string strValue = obj.ToObject<string>();
                     JValue jValue = new JValue(strValue);
                     PropertyInfo pInfo = objectType.GetProperty("Value");
-                    object val = jValue.ToObject(pInfo.PropertyType);
-                    pInfo.SetValue(existingValue, val);
+
+                    if (IsSingleMemberType(settingType, out Type valType, out MemberInfo singleMember))
+                    {
+                        object singleValue = jValue.ToObject(valType);
+                        object val = Activator.CreateInstance(settingType);
+
+                        if (singleMember is PropertyInfo singleProperty)
+                            singleProperty.SetValue(val, singleValue);
+                        else if (singleMember is FieldInfo singleField)
+                            singleField.SetValue(val, singleValue);
+
+                        pInfo.SetValue(existingValue, val);
+                    }
+                    else
+                    {
+                        object val = jValue.ToObject(settingType);
+                        pInfo.SetValue(existingValue, val);
+                    }
                 }
             }
 
@@ -101,18 +118,69 @@ namespace Molten
             {
                 PropertyInfo pInfo = t.GetProperty("Value");
                 object settingValue = pInfo.GetValue(value);
+                SerializeSettingValue(writer, settingType, settingValue, serializer);
+            }
+        }
 
-                if (settingType.IsPrimitive || settingType.IsEnum || settingType == typeof(string))
+        private void SerializeSettingValue(JsonWriter writer, Type type, object value, JsonSerializer serializer)
+        {
+            if (type.IsPrimitive || type.IsEnum || type == typeof(string))
+            {
+                JToken val = JToken.FromObject(value ?? string.Empty, serializer);
+                val.WriteTo(writer);
+            }
+            else
+            {
+                if(IsSingleMemberType(type, out Type memberValueType, out MemberInfo singleMember))
                 {
-                    JToken val = JToken.FromObject(settingValue ?? string.Empty, serializer);
-                    val.WriteTo(writer);
+                    if (singleMember is PropertyInfo pMember)
+                        value = pMember.GetValue(value);
+                    else if (singleMember is FieldInfo fMember)
+                        value = fMember.GetValue(value);
+
+                    if (value != null)
+                        SerializeSettingValue(writer, memberValueType, value, serializer);
                 }
                 else
                 {
-                    JObject valObject = JObject.FromObject(settingValue, serializer);
+                    JObject valObject = JObject.FromObject(value, serializer);
                     valObject.WriteTo(writer);
                 }
             }
+        }
+
+        private bool IsSingleMemberType(Type type, out Type memberValueType, out MemberInfo member)
+        {
+            memberValueType = null;
+            member = null;
+
+            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+            IEnumerable<MemberInfo> members = type.GetMembers(bindingFlags).Where((member) =>
+            {
+                if (member.MemberType == MemberTypes.Field ||
+                    member.MemberType == MemberTypes.Property)
+                {
+                    DataMemberAttribute attData = member.GetCustomAttribute<DataMemberAttribute>();
+                    JsonPropertyAttribute attJson = member.GetCustomAttribute<JsonPropertyAttribute>();
+                    return attData != null || attJson != null;
+                }
+
+                return false;
+            });
+
+            if (members.Count() == 1)
+            {
+                member = members.First();
+                if (member is PropertyInfo pMember)
+                    memberValueType = pMember.PropertyType;
+                else if (member is FieldInfo fMember)
+                    memberValueType = fMember.FieldType;
+
+                return true;
+            }
+
+            return false;
         }
 
         public override bool CanRead

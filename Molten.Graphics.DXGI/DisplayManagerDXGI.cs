@@ -11,10 +11,14 @@ namespace Molten.Graphics.Dxgi
 
         DXGI _api;
         IDXGIFactory7* _dxgiFactory;
-        List<int> _usable;
+
         List<DisplayAdapterDXGI> _adapters;
-        int _defaultID = -1;
-        int _selectedID = -1;
+        IReadOnlyList<DisplayAdapterDXGI> _roAdapters;
+        List<DisplayAdapterDXGI> _withOutputs;
+        IReadOnlyList<DisplayAdapterDXGI> _roWithOutputs;
+
+        DisplayAdapterDXGI _defaultAdapter;
+        DisplayAdapterDXGI _selectedAdapter;
         DXGIDetectCapabilitiesCallback _capabilitiesCallback;
 
         public DisplayManagerDXGI(DXGIDetectCapabilitiesCallback capabilitiesCallback)
@@ -36,8 +40,10 @@ namespace Molten.Graphics.Dxgi
         /// <exception cref="NotImplementedException"></exception>
         public void Initialize(Logger logger, GraphicsSettings settings)
         {
-            _usable = new List<int>();
             _adapters = new List<DisplayAdapterDXGI>();
+            _roAdapters = _adapters.AsReadOnly();
+            _withOutputs = new List<DisplayAdapterDXGI>();
+            _roWithOutputs = _withOutputs.AsReadOnly();
             Log = logger;
 
             // Create factory
@@ -80,131 +86,76 @@ namespace Molten.Graphics.Dxgi
             {
                 DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, detected[i], i);
                 adapter.Capabilities = _capabilitiesCallback(adapter);
+                _adapters.Add(adapter);
 
-                if (adapter.Capabilities.HasCapabilities(settings.MinimumCapabilities))
+                if (adapter.OutputCount > 0)
                 {
-                    _adapters.Add(adapter);
+                    _withOutputs.Add(adapter);
 
-                    if (adapter.OutputCount > 0)
+                    // Set default if needed
+                    if (_defaultAdapter == null)
                     {
-                        _usable.Add(i);
-
-                        // Set default if needed
-                        if (_defaultID == -1)
-                        {
-                            _defaultID = i;
-                            _selectedID = i;
-                        }
+                        _defaultAdapter = adapter;
+                        _selectedAdapter = adapter;
                     }
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public void GetCompatibleAdapters(GraphicsCapabilities cap, List<IDisplayAdapter> adapters)
+        {
+            for (int i = 0; i < _adapters.Count; i++)
+            {
+                if (_adapters[i].Capabilities.IsCompatible(cap))
+                    adapters.Add(_adapters[i]);
+            }
+        }
+
+        /// <inheritdoc/>
+        public IReadOnlyList<IDisplayAdapter> Adapters => _roAdapters;
+
+        /// <inheritdoc/>
+        public IReadOnlyList<IDisplayAdapter> AdaptersWithOutputs => _roWithOutputs;
+
+        /// <inheritdoc/>
+        public IDisplayAdapter DefaultAdapter => _defaultAdapter;
+
+        /// <inheritdoc/>
+        public IDisplayAdapter SelectedAdapter
+        {
+            get => _selectedAdapter;
+            set
+            {
+                if (value != null)
+                {
+                    if (value is not DisplayAdapterDXGI dxgiAdapter)
+                        throw new AdapterException(value, "The adapter is not a valid DXGI adapter.");
+
+                    if (value.Manager != this)
+                        throw new AdapterException(value, "The adapter not owned by the current display manager.");
+
+                    _selectedAdapter = dxgiAdapter;
                 }
                 else
                 {
-                    adapter.Capabilities.LogIncompatibility(logger, settings.MinimumCapabilities);
+                    _selectedAdapter = null;
                 }
             }
-
-            // Output detection info into renderer log.
-            Log.WriteLine($"Detected {_adapters.Count} adapters:");
-            List<IDisplayOutput> displays = new List<IDisplayOutput>();
-            for (int i = 0; i < _adapters.Count; i++)
-            {
-                Log.WriteLine($"   Adapter {i}: {_adapters[i].Name}{(_usable.Contains(i) ? " (usable)" : "")}");
-                _adapters[i].GetAttachedOutputs(displays);
-                for (int d = 0; d < displays.Count; d++)
-                    Log.WriteLine($"       Display {d}: {displays[d].Name}");
-                displays.Clear();
-            }
-
-            // Validate the provided adapter ID from settings.
-            _selectedID = settings.GraphicsAdapterID;
-            if (_selectedID < 0 || _selectedID >= _adapters.Count)
-            {
-                _selectedID = _defaultID;
-                settings.GraphicsAdapterID.Value = _selectedID;
-                settings.DisplayOutputIds.Values.Clear();
-            }
-
-            // Validate display count.
-            displays.Clear();
-            IDisplayAdapter preferredAdapter = _adapters[_selectedID];
-            preferredAdapter.GetAttachedOutputs(displays);
-            if (settings.DisplayOutputIds.Values.Count == 0 || settings.DisplayOutputIds.Values.Count > displays.Count)
-            {
-                settings.DisplayOutputIds.Values.Clear();
-                settings.DisplayOutputIds.Values.Add(0);
-            }
-
-            settings.Apply();
-
-            // Add all preferred displays to active list
-            foreach (int id in settings.DisplayOutputIds.Values)
-                preferredAdapter.AddActiveOutput(preferredAdapter.GetOutput(id));
-
-            // Log preferred adapter stats
-            Log.WriteLine($"Chosen {preferredAdapter.Name}");
-            Log.WriteLine($"    Dedicated VRAM: {preferredAdapter.DedicatedVideoMemory:N2} MB");
-            Log.WriteLine($"    System RAM dedicated to video: {preferredAdapter.DedicatedSystemMemory:N2} MB");
-            Log.WriteLine($"    Shared system RAM: {preferredAdapter.SharedSystemMemory:N2} MB");
         }
 
-        /// <summary>
-        /// Gets the adapters.
-        /// </summary>
-        /// <param name="output">The output list.</param>
-        public void GetAdapters(List<IDisplayAdapter> output)
+        /// <inheritdoc/>
+        public IDisplayAdapter this[DeviceID id]
         {
-            output.AddRange(_adapters);
-        }
-
-        /// <summary>
-        /// Adds all adapters with at least one output attached, to the provided output list.
-        /// </summary>
-        /// <param name="output">The list in which to add the results.</param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void GetAdaptersWithOutputs(List<IDisplayAdapter> output)
-        {
-            for (int i = 0; i < _usable.Count; i++)
-                output.Add(_adapters[_usable[i]]);
-        }
-
-        /// <summary>
-        /// Gets the adapter at the specified listing ID. This may change if the physical hardware is altered or swapped around.
-        /// </summary>
-        /// <param name="id">The ID.</param>
-        /// <returns></returns>
-        public IDisplayAdapter GetAdapter(int id)
-        {
-            if (id >= _adapters.Count)
-                throw new IndexOutOfRangeException($"ID was {id} while there are only {_adapters.Count} adapters.");
-
-            if (id < 0)
-                throw new IndexOutOfRangeException("ID cannot be less than 0");
-
-            return _adapters[id];
-        }
-
-        /// <summary>
-        /// Gets the number of display adapters attached to the system.
-        /// </summary>
-        public int AdapterCount => _adapters.Count;
-
-        /// <summary>
-        /// Gets the system's default display adapter.
-        /// </summary>
-        public IDisplayAdapter DefaultAdapter => _adapters[_defaultID];
-
-        /// <summary>
-        /// Gets or sets the adapter currently selected for use by the engine.
-        /// </summary>
-        public IDisplayAdapter SelectedAdapter
-        {
-            get => _adapters[_selectedID];
-            set
+            get
             {
-                if (value.Manager != this)
-                    throw new AdapterException(value, "The adapter not owned by the current display manager.");
+                foreach(IDisplayAdapter adapter in _adapters)
+                {
+                    if (adapter.ID == id)
+                        return adapter;
+                }
 
-                _selectedID = value.ID;
+                return null;
             }
         }
 

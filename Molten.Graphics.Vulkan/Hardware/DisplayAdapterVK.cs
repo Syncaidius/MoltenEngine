@@ -59,7 +59,7 @@ namespace Molten.Graphics.Hardware
 
         public double SharedSystemMemory { get; }
 
-        public int ID { get; }
+        public DeviceID ID { get; }
 
         public GraphicsAdapterVendor Vendor { get; }
 

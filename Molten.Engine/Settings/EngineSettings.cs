@@ -17,11 +17,11 @@ namespace Molten
         {
             _startupServices = new List<EngineService>();
             StartupServices = _startupServices.AsReadOnly();
-            Graphics = new GraphicsSettings();
-            Input = new InputSettings();
-            Network = new NetworkSettings();
-            Audio = new AudioSettings();
-            UI = new UISettings();
+            Graphics = AddBank<GraphicsSettings>();
+            Input = AddBank<InputSettings>();
+            Network = AddBank<NetworkSettings>();
+            Audio = AddBank<AudioSettings>();
+            UI = AddBank<UISettings>();
 
 
             // Add third-party JSON converters.

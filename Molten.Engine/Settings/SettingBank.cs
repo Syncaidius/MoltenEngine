@@ -6,12 +6,14 @@ namespace Molten
 {
     public abstract class SettingBank
     {
-        ThreadedList<SettingValue> _settings;
+        List<SettingValue> _settings;
+        List<SettingBank> _childBanks;
         ConcurrentDictionary<string, SettingValue> _byKey;
 
         internal SettingBank()
         {
-            _settings = new ThreadedList<SettingValue>();
+            _settings = new List<SettingValue>();
+            _childBanks = new List<SettingBank>();
             _byKey = new ConcurrentDictionary<string, SettingValue>();
         }
 
@@ -50,6 +52,14 @@ namespace Molten
             return _byKey.Remove(key, out r);
         }
 
+        protected T AddBank<T>()
+            where T : SettingBank, new()
+        {
+            T bank = new T();
+            _childBanks.Add(bank);
+            return bank;
+        }
+
         protected SettingValue<T> AddSetting<T>(string key, T defaultValue = default(T))
         {
             SettingValue<T> r = new SettingValue<T>();
@@ -69,16 +79,24 @@ namespace Molten
             return r;
         }
 
-        /// <summary>Apply all pending setting changes.</summary>
+        /// <summary>Apply all pending setting changes, including those in child/nested <see cref="SettingBank"/>.</summary>
         public void Apply()
         {
-            _settings.For(0, 1, (index, item) => item.Apply());
+            foreach (SettingValue val in _settings)
+                val.Apply();
+
+            foreach(SettingBank bank in _childBanks)
+                bank.Apply();
         }
 
-        /// <summary>Cancel all pending setting changes.</summary>
+        /// <summary>Cancel all pending setting changes, including those in child/nested <see cref="SettingBank"/>.</summary>
         public void Cancel()
         {
-            _settings.For(0, 1, (index, item) => item.Cancel());
+            foreach (SettingValue val in _settings)
+                val.Cancel();
+
+            foreach (SettingBank bank in _childBanks)
+                bank.Cancel();
         }
     }
 }

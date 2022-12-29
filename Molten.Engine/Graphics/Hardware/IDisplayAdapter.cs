@@ -37,8 +37,8 @@
         /// <summary>Gets the amount of system memory that is being shared with the adapter, in megabytes.</summary>
         double SharedSystemMemory { get; }
 
-        /// <summary>Gets the listing ID of the <see cref="IDisplayAdapter"/>.</summary>
-        int ID { get; }
+        /// <summary>Gets the machine-local device ID of the current <see cref="IDisplayAdapter"/>.</summary>
+        DeviceID ID { get; }
 
         /// <summary>The hardware vendor.</summary>
         GraphicsAdapterVendor Vendor { get; }

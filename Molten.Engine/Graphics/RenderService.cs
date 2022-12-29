@@ -240,6 +240,38 @@ namespace Molten.Graphics
             {
                 DisplayManager.Initialize(Log, settings.Graphics);
                 Log.WriteLine($"Initialized display manager");
+
+                // Output detection info into renderer log.
+                IReadOnlyList<IDisplayAdapter> adapters = DisplayManager.Adapters;
+                Log.WriteLine($"Detected {adapters.Count} adapters:");
+                List<IDisplayOutput> displays = new List<IDisplayOutput>();
+                int aID = 1;
+
+                foreach(IDisplayAdapter adapter in adapters)
+                {
+                    bool hasOutputs = DisplayManager.AdaptersWithOutputs.Contains(adapter);
+                    Log.WriteLine($"   Adapter {aID++}: {adapter.Name}{(hasOutputs ? " (usable)" : "")}");
+                    if (hasOutputs)
+                    {
+                        adapter.GetAttachedOutputs(displays);
+                        for (int d = 0; d < displays.Count; d++)
+                            Log.WriteLine($"       Display {d}: {displays[d].Name}");
+
+                        displays.Clear();
+                    }
+                }
+
+                IDisplayAdapter preferredAdapter = ValidateAdapterSettings(settings.Graphics, displays);
+
+                // Add all preferred displays to active list
+                foreach (int id in settings.Graphics.DisplayOutputIds.Values)
+                    preferredAdapter.AddActiveOutput(preferredAdapter.GetOutput(id));
+
+                // Log preferred adapter stats
+                Log.WriteLine($"Chosen {preferredAdapter.Name}");
+                Log.WriteLine($"    Dedicated VRAM: {preferredAdapter.DedicatedVideoMemory:N2} MB");
+                Log.WriteLine($"    System RAM dedicated to video: {preferredAdapter.DedicatedSystemMemory:N2} MB");
+                Log.WriteLine($"    Shared system RAM: {preferredAdapter.SharedSystemMemory:N2} MB");
             }
             catch (Exception ex)
             {
@@ -250,6 +282,43 @@ namespace Molten.Graphics
             settings.Graphics.Log(Log, "Graphics");
             MsaaLevel = _requestedMultiSampleLevel = MsaaLevel;
             settings.Graphics.MSAA.OnChanged += MSAA_OnChanged;
+        }
+
+        private IDisplayAdapter ValidateAdapterSettings(GraphicsSettings gfxSettings, List<IDisplayOutput> displays)
+        {
+            // Does the chosen device ID from settings still match any of our detected devices?
+            DeviceID selectedID = gfxSettings.AdapterID;
+            IDisplayAdapter preferredAdapter = DisplayManager[selectedID];
+            if (preferredAdapter == null)
+            {
+                preferredAdapter = DisplayManager.DefaultAdapter;
+                gfxSettings.AdapterID.Value = preferredAdapter.ID;
+                gfxSettings.DisplayOutputIds.Values.Clear();
+
+                if (selectedID.ID != 0)
+                {
+                    if (preferredAdapter != null)
+                        Log.Warning($"Reverted adapter to {preferredAdapter.Name} ({preferredAdapter.ID}) - Previous not found ({selectedID})");
+                    else
+                        Log.Warning($"No adapter available. Previous one not found ({selectedID})");
+                }
+            }
+
+            // Validate display count.
+            if (preferredAdapter != null)
+            {
+                preferredAdapter.GetAttachedOutputs(displays);
+                if (gfxSettings.DisplayOutputIds.Values.Count == 0 || gfxSettings.DisplayOutputIds.Values.Count > displays.Count)
+                {
+                    gfxSettings.DisplayOutputIds.Values.Clear();
+                    gfxSettings.DisplayOutputIds.Values.Add(0);
+                }
+            }
+
+            gfxSettings.AdapterID.Apply();
+            gfxSettings.DisplayOutputIds.Apply();
+
+            return preferredAdapter;
         }
 
         private void MSAA_OnChanged(AntiAliasLevel oldValue, AntiAliasLevel newValue)

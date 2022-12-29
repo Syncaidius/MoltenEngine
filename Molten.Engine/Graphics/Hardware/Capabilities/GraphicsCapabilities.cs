@@ -56,7 +56,7 @@ namespace Molten.Graphics
             }
         }
 
-        public bool HasCapabilities(GraphicsCapabilities other)
+        public bool IsCompatible(GraphicsCapabilities other)
         {
             // TODO compare current to other. Current must have at least everything 'other' specifies.
 

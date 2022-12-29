@@ -5,7 +5,7 @@ namespace Molten
 {
     public class UISettings : SettingBank
     {
-        internal UISettings()
+        public UISettings()
         {
             TooltipDelay = AddSetting("tooltip_delay", 500);
             DragThreshold = AddSetting("drag_threshold", 10f);

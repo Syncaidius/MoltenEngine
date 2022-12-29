@@ -10,17 +10,13 @@ namespace Molten.Graphics
 {
     internal unsafe class DisplayManagerVK : IDisplayManager
     {
-        public int AdapterCount => throw new NotImplementedException();
-
-        public IDisplayAdapter DefaultAdapter => throw new NotImplementedException();
-
-        public IDisplayAdapter SelectedAdapter { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
         RendererVK _renderer;
+        List<DisplayAdapterVK> _adapters;
 
         internal DisplayManagerVK(RendererVK renderer)
         {
             _renderer = renderer;
+            _adapters = new List<DisplayAdapterVK>();
         }
 
         public void Initialize(Logger logger, GraphicsSettings settings)
@@ -38,13 +34,16 @@ namespace Molten.Graphics
                 {
                     for (int i = 0; i < deviceCount; i++)
                     {
-                        PhysicalDeviceProperties dProperties;
-                        _renderer.VK.GetPhysicalDeviceProperties(*devices, &dProperties);
+                        PhysicalDeviceProperties2 dProperties;
+                        _renderer.VK.GetPhysicalDeviceProperties2(*devices, &dProperties);
 
-                        PhysicalDeviceFeatures dFeatures;
-                        _renderer.VK.GetPhysicalDeviceFeatures(*devices, &dFeatures);
+                        PhysicalDeviceFeatures2 dFeatures;
+                        _renderer.VK.GetPhysicalDeviceFeatures2(*devices, &dFeatures);
 
-                        GraphicsCapabilities cap = capBuilder.Build(ref dProperties, ref dProperties.Limits, ref dFeatures);
+                        GraphicsCapabilities cap = capBuilder.Build(ref dProperties.Properties, ref dProperties.Properties.Limits, ref dFeatures.Features);
+                        DisplayAdapterVK adapter = new DisplayAdapterVK(this, cap, ref dProperties.Properties);
+                        _adapters.Add(adapter);
+
                         devices++;
                     }
                 }
@@ -58,19 +57,19 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public IDisplayAdapter GetAdapter(int id)
+        public void GetCompatibleAdapters(GraphicsCapabilities capabilities, List<IDisplayAdapter> adapters)
         {
             throw new NotImplementedException();
         }
 
-        public void GetAdapters(List<IDisplayAdapter> output)
-        {
-            throw new NotImplementedException();
-        }
+        public IDisplayAdapter DefaultAdapter => throw new NotImplementedException();
 
-        public void GetAdaptersWithOutputs(List<IDisplayAdapter> output)
-        {
-            throw new NotImplementedException();
-        }
+        public IDisplayAdapter SelectedAdapter { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public IReadOnlyList<IDisplayAdapter> Adapters => throw new NotImplementedException();
+
+        public IReadOnlyList<IDisplayAdapter> AdaptersWithOutputs => throw new NotImplementedException();
+
+        public IDisplayAdapter this[DeviceID id] => throw new NotImplementedException();
     }
 }

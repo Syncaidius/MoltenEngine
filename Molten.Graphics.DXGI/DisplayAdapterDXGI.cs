@@ -23,9 +23,9 @@ namespace Molten.Graphics.Dxgi
             _manager = manager;
             Native = adapter;
             _activeOutputs = new List<DisplayOutputDXGI>();
-            ID = id;
             _desc = EngineUtil.Alloc<AdapterDesc3>();
             adapter->GetDesc3(_desc);
+            ID = (DeviceID)_desc->AdapterLuid;
 
             Name = SilkMarshal.PtrToString((nint)_desc->Description, NativeStringEncoding.LPWStr);
 
@@ -155,8 +155,8 @@ namespace Molten.Graphics.Dxgi
         /// <summary>Gets the amount of system memory that is being shared with the adapter.</summary>
         public double SharedSystemMemory { get; }
 
-        /// <summary>Gets the ID of the adapter.</summary>
-        public int ID { get; private set; }
+        /// <<inheritdoc/>
+        public DeviceID ID { get; private set; }
 
         /// <summary>The hardware vendor.</summary>
         public GraphicsAdapterVendor Vendor { get; private set; }

@@ -5,7 +5,7 @@ namespace Molten.Input
     [DataContract]
     public class InputSettings : SettingBank
     {
-        internal InputSettings()
+        public InputSettings()
         {
             PointerBufferSize = AddSetting("pointer_buffer_size", 300);
             PointerSensitivity = AddSetting("pointer_sensitivity", 1.0f);
