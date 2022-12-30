@@ -15,7 +15,7 @@ namespace Molten.Graphics.Hardware
         DisplayManagerVK _manager;
         GraphicsCapabilities _cap;
 
-        internal DisplayAdapterVK(DisplayManagerVK manager, GraphicsCapabilities cap, ref PhysicalDeviceProperties properties)
+        internal DisplayAdapterVK(DisplayManagerVK manager, GraphicsCapabilities cap, ref PhysicalDeviceProperties2 properties)
         {
             _manager = manager;
             _cap = cap;

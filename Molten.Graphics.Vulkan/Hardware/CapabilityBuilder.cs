@@ -9,7 +9,14 @@ namespace Molten.Graphics
 {
     internal class CapabilityBuilder
     {
-        internal unsafe GraphicsCapabilities Build(ref PhysicalDeviceProperties properties, ref PhysicalDeviceLimits limits, ref PhysicalDeviceFeatures features)
+        internal unsafe struct PropertiesRef
+        {
+            public StructureType SType;
+
+            public void* PNext;
+        }
+
+        internal unsafe GraphicsCapabilities Build(ref PhysicalDeviceProperties2 properties, ref PhysicalDeviceLimits limits, ref PhysicalDeviceFeatures features)
         {
             GraphicsCapabilities cap = new GraphicsCapabilities();
 
@@ -25,7 +32,7 @@ namespace Molten.Graphics
             cap.MaxAllocatedSamplers = limits.MaxSamplerAllocationCount;
 
             uint variant, major, minor, patch;
-            RendererVK.UnpackVersion(properties.ApiVersion, out variant, out major, out minor, out patch);
+            RendererVK.UnpackVersion(properties.Properties.ApiVersion, out variant, out major, out minor, out patch);
 
             cap.ApiVersion = $"{variant}.{major}.{minor}.{patch}";
             if (major == 1)
@@ -68,6 +75,17 @@ namespace Molten.Graphics
             cap.Compute.MaxGroupSizeZ = limits.MaxComputeWorkGroupSize[2];       
 
             return cap;
+        }
+
+        internal unsafe void LogAdditionalProperties(Logger log, PhysicalDeviceProperties2* properties)
+        {
+            int count = 0;
+            PropertiesRef* pRef = (PropertiesRef*)&properties;
+            while(pRef->PNext != null)
+            {
+                pRef = (PropertiesRef*)pRef->PNext;
+                log.WriteLine($"Addtional device properties found: {pRef->SType}");
+            }
         }
     }
 }
