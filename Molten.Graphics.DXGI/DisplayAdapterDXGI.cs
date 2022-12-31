@@ -29,13 +29,13 @@ namespace Molten.Graphics.Dxgi
 
             Name = SilkMarshal.PtrToString((nint)_desc->Description, NativeStringEncoding.LPWStr);
             Vendor = EngineUtil.VendorFromPCI(_desc->VendorId);
-
             DedicatedSystemMemory = ByteMath.ToMegabytes(_desc->DedicatedSystemMemory);
             DedicatedVideoMemory = ByteMath.ToMegabytes(_desc->DedicatedVideoMemory);
 
             nuint sharedMemory = _desc->SharedSystemMemory;
             sharedMemory = sharedMemory < 0 ? 0 : sharedMemory;
             SharedSystemMemory = ByteMath.ToMegabytes(sharedMemory);
+            Type = GetAdapterType(_desc->Flags);
 
             IDXGIOutput1*[] outputs = DXGIHelper.EnumArray<IDXGIOutput1, IDXGIOutput>((uint index, ref IDXGIOutput* ptrOutput) =>
             {
@@ -55,6 +55,20 @@ namespace Molten.Graphics.Dxgi
 
                 _connectedOutputs[i] = new DisplayOutputDXGI(this, (IDXGIOutput6*)ptr6);
             }
+        }
+
+        private DisplayAdapterType GetAdapterType(AdapterFlag3 flags)
+        {
+            if ((flags & AdapterFlag3.Software) == AdapterFlag3.Software)
+                return DisplayAdapterType.Cpu;
+
+            if (DedicatedVideoMemory > 0)
+                return DisplayAdapterType.DiscreteGpu;
+
+            if (DedicatedSystemMemory > 0 || SharedSystemMemory > 0)
+                return DisplayAdapterType.IntegratedGpu;
+
+            return DisplayAdapterType.Other;
         }
 
         protected override void OnDispose()
@@ -118,29 +132,31 @@ namespace Molten.Graphics.Dxgi
             outputList.AddRange(_connectedOutputs);
         }
 
-        /// <summary>Gets the amount of dedicated video memory, in megabytes.</summary>
+        /// <inheritdoc/>
         public double DedicatedVideoMemory { get; }
 
-        /// <summary>Gets the amount of system memory dedicated to the adapter.</summary>
+        /// <inheritdoc/>
         public double DedicatedSystemMemory { get; }
 
-        /// <summary>Gets the amount of system memory that is being shared with the adapter.</summary>
+        /// <inheritdoc/>
         public double SharedSystemMemory { get; }
 
         /// <<inheritdoc/>
         public DeviceID ID { get; private set; }
 
-        /// <summary>The hardware vendor.</summary>
+        /// <inheritdoc/>
         public DeviceVendor Vendor { get; private set; }
 
-        /// <summary>Gets the number of <see cref="GraphicsOutput"/> connected to the adapter.</summary>
+        /// <inheritdoc/>
+        public DisplayAdapterType Type { get; private set; }
+
+        /// <inheritdoc/>
         public int OutputCount => _connectedOutputs.Length;
 
-        /// <summary>
-        /// Gets the <see cref="IDisplayManager" /> that spawned the adapter.
-        /// </summary>
+        /// <inheritdoc/>
         public IDisplayManager Manager => _manager;
 
+        /// <inheritdoc/>
         public GraphicsCapabilities Capabilities { get; internal set; }
     }
 }

@@ -43,6 +43,11 @@
         /// <summary>The hardware vendor.</summary>
         DeviceVendor Vendor { get; }
 
+        /// <summary>
+        /// Gets the <see cref="DisplayAdapterType"/> of the current <see cref="IDisplayAdapter"/>.
+        /// </summary>
+        DisplayAdapterType Type { get; }
+
         /// <summary>Gets the number of <see cref="IDisplayOutput"/> connected to the current <see cref="IDisplayAdapter"/>.</summary>
         int OutputCount { get; }
 

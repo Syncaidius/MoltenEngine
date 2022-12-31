@@ -14,7 +14,6 @@ namespace Molten.Graphics.Hardware
         public event DisplayOutputChanged OnOutputDeactivated;
 
         DisplayManagerVK _manager;
-        GraphicsCapabilities _cap;
         PhysicalDevice _device;
 
         internal DisplayAdapterVK(DisplayManagerVK manager, PhysicalDevice device)
@@ -27,18 +26,22 @@ namespace Molten.Graphics.Hardware
 
         private void GetProperties()
         {
-            PhysicalDeviceProperties2 dProperties = new PhysicalDeviceProperties2(StructureType.PhysicalDeviceProperties2);
-            _manager.Renderer.VK.GetPhysicalDeviceProperties2(_device, &dProperties);
+            PhysicalDeviceProperties2 p = new PhysicalDeviceProperties2(StructureType.PhysicalDeviceProperties2);
+            _manager.Renderer.VK.GetPhysicalDeviceProperties2(_device, &p);
 
-            Name = SilkMarshal.PtrToString((nint)dProperties.Properties.DeviceName, NativeStringEncoding.UTF8);
-            ID = ParseDeviceID(dProperties.Properties.DeviceID);
-            Vendor = ParseVendorID(dProperties.Properties.VendorID);
+            Name = SilkMarshal.PtrToString((nint)p.Properties.DeviceName, NativeStringEncoding.UTF8);
+            ID = ParseDeviceID(p.Properties.DeviceID);
+            Vendor = ParseVendorID(p.Properties.VendorID);
+            Type = (DisplayAdapterType)p.Properties.DeviceType;
 
             PhysicalDeviceFeatures2 dFeatures = new PhysicalDeviceFeatures2(StructureType.PhysicalDeviceFeatures2);
             _manager.Renderer.VK.GetPhysicalDeviceFeatures2(_device, &dFeatures);
 
-            _cap = _manager.CapBuilder.Build(ref dProperties, ref dProperties.Properties.Limits, ref dFeatures.Features);
-            _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &dProperties);
+            Capabilities = _manager.CapBuilder.Build(ref p, ref p.Properties.Limits, ref dFeatures.Features);
+
+#if DEBUG
+            _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &p);
+#endif
         }
 
         private DeviceVendor ParseVendorID(uint vendorID)
@@ -102,10 +105,12 @@ namespace Molten.Graphics.Hardware
 
         public DeviceVendor Vendor { get; private set; }
 
+        public DisplayAdapterType Type { get; private set; }
+
         public int OutputCount { get; }
 
         public IDisplayManager Manager => _manager;
 
-        public GraphicsCapabilities Capabilities { get; internal set; }
+        public GraphicsCapabilities Capabilities { get; private set; }
     }
 }
