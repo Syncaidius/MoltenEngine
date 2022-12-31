@@ -53,7 +53,7 @@ namespace Molten.Graphics
             {
                 SType = StructureType.ApplicationInfo,
                 EngineVersion = 1,
-                ApiVersion = MakeVersion(0, 1, 1, 0),
+                ApiVersion = MakeVersion(0, 1, 3, 0),
             };
 
             InstanceCreateInfo createInfo = new InstanceCreateInfo()

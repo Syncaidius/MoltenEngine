@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Core;
 
 namespace Molten.Graphics
 {
@@ -45,10 +46,15 @@ namespace Molten.Graphics
         {
             Type sType = typeof(ShaderStageCapabilities);
             PropertyInfo pInfo = sType.GetProperty(propertyName);
-            if(pInfo != null)
+            if (pInfo != null)
             {
-                Type vType = typeof(T);
-                if (pInfo.PropertyType.IsAssignableFrom(vType))
+                Type vType = value.GetType();
+                if (value is Bool32 bValue && pInfo.PropertyType == typeof(bool))
+                {
+                    foreach (ShaderStageCapabilities sCap in _shaderCap.Values)
+                        pInfo.SetValue(sCap, bValue.Value == 1);
+                }
+                else if (pInfo.PropertyType.IsAssignableFrom(vType))
                 {
                     foreach (ShaderStageCapabilities sCap in _shaderCap.Values)
                         pInfo.SetValue(sCap, value);

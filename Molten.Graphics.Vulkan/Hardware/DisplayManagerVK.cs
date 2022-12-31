@@ -29,24 +29,23 @@ namespace Molten.Graphics
             if (_renderer.LogResult(r))
             {
                 PhysicalDevice* devices = EngineUtil.AllocArray<PhysicalDevice>(deviceCount);
-                r = _renderer.VK.EnumeratePhysicalDevices(*_renderer.Ptr, &deviceCount, devices);
+                r = _renderer.VK.EnumeratePhysicalDevices(*_renderer.Ptr, &deviceCount, devices); 
+                
                 if (_renderer.LogResult(r))
                 {
                     for (int i = 0; i < deviceCount; i++)
                     {
                         PhysicalDeviceProperties2 dProperties = new PhysicalDeviceProperties2(StructureType.PhysicalDeviceProperties2);
-                        _renderer.VK.GetPhysicalDeviceProperties2(*devices, &dProperties);
+                        _renderer.VK.GetPhysicalDeviceProperties2(devices[i], &dProperties);
 
-                        PhysicalDeviceFeatures2 dFeatures;
-                        _renderer.VK.GetPhysicalDeviceFeatures2(*devices, &dFeatures);
+                        PhysicalDeviceFeatures2 dFeatures = new PhysicalDeviceFeatures2(StructureType.PhysicalDeviceFeatures2);
+                        _renderer.VK.GetPhysicalDeviceFeatures2(devices[i], &dFeatures);
 
                         GraphicsCapabilities cap = capBuilder.Build(ref dProperties, ref dProperties.Properties.Limits, ref dFeatures.Features);
                         DisplayAdapterVK adapter = new DisplayAdapterVK(this, cap, ref dProperties);
                         _adapters.Add(adapter);
 
                         capBuilder.LogAdditionalProperties(logger, &dProperties);
-
-                        devices++;
                     }
                 }
 
