@@ -53,7 +53,7 @@ namespace Molten.Graphics
             {
                 SType = StructureType.ApplicationInfo,
                 EngineVersion = 1,
-                ApiVersion = MakeVersion(0, 1, 0, 0),
+                ApiVersion = MakeVersion(0, 1, 1, 0),
             };
 
             InstanceCreateInfo createInfo = new InstanceCreateInfo()
@@ -63,6 +63,9 @@ namespace Molten.Graphics
                 EnabledLayerCount = 0,
                 EnabledExtensionCount = 0,
             };
+
+            // TODO Store baseline profiles for each OS/platform where possible, or default to Moltens own.
+            // For android see: https://developer.android.com/ndk/guides/graphics/android-baseline-profile
 
             if (settings.EnableDebugLayer.Value == true)
                 SetupValidationLayers(ref createInfo);

@@ -34,7 +34,7 @@ namespace Molten.Graphics
                 {
                     for (int i = 0; i < deviceCount; i++)
                     {
-                        PhysicalDeviceProperties2 dProperties;
+                        PhysicalDeviceProperties2 dProperties = new PhysicalDeviceProperties2(StructureType.PhysicalDeviceProperties2);
                         _renderer.VK.GetPhysicalDeviceProperties2(*devices, &dProperties);
 
                         PhysicalDeviceFeatures2 dFeatures;
