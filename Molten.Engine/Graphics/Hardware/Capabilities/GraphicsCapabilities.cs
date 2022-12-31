@@ -183,6 +183,19 @@ namespace Molten.Graphics
         /// </summary>
         public uint MaxPrimitiveCount { get; set; }
 
+        /// <summary>Gets or sets the amount of dedicated video memory (VRAM), in megabytes. This is generally found in discrete/dedicated display adapters.</summary>
+        public double DedicatedVideoMemory { get; set; }
+
+        /// <summary>Gets or sets the amount of system memory (RAM) dedicated to the adapter, in megabytes. This is often found in integrated display adapters.</summary>
+        public double DedicatedSystemMemory { get; set; }
+
+        /// <summary>Gets or sets the amount of video memory (VRAM) that is being shared with the system, in megabytes. 
+        /// <para>This area of memory is generally available for direct mapping by the local machine CPU.</para></summary>
+        public double SharedVideoMemory { get; set; }
+
+        /// <summary>Gets or sets the maximum amount of system memory (RAM) that can be shared with the the adapter.</summary>
+        public double SharedSystemMemory { get; set; }
+
         /// <summary>
         /// Gets capabilities for vertex buffers.
         /// </summary>

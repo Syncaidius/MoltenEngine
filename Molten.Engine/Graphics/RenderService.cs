@@ -250,12 +250,20 @@ namespace Molten.Graphics
                 foreach(IDisplayAdapter adapter in adapters)
                 {
                     bool hasOutputs = DisplayManager.AdaptersWithOutputs.Contains(adapter);
-                    Log.WriteLine($"   Adapter {aID++}: {adapter.Name}{(hasOutputs ? " (usable)" : "")}");
+                    Log.WriteLine($"   {aID++}. Adapter {aID++}: {adapter.Name}{(hasOutputs ? " (usable)" : "")}");
+                    Log.WriteLine($"      Type: {adapter.Type}");
+                    Log.WriteLine($"      VRAM: {adapter.Capabilities.DedicatedVideoMemory:N2} MB");
+                    Log.WriteLine($"      Shared VRAM: {adapter.Capabilities.SharedVideoMemory:N2} MB");
+                    Log.WriteLine($"      Dedicated system RAM: {adapter.Capabilities.DedicatedSystemMemory:N2} MB");
+                    Log.WriteLine($"      Shared system RAM: {adapter.Capabilities.SharedSystemMemory:N2} MB");
+
+
                     if (hasOutputs)
                     {
                         adapter.GetAttachedOutputs(displays);
+                        Log.WriteLine($"      Detected {displays.Count} adapters:");
                         for (int d = 0; d < displays.Count; d++)
-                            Log.WriteLine($"       Display {d}: {displays[d].Name}");
+                            Log.WriteLine($"         Display {d+1}: {displays[d].Name}");
 
                         displays.Clear();
                     }
@@ -269,9 +277,6 @@ namespace Molten.Graphics
 
                 // Log preferred adapter stats
                 Log.WriteLine($"Chosen {preferredAdapter.Name}");
-                Log.WriteLine($"    Dedicated VRAM: {preferredAdapter.DedicatedVideoMemory:N2} MB");
-                Log.WriteLine($"    System RAM dedicated to video: {preferredAdapter.DedicatedSystemMemory:N2} MB");
-                Log.WriteLine($"    Shared system RAM: {preferredAdapter.SharedSystemMemory:N2} MB");
             }
             catch (Exception ex)
             {

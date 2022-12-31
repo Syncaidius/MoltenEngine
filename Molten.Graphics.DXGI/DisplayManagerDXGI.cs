@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Dxgi
 {
-    public delegate GraphicsCapabilities DXGIDetectCapabilitiesCallback(DisplayAdapterDXGI adapter);
+    public unsafe delegate GraphicsCapabilities DXGIDetectCapabilitiesCallback(IDXGIAdapter4* adapter);
 
     public unsafe class DisplayManagerDXGI : EngineObject, IDisplayManager
     {
@@ -11,11 +11,8 @@ namespace Molten.Graphics.Dxgi
 
         DXGI _api;
         IDXGIFactory7* _dxgiFactory;
-
         List<DisplayAdapterDXGI> _adapters;
-        IReadOnlyList<DisplayAdapterDXGI> _roAdapters;
         List<DisplayAdapterDXGI> _withOutputs;
-        IReadOnlyList<DisplayAdapterDXGI> _roWithOutputs;
 
         DisplayAdapterDXGI _defaultAdapter;
         DisplayAdapterDXGI _selectedAdapter;
@@ -24,7 +21,11 @@ namespace Molten.Graphics.Dxgi
         public DisplayManagerDXGI(DXGIDetectCapabilitiesCallback capabilitiesCallback)
         {
             _api = DXGI.GetApi();
-            _capabilitiesCallback = capabilitiesCallback;
+            _capabilitiesCallback = capabilitiesCallback; 
+            _adapters = new List<DisplayAdapterDXGI>();
+            Adapters = _adapters.AsReadOnly();
+            _withOutputs = new List<DisplayAdapterDXGI>();
+            AdaptersWithOutputs = _withOutputs.AsReadOnly();
         }
 
         protected override void OnDispose()
@@ -40,10 +41,6 @@ namespace Molten.Graphics.Dxgi
         /// <exception cref="NotImplementedException"></exception>
         public void Initialize(Logger logger, GraphicsSettings settings)
         {
-            _adapters = new List<DisplayAdapterDXGI>();
-            _roAdapters = _adapters.AsReadOnly();
-            _withOutputs = new List<DisplayAdapterDXGI>();
-            _roWithOutputs = _withOutputs.AsReadOnly();
             Log = logger;
 
             // Create factory
@@ -84,8 +81,8 @@ namespace Molten.Graphics.Dxgi
 
             for (int i = 0; i < detected.Length; i++)
             {
-                DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, detected[i]);
-                adapter.Capabilities = _capabilitiesCallback(adapter);
+                GraphicsCapabilities cap = _capabilitiesCallback(detected[i]);
+                DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, cap, detected[i]);
                 _adapters.Add(adapter);
 
                 if (adapter.OutputCount > 0)
@@ -113,10 +110,10 @@ namespace Molten.Graphics.Dxgi
         }
 
         /// <inheritdoc/>
-        public IReadOnlyList<IDisplayAdapter> Adapters => _roAdapters;
+        public IReadOnlyList<IDisplayAdapter> Adapters { get; }
 
         /// <inheritdoc/>
-        public IReadOnlyList<IDisplayAdapter> AdaptersWithOutputs => _roWithOutputs;
+        public IReadOnlyList<IDisplayAdapter> AdaptersWithOutputs { get; }
 
         /// <inheritdoc/>
         public IDisplayAdapter DefaultAdapter => _defaultAdapter;

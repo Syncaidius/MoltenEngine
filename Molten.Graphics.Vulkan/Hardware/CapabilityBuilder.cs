@@ -16,7 +16,11 @@ namespace Molten.Graphics
             public void* PNext;
         }
 
-        internal unsafe GraphicsCapabilities Build(ref PhysicalDeviceProperties2 properties, ref PhysicalDeviceLimits limits, ref PhysicalDeviceFeatures features)
+        internal unsafe GraphicsCapabilities Build(
+            ref PhysicalDeviceProperties2 properties, 
+            ref PhysicalDeviceLimits limits, 
+            ref PhysicalDeviceFeatures features,
+            ref PhysicalDeviceMemoryProperties2 mem)
         {
             GraphicsCapabilities cap = new GraphicsCapabilities();
 
@@ -31,8 +35,10 @@ namespace Molten.Graphics
             cap.BlendLogicOp = features.LogicOp;
             cap.MaxAllocatedSamplers = limits.MaxSamplerAllocationCount;
 
+            GetMemoryProperties(cap, ref mem);
+
             uint variant, major, minor, patch;
-            RendererVK.UnpackVersion(properties.Properties.ApiVersion, out variant, out major, out minor, out patch);
+            UnpackVersion(properties.Properties.ApiVersion, out variant, out major, out minor, out patch);
 
             cap.ApiVersion = $"{variant}.{major}.{minor}.{patch}";
             if (major == 1)
@@ -75,6 +81,48 @@ namespace Molten.Graphics
             cap.Compute.MaxGroupSizeZ = limits.MaxComputeWorkGroupSize[2];       
 
             return cap;
+        }
+
+        private void GetMemoryProperties(GraphicsCapabilities cap, ref PhysicalDeviceMemoryProperties2 mem)
+        {
+            Dictionary<uint, MemoryPropertyFlags> heapFlags = new Dictionary<uint, MemoryPropertyFlags>();
+
+            // Search here for device spec references: http://vulkan.gpuinfo.org/listdevices.php
+            for (int i = 0; i < mem.MemoryProperties.MemoryTypeCount; i++)
+            {
+                MemoryType mType = mem.MemoryProperties.MemoryTypes[i];
+                if (!heapFlags.ContainsKey(mType.HeapIndex))
+                    heapFlags[mType.HeapIndex] = mType.PropertyFlags;
+                else
+                    heapFlags[mType.HeapIndex] |= mType.PropertyFlags; 
+            }
+
+            foreach(uint heapIndex in heapFlags.Keys)
+            {
+                MemoryHeap mHeap = mem.MemoryProperties.MemoryHeaps[(int)heapIndex];
+                MemoryPropertyFlags flags = heapFlags[heapIndex];
+
+                double heapSize = ByteMath.ToMegabytes(mHeap.Size);
+
+                if ((flags & MemoryPropertyFlags.DeviceLocalBit) == MemoryPropertyFlags.DeviceLocalBit)
+                    cap.DedicatedVideoMemory += heapSize;
+
+                MemoryPropertyFlags hostFlags = MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
+                if ((flags & hostFlags) == hostFlags)
+                    cap.DedicatedSystemMemory += heapSize;
+
+                MemoryPropertyFlags sharedFlags = hostFlags | MemoryPropertyFlags.DeviceLocalBit;
+                if ((flags & sharedFlags) == sharedFlags)
+                    cap.SharedVideoMemory += heapSize;
+            }
+        }
+
+        private void UnpackVersion(uint value, out uint variant, out uint major, out uint minor, out uint patch)
+        {
+            variant = (value >> 29);
+            major = (value >> 22) & 0x7FU;
+            minor = (value >> 12) & 0x3FFU;
+            patch = value & 0xFFFU;
         }
 
         internal unsafe void LogAdditionalProperties(Logger log, PhysicalDeviceProperties2* properties)

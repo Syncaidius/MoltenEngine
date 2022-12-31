@@ -18,10 +18,12 @@ namespace Molten.Graphics.Dxgi
         /// <summary>Occurs when an <see cref="T:Molten.IDisplayOutput" /> is disconnected from the current <see cref="T:Molten.IDisplayAdapter" />. </summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
-        public DisplayAdapterDXGI(DisplayManagerDXGI manager, IDXGIAdapter4* adapter)
+        public DisplayAdapterDXGI(DisplayManagerDXGI manager, GraphicsCapabilities cap, IDXGIAdapter4* adapter)
         {
             _manager = manager;
             Native = adapter;
+            Capabilities = cap;
+
             _activeOutputs = new List<DisplayOutputDXGI>();
             _desc = EngineUtil.Alloc<AdapterDesc3>();
             adapter->GetDesc3(_desc);
@@ -29,13 +31,14 @@ namespace Molten.Graphics.Dxgi
 
             Name = SilkMarshal.PtrToString((nint)_desc->Description, NativeStringEncoding.LPWStr);
             Vendor = EngineUtil.VendorFromPCI(_desc->VendorId);
-            DedicatedSystemMemory = ByteMath.ToMegabytes(_desc->DedicatedSystemMemory);
-            DedicatedVideoMemory = ByteMath.ToMegabytes(_desc->DedicatedVideoMemory);
+            
+            cap.DedicatedSystemMemory = ByteMath.ToMegabytes(_desc->DedicatedSystemMemory);
+            cap.DedicatedVideoMemory = ByteMath.ToMegabytes(_desc->DedicatedVideoMemory);
 
             nuint sharedMemory = _desc->SharedSystemMemory;
             sharedMemory = sharedMemory < 0 ? 0 : sharedMemory;
-            SharedSystemMemory = ByteMath.ToMegabytes(sharedMemory);
-            Type = GetAdapterType(_desc->Flags);
+            cap.SharedSystemMemory = ByteMath.ToMegabytes(sharedMemory);
+            Type = GetAdapterType(cap, _desc->Flags);
 
             IDXGIOutput1*[] outputs = DXGIHelper.EnumArray<IDXGIOutput1, IDXGIOutput>((uint index, ref IDXGIOutput* ptrOutput) =>
             {
@@ -57,15 +60,15 @@ namespace Molten.Graphics.Dxgi
             }
         }
 
-        private DisplayAdapterType GetAdapterType(AdapterFlag3 flags)
+        private DisplayAdapterType GetAdapterType(GraphicsCapabilities cap, AdapterFlag3 flags)
         {
             if ((flags & AdapterFlag3.Software) == AdapterFlag3.Software)
                 return DisplayAdapterType.Cpu;
 
-            if (DedicatedVideoMemory > 0)
+            if (cap.DedicatedVideoMemory > 0)
                 return DisplayAdapterType.DiscreteGpu;
 
-            if (DedicatedSystemMemory > 0 || SharedSystemMemory > 0)
+            if (cap.DedicatedSystemMemory > 0 || cap.SharedSystemMemory > 0)
                 return DisplayAdapterType.IntegratedGpu;
 
             return DisplayAdapterType.Other;
@@ -132,15 +135,6 @@ namespace Molten.Graphics.Dxgi
             outputList.AddRange(_connectedOutputs);
         }
 
-        /// <inheritdoc/>
-        public double DedicatedVideoMemory { get; }
-
-        /// <inheritdoc/>
-        public double DedicatedSystemMemory { get; }
-
-        /// <inheritdoc/>
-        public double SharedSystemMemory { get; }
-
         /// <<inheritdoc/>
         public DeviceID ID { get; private set; }
 
@@ -156,7 +150,9 @@ namespace Molten.Graphics.Dxgi
         /// <inheritdoc/>
         public IDisplayManager Manager => _manager;
 
+        internal AdapterDesc3* Description => _desc;
+
         /// <inheritdoc/>
-        public GraphicsCapabilities Capabilities { get; internal set; }
+        public GraphicsCapabilities Capabilities { get; }
     }
 }

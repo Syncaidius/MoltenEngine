@@ -21,12 +21,12 @@ namespace Molten.Graphics
         }
 
         internal HResult CreateDevice(
-            DisplayAdapterDXGI adapter, 
+            IDXGIAdapter4* adapter, 
             DeviceCreationFlags flags,
             out ID3D11Device5* device, 
             out ID3D11DeviceContext4* context)
         {
-            IDXGIAdapter* ptrAdapter = (IDXGIAdapter*)adapter.Native;
+            IDXGIAdapter* ptrAdapter = (IDXGIAdapter*)adapter;
             ID3D11Device* ptrDevice = null;
             ID3D11DeviceContext* ptrContext = null;
 
@@ -55,11 +55,11 @@ namespace Molten.Graphics
         }
 
         internal HResult CreateHeadlessDevice(
-            DisplayAdapterDXGI adapter,
+            IDXGIAdapter4* adapter,
             DeviceCreationFlags flags,
             out ID3D11Device5* device)
         {
-            IDXGIAdapter* ptrAdapter = (IDXGIAdapter*)adapter.Native;
+            IDXGIAdapter* ptrAdapter = (IDXGIAdapter*)adapter;
             ID3D11Device* ptrDevice = null;
 
             HResult r = _api.CreateDevice(ptrAdapter,
@@ -81,7 +81,7 @@ namespace Molten.Graphics
             return r;
         }
 
-        internal GraphicsCapabilities GetCapabilities(DisplayAdapterDXGI adapter)
+        internal GraphicsCapabilities GetCapabilities(IDXGIAdapter4* adapter)
         {
             // DX11 resource limits: https://msdn.microsoft.com/en-us/library/windows/desktop/ff819065%28v=vs.85%29.aspx
             GraphicsCapabilities cap = new GraphicsCapabilities();

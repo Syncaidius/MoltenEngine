@@ -11,12 +11,16 @@ namespace Molten.Graphics
     internal unsafe class DisplayManagerVK : IDisplayManager
     {
         List<DisplayAdapterVK> _adapters;
+        List<DisplayAdapterVK> _withOutputs;
 
         internal DisplayManagerVK(RendererVK renderer)
         {
             Renderer = renderer;
             CapBuilder = new CapabilityBuilder();
             _adapters = new List<DisplayAdapterVK>();
+            Adapters = _adapters.AsReadOnly();
+            _withOutputs = new List<DisplayAdapterVK>();
+            AdaptersWithOutputs = _withOutputs.AsReadOnly();
         }
 
         public void Initialize(Logger logger, GraphicsSettings settings)
@@ -52,14 +56,19 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public IDisplayAdapter DefaultAdapter => throw new NotImplementedException();
 
+        /// <inheritdoc/>
         public IDisplayAdapter SelectedAdapter { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public IReadOnlyList<IDisplayAdapter> Adapters => throw new NotImplementedException();
+        /// <inheritdoc/>
+        public IReadOnlyList<IDisplayAdapter> Adapters { get; }
 
-        public IReadOnlyList<IDisplayAdapter> AdaptersWithOutputs => throw new NotImplementedException();
+        /// <inheritdoc/>
+        public IReadOnlyList<IDisplayAdapter> AdaptersWithOutputs { get; }
 
+        /// <inheritdoc/>
         public IDisplayAdapter this[DeviceID id] => throw new NotImplementedException();
 
         internal RendererVK Renderer { get; }

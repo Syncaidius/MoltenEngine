@@ -53,7 +53,7 @@ namespace Molten.Graphics
                 flags |= DeviceCreationFlags.Debug;
             }
 
-            HResult r = _builder.CreateDevice(_adapter, flags, out NativeDevice, out ImmediateContext);
+            HResult r = _builder.CreateDevice(_adapter.Native, flags, out NativeDevice, out ImmediateContext);
 
             _rasterizerBank = new RasterizerStateBank(this);
             _blendBank = new BlendStateBank(this);

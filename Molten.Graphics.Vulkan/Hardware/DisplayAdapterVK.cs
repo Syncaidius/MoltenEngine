@@ -37,11 +37,19 @@ namespace Molten.Graphics.Hardware
             PhysicalDeviceFeatures2 dFeatures = new PhysicalDeviceFeatures2(StructureType.PhysicalDeviceFeatures2);
             _manager.Renderer.VK.GetPhysicalDeviceFeatures2(_device, &dFeatures);
 
-            Capabilities = _manager.CapBuilder.Build(ref p, ref p.Properties.Limits, ref dFeatures.Features);
+            PhysicalDeviceMemoryProperties2 dMem = new PhysicalDeviceMemoryProperties2(StructureType.PhysicalDeviceMemoryProperties2);
+            _manager.Renderer.VK.GetPhysicalDeviceMemoryProperties2(_device, &dMem);
+
+            Capabilities = _manager.CapBuilder.Build(ref p, ref p.Properties.Limits, ref dFeatures.Features, ref dMem);
 
 #if DEBUG
             _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &p);
 #endif
+        }
+
+        private void GetOutputs()
+        {
+
         }
 
         private DeviceVendor ParseVendorID(uint vendorID)
@@ -94,12 +102,6 @@ namespace Molten.Graphics.Hardware
         }
 
         public string Name { get; private set; }
-
-        public double DedicatedVideoMemory { get; private set; }
-
-        public double DedicatedSystemMemory { get; private set; }
-
-        public double SharedSystemMemory { get; private set; }
 
         public DeviceID ID { get; private set; }
 

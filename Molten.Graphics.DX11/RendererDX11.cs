@@ -34,7 +34,7 @@ namespace Molten.Graphics
             Surfaces = new SurfaceManager(this);
         }
 
-        protected override void OnInitializeApi(GraphicsSettings settings)
+        protected unsafe override void OnInitializeApi(GraphicsSettings settings)
         {
             _api = D3D11.GetApi();
             _chain = new RenderChain(this);
