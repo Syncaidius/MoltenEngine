@@ -28,8 +28,7 @@ namespace Molten.Graphics.Dxgi
             ID = (DeviceID)_desc->AdapterLuid;
 
             Name = SilkMarshal.PtrToString((nint)_desc->Description, NativeStringEncoding.LPWStr);
-
-            PopulateVendor();
+            Vendor = EngineUtil.VendorFromPCI(_desc->VendorId);
 
             DedicatedSystemMemory = ByteMath.ToMegabytes(_desc->DedicatedSystemMemory);
             DedicatedVideoMemory = ByteMath.ToMegabytes(_desc->DedicatedVideoMemory);
@@ -62,33 +61,6 @@ namespace Molten.Graphics.Dxgi
         {
             EngineUtil.Free(ref _desc);
             SilkUtil.ReleasePtr(ref Native);
-        }
-
-        private void PopulateVendor()
-        {
-            // See: https://pcisig.com/membership/member-companies
-            // See: https://gamedev.stackexchange.com/a/31626/116135
-            switch (_desc->VendorId)
-            {
-                case 0x1002:
-                case 0x1022:
-                    Vendor = GraphicsAdapterVendor.AMD;
-                    break;
-
-                case 0x163C:
-                case 0x8086:
-                case 0x8087:
-                    Vendor = GraphicsAdapterVendor.Intel;
-                    break;
-
-                case 0x10DE:
-                    Vendor = GraphicsAdapterVendor.Nvidia;
-                    break;
-
-                default:
-                    Vendor = GraphicsAdapterVendor.Unknown;
-                    break;
-            }
         }
 
         public IDisplayOutput GetOutput(int id)
@@ -159,7 +131,7 @@ namespace Molten.Graphics.Dxgi
         public DeviceID ID { get; private set; }
 
         /// <summary>The hardware vendor.</summary>
-        public GraphicsAdapterVendor Vendor { get; private set; }
+        public DeviceVendor Vendor { get; private set; }
 
         /// <summary>Gets the number of <see cref="GraphicsOutput"/> connected to the adapter.</summary>
         public int OutputCount => _connectedOutputs.Length;

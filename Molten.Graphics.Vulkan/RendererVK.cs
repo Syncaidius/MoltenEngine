@@ -31,6 +31,14 @@ namespace Molten.Graphics
             _chain = new RenderChainVK(this);
         }
 
+        /// <summary>
+        /// An extended version of <see cref="Vk.MakeVersion(uint, uint, uint)"/> which includes the variant bits.
+        /// </summary>
+        /// <param name="variant"></param>
+        /// <param name="major"></param>
+        /// <param name="minor"></param>
+        /// <param name="patch"></param>
+        /// <returns></returns>
         internal static uint MakeVersion(uint variant, uint major, uint minor, uint patch)
         {
             return (((variant) << 29) | ((major) << 22) | ((minor) << 12) | (patch));

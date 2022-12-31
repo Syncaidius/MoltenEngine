@@ -1,7 +1,9 @@
 ﻿using System.Collections.Concurrent;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using Molten.Graphics;
 
 namespace Molten
 {
@@ -317,6 +319,34 @@ namespace Molten
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Converts a PCI vendor ID to a <see cref="DeviceVendor"/>. Some vendors have multiple PCI IDs due to buyouts or mergers.
+        /// </summary>
+        /// <param name="pciID">The PCI ID of the vendor. </param>
+        /// <returns></returns>
+        public static DeviceVendor VendorFromPCI(uint pciID)
+        {
+            // See: https://pcisig.com/membership/member-companies
+            // See: https://gamedev.stackexchange.com/a/31626/116135
+            switch (pciID)
+            {
+                case 0x1002:
+                case 0x1022:
+                    return DeviceVendor.AMD;
+
+                case 0x163C:
+                case 0x8086:
+                case 0x8087:
+                    return DeviceVendor.Intel;
+
+                case 0x10DE:
+                    return DeviceVendor.Nvidia;
+
+                default:
+                    return DeviceVendor.Unknown;
+            }
         }
     }
 }

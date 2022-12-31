@@ -41,7 +41,7 @@
         DeviceID ID { get; }
 
         /// <summary>The hardware vendor.</summary>
-        GraphicsAdapterVendor Vendor { get; }
+        DeviceVendor Vendor { get; }
 
         /// <summary>Gets the number of <see cref="IDisplayOutput"/> connected to the current <see cref="IDisplayAdapter"/>.</summary>
         int OutputCount { get; }

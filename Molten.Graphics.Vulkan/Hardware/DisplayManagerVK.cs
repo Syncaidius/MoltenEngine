@@ -10,42 +10,31 @@ namespace Molten.Graphics
 {
     internal unsafe class DisplayManagerVK : IDisplayManager
     {
-        RendererVK _renderer;
         List<DisplayAdapterVK> _adapters;
 
         internal DisplayManagerVK(RendererVK renderer)
         {
-            _renderer = renderer;
+            Renderer = renderer;
+            CapBuilder = new CapabilityBuilder();
             _adapters = new List<DisplayAdapterVK>();
         }
 
         public void Initialize(Logger logger, GraphicsSettings settings)
         {
             uint deviceCount = 0;
-            Result r = _renderer.VK.EnumeratePhysicalDevices(*_renderer.Ptr, &deviceCount, null);
+            Result r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Ptr, &deviceCount, null);
 
-            CapabilityBuilder capBuilder = new CapabilityBuilder();
-
-            if (_renderer.LogResult(r))
+            if (Renderer.LogResult(r))
             {
                 PhysicalDevice* devices = EngineUtil.AllocArray<PhysicalDevice>(deviceCount);
-                r = _renderer.VK.EnumeratePhysicalDevices(*_renderer.Ptr, &deviceCount, devices); 
+                r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Ptr, &deviceCount, devices); 
                 
-                if (_renderer.LogResult(r))
+                if (Renderer.LogResult(r))
                 {
                     for (int i = 0; i < deviceCount; i++)
                     {
-                        PhysicalDeviceProperties2 dProperties = new PhysicalDeviceProperties2(StructureType.PhysicalDeviceProperties2);
-                        _renderer.VK.GetPhysicalDeviceProperties2(devices[i], &dProperties);
-
-                        PhysicalDeviceFeatures2 dFeatures = new PhysicalDeviceFeatures2(StructureType.PhysicalDeviceFeatures2);
-                        _renderer.VK.GetPhysicalDeviceFeatures2(devices[i], &dFeatures);
-
-                        GraphicsCapabilities cap = capBuilder.Build(ref dProperties, ref dProperties.Properties.Limits, ref dFeatures.Features);
-                        DisplayAdapterVK adapter = new DisplayAdapterVK(this, cap, ref dProperties);
+                        DisplayAdapterVK adapter = new DisplayAdapterVK(this, devices[0]);
                         _adapters.Add(adapter);
-
-                        capBuilder.LogAdditionalProperties(logger, &dProperties);
                     }
                 }
 
@@ -72,5 +61,9 @@ namespace Molten.Graphics
         public IReadOnlyList<IDisplayAdapter> AdaptersWithOutputs => throw new NotImplementedException();
 
         public IDisplayAdapter this[DeviceID id] => throw new NotImplementedException();
+
+        internal RendererVK Renderer { get; }
+
+        internal CapabilityBuilder CapBuilder { get; }
     }
 }

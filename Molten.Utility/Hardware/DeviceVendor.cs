@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public enum GraphicsAdapterVendor
+    public enum DeviceVendor
     {
         /// <summary>
         /// The vendor could not be determined.
@@ -21,5 +21,20 @@
         /// Nvidia Corporation.
         /// </summary>
         Nvidia = 3,
+
+        // ====== Vulkan vendor IDs =======
+        // See: https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkVendorId
+
+        VIV = 0x10001,
+
+        VSI = 0x10002,
+
+        KAZAN = 0x10003,
+
+        CODEPLAY = 0x10004,
+
+        MESA = 0x10005,
+
+        POCL = 0x10006,
     }
 }
