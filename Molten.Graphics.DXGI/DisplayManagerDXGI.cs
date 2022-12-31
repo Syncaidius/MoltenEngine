@@ -84,7 +84,7 @@ namespace Molten.Graphics.Dxgi
 
             for (int i = 0; i < detected.Length; i++)
             {
-                DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, detected[i], i);
+                DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, detected[i]);
                 adapter.Capabilities = _capabilitiesCallback(adapter);
                 _adapters.Add(adapter);
 

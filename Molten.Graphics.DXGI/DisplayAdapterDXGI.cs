@@ -18,7 +18,7 @@ namespace Molten.Graphics.Dxgi
         /// <summary>Occurs when an <see cref="T:Molten.IDisplayOutput" /> is disconnected from the current <see cref="T:Molten.IDisplayAdapter" />. </summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
-        public DisplayAdapterDXGI(DisplayManagerDXGI manager, IDXGIAdapter4* adapter, int id)
+        public DisplayAdapterDXGI(DisplayManagerDXGI manager, IDXGIAdapter4* adapter)
         {
             _manager = manager;
             Native = adapter;
