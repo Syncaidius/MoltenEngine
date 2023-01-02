@@ -1,4 +1,4 @@
-namespace Molten
+﻿namespace Molten
 {
     /// <summary>A helper class for converting between different computational storage measurements (e.g. bits, bytes, kilobytes, etc).</summary>
     public static class ByteMath
@@ -150,6 +150,42 @@ namespace Molten
         public static ulong FromBits(ulong bits)
         {
             return bits / BITS_IN_BYTE;
+        }
+
+        /// <summary>
+        /// Gets the maximum value of a number based on <paramref name="bitCount"/>.
+        /// </summary>
+        /// <param name="bitCount">The number of its that represent the potential value.</param>
+        /// <param name="isUnsigned">If true, the max value will emulate a signed-integer type.</param>
+        /// <returns></returns>
+        public static ulong MaxBitValue(uint bitCount, bool isUnsigned)
+        {
+            ulong result = 2;
+            bitCount -= isUnsigned ? 0U : 1U;
+
+            for (int i = 1; i < bitCount; i++)
+                result *= 2;
+
+            return result - 1UL;
+        }
+
+        /// <summary>
+        /// Gets the minimum value of a number based on <paramref name="bitCount"/>.
+        /// </summary>
+        /// <param name="bitCount">The number of its that represent the potential value.</param>
+        /// <param name="isUnsigned">If true, the minimum value will always be 0.</param>
+        /// <returns></returns>
+        public static ulong MinBitValue(uint bitCount, bool isUnsigned)
+        {
+            if (isUnsigned)
+                return 0;
+
+            ulong result = 2;
+
+            for (int i = 1; i < bitCount; i++)
+                result *= 2;
+
+            return result;
         }
     }
 }

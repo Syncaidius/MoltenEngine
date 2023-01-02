@@ -250,20 +250,19 @@ namespace Molten.Graphics
                 foreach(IDisplayAdapter adapter in adapters)
                 {
                     bool hasOutputs = DisplayManager.AdaptersWithOutputs.Contains(adapter);
-                    Log.WriteLine($"   {aID++}. Adapter {aID++}: {adapter.Name}{(hasOutputs ? " (usable)" : "")}");
-                    Log.WriteLine($"      Type: {adapter.Type}");
-                    Log.WriteLine($"      VRAM: {adapter.Capabilities.DedicatedVideoMemory:N2} MB");
-                    Log.WriteLine($"      Shared VRAM: {adapter.Capabilities.SharedVideoMemory:N2} MB");
-                    Log.WriteLine($"      Dedicated system RAM: {adapter.Capabilities.DedicatedSystemMemory:N2} MB");
-                    Log.WriteLine($"      Shared system RAM: {adapter.Capabilities.SharedSystemMemory:N2} MB");
-
+                    Log.WriteLine($"   {aID++}. {adapter.Name}{(hasOutputs ? " (usable)" : "")}");
+                    Log.WriteLine($"         Type: {adapter.Type}");
+                    Log.WriteLine($"         VRAM: {adapter.Capabilities.DedicatedVideoMemory:N2} MB");
+                    Log.WriteLine($"         Shared VRAM: {adapter.Capabilities.SharedVideoMemory:N2} MB");
+                    Log.WriteLine($"         Dedicated system RAM: {adapter.Capabilities.DedicatedSystemMemory:N2} MB");
+                    Log.WriteLine($"         Shared system RAM: {adapter.Capabilities.SharedSystemMemory:N2} MB");
 
                     if (hasOutputs)
                     {
                         adapter.GetAttachedOutputs(displays);
-                        Log.WriteLine($"      Detected {displays.Count} adapters:");
+                        Log.WriteLine($"         Detected {displays.Count} adapters:");
                         for (int d = 0; d < displays.Count; d++)
-                            Log.WriteLine($"         Display {d+1}: {displays[d].Name}");
+                            Log.WriteLine($"            Display {d+1}: {displays[d].Name}");
 
                         displays.Clear();
                     }
