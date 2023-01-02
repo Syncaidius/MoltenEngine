@@ -10,8 +10,6 @@ namespace Molten.Graphics
 {
     internal class InstanceManager : IDisposable
     {
-        private unsafe delegate Result EnumerateInstanceCallback<T>(uint* count, T* info) where T : unmanaged;
-
         /// <summary>
         /// 
         /// </summary>
@@ -159,39 +157,27 @@ namespace Molten.Graphics
 
         private unsafe void EnableLayers()
         {
-            uint lCount = 0;
-            Result r = _renderer.VK.EnumerateInstanceLayerProperties(&lCount, null);
-            if (_renderer.LogResult(r, "Failed to retrieve available instance layers"))
+            LayerProperties[] properties = _renderer.Enumerate<LayerProperties>(_renderer.VK.EnumerateInstanceLayerProperties, "instance layers");
+            if (properties.Length == 0)
                 return;
 
             List<string> loaded = new List<string>();
             List<string> names = _newInstance.Extensions.Keys.ToList();
 
-            if (_renderer.LogResult(r))
+            _renderer.Log.WriteLine($"Enabled the following layers:");
+            for (int i = 0; i < properties.Length; i++)
             {
-                LayerProperties* layerInfo = EngineUtil.AllocArray<LayerProperties>(lCount);
-                r = _renderer.VK.EnumerateInstanceLayerProperties(&lCount, layerInfo);
-                if (_renderer.LogResult(r, "Failed to enumerate available instance layers"))
+                LayerProperties p = properties[i];
+                string name = SilkMarshal.PtrToString((nint)p.LayerName, NativeStringEncoding.UTF8);
+
+                if (_newInstance.Extensions.ContainsKey(name))
                 {
-                    _renderer.Log.WriteLine($"Enabled the following layers:");
-                    for (int i = 0; i < lCount; i++)
-                    {
-                        string name = SilkMarshal.PtrToString((nint)layerInfo->LayerName, NativeStringEncoding.UTF8);
-
-                        if (_newInstance.Extensions.ContainsKey(name))
-                        {
-                            loaded.Add(names[i]);
-                            VersionVK specVersion = layerInfo->SpecVersion;
-                            VersionVK implVersion = layerInfo->ImplementationVersion;
-                            string desc = SilkMarshal.PtrToString((nint)layerInfo->Description, NativeStringEncoding.UTF8);
-                            _renderer.Log.WriteLine($"   {i + 1}. {names[i]} -- Version: {specVersion} -- Implementation: {implVersion} -- Desc: {desc}");
-                        }
-
-                        layerInfo++;
-                    }
+                    loaded.Add(name);
+                    VersionVK specVersion = p.SpecVersion;
+                    VersionVK implVersion = p.ImplementationVersion;
+                    string desc = SilkMarshal.PtrToString((nint)p.Description, NativeStringEncoding.UTF8);
+                    _renderer.Log.WriteLine($"   {i + 1}. {name} -- Version: {specVersion} -- Implementation: {implVersion} -- Desc: {desc}");
                 }
-
-                EngineUtil.Free(ref layerInfo);
             }
 
             _renderer.Log.Warning($"Failed to enable the following layers:");
@@ -207,38 +193,30 @@ namespace Molten.Graphics
 
         private unsafe void EnableExtensions()
         {
-            uint lCount = 0;
-            byte* nullptr = null;
-            Result r = _renderer.VK.EnumerateInstanceExtensionProperties(nullptr, &lCount, null);
-            if (_renderer.LogResult(r, "Failed to retrieve available instance extensions"))
+            ExtensionProperties[] properties = _renderer.Enumerate<ExtensionProperties>((count, items) =>
+            {
+                byte* nullptr = null;
+                return _renderer.VK.EnumerateInstanceExtensionProperties(nullptr, count, items);
+            }, "instance extensions");
+
+            if (properties.Length == 0)
                 return;
 
             List<string> loaded = new List<string>();
             List<string> names = _newInstance.Extensions.Keys.ToList();
 
-            if (_renderer.LogResult(r))
-            {   
-                ExtensionProperties* extInfo = EngineUtil.AllocArray<ExtensionProperties>(lCount);
-                r = _renderer.VK.EnumerateInstanceExtensionProperties(nullptr, &lCount, extInfo);
-                if (_renderer.LogResult(r, "Failed to enumerate available instance extensions"))
+            _renderer.Log.WriteLine($"Enabled the following extensions:");
+            for (int i = 0; i < properties.Length; i++)
+            {
+                ExtensionProperties p = properties[i];
+                string name = SilkMarshal.PtrToString((nint)p.ExtensionName, NativeStringEncoding.UTF8);
+                if (_newInstance.Extensions.ContainsKey(name))
                 {
-                    _renderer.Log.WriteLine($"Enabled the following extensions:");
-                    for (int i = 0; i < lCount; i++)
-                    {
-                        string name = SilkMarshal.PtrToString((nint)extInfo->ExtensionName, NativeStringEncoding.UTF8);
-                        if (_newInstance.Extensions.ContainsKey(name))
-                        {
-                            loaded.Add(names[i]);
-                            VersionVK specVersion = extInfo->SpecVersion;
-                            _renderer.Log.WriteLine($"   {i + 1}. {names[i]} -- Version: {specVersion}");
-                        }
-
-                        extInfo++;
-                    }
+                    loaded.Add(name);
+                    VersionVK specVersion = p.SpecVersion;
+                    _renderer.Log.WriteLine($"   {i + 1}. {name} -- Version: {specVersion}");
                 }
-
-                EngineUtil.Free(ref extInfo);     
-            }
+            }  
 
             _renderer.Log.Warning($"Failed to enable the following extensions:");
             for (int i = 0; i < names.Count; i++)

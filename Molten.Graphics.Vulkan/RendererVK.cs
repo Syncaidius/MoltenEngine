@@ -14,6 +14,8 @@ namespace Molten.Graphics
 {
     public unsafe class RendererVK : RenderService
     {
+        internal unsafe delegate Result EnumerateCallback<T>(uint* count, T* info) where T : unmanaged;
+
         Instance* _vkInstance;
         RenderChainVK _chain;
         DisplayManagerVK _displayManager;
@@ -125,6 +127,34 @@ namespace Molten.Graphics
             }
 
             return true;
+        }
+
+        internal unsafe T[] Enumerate<T>(EnumerateCallback<T> callback, string callbackName = "")
+    where T : unmanaged
+        {
+            uint count = 0;
+
+            Result r = callback(&count, null);
+            string cbName = string.IsNullOrWhiteSpace(callbackName) ? callback.Method.Name : callbackName;
+
+            if (LogResult(r, $"Enumerate: Failed to get {cbName} count"))
+            {
+                T* items = EngineUtil.AllocArray<T>(count);
+                r = callback(&count, items);
+
+                if (LogResult(r, $"Enumerate: Failed get {cbName} items"))
+                {
+                    T[] result = new T[count];
+                    fixed (T* ptrResult = result)
+                        System.Buffer.MemoryCopy(items, ptrResult, sizeof(T) * count, sizeof(T) * count);
+
+                    return result;
+                }
+
+                EngineUtil.Free(ref items);
+            }
+
+            return new T[0];
         }
 
         public override IDisplayManager DisplayManager => _displayManager;
