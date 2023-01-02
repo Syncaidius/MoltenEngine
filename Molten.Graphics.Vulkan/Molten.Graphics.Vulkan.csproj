@@ -24,6 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Silk.NET.GLFW" Version="2.16.0" />
     <PackageReference Include="Silk.NET.Vulkan" Version="2.16.0" />
     <PackageReference Include="Silk.NET.Vulkan.Extensions.EXT" Version="2.16.0" />
   </ItemGroup>
