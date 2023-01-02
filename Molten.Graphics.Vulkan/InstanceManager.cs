@@ -107,7 +107,7 @@ namespace Molten.Graphics
                 _newInstance.Layers.Add(layerName);
         }
 
-        internal unsafe bool Build(out Instance* instance)
+        internal unsafe bool Build(VersionVK apiVersion, out Instance* instance)
         {
             if (_newInstance == null)
                 throw new Exception("Cannot call build a new instance before BeginNewInstance() is called");
@@ -116,7 +116,7 @@ namespace Molten.Graphics
             {
                 SType = StructureType.ApplicationInfo,
                 EngineVersion = 1,
-                ApiVersion = new VersionVK(0, 1, 3, 0),
+                ApiVersion = apiVersion,
             };
 
             EnableLayers();
@@ -162,29 +162,36 @@ namespace Molten.Graphics
                 return;
 
             List<string> loaded = new List<string>();
-            List<string> names = _newInstance.Extensions.Keys.ToList();
+            List<string> names = _newInstance.Layers.ToList();
 
             _renderer.Log.WriteLine($"Enabled the following layers:");
-            for (int i = 0; i < properties.Length; i++)
+            int loadIndex = 1;
+
+            foreach(LayerProperties p in properties)
             {
-                LayerProperties p = properties[i];
                 string name = SilkMarshal.PtrToString((nint)p.LayerName, NativeStringEncoding.UTF8);
 
-                if (_newInstance.Extensions.ContainsKey(name))
+                if (_newInstance.Layers.Contains(name))
                 {
                     loaded.Add(name);
                     VersionVK specVersion = p.SpecVersion;
                     VersionVK implVersion = p.ImplementationVersion;
                     string desc = SilkMarshal.PtrToString((nint)p.Description, NativeStringEncoding.UTF8);
-                    _renderer.Log.WriteLine($"   {i + 1}. {name} -- Version: {specVersion} -- Implementation: {implVersion} -- Desc: {desc}");
+                    _renderer.Log.WriteLine($"   {loadIndex++}. {name} -- Version: {specVersion} -- Implementation: {implVersion} -- Desc: {desc}");
                 }
             }
 
-            _renderer.Log.Warning($"Failed to enable the following layers:");
+
+            bool failWarned = false;
             for (int i = 0; i < names.Count; i++)
             {
                 if (!loaded.Contains(names[i]))
                 {
+                    if (!failWarned)
+                    {
+                        _renderer.Log.Warning($"Failed to enable the following layers:");
+                        failWarned = true;
+                    }
                     _renderer.Log.Warning($"   {i + 1}. {names[i]}");
                     _newInstance.Layers.Remove(names[i]);
                 }
@@ -204,25 +211,30 @@ namespace Molten.Graphics
 
             List<string> loaded = new List<string>();
             List<string> names = _newInstance.Extensions.Keys.ToList();
+            int loadIndex = 1;
 
             _renderer.Log.WriteLine($"Enabled the following extensions:");
-            for (int i = 0; i < properties.Length; i++)
+            foreach(ExtensionProperties p in properties)
             {
-                ExtensionProperties p = properties[i];
                 string name = SilkMarshal.PtrToString((nint)p.ExtensionName, NativeStringEncoding.UTF8);
                 if (_newInstance.Extensions.ContainsKey(name))
                 {
                     loaded.Add(name);
                     VersionVK specVersion = p.SpecVersion;
-                    _renderer.Log.WriteLine($"   {i + 1}. {name} -- Version: {specVersion}");
+                    _renderer.Log.WriteLine($"   {loadIndex++}. {name} -- Version: {specVersion}");
                 }
-            }  
+            }
 
-            _renderer.Log.Warning($"Failed to enable the following extensions:");
+            bool failWarned = false;
             for (int i = 0; i < names.Count; i++)
             {
                 if (!loaded.Contains(names[i]))
                 {
+                    if (!failWarned)
+                    {
+                        _renderer.Log.Warning($"Failed to enable the following extensions:");
+                        failWarned = true;
+                    }
                     _renderer.Log.Warning($"   {i + 1}. {names[i]}");
                     _newInstance.Extensions.Remove(names[i]);
                 }

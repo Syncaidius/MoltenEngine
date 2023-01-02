@@ -62,9 +62,10 @@ namespace Molten.Graphics
                         _debugMessengerHandle = null;
                     }
                 });
+                
             }
 
-            if (!_instanceManager.Build(out _vkInstance))
+            if (!_instanceManager.Build(new VersionVK(1, 3, 0), out _vkInstance))
                 Log.Error($"Failed to build new instance");
         }
 

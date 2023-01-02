@@ -15,6 +15,7 @@ namespace Molten.Graphics.Hardware
 
         DisplayManagerVK _manager;
         PhysicalDevice _device;
+        QueueFamilyProperties[] _queueFamiles;
 
         internal DisplayAdapterVK(DisplayManagerVK manager, PhysicalDevice device)
         {
@@ -40,16 +41,17 @@ namespace Molten.Graphics.Hardware
             PhysicalDeviceMemoryProperties2 dMem = new PhysicalDeviceMemoryProperties2(StructureType.PhysicalDeviceMemoryProperties2);
             _manager.Renderer.VK.GetPhysicalDeviceMemoryProperties2(_device, &dMem);
 
+            _queueFamiles = _manager.Renderer.Enumerate<QueueFamilyProperties>((count, items) =>
+            {
+                _manager.Renderer.VK.GetPhysicalDeviceQueueFamilyProperties(_device, count, items);
+                return Result.Success;
+            }, "queue families");
+
             Capabilities = _manager.CapBuilder.Build(ref p, ref p.Properties.Limits, ref dFeatures.Features, ref dMem);
 
 #if DEBUG
             _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &p);
 #endif
-        }
-
-        private void GetOutputs()
-        {
-
         }
 
         private DeviceVendor ParseVendorID(uint vendorID)
