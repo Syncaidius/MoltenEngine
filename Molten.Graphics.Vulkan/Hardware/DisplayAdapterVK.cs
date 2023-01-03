@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ImageMagick;
 using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
 
@@ -78,6 +79,11 @@ namespace Molten.Graphics.Hardware
             throw new NotImplementedException();
         }
 
+        public static implicit operator PhysicalDevice(DisplayAdapterVK adapter)
+        {
+            return adapter._device;
+        }
+
         /// <inheritdoc/>
         public string Name { get; private set; }
 
@@ -92,6 +98,11 @@ namespace Molten.Graphics.Hardware
 
         /// <inheritdoc/>
         public IDisplayManager Manager => _manager;
+
+        /// <summary>
+        /// Gets the underlying Vulkan <see cref="PhysicalDevice"/>.
+        /// </summary>
+        internal PhysicalDevice Native => _device;
 
         /// <inheritdoc/>
         public GraphicsCapabilities Capabilities { get; private set; }

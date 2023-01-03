@@ -164,9 +164,6 @@ namespace Molten.Graphics
 
             DetectShaderStages(device, cap, featureLevel);
 
-
-
-
             //            FeatureDataD3D10XHardwareOptions fData =
             //                _features.GetFeatureSupport<FeatureDataD3D10XHardwareOptions>(Feature.D3D10XHardwareOptions);
 
@@ -187,7 +184,6 @@ namespace Molten.Graphics
 
             //            return (FormatSupport2)pData.OutFormatSupport2;
             //        }
-
 
             SilkUtil.ReleasePtr(ref device);
             return cap;
