@@ -11,18 +11,21 @@
         /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is deactivated on the current <see cref="IDisplayAdapter"/>.</summary>
         event DisplayOutputChanged OnOutputDeactivated;
 
-        /// <summary>Gets all <see cref="IDisplayOutput"/> devices attached to the current <see cref="IDisplayAdapter"/>.</summary>
-        /// <param name="outputList">The output list.</param>
-        void GetAttachedOutputs(List<IDisplayOutput> outputList);
-
-        void GetActiveOutputs(List<IDisplayOutput> outputList);
-
-        IDisplayOutput GetOutput(int id);
-
+        /// <summary>
+        /// Activates a <see cref="IDisplayOutput"/> on the current <see cref="IDisplayAdapter"/>.
+        /// </summary>
+        /// <param name="output">The output to be activated.</param>
         void AddActiveOutput(IDisplayOutput output);
 
+        /// <summary>
+        /// Deactivates a <see cref="IDisplayOutput"/> from the current <see cref="IDisplayAdapter"/>. It will still be listed in <see cref="Outputs"/>, if attached.
+        /// </summary>
+        /// <param name="output">The output to be deactivated.</param>
         void RemoveActiveOutput(IDisplayOutput output);
 
+        /// <summary>
+        /// Removes all active <see cref="IDisplayOutput"/> from the current <see cref="IDisplayAdapter"/>. They will still be listed in <see cref="Outputs"/>, if attached.
+        /// </summary>
         void RemoveAllActiveOutputs();
 
         /// <summary>Gets the name of the adapter.</summary>
@@ -39,11 +42,15 @@
         /// </summary>
         DisplayAdapterType Type { get; }
 
-        /// <summary>Gets the number of <see cref="IDisplayOutput"/> connected to the current <see cref="IDisplayAdapter"/>.</summary>
-        int OutputCount { get; }
-
         /// <summary>Gets the <see cref="IDisplayManager"/> that spawned the adapter.</summary>
         IDisplayManager Manager { get; }
+
+        /// <summary>Gets a list of all <see cref="IDisplayOutput"/> devices attached to the current <see cref="IDisplayAdapter"/>.</summary>
+        IReadOnlyList<IDisplayOutput> Outputs { get; }
+
+        /// <summary>Gets a list of all active <see cref="IDisplayOutput"/> devices attached to the current <see cref="IDisplayAdapter"/>.
+        /// <para>Active outputs are added via <see cref="AddActiveOutput(IDisplayOutput)"/>.</para></summary>
+        IReadOnlyList<IDisplayOutput> ActiveOutputs { get; }
 
         /// <summary>
         /// Gets the capabilities of the current <see cref="IDisplayAdapter"/>.

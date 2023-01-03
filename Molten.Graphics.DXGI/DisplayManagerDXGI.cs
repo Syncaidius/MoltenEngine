@@ -85,7 +85,7 @@ namespace Molten.Graphics.Dxgi
                 DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, cap, detected[i]);
                 _adapters.Add(adapter);
 
-                if (adapter.OutputCount > 0)
+                if (adapter.Outputs.Count > 0)
                 {
                     _withOutputs.Add(adapter);
 

@@ -8,7 +8,7 @@ namespace Molten.Graphics.Dxgi
         /// <summary>Gets the native DXGI adapter that this instance represents.</summary>
         public IDXGIAdapter4* Native;
         AdapterDesc3* _desc;
-        DisplayOutputDXGI[] _connectedOutputs;
+        List<DisplayOutputDXGI> _outputs;
         List<DisplayOutputDXGI> _activeOutputs;
         DisplayManagerDXGI _manager;
 
@@ -24,7 +24,6 @@ namespace Molten.Graphics.Dxgi
             Native = adapter;
             Capabilities = cap;
 
-            _activeOutputs = new List<DisplayOutputDXGI>();
             _desc = EngineUtil.Alloc<AdapterDesc3>();
             adapter->GetDesc3(_desc);
             ID = (DeviceID)_desc->AdapterLuid;
@@ -40,23 +39,26 @@ namespace Molten.Graphics.Dxgi
             cap.SharedSystemMemory = ByteMath.ToMegabytes(sharedMemory);
             Type = GetAdapterType(cap, _desc->Flags);
 
-            IDXGIOutput1*[] outputs = DXGIHelper.EnumArray<IDXGIOutput1, IDXGIOutput>((uint index, ref IDXGIOutput* ptrOutput) =>
+            IDXGIOutput1*[] dxgiOutputs = DXGIHelper.EnumArray<IDXGIOutput1, IDXGIOutput>((uint index, ref IDXGIOutput* ptrOutput) =>
             {
                 return adapter->EnumOutputs(index, ref ptrOutput);
             });
 
-            _connectedOutputs = new DisplayOutputDXGI[outputs.Length];
+            _activeOutputs = new List<DisplayOutputDXGI>();
+            ActiveOutputs = _activeOutputs.AsReadOnly();
+            _outputs = new List<DisplayOutputDXGI>();
+            Outputs = _outputs.AsReadOnly();
             Guid o6Guid = IDXGIOutput6.Guid;
 
-            for (int i = 0; i < _connectedOutputs.Length; i++)
+            for (int i = 0; i < dxgiOutputs.Length; i++)
             {
                 void* ptr6 = null;
-                int r = outputs[i]->QueryInterface(&o6Guid, &ptr6);
-                DxgiError err = DXGIHelper.ErrorFromResult(r);
-                if (err != DxgiError.Ok)
+                int r = dxgiOutputs[i]->QueryInterface(&o6Guid, &ptr6);
+
+                if (DXGIHelper.ErrorFromResult(r) != DxgiError.Ok)
                     _manager.Log.Error($"Error while querying adapter '{Name}' output IDXGIOutput1 for IDXGIOutput6 interface");
 
-                _connectedOutputs[i] = new DisplayOutputDXGI(this, (IDXGIOutput6*)ptr6);
+                _outputs.Add(new DisplayOutputDXGI(this, (IDXGIOutput6*)ptr6));
             }
         }
 
@@ -78,22 +80,6 @@ namespace Molten.Graphics.Dxgi
         {
             EngineUtil.Free(ref _desc);
             SilkUtil.ReleasePtr(ref Native);
-        }
-
-        public IDisplayOutput GetOutput(int id)
-        {
-            if (id >= _connectedOutputs.Length)
-                throw new IndexOutOfRangeException($"ID was {id} while there are only {_connectedOutputs.Length} connected display outputs.");
-
-            if (id < 0)
-                throw new IndexOutOfRangeException("ID cannot be less than 0");
-
-            return _connectedOutputs[id];
-        }
-
-        public void GetActiveOutputs(List<IDisplayOutput> outputList)
-        {
-            outputList.AddRange(_activeOutputs);
         }
 
         public void AddActiveOutput(IDisplayOutput output)
@@ -128,13 +114,6 @@ namespace Molten.Graphics.Dxgi
             _activeOutputs.Clear();
         }
 
-        /// <summary>Gets all <see cref="T:Molten.IDisplayOutput" /> devices attached to the current <see cref="T:Molten.IDisplayAdapter" />.</summary>
-        /// <param name="outputList">The output list.</param>
-        public void GetAttachedOutputs(List<IDisplayOutput> outputList)
-        {
-            outputList.AddRange(_connectedOutputs);
-        }
-
         /// <<inheritdoc/>
         public DeviceID ID { get; private set; }
 
@@ -145,14 +124,17 @@ namespace Molten.Graphics.Dxgi
         public DisplayAdapterType Type { get; private set; }
 
         /// <inheritdoc/>
-        public int OutputCount => _connectedOutputs.Length;
-
-        /// <inheritdoc/>
         public IDisplayManager Manager => _manager;
 
         internal AdapterDesc3* Description => _desc;
 
         /// <inheritdoc/>
         public GraphicsCapabilities Capabilities { get; }
+
+        /// <inheritdoc/>
+        public IReadOnlyList<IDisplayOutput> Outputs { get; }
+
+        /// <inheritdoc/>
+        public IReadOnlyList<IDisplayOutput> ActiveOutputs { get; }
     }
 }

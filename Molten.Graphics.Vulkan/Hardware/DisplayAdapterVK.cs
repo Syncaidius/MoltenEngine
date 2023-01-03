@@ -60,48 +60,46 @@ namespace Molten.Graphics.Hardware
                 return new DeviceID(deviceID); // OS/Platform-based device ID.
         }
 
+        /// <inheritdoc/>
         public void AddActiveOutput(IDisplayOutput output)
         {
             throw new NotImplementedException();
         }
 
-        public void GetActiveOutputs(List<IDisplayOutput> outputList)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void GetAttachedOutputs(List<IDisplayOutput> outputList)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDisplayOutput GetOutput(int id)
-        {
-            throw new NotImplementedException();
-        }
-
+        /// <inheritdoc/>
         public void RemoveActiveOutput(IDisplayOutput output)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public void RemoveAllActiveOutputs()
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public string Name { get; private set; }
 
+        /// <inheritdoc/>
         public DeviceID ID { get; private set; }
 
+        /// <inheritdoc/>
         public DeviceVendor Vendor { get; private set; }
 
+        /// <inheritdoc/>
         public DisplayAdapterType Type { get; private set; }
 
-        public int OutputCount { get; }
-
+        /// <inheritdoc/>
         public IDisplayManager Manager => _manager;
 
+        /// <inheritdoc/>
         public GraphicsCapabilities Capabilities { get; private set; }
+
+        /// <inheritdoc/>
+        public IReadOnlyList<IDisplayOutput> Outputs => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public IReadOnlyList<IDisplayOutput> ActiveOutputs => throw new NotImplementedException();
     }
 }
