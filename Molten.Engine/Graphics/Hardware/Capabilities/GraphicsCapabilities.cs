@@ -75,6 +75,22 @@ namespace Molten.Graphics
         }
 
         /// <summary>
+        /// Checks all available <see cref="CommandSets"/> to see if any support the requested <see cref="CommandSetCapabilityFlags"/>.
+        /// </summary>
+        /// <param name="flags">The capability flags to check for.</param>
+        /// <returns></returns>
+        public bool HasCommandSet(CommandSetCapabilityFlags flags)
+        {
+            foreach(SupportedCommandSet set in CommandSets)
+            {
+                if ((set.CapabilityFlags & flags) == flags)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Gets the capabilities of a shader stage based on the provided <see cref="ShaderType"/> value.
         /// </summary>
         /// <param name="type">The shader stage type.</param>
@@ -85,6 +101,22 @@ namespace Molten.Graphics
         /// Gets or sets the graphics API capability.
         /// </summary>
         public GraphicsApi Api { get; set; }
+
+        /// <summary>
+        /// Gets a list of supported command sets.
+        /// </summary>
+        public List<SupportedCommandSet> CommandSets { get; } = new List<SupportedCommandSet>();
+
+        /// <summary>
+        /// Gets or sets whether deferred/multi-threaded command lists is supported/required.
+        /// </summary>
+        public CommandListSupport DeferredCommandLists { get; set; } = CommandListSupport.None;
+
+        /// <summary>
+        /// Gets or sets whether concurrent resource creation is supported/required. 
+        /// <para>True means resources can be created concurrently on multiple threads while drawing.</para>
+        /// </summary>
+        public bool ConcurrentResourceCreation { get; set; }
 
         /// <summary>
         /// Gets or sets the graphics API capability.

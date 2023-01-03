@@ -109,6 +109,7 @@ namespace Molten.Graphics
             FeatureDataD3D11Options3 features11_3 = GetFeatureSupport<FeatureDataD3D11Options3>(device, Feature.D3D11Options3);
             FeatureDataD3D11Options4 features11_4 = GetFeatureSupport<FeatureDataD3D11Options4>(device, Feature.D3D11Options4);
             FeatureDataD3D11Options5 features11_5 = GetFeatureSupport<FeatureDataD3D11Options5>(device, Feature.D3D11Options5);
+            FeatureDataThreading feature_threading = GetFeatureSupport<FeatureDataThreading>(device, Feature.Threading);
 
             //CounterInfo cInfo = new CounterInfo();
             //device->CheckCounterInfo(&cInfo);
@@ -148,21 +149,22 @@ namespace Molten.Graphics
             cap.Compute.MaxGroupSizeY = 1024;
             cap.Compute.MaxGroupSizeZ = 64;                 // The Z dimension of numthreads is limited to D3D11_CS_THREAD_GROUP_MAX_Z (64).;
 
-            /*            MaxVolumeExtent = 2048;
-            MaxTextureRepeat = 16384;
-            MaxPrimitiveCount = (uint)(Math.Pow(2, 32) - 1);
-            MaxUnorderedAccessViews = 8;
-            MaxIndexBufferSlots = 1;
-            MaxVertexBufferSlots = 32;     */
+            cap.CommandSets.Add(new SupportedCommandSet(1,
+                CommandSetCapabilityFlags.Graphics |
+                CommandSetCapabilityFlags.Compute |
+                CommandSetCapabilityFlags.TransferCopy));
 
+            
+            cap.ConcurrentResourceCreation = feature_threading.DriverConcurrentCreates > 0;
+            cap.DeferredCommandLists = feature_threading.DriverCommandLists > 0 ? CommandListSupport.Supported : CommandListSupport.Emulated;
+
+            /* MaxTextureRepeat = 16384;
+            MaxPrimitiveCount = (uint)(Math.Pow(2, 32) - 1);
+            MaxIndexBufferSlots = 1;     */
 
             DetectShaderStages(device, cap, featureLevel);
 
-            /*FeatureDataThreading fThreadData = GetFeatureSupport<FeatureDataThreading>(device, Feature.Threading);
-            ConcurrentResources = fThreadData.DriverConcurrentCreates > 0;
-            CommandListSupport = fThreadData.DriverCommandLists > 0 ?
-                DX11CommandListSupport.Supported :
-                DX11CommandListSupport.Emulated;*/
+
 
 
             //            FeatureDataD3D10XHardwareOptions fData =

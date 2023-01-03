@@ -15,12 +15,17 @@ namespace Molten.Graphics
             public void* PNext;
         }
 
-        internal unsafe GraphicsCapabilities Build(
-            ref PhysicalDeviceProperties2 properties, 
-            ref PhysicalDeviceLimits limits, 
-            ref PhysicalDeviceFeatures features,
-            ref PhysicalDeviceMemoryProperties2 mem)
+        internal unsafe GraphicsCapabilities Build(PhysicalDevice device, RendererVK renderer, ref PhysicalDeviceProperties2 properties)
         {
+            PhysicalDeviceFeatures2 dFeatures = new PhysicalDeviceFeatures2(StructureType.PhysicalDeviceFeatures2);
+            renderer.VK.GetPhysicalDeviceFeatures2(device, &dFeatures);
+            PhysicalDeviceFeatures features = dFeatures.Features;
+
+            ref PhysicalDeviceLimits limits = ref properties.Properties.Limits;
+
+            PhysicalDeviceMemoryProperties2 mem = new PhysicalDeviceMemoryProperties2(StructureType.PhysicalDeviceMemoryProperties2);
+            renderer.VK.GetPhysicalDeviceMemoryProperties2(device, &mem);
+
             GraphicsCapabilities cap = new GraphicsCapabilities();
 
             cap.MaxTexture1DSize = limits.MaxImageDimension1D;
@@ -77,7 +82,19 @@ namespace Molten.Graphics
             // See: maxComputeWorkGroupSize[3] -  https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceLimits.html
             cap.Compute.MaxGroupSizeX = limits.MaxComputeWorkGroupSize[0];
             cap.Compute.MaxGroupSizeY = limits.MaxComputeWorkGroupSize[1];
-            cap.Compute.MaxGroupSizeZ = limits.MaxComputeWorkGroupSize[2];       
+            cap.Compute.MaxGroupSizeZ = limits.MaxComputeWorkGroupSize[2];
+
+            QueueFamilyProperties[] queueFamilies = renderer.Enumerate<QueueFamilyProperties>((count, items) =>
+            {
+                renderer.VK.GetPhysicalDeviceQueueFamilyProperties(device, count, items);
+                return Result.Success;
+            }, "queue families");
+
+            /// Command list functionality.
+            cap.DeferredCommandLists = CommandListSupport.Supported;
+            cap.ConcurrentResourceCreation = true;
+            foreach(QueueFamilyProperties p in queueFamilies)
+                cap.CommandSets.Add(new SupportedCommandSet(p.QueueCount, (CommandSetCapabilityFlags)p.QueueFlags));
 
             return cap;
         }
