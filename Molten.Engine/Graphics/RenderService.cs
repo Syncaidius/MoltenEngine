@@ -257,6 +257,11 @@ namespace Molten.Graphics
                     Log.WriteLine($"         Dedicated system RAM: {adapter.Capabilities.DedicatedSystemMemory:N2} MB");
                     Log.WriteLine($"         Shared system RAM: {adapter.Capabilities.SharedSystemMemory:N2} MB");
 
+                    aID = 1;
+                    Log.WriteLine($"         Command Sets:");
+                    foreach (SupportedCommandSet set in adapter.Capabilities.CommandSets)
+                        Log.WriteLine($"            {aID++}. Limit: {set.MaxCount} -- Capabilities: {set.CapabilityFlags}");
+
                     if (hasOutputs)
                     {
                         adapter.GetAttachedOutputs(displays);
