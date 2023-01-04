@@ -16,16 +16,15 @@ namespace Molten.Graphics
     {
         internal unsafe delegate Result EnumerateCallback<T>(uint* count, T* info) where T : unmanaged;
 
-        Instance* _vkInstance;
         RenderChainVK _chain;
         DisplayManagerVK _displayManager;
-        InstanceManager _instanceManager;
+        InstanceManager _instance;
         DebugUtilsMessengerEXT* _debugMessengerHandle;
 
         public RendererVK()
         {
             VK = Vk.GetApi();
-            _instanceManager = new InstanceManager(this);
+            _instance = new InstanceManager(this);
             _displayManager = new DisplayManagerVK(this);
             _chain = new RenderChainVK(this);
         }
@@ -46,26 +45,25 @@ namespace Molten.Graphics
         internal unsafe delegate Result CreateDebugUtilsMessengerEXT();
         protected override void OnInitializeApi(GraphicsSettings settings)
         {
-            _instanceManager.BeginNew();
             // TODO Store baseline profiles for each OS/platform where possible, or default to Moltens own.
             // For android see: https://developer.android.com/ndk/guides/graphics/android-baseline-profile
 
             if (settings.EnableDebugLayer.Value == true)
             {
-                _instanceManager.AddLayer("VK_LAYER_KHRONOS_validation");
-                _instanceManager.AddExtension<ExtDebugUtils>(SetupDebugMessenger, (ext) =>
+                _instance.AddLayer("VK_LAYER_KHRONOS_validation");
+                _instance.AddExtension<ExtDebugUtils>(SetupDebugMessenger, (ext) =>
                 {
                     // Dispose of debug messenger handle.
                     if (_debugMessengerHandle != null)
                     {
-                        ext.DestroyDebugUtilsMessenger(*_vkInstance, *_debugMessengerHandle, null);
+                        ext.DestroyDebugUtilsMessenger(*_instance.Ptr, *_debugMessengerHandle, null);
                         _debugMessengerHandle = null;
                     }
                 });
                 
             }
 
-            if (!_instanceManager.Build(new VersionVK(1, 3, 0), out _vkInstance))
+            if (!_instance.Build(new VersionVK(1, 3, 0)))
                 Log.Error($"Failed to build new instance");
         }
 
@@ -105,7 +103,7 @@ namespace Molten.Graphics
             };
 
             _debugMessengerHandle = EngineUtil.Alloc<DebugUtilsMessengerEXT>();
-            Result r = ext.CreateDebugUtilsMessenger(*_vkInstance, &debugCreateInfo, null, _debugMessengerHandle);
+            Result r = ext.CreateDebugUtilsMessenger(*_instance.Ptr, &debugCreateInfo, null, _debugMessengerHandle);
             if (!LogResult(r))
                 EngineUtil.Free(ref _debugMessengerHandle);
         }
@@ -209,13 +207,8 @@ namespace Molten.Graphics
         protected override void OnDisposeBeforeRender()
         {
             _displayManager.Dispose();
-            _instanceManager.Dispose();
+            _instance.Dispose();
 
-            if (_vkInstance != null)
-            {
-                VK.DestroyInstance(*_vkInstance, null);
-                EngineUtil.Free(ref _vkInstance);
-            }
 
             VK.Dispose();
         }
@@ -226,8 +219,8 @@ namespace Molten.Graphics
         internal Vk VK { get; }
 
         /// <summary>
-        /// Gets the underlying <see cref="Instance"/> pointer.
+        /// Gets the underlying <see cref="InstanceManager"/> which manages a <see cref="Silk.NET.Vulkan.Instance"/> object.
         /// </summary>
-        internal Instance* Ptr => _vkInstance;
+        internal InstanceManager Instance => _instance;
     }
 }

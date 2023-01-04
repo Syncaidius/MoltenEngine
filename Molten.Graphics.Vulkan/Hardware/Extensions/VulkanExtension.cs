@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal abstract class VulkanExtension
     {
-        internal unsafe abstract bool Load(RendererVK renderer, Instance instance, Device device);
+        internal unsafe abstract bool Load(RendererVK renderer, Instance* instance, Device* device);
 
         public unsafe abstract void Unload(RendererVK renderer);
     }
@@ -28,15 +28,15 @@ namespace Molten.Graphics
             UnloadCallback = unloadCallback;
         }
 
-        internal unsafe override sealed bool Load(RendererVK renderer, Instance instance, Device device)
+        internal unsafe override sealed bool Load(RendererVK renderer, Instance* instance, Device* device)
         {
             bool success = false;
             E ext;
 
-            if (device.Handle == IntPtr.Zero)
-                success = renderer.VK.TryGetInstanceExtension(instance, out ext);
+            if (device == null)
+                success = renderer.VK.TryGetInstanceExtension(*instance, out ext);
             else
-                success = renderer.VK.TryGetDeviceExtension(instance, device, out ext);
+                success = renderer.VK.TryGetDeviceExtension(*instance, *device, out ext);
 
             if (success)
             {

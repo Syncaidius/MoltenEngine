@@ -8,7 +8,7 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal abstract class ExtensionManager<D> : IDisposable
+    internal unsafe abstract class ExtensionManager<D> : IDisposable
         where D : unmanaged
     {
         /// <summary>
@@ -37,43 +37,21 @@ namespace Molten.Graphics
             internal byte** ExtensionNames;
         }
 
-        ExtensionBinding _newBinding;
-        Dictionary<D, ExtensionBinding> _instances = new Dictionary<D, ExtensionBinding>();
-
+        D* _ptr;
+        ExtensionBinding _bind;
         RendererVK _renderer;
 
         internal ExtensionManager(RendererVK renderer)
         {
             _renderer = renderer;
+            _bind = new ExtensionBinding();
         }
 
-        protected abstract nint GetObjectHandle(D obj);
-
-        protected abstract bool LoadExtension(RendererVK renderer, VulkanExtension ext, D obj);
+        protected abstract bool LoadExtension(RendererVK renderer, VulkanExtension ext, D* obj);
 
         protected unsafe abstract Result OnBuild(RendererVK renderer, VersionVK apiVersion, TempData tmp, ExtensionBinding binding, D* obj);
 
-        protected unsafe abstract void DestroyObject(RendererVK renderer, D obj);
-
-        public unsafe void Dispose()
-        {
-            foreach (D obj in _instances.Keys)
-            {
-                if (GetObjectHandle(obj) != 0)
-                {
-                    ExtensionBinding bind = _instances[obj];
-                    foreach (VulkanExtension ext in bind.Extensions.Values)
-                        ext.Unload(_renderer);
-
-                    bind.Extensions.Clear();
-                    bind.Layers.Clear();
-
-                    DestroyObject(_renderer, obj);
-                }
-            }
-
-            _instances.Clear();
-        }
+        protected unsafe abstract void DestroyObject(RendererVK renderer, D* obj);
 
         private string GetNativeExtensionName<E>()
             where E : NativeExtension<Vk>
@@ -87,67 +65,58 @@ namespace Molten.Graphics
                 return t.Name;
         }
 
-        internal void BeginNew()
-        {
-            if (_newBinding != null)
-                throw new Exception("Cannot begin creation of a new instance when one has already began");
-
-            _newBinding = new ExtensionBinding();
-        }
-
         internal void AddExtension<E>(Action<E> loadCallback = null, Action<E> destroyCallback = null)
             where E : NativeExtension<Vk>
         {
-            if (_newBinding == null)
+            if (_bind == null)
                 throw new Exception("Cannot add extensions before BeginNewInstance() has been called");
 
             VulkanExtension<E> ext = new VulkanExtension<E>(loadCallback, destroyCallback);
             string extName = GetNativeExtensionName<E>();
-            if(!_newBinding.Extensions.ContainsKey(extName))
-                _newBinding.Extensions.Add(extName, ext);
+            if(!_bind.Extensions.ContainsKey(extName))
+                _bind.Extensions.Add(extName, ext);
         }
 
         internal void AddLayer(string layerName)
         {
-            if (_newBinding == null)
+            if (_bind == null)
                 throw new Exception("Cannot add extensions before BeginNewInstance() has been called");
 
-            if (!_newBinding.Layers.Contains(layerName))
-                _newBinding.Layers.Add(layerName);
+            if (!_bind.Layers.Contains(layerName))
+                _bind.Layers.Add(layerName);
         }
 
-        internal unsafe bool Build(VersionVK apiVersion, out D* obj)
+        internal unsafe bool Build(VersionVK apiVersion)
         {
-            if (_newBinding == null)
-                throw new Exception("Cannot call build a new instance before BeginNewInstance() is called");
+            if (_ptr != null)
+                throw new Exception("Cannot call Build() more than once on the same ExtensionManager");
 
             EnableLayers();
             EnableExtensions();
 
             TempData tmp = new TempData()
             {
-                LayerNames = (byte**)SilkMarshal.StringArrayToPtr(_newBinding.Layers.AsReadOnly(), NativeStringEncoding.UTF8),
-                ExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(_newBinding.Extensions.Keys.ToList().AsReadOnly(), NativeStringEncoding.UTF8)
+                LayerNames = (byte**)SilkMarshal.StringArrayToPtr(_bind.Layers.AsReadOnly(), NativeStringEncoding.UTF8),
+                ExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(_bind.Extensions.Keys.ToList().AsReadOnly(), NativeStringEncoding.UTF8)
             };
 
-            obj = EngineUtil.Alloc<D>();
-            Result r = OnBuild(_renderer, apiVersion, tmp, _newBinding, obj);
+            _ptr = EngineUtil.Alloc<D>();
+            Result r = OnBuild(_renderer, apiVersion, tmp, _bind, _ptr);
             bool success = _renderer.LogResult(r); 
             if (success)
             {
-                _instances.Add(*obj, _newBinding);
 
                 // Load load all requested extension modules that were supported/available.
-                foreach (VulkanExtension ext in _newBinding.Extensions.Values)
+                foreach (VulkanExtension ext in _bind.Extensions.Values)
                 {
-                    bool extSuccess = LoadExtension(_renderer, ext, *obj);
+                    bool extSuccess = LoadExtension(_renderer, ext, _ptr);
                 }
             }
 
             SilkMarshal.Free((nint)tmp.LayerNames);
             SilkMarshal.Free((nint)tmp.ExtensionNames);
 
-            _newBinding = null;
+            _bind = null;
             return success;
         }
 
@@ -159,7 +128,7 @@ namespace Molten.Graphics
                 return;
 
             List<string> loaded = new List<string>();
-            List<string> names = _newBinding.Layers.ToList();
+            List<string> names = _bind.Layers.ToList();
 
             _renderer.Log.WriteLine($"Enabled the following {typeName} layers:");
             int loadIndex = 1;
@@ -168,7 +137,7 @@ namespace Molten.Graphics
             {
                 string name = SilkMarshal.PtrToString((nint)p.LayerName, NativeStringEncoding.UTF8);
 
-                if (_newBinding.Layers.Contains(name))
+                if (_bind.Layers.Contains(name))
                 {
                     loaded.Add(name);
                     VersionVK specVersion = p.SpecVersion;
@@ -190,7 +159,7 @@ namespace Molten.Graphics
                         failWarned = true;
                     }
                     _renderer.Log.Warning($"   {i + 1}. {names[i]}");
-                    _newBinding.Layers.Remove(names[i]);
+                    _bind.Layers.Remove(names[i]);
                 }
             }
         }
@@ -208,14 +177,14 @@ namespace Molten.Graphics
                 return;
 
             List<string> loaded = new List<string>();
-            List<string> names = _newBinding.Extensions.Keys.ToList();
+            List<string> names = _bind.Extensions.Keys.ToList();
             int loadIndex = 1;
 
             _renderer.Log.WriteLine($"Enabled the following {typeName} extensions:");
             foreach(ExtensionProperties p in properties)
             {
                 string name = SilkMarshal.PtrToString((nint)p.ExtensionName, NativeStringEncoding.UTF8);
-                if (_newBinding.Extensions.ContainsKey(name))
+                if (_bind.Extensions.ContainsKey(name))
                 {
                     loaded.Add(name);
                     VersionVK specVersion = p.SpecVersion;
@@ -234,9 +203,34 @@ namespace Molten.Graphics
                         failWarned = true;
                     }
                     _renderer.Log.Warning($"   {i + 1}. {names[i]}");
-                    _newBinding.Extensions.Remove(names[i]);
+                    _bind.Extensions.Remove(names[i]);
                 }
             }
         }
+
+        public unsafe void Dispose()
+        {
+            if (_ptr != null)
+            {
+                foreach (VulkanExtension ext in _bind.Extensions.Values)
+                    ext.Unload(_renderer);
+
+                _bind.Extensions.Clear();
+                _bind.Layers.Clear();
+
+                DestroyObject(_renderer, _ptr);
+                EngineUtil.Free(ref _ptr);
+            }
+        }
+
+        public static implicit operator D*(ExtensionManager<D> manager)
+        {
+            return manager._ptr;
+        }
+
+        /// <summary>
+        /// Gets the underlying pointer of the object that has extensions attached to it. e.g. a <see cref="Instance"/> or <see cref="Device"/>.
+        /// </summary>
+        internal D* Ptr => _ptr;
     }
 }

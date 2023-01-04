@@ -8,25 +8,18 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal class InstanceManager : ExtensionManager<Instance>
+    internal unsafe class InstanceManager : ExtensionManager<Instance>
     {
-        internal InstanceManager(RendererVK renderer) : base(renderer)
+        internal InstanceManager(RendererVK renderer) : base(renderer) { }
+
+        protected override bool LoadExtension(RendererVK renderer, VulkanExtension ext, Instance* obj)
         {
+            return ext.Load(renderer, obj, null);
         }
 
-        protected override nint GetObjectHandle(Instance obj)
+        protected unsafe override void DestroyObject(RendererVK renderer, Instance* obj)
         {
-            return obj.Handle;
-        }
-
-        protected override bool LoadExtension(RendererVK renderer, VulkanExtension ext, Instance obj)
-        {
-            return ext.Load(renderer, obj, new Device());
-        }
-
-        protected unsafe override void DestroyObject(RendererVK renderer, Instance obj)
-        {
-            renderer.VK.DestroyInstance(obj, null);
+            renderer.VK.DestroyInstance(*obj, null);
         }
 
         protected override unsafe Result OnBuild(RendererVK renderer, VersionVK apiVersion, TempData tmp, ExtensionBinding binding, Instance* obj)
