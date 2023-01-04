@@ -8,7 +8,8 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal class InstanceManager : IDisposable
+    internal abstract class ExtensionManager<D> : IDisposable
+        where D : unmanaged
     {
         /// <summary>
         /// 
@@ -17,13 +18,6 @@ namespace Molten.Graphics
         /// <param name="info"></param>
         /// <returns>True if the instance layer/extension is valid.</returns>
         private unsafe delegate PropertyInfo EnumerateInstanceRetrieveCallback<T>(T* info) where T : unmanaged;
-
-        internal class InstanceBinding
-        {
-            internal Dictionary<string, VulkanExtension> Extensions = new Dictionary<string, VulkanExtension>();
-
-            internal List<string> Layers = new List<string>();
-        }
 
         internal struct PropertyInfo
         {
@@ -36,30 +30,45 @@ namespace Molten.Graphics
             internal bool Loaded;
         }
 
-        InstanceBinding _newInstance;
-        Dictionary<Instance, InstanceBinding> _instances = new Dictionary<Instance, InstanceBinding>();
+        protected unsafe class TempData
+        {
+            internal byte** LayerNames;
+
+            internal byte** ExtensionNames;
+        }
+
+        ExtensionBinding _newBinding;
+        Dictionary<D, ExtensionBinding> _instances = new Dictionary<D, ExtensionBinding>();
 
         RendererVK _renderer;
 
-        internal InstanceManager(RendererVK renderer)
+        internal ExtensionManager(RendererVK renderer)
         {
             _renderer = renderer;
         }
 
+        protected abstract nint GetObjectHandle(D obj);
+
+        protected abstract bool LoadExtension(RendererVK renderer, VulkanExtension ext, D obj);
+
+        protected unsafe abstract Result OnBuild(RendererVK renderer, VersionVK apiVersion, TempData tmp, ExtensionBinding binding, D* obj);
+
+        protected unsafe abstract void DestroyObject(RendererVK renderer, D obj);
+
         public unsafe void Dispose()
         {
-            foreach (Instance instance in _instances.Keys)
+            foreach (D obj in _instances.Keys)
             {
-                if (instance.Handle != 0)
+                if (GetObjectHandle(obj) != 0)
                 {
-                    InstanceBinding bind = _instances[instance];
+                    ExtensionBinding bind = _instances[obj];
                     foreach (VulkanExtension ext in bind.Extensions.Values)
-                        ext.Unload(_renderer, instance);
+                        ext.Unload(_renderer);
 
                     bind.Extensions.Clear();
                     bind.Layers.Clear();
 
-                    _renderer.VK.DestroyInstance(instance, null);
+                    DestroyObject(_renderer, obj);
                 }
             }
 
@@ -80,98 +89,86 @@ namespace Molten.Graphics
 
         internal void BeginNew()
         {
-            if (_newInstance != null)
+            if (_newBinding != null)
                 throw new Exception("Cannot begin creation of a new instance when one has already began");
 
-            _newInstance = new InstanceBinding();
+            _newBinding = new ExtensionBinding();
         }
 
         internal void AddExtension<E>(Action<E> loadCallback = null, Action<E> destroyCallback = null)
             where E : NativeExtension<Vk>
         {
-            if (_newInstance == null)
+            if (_newBinding == null)
                 throw new Exception("Cannot add extensions before BeginNewInstance() has been called");
 
             VulkanExtension<E> ext = new VulkanExtension<E>(loadCallback, destroyCallback);
             string extName = GetNativeExtensionName<E>();
-            if(!_newInstance.Extensions.ContainsKey(extName))
-                _newInstance.Extensions.Add(extName, ext);
+            if(!_newBinding.Extensions.ContainsKey(extName))
+                _newBinding.Extensions.Add(extName, ext);
         }
 
         internal void AddLayer(string layerName)
         {
-            if (_newInstance == null)
+            if (_newBinding == null)
                 throw new Exception("Cannot add extensions before BeginNewInstance() has been called");
 
-            if (!_newInstance.Layers.Contains(layerName))
-                _newInstance.Layers.Add(layerName);
+            if (!_newBinding.Layers.Contains(layerName))
+                _newBinding.Layers.Add(layerName);
         }
 
-        internal unsafe bool Build(VersionVK apiVersion, out Instance* instance)
+        internal unsafe bool Build(VersionVK apiVersion, out D* obj)
         {
-            if (_newInstance == null)
+            if (_newBinding == null)
                 throw new Exception("Cannot call build a new instance before BeginNewInstance() is called");
-
-            ApplicationInfo appInfo = new ApplicationInfo()
-            {
-                SType = StructureType.ApplicationInfo,
-                EngineVersion = 1,
-                ApiVersion = apiVersion,
-            };
 
             EnableLayers();
             EnableExtensions();
 
-            byte** layerNames = (byte**)SilkMarshal.StringArrayToPtr(_newInstance.Layers.AsReadOnly(), NativeStringEncoding.UTF8);
-            byte** extNames = (byte**)SilkMarshal.StringArrayToPtr(_newInstance.Extensions.Keys.ToList().AsReadOnly(), NativeStringEncoding.UTF8);
-
-            InstanceCreateInfo createInfo = new InstanceCreateInfo()
+            TempData tmp = new TempData()
             {
-                SType = StructureType.InstanceCreateInfo,
-                PApplicationInfo = &appInfo,
-                EnabledLayerCount = (uint)_newInstance.Layers.Count,
-                PpEnabledLayerNames = layerNames,
-                EnabledExtensionCount = (uint)_newInstance.Extensions.Count,
-                PpEnabledExtensionNames = extNames
+                LayerNames = (byte**)SilkMarshal.StringArrayToPtr(_newBinding.Layers.AsReadOnly(), NativeStringEncoding.UTF8),
+                ExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(_newBinding.Extensions.Keys.ToList().AsReadOnly(), NativeStringEncoding.UTF8)
             };
 
-            // Create the instance
-            instance = EngineUtil.Alloc<Instance>();
-            Result r = _renderer.VK.CreateInstance(&createInfo, null, instance);
-            bool success = _renderer.LogResult(r);
+            obj = EngineUtil.Alloc<D>();
+            Result r = OnBuild(_renderer, apiVersion, tmp, _newBinding, obj);
+            bool success = _renderer.LogResult(r); 
             if (success)
             {
-                _instances.Add(*instance, _newInstance);
+                _instances.Add(*obj, _newBinding);
 
                 // Load load all requested extension modules that were supported/available.
-                foreach (VulkanExtension ext in _newInstance.Extensions.Values)
-                    ext.Load(_renderer, *instance);
+                foreach (VulkanExtension ext in _newBinding.Extensions.Values)
+                {
+                    bool extSuccess = LoadExtension(_renderer, ext, *obj);
+                }
             }
 
-            SilkMarshal.Free((nint)layerNames);
-            SilkMarshal.Free((nint)extNames);
+            SilkMarshal.Free((nint)tmp.LayerNames);
+            SilkMarshal.Free((nint)tmp.ExtensionNames);
 
-            _newInstance = null;
+            _newBinding = null;
             return success;
         }
 
         private unsafe void EnableLayers()
         {
-            LayerProperties[] properties = _renderer.Enumerate<LayerProperties>(_renderer.VK.EnumerateInstanceLayerProperties, "instance layers");
+            string typeName = typeof(D).Name.ToLower();
+            LayerProperties[] properties = _renderer.Enumerate<LayerProperties>(_renderer.VK.EnumerateInstanceLayerProperties, $"{typeName} layers");
             if (properties.Length == 0)
                 return;
 
             List<string> loaded = new List<string>();
-            List<string> names = _newInstance.Layers.ToList();
+            List<string> names = _newBinding.Layers.ToList();
 
-            _renderer.Log.WriteLine($"Enabled the following layers:");
+            _renderer.Log.WriteLine($"Enabled the following {typeName} layers:");
             int loadIndex = 1;
 
             foreach(LayerProperties p in properties)
             {
                 string name = SilkMarshal.PtrToString((nint)p.LayerName, NativeStringEncoding.UTF8);
 
-                if (_newInstance.Layers.Contains(name))
+                if (_newBinding.Layers.Contains(name))
                 {
                     loaded.Add(name);
                     VersionVK specVersion = p.SpecVersion;
@@ -189,35 +186,36 @@ namespace Molten.Graphics
                 {
                     if (!failWarned)
                     {
-                        _renderer.Log.Warning($"Failed to enable the following layers:");
+                        _renderer.Log.Warning($"Failed to enable the following {typeName} layers:");
                         failWarned = true;
                     }
                     _renderer.Log.Warning($"   {i + 1}. {names[i]}");
-                    _newInstance.Layers.Remove(names[i]);
+                    _newBinding.Layers.Remove(names[i]);
                 }
             }
         }
 
         private unsafe void EnableExtensions()
         {
+            string typeName = typeof(D).Name.ToLower();
             ExtensionProperties[] properties = _renderer.Enumerate<ExtensionProperties>((count, items) =>
             {
                 byte* nullptr = null;
                 return _renderer.VK.EnumerateInstanceExtensionProperties(nullptr, count, items);
-            }, "instance extensions");
+            }, $"{typeName} extensions");
 
             if (properties.Length == 0)
                 return;
 
             List<string> loaded = new List<string>();
-            List<string> names = _newInstance.Extensions.Keys.ToList();
+            List<string> names = _newBinding.Extensions.Keys.ToList();
             int loadIndex = 1;
 
-            _renderer.Log.WriteLine($"Enabled the following extensions:");
+            _renderer.Log.WriteLine($"Enabled the following {typeName} extensions:");
             foreach(ExtensionProperties p in properties)
             {
                 string name = SilkMarshal.PtrToString((nint)p.ExtensionName, NativeStringEncoding.UTF8);
-                if (_newInstance.Extensions.ContainsKey(name))
+                if (_newBinding.Extensions.ContainsKey(name))
                 {
                     loaded.Add(name);
                     VersionVK specVersion = p.SpecVersion;
@@ -232,11 +230,11 @@ namespace Molten.Graphics
                 {
                     if (!failWarned)
                     {
-                        _renderer.Log.Warning($"Failed to enable the following extensions:");
+                        _renderer.Log.Warning($"Failed to enable the following {typeName}extensions:");
                         failWarned = true;
                     }
                     _renderer.Log.Warning($"   {i + 1}. {names[i]}");
-                    _newInstance.Extensions.Remove(names[i]);
+                    _newBinding.Extensions.Remove(names[i]);
                 }
             }
         }
