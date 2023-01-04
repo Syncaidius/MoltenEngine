@@ -77,6 +77,11 @@ namespace Molten.Graphics
                 _bind.Extensions.Add(extName, ext);
         }
 
+        internal bool HasExtension(string extName)
+        {
+            return _bind.Extensions.ContainsKey(extName);
+        }
+
         internal void AddLayer(string layerName)
         {
             if (_bind == null)
