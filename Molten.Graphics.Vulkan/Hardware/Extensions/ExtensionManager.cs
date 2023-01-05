@@ -8,7 +8,7 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class ExtensionManager<D> : IDisposable
+    internal unsafe abstract class ExtensionManager<D> : EngineObject
         where D : unmanaged
     {
         /// <summary>
@@ -213,7 +213,7 @@ namespace Molten.Graphics
             }
         }
 
-        public unsafe void Dispose()
+        protected override void OnDispose()
         {
             if (_ptr != null)
             {
