@@ -10,12 +10,12 @@ namespace Molten.Graphics
     internal unsafe class DeviceVK : ExtensionManager<Device>
     {
         Instance* _vkInstance;
-        Logger _log;
+        RendererVK _renderer;
 
         internal DeviceVK(RendererVK renderer, DisplayAdapterVK adapter, Instance* instance) : 
             base(renderer)
         {
-            _log = renderer.Log;
+            _renderer = renderer;
             _vkInstance = instance;
             Adapter = adapter;
         }
@@ -53,5 +53,10 @@ namespace Molten.Graphics
         /// Gets the underlying <see cref="DisplayAdapterVK"/> that the current <see cref="DeviceVK"/> is bound to.
         /// </summary>
         internal DisplayAdapterVK Adapter { get; }
+
+        /// <summary>
+        /// Gets the <see cref="Instance"/> that the current <see cref="DeviceVK"/> is bound to.
+        /// </summary>
+        internal Instance* Instance => _vkInstance;
     }
 }

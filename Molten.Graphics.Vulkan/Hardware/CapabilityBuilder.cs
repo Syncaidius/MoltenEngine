@@ -93,8 +93,15 @@ namespace Molten.Graphics
             /// Command list functionality.
             cap.DeferredCommandLists = CommandListSupport.Supported;
             cap.ConcurrentResourceCreation = true;
-            foreach(QueueFamilyProperties p in queueFamilies)
-                cap.CommandSets.Add(new SupportedCommandSet(p.QueueCount, (CommandSetCapabilityFlags)p.QueueFlags));
+            foreach (QueueFamilyProperties p in queueFamilies)
+            {
+                cap.CommandSets.Add(new SupportedCommandSet()
+                {
+                    MaxCount = p.QueueCount,
+                    CapabilityFlags = (CommandSetCapabilityFlags)p.QueueFlags,
+                    TimeStampBits = p.TimestampValidBits
+                });
+            }
 
             return cap;
         }

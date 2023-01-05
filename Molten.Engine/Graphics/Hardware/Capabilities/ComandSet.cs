@@ -9,15 +9,11 @@ namespace Molten.Graphics
     public class SupportedCommandSet
     {
         /// <summary>
-        /// Creates a new instance of <see cref="SupportedCommandSet"/>.
+        /// Gets or sets the number of meaningful bits in query timestamps written via the timestamp functionality of a graphics API. e.g. in Vulkan these would be 
+        /// functions such as vkCmdWriteTimestamp.
+        /// <para>A value of 0 indicates no support for timestamps.</para>
         /// </summary>
-        /// <param name="maxCount">The maximum number allowed of the current command set.</param>
-        /// <param name="capFlags">The command set capability flags.</param>
-        public SupportedCommandSet(uint maxCount, CommandSetCapabilityFlags capFlags)
-        {
-            MaxCount = maxCount;
-            CapabilityFlags = capFlags;
-        }
+        public uint TimeStampBits { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum number allowed sets of the current <see cref="SupportedCommandSet"/>.

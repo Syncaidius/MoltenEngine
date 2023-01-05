@@ -149,10 +149,14 @@ namespace Molten.Graphics
             cap.Compute.MaxGroupSizeY = 1024;
             cap.Compute.MaxGroupSizeZ = 64;                 // The Z dimension of numthreads is limited to D3D11_CS_THREAD_GROUP_MAX_Z (64).;
 
-            cap.CommandSets.Add(new SupportedCommandSet(1,
-                CommandSetCapabilityFlags.Graphics |
+            cap.CommandSets.Add(new SupportedCommandSet()
+            {
+                MaxCount = 1,
+                CapabilityFlags = CommandSetCapabilityFlags.Graphics |
                 CommandSetCapabilityFlags.Compute |
-                CommandSetCapabilityFlags.TransferCopy));
+                CommandSetCapabilityFlags.TransferCopy,
+                TimeStampBits = 64,  // Queries of type D3D11_QUERY_TIMESTAMP always return UINT64
+            });
 
             
             cap.ConcurrentResourceCreation = feature_threading.DriverConcurrentCreates > 0;
