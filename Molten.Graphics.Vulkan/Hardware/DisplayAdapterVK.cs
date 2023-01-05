@@ -7,7 +7,7 @@ using ImageMagick;
 using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
 
-namespace Molten.Graphics.Hardware
+namespace Molten.Graphics
 {
     public unsafe class DisplayAdapterVK : IDisplayAdapter
     {
@@ -16,6 +16,9 @@ namespace Molten.Graphics.Hardware
 
         DisplayManagerVK _manager;
         PhysicalDevice _device;
+
+        List<DisplayOutputVK> _outputs;
+        List<DisplayOutputVK> _activeOutputs;
 
         internal DisplayAdapterVK(DisplayManagerVK manager, PhysicalDevice device)
         {
@@ -40,6 +43,11 @@ namespace Molten.Graphics.Hardware
 #if DEBUG
             _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &p);
 #endif
+
+            _outputs = new List<DisplayOutputVK>();
+            _activeOutputs = new List<DisplayOutputVK>();
+            Outputs = _outputs.AsReadOnly();
+            ActiveOutputs = _activeOutputs.AsReadOnly();
         }
 
         private DeviceVendor ParseVendorID(uint vendorID)
@@ -108,9 +116,9 @@ namespace Molten.Graphics.Hardware
         public GraphicsCapabilities Capabilities { get; private set; }
 
         /// <inheritdoc/>
-        public IReadOnlyList<IDisplayOutput> Outputs => throw new NotImplementedException();
+        public IReadOnlyList<IDisplayOutput> Outputs { get; private set; }
 
         /// <inheritdoc/>
-        public IReadOnlyList<IDisplayOutput> ActiveOutputs => throw new NotImplementedException();
+        public IReadOnlyList<IDisplayOutput> ActiveOutputs { get; private set; }
     }
 }

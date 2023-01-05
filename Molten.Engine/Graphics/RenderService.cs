@@ -254,7 +254,10 @@ namespace Molten.Graphics
 
                 // Add all preferred displays to active list
                 foreach (int id in settings.Graphics.DisplayOutputIds.Values)
-                    preferredAdapter.AddActiveOutput(preferredAdapter.Outputs[id]);
+                {
+                    if(id < preferredAdapter.Outputs.Count)
+                        preferredAdapter.AddActiveOutput(preferredAdapter.Outputs[id]);
+                }
 
                 // Log preferred adapter stats
                 Log.WriteLine($"Chosen {preferredAdapter.Name}");

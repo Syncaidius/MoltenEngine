@@ -21,9 +21,12 @@ namespace Molten.Graphics
         InstanceManager _instance;
         DebugUtilsMessengerEXT* _debugMessengerHandle;
 
+        List<DeviceVK> _devices;
+
         public RendererVK()
         {
             VK = Vk.GetApi();
+            _devices = new List<DeviceVK>();
             _instance = new InstanceManager(this);
             _displayManager = new DisplayManagerVK(this);
             _chain = new RenderChainVK(this);
@@ -42,7 +45,6 @@ namespace Molten.Graphics
             return (((variant) << 29) | ((major) << 22) | ((minor) << 12) | (patch));
         }
 
-        internal unsafe delegate Result CreateDebugUtilsMessengerEXT();
         protected override void OnInitializeApi(GraphicsSettings settings)
         {
             // TODO Store baseline profiles for each OS/platform where possible, or default to Moltens own.
@@ -111,6 +113,13 @@ namespace Molten.Graphics
         protected override void OnInitialize(EngineSettings settings)
         {
             base.OnInitialize(settings);
+
+            DisplayAdapterVK adapter = _displayManager.SelectedAdapter as DisplayAdapterVK;
+            DeviceVK mainDevice = new DeviceVK(this, adapter, _instance, CommandSetCapabilityFlags.Graphics);
+            // TODO add device extensions
+            // TODO mainDevice.Build(apiVersion);
+
+            _devices.Add(mainDevice);
         }
 
         internal bool LogResult(Result r, string msg = "")
@@ -129,7 +138,7 @@ namespace Molten.Graphics
         }
 
         internal unsafe T[] Enumerate<T>(EnumerateCallback<T> callback, string callbackName = "")
-    where T : unmanaged
+            where T : unmanaged
         {
             uint count = 0;
 
@@ -206,9 +215,13 @@ namespace Molten.Graphics
 
         protected override void OnDisposeBeforeRender()
         {
+            foreach (DeviceVK device in _devices)
+                device.Dispose();
+
+            _devices.Clear();
+
             _displayManager.Dispose();
             _instance.Dispose();
-
 
             VK.Dispose();
         }
@@ -222,5 +235,7 @@ namespace Molten.Graphics
         /// Gets the underlying <see cref="InstanceManager"/> which manages a <see cref="Silk.NET.Vulkan.Instance"/> object.
         /// </summary>
         internal InstanceManager Instance => _instance;
+
+        internal DeviceVK this[int index] => _devices[index];
     }
 }

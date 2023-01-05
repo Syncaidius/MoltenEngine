@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Molten.Graphics.Hardware;
 using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
@@ -12,6 +11,8 @@ namespace Molten.Graphics
     {
         List<DisplayAdapterVK> _adapters;
         List<DisplayAdapterVK> _withOutputs;
+        DisplayAdapterVK _defaultAdapter;
+        DisplayAdapterVK _selectedAdapter;
 
         internal DisplayManagerVK(RendererVK renderer)
         {
@@ -44,6 +45,10 @@ namespace Molten.Graphics
 
                 EngineUtil.Free(ref devices);
             }
+
+            // TODO set the adapter with the highest resolution display/output as the default
+            if (_adapters.Count > 0)
+                _defaultAdapter = _adapters[0];
         }
 
         public void Dispose()
@@ -57,10 +62,30 @@ namespace Molten.Graphics
         }
 
         /// <inheritdoc/>
-        public IDisplayAdapter DefaultAdapter => throw new NotImplementedException();
+        public IDisplayAdapter DefaultAdapter => _defaultAdapter;
 
         /// <inheritdoc/>
-        public IDisplayAdapter SelectedAdapter { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IDisplayAdapter SelectedAdapter
+        {
+            get => _selectedAdapter;
+            set
+            {
+                if (value != null)
+                {
+                    if (value is not DisplayAdapterVK vkAdapter)
+                        throw new AdapterException(value, "The adapter is not a valid Vulkan adapter.");
+
+                    if (value.Manager != this)
+                        throw new AdapterException(value, "The adapter not owned by the current display manager.");
+
+                    _selectedAdapter = vkAdapter;
+                }
+                else
+                {
+                    _selectedAdapter = null;
+                }
+            }
+        }
 
         /// <inheritdoc/>
         public IReadOnlyList<IDisplayAdapter> Adapters { get; }
@@ -69,7 +94,19 @@ namespace Molten.Graphics
         public IReadOnlyList<IDisplayAdapter> AdaptersWithOutputs { get; }
 
         /// <inheritdoc/>
-        public IDisplayAdapter this[DeviceID id] => throw new NotImplementedException();
+        public IDisplayAdapter this[DeviceID id]
+        {
+            get
+            {
+                foreach (IDisplayAdapter adapter in _adapters)
+                {
+                    if (adapter.ID == id)
+                        return adapter;
+                }
+
+                return null;
+            }
+        }
 
         internal RendererVK Renderer { get; }
 
