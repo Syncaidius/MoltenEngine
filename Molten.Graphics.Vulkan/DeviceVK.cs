@@ -57,6 +57,9 @@ namespace Molten.Graphics
                 // Use the queue if it has at least one of the requested capabilities.
                 foreach(CommandSetCapabilityFlags flag in values)
                 {
+                    if (flag == CommandSetCapabilityFlags.None)
+                        continue;
+
                     if((_cap & flag) == flag && (set.CapabilityFlags & flag) == flag)
                     {
                         queueInfo[queueCount++] = new DeviceQueueCreateInfo(StructureType.DeviceQueueCreateInfo)

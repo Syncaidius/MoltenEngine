@@ -22,6 +22,8 @@ namespace Molten.Graphics
         DebugUtilsMessengerEXT* _debugMessengerHandle;
 
         List<DeviceVK> _devices;
+        VersionVK _apiVersion;
+
 
         public RendererVK()
         {
@@ -30,6 +32,7 @@ namespace Molten.Graphics
             _instance = new InstanceManager(this);
             _displayManager = new DisplayManagerVK(this);
             _chain = new RenderChainVK(this);
+            _apiVersion = new VersionVK(1, 3, 0);
         }
 
         /// <summary>
@@ -65,7 +68,7 @@ namespace Molten.Graphics
                 
             }
 
-            if (!_instance.Build(new VersionVK(1, 3, 0)))
+            if (!_instance.Build(_apiVersion))
                 Log.Error($"Failed to build new instance");
         }
 
@@ -116,10 +119,9 @@ namespace Molten.Graphics
 
             DisplayAdapterVK adapter = _displayManager.SelectedAdapter as DisplayAdapterVK;
             DeviceVK mainDevice = new DeviceVK(this, adapter, _instance, CommandSetCapabilityFlags.Graphics);
-            // TODO add device extensions
-            // TODO mainDevice.Build(apiVersion);
 
-            _devices.Add(mainDevice);
+            if(mainDevice.Build(_apiVersion))
+                _devices.Add(mainDevice);
         }
 
         internal bool LogResult(Result r, string msg = "")

@@ -281,6 +281,7 @@ namespace Molten.Graphics
             if (preferredAdapter == null)
             {
                 preferredAdapter = DisplayManager.DefaultAdapter;
+
                 gfxSettings.AdapterID.Value = preferredAdapter.ID;
                 gfxSettings.DisplayOutputIds.Values.Clear();
 
@@ -303,6 +304,8 @@ namespace Molten.Graphics
                     gfxSettings.DisplayOutputIds.Values.Add(0);
                 }
             }
+
+            DisplayManager.SelectedAdapter = preferredAdapter;
 
             gfxSettings.AdapterID.Apply();
             gfxSettings.DisplayOutputIds.Apply();

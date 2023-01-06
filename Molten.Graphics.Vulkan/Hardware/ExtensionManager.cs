@@ -135,9 +135,6 @@ namespace Molten.Graphics
             List<string> loaded = new List<string>();
             List<string> names = _bind.Layers.ToList();
 
-            _renderer.Log.WriteLine($"Enabled the following {typeName} layers:");
-            int loadIndex = 1;
-
             foreach(LayerProperties p in properties)
             {
                 string name = SilkMarshal.PtrToString((nint)p.LayerName, NativeStringEncoding.UTF8);
@@ -148,7 +145,7 @@ namespace Molten.Graphics
                     VersionVK specVersion = p.SpecVersion;
                     VersionVK implVersion = p.ImplementationVersion;
                     string desc = SilkMarshal.PtrToString((nint)p.Description, NativeStringEncoding.UTF8);
-                    _renderer.Log.WriteLine($"   {loadIndex++}. {name} -- Version: {specVersion} -- Implementation: {implVersion} -- Desc: {desc}");
+                    _renderer.Log.WriteLine($"Loaded validation layer '{name}' -- Version: {specVersion} -- Implementation: {implVersion} -- Desc: {desc}");
                 }
             }
 
@@ -183,9 +180,7 @@ namespace Molten.Graphics
 
             List<string> loaded = new List<string>();
             List<string> names = _bind.Extensions.Keys.ToList();
-            int loadIndex = 1;
 
-            _renderer.Log.WriteLine($"Enabled the following {typeName} extensions:");
             foreach(ExtensionProperties p in properties)
             {
                 string name = SilkMarshal.PtrToString((nint)p.ExtensionName, NativeStringEncoding.UTF8);
@@ -193,7 +188,7 @@ namespace Molten.Graphics
                 {
                     loaded.Add(name);
                     VersionVK specVersion = p.SpecVersion;
-                    _renderer.Log.WriteLine($"   {loadIndex++}. {name} -- Version: {specVersion}");
+                    _renderer.Log.WriteLine($"Loaded {typeName} extension {name} -- Version: {specVersion}");
                 }
             }
 
@@ -204,7 +199,7 @@ namespace Molten.Graphics
                 {
                     if (!failWarned)
                     {
-                        _renderer.Log.Warning($"Failed to enable the following {typeName}extensions:");
+                        _renderer.Log.Warning($"Failed to enable the following {typeName} extensions:");
                         failWarned = true;
                     }
                     _renderer.Log.Warning($"   {i + 1}. {names[i]}");
