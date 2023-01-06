@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Silk.NET.Core.Native;
+using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
@@ -15,6 +16,18 @@ namespace Molten.Graphics
         protected override bool LoadExtension(RendererVK renderer, VulkanExtension ext, Instance* obj)
         {
             return ext.Load(renderer, obj, null);
+        }
+
+        internal void AddGlfwExtensions()
+        {
+            uint glfwCount = 0;
+
+            byte** glfwNames = Renderer.GLFW.GetRequiredInstanceExtensions(out glfwCount);
+            for(uint i = 0; i < glfwCount; i++)
+            {
+                string name = SilkMarshal.PtrToString((nint)glfwNames[i], NativeStringEncoding.UTF8);
+                AddBasicExtension(name);
+            }
         }
 
         protected unsafe override void DestroyObject(RendererVK renderer, Instance* obj)

@@ -14,6 +14,13 @@ namespace Molten.Graphics
         public unsafe abstract void Unload(RendererVK renderer);
     }
 
+    internal class VulkanBasicExtension : VulkanExtension
+    {
+        public override void Unload(RendererVK renderer) { }
+
+        internal override unsafe bool Load(RendererVK renderer, Instance* instance, Device* device) { return true; }
+    }
+
     internal class VulkanExtension<E> : VulkanExtension
         where E : NativeExtension<Vk>
     {

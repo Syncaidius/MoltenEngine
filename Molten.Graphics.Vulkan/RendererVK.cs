@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Silk.NET.Core;
 using Silk.NET.Core.Native;
+using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 
@@ -28,11 +29,14 @@ namespace Molten.Graphics
         public RendererVK()
         {
             VK = Vk.GetApi();
+            GLFW = Glfw.GetApi();
+            GLFW.Init();
+
             _devices = new List<DeviceVK>();
             _instance = new InstanceManager(this);
             _displayManager = new DisplayManagerVK(this);
             _chain = new RenderChainVK(this);
-            _apiVersion = new VersionVK(1, 3, 0);
+            _apiVersion = new VersionVK(1, 2, 0);
         }
 
         /// <summary>
@@ -65,9 +69,10 @@ namespace Molten.Graphics
                         _debugMessengerHandle = null;
                     }
                 });
-                
+
             }
 
+            _instance.AddGlfwExtensions();
             if (!_instance.Build(_apiVersion))
                 Log.Error($"Failed to build new instance");
         }
@@ -225,6 +230,7 @@ namespace Molten.Graphics
             _displayManager.Dispose();
             _instance.Dispose();
 
+            GLFW.Dispose();
             VK.Dispose();
         }
 
@@ -232,6 +238,11 @@ namespace Molten.Graphics
         /// Gets the underlying <see cref="Vk"/> API instance.
         /// </summary>
         internal Vk VK { get; }
+
+        /// <summary>
+        /// Gets the underlying <see cref="Glfw"/> API instance.
+        /// </summary>
+        internal Glfw GLFW { get; }
 
         /// <summary>
         /// Gets the underlying <see cref="InstanceManager"/> which manages a <see cref="Silk.NET.Vulkan.Instance"/> object.

@@ -5,6 +5,7 @@ using System.Reflection;
 using Silk.NET.Core.Attributes;
 using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Molten.Graphics
 {
@@ -39,11 +40,10 @@ namespace Molten.Graphics
 
         D* _ptr;
         ExtensionBinding _bind;
-        RendererVK _renderer;
 
         internal ExtensionManager(RendererVK renderer)
         {
-            _renderer = renderer;
+            Renderer = renderer;
             _bind = new ExtensionBinding();
         }
 
@@ -77,6 +77,13 @@ namespace Molten.Graphics
                 _bind.Extensions.Add(extName, ext);
         }
 
+        internal void AddBasicExtension(string name)
+        {
+            VulkanBasicExtension ext = new VulkanBasicExtension();
+            if (!_bind.Extensions.ContainsKey(name))
+                _bind.Extensions.Add(name, ext);
+        }
+
         internal bool HasExtension(string extName)
         {
             return _bind.Extensions.ContainsKey(extName);
@@ -106,15 +113,15 @@ namespace Molten.Graphics
             };
 
             _ptr = EngineUtil.Alloc<D>();
-            Result r = OnBuild(_renderer, apiVersion, tmp, _bind, _ptr);
-            bool success = _renderer.LogResult(r); 
+            Result r = OnBuild(Renderer, apiVersion, tmp, _bind, _ptr);
+            bool success = Renderer.LogResult(r); 
             if (success)
             {
 
                 // Load load all requested extension modules that were supported/available.
                 foreach (VulkanExtension ext in _bind.Extensions.Values)
                 {
-                    bool extSuccess = LoadExtension(_renderer, ext, _ptr);
+                    bool extSuccess = LoadExtension(Renderer, ext, _ptr);
                 }
             }
 
@@ -128,7 +135,7 @@ namespace Molten.Graphics
         private unsafe void EnableLayers()
         {
             string typeName = typeof(D).Name.ToLower();
-            LayerProperties[] properties = _renderer.Enumerate<LayerProperties>(_renderer.VK.EnumerateInstanceLayerProperties, $"{typeName} layers");
+            LayerProperties[] properties = Renderer.Enumerate<LayerProperties>(Renderer.VK.EnumerateInstanceLayerProperties, $"{typeName} layers");
             if (properties.Length == 0)
                 return;
 
@@ -145,7 +152,7 @@ namespace Molten.Graphics
                     VersionVK specVersion = p.SpecVersion;
                     VersionVK implVersion = p.ImplementationVersion;
                     string desc = SilkMarshal.PtrToString((nint)p.Description, NativeStringEncoding.UTF8);
-                    _renderer.Log.WriteLine($"Loaded validation layer '{name}' -- Version: {specVersion} -- Implementation: {implVersion} -- Desc: {desc}");
+                    Renderer.Log.WriteLine($"Loaded validation layer '{name}' -- Version: {specVersion} -- Implementation: {implVersion} -- Desc: {desc}");
                 }
             }
 
@@ -157,10 +164,10 @@ namespace Molten.Graphics
                 {
                     if (!failWarned)
                     {
-                        _renderer.Log.Warning($"Failed to enable the following {typeName} layers:");
+                        Renderer.Log.Warning($"Failed to enable the following {typeName} layers:");
                         failWarned = true;
                     }
-                    _renderer.Log.Warning($"   {i + 1}. {names[i]}");
+                    Renderer.Log.Warning($"   {i + 1}. {names[i]}");
                     _bind.Layers.Remove(names[i]);
                 }
             }
@@ -169,10 +176,10 @@ namespace Molten.Graphics
         private unsafe void EnableExtensions()
         {
             string typeName = typeof(D).Name.ToLower();
-            ExtensionProperties[] properties = _renderer.Enumerate<ExtensionProperties>((count, items) =>
+            ExtensionProperties[] properties = Renderer.Enumerate<ExtensionProperties>((count, items) =>
             {
                 byte* nullptr = null;
-                return _renderer.VK.EnumerateInstanceExtensionProperties(nullptr, count, items);
+                return Renderer.VK.EnumerateInstanceExtensionProperties(nullptr, count, items);
             }, $"{typeName} extensions");
 
             if (properties.Length == 0)
@@ -188,7 +195,7 @@ namespace Molten.Graphics
                 {
                     loaded.Add(name);
                     VersionVK specVersion = p.SpecVersion;
-                    _renderer.Log.WriteLine($"Loaded {typeName} extension {name} -- Version: {specVersion}");
+                    Renderer.Log.WriteLine($"Loaded {typeName} extension {name} -- Version: {specVersion}");
                 }
             }
 
@@ -199,10 +206,10 @@ namespace Molten.Graphics
                 {
                     if (!failWarned)
                     {
-                        _renderer.Log.Warning($"Failed to enable the following {typeName} extensions:");
+                        Renderer.Log.Warning($"Failed to enable the following {typeName} extensions:");
                         failWarned = true;
                     }
-                    _renderer.Log.Warning($"   {i + 1}. {names[i]}");
+                    Renderer.Log.Warning($"   {i + 1}. {names[i]}");
                     _bind.Extensions.Remove(names[i]);
                 }
             }
@@ -213,12 +220,12 @@ namespace Molten.Graphics
             if (_ptr != null)
             {
                 foreach (VulkanExtension ext in _bind.Extensions.Values)
-                    ext.Unload(_renderer);
+                    ext.Unload(Renderer);
 
                 _bind.Extensions.Clear();
                 _bind.Layers.Clear();
 
-                DestroyObject(_renderer, _ptr);
+                DestroyObject(Renderer, _ptr);
                 EngineUtil.Free(ref _ptr);
             }
         }
@@ -232,5 +239,10 @@ namespace Molten.Graphics
         /// Gets the underlying pointer of the object that has extensions attached to it. e.g. a <see cref="Instance"/> or <see cref="Device"/>.
         /// </summary>
         internal D* Ptr => _ptr;
+
+        /// <summary>
+        /// Gets the <see cref="RendererVK"/> instance that the current <see cref="ExtensionManager{D}"/> is bound to.
+        /// </summary>
+        internal RendererVK Renderer { get; }
     }
 }

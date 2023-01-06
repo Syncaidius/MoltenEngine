@@ -106,7 +106,6 @@ namespace Molten
                 }
             }
 
-
             OnInitialize(Engine);
             OnFirstLoad(Engine);
 
