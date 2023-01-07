@@ -315,7 +315,7 @@ namespace Molten.Graphics
 
         private void LogAdapter(IDisplayAdapter adapter, int index)
         {
-            bool hasOutputs = DisplayManager.AdaptersWithOutputs.Contains(adapter);
+            bool hasOutputs = adapter.Outputs.Count > 0;
             Log.WriteLine($"   {index++}. {adapter.Name}{(hasOutputs ? " (usable)" : "")}");
             Log.WriteLine($"         Type: {adapter.Type}");
             Log.WriteLine($"         VRAM: {adapter.Capabilities.DedicatedVideoMemory:N2} MB");
@@ -330,7 +330,7 @@ namespace Molten.Graphics
 
             if (hasOutputs)
             {
-                Log.WriteLine($"         Detected {adapter.Outputs.Count} adapters:");
+                Log.WriteLine($"         Detected {adapter.Outputs.Count} outputs:");
                 for (int d = 0; d < adapter.Outputs.Count; d++)
                     Log.WriteLine($"            Display {d + 1}: {adapter.Outputs[d].Name}");
             }

@@ -69,16 +69,55 @@ namespace Molten.Graphics
                 return new DeviceID(deviceID); // OS/Platform-based device ID.
         }
 
+        internal bool AssociateOutput(DisplayOutputVK output)
+        {
+            if (output.AssociatedAdapter == this)
+                return true;
+
+            output.AssociatedAdapter?.UnassociateOutput(output);
+
+            _outputs.Add(output);
+            output.AssociatedAdapter = this;
+
+            return false;
+        }
+
+        internal void UnassociateOutput(DisplayOutputVK output)
+        {
+            if (output.AssociatedAdapter != this)
+                return;
+
+            int index = _activeOutputs.IndexOf(output);
+            if (index > -1)
+                _activeOutputs.RemoveAt(index);
+
+            _outputs.Remove(output);
+            output.AssociatedAdapter = null;
+        }
+
         /// <inheritdoc/>
         public void AddActiveOutput(IDisplayOutput output)
         {
-            throw new NotImplementedException();
+            if (output is DisplayOutputVK vkOutput)
+            {
+                if (vkOutput.AssociatedAdapter != this)
+                    return;
+
+                if (!_activeOutputs.Contains(vkOutput))
+                    _activeOutputs.Add(vkOutput);
+            }
         }
 
         /// <inheritdoc/>
         public void RemoveActiveOutput(IDisplayOutput output)
         {
-            throw new NotImplementedException();
+            if (output is DisplayOutputVK vkOutput)
+            {
+                if (vkOutput.AssociatedAdapter != this)
+                    return;
+
+                _activeOutputs.Remove(vkOutput);
+            }
         }
 
         /// <inheritdoc/>

@@ -12,7 +12,6 @@ namespace Molten.Graphics.Dxgi
         DXGI _api;
         IDXGIFactory7* _dxgiFactory;
         List<DisplayAdapterDXGI> _adapters;
-        List<DisplayAdapterDXGI> _withOutputs;
 
         DisplayAdapterDXGI _defaultAdapter;
         DisplayAdapterDXGI _selectedAdapter;
@@ -24,8 +23,6 @@ namespace Molten.Graphics.Dxgi
             _capabilitiesCallback = capabilitiesCallback; 
             _adapters = new List<DisplayAdapterDXGI>();
             Adapters = _adapters.AsReadOnly();
-            _withOutputs = new List<DisplayAdapterDXGI>();
-            AdaptersWithOutputs = _withOutputs.AsReadOnly();
         }
 
         protected override void OnDispose()
@@ -87,8 +84,6 @@ namespace Molten.Graphics.Dxgi
 
                 if (adapter.Outputs.Count > 0)
                 {
-                    _withOutputs.Add(adapter);
-
                     // Set default if needed
                     if (_defaultAdapter == null)
                     {
@@ -96,6 +91,13 @@ namespace Molten.Graphics.Dxgi
                         _selectedAdapter = adapter;
                     }
                 }
+            }
+
+            // If no adapter with outputs was found, use the first detected adapter.
+            if (_defaultAdapter == null && _adapters.Count > 0)
+            {
+                _defaultAdapter = _adapters[0];
+                _selectedAdapter = _defaultAdapter;
             }
         }
 

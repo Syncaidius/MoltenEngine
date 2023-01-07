@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Silk.NET.Vulkan;
+using Silk.NET.GLFW;
+using Monitor = Silk.NET.GLFW.Monitor;
 
 namespace Molten.Graphics
 {
     internal unsafe class DisplayManagerVK : IDisplayManager
     {
         List<DisplayAdapterVK> _adapters;
-        List<DisplayAdapterVK> _withOutputs;
         DisplayAdapterVK _defaultAdapter;
         DisplayAdapterVK _selectedAdapter;
 
@@ -20,8 +20,7 @@ namespace Molten.Graphics
             CapBuilder = new CapabilityBuilder();
             _adapters = new List<DisplayAdapterVK>();
             Adapters = _adapters.AsReadOnly();
-            _withOutputs = new List<DisplayAdapterVK>();
-            AdaptersWithOutputs = _withOutputs.AsReadOnly();
+            Outputs = new List<DisplayOutputVK>();
         }
 
         public void Initialize(Logger logger, GraphicsSettings settings)
@@ -46,9 +45,68 @@ namespace Molten.Graphics
                 EngineUtil.Free(ref devices);
             }
 
-            // TODO set the adapter with the highest resolution display/output as the default
+            Renderer.GLFW.SetMonitorCallback(MonitorConnectionCallback);
+
+            DetectOutputs();
+
             if (_adapters.Count > 0)
+            {
                 _defaultAdapter = _adapters[0];
+
+                // TODO improve this.
+                // For now, associate all detected outputs with the default adapter.
+                foreach (DisplayOutputVK output in Outputs)
+                    _defaultAdapter.AssociateOutput(output);
+            }
+        }
+
+        private void DetectOutputs()
+        {
+            int monitorCount = 0;
+            Monitor** monitors = Renderer.GLFW.GetMonitors(out monitorCount);
+            Monitor* primaryMonitor = Renderer.GLFW.GetPrimaryMonitor();
+
+            for(int i = 0; i < monitorCount; i++)
+            {
+                Monitor* monitor = monitors[i];
+                DisplayOutputVK vkOutput = new DisplayOutputVK(this, monitor);
+
+                if (monitor == primaryMonitor)
+                    PrimaryOutput = vkOutput;
+
+                Outputs.Add(vkOutput);
+            }
+        }
+
+        private void MonitorConnectionCallback(Monitor* monitor, ConnectedState state)
+        {
+            switch (state)
+            {
+                case ConnectedState.Connected:
+                    {
+                        DisplayOutputVK vkOutput = new DisplayOutputVK(this, monitor);
+                        Outputs.Add(vkOutput);
+
+                        // Associate with the selected adapter by default.
+                        _selectedAdapter?.AssociateOutput(vkOutput);
+                        Renderer.Log.WriteLine($"Display output '{vkOutput.Name}' connected");
+                    }
+                    break;
+
+                case ConnectedState.Disconnected:
+                    {
+                        foreach (DisplayOutputVK vkOutput in Outputs)
+                        {
+                            if (vkOutput.Ptr == monitor)
+                            {
+                                vkOutput.AssociatedAdapter?.UnassociateOutput(vkOutput);
+                                Outputs.Remove(vkOutput);
+                                Renderer.Log.WriteLine($"Display output '{vkOutput.Name}' disconnected");
+                            }
+                        }
+                    }
+                    break;
+            }
         }
 
         public void Dispose()
@@ -87,11 +145,12 @@ namespace Molten.Graphics
             }
         }
 
-        /// <inheritdoc/>
-        public IReadOnlyList<IDisplayAdapter> Adapters { get; }
+        internal List<DisplayOutputVK> Outputs { get; }
+
+        internal DisplayOutputVK PrimaryOutput { get; private set; }
 
         /// <inheritdoc/>
-        public IReadOnlyList<IDisplayAdapter> AdaptersWithOutputs { get; }
+        public IReadOnlyList<IDisplayAdapter> Adapters { get; }
 
         /// <inheritdoc/>
         public IDisplayAdapter this[DeviceID id]

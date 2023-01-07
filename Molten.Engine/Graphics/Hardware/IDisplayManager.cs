@@ -18,11 +18,6 @@
         IReadOnlyList<IDisplayAdapter> Adapters { get; }
 
         /// <summary>
-        /// Gets a list of all <see cref="Adapters"/> that have at least one <see cref="IDisplayOutput"/> attached.
-        /// </summary>
-        IReadOnlyList<IDisplayAdapter> AdaptersWithOutputs { get; }
-
-        /// <summary>
         /// Adds all adapters that are compatible with the provided <paramref name="capabilities"/>, to the provided output list.
         /// </summary>
         /// <param name="capabilities">The capabilities for which to test.</param>
