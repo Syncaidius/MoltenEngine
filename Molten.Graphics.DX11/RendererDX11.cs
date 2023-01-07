@@ -192,7 +192,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the display manager bound to the renderer.
         /// </summary>
-        public override IDisplayManager DisplayManager => _displayManager;
+        public override DisplayManager DisplayManager => _displayManager;
 
         internal DeviceDX11 Device { get; private set; }
 

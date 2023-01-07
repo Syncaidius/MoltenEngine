@@ -144,7 +144,7 @@ namespace Molten.Graphics
         public DisplayAdapterType Type { get; private set; }
 
         /// <inheritdoc/>
-        public IDisplayManager Manager => _manager;
+        public DisplayManager Manager => _manager;
 
         /// <summary>
         /// Gets the underlying Vulkan <see cref="PhysicalDevice"/>.

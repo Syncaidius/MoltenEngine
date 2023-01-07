@@ -241,26 +241,6 @@ namespace Molten.Graphics
             {
                 DisplayManager.Initialize(Log, settings.Graphics);
                 Log.WriteLine($"Initialized display manager");
-
-                // Output detection info into renderer log.
-                IReadOnlyList<IDisplayAdapter> adapters = DisplayManager.Adapters;
-                Log.WriteLine($"Detected {adapters.Count} adapters:");
-                int aID = 1;
-
-                foreach (IDisplayAdapter adapter in adapters)
-                    LogAdapter(adapter, aID++);
-
-                IDisplayAdapter preferredAdapter = ValidateAdapterSettings(settings.Graphics);
-
-                // Add all preferred displays to active list
-                foreach (int id in settings.Graphics.DisplayOutputIds.Values)
-                {
-                    if(id < preferredAdapter.Outputs.Count)
-                        preferredAdapter.AddActiveOutput(preferredAdapter.Outputs[id]);
-                }
-
-                // Log preferred adapter stats
-                Log.WriteLine($"Chosen {preferredAdapter.Name}");
             }
             catch (Exception ex)
             {
@@ -271,70 +251,7 @@ namespace Molten.Graphics
             settings.Graphics.Log(Log, "Graphics");
             MsaaLevel = _requestedMultiSampleLevel = MsaaLevel;
             settings.Graphics.MSAA.OnChanged += MSAA_OnChanged;
-        }
-
-        private IDisplayAdapter ValidateAdapterSettings(GraphicsSettings gfxSettings)
-        {
-            // Does the chosen device ID from settings still match any of our detected devices?
-            DeviceID selectedID = gfxSettings.AdapterID;
-            IDisplayAdapter preferredAdapter = DisplayManager[selectedID];
-            if (preferredAdapter == null)
-            {
-                preferredAdapter = DisplayManager.DefaultAdapter;
-
-                gfxSettings.AdapterID.Value = preferredAdapter.ID;
-                gfxSettings.DisplayOutputIds.Values.Clear();
-
-                if (selectedID.ID != 0)
-                {
-                    if (preferredAdapter != null)
-                        Log.Warning($"Reverted adapter to {preferredAdapter.Name} ({preferredAdapter.ID}) - Previous not found ({selectedID})");
-                    else
-                        Log.Warning($"No adapter available. Previous one not found ({selectedID})");
-                }
-            }
-
-            // Validate display count.
-            if (preferredAdapter != null)
-            {
-                if (gfxSettings.DisplayOutputIds.Values.Count == 0 || 
-                    gfxSettings.DisplayOutputIds.Values.Count > preferredAdapter.Outputs.Count)
-                {
-                    gfxSettings.DisplayOutputIds.Values.Clear();
-                    gfxSettings.DisplayOutputIds.Values.Add(0);
-                }
-            }
-
-            DisplayManager.SelectedAdapter = preferredAdapter;
-
-            gfxSettings.AdapterID.Apply();
-            gfxSettings.DisplayOutputIds.Apply();
-
-            return preferredAdapter;
-        }
-
-        private void LogAdapter(IDisplayAdapter adapter, int index)
-        {
-            bool hasOutputs = adapter.Outputs.Count > 0;
-            Log.WriteLine($"   {index++}. {adapter.Name}{(hasOutputs ? " (usable)" : "")}");
-            Log.WriteLine($"         Type: {adapter.Type}");
-            Log.WriteLine($"         VRAM: {adapter.Capabilities.DedicatedVideoMemory:N2} MB");
-            Log.WriteLine($"         Shared VRAM: {adapter.Capabilities.SharedVideoMemory:N2} MB");
-            Log.WriteLine($"         Dedicated system RAM: {adapter.Capabilities.DedicatedSystemMemory:N2} MB");
-            Log.WriteLine($"         Shared system RAM: {adapter.Capabilities.SharedSystemMemory:N2} MB");
-
-            index = 1;
-            Log.WriteLine($"         Command Sets:");
-            foreach (SupportedCommandSet set in adapter.Capabilities.CommandSets)
-                Log.WriteLine($"            {index++}. Limit: {set.MaxCount} -- Capabilities: {set.CapabilityFlags}");
-
-            if (hasOutputs)
-            {
-                Log.WriteLine($"         Detected {adapter.Outputs.Count} outputs:");
-                for (int d = 0; d < adapter.Outputs.Count; d++)
-                    Log.WriteLine($"            Display {d + 1}: {adapter.Outputs[d].Name}");
-            }
-        }
+        } 
 
         private void MSAA_OnChanged(AntiAliasLevel oldValue, AntiAliasLevel newValue)
         {
@@ -429,7 +346,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the display manager bound to the renderer.
         /// </summary>
-        public abstract IDisplayManager DisplayManager { get; }
+        public abstract DisplayManager DisplayManager { get; }
 
         /// <summary>
         /// Gets the <see cref="ResourceFactory"/> bound to the renderer.

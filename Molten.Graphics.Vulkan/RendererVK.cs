@@ -172,7 +172,7 @@ namespace Molten.Graphics
             return new T[0];
         }
 
-        public override IDisplayManager DisplayManager => _displayManager;
+        public override DisplayManager DisplayManager => _displayManager;
 
         public override ResourceFactory Resources { get; }
 

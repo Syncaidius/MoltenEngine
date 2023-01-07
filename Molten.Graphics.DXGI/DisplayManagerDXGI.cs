@@ -4,7 +4,7 @@ namespace Molten.Graphics.Dxgi
 {
     public unsafe delegate GraphicsCapabilities DXGIDetectCapabilitiesCallback(IDXGIAdapter4* adapter);
 
-    public unsafe class DisplayManagerDXGI : EngineObject, IDisplayManager
+    public unsafe class DisplayManagerDXGI : DisplayManager
     {
         const uint DXGI_CREATE_FACTORY_NODEBUG = 0x0;
         const uint DXGI_CREATE_FACTORY_DEBUG = 0x01;
@@ -31,14 +31,10 @@ namespace Molten.Graphics.Dxgi
             _api.Dispose();
         }
 
-        /// <summary>
-        /// Initializes the specified settings.
-        /// </summary>
-        /// <param name="settings">The settings.</param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void Initialize(Logger logger, GraphicsSettings settings)
+        /// <inheritdoc/>
+        protected override void OnInitialize(Logger log, GraphicsSettings settings)
         {
-            Log = logger;
+            Log = log;
 
             // Create factory
             Guid factoryGuid = IDXGIFactory2.Guid;
@@ -49,7 +45,7 @@ namespace Molten.Graphics.Dxgi
             DxgiError err = DXGIHelper.ErrorFromResult(r);
             if (err != DxgiError.Ok)
             {
-                logger.Error($"Failed to initialize DXGI: {err}");
+                log.Error($"Failed to initialize DXGI: {err}");
                 return;
             }
 
@@ -60,7 +56,7 @@ namespace Molten.Graphics.Dxgi
             err = DXGIHelper.ErrorFromResult(r);
             if (err != DxgiError.Ok)
             {
-                logger.Error($"Failed to query DXGI 1.6 factory: {err}");
+                log.Error($"Failed to query DXGI 1.6 factory: {err}");
                 return;
             }
 
@@ -102,7 +98,7 @@ namespace Molten.Graphics.Dxgi
         }
 
         /// <inheritdoc/>
-        public void GetCompatibleAdapters(GraphicsCapabilities cap, List<IDisplayAdapter> adapters)
+        public override void GetCompatibleAdapters(GraphicsCapabilities cap, List<IDisplayAdapter> adapters)
         {
             for (int i = 0; i < _adapters.Count; i++)
             {
@@ -112,16 +108,13 @@ namespace Molten.Graphics.Dxgi
         }
 
         /// <inheritdoc/>
-        public IReadOnlyList<IDisplayAdapter> Adapters { get; }
+        public override IReadOnlyList<IDisplayAdapter> Adapters { get; }
 
         /// <inheritdoc/>
-        public IReadOnlyList<IDisplayAdapter> AdaptersWithOutputs { get; }
+        public override IDisplayAdapter DefaultAdapter => _defaultAdapter;
 
         /// <inheritdoc/>
-        public IDisplayAdapter DefaultAdapter => _defaultAdapter;
-
-        /// <inheritdoc/>
-        public IDisplayAdapter SelectedAdapter
+        public override IDisplayAdapter SelectedAdapter
         {
             get => _selectedAdapter;
             set
@@ -140,21 +133,6 @@ namespace Molten.Graphics.Dxgi
                 {
                     _selectedAdapter = null;
                 }
-            }
-        }
-
-        /// <inheritdoc/>
-        public IDisplayAdapter this[DeviceID id]
-        {
-            get
-            {
-                foreach(IDisplayAdapter adapter in _adapters)
-                {
-                    if (adapter.ID == id)
-                        return adapter;
-                }
-
-                return null;
             }
         }
 

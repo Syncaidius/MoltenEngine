@@ -8,7 +8,7 @@ using Monitor = Silk.NET.GLFW.Monitor;
 
 namespace Molten.Graphics
 {
-    internal unsafe class DisplayManagerVK : IDisplayManager
+    internal unsafe class DisplayManagerVK : DisplayManager
     {
         List<DisplayAdapterVK> _adapters;
         DisplayAdapterVK _defaultAdapter;
@@ -23,7 +23,7 @@ namespace Molten.Graphics
             Outputs = new List<DisplayOutputVK>();
         }
 
-        public void Initialize(Logger logger, GraphicsSettings settings)
+        protected override void OnInitialize(Logger log, GraphicsSettings settings)
         {
             uint deviceCount = 0;
             Result r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Instance.Ptr, &deviceCount, null);
@@ -109,21 +109,21 @@ namespace Molten.Graphics
             }
         }
 
-        public void Dispose()
+        protected override void OnDispose()
         {
             throw new NotImplementedException();
         }
 
-        public void GetCompatibleAdapters(GraphicsCapabilities capabilities, List<IDisplayAdapter> adapters)
+        public override void GetCompatibleAdapters(GraphicsCapabilities capabilities, List<IDisplayAdapter> adapters)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public IDisplayAdapter DefaultAdapter => _defaultAdapter;
+        public override IDisplayAdapter DefaultAdapter => _defaultAdapter;
 
         /// <inheritdoc/>
-        public IDisplayAdapter SelectedAdapter
+        public override IDisplayAdapter SelectedAdapter
         {
             get => _selectedAdapter;
             set
@@ -150,22 +150,7 @@ namespace Molten.Graphics
         internal DisplayOutputVK PrimaryOutput { get; private set; }
 
         /// <inheritdoc/>
-        public IReadOnlyList<IDisplayAdapter> Adapters { get; }
-
-        /// <inheritdoc/>
-        public IDisplayAdapter this[DeviceID id]
-        {
-            get
-            {
-                foreach (IDisplayAdapter adapter in _adapters)
-                {
-                    if (adapter.ID == id)
-                        return adapter;
-                }
-
-                return null;
-            }
-        }
+        public override IReadOnlyList<IDisplayAdapter> Adapters { get; }
 
         internal RendererVK Renderer { get; }
 
