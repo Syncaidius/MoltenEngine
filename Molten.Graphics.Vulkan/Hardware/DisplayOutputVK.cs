@@ -9,13 +9,18 @@ namespace Molten.Graphics
     public unsafe class DisplayOutputVK : IDisplayOutput
     {
         Monitor* _monitor;
+        Rectangle _bounds;
 
         internal DisplayOutputVK(DisplayManagerVK manager, Monitor* monitor)
         {
             Manager = manager;
             _monitor = monitor;
+            _bounds = Rectangle.Empty;
 
             Name = manager.Renderer.GLFW.GetMonitorName(_monitor);
+            manager.Renderer.GLFW.GetMonitorWorkarea(_monitor, out _bounds.Left, out _bounds.Top, out int bWidth, out int bHeight);
+            _bounds.Width = bWidth;
+            _bounds.Height = bHeight;
         }        
         
         public string Name { get; }
@@ -26,7 +31,7 @@ namespace Molten.Graphics
 
         internal Monitor* Ptr => _monitor;
 
-        public Rectangle DesktopBounds => throw new NotImplementedException();
+        public Rectangle DesktopBounds => _bounds;
 
         internal DisplayAdapterVK AssociatedAdapter { get; set; }
 

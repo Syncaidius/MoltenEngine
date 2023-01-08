@@ -8,6 +8,7 @@
     public abstract class DisplayManager : EngineObject
     {
         /// <summary>Initializes the display manager using the provided <see cref="GraphicsSettings"/>.</summary>
+        /// <param name="log">The <see cref="Logger"/> for providing feedback or debug info about initialization.</param>
         /// <param name="settings">An instance of <see cref="GraphicsSettings"/>. This is used to help configure the display manager.</param>
         public void Initialize(Logger log, GraphicsSettings settings)
         {
@@ -96,6 +97,7 @@
         }
 
         /// <summary>Invoked when the current <see cref="DisplayManager"/> is being initialized..</summary>
+        /// <param name="log">The <see cref="Logger"/> for providing feedback or debug info about initialization.</param>
         /// <param name="settings">An instance of <see cref="GraphicsSettings"/>. This is used to help configure the display manager.</param>
         protected abstract void OnInitialize(Logger log, GraphicsSettings settings);
 
