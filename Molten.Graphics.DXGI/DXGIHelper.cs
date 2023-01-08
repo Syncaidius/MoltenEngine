@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Core.Native;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
@@ -87,6 +88,26 @@ namespace Molten.Graphics
             }
 
             return count;
+        }
+
+        public static Format ToApi(this GraphicsFormat format)
+        {
+            return (Format)format;
+        }
+
+        public static GraphicsFormat FromApi(this Format format)
+        {
+            return (GraphicsFormat)format;
+        }
+
+        public static ModeScaling ToApi(this DisplayScalingMode format)
+        {
+            return (ModeScaling)format;
+        }
+
+        public static DisplayScalingMode FromApi(this ModeScaling format)
+        {
+            return (DisplayScalingMode)format;
         }
     }
 }

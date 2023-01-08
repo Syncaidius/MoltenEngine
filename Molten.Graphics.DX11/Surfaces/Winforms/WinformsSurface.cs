@@ -14,7 +14,7 @@ namespace Molten.Graphics
         IntPtr? _parentHandle;
 
         protected Rectangle _bounds;
-        DisplayMode _displayMode;
+        DisplayModeDXGI _displayMode;
         string _title;
         string _ctrlName;
         bool _disposing;
@@ -74,7 +74,7 @@ namespace Molten.Graphics
                 ScanlineOrdering = ModeScanlineOrder.Progressive,
             };
 
-            _displayMode = new DisplayMode(ref modeDesc);
+            _displayMode = new DisplayModeDXGI(ref modeDesc);
             CreateSwapChain(_displayMode, true, _control.Handle);
 
             SubscribeToControl(_control);

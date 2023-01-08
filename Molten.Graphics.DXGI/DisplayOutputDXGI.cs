@@ -19,6 +19,8 @@ namespace Molten.Graphics.Dxgi
 
             Name = SilkMarshal.PtrToString((nint)_desc->DeviceName, NativeStringEncoding.LPWStr);
             Name = Name.Replace("\0", string.Empty);
+
+            IDisplayMode[] modes = GetSupportedModes(GraphicsFormat.R8G8B8A8_UNorm);
         }
 
         protected override void OnDispose()
@@ -27,19 +29,19 @@ namespace Molten.Graphics.Dxgi
             SilkUtil.ReleasePtr(ref Native);
         }
 
-        public DisplayMode[] GetSupportedModes(Format format)
+        public IDisplayMode[] GetSupportedModes(GraphicsFormat format)
         {
-            uint flags = DXGI.EnumModesInterlaced | DXGI.EnumModesScaling;
-            uint* modeCount = (uint*)0;
-            ModeDesc1* modeDescs = (ModeDesc1*)0;
+            uint flags = DXGI.EnumModesInterlaced | DXGI.EnumModesScaling | DXGI.EnumModesStereo;
 
-            Native->GetDisplayModeList1(format, flags, modeCount, modeDescs);
-            ModeDesc1[] m = new ModeDesc1[(int)modeCount];
-            DisplayMode[] modes = new DisplayMode[m.Length];
+            uint modeCount = 0;
+            Native->GetDisplayModeList1(format.ToApi(), flags, &modeCount, null);
+            ModeDesc1* mDescs = EngineUtil.AllocArray<ModeDesc1>(modeCount);
+            DisplayModeDXGI[] modes = new DisplayModeDXGI[modeCount];
+            Native->GetDisplayModeList1(format.ToApi(), flags, &modeCount, mDescs);
 
             // Build a list of all valid display modes
-            for (int i = 0; i < m.Length; i++)
-                modes[i] = new DisplayMode(ref m[i]);
+            for (int i = 0; i < modes.Length; i++)
+                modes[i] = new DisplayModeDXGI(ref mDescs[i]);
 
             return modes;
         }

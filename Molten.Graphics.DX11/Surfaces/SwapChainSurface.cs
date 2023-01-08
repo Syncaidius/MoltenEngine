@@ -25,13 +25,13 @@ namespace Molten.Graphics
             _presentParams = EngineUtil.Alloc<PresentParameters>();
         }
 
-        protected void CreateSwapChain(DisplayMode mode, bool windowed, IntPtr controlHandle)
+        protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)
         {
             _swapDesc = new SwapChainDesc1()
             {
                 Width = mode.Width,
                 Height = mode.Height,
-                Format = mode.Format,
+                Format = mode.Format.ToApi(),
                 BufferUsage = (uint)DxgiUsage.RenderTargetOutput,
                 BufferCount = Device.Settings.BackBufferSize,
                 SampleDesc = new SampleDesc(1, 0),

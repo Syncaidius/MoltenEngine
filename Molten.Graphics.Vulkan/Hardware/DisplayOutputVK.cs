@@ -21,8 +21,13 @@ namespace Molten.Graphics
             manager.Renderer.GLFW.GetMonitorWorkarea(_monitor, out _bounds.Left, out _bounds.Top, out int bWidth, out int bHeight);
             _bounds.Width = bWidth;
             _bounds.Height = bHeight;
-        }        
-        
+        }
+
+        public IDisplayMode[] GetSupportedModes(GraphicsFormat format)
+        {
+            throw new NotImplementedException();
+        }
+
         public string Name { get; }
 
         public DisplayOrientation Orientation => throw new NotImplementedException();
