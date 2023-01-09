@@ -1,4 +1,6 @@
-﻿using Molten.Graphics.Dxgi;
+﻿using Microsoft.VisualBasic.Logging;
+using Molten.Font;
+using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
@@ -20,50 +22,48 @@ namespace Molten.Graphics
             _featureLevels = featureLevels;
         }
 
-        internal HResult CreateDevice(
-            IDXGIAdapter4* adapter, 
-            DeviceCreationFlags flags,
-            out ID3D11Device5* device, 
-            out ID3D11DeviceContext4* context)
+        private DeviceCreationFlags GetFlags(GraphicsSettings settings)
         {
-            IDXGIAdapter* ptrAdapter = (IDXGIAdapter*)adapter;
-            ID3D11Device* ptrDevice = null;
-            ID3D11DeviceContext* ptrContext = null;
+            DeviceCreationFlags flags = DeviceCreationFlags.BgraSupport;
 
-            HResult r = _api.CreateDevice(ptrAdapter,
-                D3DDriverType.Unknown,
-                0,
-                (uint)flags,
-                ref _featureLevels[0], 
-                (uint)_featureLevels.Length,
-                D3D11.SdkVersion,
-                &ptrDevice,
-                null,
-                &ptrContext);
+            if (_renderer.Settings.Graphics.EnableDebugLayer)
+            {
+                _renderer.Log.WriteLine("Renderer debug layer enabled");
+                flags |= DeviceCreationFlags.Debug;
+            }
 
-            Guid dev5Guid = ID3D11Device5.Guid;
-            void* ptrDevice5 = null;
-            ptrDevice->QueryInterface(&dev5Guid, &ptrDevice5);
-            device = (ID3D11Device5*)ptrDevice5;
-
-            Guid cxt4Guid = ID3D11DeviceContext4.Guid;
-            void* ptrCxt4 = null;
-            ptrContext->QueryInterface(&cxt4Guid, &ptrCxt4);
-            context = (ID3D11DeviceContext4*)ptrCxt4;
-
-            return r;
+            return flags;
         }
 
-        internal HResult CreateHeadlessDevice(
-            IDXGIAdapter4* adapter,
-            DeviceCreationFlags flags,
-            out ID3D11Device5* device)
+        internal HResult CreateDevice(DisplayAdapterDXGI adapter, out ID3D11Device5* device)
         {
-            IDXGIAdapter* ptrAdapter = (IDXGIAdapter*)adapter;
+            ID3D11DeviceContext4* nullContext = null;
+            return CreateDevice(adapter, out device, out nullContext, true);
+        }
+
+        internal HResult CreateDevice(
+            DisplayAdapterDXGI adapter,
+            out ID3D11Device5* device,
+            out ID3D11DeviceContext4* context, bool headless = false)
+        {
+            context = null;
+            device = null;
+
+            DeviceCreationFlags flags = GetFlags(_renderer.Settings.Graphics);
+            IDXGIAdapter* ptrAdapter = (IDXGIAdapter*)adapter.Native;
             ID3D11Device* ptrDevice = null;
+            ID3D11DeviceContext* ptrContext = null;
+            ID3D11DeviceContext** ptrContextRef = &ptrContext;
+
+            if (headless)
+                ptrContextRef = null;
+
+            D3DDriverType type = D3DDriverType.Unknown;
+            if (adapter.Vendor == DeviceVendor.Intel)
+                type = D3DDriverType.Hardware;
 
             HResult r = _api.CreateDevice(ptrAdapter,
-                D3DDriverType.Unknown,
+                type,
                 0,
                 (uint)flags,
                 ref _featureLevels[0],
@@ -71,22 +71,38 @@ namespace Molten.Graphics
                 D3D11.SdkVersion,
                 &ptrDevice,
                 null,
-                null);
+                ptrContextRef);
 
-            Guid dev5Guid = ID3D11Device5.Guid;
-            void* ptrDevice5 = null;
-            ptrDevice->QueryInterface(&dev5Guid, &ptrDevice5);
-            device = (ID3D11Device5*)ptrDevice5;
+            if (!r.IsFailure)
+            {
+                Guid dev5Guid = ID3D11Device5.Guid;
+                void* ptrDevice5 = null;
+                ptrDevice->QueryInterface(&dev5Guid, &ptrDevice5);
+                device = (ID3D11Device5*)ptrDevice5;
+            }
+
+            if (!headless)
+            {
+                Guid cxt4Guid = ID3D11DeviceContext4.Guid;
+                void* ptrCxt4 = null;
+                ptrContext->QueryInterface(&cxt4Guid, &ptrCxt4);
+                context = (ID3D11DeviceContext4*)ptrCxt4;
+            }
 
             return r;
         }
 
-        internal GraphicsCapabilities GetCapabilities(IDXGIAdapter4* adapter)
+        internal void GetCapabilities(GraphicsSettings settings, DisplayAdapterDXGI adapter)
         {
             // DX11 resource limits: https://msdn.microsoft.com/en-us/library/windows/desktop/ff819065%28v=vs.85%29.aspx
-            GraphicsCapabilities cap = new GraphicsCapabilities();
+            GraphicsCapabilities cap = adapter.Capabilities;
             ID3D11Device5* device = null;
-            CreateHeadlessDevice(adapter, DeviceCreationFlags.None, out device);
+            HResult r = CreateDevice(adapter, out device);
+            if (r.IsFailure)
+            {
+                _renderer.Log.Error($"Failed to detect capabilities for adapter '{adapter.Name}'");
+                return;
+            }
 
             D3DFeatureLevel featureLevel = device->GetFeatureLevel();
             switch (featureLevel)
@@ -99,6 +115,14 @@ namespace Molten.Graphics
                 case D3DFeatureLevel.Level110:
                     cap.Api = GraphicsApi.DirectX11_0;
                     cap.UnorderedAccessBuffers.MaxSlots = 8;  // D3D11_PS_CS_UAV_REGISTER_COUNT = 8
+                    break;
+
+                case D3DFeatureLevel.Level101:
+                    cap.Api = GraphicsApi.DirectX10_1;
+                    break;
+
+                case D3DFeatureLevel.Level100:
+                    cap.Api = GraphicsApi.DirectX10_0;
                     break;
             }
 
@@ -190,7 +214,6 @@ namespace Molten.Graphics
             //        }
 
             SilkUtil.ReleasePtr(ref device);
-            return cap;
         }
 
         private void DetectShaderStages(ID3D11Device5* device, GraphicsCapabilities cap, D3DFeatureLevel featureLevel)

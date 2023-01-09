@@ -14,19 +14,29 @@ namespace Molten.Graphics
         Unsupported = 0,
 
         /// <summary>
+        /// DirectX 11, feature level 10_0.
+        /// </summary>
+        DirectX10_0 = 8,
+
+        /// <summary>
+        /// DirectX 11, feature level 10_1.
+        /// </summary>
+        DirectX10_1 = 9,
+
+        /// <summary>
         /// DirectX 11.0.
         /// </summary>
-        DirectX11_0 = 1,
+        DirectX11_0 = 10,
 
         /// <summary>
         /// DirectX 11.1 Runtime. Covers DirectX 11.0 to 11.4 feature-sets.
         /// </summary>
-        DirectX11_1 = 2,
+        DirectX11_1 = 11,
 
         /// <summary>
         /// DirectX 12.0.
         /// </summary>
-        DirectX12_0 = 3,
+        DirectX12_0 = 12,
 
         /// <summary>
         /// Vulkan 1.0.

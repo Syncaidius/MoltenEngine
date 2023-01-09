@@ -1,7 +1,5 @@
 ﻿namespace Molten.Graphics
 {
-    public delegate void DisplayManagerEvent(DisplayManager manager);
-
     /// <summary>
     /// Represents an implementation of a graphics device, adapter and/or display manager.
     /// </summary>
@@ -12,6 +10,9 @@
         /// <param name="settings">An instance of <see cref="GraphicsSettings"/>. This is used to help configure the display manager.</param>
         public void Initialize(Logger log, GraphicsSettings settings)
         {
+            Log = log;
+            Settings = settings;
+
             OnInitialize(log, settings);
 
             // Output detection info into renderer log.
@@ -75,8 +76,7 @@
 
         private void LogAdapter(Logger log, IDisplayAdapter adapter, int index)
         {
-            bool hasOutputs = adapter.Outputs.Count > 0;
-            log.WriteLine($"   {index++}. {adapter.Name}{(hasOutputs ? " (usable)" : "")}");
+            log.WriteLine($"   {index++}. {adapter.Name}");
             log.WriteLine($"         Type: {adapter.Type}");
             log.WriteLine($"         VRAM: {adapter.Capabilities.DedicatedVideoMemory:N2} MB");
             log.WriteLine($"         Shared VRAM: {adapter.Capabilities.SharedVideoMemory:N2} MB");
@@ -88,7 +88,7 @@
             foreach (SupportedCommandSet set in adapter.Capabilities.CommandSets)
                 log.WriteLine($"            {index++}. Limit: {set.MaxCount} -- Capabilities: {set.CapabilityFlags}");
 
-            if (hasOutputs)
+            if (adapter.Outputs.Count > 0)
             {
                 log.WriteLine($"         Detected {adapter.Outputs.Count} outputs:");
                 for (int d = 0; d < adapter.Outputs.Count; d++)
@@ -118,6 +118,16 @@
 
         /// <summary>Gets or sets the adapter currently selected for use by the engine.</summary>
         public abstract IDisplayAdapter SelectedAdapter { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="GraphicsSettings"/> that the current <see cref="DisplayManager"/> was initialized and bound to.
+        /// </summary>
+        public GraphicsSettings Settings { get; private set; }
+
+        /// <summary>
+        /// Getts the <see cref="Logger"/> that the current <see cref="DisplayManager"/> uses for outputting information.
+        /// </summary>
+        public Logger Log { get; private set; }
 
         /// <summary>
         /// Attempts to find a <see cref="IDisplayAdapter"/> with an ID matching the one provided.

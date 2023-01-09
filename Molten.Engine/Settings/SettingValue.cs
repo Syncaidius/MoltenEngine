@@ -73,6 +73,9 @@ namespace Molten
             _value = _pendingValue;
         }
 
+        /// <summary>
+        /// Cancels the pending value and reverts it to the underlying, saved value.
+        /// </summary>
         public override void Cancel()
         {
             _pendingValue = _value;

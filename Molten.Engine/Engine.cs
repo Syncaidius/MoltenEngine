@@ -35,10 +35,9 @@ namespace Molten
             Settings = initialSettings ?? new EngineSettings();
 
             if (!ignoreSavedSettings)
-            {
                 Settings.Load();
-                Settings.Apply();
-            }
+
+            Settings.Apply();
 
             Log = Logger.Get();
             Log.AddOutput(new LogFileWriter("Logs/engine_log.log"));

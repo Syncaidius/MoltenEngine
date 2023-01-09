@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Dxgi
 {
-    public unsafe delegate GraphicsCapabilities DXGIDetectCapabilitiesCallback(IDXGIAdapter4* adapter);
+    public unsafe delegate void DXGIDetectCapabilitiesCallback(GraphicsSettings settings, DisplayAdapterDXGI adapter);
 
     public unsafe class DisplayManagerDXGI : DisplayManager
     {
@@ -34,8 +34,6 @@ namespace Molten.Graphics.Dxgi
         /// <inheritdoc/>
         protected override void OnInitialize(Logger log, GraphicsSettings settings)
         {
-            Log = log;
-
             // Create factory
             Guid factoryGuid = IDXGIFactory2.Guid;
             void* ptrFactory = null;
@@ -74,14 +72,14 @@ namespace Molten.Graphics.Dxgi
 
             for (int i = 0; i < detected.Length; i++)
             {
-                GraphicsCapabilities cap = _capabilitiesCallback(detected[i]);
-                DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, cap, detected[i]);
+                DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, detected[i]);
+                _capabilitiesCallback(settings, adapter);
                 _adapters.Add(adapter);
 
                 if (adapter.Outputs.Count > 0)
                 {
                     // Set default if needed
-                    if (_defaultAdapter == null)
+                    if (_defaultAdapter == null && adapter.Capabilities.Api != GraphicsApi.Unsupported)
                     {
                         _defaultAdapter = adapter;
                         _selectedAdapter = adapter;
@@ -92,9 +90,20 @@ namespace Molten.Graphics.Dxgi
             // If no adapter with outputs was found, use the first detected adapter.
             if (_defaultAdapter == null && _adapters.Count > 0)
             {
-                _defaultAdapter = _adapters[0];
-                _selectedAdapter = _defaultAdapter;
+                for(int i = 0; i < _adapters.Count; i++)
+                {
+                    if (_adapters[i].Capabilities.Api != GraphicsApi.Unsupported)
+                    {
+                        _defaultAdapter = _adapters[i];
+                        _selectedAdapter = _defaultAdapter;
+                        break;
+                    }
+                }
             }
+
+            // Do we still not have an adapter? Unsupported.
+            if(_defaultAdapter == null)
+                Log.Error($"No supported GPU adapter found.");
         }
 
         /// <inheritdoc/>
@@ -138,10 +147,5 @@ namespace Molten.Graphics.Dxgi
 
         /// <summary>Gets the DXGI factory.</summary>
         public IDXGIFactory7* DxgiFactory => _dxgiFactory;
-
-        /// <summary>
-        /// Gets the <see cref="Logger"/> attached to the current <see cref="DisplayManagerDXGI"/> instance.
-        /// </summary>
-        internal Logger Log { get; private set; }
     }
 }

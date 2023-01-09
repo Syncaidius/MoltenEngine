@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using Microsoft.VisualBasic.Logging;
+using Molten.Collections;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
@@ -38,7 +39,11 @@ namespace Molten.Graphics
         {
             _api = D3D11.GetApi();
             _chain = new RenderChain(this);
-            _deviceBuilder = new DeviceBuilderDX11(_api, this, D3DFeatureLevel.Level111, D3DFeatureLevel.Level110);
+            _deviceBuilder = new DeviceBuilderDX11(_api, this, 
+                D3DFeatureLevel.Level111,
+                D3DFeatureLevel.Level110, 
+                D3DFeatureLevel.Level101, 
+                D3DFeatureLevel.Level100);
             _displayManager = new DisplayManagerDXGI(_deviceBuilder.GetCapabilities);
         }
 
@@ -48,7 +53,7 @@ namespace Molten.Graphics
 
             Assembly includeAssembly = this.GetType().Assembly;
 
-            Device = new DeviceDX11(_deviceBuilder, Log, settings.Graphics, _displayManager);
+            Device = new DeviceDX11(settings.Graphics, _deviceBuilder, Log, _displayManager.SelectedAdapter);
             ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _resFactory = new ResourceFactoryDX11(this);
             _compute = new ComputeManager(this.Device);

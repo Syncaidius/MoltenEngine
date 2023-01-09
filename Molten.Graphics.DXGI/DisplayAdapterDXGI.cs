@@ -18,11 +18,11 @@ namespace Molten.Graphics.Dxgi
         /// <summary>Occurs when an <see cref="T:Molten.IDisplayOutput" /> is disconnected from the current <see cref="T:Molten.IDisplayAdapter" />. </summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
-        public DisplayAdapterDXGI(DisplayManagerDXGI manager, GraphicsCapabilities cap, IDXGIAdapter4* adapter)
+        public DisplayAdapterDXGI(DisplayManagerDXGI manager, IDXGIAdapter4* adapter)
         {
             _manager = manager;
             Native = adapter;
-            Capabilities = cap;
+            Capabilities = new GraphicsCapabilities();
 
             _desc = EngineUtil.Alloc<AdapterDesc3>();
             adapter->GetDesc3(_desc);
@@ -30,14 +30,14 @@ namespace Molten.Graphics.Dxgi
 
             Name = SilkMarshal.PtrToString((nint)_desc->Description, NativeStringEncoding.LPWStr);
             Vendor = EngineUtil.VendorFromPCI(_desc->VendorId);
-            
-            cap.DedicatedSystemMemory = ByteMath.ToMegabytes(_desc->DedicatedSystemMemory);
-            cap.DedicatedVideoMemory = ByteMath.ToMegabytes(_desc->DedicatedVideoMemory);
+
+            Capabilities.DedicatedSystemMemory = ByteMath.ToMegabytes(_desc->DedicatedSystemMemory);
+            Capabilities.DedicatedVideoMemory = ByteMath.ToMegabytes(_desc->DedicatedVideoMemory);
 
             nuint sharedMemory = _desc->SharedSystemMemory;
             sharedMemory = sharedMemory < 0 ? 0 : sharedMemory;
-            cap.SharedSystemMemory = ByteMath.ToMegabytes(sharedMemory);
-            Type = GetAdapterType(cap, _desc->Flags);
+            Capabilities.SharedSystemMemory = ByteMath.ToMegabytes(sharedMemory);
+            Type = GetAdapterType(Capabilities, _desc->Flags);
 
             IDXGIOutput1*[] dxgiOutputs = DXGIHelper.EnumArray<IDXGIOutput1, IDXGIOutput>((uint index, ref IDXGIOutput* ptrOutput) =>
             {

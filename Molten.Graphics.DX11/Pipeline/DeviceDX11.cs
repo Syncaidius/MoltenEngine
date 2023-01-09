@@ -19,7 +19,6 @@ namespace Molten.Graphics
 
         Logger _log;
         DisplayManagerDXGI _displayManager;
-        GraphicsSettings _settings;
         long _allocatedVRAM;
 
         RasterizerStateBank _rasterizerBank;
@@ -31,29 +30,22 @@ namespace Molten.Graphics
         ThreadedQueue<ContextObject> _objectsToDispose;
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
-        /// <param name="adapter">The adapter.</param>
-        internal DeviceDX11(DeviceBuilderDX11 builder, Logger log, GraphicsSettings settings, DisplayManagerDXGI manager)
+        /// <param name="adapter">The physical display adapter to bind the new device to.</param>
+        internal DeviceDX11(GraphicsSettings settings, DeviceBuilderDX11 builder, Logger log, IDisplayAdapter adapter)
         {
             _builder = builder;
             _log = log;
-            _displayManager = manager;
-            _adapter = _displayManager.SelectedAdapter as DisplayAdapterDXGI;
+            _displayManager = adapter.Manager as DisplayManagerDXGI;
+            _adapter = adapter as DisplayAdapterDXGI;
             _contexts = new List<DeviceContext>();
             Contexts = _contexts.AsReadOnly();
+            Settings = settings;
             VertexFormatCache = new TypedObjectCache<IVertexType, VertexFormat>(VertexFormat.FromType);
-            _settings = settings;
+
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
             _objectsToDispose = new ThreadedQueue<ContextObject>();
 
-            DeviceCreationFlags flags = DeviceCreationFlags.BgraSupport;
-
-            if (settings.EnableDebugLayer)
-            {
-                _log.WriteLine("Renderer debug layer enabled");
-                flags |= DeviceCreationFlags.Debug;
-            }
-
-            HResult r = _builder.CreateDevice(_adapter.Native, flags, out NativeDevice, out ImmediateContext);
+            HResult r = _builder.CreateDevice(_adapter, out NativeDevice, out ImmediateContext);
 
             _rasterizerBank = new RasterizerStateBank(this);
             _blendBank = new BlendStateBank(this);
@@ -169,7 +161,7 @@ namespace Molten.Graphics
 
         internal DisplayAdapterDXGI Adapter => _adapter;
 
-        internal GraphicsSettings Settings => _settings;
+        internal GraphicsSettings Settings { get; }
 
         internal TypedObjectCache<IVertexType, VertexFormat> VertexFormatCache { get; }
 
