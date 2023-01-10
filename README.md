@@ -29,7 +29,7 @@ Blank - Not Started\
 | :---                       | :-------:  | :-----:  | :---:  | :-:  | :-: |
 | Renderer - OpenGL          |            | 🚫       |        |      |    |
 | Renderer - OpenES          |            |          | 🚫     | 🚫   |    |     
-| Renderer - Vulkan          |            |          |        |      |     |
+| Renderer - Vulkan          | 🚧         |          |        |      |     |
 | Renderer - DirectX 11      | 🚧         | 🚫       | 🚫    | 🚫   |     |
 | Renderer - DirectX 12      |            | 🚫       | 🚫    | 🚫   |     |
 | Audio - OpenAL             | 🚧         |          |        |      |     |
@@ -60,6 +60,7 @@ Blank - Not Started\
 | Feature                | DX11       | DX12    | OpenGL  | OpenGL ES  | Vulkan |
 | :---                   | :-------:  | :-----: | :---:   | :-:        | :-:    |
 | Deferrend rendering    | 🚧         |         |        |             |       |
+| Physically-Based (PBR) |            |         |        |             |       |
 | Geometry Shaders       | ✔️         |         |        |             |       |
 | Tessellation           | 🚧         |         |        |             |       |
 | Hull & Domain Shaders  | ✔️         |         |        |             |       |
