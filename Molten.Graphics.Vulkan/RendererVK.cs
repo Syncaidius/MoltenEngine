@@ -36,7 +36,7 @@ namespace Molten.Graphics
             _instance = new InstanceManager(this);
             _displayManager = new DisplayManagerVK(this);
             _chain = new RenderChainVK(this);
-            _apiVersion = new VersionVK(1, 2, 0);
+            _apiVersion = new VersionVK(1, 1, 0);
         }
 
         /// <summary>

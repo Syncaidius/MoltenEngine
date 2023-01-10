@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Title>Molten.Graphics.DX12</Title>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <AssemblyVersion>0.3.0</AssemblyVersion>
+    <FileVersion>0.3.0</FileVersion>
+    <Description>The start of an open-source, cross-platform game engine, written in C#</Description>
+    <Copyright>Copyright © 2023 James Yarwood</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Syncaidius/MoltenEngine</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>DirectX;game engine;cross platform;windows;dx12;</PackageTags>
+    <PackageReleaseNotes>Initial release of Molten Engine.</PackageReleaseNotes>
+    <PackageIcon>logo_128.png</PackageIcon>
+    <Version>0.3.0</Version>
+    <Authors>James Yarwood</Authors>
+    <RootNamespace>Molten.Graphics</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\Images\logo_128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Silk.NET.Direct3D.Compilers" Version="2.16.0" />
+    <PackageReference Include="Silk.NET.Direct3D12" Version="2.16.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Molten.Engine.Windows\Molten.Engine.Windows.csproj" />
+    <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj" />
+    <ProjectReference Include="..\Molten.Graphics.DXGI\Molten.Graphics.DXGI.csproj" />
+    <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
+    <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
+  </ItemGroup>
+
+</Project>

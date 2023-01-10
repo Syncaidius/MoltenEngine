@@ -66,6 +66,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Benchmarks", "Molten
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Graphics.Vulkan", "Molten.Graphics.Vulkan\Molten.Graphics.Vulkan.csproj", "{640AAF55-92F0-478C-8A81-EA13F9AF6B35}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Graphics.DX12", "Molten.Graphics.DX12\Molten.Graphics.DX12.csproj", "{037B4625-B4FF-40E3-8EF2-DA240FB3953F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Android_Debug|Any CPU = Android_Debug|Any CPU
@@ -518,6 +520,34 @@ Global
 		{640AAF55-92F0-478C-8A81-EA13F9AF6B35}.Release|x64.Build.0 = Release|Any CPU
 		{640AAF55-92F0-478C-8A81-EA13F9AF6B35}.Release|x86.ActiveCfg = Release|Any CPU
 		{640AAF55-92F0-478C-8A81-EA13F9AF6B35}.Release|x86.Build.0 = Release|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Debug|Any CPU.Build.0 = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Debug|x64.ActiveCfg = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Debug|x86.ActiveCfg = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Debug|x86.Build.0 = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Release|Any CPU.ActiveCfg = Release|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Release|Any CPU.Build.0 = Release|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Release|x64.ActiveCfg = Release|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Release|x86.ActiveCfg = Release|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Release|x86.Build.0 = Release|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Benchmarks|Any CPU.ActiveCfg = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Benchmarks|Any CPU.Build.0 = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Benchmarks|x64.ActiveCfg = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Benchmarks|x64.Build.0 = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Benchmarks|x86.ActiveCfg = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Benchmarks|x86.Build.0 = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Debug|x64.Build.0 = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Debug|x86.Build.0 = Debug|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Release|x64.ActiveCfg = Release|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Release|x64.Build.0 = Release|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Release|x86.ActiveCfg = Release|Any CPU
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -540,6 +570,7 @@ Global
 		{BCD4DD20-054B-477D-A38D-FB7662C8C504} = {940AA3BE-1CDB-4EFC-B811-6FA4D0562AB3}
 		{6A5C9194-584A-4605-9E00-DB245188431B} = {940AA3BE-1CDB-4EFC-B811-6FA4D0562AB3}
 		{640AAF55-92F0-478C-8A81-EA13F9AF6B35} = {0DBE30A6-8BCF-4916-AB5B-335ED3A3CD2B}
+		{037B4625-B4FF-40E3-8EF2-DA240FB3953F} = {0DBE30A6-8BCF-4916-AB5B-335ED3A3CD2B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC16AE48-8B66-43B4-9033-C95D608AA215}
