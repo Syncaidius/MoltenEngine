@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Silk.NET.GLFW;
 using Monitor = Silk.NET.GLFW.Monitor;
 
 namespace Molten.Graphics
@@ -10,6 +11,7 @@ namespace Molten.Graphics
     {
         Monitor* _monitor;
         Rectangle _bounds;
+        List<DisplayModeVK> _modes;
 
         internal DisplayOutputVK(DisplayManagerVK manager, Monitor* monitor)
         {
@@ -21,11 +23,23 @@ namespace Molten.Graphics
             manager.Renderer.GLFW.GetMonitorWorkarea(_monitor, out _bounds.Left, out _bounds.Top, out int bWidth, out int bHeight);
             _bounds.Width = bWidth;
             _bounds.Height = bHeight;
+
+            CacheDisplayModes();
         }
 
-        public IDisplayMode[] GetSupportedModes(GraphicsFormat format)
+        private void CacheDisplayModes()
         {
-            throw new NotImplementedException();
+            _modes = new List<DisplayModeVK>();
+
+            int modeCount = 0;
+            VideoMode* modes = Manager.Renderer.GLFW.GetVideoModes(_monitor, out modeCount);
+            for (int i = 0; i < modeCount; i++)
+                _modes.Add(new DisplayModeVK(modes++));
+        }
+
+        public IReadOnlyList<IDisplayMode> GetModes(GraphicsFormat format)
+        {
+            return _modes.AsReadOnly();
         }
 
         public string Name { get; }

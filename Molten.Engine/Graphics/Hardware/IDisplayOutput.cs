@@ -8,7 +8,7 @@
         /// </summary>
         /// <param name="format">The format to check for support.</param>
         /// <returns></returns>
-        IDisplayMode[] GetSupportedModes(GraphicsFormat format);
+        IReadOnlyList<IDisplayMode> GetModes(GraphicsFormat format);
 
         /// <summary>Gets the name of the current <see cref="IDisplayOutput"/>.</summary>
         string Name { get; }
