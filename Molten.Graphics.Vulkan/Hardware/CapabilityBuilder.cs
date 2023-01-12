@@ -150,7 +150,6 @@ namespace Molten.Graphics
 
         internal unsafe void LogAdditionalProperties(Logger log, PhysicalDeviceProperties2* properties)
         {
-            int count = 0;
             PropertiesRef* pRef = (PropertiesRef*)properties;
             while(pRef->PNext != null)
             {

@@ -144,6 +144,16 @@ namespace Molten.Graphics
         public uint MaxTextureArraySlices { get; set; }
 
         /// <summary>
+        /// Gets or sets Rasterizer-order-views (ROVs) support/requirement.
+        /// </summary>
+        public bool RasterizerOrderViews { get; set; }
+
+        /// <summary>
+        /// Gets or sets conservative rasterization support/requirement.
+        /// </summary>
+        public ConservativeRasterizationLevel ConservativeRasterization { get; set; }
+
+        /// <summary>
         /// Gets or sets the maximum supported shader model.
         /// </summary>
         public ShaderModel MaxShaderModel { get; set; }

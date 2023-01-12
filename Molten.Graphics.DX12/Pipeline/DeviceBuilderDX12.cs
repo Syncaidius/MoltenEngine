@@ -134,10 +134,14 @@ namespace Molten.Graphics
             cap.NonPowerOfTwoTextures = true;
             cap.MaxAllocatedSamplers = 4096;                // D3D11_REQ_SAMPLER_OBJECT_COUNT_PER_DEVICE (4096) - Total number of sampler objects per context
             cap.MaxPrimitiveCount = uint.MaxValue;          // (2^32) – 1 = uint.maxValue (4,294,967,295)
+            cap.RasterizerOrderViews = features12_0.ROVsSupported != 0;
+            cap.ConservativeRasterization = (ConservativeRasterizationLevel)features12_0.ConservativeRasterizationTier;
 
             cap.VertexBuffers.MaxSlots = 32;                // D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT = 32;
             cap.VertexBuffers.MaxElementsPerVertex = 32;    // D3D11_STANDARD_VERTEX_ELEMENT_COUNT = 32;
             cap.VertexBuffers.MaxElements = uint.MaxValue;  // (2^32) – 1 = uint.maxValue (4,294,967,295)
+
+           
 
             DetectShaderStages(device, cap, 
                 features12_0.MinPrecisionSupport, 
