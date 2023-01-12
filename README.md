@@ -31,7 +31,7 @@ Blank - Not Started\
 | Renderer - OpenES          |            |          | 🚫     | 🚫   |    |     
 | Renderer - Vulkan          | 🚧         |          |        |      |     |
 | Renderer - DirectX 11      | 🚧         | 🚫       | 🚫    | 🚫   |     |
-| Renderer - DirectX 12      |            | 🚫       | 🚫    | 🚫   |     |
+| Renderer - DirectX 12      | 🚧         | 🚫       | 🚫    | 🚫   |     |
 | Audio - OpenAL             | 🚧         |          |        |      |     |
 | Audio - XAudio 2           |            | 🚫       | 🚫    | 🚫   |     |
 | Keyboard support           | ✔️          |          |        |      |    |
