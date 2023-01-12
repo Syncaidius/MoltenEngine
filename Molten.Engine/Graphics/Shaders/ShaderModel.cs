@@ -67,6 +67,11 @@
         /// <summary>
         /// Shader model 6.6. See: https://github.com/microsoft/DirectXShaderCompiler/wiki/Shader-Model-6.6
         /// </summary>
-        Model6_6 = 1 << 14
+        Model6_6 = 1 << 14,
+
+        /// <summary>
+        /// Shader model 6.7. See: https://devblogs.microsoft.com/directx/in-the-works-hlsl-shader-model-6-7/
+        /// </summary>
+        Model6_7 = 1 << 15
     }
 }

@@ -9,10 +9,12 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics
 {
-    internal class RendererDX12 : RenderService
+    public class RendererDX12 : RenderService
     {
         D3D12 _api;
+        RenderChainDX12 _chain;
         DisplayManagerDXGI _displayManager;
+        DeviceBuilderDX12 _deviceBuilder;
 
         public RendererDX12()
         {
@@ -22,6 +24,14 @@ namespace Molten.Graphics
         protected override void OnInitializeApi(GraphicsSettings settings)
         {
             _api = D3D12.GetApi();
+            _chain = new RenderChainDX12(this);
+            _deviceBuilder = new DeviceBuilderDX12(_api, this);
+            _displayManager = new DisplayManagerDXGI(_deviceBuilder.GetCapabilities);
+        }
+
+        protected override void OnInitialize(EngineSettings settings)
+        {
+            base.OnInitialize(settings);
         }
 
         protected override SceneRenderData OnCreateRenderData()
@@ -75,6 +85,6 @@ namespace Molten.Graphics
 
         public override IComputeManager Compute => throw new NotImplementedException();
 
-        protected override IRenderChain Chain => throw new NotImplementedException();
+        protected override IRenderChain Chain => _chain;
     }
 }

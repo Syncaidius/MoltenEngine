@@ -12,7 +12,7 @@ namespace Molten.Graphics
         D3D11 _api;
         DisplayManagerDXGI _displayManager;
         DeviceBuilderDX11 _deviceBuilder;
-        RenderChain _chain;
+        RenderChainDX11 _chain;
         ResourceFactoryDX11 _resFactory;
         ComputeManager _compute;
         HashSet<Texture2D> _clearedSurfaces;
@@ -31,14 +31,13 @@ namespace Molten.Graphics
         {
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
-
             Surfaces = new SurfaceManager(this);
         }
 
         protected unsafe override void OnInitializeApi(GraphicsSettings settings)
         {
             _api = D3D11.GetApi();
-            _chain = new RenderChain(this);
+            _chain = new RenderChainDX11(this);
             _deviceBuilder = new DeviceBuilderDX11(_api, this, 
                 D3DFeatureLevel.Level111,
                 D3DFeatureLevel.Level110, 

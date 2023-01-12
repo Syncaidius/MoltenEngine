@@ -87,7 +87,6 @@ namespace Molten.Graphics
             }
             else
             {
-
                 DeviceCreateInfo createInfo = new DeviceCreateInfo()
                 {
                     SType = StructureType.DeviceCreateInfo,

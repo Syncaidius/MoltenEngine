@@ -45,10 +45,6 @@ namespace Molten.Graphics
         /// <param name="time"></param>
         protected override sealed void OnUpdate(Timing time)
         {
-            /* CAMERA REFACTOR
-             *  - The layer limit will be 32
-             */
-
             /* DESIGN NOTES:
              *  - Store a hashset of materials used in each scene so that the renderer can set the "Common" buffer in one pass
              *  

@@ -19,6 +19,7 @@
     <Version>0.3.0</Version>
     <Authors>James Yarwood</Authors>
     <RootNamespace>Molten.Graphics</RootNamespace>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -43,6 +44,12 @@
     <ProjectReference Include="..\Molten.Graphics.DXGI\Molten.Graphics.DXGI.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="d3d12SDKLayers.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

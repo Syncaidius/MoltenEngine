@@ -7,10 +7,10 @@ namespace Molten.Graphics
         List<RenderChainLink> _previous = new List<RenderChainLink>();
         List<RenderChainLink> _next = new List<RenderChainLink>();
         RenderStepBase _step;
-        RenderChain _chain;
+        RenderChainDX11 _chain;
         bool _completed;
 
-        internal RenderChainLink(RenderChain chain)
+        internal RenderChainLink(RenderChainDX11 chain)
         {
             _chain = chain;
         }

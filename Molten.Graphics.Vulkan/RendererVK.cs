@@ -25,7 +25,6 @@ namespace Molten.Graphics
         List<DeviceVK> _devices;
         VersionVK _apiVersion;
 
-
         public RendererVK()
         {
             VK = Vk.GetApi();
