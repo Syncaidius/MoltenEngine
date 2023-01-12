@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Silk.NET.Core;
 using Silk.NET.Vulkan;
+using Silk.NET.Vulkan.Extensions.KHR;
+using Queue = Silk.NET.Vulkan.Queue;
 
 namespace Molten.Graphics
 {
@@ -12,6 +16,7 @@ namespace Molten.Graphics
         RendererVK _renderer;
         CommandSetCapabilityFlags _cap;
         long _allocatedVRAM;
+        List<CommandQueueVK> _queues;
 
         /// <summary>
         /// 
@@ -23,10 +28,31 @@ namespace Molten.Graphics
         internal DeviceVK(RendererVK renderer, DisplayAdapterVK adapter, Instance* instance, CommandSetCapabilityFlags requiredCap) : 
             base(renderer)
         {
+            _queues = new List<CommandQueueVK>();
             _renderer = renderer;
             _vkInstance = instance;
             Adapter = adapter;
             _cap = requiredCap;
+        }
+
+        /// <summary>
+        /// Finds a <see cref="CommandQueueVK"/> that can present the provided <see cref="PresentationSurfaceVK"/>.
+        /// </summary>
+        /// <param name="surface"></param>
+        /// <returns></returns>
+        internal CommandQueueVK FindPresentQueue(PresentationSurfaceVK surface)
+        {
+            KhrSurface extSurface = _renderer.Instance.GetExtension<KhrSurface>();
+            Bool32 presentSupported = false;
+
+            foreach (CommandQueueVK queue in _queues)
+            {
+                Result r = extSurface.GetPhysicalDeviceSurfaceSupport(Adapter.Native, queue.FamilyIndex, surface.Native, &presentSupported);
+                if (_renderer.CheckResult(r) && presentSupported)
+                    return queue;
+            }
+
+            return null;
         }
 
         protected override bool LoadExtension(RendererVK renderer, VulkanExtension ext, Device* obj)
@@ -101,6 +127,24 @@ namespace Molten.Graphics
 
                 // Create the instance
                 r = renderer.VK.CreateDevice(Adapter, &createInfo, null, obj);
+                if (renderer.CheckResult(r, () => $"Failed to create logical device on '{Adapter.Name}' adapter"))
+                {
+                    for (int i = 0; i < queueCount; i++)
+                    {
+                        ref DeviceQueueCreateInfo qi = ref queueInfo[i];
+
+                        for (uint index = 0; index < qi.QueueCount; index++)
+                        {
+                            Queue q = new Queue();
+                            _renderer.VK.GetDeviceQueue(*obj, qi.QueueFamilyIndex, index, &q);
+                            SupportedCommandSet set = sets[(int)qi.QueueFamilyIndex];
+                            CommandQueueVK queue = new CommandQueueVK(_renderer, this, qi.QueueFamilyIndex, q, index, set);
+                            _queues.Add(queue);
+
+                            _renderer.Log.Write($"Instantiated command queue -- Family: {qi.QueueFamilyIndex} -- Index: {index} -- Flags: {set.CapabilityFlags}");
+                        }
+                    }
+                }
             }
 
             EngineUtil.Free(ref queueInfo);

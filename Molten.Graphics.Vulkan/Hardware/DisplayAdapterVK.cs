@@ -9,13 +9,12 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    public unsafe class DisplayAdapterVK : IDisplayAdapter
+    public unsafe class DisplayAdapterVK : NativeObjectVK<PhysicalDevice>, IDisplayAdapter
     {
         public event DisplayOutputChanged OnOutputActivated;
         public event DisplayOutputChanged OnOutputDeactivated;
 
         DisplayManagerVK _manager;
-        PhysicalDevice _device;
 
         List<DisplayOutputVK> _outputs;
         List<DisplayOutputVK> _activeOutputs;
@@ -23,22 +22,27 @@ namespace Molten.Graphics
         internal DisplayAdapterVK(DisplayManagerVK manager, PhysicalDevice device)
         {
             _manager = manager;
-            _device = device;
+            Native = device;
 
             GetProperties();
+        }
+
+        protected override void OnDispose()
+        {
+            
         }
 
         private void GetProperties()
         {
             PhysicalDeviceProperties2 p = new PhysicalDeviceProperties2(StructureType.PhysicalDeviceProperties2);
-            _manager.Renderer.VK.GetPhysicalDeviceProperties2(_device, &p);
+            _manager.Renderer.VK.GetPhysicalDeviceProperties2(Native, &p);
 
             Name = SilkMarshal.PtrToString((nint)p.Properties.DeviceName, NativeStringEncoding.UTF8);
             ID = ParseDeviceID(p.Properties.DeviceID);
             Vendor = ParseVendorID(p.Properties.VendorID);
             Type = (DisplayAdapterType)p.Properties.DeviceType;
 
-            Capabilities = _manager.CapBuilder.Build(_device, _manager.Renderer, ref p);
+            Capabilities = _manager.CapBuilder.Build(Native, _manager.Renderer, ref p);
 
 #if DEBUG
             _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &p);
@@ -128,7 +132,7 @@ namespace Molten.Graphics
 
         public static implicit operator PhysicalDevice(DisplayAdapterVK adapter)
         {
-            return adapter._device;
+            return adapter.Native;
         }
 
         /// <inheritdoc/>
@@ -145,11 +149,6 @@ namespace Molten.Graphics
 
         /// <inheritdoc/>
         public DisplayManager Manager => _manager;
-
-        /// <summary>
-        /// Gets the underlying Vulkan <see cref="PhysicalDevice"/>.
-        /// </summary>
-        internal PhysicalDevice Native => _device;
 
         /// <inheritdoc/>
         public GraphicsCapabilities Capabilities { get; private set; }

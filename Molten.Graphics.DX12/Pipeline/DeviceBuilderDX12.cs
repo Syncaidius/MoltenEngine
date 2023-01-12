@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic.Logging;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
@@ -15,6 +16,7 @@ namespace Molten.Graphics
     {
         RendererDX12 _renderer;
         D3D12 _api;
+
         readonly D3DFeatureLevel[] _featureLevels = new D3DFeatureLevel[]
         {
             D3DFeatureLevel.Level122,
@@ -28,6 +30,22 @@ namespace Molten.Graphics
         {
             _renderer = renderer;
             _api = api;
+        }
+
+        internal bool CheckResult(HResult r, Func<string> getMsg = null)
+        {
+            if (r.IsFailure)
+            {
+                if (getMsg != null)
+                {
+                    string msg = getMsg() + $" - Code: {r}";
+                    _renderer.Log.Error(msg);
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         internal  HResult CreateDevice(
@@ -53,11 +71,8 @@ namespace Molten.Graphics
             GraphicsCapabilities cap = adapter.Capabilities;
             ID3D12Device10* device = null;
             HResult r = CreateDevice(adapter, out device);
-            if (r.IsFailure)
-            {
-                _renderer.Log.Error($"Failed to detect capabilities for adapter '{adapter.Name}'");
+            if(!CheckResult(r, () => $"Failed to detect capabilities for adapter '{adapter.Name}'"))
                 return;
-            }
 
             FeatureDataFeatureLevels dataFeatures = new FeatureDataFeatureLevels();
             fixed (D3DFeatureLevel* ptrLevels = _featureLevels)
@@ -179,7 +194,7 @@ namespace Molten.Graphics
         {
             uint sizeOf = (uint)sizeof(T);
             HResult r = device->CheckFeatureSupport(feature, pData, sizeOf);
-            if (r.IsFailure)
+            if (!CheckResult(r))
             {
                 string valName = feature.ToString().Replace("Features", "").Replace("Feature", "");
                 _renderer.Log.Error($"Failed to retrieve '{valName}' features. Code: {r}");

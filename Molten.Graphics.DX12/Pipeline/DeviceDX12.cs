@@ -10,9 +10,11 @@ namespace Molten.Graphics
         Logger _log;
         DisplayAdapterDXGI _adapter;
         DisplayManagerDXGI _displayManager;
-        long _allocatedVRAM;
+        long _allocatedVRAM; 
 
         internal ID3D12Device10* Ptr;
+
+        CommandQueueDX12 _qDirect;
 
         public DeviceDX12(GraphicsSettings graphics, DeviceBuilderDX12 deviceBuilder, Logger log, IDisplayAdapter selectedAdapter)
         {
@@ -23,11 +25,15 @@ namespace Molten.Graphics
             _displayManager = _adapter.Manager as DisplayManagerDXGI;
 
             HResult r = _builder.CreateDevice(_adapter, out Ptr);
-            if (r.IsFailure)
-            {
-                _log.Error($"Failed to initialize {nameof(DeviceDX12)}. Code: {r}");
+            if (!_builder.CheckResult(r, () => $"Failed to initialize {nameof(DeviceDX12)}"))
                 return;
-            }
+
+            CommandQueueDesc cmdDesc = new CommandQueueDesc()
+            {
+                Type = CommandListType.Direct
+            };
+
+            _qDirect = new CommandQueueDX12(_log, this, _builder, ref cmdDesc);
         }
 
         /// <summary>Track a VRAM allocation.</summary>
@@ -46,6 +52,7 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
+            _qDirect.Dispose();
             SilkUtil.ReleasePtr(ref Ptr);
         }
 

@@ -10,6 +10,7 @@ using Silk.NET.Core.Native;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
+using Silk.NET.Vulkan.Extensions.KHR;
 
 namespace Molten.Graphics
 {
@@ -59,6 +60,7 @@ namespace Molten.Graphics
             if (settings.EnableDebugLayer.Value == true)
             {
                 _instance.AddLayer("VK_LAYER_KHRONOS_validation");
+                _instance.AddExtension<KhrSurface>();
                 _instance.AddExtension<ExtDebugUtils>(SetupDebugMessenger, (ext) =>
                 {
                     // Dispose of debug messenger handle.
@@ -113,7 +115,7 @@ namespace Molten.Graphics
 
             _debugMessengerHandle = EngineUtil.Alloc<DebugUtilsMessengerEXT>();
             Result r = ext.CreateDebugUtilsMessenger(*_instance.Ptr, &debugCreateInfo, null, _debugMessengerHandle);
-            if (!LogResult(r))
+            if (!CheckResult(r))
                 EngineUtil.Free(ref _debugMessengerHandle);
         }
 
@@ -124,18 +126,18 @@ namespace Molten.Graphics
             DisplayAdapterVK adapter = _displayManager.SelectedAdapter as DisplayAdapterVK;
             DeviceVK mainDevice = new DeviceVK(this, adapter, _instance, CommandSetCapabilityFlags.Graphics);
 
-            if(mainDevice.Build(_apiVersion))
+            if (mainDevice.Build(_apiVersion))
                 _devices.Add(mainDevice);
         }
 
-        internal bool LogResult(Result r, string msg = "")
+        internal bool CheckResult(Result r, Func<string> getMsg = null)
         {
             if (r != Result.Success)
             {
-                if (string.IsNullOrWhiteSpace(msg))
+                if (getMsg == null)
                     Log.Error($"Vulkan error: {r}");
                 else
-                    Log.Error($"Vulkan error: {r} -- {msg}");
+                    Log.Error($"Vulkan error: {r} -- {getMsg()}");
 
                 return false;
             }
@@ -146,17 +148,18 @@ namespace Molten.Graphics
         internal unsafe T[] Enumerate<T>(EnumerateCallback<T> callback, string callbackName = "")
             where T : unmanaged
         {
+            string GetCallbackName() => string.IsNullOrWhiteSpace(callbackName) ? callback.Method.Name : callbackName;
+
             uint count = 0;
 
             Result r = callback(&count, null);
-            string cbName = string.IsNullOrWhiteSpace(callbackName) ? callback.Method.Name : callbackName;
 
-            if (LogResult(r, $"Enumerate: Failed to get {cbName} count"))
+            if (CheckResult(r, () =>$"Enumerate: Failed to get {GetCallbackName} count"))
             {
                 T* items = EngineUtil.AllocArray<T>(count);
                 r = callback(&count, items);
 
-                if (LogResult(r, $"Enumerate: Failed get {cbName} items"))
+                if (CheckResult(r, () => $"Enumerate: Failed get {GetCallbackName} items"))
                 {
                     T[] result = new T[count];
                     fixed (T* ptrResult = result)
@@ -248,6 +251,16 @@ namespace Molten.Graphics
         /// </summary>
         internal InstanceManager Instance => _instance;
 
+        /// <summary>
+        /// Gets a <see cref="DeviceVK"/> by it's index. The primary <see cref="Device"/> is always at index 0, if it exists.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         internal DeviceVK this[int index] => _devices[index];
+
+        /// <summary>
+        /// Gets the main <see cref="DeviceVK"/>.
+        /// </summary>
+        internal DeviceVK Device { get; }
     }
 }

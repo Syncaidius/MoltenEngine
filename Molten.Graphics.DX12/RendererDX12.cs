@@ -14,7 +14,6 @@ namespace Molten.Graphics
         D3D12 _api;
         RenderChainDX12 _chain;
         DisplayManagerDXGI _displayManager;
-        DeviceBuilderDX12 _deviceBuilder;
 
         public RendererDX12()
         {
@@ -25,15 +24,15 @@ namespace Molten.Graphics
         {
             _api = D3D12.GetApi();
             _chain = new RenderChainDX12(this);
-            _deviceBuilder = new DeviceBuilderDX12(_api, this);
-            _displayManager = new DisplayManagerDXGI(_deviceBuilder.GetCapabilities);
+            Builder = new DeviceBuilderDX12(_api, this);
+            _displayManager = new DisplayManagerDXGI(Builder.GetCapabilities);
         }
 
         protected override void OnInitialize(EngineSettings settings)
         {
             base.OnInitialize(settings);
 
-            Device = new DeviceDX12(settings.Graphics, _deviceBuilder, Log, _displayManager.SelectedAdapter);
+            Device = new DeviceDX12(settings.Graphics, Builder, Log, _displayManager.SelectedAdapter);
         }
 
         protected override SceneRenderData OnCreateRenderData()
@@ -83,6 +82,8 @@ namespace Molten.Graphics
         }
 
         internal DeviceDX12 Device { get; private set; }
+
+        internal DeviceBuilderDX12 Builder { get; private set; }
 
         public override DisplayManager DisplayManager => _displayManager;
 

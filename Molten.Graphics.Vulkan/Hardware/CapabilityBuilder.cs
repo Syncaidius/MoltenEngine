@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Silk.NET.Core;
 using Silk.NET.Vulkan;
+using Silk.NET.Vulkan.Extensions.KHR;
 
 namespace Molten.Graphics
 {
@@ -93,13 +95,16 @@ namespace Molten.Graphics
             /// Command list functionality.
             cap.DeferredCommandLists = CommandListSupport.Supported;
             cap.ConcurrentResourceCreation = true;
-            foreach (QueueFamilyProperties p in queueFamilies)
-            {
+
+            for(uint famIndex = 0; famIndex < queueFamilies.Length; famIndex++)
+            { 
+                ref QueueFamilyProperties p = ref queueFamilies[famIndex];
+
                 cap.CommandSets.Add(new SupportedCommandSet()
                 {
-                    MaxCount = p.QueueCount,
+                    MaxQueueCount = p.QueueCount,
                     CapabilityFlags = (CommandSetCapabilityFlags)p.QueueFlags,
-                    TimeStampBits = p.TimestampValidBits
+                    TimeStampBits = p.TimestampValidBits,
                 });
             }
 

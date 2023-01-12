@@ -86,7 +86,7 @@
             index = 1;
             log.WriteLine($"         Command Sets:");
             foreach (SupportedCommandSet set in adapter.Capabilities.CommandSets)
-                log.WriteLine($"            {index++}. Limit: {set.MaxCount} -- Capabilities: {set.CapabilityFlags}");
+                log.WriteLine($"            {index++}. Limit: {set.MaxQueueCount} -- Capabilities: {set.CapabilityFlags}");
 
             if (adapter.Outputs.Count > 0)
             {

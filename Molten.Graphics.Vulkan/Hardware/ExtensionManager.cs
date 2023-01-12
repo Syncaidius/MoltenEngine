@@ -9,7 +9,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class ExtensionManager<D> : EngineObject
+    internal unsafe abstract class ExtensionManager<D> : AllocatedObjectVK<D>
         where D : unmanaged
     {
         /// <summary>
@@ -38,7 +38,6 @@ namespace Molten.Graphics
             internal byte** ExtensionNames;
         }
 
-        D* _ptr;
         ExtensionBinding _bind;
 
         internal ExtensionManager(RendererVK renderer)
@@ -88,6 +87,16 @@ namespace Molten.Graphics
         {
             return _bind.Extensions.ContainsKey(extName);
         }
+        
+        internal E GetExtension<E>()
+            where E : NativeExtension<Vk>
+        {
+            string extName = GetNativeExtensionName<E>();
+            if (_bind.Extensions.TryGetValue(extName, out VulkanExtension ext))
+                return ext as E;
+            else
+                throw new Exception("Attempt to retrieve invalid extension '{extName}'. Check extension support or add during instantiation.");
+        }
 
         internal void AddLayer(string layerName)
         {
@@ -100,7 +109,7 @@ namespace Molten.Graphics
 
         internal unsafe bool Build(VersionVK apiVersion)
         {
-            if (_ptr != null)
+            if (IsBuilt)
                 throw new Exception("Cannot call Build() more than once on the same ExtensionManager");
 
             EnableLayers();
@@ -112,16 +121,15 @@ namespace Molten.Graphics
                 ExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(_bind.Extensions.Keys.ToList().AsReadOnly(), NativeStringEncoding.UTF8)
             };
 
-            _ptr = EngineUtil.Alloc<D>();
-            Result r = OnBuild(Renderer, apiVersion, tmp, _bind, _ptr);
-            bool success = Renderer.LogResult(r); 
+            Result r = OnBuild(Renderer, apiVersion, tmp, _bind, Ptr);
+            bool success = Renderer.CheckResult(r); 
             if (success)
             {
 
                 // Load load all requested extension modules that were supported/available.
                 foreach (VulkanExtension ext in _bind.Extensions.Values)
                 {
-                    bool extSuccess = LoadExtension(Renderer, ext, _ptr);
+                    bool extSuccess = LoadExtension(Renderer, ext, Ptr);
                 }
             }
 
@@ -129,6 +137,7 @@ namespace Molten.Graphics
             SilkMarshal.Free((nint)tmp.ExtensionNames);
 
             _bind = null;
+            IsBuilt = success;
             return success;
         }
 
@@ -217,7 +226,7 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            if (_ptr != null)
+            if (Ptr != null)
             {
                 foreach (VulkanExtension ext in _bind.Extensions.Values)
                     ext.Unload(Renderer);
@@ -225,24 +234,25 @@ namespace Molten.Graphics
                 _bind.Extensions.Clear();
                 _bind.Layers.Clear();
 
-                DestroyObject(Renderer, _ptr);
-                EngineUtil.Free(ref _ptr);
+                DestroyObject(Renderer, Ptr);
             }
+
+            base.OnDispose();
         }
 
         public static implicit operator D*(ExtensionManager<D> manager)
         {
-            return manager._ptr;
+            return manager.Ptr;
         }
-
-        /// <summary>
-        /// Gets the underlying pointer of the object that has extensions attached to it. e.g. a <see cref="Instance"/> or <see cref="Device"/>.
-        /// </summary>
-        internal D* Ptr => _ptr;
 
         /// <summary>
         /// Gets the <see cref="RendererVK"/> instance that the current <see cref="ExtensionManager{D}"/> is bound to.
         /// </summary>
         internal RendererVK Renderer { get; }
+
+        /// <summary>
+        /// Gets whether or not the current <see cref="ExtensionManager{D}"/> object has been built via <see cref="Build(VersionVK)"/>.
+        /// </summary>
+        internal bool IsBuilt { get; private protected set; }
     }
 }

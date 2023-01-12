@@ -175,7 +175,7 @@ namespace Molten.Graphics
 
             cap.CommandSets.Add(new SupportedCommandSet()
             {
-                MaxCount = 1,
+                MaxQueueCount = 1,
                 CapabilityFlags = CommandSetCapabilityFlags.Graphics |
                 CommandSetCapabilityFlags.Compute |
                 CommandSetCapabilityFlags.TransferCopy,

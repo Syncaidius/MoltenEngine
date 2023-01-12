@@ -18,7 +18,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets or sets the maximum number allowed sets of the current <see cref="SupportedCommandSet"/>.
         /// </summary>
-        public uint MaxCount { get; set; }
+        public uint MaxQueueCount { get; set; }
 
         /// <summary>
         /// Gets the command capabilities of the current <see cref="SupportedCommandSet"/>.
