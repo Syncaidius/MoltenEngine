@@ -12,7 +12,7 @@ namespace Molten.Graphics
         protected override unsafe ID3D11VertexShader* CreateShader(void* ptrBytecode, nuint numBytes)
         {
             ID3D11VertexShader* ppShader = null;
-            Parent.Device.NativeDevice->CreateVertexShader(ptrBytecode, numBytes, null, &ppShader);
+            Parent.Device.Ptr->CreateVertexShader(ptrBytecode, numBytes, null, &ppShader);
             return ppShader;
         }
     }

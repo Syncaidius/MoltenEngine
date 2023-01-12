@@ -122,12 +122,12 @@ namespace Molten.Graphics
                 {
                     SubresourceData srd = new SubresourceData(null, numBytes, numBytes);
                     srd.PSysMem = ptr.ToPointer();
-                    Device.NativeDevice->CreateBuffer(ref Description, ref srd, ref _native);
+                    Device.Ptr->CreateBuffer(ref Description, ref srd, ref _native);
                 });
             }
             else
             {
-                Device.NativeDevice->CreateBuffer(ref Description, null, ref _native);
+                Device.Ptr->CreateBuffer(ref Description, null, ref _native);
             }
 
             Device.AllocateVRAM(numBytes);

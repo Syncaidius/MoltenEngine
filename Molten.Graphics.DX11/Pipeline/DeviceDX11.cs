@@ -10,7 +10,7 @@ namespace Molten.Graphics
     /// <seealso cref="DeviceContext" />
     public unsafe class DeviceDX11 : DeviceContext
     {
-        internal ID3D11Device5* NativeDevice;
+        internal ID3D11Device5* Ptr;
         internal ID3D11DeviceContext4* ImmediateContext;
 
         DeviceBuilderDX11 _builder;
@@ -45,7 +45,12 @@ namespace Molten.Graphics
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
             _objectsToDispose = new ThreadedQueue<ContextObject>();
 
-            HResult r = _builder.CreateDevice(_adapter, out NativeDevice, out ImmediateContext);
+            HResult r = _builder.CreateDevice(_adapter, out Ptr, out ImmediateContext);
+            if (r.IsFailure)
+            {
+                _log.Error($"Failed to initialize {nameof(DeviceDX11)}. Code: {r}");
+                return;
+            }
 
             _rasterizerBank = new RasterizerStateBank(this);
             _blendBank = new BlendStateBank(this);
@@ -98,7 +103,7 @@ namespace Molten.Graphics
         internal DeviceContext GetDeferredContext()
         {
             ID3D11DeviceContext3* dc = null;
-            NativeDevice->CreateDeferredContext3(0, &dc);
+            Ptr->CreateDeferredContext3(0, &dc);
 
             Guid cxt4Guid = ID3D11DeviceContext4.Guid;
             void* ptr4 = null;
@@ -147,7 +152,7 @@ namespace Molten.Graphics
             SamplerBank.Dispose();
 
             SilkUtil.ReleasePtr(ref ImmediateContext);
-            SilkUtil.ReleasePtr(ref NativeDevice);
+            SilkUtil.ReleasePtr(ref Ptr);
 
             _bufferSegmentPool.Dispose();
             DisposeMarkedObjects();

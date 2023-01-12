@@ -50,12 +50,12 @@ namespace Molten.Graphics
         {
             base.OnInitialize(settings);
 
-            Assembly includeAssembly = this.GetType().Assembly;
+            Assembly includeAssembly = GetType().Assembly;
 
             Device = new DeviceDX11(settings.Graphics, _deviceBuilder, Log, _displayManager.SelectedAdapter);
             ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _resFactory = new ResourceFactoryDX11(this);
-            _compute = new ComputeManager(this.Device);
+            _compute = new ComputeManager(Device);
             _clearedSurfaces = new HashSet<Texture2D>();
 
             uint maxBufferSize = (uint)ByteMath.FromMegabytes(3.5);

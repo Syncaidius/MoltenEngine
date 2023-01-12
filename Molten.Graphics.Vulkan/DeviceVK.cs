@@ -11,6 +11,7 @@ namespace Molten.Graphics
         Instance* _vkInstance;
         RendererVK _renderer;
         CommandSetCapabilityFlags _cap;
+        long _allocatedVRAM;
 
         /// <summary>
         /// 
@@ -106,6 +107,20 @@ namespace Molten.Graphics
             return r;
         }
 
+        /// <summary>Track a VRAM allocation.</summary>
+        /// <param name="bytes">The number of bytes that were allocated.</param>
+        internal void AllocateVRAM(long bytes)
+        {
+            Interlocked.Add(ref _allocatedVRAM, bytes);
+        }
+
+        /// <summary>Track a VRAM deallocation.</summary>
+        /// <param name="bytes">The number of bytes that were deallocated.</param>
+        internal void DeallocateVRAM(long bytes)
+        {
+            Interlocked.Add(ref _allocatedVRAM, -bytes);
+        }
+
         /// <summary>
         /// Gets the underlying <see cref="DisplayAdapterVK"/> that the current <see cref="DeviceVK"/> is bound to.
         /// </summary>
@@ -115,5 +130,7 @@ namespace Molten.Graphics
         /// Gets the <see cref="Instance"/> that the current <see cref="DeviceVK"/> is bound to.
         /// </summary>
         internal Instance* Instance => _vkInstance;
+
+        internal long AllocatedVRAM => _allocatedVRAM;
     }
 }

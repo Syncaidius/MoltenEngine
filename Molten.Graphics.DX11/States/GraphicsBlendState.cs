@@ -119,7 +119,7 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 // Create new state
-                Device.NativeDevice->CreateBlendState1(ref _desc, ref _native);
+                Device.Ptr->CreateBlendState1(ref _desc, ref _native);
             }
         }
 

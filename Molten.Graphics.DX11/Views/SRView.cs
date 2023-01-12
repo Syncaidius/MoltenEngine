@@ -8,7 +8,7 @@ namespace Molten.Graphics
 
         protected override unsafe void OnCreateView(ID3D11Resource* resource, ref ShaderResourceViewDesc1 desc, ref ID3D11ShaderResourceView1* view)
         {
-            Device.NativeDevice->CreateShaderResourceView1(resource, ref desc, ref view);
+            Device.Ptr->CreateShaderResourceView1(resource, ref desc, ref view);
         }
 
         public static implicit operator ID3D11ShaderResourceView*(SRView view)

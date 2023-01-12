@@ -32,6 +32,8 @@ namespace Molten.Graphics
         protected override void OnInitialize(EngineSettings settings)
         {
             base.OnInitialize(settings);
+
+            Device = new DeviceDX12(settings.Graphics, _deviceBuilder, Log, _displayManager.SelectedAdapter);
         }
 
         protected override SceneRenderData OnCreateRenderData()
@@ -76,12 +78,15 @@ namespace Molten.Graphics
 
         protected override void OnDisposeBeforeRender()
         {
+            Device?.Dispose();
             _api.Dispose();
         }
 
+        internal DeviceDX12 Device { get; private set; }
+
         public override DisplayManager DisplayManager => _displayManager;
 
-        public override ResourceFactory Resources => throw new NotImplementedException();
+        public override ResourceFactory Resources { get; }
 
         public override IComputeManager Compute => throw new NotImplementedException();
 

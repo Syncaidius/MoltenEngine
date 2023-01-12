@@ -53,7 +53,7 @@ namespace Molten.Graphics
                 int fVal = (int)_desc.Filter;
                 PipelineRelease();
 
-                pipe.Device.NativeDevice->CreateSamplerState(ref _desc, ref _native);
+                pipe.Device.Ptr->CreateSamplerState(ref _desc, ref _native);
                 _isDirty = false;
                 Version++;
             }

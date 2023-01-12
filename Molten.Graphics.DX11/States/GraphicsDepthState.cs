@@ -160,7 +160,7 @@ namespace Molten.Graphics
                 _desc.BackFace = _backFace._desc;
 
                 //create new state
-                Device.NativeDevice->CreateDepthStencilState(ref _desc, ref _native);
+                Device.Ptr->CreateDepthStencilState(ref _desc, ref _native);
             }
         }
 

@@ -43,7 +43,7 @@ namespace Molten.Graphics
             };
 
             IDXGISwapChain1* ptrSwap1 = null;
-            WinHResult hr = Device.DisplayManager.DxgiFactory->CreateSwapChainForHwnd((IUnknown*)Device.NativeDevice, controlHandle, ref _swapDesc, null, null, ref ptrSwap1);
+            WinHResult hr = Device.DisplayManager.DxgiFactory->CreateSwapChainForHwnd((IUnknown*)Device.Ptr, controlHandle, ref _swapDesc, null, null, ref ptrSwap1);
             DxgiError de = hr.ToEnum<DxgiError>();
 
             if (de != DxgiError.Ok)

@@ -81,7 +81,7 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 //create new state
-                Device.NativeDevice->CreateRasterizerState2(ref _desc, ref _native);
+                Device.Ptr->CreateRasterizerState2(ref _desc, ref _native);
             }
         }
 

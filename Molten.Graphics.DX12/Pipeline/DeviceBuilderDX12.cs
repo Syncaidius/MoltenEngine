@@ -141,8 +141,6 @@ namespace Molten.Graphics
             cap.VertexBuffers.MaxElementsPerVertex = 32;    // D3D11_STANDARD_VERTEX_ELEMENT_COUNT = 32;
             cap.VertexBuffers.MaxElements = uint.MaxValue;  // (2^32) – 1 = uint.maxValue (4,294,967,295)
 
-           
-
             DetectShaderStages(device, cap, 
                 features12_0.MinPrecisionSupport, 
                 features12_0.DoublePrecisionFloatShaderOps != 0, 

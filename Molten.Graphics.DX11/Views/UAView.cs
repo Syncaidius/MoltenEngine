@@ -8,7 +8,7 @@ namespace Molten.Graphics
 
         protected override unsafe void OnCreateView(ID3D11Resource* resource, ref UnorderedAccessViewDesc1 desc, ref ID3D11UnorderedAccessView1* view)
         {
-            Device.NativeDevice->CreateUnorderedAccessView1(resource, ref desc, ref view);
+            Device.Ptr->CreateUnorderedAccessView1(resource, ref desc, ref view);
         }
     }
 }

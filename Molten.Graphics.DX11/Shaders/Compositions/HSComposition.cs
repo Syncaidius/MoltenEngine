@@ -12,7 +12,7 @@ namespace Molten.Graphics
         protected override unsafe ID3D11HullShader* CreateShader(void* ptrBytecode, nuint numBytes)
         {
             ID3D11HullShader* ppShader = null;
-            Parent.Device.NativeDevice->CreateHullShader(ptrBytecode, numBytes, null, &ppShader);
+            Parent.Device.Ptr->CreateHullShader(ptrBytecode, numBytes, null, &ppShader);
             return ppShader;
         }
     }
