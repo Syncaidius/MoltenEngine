@@ -19,6 +19,7 @@ namespace Molten.Graphics
         internal unsafe delegate Result EnumerateCallback<T>(uint* count, T* info) where T : unmanaged;
 
         RenderChainVK _chain;
+        ResourceFactoryVK _resFactory;
         DisplayManagerVK _displayManager;
         InstanceManager _instance;
         DebugUtilsMessengerEXT* _debugMessengerHandle;
@@ -123,6 +124,8 @@ namespace Molten.Graphics
         {
             base.OnInitialize(settings);
 
+            _resFactory = new ResourceFactoryVK(this, null);
+
             DisplayAdapterVK adapter = _displayManager.SelectedAdapter as DisplayAdapterVK;
             DeviceVK mainDevice = new DeviceVK(this, adapter, _instance, CommandSetCapabilityFlags.Graphics);
 
@@ -176,7 +179,7 @@ namespace Molten.Graphics
 
         public override DisplayManager DisplayManager => _displayManager;
 
-        public override ResourceFactory Resources { get; }
+        public override ResourceFactory Resources => _resFactory;
 
         public override IComputeManager Compute { get; }
 
