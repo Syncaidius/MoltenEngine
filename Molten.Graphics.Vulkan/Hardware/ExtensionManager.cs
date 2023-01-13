@@ -93,9 +93,14 @@ namespace Molten.Graphics
         {
             string extName = GetNativeExtensionName<E>();
             if (_bind.Extensions.TryGetValue(extName, out VulkanExtension ext))
-                return ext as E;
+            {
+                VulkanExtension<E> extension = ext as VulkanExtension<E>;
+                return extension.Module;
+            }
             else
+            {
                 throw new Exception("Attempt to retrieve invalid extension '{extName}'. Check extension support or add during instantiation.");
+            }
         }
 
         internal void AddLayer(string layerName)
@@ -136,7 +141,6 @@ namespace Molten.Graphics
             SilkMarshal.Free((nint)tmp.LayerNames);
             SilkMarshal.Free((nint)tmp.ExtensionNames);
 
-            _bind = null;
             IsBuilt = success;
             return success;
         }

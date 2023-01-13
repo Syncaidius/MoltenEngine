@@ -24,7 +24,7 @@ namespace Molten.Graphics
     internal class VulkanExtension<E> : VulkanExtension
         where E : NativeExtension<Vk>
     {
-        internal E Ext { get; set; }
+        internal E Module { get; set; }
 
         protected Action<E> LoadCallback;
         protected Action<E> UnloadCallback;
@@ -47,7 +47,7 @@ namespace Molten.Graphics
 
             if (success)
             {
-                Ext = ext;
+                Module = ext;
                 LoadCallback?.Invoke(ext);
             }
             else
@@ -60,11 +60,11 @@ namespace Molten.Graphics
 
         public unsafe override void Unload(RendererVK renderer)
         {
-            if (Ext != null)
+            if (Module != null)
             {
-                Ext.Dispose();
-                UnloadCallback?.Invoke(Ext);
-                Ext = null;
+                Module.Dispose();
+                UnloadCallback?.Invoke(Module);
+                Module = null;
             }
         }
     }

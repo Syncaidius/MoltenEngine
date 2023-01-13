@@ -7,6 +7,7 @@ using Silk.NET.Core;
 using Silk.NET.Core.Native;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
+using Silk.NET.Vulkan.Extensions.KHR;
 
 namespace Molten.Graphics
 {
@@ -38,12 +39,13 @@ namespace Molten.Graphics
             _window = renderer.GLFW.CreateWindow((int)width, (int)height, _title, null, null);
 
             VkHandle instanceHandle = new VkHandle(renderer.Instance.Ptr->Handle);
-            VkNonDispatchableHandle* surfaceHandle = null;
-            Result r = (Result)renderer.GLFW.CreateWindowSurface(instanceHandle, _window, null, surfaceHandle);
+            VkNonDispatchableHandle surfaceHandle = new VkNonDispatchableHandle();
+
+            Result r = (Result)renderer.GLFW.CreateWindowSurface(instanceHandle, _window, null, &surfaceHandle);
             if (!renderer.CheckResult(r))
                 return;
 
-            Native = new SurfaceKHR(surfaceHandle->Handle);
+            Native = new SurfaceKHR(surfaceHandle.Handle);
             _presentQueue = renderer.Device.FindPresentQueue(this);
 
             if (_presentQueue == null)
@@ -52,6 +54,9 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
+            KhrSurface extSurface = Renderer.Device.GetExtension<KhrSurface>();
+            extSurface?.DestroySurface(*Renderer.Instance.Ptr, Native, null);
+
             if (_window != null)
                 Renderer.GLFW.DestroyWindow(_window);
         }
@@ -201,6 +206,6 @@ namespace Molten.Graphics
                     Renderer.GLFW.SetWindowTitle(_window, _title);
             }
         }
-        public bool IsVisible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsVisible { get; set; }
     }
 }

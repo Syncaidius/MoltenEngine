@@ -127,10 +127,10 @@ namespace Molten.Graphics
             _resFactory = new ResourceFactoryVK(this, null);
 
             DisplayAdapterVK adapter = _displayManager.SelectedAdapter as DisplayAdapterVK;
-            DeviceVK mainDevice = new DeviceVK(this, adapter, _instance, CommandSetCapabilityFlags.Graphics);
+            Device = new DeviceVK(this, adapter, _instance, CommandSetCapabilityFlags.Graphics);
 
-            if (mainDevice.Build(_apiVersion))
-                _devices.Add(mainDevice);
+            if (Device.Build(_apiVersion))
+                _devices.Add(Device);
         }
 
         internal bool CheckResult(Result r, Func<string> getMsg = null)
@@ -264,6 +264,6 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the main <see cref="DeviceVK"/>.
         /// </summary>
-        internal DeviceVK Device { get; }
+        internal DeviceVK Device { get; private set; }
     }
 }
