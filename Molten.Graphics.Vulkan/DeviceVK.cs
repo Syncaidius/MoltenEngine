@@ -36,11 +36,11 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Finds a <see cref="CommandQueueVK"/> that can present the provided <see cref="PresentationSurfaceVK"/>.
+        /// Finds a <see cref="CommandQueueVK"/> that can present the provided <see cref="WindowSurfaceVK"/>.
         /// </summary>
         /// <param name="surface"></param>
         /// <returns></returns>
-        internal CommandQueueVK FindPresentQueue(PresentationSurfaceVK surface)
+        internal CommandQueueVK FindPresentQueue(WindowSurfaceVK surface)
         {
             KhrSurface extSurface = _renderer.Instance.GetExtension<KhrSurface>();
             Bool32 presentSupported = false;

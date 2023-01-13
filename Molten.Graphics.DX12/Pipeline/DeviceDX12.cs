@@ -7,7 +7,6 @@ namespace Molten.Graphics
     internal unsafe class DeviceDX12 : EngineObject
     {
         DeviceBuilderDX12 _builder;
-        Logger _log;
         DisplayAdapterDXGI _adapter;
         DisplayManagerDXGI _displayManager;
         long _allocatedVRAM; 
@@ -20,7 +19,7 @@ namespace Molten.Graphics
         {
             Settings = graphics;
             _builder = deviceBuilder;
-            _log = log;
+            Log = log;
             _adapter = selectedAdapter as DisplayAdapterDXGI;
             _displayManager = _adapter.Manager as DisplayManagerDXGI;
 
@@ -33,7 +32,7 @@ namespace Molten.Graphics
                 Type = CommandListType.Direct
             };
 
-            _qDirect = new CommandQueueDX12(_log, this, _builder, ref cmdDesc);
+            _qDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         }
 
         /// <summary>Track a VRAM allocation.</summary>
@@ -61,6 +60,8 @@ namespace Molten.Graphics
         internal DisplayAdapterDXGI Adapter => _adapter;
 
         internal GraphicsSettings Settings { get; }
+
+        internal Logger Log { get; }
 
         internal long AllocatedVRAM => _allocatedVRAM;
     }

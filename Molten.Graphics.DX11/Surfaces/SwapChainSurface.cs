@@ -27,32 +27,7 @@ namespace Molten.Graphics
 
         protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)
         {
-            _swapDesc = new SwapChainDesc1()
-            {
-                Width = mode.Width,
-                Height = mode.Height,
-                Format = mode.Format.ToApi(),
-                BufferUsage = (uint)DxgiUsage.RenderTargetOutput,
-                BufferCount = Device.Settings.BackBufferSize,
-                SampleDesc = new SampleDesc(1, 0),
-                SwapEffect = SwapEffect.Discard,
-                Flags = (uint)DxgiSwapChainFlags.None,
-                Stereo = 0,
-                Scaling = Scaling.Stretch,
-                AlphaMode = AlphaMode.Ignore // TODO implement this correctly
-            };
-
-            IDXGISwapChain1* ptrSwap1 = null;
-            WinHResult hr = Device.DisplayManager.DxgiFactory->CreateSwapChainForHwnd((IUnknown*)Device.Ptr, controlHandle, ref _swapDesc, null, null, ref ptrSwap1);
-            DxgiError de = hr.ToEnum<DxgiError>();
-
-            if (de != DxgiError.Ok)
-                Renderer.Log.Error($"Creation of swapchain failed with result: {de}");
-
-            Guid swap4Guid = IDXGISwapChain4.Guid;
-            void* nativeSwap = null;
-            int r = ptrSwap1->QueryInterface(&swap4Guid, &nativeSwap);
-            NativeSwapChain = (IDXGISwapChain4*)nativeSwap;
+            NativeSwapChain = Device.DisplayManager.CreateSwapChain(mode, Device.Settings, Device.Log, (IUnknown*)Device.Ptr, controlHandle);
         }
 
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
@@ -62,7 +37,7 @@ namespace Molten.Graphics
             // Resize the swap chain if needed.
             if (resize && NativeSwapChain != null)
             {
-                NativeSwapChain->ResizeBuffers(_swapDesc.BufferCount, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
+                NativeSwapChain->ResizeBuffers(Device.Settings.BackBufferSize, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
                 NativeSwapChain->GetDesc1(ref _swapDesc);
             }
             else

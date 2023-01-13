@@ -1,4 +1,6 @@
-﻿using Silk.NET.DXGI;
+﻿using Molten.Windows32;
+using Silk.NET.Core.Native;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics.Dxgi
 {
@@ -104,6 +106,39 @@ namespace Molten.Graphics.Dxgi
             // Do we still not have an adapter? Unsupported.
             if(_defaultAdapter == null)
                 Log.Error($"No supported GPU adapter found.");
+        }
+
+        public IDXGISwapChain4* CreateSwapChain(DisplayModeDXGI mode, GraphicsSettings settings, Logger log, IUnknown* ptrDevice, IntPtr windowHandle)
+        {
+            SwapChainDesc1 desc = new SwapChainDesc1()
+            {
+                Width = mode.Width,
+                Height = mode.Height,
+                Format = mode.Format.ToApi(),
+                BufferUsage = (uint)DxgiUsage.RenderTargetOutput,
+                BufferCount = settings.BackBufferSize,
+                SampleDesc = new SampleDesc(1, 0), // TODO support multi-sampling: https://learn.microsoft.com/en-us/windows/win32/api/dxgicommon/ns-dxgicommon-dxgi_sample_desc
+                SwapEffect = SwapEffect.Discard,
+                Flags = (uint)DxgiSwapChainFlags.None,
+                Stereo = 0,
+                Scaling = Scaling.Stretch,
+                AlphaMode = AlphaMode.Ignore // TODO implement this correctly
+            };
+
+            IDXGISwapChain1* ptrSwap1 = null;
+            WinHResult hr = DxgiFactory->CreateSwapChainForHwnd(ptrDevice, windowHandle, ref desc, null, null, ref ptrSwap1);
+            DxgiError de = hr.ToEnum<DxgiError>();
+
+            if (de != DxgiError.Ok)
+            {
+                log.Error($"Creation of swapchain failed with result: {de}");
+                return null;
+            }
+
+            Guid swap4Guid = IDXGISwapChain4.Guid;
+            void* nativeSwap = null;
+            int r = ptrSwap1->QueryInterface(&swap4Guid, &nativeSwap);
+            return (IDXGISwapChain4*)nativeSwap;
         }
 
         /// <inheritdoc/>
