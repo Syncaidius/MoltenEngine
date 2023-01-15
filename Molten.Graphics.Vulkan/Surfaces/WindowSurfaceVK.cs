@@ -24,15 +24,24 @@ namespace Molten.Graphics
 
         CommandQueueVK _presentQueue;
         WindowHandle* _window;
+        PresentModeKHR _mode;
 
         string _title;
         uint _width;
         uint _height;
 
-        internal unsafe WindowSurfaceVK(RendererVK renderer, string title, uint width, uint height)
+        internal unsafe WindowSurfaceVK(DeviceVK device, GraphicsFormat format, string title, uint width, uint height, PresentModeKHR presentMode = PresentModeKHR.MailboxKhr)
         {
-            Renderer = renderer;
+            Device = device;
+            RendererVK renderer = Device.Renderer;
             _title = title;
+
+            KhrSurface extSurface = renderer.Instance.GetExtension<KhrSurface>();
+            if (extSurface == null)
+            {
+                renderer.Log.Error($"VK_KHR_surface extension is unsupported. Unable to initialize WindowSurfaceVK");
+                return;
+            }
 
             renderer.GLFW.WindowHint(WindowHintClientApi.ClientApi, ClientApi.NoApi);
             renderer.GLFW.WindowHint(WindowHintBool.Resizable, true);
@@ -49,16 +58,68 @@ namespace Molten.Graphics
             _presentQueue = renderer.Device.FindPresentQueue(this);
 
             if (_presentQueue == null)
+            {
                 renderer.Log.Error($"No command queue found to present window surface");
+                return;
+            }
+
+            // Check surface capabilities
+            SurfaceCapabilitiesKHR cap = new SurfaceCapabilitiesKHR();
+            r = extSurface.GetPhysicalDeviceSurfaceCapabilities(device.Adapter, Native, &cap);
+            if (!renderer.CheckResult(r))
+                return;
+
+            ColorSpaceKHR colorSpace = ColorSpaceKHR.SpaceSrgbNonlinearKhr;
+            if (!IsFormatSupported(extSurface, format, colorSpace))
+            {
+                renderer.Log.Error($"Surface format '{format}' with a '{colorSpace}' color-space is not supported");
+                return;
+            }
+
+            _mode = ValidatePresentMode(extSurface, presentMode);
+        }
+
+        private bool IsFormatSupported(KhrSurface extSurface, GraphicsFormat format, ColorSpaceKHR colorSpace)
+        {
+            SurfaceFormatKHR[] supportedFormats = Device.Renderer.Enumerate<SurfaceFormatKHR>((count, items) =>
+            {
+                return extSurface.GetPhysicalDeviceSurfaceFormats(Device.Adapter, Native, count, items);
+            }, "surface format");
+
+            Format vkFormat = format.ToApi();
+
+            for(int i = 0; i < supportedFormats.Length; i++)
+            {
+                if (supportedFormats[i].Format == vkFormat && supportedFormats[i].ColorSpace == colorSpace)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private PresentModeKHR ValidatePresentMode(KhrSurface extSurface, PresentModeKHR requested)
+        {
+            PresentModeKHR[] supportedModes = Device.Renderer.Enumerate<PresentModeKHR>((count, items) =>
+            {
+                return extSurface.GetPhysicalDeviceSurfacePresentModes(Device.Adapter, Native, count, items);
+            }, "present mode");
+
+            for (int i = 0; i < supportedModes.Length; i++)
+            {
+                if (supportedModes[i] == requested)
+                    return requested;
+            }
+
+            return PresentModeKHR.FifoKhr;
         }
 
         protected override void OnDispose()
         {
-            KhrSurface extSurface = Renderer.Device.GetExtension<KhrSurface>();
-            extSurface?.DestroySurface(*Renderer.Instance.Ptr, Native, null);
+            KhrSurface extSurface = Device.GetExtension<KhrSurface>();
+            extSurface?.DestroySurface(*Device.Renderer.Instance.Ptr, Native, null);
 
             if (_window != null)
-                Renderer.GLFW.DestroyWindow(_window);
+                Device.Renderer.GLFW.DestroyWindow(_window);
         }
 
         public void Present()
@@ -154,13 +215,13 @@ namespace Molten.Graphics
         public void Close()
         {
             if(_window != null)
-                Renderer.GLFW.SetWindowShouldClose(_window, true);
+                Device.Renderer.GLFW.SetWindowShouldClose(_window, true);
         }
 
         /// <summary>
         /// Gets the <see cref="RendererVK"/> instance that the current <see cref="WindowSurfaceVK"/> is bound to.
         /// </summary>
-        public RendererVK Renderer { get; }
+        public DeviceVK Device { get; }
 
         public bool IsFocused => throw new NotImplementedException();
 
@@ -203,7 +264,7 @@ namespace Molten.Graphics
             set
             {
                 if (_window != null)
-                    Renderer.GLFW.SetWindowTitle(_window, _title);
+                    Device.Renderer.GLFW.SetWindowTitle(_window, _title);
             }
         }
         public bool IsVisible { get; set; }

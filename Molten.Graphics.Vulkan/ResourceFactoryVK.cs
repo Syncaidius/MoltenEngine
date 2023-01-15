@@ -28,7 +28,7 @@ namespace Molten.Graphics
 
         public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1)
         {
-            return new WindowSurfaceVK(_renderer, formTitle, 1024, 800);
+            return new WindowSurfaceVK(_renderer.Device, GraphicsFormat.B8G8R8A8_UNorm, formTitle, 1024, 800);
         }
 
         public override IIndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices, uint maxIndices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false)
