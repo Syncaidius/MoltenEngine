@@ -25,16 +25,21 @@ namespace Molten.Graphics
         CommandQueueVK _presentQueue;
         WindowHandle* _window;
         PresentModeKHR _mode;
+        SurfaceCapabilitiesKHR _cap;
 
         string _title;
         uint _width;
         uint _height;
+        uint _backBufferSize;
 
-        internal unsafe WindowSurfaceVK(DeviceVK device, GraphicsFormat format, string title, uint width, uint height, PresentModeKHR presentMode = PresentModeKHR.MailboxKhr)
+        internal unsafe WindowSurfaceVK(DeviceVK device, GraphicsFormat format, string title, uint width, uint height, 
+            PresentModeKHR presentMode = PresentModeKHR.MailboxKhr)
         {
             Device = device;
             RendererVK renderer = Device.Renderer;
             _title = title;
+            _width = width;
+            _height = height;
 
             KhrSurface extSurface = renderer.Instance.GetExtension<KhrSurface>();
             if (extSurface == null)
@@ -64,8 +69,7 @@ namespace Molten.Graphics
             }
 
             // Check surface capabilities
-            SurfaceCapabilitiesKHR cap = new SurfaceCapabilitiesKHR();
-            r = extSurface.GetPhysicalDeviceSurfaceCapabilities(device.Adapter, Native, &cap);
+            r = extSurface.GetPhysicalDeviceSurfaceCapabilities(device.Adapter, Native, out _cap);
             if (!renderer.CheckResult(r))
                 return;
 
@@ -77,6 +81,8 @@ namespace Molten.Graphics
             }
 
             _mode = ValidatePresentMode(extSurface, presentMode);
+            ValidateSize();
+            ValidateBackBufferSize();
         }
 
         private bool IsFormatSupported(KhrSurface extSurface, GraphicsFormat format, ColorSpaceKHR colorSpace)
@@ -111,6 +117,26 @@ namespace Molten.Graphics
             }
 
             return PresentModeKHR.FifoKhr;
+        }
+
+        private void ValidateBackBufferSize()
+        {
+            BackBufferMode mode = Device.Renderer.Settings.Graphics.BackBufferSize;
+            if (mode == BackBufferMode.Default)
+                _backBufferSize = _cap.MinImageCount + 1;
+            else
+                _backBufferSize = (uint)mode;
+
+            if (_cap.MaxImageCount > 0)
+                _backBufferSize = uint.Clamp(_backBufferSize, _cap.MinImageCount, _cap.MaxImageCount);
+            else
+                _backBufferSize = uint.Max(_cap.MinImageCount, _backBufferSize);
+        }
+
+        private void ValidateSize()
+        {
+            _width = uint.Clamp(_width, _cap.MinImageExtent.Width, _cap.MaxImageExtent.Width);
+            _height = uint.Clamp(_height, _cap.MinImageExtent.Height, _cap.MaxImageExtent.Height);
         }
 
         protected override void OnDispose()

@@ -20,11 +20,11 @@ namespace Molten
 
         public GraphicsSettings()
         {
-            AdapterID = AddSetting<DeviceID>("adapter_id", new DeviceID());
+            AdapterID = AddSetting("adapter_id", new DeviceID());
             DisplayOutputIds = AddSettingList<int>("display_id");
-            VSync = AddSetting<bool>("vsync", true);
+            VSync = AddSetting("vsync", true);
             MSAA = AddSetting<AntiAliasLevel>("msaa", 0);
-            BackBufferSize = AddSetting<uint>("back_buffer_size", 1);
+            BackBufferSize = AddSetting<BackBufferMode>("back_buffer_size", BackBufferMode.Double);
             EnableDebugLayer = AddSetting<bool>("renderer_debug");
         }
 
@@ -44,8 +44,8 @@ namespace Molten
         [DataMember]
         public SettingValue<AntiAliasLevel> MSAA { get; }
 
-        /// <summary>Gets or sets the number of back-buffer surfaces. More tend to increase performance, but also consumes more video memory.</summary>
-        public SettingValue<uint> BackBufferSize { get; }
+        /// <summary>Gets or sets the number of back-buffer surfaces. A larger back-buffer tends to increase performance, but also consumes more video memory.</summary>
+        public SettingValue<BackBufferMode> BackBufferSize { get; }
 
         /// <summary>Gets or sets whether to enable a renderer's debug layer, if available.</summary>
         [DataMember]
