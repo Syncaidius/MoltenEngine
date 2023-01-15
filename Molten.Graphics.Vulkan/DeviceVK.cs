@@ -35,6 +35,23 @@ namespace Molten.Graphics
             _cap = requiredCap;
         }
 
+        protected override LayerProperties[] GetLayers(string typeName)
+        {
+            return Renderer.Enumerate<LayerProperties>((count, items) =>
+            {
+                return Renderer.VK.EnumerateDeviceLayerProperties(Adapter.Native, count, items);
+            }, $"{typeName} layers");
+        }
+
+        protected override ExtensionProperties[] GetExtensions(string typeName)
+        {
+            return Renderer.Enumerate<ExtensionProperties>((count, items) =>
+            {
+                byte* nullptr = null;
+                return Renderer.VK.EnumerateDeviceExtensionProperties(Adapter.Native, nullptr, count, items);
+            }, $"{typeName} extensions");
+        }
+
         /// <summary>
         /// Finds a <see cref="CommandQueueVK"/> that can present the provided <see cref="WindowSurfaceVK"/>.
         /// </summary>

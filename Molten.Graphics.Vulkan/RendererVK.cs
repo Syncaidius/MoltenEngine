@@ -128,6 +128,7 @@ namespace Molten.Graphics
 
             DisplayAdapterVK adapter = _displayManager.SelectedAdapter as DisplayAdapterVK;
             Device = new DeviceVK(this, adapter, _instance, CommandSetCapabilityFlags.Graphics);
+            Device.AddExtension<KhrSwapchain>();
 
             if (Device.Build(_apiVersion))
                 _devices.Add(Device);
