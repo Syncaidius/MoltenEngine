@@ -37,7 +37,7 @@ namespace Molten.Graphics
             // Resize the swap chain if needed.
             if (resize && NativeSwapChain != null)
             {
-                NativeSwapChain->ResizeBuffers(Device.Settings.BackBufferSize, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
+                NativeSwapChain->ResizeBuffers(Device.Settings.GetBackBufferSize(), Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
                 NativeSwapChain->GetDesc1(ref _swapDesc);
             }
             else

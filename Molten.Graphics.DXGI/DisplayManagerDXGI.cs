@@ -116,7 +116,7 @@ namespace Molten.Graphics.Dxgi
                 Height = mode.Height,
                 Format = mode.Format.ToApi(),
                 BufferUsage = (uint)DxgiUsage.RenderTargetOutput,
-                BufferCount = settings.BackBufferSize,
+                BufferCount = settings.GetBackBufferSize(),
                 SampleDesc = new SampleDesc(1, 0), // TODO support multi-sampling: https://learn.microsoft.com/en-us/windows/win32/api/dxgicommon/ns-dxgicommon-dxgi_sample_desc
                 SwapEffect = SwapEffect.Discard,
                 Flags = (uint)DxgiSwapChainFlags.None,

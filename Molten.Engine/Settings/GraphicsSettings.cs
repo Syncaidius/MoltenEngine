@@ -28,6 +28,19 @@ namespace Molten
             EnableDebugLayer = AddSetting<bool>("renderer_debug");
         }
 
+        /// <summary>
+        /// Gets <see cref="BackBufferSize"/> as a <see cref="uint"/> value.
+        /// </summary>
+        /// <returns></returns>
+        public uint GetBackBufferSize()
+        {
+            uint backBufferSize = 1;
+            if (BackBufferSize.Value != BackBufferMode.Default)
+                backBufferSize = (uint)BackBufferSize.Value;
+
+            return backBufferSize;
+        }
+
         /// <summary>Gets or sets the UID of the <see cref="IDisplayAdapter"/> that was last used.</summary>
         [DataMember]
         public SettingValue<DeviceID> AdapterID { get; }
