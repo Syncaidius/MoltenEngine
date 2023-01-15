@@ -58,6 +58,7 @@ namespace Molten
         public SettingValue<AntiAliasLevel> MSAA { get; }
 
         /// <summary>Gets or sets the number of back-buffer surfaces. A larger back-buffer tends to increase performance, but also consumes more video memory.</summary>
+        [DataMember]
         public SettingValue<BackBufferMode> BackBufferSize { get; }
 
         /// <summary>Gets or sets whether to enable a renderer's debug layer, if available.</summary>
