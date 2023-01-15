@@ -23,6 +23,11 @@ namespace Molten.Graphics
             Set = set;
         }
 
+        internal bool HasFlags(CommandSetCapabilityFlags flags)
+        {
+            return (Flags & flags) == flags;
+        }
+
         protected override void OnDispose()
         {
             

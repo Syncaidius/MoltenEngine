@@ -17,6 +17,7 @@ namespace Molten.Graphics
         CommandSetCapabilityFlags _cap;
         long _allocatedVRAM;
         List<CommandQueueVK> _queues;
+        CommandQueueVK _gfxQueue;
 
         /// <summary>
         /// 
@@ -64,6 +65,23 @@ namespace Molten.Graphics
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Retrieves the <see cref="SharingMode"/> for a resource, based on <see cref="CommandQueueVK"/> queues that may potentionally access it.
+        /// </summary>
+        /// <param name="expectedQueues">The <see cref="CommandQueueVK"/> queues that are expected to share.</param>
+        /// <returns></returns>
+        internal (SharingMode, CommandQueueVK[]) GetSharingMode(params CommandQueueVK[] expectedQueues)
+        {
+            HashSet<CommandQueueVK> set = new HashSet<CommandQueueVK>();
+            for (int i = 0; i < expectedQueues.Length; i++)
+                set.Add(expectedQueues[i]);
+
+            if (set.Count <= 1)
+                return (SharingMode.Exclusive, set.ToArray());
+            else
+                return (SharingMode.Concurrent, set.ToArray());
         }
 
         protected override bool LoadExtension(RendererVK renderer, VulkanExtension ext, Device* obj)
@@ -152,6 +170,10 @@ namespace Molten.Graphics
                             CommandQueueVK queue = new CommandQueueVK(_renderer, this, qi.QueueFamilyIndex, q, index, set);
                             _queues.Add(queue);
 
+                            // TODO maybe find the best queue, rather than first match?
+                            if (_gfxQueue == null && queue.HasFlags(CommandSetCapabilityFlags.Graphics))
+                                _gfxQueue = queue;
+
                             _renderer.Log.Write($"Instantiated command queue -- Family: {qi.QueueFamilyIndex} -- Index: {index} -- Flags: {set.CapabilityFlags}");
                         }
                     }
@@ -185,6 +207,11 @@ namespace Molten.Graphics
         /// Gets the <see cref="Instance"/> that the current <see cref="DeviceVK"/> is bound to.
         /// </summary>
         internal Instance* Instance => _vkInstance;
+
+        /// <summary>
+        /// Gets the underlying <see cref="CommandQueueVK"/> that should execute graphics commands.
+        /// </summary>
+        internal CommandQueueVK GraphicsQueue => _gfxQueue;
 
         internal long AllocatedVRAM => _allocatedVRAM;
     }

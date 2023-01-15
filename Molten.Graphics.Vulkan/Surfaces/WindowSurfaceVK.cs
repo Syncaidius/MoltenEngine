@@ -26,15 +26,18 @@ namespace Molten.Graphics
         WindowHandle* _window;
         PresentModeKHR _mode;
         SurfaceCapabilitiesKHR _cap;
+        SwapchainKHR _swapChain;
 
         string _title;
         uint _width;
         uint _height;
         uint _backBufferSize;
+        ColorSpaceKHR _colorSpace = ColorSpaceKHR.SpaceSrgbNonlinearKhr;
 
-        internal unsafe WindowSurfaceVK(DeviceVK device, GraphicsFormat format, string title, uint width, uint height, 
+        internal unsafe WindowSurfaceVK(DeviceVK device, GraphicsFormat format, string title, uint width, uint height,
             PresentModeKHR presentMode = PresentModeKHR.MailboxKhr)
         {
+            DataFormat = format;
             Device = device;
             RendererVK renderer = Device.Renderer;
             _title = title;
@@ -45,6 +48,13 @@ namespace Molten.Graphics
             if (extSurface == null)
             {
                 renderer.Log.Error($"VK_KHR_surface extension is unsupported. Unable to initialize WindowSurfaceVK");
+                return;
+            }
+
+            KhrSwapchain extSwapChain = Device.GetExtension<KhrSwapchain>();
+            if (extSwapChain == null)
+            {
+                renderer.Log.Error($"VK_KHR_swapchain extension is unsupported. Unable to initialize WindowSurfaceVK");
                 return;
             }
 
@@ -73,16 +83,50 @@ namespace Molten.Graphics
             if (!renderer.CheckResult(r))
                 return;
 
-            ColorSpaceKHR colorSpace = ColorSpaceKHR.SpaceSrgbNonlinearKhr;
-            if (!IsFormatSupported(extSurface, format, colorSpace))
+            if (!IsFormatSupported(extSurface, format, _colorSpace))
             {
-                renderer.Log.Error($"Surface format '{format}' with a '{colorSpace}' color-space is not supported");
+                renderer.Log.Error($"Surface format '{format}' with a '{_colorSpace}' color-space is not supported");
                 return;
             }
 
             _mode = ValidatePresentMode(extSurface, presentMode);
             ValidateSize();
             ValidateBackBufferSize();
+
+            r = CreateSwapChain(extSwapChain);
+            renderer.CheckResult(r);
+        }
+
+        private Result CreateSwapChain(KhrSwapchain extSwapChain)
+        {
+            SwapchainCreateInfoKHR createInfo = new SwapchainCreateInfoKHR()
+            {
+                SType = StructureType.SwapchainCreateInfoKhr,
+                Surface = Native,
+                MinImageCount = _backBufferSize,
+                ImageFormat = DataFormat.ToApi(),
+                ImageColorSpace = _colorSpace,
+                ImageExtent = new Extent2D(_width, _height),
+                ImageArrayLayers = 1,
+                ImageUsage = ImageUsageFlags.ColorAttachmentBit,
+            };
+
+            // Detect swap-chain sharing mode.
+            (createInfo.ImageSharingMode, CommandQueueVK[] sharingWith) = Device.GetSharingMode(Device.GraphicsQueue, _presentQueue);
+            uint* familyIndices = stackalloc uint[sharingWith.Length];
+
+            for (int i = 0; i < sharingWith.Length; i++)
+                familyIndices[i] = sharingWith[i].FamilyIndex;
+
+            createInfo.QueueFamilyIndexCount = (uint)sharingWith.Length;
+            createInfo.PQueueFamilyIndices = familyIndices;
+            createInfo.PreTransform = _cap.CurrentTransform;
+            createInfo.CompositeAlpha = CompositeAlphaFlagsKHR.OpaqueBitKhr;
+            createInfo.PresentMode = _mode;
+            createInfo.Clipped = true;
+            createInfo.OldSwapchain = _swapChain;
+
+            return extSwapChain.CreateSwapchain(*Device.Ptr, &createInfo, null, out _swapChain);
         }
 
         private bool IsFormatSupported(KhrSurface extSurface, GraphicsFormat format, ColorSpaceKHR colorSpace)
@@ -141,7 +185,13 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            KhrSurface extSurface = Device.GetExtension<KhrSurface>();
+            if (_swapChain.Handle != 0)
+            {
+                KhrSwapchain extSwapchain = Device.GetExtension<KhrSwapchain>();
+                extSwapchain?.DestroySwapchain(*Device.Ptr, _swapChain, null);
+            }
+
+            KhrSurface extSurface = Device.Renderer.Instance.GetExtension<KhrSurface>();
             extSurface?.DestroySurface(*Device.Renderer.Instance.Ptr, Native, null);
 
             if (_window != null)
@@ -263,7 +313,7 @@ namespace Molten.Graphics
 
         public TextureFlags Flags => throw new NotImplementedException();
 
-        public GraphicsFormat DataFormat => throw new NotImplementedException();
+        public GraphicsFormat DataFormat { get; }
 
         public bool IsBlockCompressed => throw new NotImplementedException();
 
