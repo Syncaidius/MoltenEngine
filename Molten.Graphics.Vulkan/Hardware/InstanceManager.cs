@@ -13,18 +13,15 @@ namespace Molten.Graphics
     {
         internal InstanceManager(RendererVK renderer) : base(renderer) { }
 
-        protected override LayerProperties[] GetLayers(string typeName)
+        protected override unsafe Result GetLayers(uint* count, LayerProperties* items)
         {
-            return Renderer.Enumerate<LayerProperties>(Renderer.VK.EnumerateInstanceLayerProperties, $"{typeName} layers");
+            return Renderer.VK.EnumerateInstanceLayerProperties(count, items);
         }
 
-        protected override ExtensionProperties[] GetExtensions(string typeName)
+        protected override unsafe Result GetExtensions(uint* count, ExtensionProperties* items)
         {
-            return Renderer.Enumerate<ExtensionProperties>((count, items) =>
-            {
-                byte* nullptr = null;
-                return Renderer.VK.EnumerateInstanceExtensionProperties(nullptr, count, items);
-            }, $"{typeName} extensions");
+            byte * nullptr = null;
+            return Renderer.VK.EnumerateInstanceExtensionProperties(nullptr, count, items);
         }
 
         protected override bool LoadExtension(RendererVK renderer, VulkanExtension ext, Instance* obj)

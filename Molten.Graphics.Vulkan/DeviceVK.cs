@@ -35,21 +35,15 @@ namespace Molten.Graphics
             _cap = requiredCap;
         }
 
-        protected override LayerProperties[] GetLayers(string typeName)
+        protected override unsafe Result GetLayers(uint* count, LayerProperties* items)
         {
-            return Renderer.Enumerate<LayerProperties>((count, items) =>
-            {
-                return Renderer.VK.EnumerateDeviceLayerProperties(Adapter.Native, count, items);
-            }, $"{typeName} layers");
+            return Renderer.VK.EnumerateDeviceLayerProperties(Adapter.Native, count, items);
         }
 
-        protected override ExtensionProperties[] GetExtensions(string typeName)
+        protected override unsafe Result GetExtensions(uint* count, ExtensionProperties* items)
         {
-            return Renderer.Enumerate<ExtensionProperties>((count, items) =>
-            {
-                byte* nullptr = null;
-                return Renderer.VK.EnumerateDeviceExtensionProperties(Adapter.Native, nullptr, count, items);
-            }, $"{typeName} extensions");
+            byte* nullptr = null;
+            return Renderer.VK.EnumerateDeviceExtensionProperties(Adapter.Native, nullptr, count, items);
         }
 
         /// <summary>

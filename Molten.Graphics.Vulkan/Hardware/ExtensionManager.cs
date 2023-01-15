@@ -52,9 +52,9 @@ namespace Molten.Graphics
 
         protected unsafe abstract void DestroyObject(RendererVK renderer, D* obj);
 
-        protected abstract LayerProperties[] GetLayers(string typeName);
+        protected abstract Result GetLayers(uint* count, LayerProperties* items);
 
-        protected abstract ExtensionProperties[] GetExtensions(string typeName);
+        protected abstract Result GetExtensions(uint* count, ExtensionProperties* items);
 
         private string GetNativeExtensionName<E>()
             where E : NativeExtension<Vk>
@@ -153,7 +153,7 @@ namespace Molten.Graphics
         {
             string typeName = typeof(D).Name.ToLower();
 
-            LayerProperties[] properties = GetLayers(typeName);
+            LayerProperties[] properties = Renderer.Enumerate<LayerProperties>(GetLayers, $"{typeName} layers");
             if (properties.Length == 0)
                 return;
 
@@ -194,7 +194,7 @@ namespace Molten.Graphics
         private unsafe void EnableExtensions()
         {
             string typeName = typeof(D).Name.ToLower();
-            ExtensionProperties[] properties = GetExtensions(typeName);
+            ExtensionProperties[] properties = Renderer.Enumerate<ExtensionProperties>(GetExtensions, $"{typeName} extensions");
 
             if (properties.Length == 0)
                 return;
