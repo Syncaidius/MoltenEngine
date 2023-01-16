@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -132,6 +133,9 @@ namespace Molten.Graphics
 
             if (Device.Build(_apiVersion))
                 _devices.Add(Device);
+
+            Assembly includeAssembly = GetType().Assembly;
+            ShaderCompiler = new DxcCompiler<RendererVK, ShaderVK>(this, "\\Assets\\HLSL\\include\\", includeAssembly);
         }
 
         internal bool CheckResult(Result r, Func<string> getMsg = null)
@@ -228,9 +232,10 @@ namespace Molten.Graphics
 
         protected override void OnDisposeBeforeRender()
         {
+            ShaderCompiler.Dispose();
+
             foreach (DeviceVK device in _devices)
                 device.Dispose();
-
             _devices.Clear();
 
             _displayManager.Dispose();
@@ -266,5 +271,7 @@ namespace Molten.Graphics
         /// Gets the main <see cref="DeviceVK"/>.
         /// </summary>
         internal DeviceVK Device { get; private set; }
+
+        internal DxcCompiler<RendererVK, ShaderVK> ShaderCompiler { get; private set; }
     }
 }

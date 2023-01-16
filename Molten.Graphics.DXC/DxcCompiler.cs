@@ -5,7 +5,7 @@ using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe class DxcCompiler<R, S> : ShaderCompiler<R, S>
+    public unsafe class DxcCompiler<R, S> : ShaderCompiler<R, S>
         where R : RenderService
         where S : DxcFoundation
     {
@@ -42,7 +42,7 @@ namespace Molten.Graphics
         /// <param name="log"></param>
         /// <param name="includePath">The default path for engine/game HLSL include files.</param>
         /// <param name="includeAssembly"></param>
-        public DxcCompiler(R renderer, Logger log, string includePath, Assembly includeAssembly) : 
+        public DxcCompiler(R renderer, string includePath, Assembly includeAssembly) : 
             base(renderer, includePath, includeAssembly)
         {
             _shaderParsers = new Dictionary<string, DxcClassCompiler<R,S>>();
@@ -55,7 +55,7 @@ namespace Molten.Graphics
 
         protected override List<Type> GetNodeParserList()
         {
-            throw new NotImplementedException();
+            return new List<Type>();
         }
 
         protected override void OnDispose()
