@@ -8,11 +8,25 @@ using Silk.NET.Core.Native;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
+using Image = Silk.NET.Vulkan.Image;
 
 namespace Molten.Graphics
 {
     internal unsafe class WindowSurfaceVK : NativeObjectVK<SurfaceKHR>, INativeSurface
     {
+        struct BackBuffer
+        {
+            internal Image Texture;
+
+            internal ImageView View;
+
+            internal BackBuffer(Image texture, ImageView view)
+            {
+                Texture = texture;
+                View = view;
+            }
+        }
+
         public event WindowSurfaceHandler OnHandleChanged;
         public event WindowSurfaceHandler OnParentChanged;
         public event WindowSurfaceHandler OnClose;
@@ -27,17 +41,22 @@ namespace Molten.Graphics
         PresentModeKHR _mode;
         SurfaceCapabilitiesKHR _cap;
         SwapchainKHR _swapChain;
+        BackBuffer[] _backBuffer;
 
         string _title;
         uint _width;
         uint _height;
         uint _backBufferSize;
+
         ColorSpaceKHR _colorSpace = ColorSpaceKHR.SpaceSrgbNonlinearKhr;
+        Format _format;
+
+        KhrSwapchain _extSwapChain;
 
         internal unsafe WindowSurfaceVK(DeviceVK device, GraphicsFormat format, string title, uint width, uint height,
             PresentModeKHR presentMode = PresentModeKHR.MailboxKhr)
         {
-            DataFormat = format;
+            _format = format.ToApi();
             Device = device;
             RendererVK renderer = Device.Renderer;
             _title = title;
@@ -51,8 +70,8 @@ namespace Molten.Graphics
                 return;
             }
 
-            KhrSwapchain extSwapChain = Device.GetExtension<KhrSwapchain>();
-            if (extSwapChain == null)
+            _extSwapChain = Device.GetExtension<KhrSwapchain>();
+            if (_extSwapChain == null)
             {
                 renderer.Log.Error($"VK_KHR_swapchain extension is unsupported. Unable to initialize WindowSurfaceVK");
                 return;
@@ -93,11 +112,12 @@ namespace Molten.Graphics
             ValidateSize();
             ValidateBackBufferSize();
 
-            r = CreateSwapChain(extSwapChain);
-            renderer.CheckResult(r);
+            r = CreateSwapChain();
+            if (renderer.CheckResult(r))
+                _backBuffer = GetBackBufferImages();
         }
 
-        private Result CreateSwapChain(KhrSwapchain extSwapChain)
+        private Result CreateSwapChain()
         {
             SwapchainCreateInfoKHR createInfo = new SwapchainCreateInfoKHR()
             {
@@ -126,7 +146,49 @@ namespace Molten.Graphics
             createInfo.Clipped = true;
             createInfo.OldSwapchain = _swapChain;
 
-            return extSwapChain.CreateSwapchain(*Device.Ptr, &createInfo, null, out _swapChain);
+            return _extSwapChain.CreateSwapchain(Device, &createInfo, null, out _swapChain);
+        }
+
+        private BackBuffer[] GetBackBufferImages()
+        {
+            Image[] images = Device.Renderer.Enumerate<Image>((count, items) =>
+            {
+                return _extSwapChain.GetSwapchainImages(Device, _swapChain, count, items);
+            }, "Swapchain image");
+
+            BackBuffer[] buffer = new BackBuffer[images.Length];
+            ImageViewCreateInfo createInfo = new ImageViewCreateInfo()
+            {
+                SType = StructureType.ImageCreateInfo,
+                ViewType = ImageViewType.Type2D,
+                Format = _format,
+                Components = new ComponentMapping()
+                {
+                    R = ComponentSwizzle.Identity,
+                    G = ComponentSwizzle.Identity,
+                    B = ComponentSwizzle.Identity,
+                    A = ComponentSwizzle.Identity
+                },
+                SubresourceRange = new ImageSubresourceRange()
+                {
+                    AspectMask = ImageAspectFlags.ColorBit,
+                    BaseMipLevel = 0,
+                    LevelCount = 0,
+                    BaseArrayLayer = 0,
+                    LayerCount = 1, // Number of array slices
+                },
+            };
+
+            for (int i = 0; i < images.Length; i++)
+            {
+                buffer[i].Texture = images[i];
+                createInfo.Image = images[i];
+                Result r = Device.Renderer.VK.CreateImageView(Device, &createInfo, null, out buffer[i].View);
+                if (!Device.Renderer.CheckResult(r, () => $"Failed to create image view for back-buffer image {i}"))
+                    break;
+            }
+
+            return buffer;
         }
 
         private bool IsFormatSupported(KhrSurface extSurface, GraphicsFormat format, ColorSpaceKHR colorSpace)
@@ -187,8 +249,12 @@ namespace Molten.Graphics
         {
             if (_swapChain.Handle != 0)
             {
+                // Clean up image view handles
+                for (int i = 0; i < _backBuffer.Length; i++)
+                    Device.Renderer.VK.DestroyImageView(Device, _backBuffer[i].View, null);
+
                 KhrSwapchain extSwapchain = Device.GetExtension<KhrSwapchain>();
-                extSwapchain?.DestroySwapchain(*Device.Ptr, _swapChain, null);
+                extSwapchain?.DestroySwapchain(Device, _swapChain, null);
             }
 
             KhrSurface extSurface = Device.Renderer.Instance.GetExtension<KhrSurface>();
@@ -313,7 +379,7 @@ namespace Molten.Graphics
 
         public TextureFlags Flags => throw new NotImplementedException();
 
-        public GraphicsFormat DataFormat { get; }
+        public GraphicsFormat DataFormat => _format.FromApi();
 
         public bool IsBlockCompressed => throw new NotImplementedException();
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Silk.NET.Core;
 using Silk.NET.Vulkan;
@@ -196,6 +197,12 @@ namespace Molten.Graphics
         internal void DeallocateVRAM(long bytes)
         {
             Interlocked.Add(ref _allocatedVRAM, -bytes);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator Device(DeviceVK device)
+        {
+            return *device.Ptr;
         }
 
         /// <summary>
