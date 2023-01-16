@@ -27,8 +27,8 @@
             uint subDest = (Destination.MipMapCount * DestArraySlice) + DestMipLevel;
 
             RendererDX11 dx11Renderer = renderer as RendererDX11;
-            Destination.Apply(dx11Renderer.Device);
-            (renderer as RendererDX11).Device.Native->ResolveSubresource(Destination.NativePtr, subDest,
+            Destination.Apply(dx11Renderer.Device.Cmd);
+            (renderer as RendererDX11).Device.Cmd.Native->ResolveSubresource(Destination.NativePtr, subDest,
                 Source.NativePtr, subSource, Source.DxgiFormat);
             Recycle(this);
         }

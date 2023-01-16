@@ -74,7 +74,7 @@ namespace Molten.Graphics
 
         /// <summary>Copies an array of elements into the buffer.</summary>
         /// <param name="data">The elements to set </param>
-        internal void SetData<T>(DeviceContext context, T[] data) where T : unmanaged
+        internal void SetData<T>(CommandQueueDX11 context, T[] data) where T : unmanaged
         {
             SetData<T>(context, data, 0, (uint)data.Length);
         }
@@ -83,7 +83,7 @@ namespace Molten.Graphics
         /// <param name="data">The source of elements to copy into the buffer.</param>
         /// <param name="offset">The ID of the first element in the buffer at which to copy the source data into.</param>
         /// <param name="count">The number of elements to copy from the source array.</param>
-        internal void SetData<T>(DeviceContext context, T[] data, uint count)
+        internal void SetData<T>(CommandQueueDX11 context, T[] data, uint count)
             where T : unmanaged
         {
             SetData<T>(context, data, 0, count);
@@ -96,7 +96,7 @@ namespace Molten.Graphics
         /// <param name="elementOffset">The number of elements from the beginning of the <see cref="BufferSegment"/> to offset the destination of the provided data.
         /// The number of bytes the data is offset is based on the <see cref="Stride"/> value of the buffer segment.</param>
         /// <param name="completionCallback">The callback to invoke when the set-data operation has been completed.</param>
-        internal void SetData<T>(DeviceContext context, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null, Action completionCallback = null) 
+        internal void SetData<T>(CommandQueueDX11 context, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null, Action completionCallback = null) 
             where T : unmanaged
         {
             uint tStride = (uint)Marshal.SizeOf(typeof(T));
@@ -133,7 +133,7 @@ namespace Molten.Graphics
         /// <param name="startIndex">The element index within the provided data array to start copying from.</param>
         /// <param name="count">The number of elements to transfer from the provided data array.</param>
         /// <param name="byteOffset">The number of bytes to offset the copied data within the buffer segment.</param>
-        internal void SetDataImmediate<T>(DeviceContext context, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null) 
+        internal void SetDataImmediate<T>(CommandQueueDX11 context, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null) 
             where T : unmanaged
         {
             uint tStride = (uint)sizeof(T);
@@ -149,7 +149,7 @@ namespace Molten.Graphics
             Buffer.Set<T>(context, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
         }
 
-        internal void Map(DeviceContext context, Action<GraphicsBuffer, RawStream> callback, GraphicsBuffer staging = null)
+        internal void Map(CommandQueueDX11 context, Action<GraphicsBuffer, RawStream> callback, GraphicsBuffer staging = null)
         {
             uint curByteOffset = ByteOffset;
             uint curStride = Stride;
@@ -167,7 +167,7 @@ namespace Molten.Graphics
                 Version++;
         }
 
-        internal void GetData<T>(DeviceContext context, 
+        internal void GetData<T>(CommandQueueDX11 context, 
             T[] destination, 
             uint startIndex, 
             uint count, 
@@ -189,7 +189,7 @@ namespace Molten.Graphics
             Buffer.QueueOperation(op);
         }
 
-        internal void CopyTo(DeviceContext context, uint sourceByteOffset, BufferSegment destination, uint destByteOffset, uint count, bool isImmediate = false, Action completionCallback = null)
+        internal void CopyTo(CommandQueueDX11 context, uint sourceByteOffset, BufferSegment destination, uint destByteOffset, uint count, bool isImmediate = false, Action completionCallback = null)
         {
             uint bytesToCopy = Stride * count;
             uint totalOffset = ByteOffset + sourceByteOffset;
@@ -227,7 +227,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnApply(DeviceContext context)
+        protected override void OnApply(CommandQueueDX11 context)
         {
             Buffer.Apply(context);
         }

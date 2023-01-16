@@ -12,19 +12,19 @@
         {
             RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
 
-            DeviceDX11 device = renderer.Device;
+            CommandQueueDX11 cmd = renderer.Device.Cmd;
             sScene.Clear(Color.Transparent);
 
-            device.State.SetRenderSurface(sScene, 0);
-            device.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
-            device.State.SetViewports(camera.Surface.Viewport);
-            device.State.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
+            cmd.State.SetRenderSurface(sScene, 0);
+            cmd.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
+            cmd.State.SetViewports(camera.Surface.Viewport);
+            cmd.State.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
 
             StateConditions conditions = context.BaseStateConditions | StateConditions.ScissorTest;
 
-            device.BeginDraw(conditions);
-            renderer.RenderSceneLayer(device, context.Layer, camera);
-            device.EndDraw();
+            cmd.BeginDraw(conditions);
+            renderer.RenderSceneLayer(cmd, context.Layer, camera);
+            cmd.EndDraw();
         }
     }
 }

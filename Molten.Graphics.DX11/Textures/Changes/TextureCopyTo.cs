@@ -4,7 +4,7 @@
     {
         public TextureBase Destination;
 
-        public bool Process(DeviceContext pipe, TextureBase texture)
+        public bool Process(CommandQueueDX11 pipe, TextureBase texture)
         {
             if (Destination.HasFlags(TextureFlags.Dynamic))
                 throw new TextureCopyException(texture, Destination, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");

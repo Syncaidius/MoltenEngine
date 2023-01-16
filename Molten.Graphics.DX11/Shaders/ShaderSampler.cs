@@ -45,7 +45,7 @@ namespace Molten.Graphics
                     _desc.Filter <= Filter.ComparisonAnisotropic;
         }
 
-        protected override void OnApply(DeviceContext pipe)
+        protected override void OnApply(CommandQueueDX11 pipe)
         {
             // If the sampler was actually dirty, recreate it.
             if (_isDirty)
@@ -53,7 +53,7 @@ namespace Molten.Graphics
                 int fVal = (int)_desc.Filter;
                 PipelineRelease();
 
-                pipe.Device.Ptr->CreateSamplerState(ref _desc, ref _native);
+                pipe.DXDevice.Ptr->CreateSamplerState(ref _desc, ref _native);
                 _isDirty = false;
                 Version++;
             }

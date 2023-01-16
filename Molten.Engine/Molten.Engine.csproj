@@ -26,12 +26,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Graphics\Shaders\Compiler\NodeParsers\**" />
-    <EmbeddedResource Remove="Graphics\Shaders\Compiler\NodeParsers\**" />
-    <None Remove="Graphics\Shaders\Compiler\NodeParsers\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\Images\logo_128.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>

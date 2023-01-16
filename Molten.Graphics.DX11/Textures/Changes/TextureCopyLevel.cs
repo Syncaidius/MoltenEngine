@@ -10,7 +10,7 @@
         public uint DestinationLevel;
         public uint DestinationSlice;
 
-        public unsafe bool Process(DeviceContext pipe, TextureBase texture)
+        public unsafe bool Process(CommandQueueDX11 pipe, TextureBase texture)
         {
 
             uint srcSub = (SourceSlice * texture.MipMapCount) + SourceLevel;

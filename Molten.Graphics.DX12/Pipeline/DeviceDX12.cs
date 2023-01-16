@@ -4,26 +4,22 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics
 {
-    internal unsafe class DeviceDX12 : EngineObject
+    internal unsafe class DeviceDX12 : GraphicsDevice<ID3D12Device10>
     {
         DeviceBuilderDX12 _builder;
         DisplayAdapterDXGI _adapter;
         DisplayManagerDXGI _displayManager;
-        long _allocatedVRAM; 
-
-        internal ID3D12Device10* Ptr;
 
         CommandQueueDX12 _qDirect;
 
-        public DeviceDX12(GraphicsSettings graphics, DeviceBuilderDX12 deviceBuilder, Logger log, IDisplayAdapter selectedAdapter)
+        public DeviceDX12(GraphicsSettings settings, DeviceBuilderDX12 deviceBuilder, Logger log, IDisplayAdapter adapter) : 
+            base(settings, log, false)
         {
-            Settings = graphics;
             _builder = deviceBuilder;
-            Log = log;
-            _adapter = selectedAdapter as DisplayAdapterDXGI;
+            _adapter = adapter as DisplayAdapterDXGI;
             _displayManager = _adapter.Manager as DisplayManagerDXGI;
 
-            HResult r = _builder.CreateDevice(_adapter, out Ptr);
+            HResult r = _builder.CreateDevice(_adapter, out PtrRef);
             if (!_builder.CheckResult(r, () => $"Failed to initialize {nameof(DeviceDX12)}"))
                 return;
 
@@ -35,34 +31,15 @@ namespace Molten.Graphics
             _qDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         }
 
-        /// <summary>Track a VRAM allocation.</summary>
-        /// <param name="bytes">The number of bytes that were allocated.</param>
-        internal void AllocateVRAM(long bytes)
-        {
-            Interlocked.Add(ref _allocatedVRAM, bytes);
-        }
-
-        /// <summary>Track a VRAM deallocation.</summary>
-        /// <param name="bytes">The number of bytes that were deallocated.</param>
-        internal void DeallocateVRAM(long bytes)
-        {
-            Interlocked.Add(ref _allocatedVRAM, -bytes);
-        }
-
         protected override void OnDispose()
         {
             _qDirect.Dispose();
-            SilkUtil.ReleasePtr(ref Ptr);
+
+            base.OnDispose();
         }
 
         internal DisplayManagerDXGI DisplayManager => _displayManager;
 
-        internal DisplayAdapterDXGI Adapter => _adapter;
-
-        internal GraphicsSettings Settings { get; }
-
-        internal Logger Log { get; }
-
-        internal long AllocatedVRAM => _allocatedVRAM;
+        public override DisplayAdapterDXGI Adapter => _adapter;
     }
 }

@@ -3,7 +3,7 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a rasterizer state for use with a <see cref="DeviceContext"/>.</summary>
+    /// <summary>Stores a rasterizer state for use with a <see cref="CommandQueueDX11"/>.</summary>
     internal unsafe class GraphicsRasterizerState : ContextBindable<ID3D11RasterizerState2>
     {
         static RasterizerDesc2 _defaultDesc;
@@ -73,7 +73,7 @@ namespace Molten.Graphics
                 _desc.ForcedSampleCount == other._desc.ForcedSampleCount;
         }
 
-        protected override void OnApply(DeviceContext pipe)
+        protected override void OnApply(CommandQueueDX11 pipe)
         {
             if (_native == null || _dirty)
             {

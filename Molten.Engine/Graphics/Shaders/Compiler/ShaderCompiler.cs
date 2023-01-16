@@ -8,8 +8,15 @@ namespace Molten.Graphics
 {
     public abstract class ShaderCompiler : EngineObject
     {
+        /// <summary>
+        /// Gets the <see cref="Logger"/> bound to the current <see cref="ShaderCompiler"/> instance.
+        /// </summary>
         public Logger Log { get; }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="ShaderCompiler"/>.
+        /// </summary>
+        /// <param name="log">The <see cref="Logger"/> to use for outputting shader compiler information.</param>
         protected ShaderCompiler(Logger log)
         {
             Log = log;
@@ -90,7 +97,7 @@ namespace Molten.Graphics
             foreach(ShaderNodeType t in nTypes)
             {
                 if (!_nodeParsers.ContainsKey(t))
-                    Log.Error($"Shader compiler '{this.GetType()}' doesn't provide node parser for '{t}' nodes. May prevent shader compilation.");
+                    Log.Error($"Shader compiler '{GetType()}' doesn't provide node parser for '{t}' nodes. May prevent shader compilation.");
             }
         }
 

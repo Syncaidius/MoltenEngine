@@ -6,7 +6,7 @@
 
         public Action<TextureData> Callback;
 
-        public bool Process(DeviceContext pipe, TextureBase texture)
+        public bool Process(CommandQueueDX11 pipe, TextureBase texture)
         {
             if (!StagingTexture.HasFlags(TextureFlags.Staging))
                 throw new TextureFlagException(StagingTexture.Flags, "Provided staging texture does not have the staging flag set.");

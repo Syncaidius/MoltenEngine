@@ -23,7 +23,7 @@ namespace Molten.Graphics
 
         public void Dispatch(IComputeTask task, uint x, uint y, uint z)
         {
-            _device.Dispatch(task as ComputeTask, x, y, z);
+            _device.Cmd.Dispatch(task as ComputeTask, x, y, z);
         }
 
         public IComputeTask this[string name] => _computeByName[name.ToLower()];

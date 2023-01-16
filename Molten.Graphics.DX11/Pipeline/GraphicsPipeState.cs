@@ -1,9 +1,9 @@
 ﻿namespace Molten.Graphics
 {
-    /// <summary>Stores the current state of a <see cref="DeviceContext"/>.</summary>
+    /// <summary>Stores the current state of a <see cref="CommandQueueDX11"/>.</summary>
     internal class GraphicsPipeState
     {
-        DeviceContext _context;
+        CommandQueueDX11 _context;
         GraphicsBlendState _blendState;
         GraphicsDepthState _depthState;
         GraphicsRasterizerState _rasterState;
@@ -18,14 +18,14 @@
 
         ViewportF[] _viewports;
 
-        public GraphicsPipeState(DeviceContext context)
+        public GraphicsPipeState(CommandQueueDX11 context)
         {
             _context = context;
-            uint maxSurfaces = _context.Device.Adapter.Capabilities.PixelShader.MaxOutResources;
+            uint maxSurfaces = _context.DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
 
             _surfaces = new RenderSurface2D[maxSurfaces];
             _viewports = new ViewportF[maxSurfaces];
-            _vSegments = new BufferSegment[_context.Device.Adapter.Capabilities.VertexBuffers.MaxSlots];
+            _vSegments = new BufferSegment[_context.DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots];
         }
 
         public void Capture()

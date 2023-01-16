@@ -63,7 +63,7 @@ namespace Molten.Graphics
             _width = width;
             _height = height;
 
-            KhrSurface extSurface = renderer.Instance.GetExtension<KhrSurface>();
+            KhrSurface extSurface = renderer.GetInstanceExtension<KhrSurface>();
             if (extSurface == null)
             {
                 renderer.Log.Error($"VK_KHR_surface extension is unsupported. Unable to initialize WindowSurfaceVK");
@@ -81,7 +81,7 @@ namespace Molten.Graphics
             renderer.GLFW.WindowHint(WindowHintBool.Resizable, true);
             _window = renderer.GLFW.CreateWindow((int)width, (int)height, _title, null, null);
 
-            VkHandle instanceHandle = new VkHandle(renderer.Instance.Ptr->Handle);
+            VkHandle instanceHandle = new VkHandle(renderer.Instance->Handle);
             VkNonDispatchableHandle surfaceHandle = new VkNonDispatchableHandle();
 
             Result r = (Result)renderer.GLFW.CreateWindowSurface(instanceHandle, _window, null, &surfaceHandle);
@@ -257,8 +257,8 @@ namespace Molten.Graphics
                 extSwapchain?.DestroySwapchain(Device, _swapChain, null);
             }
 
-            KhrSurface extSurface = Device.Renderer.Instance.GetExtension<KhrSurface>();
-            extSurface?.DestroySurface(*Device.Renderer.Instance.Ptr, Native, null);
+            KhrSurface extSurface = Device.Renderer.GetInstanceExtension<KhrSurface>();
+            extSurface?.DestroySurface(*Device.Renderer.Instance, Native, null);
 
             if (_window != null)
                 Device.Renderer.GLFW.DestroyWindow(_window);

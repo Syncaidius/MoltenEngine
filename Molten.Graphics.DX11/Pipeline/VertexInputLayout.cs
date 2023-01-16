@@ -91,7 +91,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnApply(DeviceContext context)
+        protected override void OnApply(CommandQueueDX11 context)
         {
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }

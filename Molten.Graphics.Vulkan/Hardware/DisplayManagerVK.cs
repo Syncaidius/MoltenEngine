@@ -26,12 +26,12 @@ namespace Molten.Graphics
         protected override void OnInitialize(Logger log, GraphicsSettings settings)
         {
             uint deviceCount = 0;
-            Result r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Instance.Ptr, &deviceCount, null);
+            Result r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Instance, &deviceCount, null);
 
             if (Renderer.CheckResult(r))
             {
                 PhysicalDevice* devices = EngineUtil.AllocArray<PhysicalDevice>(deviceCount);
-                r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Instance.Ptr, &deviceCount, devices); 
+                r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Instance, &deviceCount, devices); 
                 
                 if (Renderer.CheckResult(r))
                 {

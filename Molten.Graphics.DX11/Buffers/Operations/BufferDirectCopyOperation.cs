@@ -8,7 +8,7 @@
 
         internal Action CompletionCallback;
 
-        public void Process(DeviceContext context)
+        public void Process(CommandQueueDX11 context)
         {
             SourceBuffer.CopyTo(context, DestinationBuffer);
             CompletionCallback?.Invoke();

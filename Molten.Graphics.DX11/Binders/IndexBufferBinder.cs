@@ -6,12 +6,12 @@ namespace Molten.Graphics
     {
         internal override void Bind(ContextSlot<BufferSegment> slot, BufferSegment value)
         {
-            slot.Context.Native->IASetIndexBuffer(value, value.DataFormat, value.ByteOffset);
+            slot.CmdList.Native->IASetIndexBuffer(value, value.DataFormat, value.ByteOffset);
         }
 
         internal override void Unbind(ContextSlot<BufferSegment> slot, BufferSegment value)
         {
-            slot.Context.Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
+            slot.CmdList.Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
         }
     }
 }

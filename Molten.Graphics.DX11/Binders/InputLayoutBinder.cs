@@ -4,12 +4,12 @@
     {
         internal override void Bind(ContextSlot<VertexInputLayout> slot, VertexInputLayout value)
         {
-            slot.Context.Native->IASetInputLayout(slot.BoundValue);
+            slot.CmdList.Native->IASetInputLayout(slot.BoundValue);
         }
 
         internal override void Unbind(ContextSlot<VertexInputLayout> slot, VertexInputLayout value)
         {
-            slot.Context.Native->IASetInputLayout(null);
+            slot.CmdList.Native->IASetInputLayout(null);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Molten.Graphics
         BufferSegment _bufferData;
 
   
-        Func<DeviceContext, SpriteRange, ObjectRenderData, Material>[] _checkers;
+        Func<CommandQueueDX11, SpriteRange, ObjectRenderData, Material>[] _checkers;
         Material _matDefault; 
         Material _matDefaultMS;
         Material _matDefaultNoTexture;
@@ -40,7 +40,7 @@ namespace Molten.Graphics
             ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite_sdf.mfx");
             _matMsdf = resultSdf[ShaderClassType.Material, "sprite-msdf"] as Material;
 
-            _checkers = new Func<DeviceContext, SpriteRange, ObjectRenderData, Material>[7];
+            _checkers = new Func<CommandQueueDX11, SpriteRange, ObjectRenderData, Material>[7];
             _checkers[(int)RangeType.None] = NoCheckRange;
             _checkers[(int)RangeType.Sprite] = CheckSpriteRange;
             _checkers[(int)RangeType.MSDF] = CheckMsdfRange;
@@ -49,7 +49,7 @@ namespace Molten.Graphics
             _checkers[(int)RangeType.Grid] = CheckGridRange;
         }
 
-        internal unsafe void Flush(DeviceContext context, RenderCamera camera, ObjectRenderData data)
+        internal unsafe void Flush(CommandQueueDX11 context, RenderCamera camera, ObjectRenderData data)
         {
             if (DataCount == 0)
                 return;
@@ -60,7 +60,7 @@ namespace Molten.Graphics
                 FlushBuffer(context, camera, data, firstRangeID, rangeCount, firstDataID, flushCount));
         }
 
-        private void FlushBuffer(DeviceContext context, RenderCamera camera, ObjectRenderData data, uint firstRangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
+        private void FlushBuffer(CommandQueueDX11 context, RenderCamera camera, ObjectRenderData data, uint firstRangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
         {
             SpriteRange range;
             _bufferData.Map(context, (buffer, stream) => stream.WriteRange(Data, vertexStartIndex, vertexCount));
@@ -106,7 +106,7 @@ namespace Molten.Graphics
             }
         }
 
-        private Material CheckSpriteRange(DeviceContext context, SpriteRange range, ObjectRenderData data)
+        private Material CheckSpriteRange(CommandQueueDX11 context, SpriteRange range, ObjectRenderData data)
         {
             if (range.Texture != null)
                 return range.Texture.IsMultisampled ? _matDefaultMS : _matDefault;
@@ -114,7 +114,7 @@ namespace Molten.Graphics
                 return _matDefaultNoTexture;
         }
 
-        private Material CheckMsdfRange(DeviceContext context, SpriteRange range, ObjectRenderData data)
+        private Material CheckMsdfRange(CommandQueueDX11 context, SpriteRange range, ObjectRenderData data)
         {
             if (range.Texture != null)
             {
@@ -129,22 +129,22 @@ namespace Molten.Graphics
             }
         }
 
-        private Material CheckLineRange(DeviceContext context, SpriteRange range, ObjectRenderData data)
+        private Material CheckLineRange(CommandQueueDX11 context, SpriteRange range, ObjectRenderData data)
         {
             return _matLine;
         }
 
-        private Material CheckEllipseRange(DeviceContext context, SpriteRange range, ObjectRenderData data)
+        private Material CheckEllipseRange(CommandQueueDX11 context, SpriteRange range, ObjectRenderData data)
         {
             return range.Texture != null ? _matCircle : _matCircleNoTexture;
         }
 
-        private Material CheckGridRange(DeviceContext context, SpriteRange range, ObjectRenderData data)
+        private Material CheckGridRange(CommandQueueDX11 context, SpriteRange range, ObjectRenderData data)
         {
             return _matGrid; // range.Texture != null ? _matCircle : _matCircleNoTexture;
         }
 
-        private Material NoCheckRange(DeviceContext context, SpriteRange range, ObjectRenderData data)
+        private Material NoCheckRange(CommandQueueDX11 context, SpriteRange range, ObjectRenderData data)
         {
             return null;
         }

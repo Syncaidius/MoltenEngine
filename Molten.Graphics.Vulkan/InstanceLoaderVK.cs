@@ -8,9 +8,9 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal unsafe class InstanceManager : ExtensionManager<Instance>
+    internal unsafe class InstanceLoaderVK : ExtensionLoaderVK<Instance>
     {
-        internal InstanceManager(RendererVK renderer) : base(renderer) { }
+        internal InstanceLoaderVK(RendererVK renderer) : base(renderer) { }
 
         protected override unsafe Result GetLayers(uint* count, LayerProperties* items)
         {
@@ -38,11 +38,6 @@ namespace Molten.Graphics
                 string name = SilkMarshal.PtrToString((nint)glfwNames[i], NativeStringEncoding.UTF8);
                 AddBasicExtension(name);
             }
-        }
-
-        protected unsafe override void DestroyObject(RendererVK renderer, Instance* obj)
-        {
-            renderer.VK.DestroyInstance(*obj, null);
         }
 
         protected override unsafe Result OnBuild(RendererVK renderer, VersionVK apiVersion, TempData tmp, ExtensionBinding binding, Instance* obj)

@@ -69,7 +69,7 @@ namespace Molten.Graphics
             base.PipelineRelease();
         }
 
-        protected override void OnApply(DeviceContext context)
+        protected override void OnApply(CommandQueueDX11 context)
         {
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
             if (DirtyVariables)

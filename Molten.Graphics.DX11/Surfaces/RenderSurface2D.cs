@@ -32,14 +32,14 @@ namespace Molten.Graphics
             };
         }
 
-        internal virtual void Clear(DeviceContext pipe, Color color)
+        internal virtual void Clear(CommandQueueDX11 cmd, Color color)
         {
-            OnApply(pipe);
+            OnApply(cmd);
 
             if (RTV.Ptr != null)
             {
                 Color4 c4 = color;
-                pipe.Native->ClearRenderTargetView((ID3D11RenderTargetView*)RTV.Ptr, (float*)&c4);
+                cmd.Native->ClearRenderTargetView((ID3D11RenderTargetView*)RTV.Ptr, (float*)&c4);
             }
         }
 

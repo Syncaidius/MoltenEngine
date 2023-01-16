@@ -49,16 +49,16 @@
         public void SetIndices<I>(I[] data, uint startIndex, uint count) where I : unmanaged
         {
             _indexCount = count;
-            _ib.SetData(_renderer.Device, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _ib.SetData(_renderer.Device.Cmd, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        internal override void ApplyBuffers(DeviceContext context)
+        internal override void ApplyBuffers(CommandQueueDX11 context)
         {
             base.ApplyBuffers(context);
             context.State.IndexBuffer.Value = _ib;
         }
 
-        private protected override void OnRender(DeviceContext context, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        private protected override void OnRender(CommandQueueDX11 context, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (_material == null)
                 return;
@@ -67,7 +67,7 @@
             ApplyResources(_material);
             _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
-            renderer.Device.DrawIndexed(_material, _indexCount, Topology);
+            renderer.Device.Cmd.DrawIndexed(_material, _indexCount, Topology);
         }
 
         public uint MaxIndices { get; }

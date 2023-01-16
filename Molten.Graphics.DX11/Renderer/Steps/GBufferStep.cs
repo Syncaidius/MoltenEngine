@@ -10,21 +10,21 @@
             RenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
             RenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
 
-            DeviceDX11 device = renderer.Device;
+            CommandQueueDX11 cmd = renderer.Device.Cmd;
 
-            device.State.SetRenderSurface(sScene, 0);
-            device.State.SetRenderSurface(sNormals, 1);
-            device.State.SetRenderSurface(sEmissive, 2);
-            device.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
+            cmd.State.SetRenderSurface(sScene, 0);
+            cmd.State.SetRenderSurface(sNormals, 1);
+            cmd.State.SetRenderSurface(sEmissive, 2);
+            cmd.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
 
             SetMaterialCommon(renderer.StandardMeshMaterial, camera, sScene);
             SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, sScene);
 
-            device.State.SetViewports(camera.Surface.Viewport);
+            cmd.State.SetViewports(camera.Surface.Viewport);
 
-            device.BeginDraw(context.BaseStateConditions);
-            renderer.RenderSceneLayer(device, context.Layer, camera);
-            device.EndDraw();
+            cmd.BeginDraw(context.BaseStateConditions);
+            renderer.RenderSceneLayer(cmd, context.Layer, camera);
+            cmd.EndDraw();
         }
 
         private void SetMaterialCommon(Material material, RenderCamera camera, RenderSurface2D gBufferScene)

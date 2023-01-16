@@ -5,6 +5,9 @@
     /// </summary>
     public interface IShaderElement
     {
+        /// <summary>
+        /// Gets the name of the shader element.
+        /// </summary>
         string Name { get; }
 
         /// <summary>

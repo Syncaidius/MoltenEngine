@@ -22,7 +22,7 @@
 
         internal uint SlotIndex { get; }
 
-        internal DeviceContext Context => ParentState.Context;
+        internal CommandQueueDX11 CmdList => ParentState.CmdList;
 
         internal protected uint PendingID { get; set; }
 
@@ -80,7 +80,7 @@
                         slot = _value.BoundTo[i];
 
                         // Only check slots on the same context.
-                        if (slot.Context != Context)
+                        if (slot.CmdList != CmdList)
                             continue;
 
                         // Are the slot bind types different, or can the object to be simultaneously bound to input and output slots?
@@ -102,7 +102,7 @@
                                 }
                                 else if (slot.PendingID == PendingID)
                                 {
-                                    Context.Log.Error($"{_value.Name} is will be bound on '{slot.Name}' and '{Name}' with the same pending BindID ({PendingID}). This is unexpected behaviour!");
+                                    CmdList.DXDevice.Log.Error($"{_value.Name} is will be bound on '{slot.Name}' and '{Name}' with the same pending BindID ({PendingID}). This is unexpected behaviour!");
                                     canBind = false;
                                 }
                             }
@@ -129,7 +129,7 @@
                             _boundValue.BoundTo.Remove(this);
                     }
 
-                    _value.Apply(Context);
+                    _value.Apply(CmdList);
                     _boundValue = _value;
                     _boundVersion = _boundValue.Version;
                     _value.BoundTo.Add(this);
@@ -137,7 +137,7 @@
                     if (!IsGroupMember)
                     {
                         _binder.Bind(this, _boundValue);
-                        Context.Profiler.Current.GpuBindings++;
+                        CmdList.Profiler.Current.GpuBindings++;
                     }
                 }
 
@@ -148,11 +148,11 @@
                 // Refresh the existing value.
                 if(_value != null)
                 {
-                    _value.Apply(this.Context);
+                    _value.Apply(this.CmdList);
                     if (_boundVersion != Value.Version)
                     {
                         _boundVersion = Value.Version;
-                        Context.Profiler.Current.GpuBindings++;
+                        CmdList.Profiler.Current.GpuBindings++;
                         return true;
                     }
                 }

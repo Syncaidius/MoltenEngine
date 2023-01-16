@@ -95,5 +95,10 @@
         /// Send pre-processing results to file. This argument must be used alone.
         /// </summary>
         PreProcessToFile = 37,
+
+        /// <summary>
+        /// Tells DXC to compile HLSL to Spr-V bytecode.
+        /// </summary>
+        SpirV = 38,
     }
 }

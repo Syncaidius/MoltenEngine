@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using Silk.NET.Core;
 using Silk.NET.Core.Native;
 using Silk.NET.GLFW;
@@ -22,23 +20,23 @@ namespace Molten.Graphics
         RenderChainVK _chain;
         ResourceFactoryVK _resFactory;
         DisplayManagerVK _displayManager;
-        InstanceManager _instance;
+        InstanceLoaderVK _instanceLoader;
+        Instance* _instance;
         DebugUtilsMessengerEXT* _debugMessengerHandle;
-
         List<DeviceVK> _devices;
-        VersionVK _apiVersion;
 
         public RendererVK()
         {
             VK = Vk.GetApi();
             GLFW = Glfw.GetApi();
             GLFW.Init();
+            ApiVersion = new VersionVK(0, 1, 1, 0);
 
             _devices = new List<DeviceVK>();
-            _instance = new InstanceManager(this);
+            _instanceLoader = new InstanceLoaderVK(this);
             _displayManager = new DisplayManagerVK(this);
             _chain = new RenderChainVK(this);
-            _apiVersion = new VersionVK(1, 1, 0);
+            ApiVersion = new VersionVK(1, 1, 0);
         }
 
         /// <summary>
@@ -61,22 +59,23 @@ namespace Molten.Graphics
 
             if (settings.EnableDebugLayer.Value == true)
             {
-                _instance.AddLayer("VK_LAYER_KHRONOS_validation");
-                _instance.AddExtension<KhrSurface>();
-                _instance.AddExtension<ExtDebugUtils>(SetupDebugMessenger, (ext) =>
+                _instanceLoader.AddLayer("VK_LAYER_KHRONOS_validation");
+                _instanceLoader.AddExtension<ExtDebugUtils>(SetupDebugMessenger, (ext) =>
                 {
                     // Dispose of debug messenger handle.
                     if (_debugMessengerHandle != null)
                     {
-                        ext.DestroyDebugUtilsMessenger(*_instance.Ptr, *_debugMessengerHandle, null);
+                        ext.DestroyDebugUtilsMessenger(*_instance, *_debugMessengerHandle, null);
                         _debugMessengerHandle = null;
                     }
                 });
-
             }
 
-            _instance.AddGlfwExtensions();
-            if (!_instance.Build(_apiVersion))
+            _instanceLoader.AddExtension<KhrSurface>();
+            _instanceLoader.AddGlfwExtensions();
+
+            _instance = EngineUtil.Alloc<Instance>();
+            if (!_instanceLoader.Build(ApiVersion, _instance))
                 Log.Error($"Failed to build new instance");
         }
 
@@ -116,7 +115,7 @@ namespace Molten.Graphics
             };
 
             _debugMessengerHandle = EngineUtil.Alloc<DebugUtilsMessengerEXT>();
-            Result r = ext.CreateDebugUtilsMessenger(*_instance.Ptr, &debugCreateInfo, null, _debugMessengerHandle);
+            Result r = ext.CreateDebugUtilsMessenger(*_instance, &debugCreateInfo, null, _debugMessengerHandle);
             if (!CheckResult(r))
                 EngineUtil.Free(ref _debugMessengerHandle);
         }
@@ -131,11 +130,11 @@ namespace Molten.Graphics
             Device = new DeviceVK(this, adapter, _instance, CommandSetCapabilityFlags.Graphics);
             Device.AddExtension<KhrSwapchain>();
 
-            if (Device.Build(_apiVersion))
+            if (Device.Initialize())
                 _devices.Add(Device);
 
             Assembly includeAssembly = GetType().Assembly;
-            ShaderCompiler = new DxcCompiler<RendererVK, ShaderVK>(this, "\\Assets\\HLSL\\include\\", includeAssembly);
+            ShaderCompiler = new DxcCompiler<RendererVK, SpirVShader>(this, "\\Assets\\HLSL\\include\\", includeAssembly);
         }
 
         internal bool CheckResult(Result r, Func<string> getMsg = null)
@@ -159,7 +158,6 @@ namespace Molten.Graphics
             string GetCallbackName() => string.IsNullOrWhiteSpace(callbackName) ? callback.Method.Name : callbackName;
 
             uint count = 0;
-
             Result r = callback(&count, null);
 
             if (CheckResult(r, () =>$"Enumerate: Failed to get {GetCallbackName} count"))
@@ -180,6 +178,17 @@ namespace Molten.Graphics
             }
 
             return new T[0];
+        }
+
+        /// <summary>
+        /// Gets an extension that was loaded for the <see cref="Instance"/>.
+        /// </summary>
+        /// <typeparam name="E">The type of extension to retrieve.</typeparam>
+        /// <returns></returns>
+        internal E GetInstanceExtension<E>()
+            where E : NativeExtension<Vk>
+        {
+            return _instanceLoader.GetExtension<E>();
         }
 
         public override DisplayManager DisplayManager => _displayManager;
@@ -239,7 +248,13 @@ namespace Molten.Graphics
             _devices.Clear();
 
             _displayManager.Dispose();
-            _instance.Dispose();
+            _instanceLoader.Dispose();
+
+            if(_instance != null)
+            {
+                VK.DestroyInstance(*_instance, null);
+                EngineUtil.Free(ref _instance);
+            }
 
             GLFW.Dispose();
             VK.Dispose();
@@ -256,9 +271,9 @@ namespace Molten.Graphics
         internal Glfw GLFW { get; }
 
         /// <summary>
-        /// Gets the underlying <see cref="InstanceManager"/> which manages a <see cref="Silk.NET.Vulkan.Instance"/> object.
+        /// Gets the underlying <see cref="Silk.NET.Vulkan.Instance"/>.
         /// </summary>
-        internal InstanceManager Instance => _instance;
+        internal Instance* Instance => _instance;
 
         /// <summary>
         /// Gets a <see cref="DeviceVK"/> by it's index. The primary <see cref="Device"/> is always at index 0, if it exists.
@@ -272,6 +287,8 @@ namespace Molten.Graphics
         /// </summary>
         internal DeviceVK Device { get; private set; }
 
-        internal DxcCompiler<RendererVK, ShaderVK> ShaderCompiler { get; private set; }
+        internal DxcCompiler<RendererVK, SpirVShader> ShaderCompiler { get; private set; }
+
+        internal VersionVK ApiVersion { get; }
     }
 }

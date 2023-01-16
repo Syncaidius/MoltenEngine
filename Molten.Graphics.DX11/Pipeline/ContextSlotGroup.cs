@@ -103,7 +103,7 @@ namespace Molten.Graphics
         /// </summary>
         internal DeviceContextState ParentState { get; }
 
-        internal DeviceContext Context => ParentState.Context;
+        internal CommandQueueDX11 Context => ParentState.CmdList;
 
         internal uint SlotCount { get; }
 

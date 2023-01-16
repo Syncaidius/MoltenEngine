@@ -5,8 +5,8 @@
         internal ContextStateProvider(DeviceContextState parent) { }
 
         /// <summary>
-        /// Called when the current <see cref="ContextStateProvider"/> is to be bound to it's parent <see cref="DeviceContext"/>
+        /// Called when the current <see cref="ContextStateProvider"/> is to be bound to it's parent <see cref="CommandQueueDX11"/>
         /// </summary>
-        internal abstract void Bind(DeviceContextState state, DeviceContext context);
+        internal abstract void Bind(DeviceContextState state, CommandQueueDX11 context);
     }
 }

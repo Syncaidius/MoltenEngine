@@ -13,17 +13,17 @@ namespace Molten.Graphics
             RenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
             DepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            DeviceDX11 device = renderer.Device;
+            CommandQueueDX11 cmd = renderer.Device.Cmd;
 
-            device.State.SetRenderSurfaces(null);
-            bool newSurface = renderer.ClearIfFirstUse(device, sScene, context.Scene.BackgroundColor);
-            renderer.ClearIfFirstUse(device, sNormals, Color.White * 0.5f);
-            renderer.ClearIfFirstUse(device, sEmissive, Color.Black);
+            cmd.State.SetRenderSurfaces(null);
+            bool newSurface = renderer.ClearIfFirstUse(cmd, sScene, context.Scene.BackgroundColor);
+            renderer.ClearIfFirstUse(cmd, sNormals, Color.White * 0.5f);
+            renderer.ClearIfFirstUse(cmd, sEmissive, Color.Black);
 
             // Always clear the depth surface at the start of each scene unless otherwise instructed.
             // Will also be cleared if we've just switched to a previously un-rendered surface during this frame.
             if(!camera.Flags.HasFlag(RenderCameraFlags.DoNotClearDepth) || newSurface)
-                sDepth.Clear(device, ClearFlag.Depth | ClearFlag.Stencil);
+                sDepth.Clear(cmd, ClearFlag.Depth | ClearFlag.Stencil);
         }
     }
 }

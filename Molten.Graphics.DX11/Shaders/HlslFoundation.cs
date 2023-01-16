@@ -32,7 +32,7 @@
             Parent = this;
         }
 
-        protected override sealed void OnApply(DeviceContext pipe) { }
+        protected override sealed void OnApply(CommandQueueDX11 pipe) { }
 
         /// <summary>
         /// Gets or sets the number of iterations the shader/component should be run.

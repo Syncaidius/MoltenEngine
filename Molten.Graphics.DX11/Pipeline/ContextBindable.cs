@@ -12,20 +12,20 @@ namespace Molten.Graphics
         {
             BoundTo = new List<ContextSlot>();
             BindFlags = bindFlags;
-            LastUsedFrameID = device.Profiler.FrameID;
+            LastUsedFrameID = device.Cmd.Profiler.FrameID;
         }
 
         /// <summary>
         /// Invoked when the current <see cref="ContextBindable"/> should apply any changes before being bound to a GPU context.
         /// </summary>
-        /// <param name="context">The <see cref="DeviceContext"/> that the current <see cref="ContextBindable"/> is to be bound to.</param>
-        internal void Apply(DeviceContext context)
+        /// <param name="cmd">The <see cref="CommandQueueDX11"/> that the current <see cref="ContextBindable"/> is to be bound to.</param>
+        internal void Apply(CommandQueueDX11 cmd)
         {
-            LastUsedFrameID = context.Device.Profiler.FrameID;
-            OnApply(context);
+            LastUsedFrameID = cmd.Profiler.FrameID;
+            OnApply(cmd);
         }
 
-        protected abstract void OnApply(DeviceContext context);
+        protected abstract void OnApply(CommandQueueDX11 context);
 
         /// <summary>
         /// Gets the instance-specific version of the current <see cref="ContextBindable"/>. Any change which will require a device

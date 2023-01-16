@@ -2,6 +2,6 @@
 {
     internal interface IBufferOperation
     {
-        void Process(DeviceContext context);
+        void Process(CommandQueueDX11 context);
     }
 }

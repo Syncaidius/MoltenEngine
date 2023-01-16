@@ -9,9 +9,9 @@
             base(renderer, maxVertices, maxIndices, topology, indexFormat, dynamic)
         { }
 
-        private protected override void OnRender(DeviceContext context, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        private protected override void OnRender(CommandQueueDX11 cmd, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
-            ApplyBuffers(context);
+            ApplyBuffers(cmd);
             IShaderResource normal = GetResource(1);
             Material mat = _material;
 
@@ -30,7 +30,7 @@
             mat.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
             ApplyResources(mat);
-            renderer.Device.DrawIndexed(mat, _indexCount, Topology);
+            cmd.DrawIndexed(mat, _indexCount, Topology);
         }
     }
 }

@@ -6,11 +6,5 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class ShaderVK : DxcFoundation
-    {
-        protected override void OnDispose()
-        {
-            
-        }
-    }
+    public abstract class SpirVNodeParser : ShaderNodeParser<RendererVK, SpirVShader> { }
 }

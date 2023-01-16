@@ -8,6 +8,6 @@
         /// <param name="pipe"></param>
         /// <param name="texture"></param>
         /// <returns></returns>
-        bool Process(DeviceContext pipe, TextureBase texture);
+        bool Process(CommandQueueDX11 pipe, TextureBase texture);
     }
 }

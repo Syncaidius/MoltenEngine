@@ -114,12 +114,12 @@ namespace Molten.Graphics
 
         protected override void OnPreRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
-            Device.Profiler = camera.Profiler;
+            Device.Cmd.Profiler = camera.Profiler;
         }
 
         protected override void OnPostRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
-            Device.Profiler = null;
+            Device.Cmd.Profiler = null;
         }
 
         protected override void OnPostPresent(Timing time)
@@ -132,7 +132,7 @@ namespace Molten.Graphics
             Surfaces.Rebuild(requiredWidth, requiredHeight);
         }
 
-        internal void RenderSceneLayer(DeviceContext pipe, LayerRenderData layerData, RenderCamera camera)
+        internal void RenderSceneLayer(CommandQueueDX11 pipe, LayerRenderData layerData, RenderCamera camera)
         {
             // TODO To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later
@@ -150,7 +150,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal bool ClearIfFirstUse(DeviceContext context, RenderSurface2D surface, Color color)
+        internal bool ClearIfFirstUse(CommandQueueDX11 context, RenderSurface2D surface, Color color)
         {
             if (!_clearedSurfaces.Contains(surface))
             {
@@ -162,7 +162,7 @@ namespace Molten.Graphics
             return false;
         }
 
-        internal bool ClearIfFirstUse(DeviceContext context, DepthStencilSurface surface,
+        internal bool ClearIfFirstUse(CommandQueueDX11 context, DepthStencilSurface surface,
             ClearFlag flags = ClearFlag.Depth, 
             float depth = 1.0f, byte stencil = 0)
         {

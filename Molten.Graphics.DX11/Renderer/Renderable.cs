@@ -42,13 +42,13 @@
                 material.Resources[i].Value = material.DefaultResources[i];
         }
 
-        internal void Render(DeviceContext pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        internal void Render(CommandQueueDX11 cmd, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
-            pipe.State.DepthWriteOverride = data.DepthWriteOverride;
-            OnRender(pipe, renderer, camera, data);
+            cmd.State.DepthWriteOverride = data.DepthWriteOverride;
+            OnRender(cmd, renderer, camera, data);
         }
 
-        private protected abstract void OnRender(DeviceContext context, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data);
+        private protected abstract void OnRender(CommandQueueDX11 cmd, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data);
 
         /// <summary>Gets or sets whether or not the renderable should be drawn.</summary>
         public bool IsVisible { get; set; }

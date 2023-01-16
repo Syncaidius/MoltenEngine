@@ -26,9 +26,9 @@ namespace Molten.Graphics
 
         internal override void Unbind(ContextSlot<RenderSurface2D> slot, RenderSurface2D value)
         {
-            var rtvs = slot.Context.State.RTVs;
+            var rtvs = slot.CmdList.State.RTVs;
             rtvs[slot.SlotIndex] = null;
-            slot.Context.Native->OMSetRenderTargets(1, (ID3D11RenderTargetView**)rtvs, slot.Context.State.DSV);
+            slot.CmdList.Native->OMSetRenderTargets(1, (ID3D11RenderTargetView**)rtvs, slot.CmdList.State.DSV);
         }
     }
 }

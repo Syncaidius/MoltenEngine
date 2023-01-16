@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a blend state for use with a <see cref="DeviceContext"/>.</summary>
+    /// <summary>Stores a blend state for use with a <see cref="CommandQueueDX11"/>.</summary>
     internal unsafe class GraphicsBlendState : ContextBindable<ID3D11BlendState1>, IEquatable<GraphicsBlendState>
     {
         public static readonly BlendDesc1 _defaultDesc;
@@ -111,7 +111,7 @@ namespace Molten.Graphics
             return true;
         }
 
-        protected override void OnApply(DeviceContext pipe)
+        protected override void OnApply(CommandQueueDX11 pipe)
         {
             if (_native == null || _dirty)
             {

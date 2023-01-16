@@ -2,24 +2,16 @@
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
-using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
     /// <summary>A Direct3D 11 graphics device.</summary>
-    /// <seealso cref="DeviceContext" />
-    public unsafe class DeviceDX11 : DeviceContext
+    /// <seealso cref="CommandQueueDX11" />
+    public unsafe class DeviceDX11 : GraphicsDevice<ID3D11Device5>
     {
-        internal ID3D11Device5* Ptr;
-        internal ID3D11DeviceContext4* ImmediateContext;
-
         DeviceBuilderDX11 _builder;
         DisplayAdapterDXGI _adapter;
-        List<DeviceContext> _contexts;
-
-        Logger _log;
         DisplayManagerDXGI _displayManager;
-        long _allocatedVRAM;
 
         RasterizerStateBank _rasterizerBank;
         BlendStateBank _blendBank;
@@ -29,35 +21,36 @@ namespace Molten.Graphics
         ObjectPool<BufferSegment> _bufferSegmentPool;
         ThreadedQueue<ContextObject> _objectsToDispose;
 
+        CommandQueueDX11 CmdList;
+        List<CommandQueueDX11> _deferredContexts;
+
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The physical display adapter to bind the new device to.</param>
-        internal DeviceDX11(GraphicsSettings settings, DeviceBuilderDX11 builder, Logger log, IDisplayAdapter adapter)
+        internal DeviceDX11(GraphicsSettings settings, DeviceBuilderDX11 builder, Logger log, IDisplayAdapter adapter) :
+            base(settings, log, false)
         {
             _builder = builder;
-            _log = log;
             _displayManager = adapter.Manager as DisplayManagerDXGI;
             _adapter = adapter as DisplayAdapterDXGI;
-            _contexts = new List<DeviceContext>();
-            Contexts = _contexts.AsReadOnly();
-            Settings = settings;
+            _deferredContexts = new List<CommandQueueDX11>();
             VertexFormatCache = new TypedObjectCache<IVertexType, VertexFormat>(VertexFormat.FromType);
 
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
             _objectsToDispose = new ThreadedQueue<ContextObject>();
 
-            HResult r = _builder.CreateDevice(_adapter, out Ptr, out ImmediateContext);
+            HResult r = _builder.CreateDevice(_adapter, out PtrRef, out ID3D11DeviceContext4* deviceContext);
             if (r.IsFailure)
             {
-                _log.Error($"Failed to initialize {nameof(DeviceDX11)}. Code: {r}");
+                Log.Error($"Failed to initialize {nameof(DeviceDX11)}. Code: {r}");
                 return;
             }
+
+            CmdList = new CommandQueueDX11(this, deviceContext);
 
             _rasterizerBank = new RasterizerStateBank(this);
             _blendBank = new BlendStateBank(this);
             _depthBank = new DepthStateBank(this);
             _samplerBank = new SamplerBank(this);
-
-            Initialize(_log, this, ImmediateContext);
         }
 
         internal BufferSegment GetBufferSegment()
@@ -84,23 +77,9 @@ namespace Molten.Graphics
                 obj.PipelineRelease();
         }
 
-        /// <summary>Track a VRAM allocation.</summary>
-        /// <param name="bytes">The number of bytes that were allocated.</param>
-        internal void AllocateVRAM(long bytes)
-        {
-            Interlocked.Add(ref _allocatedVRAM, bytes);
-        }
-
-        /// <summary>Track a VRAM deallocation.</summary>
-        /// <param name="bytes">The number of bytes that were deallocated.</param>
-        internal void DeallocateVRAM(long bytes)
-        {
-            Interlocked.Add(ref _allocatedVRAM, -bytes);
-        }
-
-        /// <summary>Gets a new deferred <see cref="DeviceContext"/>.</summary>
+        /// <summary>Gets a new deferred <see cref="CommandQueueDX11"/>.</summary>
         /// <returns></returns>
-        internal DeviceContext GetDeferredContext()
+        internal CommandQueueDX11 GetDeferredContext()
         {
             ID3D11DeviceContext3* dc = null;
             Ptr->CreateDeferredContext3(0, &dc);
@@ -109,27 +88,23 @@ namespace Molten.Graphics
             void* ptr4 = null;
             dc->QueryInterface(&cxt4Guid, &ptr4);
 
-            DeviceContext context = new DeviceContext();
-            context.Initialize(_log, this, (ID3D11DeviceContext4*)ptr4);
-            _contexts.Add(context);
+            CommandQueueDX11 context = new CommandQueueDX11(this, (ID3D11DeviceContext4*)ptr4);
+            _deferredContexts.Add(context);
             return context;
         }
 
-        internal void RemoveDeferredContext(DeviceContext context)
+        internal void RemoveDeferredContext(CommandQueueDX11 cmd)
         {
-            if(context == this)
-                throw new GraphicsContextException("Cannot remove the graphics device from itself.");
+            if (cmd.DXDevice != this)
+                throw new GraphicsCommandQueueException(cmd, "Graphics pipe is owned by another device.");
 
-            if (context.Device != this)
-                throw new GraphicsContextException("Graphics pipe is owned by another device.");
+            if (!cmd.IsDisposed)
+                cmd.Dispose();
 
-            if (!context.IsDisposed)
-                context.Dispose();
-
-            _contexts.Remove(context);
+            _deferredContexts.Remove(cmd);
         }
 
-        internal void SubmitContext(DeviceContext context)
+        internal void SubmitContext(CommandQueueDX11 context)
         {
             if (context.Type != GraphicsContextType.Deferred)
                 throw new Exception("Cannot submit immediate graphics contexts, only deferred.");
@@ -141,8 +116,8 @@ namespace Molten.Graphics
         /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
-            for (int i = _contexts.Count - 1; i >= 0; i--)
-                RemoveDeferredContext(_contexts[i]);
+            for (int i = _deferredContexts.Count - 1; i >= 0; i--)
+                RemoveDeferredContext(_deferredContexts[i]);
 
             // TODO dispose of all bound IGraphicsResource
             VertexFormatCache.Dispose();
@@ -151,8 +126,7 @@ namespace Molten.Graphics
             DepthBank.Dispose();
             SamplerBank.Dispose();
 
-            SilkUtil.ReleasePtr(ref ImmediateContext);
-            SilkUtil.ReleasePtr(ref Ptr);
+            CmdList.Dispose();
 
             _bufferSegmentPool.Dispose();
             DisposeMarkedObjects();
@@ -160,17 +134,11 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        internal IReadOnlyCollection<DeviceContext> Contexts { get; }
-
         internal DisplayManagerDXGI DisplayManager => _displayManager;
 
-        internal DisplayAdapterDXGI Adapter => _adapter;
-
-        internal GraphicsSettings Settings { get; }
+        public override DisplayAdapterDXGI Adapter => _adapter;
 
         internal TypedObjectCache<IVertexType, VertexFormat> VertexFormatCache { get; }
-
-        internal long AllocatedVRAM => _allocatedVRAM;
 
         /// <summary>
         /// Gets the device's blend state bank.
@@ -191,5 +159,10 @@ namespace Molten.Graphics
         /// Gets the device's texture sampler bank.
         /// </summary>
         internal SamplerBank SamplerBank => _samplerBank;
+
+        /// <summary>
+        /// The main <see cref="CommandQueueDX11"/> of the current <see cref="DeviceDX11"/>. This is used for issuing immediate commands to the GPU.
+        /// </summary>
+        internal CommandQueueDX11 Cmd => CmdList;
     }
 }

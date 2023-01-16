@@ -6,7 +6,7 @@
 
         public Color Color;
 
-        public bool Process(DeviceContext pipe, TextureBase texture)
+        public bool Process(CommandQueueDX11 pipe, TextureBase texture)
         {
             Surface.Clear(pipe, Color);
             return false;

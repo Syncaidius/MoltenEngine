@@ -7,10 +7,10 @@ namespace Molten.Graphics
     {
         internal ContextShaderStage(DeviceContextState state, ShaderType type)
         {
-            Context = state.Context;
+            Context = state.CmdList;
             Type = type;
 
-            GraphicsCapabilities cap = Context.Device.Adapter.Capabilities;
+            GraphicsCapabilities cap = Context.DXDevice.Adapter.Capabilities;
             ShaderStageCapabilities shaderCap = cap[type];
             
             Samplers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_Sampler", cap.MaxShaderSamplers, new SamplerGroupBinder<T>(this));
@@ -68,7 +68,7 @@ namespace Molten.Graphics
 
         internal abstract void SetShader(void* shader, ID3D11ClassInstance** classInstances, uint numClassInstances);
 
-        internal DeviceContext Context { get; }
+        internal CommandQueueDX11 Context { get; }
 
         internal ShaderType Type { get; }
 

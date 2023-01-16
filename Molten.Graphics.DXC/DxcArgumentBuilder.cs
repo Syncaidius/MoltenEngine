@@ -9,6 +9,7 @@ namespace Molten.Graphics
     /// See for important ones:
     /// <para>https://strontic.github.io/xcyclopedia/library/dxc.exe-0C1709D4E1787E3EB3E6A35C85714824.html</para>
     /// <para>https://simoncoenen.com/blog/programming/graphics/DxcCompiling</para>
+    /// <para>For vulkan-specific arguments, see: https://github.com/Microsoft/DirectXShaderCompiler/blob/main/docs/SPIR-V.rst#vulkan-specific-options</para>
     /// </summary>
     internal unsafe class DxcArgumentBuilder<R,S>
         where R : RenderService
@@ -25,6 +26,7 @@ namespace Molten.Graphics
             [DxcCompilerArg.EnableStrictness] = DXC.ArgEnableStrictness,
             [DxcCompilerArg.IeeeStrictness] = DXC.ArgIeeeStrictness,
             [DxcCompilerArg.None] = "",
+            [DxcCompilerArg.SpirV] = "-spirv",
             [DxcCompilerArg.OptimizationLevel0] = DXC.ArgOptimizationLevel0,
             [DxcCompilerArg.OptimizationLevel1] = DXC.ArgOptimizationLevel1,
             [DxcCompilerArg.OptimizationLevel2] = DXC.ArgOptimizationLevel2,

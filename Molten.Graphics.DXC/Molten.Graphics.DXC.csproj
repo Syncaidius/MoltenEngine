@@ -15,7 +15,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Syncaidius/MoltenEngine</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>DirectX;game engine;cross platform;dxc;dx12;</PackageTags>
+    <PackageTags>DirectX;game engine;cross platform;dxc;dx12;spirv;</PackageTags>
     <PackageReleaseNotes>Initial release of Molten Engine.</PackageReleaseNotes>
     <PackageIcon>logo_128.png</PackageIcon>
     <Version>0.3.0</Version>
@@ -41,6 +41,10 @@
     <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NodeParsers\" />
   </ItemGroup>
 
 </Project>

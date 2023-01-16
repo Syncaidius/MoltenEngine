@@ -21,18 +21,18 @@
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF bounds = new RectangleF(0, 0, camera.Surface.Width, camera.Surface.Height);
-            DeviceDX11 device = renderer.Device;
+            CommandQueueDX11 cmd = renderer.Device.Cmd;
             RenderSurface2D finalSurface = camera.Surface as RenderSurface2D;
 
             if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
-                renderer.ClearIfFirstUse(device, finalSurface, context.Scene.BackgroundColor);
+                renderer.ClearIfFirstUse(cmd, finalSurface, context.Scene.BackgroundColor);
 
-            device.State.SetRenderSurfaces(null);
-            device.State.SetRenderSurface(finalSurface, 0);
-            device.State.DepthSurface.Value = null;
-            device.State.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
-            device.State.SetViewports(camera.Surface.Viewport);
-            device.State.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
+            cmd.State.SetRenderSurfaces(null);
+            cmd.State.SetRenderSurface(finalSurface, 0);
+            cmd.State.DepthSurface.Value = null;
+            cmd.State.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
+            cmd.State.SetViewports(camera.Surface.Viewport);
+            cmd.State.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
 
             // We only need scissor testing here
             StateConditions conditions = StateConditions.ScissorTest;
@@ -40,14 +40,14 @@
 
             RectStyle style = RectStyle.Default;
 
-            renderer.Device.BeginDraw(conditions);
+            cmd.BeginDraw(conditions);
             renderer.SpriteBatcher.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Bounds.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
 
             if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
                 renderer.Overlay.Render(time, renderer.SpriteBatcher, renderer.Profiler, context.Scene.Profiler, camera);
 
-            renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
-            renderer.Device.EndDraw();
+            renderer.SpriteBatcher.Flush(cmd, _orthoCamera, _dummyData);
+            cmd.EndDraw();
         }
     }
 }

@@ -64,7 +64,7 @@ namespace Molten.Graphics
                 pOffsets[0] = 0;
             }
 
-            slot.Context.Native->IASetVertexBuffers(slot.SlotIndex, 0, pBuffers, pStrides, pOffsets);
+            slot.CmdList.Native->IASetVertexBuffers(slot.SlotIndex, 0, pBuffers, pStrides, pOffsets);
         }
 
         internal override void Unbind(ContextSlotGroup<BufferSegment> grp, uint startIndex, uint endIndex, uint numChanged)
@@ -100,7 +100,7 @@ namespace Molten.Graphics
             pStrides[0] = 0;
             pOffsets[0] = 0;
 
-            slot.Context.Native->IASetVertexBuffers(slot.SlotIndex, 0, pBuffers, pStrides, pOffsets);
+            slot.CmdList.Native->IASetVertexBuffers(slot.SlotIndex, 0, pBuffers, pStrides, pOffsets);
         }
     }
 }

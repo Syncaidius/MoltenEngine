@@ -8,6 +8,15 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>False</Optimize>
+    <DefineConstants>$(DefineConstants)TRACE; DEBUG</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Molten.Audio.OpenAL\Molten.Audio.OpenAL.csproj" />
     <ProjectReference Include="..\Molten.Engine.Windows\Molten.Engine.Windows.csproj" />

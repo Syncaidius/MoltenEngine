@@ -38,17 +38,17 @@ namespace Molten.Graphics
             RenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
             DepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            DeviceDX11 device = renderer.Device;
+            CommandQueueDX11 cmd = renderer.Device.Cmd;
 
-            _surfaceLighting.Clear(renderer.Device, context.Scene.AmbientLightColor);
-            device.State.ResetRenderSurfaces();
-            device.State.SetRenderSurface(_surfaceLighting, 0);
-            device.State.DepthSurface.Value = sDepth;
-            device.State.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
-            RenderPointLights(renderer, device, camera, context.Scene, sDepth);
+            _surfaceLighting.Clear(cmd, context.Scene.AmbientLightColor);
+            cmd.State.ResetRenderSurfaces();
+            cmd.State.SetRenderSurface(_surfaceLighting, 0);
+            cmd.State.DepthSurface.Value = sDepth;
+            cmd.State.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
+            RenderPointLights(renderer, cmd, camera, context.Scene, sDepth);
         }
 
-        private void RenderPointLights(RendererDX11 renderer, DeviceContext context, RenderCamera camera, SceneRenderData scene, DepthStencilSurface dsSurface)
+        private void RenderPointLights(RendererDX11 renderer, CommandQueueDX11 context, RenderCamera camera, SceneRenderData scene, DepthStencilSurface dsSurface)
         {
             RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             RenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];

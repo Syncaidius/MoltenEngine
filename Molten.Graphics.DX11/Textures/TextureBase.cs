@@ -191,7 +191,7 @@ namespace Molten.Graphics
             return (Flags & flags) == flags;
         }
 
-        /// <summary>Generates mip maps for the texture via the provided <see cref="DeviceContext"/>.</summary>
+        /// <summary>Generates mip maps for the texture via the provided <see cref="CommandQueueDX11"/>.</summary>
         public void GenerateMipMaps()
         {
             if (!((Flags & TextureFlags.AllowMipMapGeneration) == TextureFlags.AllowMipMapGeneration))
@@ -201,7 +201,7 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        internal void GenerateMipMaps(DeviceContext pipe)
+        internal void GenerateMipMaps(CommandQueueDX11 pipe)
         {
             if (SRV != null)
                 pipe.Native->GenerateMips(SRV);
@@ -336,7 +336,7 @@ namespace Molten.Graphics
             });
         }
 
-        internal TextureData GetAllData(DeviceContext context, TextureBase staging)
+        internal TextureData GetAllData(CommandQueueDX11 context, TextureBase staging)
         {
             if (staging == null && !HasFlags(TextureFlags.Staging))
                 throw new TextureCopyException(this, null, "A null staging texture was provided, but this is only valid if the current texture is a staging texture. A staging texture is required to retrieve data from non-staged textures.");
@@ -393,7 +393,7 @@ namespace Molten.Graphics
         /// <param name="level">The mip-map level.</param>
         /// <param name="arraySlice">The array slice.</param>
         /// <returns></returns>
-        internal unsafe TextureSlice GetSliceData(DeviceContext pipe, TextureBase staging, uint level, uint arraySlice)
+        internal unsafe TextureSlice GetSliceData(CommandQueueDX11 pipe, TextureBase staging, uint level, uint arraySlice)
         {
             uint subID = (arraySlice * MipMapCount) + level;
             uint subWidth = Width >> (int)level;
@@ -565,7 +565,7 @@ namespace Molten.Graphics
         /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the
         /// GPU may be using the texture will cause unexpected behaviour.</summary>
         /// <param name="pipe"></param>
-        protected override void OnApply(DeviceContext pipe)
+        protected override void OnApply(CommandQueueDX11 pipe)
         {
             if (IsDisposed)
                 return;

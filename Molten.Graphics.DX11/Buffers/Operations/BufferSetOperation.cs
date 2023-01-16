@@ -23,7 +23,7 @@
 
         internal StagingBuffer Staging;
 
-        public void Process(DeviceContext context)
+        public void Process(CommandQueueDX11 context)
         {
             DestinationSegment.Buffer.Set<T>(context, Data, StartIndex, Count, DataStride, ByteOffset, Staging);
             CompletionCallback?.Invoke();

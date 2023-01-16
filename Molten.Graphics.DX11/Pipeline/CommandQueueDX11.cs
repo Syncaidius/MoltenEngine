@@ -6,38 +6,17 @@ namespace Molten.Graphics
     internal delegate void ContextDrawCallback(MaterialPass pass);
     internal delegate void ContextDrawFailCallback(MaterialPass pass, uint iteration, uint passNumber, GraphicsBindResult result);
 
-    /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="DeviceContext"/>.</summary>
-    public unsafe partial class DeviceContext : EngineObject
+    /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="CommandQueueDX11"/>.</summary>
+    public unsafe partial class CommandQueueDX11 : GraphicsCommandQueue
     {
-        class DrawInfo
-        {
-            public bool Began;
-            public StateConditions Conditions;
-
-            public void Reset()
-            {
-                Began = false;
-                Conditions = StateConditions.None;
-            }
-        }
-
         ID3D11DeviceContext4* _context;
         ContextStateStack _stateStack;
-        RenderProfiler _profiler;
-        RenderProfiler _defaultProfiler;
-        DrawInfo _drawInfo;
 
-        internal DeviceContext()
-        {
-            _drawInfo = new DrawInfo();
-            _defaultProfiler = _profiler = new RenderProfiler();
-        }
-
-        internal void Initialize(Logger log, DeviceDX11 device, ID3D11DeviceContext4* context)
+        internal CommandQueueDX11(DeviceDX11 device, ID3D11DeviceContext4* context) :
+            base(device)
         {
             _context = context;
-            Device = device;
-            Log = log;
+            DXDevice = device;
 
             if (_context->GetType() == DeviceContextType.Immediate)
                 Type = GraphicsContextType.Immediate;
@@ -53,7 +32,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Maps a resource on the current <see cref="Graphics.DeviceContext"/>.
+        /// Maps a resource on the current <see cref="CommandQueueDX11"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="resource"></param>
@@ -71,7 +50,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Maps a resource on the current <see cref="Graphics.DeviceContext"/> and provides a <see cref="RawStream"/> to aid read-write operations.
+        /// Maps a resource on the current <see cref="CommandQueueDX11"/> and provides a <see cref="RawStream"/> to aid read-write operations.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="resource"></param>
@@ -110,8 +89,8 @@ namespace Molten.Graphics
         }
 
         internal void CopyResourceRegion(
-    ID3D11Resource* source, uint srcSubresource, Box* sourceRegion,
-    ID3D11Resource* dest, uint destSubresource, Vector3UI destStart)
+            ID3D11Resource* source, uint srcSubresource, Box* sourceRegion,
+            ID3D11Resource* dest, uint destSubresource, Vector3UI destStart)
         {
             Native->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
                 source, srcSubresource, sourceRegion);
@@ -125,8 +104,6 @@ namespace Molten.Graphics
             Native->UpdateSubresource(resource, subresource, region, ptrData, rowPitch, slicePitch);
             Profiler.Current.UpdateSubresourceCount++;
         }
-
-    
 
         public int PushState()
         {
@@ -145,7 +122,7 @@ namespace Molten.Graphics
             if (topology == VertexTopology.Undefined)
                 return GraphicsBindResult.UndefinedTopology;
 
-            State.Bind(pass, _drawInfo.Conditions, topology);
+            State.Bind(pass, DrawInfo.Conditions, topology);
 
             // Validate all pipeline components.
             GraphicsBindResult result = State.Validate(mode);
@@ -153,34 +130,13 @@ namespace Molten.Graphics
             return result;
         }
 
-        internal void BeginDraw(StateConditions conditions)
-        {
-#if DEBUG
-            if (_drawInfo.Began)
-                throw new GraphicsContextException($"{nameof(DeviceContext)}: EndDraw() must be called before the next BeginDraw() call.");
-#endif
-
-            _drawInfo.Began = true;
-            _drawInfo.Conditions = conditions;
-        }
-
-        internal void EndDraw()
-        {
-#if DEBUG
-            if (!_drawInfo.Began)
-                throw new GraphicsContextException($"{nameof(DeviceContext)}: BeginDraw() must be called before EndDraw().");
-#endif
-
-            _drawInfo.Reset();
-        }
-
         private GraphicsBindResult DrawCommon(Material mat, GraphicsValidationMode mode, VertexTopology topology, 
             ContextDrawCallback drawCallback, ContextDrawFailCallback failCallback)
         {
             GraphicsBindResult vResult = GraphicsBindResult.Successful;
 
-            if (!_drawInfo.Began)
-                throw new GraphicsContextException($"{nameof(DeviceContext)}: BeginDraw() must be called before calling {nameof(Draw)}()");
+            if (!DrawInfo.Began)
+                throw new GraphicsCommandQueueException(this, $"{nameof(CommandQueueDX11)}: BeginDraw() must be called before calling {nameof(Draw)}()");
 
             State.Material.Value = mat;
 
@@ -212,107 +168,85 @@ namespace Molten.Graphics
             return vResult;
         }
 
-        /// <summary>Draw non-indexed, non-instanced primitives. 
-        /// All queued compute shader dispatch requests are also processed</summary>
-        /// <param name="vertexCount">The number of vertices to draw from the provided vertex buffer(s).</param>
-        /// <param name="vertexStartIndex">The vertex to start drawing from.</param>
-        /// <param name="topology">The primitive topology to use when drawing with a NULL vertex buffer. 
-        /// Vertex buffers always override this when applied.</param>
-        public GraphicsBindResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
+        public override GraphicsBindResult Draw(IMaterial material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
         {
-            return DrawCommon(material, GraphicsValidationMode.Unindexed, topology, (pass) =>
+            return DrawCommon(material as Material, GraphicsValidationMode.Unindexed, topology, (pass) =>
             {
                 _context->Draw(vertexCount, vertexStartIndex);
             },
             (pass, iteration, passNumber, vResult) =>
             {
-                Device.Log.Warning($"Draw() call failed with result: {vResult} -- " + 
+                DXDevice.Log.Warning($"Draw() call failed with result: {vResult} -- " + 
                     $"Iteration: M{iteration}/{material.Iterations}P{passNumber}/{material.PassCount} -- " +
                     $"Material: {material.Name} -- Topology: {topology} -- VertexCount: { vertexCount}");
             });
         }
 
-        /// <summary>Draw instanced, unindexed primitives. </summary>
-        /// <param name="vertexCountPerInstance">The expected number of vertices per instance.</param>
-        /// <param name="instanceCount">The expected number of instances.</param>
-        /// <param name="topology">The expected topology of the indexed vertex data.</param>
-        /// <param name="vertexStartIndex">The index of the first vertex.</param>
-        /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public GraphicsBindResult DrawInstanced(Material material,
+        /// <inheritdoc/>
+        public override GraphicsBindResult DrawInstanced(IMaterial material,
             uint vertexCountPerInstance,
             uint instanceCount,
             VertexTopology topology,
             uint vertexStartIndex = 0,
             uint instanceStartIndex = 0)
         {
-            return DrawCommon(material, GraphicsValidationMode.Instanced, topology, (pass) =>
+            return DrawCommon(material as Material, GraphicsValidationMode.Instanced, topology, (pass) =>
             {
                 _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
             },
             (pass, iteration, passNum, vResult) =>
             {
-                Device.Log.Warning($"DrawInstanced() call failed with result: {vResult} -- " + 
+                DXDevice.Log.Warning($"DrawInstanced() call failed with result: {vResult} -- " + 
                         $"Iteration: M{iteration}/{material.Iterations}P{passNum}/{material.PassCount} -- Material: {material.Name} -- " +
                         $"Topology: {topology} -- VertexCount: { vertexCountPerInstance} -- Instances: {instanceCount}");
             });
         }
 
-        /// <summary>Draw indexed, non-instanced primitives.</summary>
-        /// <param name="vertexCount">The number of indices to draw from the provided vertex/index buffers.</param>
-        /// <param name="vertexIndexOffset">A value added to each index before reading from the vertex buffer.</param>
-        /// <param name="indexCount">The number of indices to be drawn.</param>
-        /// <param name="startIndex">The index to start drawing from.</param>
-        /// <param name="topology">The toplogy to apply when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
-        public GraphicsBindResult DrawIndexed(Material material,
+        /// <inheritdoc/>
+        public override GraphicsBindResult DrawIndexed(IMaterial material,
             uint indexCount,
             VertexTopology topology,
             int vertexIndexOffset = 0,
             uint startIndex = 0)
         {
-            return DrawCommon(material, GraphicsValidationMode.Indexed, topology, (pass) =>
+            return DrawCommon(material as Material, GraphicsValidationMode.Indexed, topology, (pass) =>
             {
                 _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset);
             },
             (pass, it, passNum, vResult) =>
             {
-                Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
+                DXDevice.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
                     $" -- Material: {material.Name} -- Topology: {topology} -- indexCount: { indexCount}");
             });
         }
 
-        /// <summary>Draw indexed, instanced primitives.</summary>
-        /// <param name="indexCountPerInstance">The expected number of indices per instance.</param>
-        /// <param name="instanceCount">The expected number of instances.</param>
-        /// <param name="topology">The expected topology of the indexed vertex data.</param>
-        /// <param name="startIndex">The start index.</param>
-        /// <param name="vertexIndexOffset">The index of the first vertex.</param>
-        /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public GraphicsBindResult DrawIndexedInstanced(Material material,
+        /// <inheritdoc/>
+        public override GraphicsBindResult DrawIndexedInstanced(IMaterial material,
             uint indexCountPerInstance,
             uint instanceCount,
             VertexTopology topology,
-            StateConditions conditions,
             uint startIndex = 0,
             int vertexIndexOffset = 0,
             uint instanceStartIndex = 0)
         {
-            return DrawCommon(material, GraphicsValidationMode.Indexed, topology, (pass) =>
+            return DrawCommon(material as Material, GraphicsValidationMode.InstancedIndexed, topology, (pass) =>
             {
                 _context->DrawIndexedInstanced(indexCountPerInstance, instanceCount,
                     startIndex, vertexIndexOffset, instanceStartIndex);
             },
             (pass, it, passNum, vResult) =>
             {
-                Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
+                DXDevice.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
                     $" -- Material: {material.Name} -- Topology: {topology} -- Indices-per-instance: { indexCountPerInstance}");
             });
         }
 
-        internal void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
+        /// <inheritdoc/>
+        public override void Dispatch(IComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
         {
-            bool csChanged = State.Bind(task);
+            bool csChanged = State.Bind(task as ComputeTask);
 
             if (State.CS.Shader.BoundValue == null)
             {
@@ -324,17 +258,17 @@ namespace Molten.Graphics
 
                 if (groupsZ > comCap.MaxGroupCountZ)
                 {
-                    Log.Error($"Unable to dispatch compute shader. Z dimension ({groupsZ}) is greater than supported ({comCap.MaxGroupCountZ}).");
+                    Device.Log.Error($"Unable to dispatch compute shader. Z dimension ({groupsZ}) is greater than supported ({comCap.MaxGroupCountZ}).");
                     return;
                 }
                 else if (groupsX > comCap.MaxGroupCountX)
                 {
-                    Log.Error($"Unable to dispatch compute shader. X dimension ({groupsX}) is greater than supported ({comCap.MaxGroupCountX}).");
+                    Device.Log.Error($"Unable to dispatch compute shader. X dimension ({groupsX}) is greater than supported ({comCap.MaxGroupCountX}).");
                     return;
                 }
                 else if (groupsY > comCap.MaxGroupCountY)
                 {
-                    Log.Error($"Unable to dispatch compute shader. Y dimension ({groupsY}) is greater than supported ({comCap.MaxGroupCountY}).");
+                    Device.Log.Error($"Unable to dispatch compute shader. Y dimension ({groupsY}) is greater than supported ({comCap.MaxGroupCountY}).");
                     return;
                 }
 
@@ -344,7 +278,7 @@ namespace Molten.Graphics
             }
         }
 
-        /// <summary>Dispoes of the current <see cref="Graphics.DeviceContext"/> instance.</summary>
+        /// <summary>Dispoes of the current <see cref="Graphics.CommandQueueDX11"/> instance.</summary>
         protected override void OnDispose()
         {
             State.Dispose();
@@ -353,30 +287,20 @@ namespace Molten.Graphics
             if (Type != GraphicsContextType.Immediate)
             {
                 SilkUtil.ReleasePtr(ref _context);
-                Device.RemoveDeferredContext(this);
+                DXDevice.RemoveDeferredContext(this);
             }
         }
 
-        /// <summary>Gets the current <see cref="Graphics.DeviceContext"/> type. This value will not change during the context's life.</summary>
+        /// <summary>Gets the current <see cref="CommandQueueDX11"/> type. This value will not change during the context's life.</summary>
         public GraphicsContextType Type { get; private set; }
 
-        internal DeviceDX11 Device { get; private set; }
+        internal DeviceDX11 DXDevice { get; private set; }
 
         internal ID3D11DeviceContext4* Native => _context;
 
-        internal Logger Log { get; private set; }
-
-        /// <summary>Gets the profiler bound to the current <see cref="Graphics.DeviceContext"/>. Contains statistics for this context alone.</summary>
-        public RenderProfiler Profiler
-        {
-            get => _profiler;
-            set => _profiler = value ?? _defaultProfiler;
-        }
-
         /// <summary>
-        /// Gets the state of the current <see cref="DeviceContext"/>.
+        /// Gets the state of the current <see cref="CommandQueueDX11"/>.
         /// </summary>
         internal DeviceContextState State { get; private set; }
-
     }
 }

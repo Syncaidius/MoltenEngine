@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a depth-stencil state for use with a <see cref="DeviceContext"/>.</summary>
+    /// <summary>Stores a depth-stencil state for use with a <see cref="CommandQueueDX11"/>.</summary>
     internal unsafe class GraphicsDepthState : ContextBindable<ID3D11DepthStencilState>, IEquatable<GraphicsDepthState>
     {
         public class Face
@@ -148,7 +148,7 @@ namespace Molten.Graphics
             _dirty = true;
         }
 
-        protected override void OnApply(DeviceContext pipe)
+        protected override void OnApply(CommandQueueDX11 pipe)
         {
             if (_native == null || _dirty)
             {

@@ -4,13 +4,13 @@
     {
         internal override void Bind(ContextSlot<GraphicsDepthState> slot, GraphicsDepthState value)
         {
-            value = value ?? slot.Context.Device.DepthBank.GetPreset(DepthStencilPreset.Default);
-            slot.Context.Native->OMSetDepthStencilState(value.NativePtr, value.StencilReference);
+            value = value ?? slot.CmdList.DXDevice.DepthBank.GetPreset(DepthStencilPreset.Default);
+            slot.CmdList.Native->OMSetDepthStencilState(value.NativePtr, value.StencilReference);
         }
 
         internal override void Unbind(ContextSlot<GraphicsDepthState> slot, GraphicsDepthState value)
         {
-            slot.Context.Native->OMSetDepthStencilState(null, 0);
+            slot.CmdList.Native->OMSetDepthStencilState(null, 0);
         }
     }
 }

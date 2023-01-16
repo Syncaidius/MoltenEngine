@@ -37,15 +37,15 @@
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF vpBounds = camera.Surface.Viewport.Bounds;
-            DeviceDX11 device = renderer.Device;
+            CommandQueueDX11 cmd = renderer.Device.Cmd;
 
             context.CompositionSurface.Clear(context.Scene.BackgroundColor);
-            device.State.ResetRenderSurfaces();
-            device.State.SetRenderSurface(context.CompositionSurface, 0);
-            device.State.DepthSurface.Value = null;
-            device.State.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
-            device.State.SetViewports(camera.Surface.Viewport);
-            device.State.SetScissorRectangle((Rectangle)vpBounds);
+            cmd.State.ResetRenderSurfaces();
+            cmd.State.SetRenderSurface(context.CompositionSurface, 0);
+            cmd.State.DepthSurface.Value = null;
+            cmd.State.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
+            cmd.State.SetViewports(camera.Surface.Viewport);
+            cmd.State.SetScissorRectangle((Rectangle)vpBounds);
 
             StateConditions conditions = context.BaseStateConditions | StateConditions.ScissorTest;
 
@@ -56,10 +56,10 @@
 
             RectStyle style = RectStyle.Default;
 
-            renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
+            cmd.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
             renderer.SpriteBatcher.Draw(sourceSurface, vpBounds, Vector2F.Zero, vpBounds.Size, 0, Vector2F.Zero, ref style, _matCompose, 0, 0);
-            renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
-            renderer.Device.EndDraw();
+            renderer.SpriteBatcher.Flush(cmd, _orthoCamera, _dummyData);
+            cmd.EndDraw();
 
             context.SwapComposition();
         }

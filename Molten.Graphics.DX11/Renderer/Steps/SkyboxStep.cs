@@ -39,24 +39,24 @@
                 return;
 
             Rectangle bounds = (Rectangle)camera.Surface.Viewport.Bounds;
-            DeviceDX11 device = renderer.Device;
+            CommandQueueDX11 cmd = renderer.Device.Cmd;
 
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 
             // We want to add to the previous composition, rather than completely overwrite it.
             RenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
 
-            device.State.ResetRenderSurfaces();
-            device.State.SetRenderSurface(destSurface, 0);
-            device.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
-            device.State.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
-            device.State.SetViewports(camera.Surface.Viewport);
-            device.State.SetScissorRectangle(bounds);
+            cmd.State.ResetRenderSurfaces();
+            cmd.State.SetRenderSurface(destSurface, 0);
+            cmd.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
+            cmd.State.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
+            cmd.State.SetViewports(camera.Surface.Viewport);
+            cmd.State.SetScissorRectangle(bounds);
 
-            renderer.Device.BeginDraw(context.BaseStateConditions);
+            cmd.BeginDraw(context.BaseStateConditions);
             _skyboxData.RenderTransform = Matrix4F.Scaling(camera.MaxDrawDistance) * Matrix4F.CreateTranslation(camera.Position);
-            _sphereMesh.Render(device, renderer, camera, _skyboxData);
-            renderer.Device.EndDraw();
+            _sphereMesh.Render(cmd, renderer, camera, _skyboxData);
+            cmd.EndDraw();
         }
 
         private void MakeSphere(int LatLines, int LongLines, out Vertex[] vertices, out int[] indices)

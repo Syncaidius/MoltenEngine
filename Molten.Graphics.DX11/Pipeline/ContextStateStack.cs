@@ -5,9 +5,9 @@
         const int STACK_INCREMENT = 5;
         GraphicsPipeState[] _stack;
         int _stackSize = 0;
-        DeviceContext _context;
+        CommandQueueDX11 _context;
 
-        internal ContextStateStack(DeviceContext context)
+        internal ContextStateStack(CommandQueueDX11 context)
         {
             _stack = new GraphicsPipeState[STACK_INCREMENT];
             for (int i = 0; i < _stack.Length; i++)

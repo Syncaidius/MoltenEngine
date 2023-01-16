@@ -4,13 +4,13 @@
     {
         internal override void Bind(ContextSlot<GraphicsRasterizerState> slot, GraphicsRasterizerState value)
         {
-            value = value ?? slot.Context.Device.RasterizerBank.GetPreset(RasterizerPreset.Default);
-            slot.Context.Native->RSSetState(value);
+            value = value ?? slot.CmdList.DXDevice.RasterizerBank.GetPreset(RasterizerPreset.Default);
+            slot.CmdList.Native->RSSetState(value);
         }
 
         internal override void Unbind(ContextSlot<GraphicsRasterizerState> slot, GraphicsRasterizerState value)
         {
-            slot.Context.Native->RSSetState(null);
+            slot.CmdList.Native->RSSetState(null);
         }
     }
 }

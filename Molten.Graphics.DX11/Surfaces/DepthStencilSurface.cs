@@ -157,7 +157,7 @@ namespace Molten.Graphics
             UpdateViewport();
         }
 
-        internal void Clear(DeviceContext pipe, ClearFlag clearFlags = ClearFlag.Depth, float depth = 1.0f, byte stencil = 0)
+        internal void Clear(CommandQueueDX11 pipe, ClearFlag clearFlags = ClearFlag.Depth, float depth = 1.0f, byte stencil = 0)
         {
             if (_depthView == null)
                 CreateTexture(false);
@@ -167,7 +167,7 @@ namespace Molten.Graphics
 
         public void Clear(DepthClearFlags flags, float depth = 1.0f, byte stencil = 0)
         {
-            Clear(Device, (ClearFlag)flags, depth, stencil);
+            Clear(Device.Cmd, (ClearFlag)flags, depth, stencil);
         }
 
         internal override void PipelineRelease()

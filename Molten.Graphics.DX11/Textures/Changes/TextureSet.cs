@@ -65,7 +65,7 @@ namespace Molten.Graphics
                 EngineUtil.Free(ref _data);
         }
 
-        public unsafe bool Process(DeviceContext context, TextureBase texture)
+        public unsafe bool Process(CommandQueueDX11 context, TextureBase texture)
         {
             // Calculate size of a single array slice
             uint arraySliceBytes = 0;
