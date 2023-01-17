@@ -27,7 +27,7 @@ namespace Molten.Graphics
 
         protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)
         {
-            NativeSwapChain = Device.DisplayManager.CreateSwapChain(mode, Device.Settings, Device.Log, (IUnknown*)Device.Ptr, controlHandle);
+            NativeSwapChain = NativeDevice.DisplayManager.CreateSwapChain(mode, Device.Settings, Device.Log, (IUnknown*)NativeDevice.Ptr, controlHandle);
         }
 
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
@@ -85,7 +85,7 @@ namespace Molten.Graphics
 
         public void Present()
         {
-            OnApply(Device.Cmd);
+            OnApply(NativeDevice.Cmd);
 
             if (OnPresent() && NativeSwapChain != null)
             {
@@ -110,7 +110,7 @@ namespace Molten.Graphics
         {
             // Avoid calling RenderFormSurface's OnPipelineDispose implementation by skipping it. Jump straight to base.
             // This prevents any swapchain render loops from being aborted due to disposal flags being set.
-            base.PipelineRelease();
+            base.GraphicsRelease();
         }
 
         public void Dispatch(Action action)
@@ -118,11 +118,11 @@ namespace Molten.Graphics
             _dispatchQueue.Enqueue(action);
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref NativeSwapChain);
             EngineUtil.Free(ref _presentParams);
-            base.PipelineRelease();
+            base.GraphicsRelease();
         }
 
         protected abstract bool OnPresent();

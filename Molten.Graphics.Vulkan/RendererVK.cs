@@ -52,7 +52,7 @@ namespace Molten.Graphics
             return (((variant) << 29) | ((major) << 22) | ((minor) << 12) | (patch));
         }
 
-        protected override void OnInitializeApi(GraphicsSettings settings)
+        protected override GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings)
         {
             // TODO Store baseline profiles for each OS/platform where possible, or default to Moltens own.
             // For android see: https://developer.android.com/ndk/guides/graphics/android-baseline-profile
@@ -77,6 +77,29 @@ namespace Molten.Graphics
             _instance = EngineUtil.Alloc<Instance>();
             if (!_instanceLoader.Build(ApiVersion, _instance))
                 Log.Error($"Failed to build new instance");
+
+            return _displayManager;
+        }
+
+        protected override GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
+        {
+            DisplayAdapterVK adapter = _displayManager.SelectedAdapter as DisplayAdapterVK;
+            NativeDevice = new DeviceVK(this, adapter, _instance, CommandSetCapabilityFlags.Graphics);
+            NativeDevice.AddExtension<KhrSwapchain>();
+
+            if (NativeDevice.Initialize())
+                _devices.Add(NativeDevice);
+
+            return NativeDevice;
+        }
+
+        protected override void OnInitialize(EngineSettings settings)
+        {
+            base.OnInitialize(settings);
+
+            Assembly includeAssembly = GetType().Assembly;
+            ShaderCompiler = new DxcCompiler<RendererVK, SpirVShader>(this, "\\Assets\\HLSL\\include\\", includeAssembly);
+            _resFactory = new ResourceFactoryVK(this, ShaderCompiler);
         }
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -118,23 +141,6 @@ namespace Molten.Graphics
             Result r = ext.CreateDebugUtilsMessenger(*_instance, &debugCreateInfo, null, _debugMessengerHandle);
             if (!CheckResult(r))
                 EngineUtil.Free(ref _debugMessengerHandle);
-        }
-
-        protected override void OnInitialize(EngineSettings settings)
-        {
-            base.OnInitialize(settings);
-
-            _resFactory = new ResourceFactoryVK(this, null);
-
-            DisplayAdapterVK adapter = _displayManager.SelectedAdapter as DisplayAdapterVK;
-            Device = new DeviceVK(this, adapter, _instance, CommandSetCapabilityFlags.Graphics);
-            Device.AddExtension<KhrSwapchain>();
-
-            if (Device.Initialize())
-                _devices.Add(Device);
-
-            Assembly includeAssembly = GetType().Assembly;
-            ShaderCompiler = new DxcCompiler<RendererVK, SpirVShader>(this, "\\Assets\\HLSL\\include\\", includeAssembly);
         }
 
         internal bool CheckResult(Result r, Func<string> getMsg = null)
@@ -190,12 +196,6 @@ namespace Molten.Graphics
         {
             return _instanceLoader.GetExtension<E>();
         }
-
-        public override DisplayManager DisplayManager => _displayManager;
-
-        public override ResourceFactory Resources => _resFactory;
-
-        public override IComputeManager Compute { get; }
 
         protected override SceneRenderData OnCreateRenderData()
         {
@@ -276,7 +276,7 @@ namespace Molten.Graphics
         internal Instance* Instance => _instance;
 
         /// <summary>
-        /// Gets a <see cref="DeviceVK"/> by it's index. The primary <see cref="Device"/> is always at index 0, if it exists.
+        /// Gets a <see cref="DeviceVK"/> by it's index. The primary <see cref="NativeDevice"/> is always at index 0, if it exists.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
@@ -285,10 +285,14 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the main <see cref="DeviceVK"/>.
         /// </summary>
-        internal DeviceVK Device { get; private set; }
+        internal DeviceVK NativeDevice { get; private set; }
 
         internal DxcCompiler<RendererVK, SpirVShader> ShaderCompiler { get; private set; }
 
         internal VersionVK ApiVersion { get; }
+
+        public override ResourceFactory Resources => _resFactory;
+
+        public override IComputeManager Compute { get; }
     }
 }

@@ -6,7 +6,7 @@ namespace Molten.Graphics
     /// <summary>
     /// Represents a DX11 bindable pipeline object.
     /// </summary>
-    public abstract class ContextBindable : ContextObject
+    public abstract class ContextBindable : GraphicsObject<DeviceDX11>
     {
         internal ContextBindable(DeviceDX11 device, ContextBindTypeFlags bindFlags) : base(device)
         {
@@ -70,11 +70,11 @@ namespace Molten.Graphics
         /// </summary>
         internal void* RawNative => NativePtr;
 
+
         public static implicit operator T*(ContextBindable<T> bindable)
         {
             return bindable.NativePtr;
         }
-
 
         /// <summary>Queries the underlying texture's interface.</summary>
         /// <typeparam name="T">The type of object to request in the query.</typeparam>

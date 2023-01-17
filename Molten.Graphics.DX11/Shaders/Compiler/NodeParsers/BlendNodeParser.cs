@@ -11,7 +11,7 @@ namespace Molten.Graphics
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            GraphicsBlendState template = foundation.Device.BlendBank.GetPreset(BlendPreset.Default);
+            GraphicsBlendState template = foundation.NativeDevice.BlendBank.GetPreset(BlendPreset.Default);
             RenderTargetBlendDesc1 rtBlendDesc = template.GetSurfaceBlendState(0); // Use the default preset's first (0) RT blend description.
 
             if(node.ValueType == ShaderHeaderValueType.Preset)
@@ -19,7 +19,7 @@ namespace Molten.Graphics
                 if (Enum.TryParse(node.Value, true, out BlendPreset preset))
                 {
                     // Use a template preset's first (0) RT blend description.
-                    template = foundation.Device.BlendBank.GetPreset(preset);
+                    template = foundation.NativeDevice.BlendBank.GetPreset(preset);
                     rtBlendDesc = template.GetSurfaceBlendState(0);
                 }
                 else
@@ -28,7 +28,7 @@ namespace Molten.Graphics
                 }
             }
 
-            GraphicsBlendState state = new GraphicsBlendState(foundation.Device, foundation.BlendState[node.Conditions] ?? foundation.Device.BlendBank.GetPreset(BlendPreset.Default));
+            GraphicsBlendState state = new GraphicsBlendState(foundation.NativeDevice, foundation.BlendState[node.Conditions] ?? foundation.NativeDevice.BlendBank.GetPreset(BlendPreset.Default));
             state.IndependentBlendEnable = (state.IndependentBlendEnable || (node.SlotID > 0));
 
             foreach ((string Name, string Value) c in node.ChildValues)
@@ -113,7 +113,7 @@ namespace Molten.Graphics
 
             // Update RT blend description on main description.
             state[node.SlotID] = rtBlendDesc;
-            state = foundation.Device.BlendBank.AddOrRetrieveExisting(state);
+            state = foundation.NativeDevice.BlendBank.AddOrRetrieveExisting(state);
 
             if (node.Conditions == StateConditions.None)
                 foundation.BlendState.FillMissingWith(state);

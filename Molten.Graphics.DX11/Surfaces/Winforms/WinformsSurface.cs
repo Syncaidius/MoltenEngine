@@ -86,7 +86,7 @@ namespace Molten.Graphics
             };
 
             // Ignore all windows events
-            Device.DisplayManager.DxgiFactory->MakeWindowAssociation(_control.Handle, (uint)WindowAssociationFlags.NoAltEnter);
+            NativeDevice.DisplayManager.DxgiFactory->MakeWindowAssociation(_control.Handle, (uint)WindowAssociationFlags.NoAltEnter);
         }
 
         protected abstract void CreateControl(string title, out T control, out IntPtr handle);
@@ -182,9 +182,9 @@ namespace Molten.Graphics
             return controlAlive;
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
-            base.PipelineRelease();
+            base.GraphicsRelease();
 
             _disposing = true;
         }

@@ -12,7 +12,7 @@
 
         public override void Process(RenderService renderer)
         {
-            Texture.Apply((renderer as RendererDX11).Device.Cmd);
+            Texture.Apply((renderer as RendererDX11).NativeDevice.Cmd);
             Recycle(this);
         }
     }

@@ -10,7 +10,7 @@
         private protected bool _isDynamic;
 
         internal Mesh(RendererDX11 renderer, uint maxVertices, VertexTopology topology, bool dynamic) :
-            base(renderer.Device)
+            base(renderer.NativeDevice)
         {
             _renderer = renderer;
             MaxVertices = maxVertices;
@@ -35,7 +35,7 @@
         public void SetVertices(T[] data, uint startIndex, uint count)
         {
             _vertexCount = count;
-            _vb.SetData(_renderer.Device.Cmd, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _vb.SetData(_renderer.NativeDevice.Cmd, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         internal virtual void ApplyBuffers(CommandQueueDX11 context)

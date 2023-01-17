@@ -11,7 +11,7 @@ namespace Molten.Graphics
             RendererDX11 renderer, in string header)
         {
             List<IShaderElement> shaders = new List<IShaderElement>();
-            ComputeTask compute = new ComputeTask(renderer.Device, context.Source.Filename);
+            ComputeTask compute = new ComputeTask(renderer.NativeDevice, context.Source.Filename);
             try
             {
                 context.Compiler.ParserHeader(compute, in header, context);

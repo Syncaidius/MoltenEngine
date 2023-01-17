@@ -126,7 +126,7 @@ namespace Molten.Graphics
             return true;
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

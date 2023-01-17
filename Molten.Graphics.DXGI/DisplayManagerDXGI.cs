@@ -6,7 +6,7 @@ namespace Molten.Graphics.Dxgi
 {
     public unsafe delegate void DXGIDetectCapabilitiesCallback(GraphicsSettings settings, DisplayAdapterDXGI adapter);
 
-    public unsafe class DisplayManagerDXGI : DisplayManager
+    public unsafe class DisplayManagerDXGI : GraphicsDisplayManager
     {
         const uint DXGI_CREATE_FACTORY_NODEBUG = 0x0;
         const uint DXGI_CREATE_FACTORY_DEBUG = 0x01;

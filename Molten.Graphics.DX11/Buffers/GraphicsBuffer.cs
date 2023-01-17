@@ -122,18 +122,18 @@ namespace Molten.Graphics
                 {
                     SubresourceData srd = new SubresourceData(null, numBytes, numBytes);
                     srd.PSysMem = ptr.ToPointer();
-                    Device.Ptr->CreateBuffer(ref Description, ref srd, ref _native);
+                    NativeDevice.Ptr->CreateBuffer(ref Description, ref srd, ref _native);
                 });
             }
             else
             {
-                Device.Ptr->CreateBuffer(ref Description, null, ref _native);
+                NativeDevice.Ptr->CreateBuffer(ref Description, null, ref _native);
             }
 
             Device.AllocateVRAM(numBytes);
 
             // Allocate the first segment.
-            _firstSegment = Device.GetBufferSegment();
+            _firstSegment = NativeDevice.GetBufferSegment();
             _firstSegment.BindFlags = BindFlags;
             _firstSegment.Buffer = this;
             _firstSegment.ByteOffset = 0;
@@ -378,9 +378,9 @@ namespace Molten.Graphics
             ApplyChanges(context);
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
-            base.PipelineRelease();
+            base.GraphicsRelease();
 
             if (NativePtr != null)
             {
@@ -494,14 +494,14 @@ namespace Molten.Graphics
                 // The next one will be listed in _freeSegments, so removei t.
                 _freeSegments.Remove(segment.Next);
 
-                Device.RecycleBufferSegment(segment.Next);
-                Device.RecycleBufferSegment(segment);
+                NativeDevice.RecycleBufferSegment(segment.Next);
+                NativeDevice.RecycleBufferSegment(segment);
             }
             else if (mergePrev)
             {
                 segment.Previous.ByteCount += segment.ByteCount;
                 segment.Previous.LinkNext(segment.Next);
-                Device.RecycleBufferSegment(segment);
+                NativeDevice.RecycleBufferSegment(segment);
             }
             else if (mergeNext)
             {
@@ -509,7 +509,7 @@ namespace Molten.Graphics
                 segment.LinkNext(segment.Next.Next);
                 segment.IsFree = true;
 
-                Device.RecycleBufferSegment(segment.Next);
+                NativeDevice.RecycleBufferSegment(segment.Next);
                 _freeSegments.Add(segment);
             }
         }

@@ -124,7 +124,7 @@ namespace Molten.Graphics.Dxgi
         public DisplayAdapterType Type { get; private set; }
 
         /// <inheritdoc/>
-        public DisplayManager Manager => _manager;
+        public GraphicsDisplayManager Manager => _manager;
 
         internal AdapterDesc3* Description => _desc;
 

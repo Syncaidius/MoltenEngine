@@ -148,7 +148,7 @@ namespace Molten.Graphics
         public DisplayAdapterType Type { get; private set; }
 
         /// <inheritdoc/>
-        public DisplayManager Manager => _manager;
+        public GraphicsDisplayManager Manager => _manager;
 
         /// <inheritdoc/>
         public GraphicsCapabilities Capabilities { get; private set; }

@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
         internal unsafe SpriteBatcherDX11(RendererDX11 renderer, uint dataCapacity, uint rangeCapcity) : base(dataCapacity, rangeCapcity)
         {
-            _buffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicDiscard, 
+            _buffer = new GraphicsBuffer(renderer.NativeDevice, BufferMode.DynamicDiscard, 
                 BindFlag.ShaderResource, 
                 (uint)sizeof(GpuData) * dataCapacity,
                 ResourceMiscFlag.BufferStructured,

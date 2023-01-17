@@ -16,7 +16,7 @@ namespace Molten.Graphics
 
         internal SwapChainSurfaceDX12(RendererDX12 renderer, uint mipCount)
         {
-            Device = renderer.Device;
+            Device = renderer.NativeDevice;
         }
 
         protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)

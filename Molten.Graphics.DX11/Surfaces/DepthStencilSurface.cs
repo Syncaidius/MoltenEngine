@@ -141,11 +141,11 @@ namespace Molten.Graphics
             SubresourceData* subData = null;
             ID3D11Resource* res = (ID3D11Resource*)NativeTexture;
 
-            Device.Ptr->CreateDepthStencilView(res, ref _depthDesc, ref _depthView);
+            NativeDevice.Ptr->CreateDepthStencilView(res, ref _depthDesc, ref _depthView);
 
             // Create read-only depth view for passing to shaders.
             _depthDesc.Flags = (uint)GetReadOnlyFlags();
-            Device.Ptr->CreateDepthStencilView(res, ref _depthDesc, ref _readOnlyView);
+            NativeDevice.Ptr->CreateDepthStencilView(res, ref _depthDesc, ref _readOnlyView);
             _depthDesc.Flags = 0U; // DsvFlag.None;
 
             return res;
@@ -167,15 +167,15 @@ namespace Molten.Graphics
 
         public void Clear(DepthClearFlags flags, float depth = 1.0f, byte stencil = 0)
         {
-            Clear(Device.Cmd, (ClearFlag)flags, depth, stencil);
+            Clear(NativeDevice.Cmd, (ClearFlag)flags, depth, stencil);
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _depthView);
             SilkUtil.ReleasePtr(ref _readOnlyView);
 
-            base.PipelineRelease();
+            base.GraphicsRelease();
         }
 
         /// <summary>Gets the DepthStencilView instance associated with this surface.</summary>

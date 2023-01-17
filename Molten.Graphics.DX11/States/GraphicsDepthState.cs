@@ -160,11 +160,11 @@ namespace Molten.Graphics
                 _desc.BackFace = _backFace._desc;
 
                 //create new state
-                Device.Ptr->CreateDepthStencilState(ref _desc, ref _native);
+                NativeDevice.Ptr->CreateDepthStencilState(ref _desc, ref _native);
             }
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

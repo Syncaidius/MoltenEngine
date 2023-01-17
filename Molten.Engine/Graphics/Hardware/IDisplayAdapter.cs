@@ -42,8 +42,8 @@
         /// </summary>
         DisplayAdapterType Type { get; }
 
-        /// <summary>Gets the <see cref="DisplayManager"/> that spawned the adapter.</summary>
-        DisplayManager Manager { get; }
+        /// <summary>Gets the <see cref="GraphicsDisplayManager"/> that spawned the adapter.</summary>
+        GraphicsDisplayManager Manager { get; }
 
         /// <summary>Gets a list of all <see cref="IDisplayOutput"/> devices attached to the current <see cref="IDisplayAdapter"/>.</summary>
         IReadOnlyList<IDisplayOutput> Outputs { get; }

@@ -17,7 +17,7 @@ namespace Molten.Graphics
             UAV = new UAView(device);
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             UAV.Release();
             SRV.Release();

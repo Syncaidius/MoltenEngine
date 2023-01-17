@@ -50,12 +50,12 @@ namespace Molten.Graphics
 
         internal void SetVertexFormat<T>() where T: struct, IVertexType
         {
-            VertexFormat = Buffer.Device.VertexFormatCache.Get<T>();
+            VertexFormat = Buffer.NativeDevice.VertexFormatCache.Get<T>();
         }
 
         internal void SetVertexFormat(Type vertexType)
         {
-            VertexFormat = Buffer.Device.VertexFormatCache.Get(vertexType);
+            VertexFormat = Buffer.NativeDevice.VertexFormatCache.Get(vertexType);
         }
 
         internal void SetIndexFormat(IndexBufferFormat format)
@@ -240,10 +240,12 @@ namespace Molten.Graphics
             Buffer.Deallocate(this);
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             Release();
             IsDisposed = false;
+
+            base.OnDispose();
         }
 
         /// <summary>Clears segment's internal data.</summary>
@@ -289,7 +291,7 @@ namespace Molten.Graphics
             if(Previous.ByteCount == 0)
             {
                 LinkPrevious(Previous.Previous);
-                Device.RecycleBufferSegment(Previous);
+                NativeDevice.RecycleBufferSegment(Previous);
             }
         }
 
@@ -306,13 +308,13 @@ namespace Molten.Graphics
             if (Next.ByteCount == 0)
             {
                 LinkNext(Next.Next);
-                Device.RecycleBufferSegment(Next);
+                NativeDevice.RecycleBufferSegment(Next);
             }
         }
 
         internal BufferSegment SplitFromBack(uint bytesToTake)
         {
-            BufferSegment seg = Device.GetBufferSegment();
+            BufferSegment seg = NativeDevice.GetBufferSegment();
             seg.LinkNext(this);
             seg.LinkPrevious(Previous);
 
@@ -329,7 +331,7 @@ namespace Molten.Graphics
 
         internal BufferSegment SplitFromFront(uint bytesToTake)
         {
-            BufferSegment seg = Device.GetBufferSegment();
+            BufferSegment seg = NativeDevice.GetBufferSegment();
             seg.LinkNext(Next);
             seg.LinkPrevious(this);
 

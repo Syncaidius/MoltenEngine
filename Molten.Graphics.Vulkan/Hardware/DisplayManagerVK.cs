@@ -8,7 +8,7 @@ using Monitor = Silk.NET.GLFW.Monitor;
 
 namespace Molten.Graphics
 {
-    internal unsafe class DisplayManagerVK : DisplayManager
+    internal unsafe class DisplayManagerVK : GraphicsDisplayManager
     {
         List<DisplayAdapterVK> _adapters;
         DisplayAdapterVK _defaultAdapter;

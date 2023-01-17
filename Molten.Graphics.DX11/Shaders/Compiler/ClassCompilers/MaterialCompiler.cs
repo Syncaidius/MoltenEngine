@@ -11,7 +11,7 @@
             RendererDX11 renderer, in string header)
         {
             List<IShaderElement> result = new List<IShaderElement>();
-            Material material = new Material(renderer.Device, context.Source.Filename);
+            Material material = new Material(renderer.NativeDevice, context.Source.Filename);
             try
             {
                 context.Compiler.ParserHeader(material, in header, context);
@@ -28,7 +28,7 @@
             catch (Exception e)
             {
                 context.AddError($"{context.Source.Filename ?? "Material header error"}: {e.Message}");
-                renderer.Device.Log.Error(e);
+                renderer.NativeDevice.Log.Error(e);
                 return result;
             }
 
@@ -59,11 +59,11 @@
             if (!context.HasErrors)
             {
                 // Populate missing material states with default.
-                material.DepthState.FillMissingWith(renderer.Device.DepthBank.GetPreset(DepthStencilPreset.Default));
-                material.RasterizerState.FillMissingWith(renderer.Device.RasterizerBank.GetPreset(RasterizerPreset.Default));
-                material.BlendState.FillMissingWith(renderer.Device.BlendBank.GetPreset(BlendPreset.Default));
+                material.DepthState.FillMissingWith(renderer.NativeDevice.DepthBank.GetPreset(DepthStencilPreset.Default));
+                material.RasterizerState.FillMissingWith(renderer.NativeDevice.RasterizerBank.GetPreset(RasterizerPreset.Default));
+                material.BlendState.FillMissingWith(renderer.NativeDevice.BlendBank.GetPreset(BlendPreset.Default));
 
-                ShaderSampler defaultSampler = renderer.Device.SamplerBank.GetPreset(SamplerPreset.Default);
+                ShaderSampler defaultSampler = renderer.NativeDevice.SamplerBank.GetPreset(SamplerPreset.Default);
                 for (int i = 0; i < material.Samplers.Length; i++)
                     material.Samplers[i].FillMissingWith(defaultSampler);
 

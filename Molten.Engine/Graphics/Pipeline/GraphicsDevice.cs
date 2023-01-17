@@ -4,11 +4,15 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.Collections;
 
 namespace Molten.Graphics
 {
     public abstract class GraphicsDevice : EngineObject
     {
+        long _allocatedVRAM;
+        ThreadedQueue<GraphicsObject> _objectsToDispose;
+
         /// <summary>
         /// Creates a new instance of <see cref="GraphicsDevice"/>.
         /// </summary>
@@ -18,9 +22,27 @@ namespace Molten.Graphics
         {
             Settings = settings;
             Log = log;
+            _objectsToDispose = new ThreadedQueue<GraphicsObject>();
         }
 
-        long _allocatedVRAM;
+        internal void DisposeMarkedObjects()
+        {
+            while (_objectsToDispose.TryDequeue(out GraphicsObject obj))
+                obj.GraphicsRelease();
+        }
+
+        public void MarkForRelease(GraphicsObject pObject)
+        {
+            if (IsDisposed)
+                pObject.GraphicsRelease();
+            else
+                _objectsToDispose.Enqueue(pObject);
+        }
+
+        protected override void OnDispose()
+        {
+            DisposeMarkedObjects();
+        }
 
         /// <summary>Track a VRAM allocation.</summary>
         /// <param name="bytes">The number of bytes that were allocated.</param>

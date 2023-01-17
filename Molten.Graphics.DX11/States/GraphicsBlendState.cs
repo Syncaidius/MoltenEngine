@@ -119,7 +119,7 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 // Create new state
-                Device.Ptr->CreateBlendState1(ref _desc, ref _native);
+                NativeDevice.Ptr->CreateBlendState1(ref _desc, ref _native);
             }
         }
 
@@ -133,7 +133,7 @@ namespace Molten.Graphics
             return (ID3D11BlendState*)state._native;
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

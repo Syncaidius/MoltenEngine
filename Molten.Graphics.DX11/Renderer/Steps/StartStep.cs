@@ -13,7 +13,7 @@ namespace Molten.Graphics
             RenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
             DepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            CommandQueueDX11 cmd = renderer.Device.Cmd;
+            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
 
             cmd.State.SetRenderSurfaces(null);
             bool newSurface = renderer.ClearIfFirstUse(cmd, sScene, context.Scene.BackgroundColor);

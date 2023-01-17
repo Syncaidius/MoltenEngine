@@ -20,7 +20,7 @@ namespace Molten.Graphics
                     InvalidEnumMessage<RasterizerPreset>(context, (node.Name, node.Value), "rasterizer preset");
             }
 
-            state = new GraphicsRasterizerState(foundation.Device, foundation.Device.RasterizerBank.GetPreset(preset));
+            state = new GraphicsRasterizerState(foundation.NativeDevice, foundation.NativeDevice.RasterizerBank.GetPreset(preset));
 
             foreach ((string Name, string Value) c in node.ChildValues)
             {
@@ -99,7 +99,7 @@ namespace Molten.Graphics
                         break;
                 }
             }
-            state = foundation.Device.RasterizerBank.AddOrRetrieveExisting(state);
+            state = foundation.NativeDevice.RasterizerBank.AddOrRetrieveExisting(state);
 
             if (node.Conditions == StateConditions.None)
                 foundation.RasterizerState.FillMissingWith(state);

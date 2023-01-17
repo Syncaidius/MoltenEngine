@@ -10,7 +10,7 @@
             RenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
             RenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
 
-            CommandQueueDX11 cmd = renderer.Device.Cmd;
+            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
 
             cmd.State.SetRenderSurface(sScene, 0);
             cmd.State.SetRenderSurface(sNormals, 1);

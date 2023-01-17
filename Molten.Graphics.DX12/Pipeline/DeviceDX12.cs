@@ -34,7 +34,6 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             _qDirect.Dispose();
-
             base.OnDispose();
         }
 

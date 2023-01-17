@@ -20,7 +20,7 @@ namespace Molten.Graphics
             }
 
             // Retrieve existing state if available and create a new one from it to avoid editing the existing one.
-            sampler = new ShaderSampler(foundation.Device, foundation.Device.SamplerBank.GetPreset(preset));
+            sampler = new ShaderSampler(foundation.NativeDevice, foundation.NativeDevice.SamplerBank.GetPreset(preset));
 
             foreach ((string Name, string Value) c in node.ChildValues)
             {
@@ -110,7 +110,7 @@ namespace Molten.Graphics
                     foundation.Samplers[i] = new ShaderStateBank<ShaderSampler>();
             }
 
-            sampler = foundation.Device.SamplerBank.AddOrRetrieveExisting(sampler);
+            sampler = foundation.NativeDevice.SamplerBank.AddOrRetrieveExisting(sampler);
             foundation.Samplers[node.SlotID][node.Conditions] = sampler;
         }
     }

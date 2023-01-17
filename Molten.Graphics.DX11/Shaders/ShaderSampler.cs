@@ -51,7 +51,7 @@ namespace Molten.Graphics
             if (_isDirty)
             {
                 int fVal = (int)_desc.Filter;
-                PipelineRelease();
+                GraphicsRelease();
 
                 pipe.DXDevice.Ptr->CreateSamplerState(ref _desc, ref _native);
                 _isDirty = false;
@@ -59,7 +59,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

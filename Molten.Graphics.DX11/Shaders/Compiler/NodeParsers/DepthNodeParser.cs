@@ -20,7 +20,7 @@ namespace Molten.Graphics
                     InvalidEnumMessage<DepthStencilPreset>(context, (node.Name, node.Value), "depth-stencil preset");
             }
 
-            state = new GraphicsDepthState(foundation.Device, foundation.Device.DepthBank.GetPreset(preset));
+            state = new GraphicsDepthState(foundation.NativeDevice, foundation.NativeDevice.DepthBank.GetPreset(preset));
 
             foreach ((string Name, string Value) c in node.ChildValues)
             {
@@ -102,7 +102,7 @@ namespace Molten.Graphics
                 }
             }
 
-            state = foundation.Device.DepthBank.AddOrRetrieveExisting(state);
+            state = foundation.NativeDevice.DepthBank.AddOrRetrieveExisting(state);
 
             if (node.Conditions == StateConditions.None)
                 foundation.DepthState.FillMissingWith(state);

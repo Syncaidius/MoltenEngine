@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics
 {
     internal class ShaderStateBank<T> : EngineObject
-        where T : ContextObject
+        where T : GraphicsObject
     {
         T[] _states;
 

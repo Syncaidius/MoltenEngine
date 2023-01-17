@@ -34,7 +34,7 @@ namespace Molten.Graphics
             Surfaces = new SurfaceManager(this);
         }
 
-        protected unsafe override void OnInitializeApi(GraphicsSettings settings)
+        protected unsafe override GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings)
         {
             _api = D3D11.GetApi();
             _chain = new RenderChainDX11(this);
@@ -44,6 +44,14 @@ namespace Molten.Graphics
                 D3DFeatureLevel.Level101, 
                 D3DFeatureLevel.Level100);
             _displayManager = new DisplayManagerDXGI(_deviceBuilder.GetCapabilities);
+
+            return _displayManager;
+        }
+
+        protected override GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
+        {
+            NativeDevice = new DeviceDX11(settings, _deviceBuilder, Log, _displayManager.SelectedAdapter);
+            return NativeDevice;
         }
 
         protected override void OnInitialize(EngineSettings settings)
@@ -51,18 +59,17 @@ namespace Molten.Graphics
             base.OnInitialize(settings);
 
             Assembly includeAssembly = GetType().Assembly;
-
-            Device = new DeviceDX11(settings.Graphics, _deviceBuilder, Log, _displayManager.SelectedAdapter);
+            
             ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _resFactory = new ResourceFactoryDX11(this);
-            _compute = new ComputeManager(Device);
+            _compute = new ComputeManager(NativeDevice);
             _clearedSurfaces = new HashSet<Texture2D>();
 
             uint maxBufferSize = (uint)ByteMath.FromMegabytes(3.5);
-            StaticVertexBuffer = new GraphicsBuffer(Device, BufferMode.Default, BindFlag.VertexBuffer | BindFlag.IndexBuffer, maxBufferSize);
-            DynamicVertexBuffer = new GraphicsBuffer(Device, BufferMode.DynamicRing, BindFlag.VertexBuffer | BindFlag.IndexBuffer, maxBufferSize);
+            StaticVertexBuffer = new GraphicsBuffer(NativeDevice, BufferMode.Default, BindFlag.VertexBuffer | BindFlag.IndexBuffer, maxBufferSize);
+            DynamicVertexBuffer = new GraphicsBuffer(NativeDevice, BufferMode.DynamicRing, BindFlag.VertexBuffer | BindFlag.IndexBuffer, maxBufferSize);
 
-            StagingBuffer = new StagingBuffer(Device, StagingBufferFlags.Write, maxBufferSize);
+            StagingBuffer = new StagingBuffer(NativeDevice, StagingBufferFlags.Write, maxBufferSize);
             SpriteBatcher = new SpriteBatcherDX11(this, 3000, 20);
 
             Surfaces.Initialize(BiggestWidth, BiggestHeight);
@@ -96,15 +103,9 @@ namespace Molten.Graphics
             return new SceneRenderData<Renderable>();
         }
 
-        protected override void OnPrePresent(Timing time)
-        {
-            Device.DisposeMarkedObjects();
-        }
+        protected override void OnPrePresent(Timing time) { }
 
-        protected override void OnPreRenderScene(SceneRenderData sceneData, Timing time)
-        {
-            
-        }
+        protected override void OnPreRenderScene(SceneRenderData sceneData, Timing time) { }
 
         protected override void OnPostRenderScene(SceneRenderData sceneData, Timing time)
         {
@@ -114,12 +115,12 @@ namespace Molten.Graphics
 
         protected override void OnPreRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
-            Device.Cmd.Profiler = camera.Profiler;
+            NativeDevice.Cmd.Profiler = camera.Profiler;
         }
 
         protected override void OnPostRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
-            Device.Cmd.Profiler = null;
+            NativeDevice.Cmd.Profiler = null;
         }
 
         protected override void OnPostPresent(Timing time)
@@ -189,16 +190,11 @@ namespace Molten.Graphics
 
             StaticVertexBuffer.Dispose();
             DynamicVertexBuffer.Dispose();
-            Device?.Dispose();
+            NativeDevice?.Dispose();
             _api.Dispose();
         }
 
-        /// <summary>
-        /// Gets the display manager bound to the renderer.
-        /// </summary>
-        public override DisplayManager DisplayManager => _displayManager;
-
-        internal DeviceDX11 Device { get; private set; }
+        internal DeviceDX11 NativeDevice { get; private set; }
 
         public override IComputeManager Compute => _compute;
 

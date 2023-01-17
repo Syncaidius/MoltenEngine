@@ -15,7 +15,7 @@ namespace Molten.Graphics
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings
             uint bufferByteSize = stride * maxLights;
-            _lightDataBuffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicRing, 
+            _lightDataBuffer = new GraphicsBuffer(renderer.NativeDevice, BufferMode.DynamicRing, 
                 BindFlag.ShaderResource, bufferByteSize, ResourceMiscFlag.BufferStructured, structuredStride: stride);
             _lightSegment = _lightDataBuffer.Allocate<LightData>(maxLights);
 
@@ -38,7 +38,7 @@ namespace Molten.Graphics
             RenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
             DepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            CommandQueueDX11 cmd = renderer.Device.Cmd;
+            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
 
             _surfaceLighting.Clear(cmd, context.Scene.AmbientLightColor);
             cmd.State.ResetRenderSurfaces();

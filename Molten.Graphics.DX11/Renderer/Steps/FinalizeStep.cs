@@ -21,7 +21,7 @@
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF bounds = new RectangleF(0, 0, camera.Surface.Width, camera.Surface.Height);
-            CommandQueueDX11 cmd = renderer.Device.Cmd;
+            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
             RenderSurface2D finalSurface = camera.Surface as RenderSurface2D;
 
             if (!camera.HasFlags(RenderCameraFlags.DoNotClear))

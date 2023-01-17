@@ -23,7 +23,7 @@ namespace Molten.Graphics
             Viewport = new ViewportF(0, 0, width, height);
 
             Name = $"Surface_{name ?? GetType().Name}";
-            RTV = new RenderTargetView(renderer.Device)
+            RTV = new RenderTargetView(renderer.NativeDevice)
             {
                 Desc = new RenderTargetViewDesc1()
                 {
@@ -97,10 +97,10 @@ namespace Molten.Graphics
         }
 
         /// <summary>Called when the render target needs to be disposed.</summary>
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             RTV.Release();
-            base.PipelineRelease();
+            base.GraphicsRelease();
         }
 
         /// <summary>Gets the viewport that defines the default renderable area of the render target.</summary>

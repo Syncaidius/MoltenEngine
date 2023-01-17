@@ -81,11 +81,11 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 //create new state
-                Device.Ptr->CreateRasterizerState2(ref _desc, ref _native);
+                NativeDevice.Ptr->CreateRasterizerState2(ref _desc, ref _native);
             }
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

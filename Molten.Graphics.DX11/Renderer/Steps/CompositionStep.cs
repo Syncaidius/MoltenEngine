@@ -37,7 +37,7 @@
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF vpBounds = camera.Surface.Viewport.Bounds;
-            CommandQueueDX11 cmd = renderer.Device.Cmd;
+            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
 
             context.CompositionSurface.Clear(context.Scene.BackgroundColor);
             cmd.State.ResetRenderSurfaces();

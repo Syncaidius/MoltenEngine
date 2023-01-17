@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents an implementation of a graphics device, adapter and/or display manager.
     /// </summary>
-    public abstract class DisplayManager : EngineObject
+    public abstract class GraphicsDisplayManager : EngineObject
     {
         /// <summary>Initializes the display manager using the provided <see cref="GraphicsSettings"/>.</summary>
         /// <param name="log">The <see cref="Logger"/> for providing feedback or debug info about initialization.</param>
@@ -96,7 +96,7 @@
             }
         }
 
-        /// <summary>Invoked when the current <see cref="DisplayManager"/> is being initialized..</summary>
+        /// <summary>Invoked when the current <see cref="GraphicsDisplayManager"/> is being initialized..</summary>
         /// <param name="log">The <see cref="Logger"/> for providing feedback or debug info about initialization.</param>
         /// <param name="settings">An instance of <see cref="GraphicsSettings"/>. This is used to help configure the display manager.</param>
         protected abstract void OnInitialize(Logger log, GraphicsSettings settings);
@@ -120,12 +120,12 @@
         public abstract IDisplayAdapter SelectedAdapter { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="GraphicsSettings"/> that the current <see cref="DisplayManager"/> was initialized and bound to.
+        /// Gets the <see cref="GraphicsSettings"/> that the current <see cref="GraphicsDisplayManager"/> was initialized and bound to.
         /// </summary>
         public GraphicsSettings Settings { get; private set; }
 
         /// <summary>
-        /// Getts the <see cref="Logger"/> that the current <see cref="DisplayManager"/> uses for outputting information.
+        /// Getts the <see cref="Logger"/> that the current <see cref="GraphicsDisplayManager"/> uses for outputting information.
         /// </summary>
         public Logger Log { get; private set; }
 

@@ -19,7 +19,6 @@ namespace Molten.Graphics
         SamplerBank _samplerBank;
 
         ObjectPool<BufferSegment> _bufferSegmentPool;
-        ThreadedQueue<ContextObject> _objectsToDispose;
 
         CommandQueueDX11 CmdList;
         List<CommandQueueDX11> _deferredContexts;
@@ -34,9 +33,7 @@ namespace Molten.Graphics
             _adapter = adapter as DisplayAdapterDXGI;
             _deferredContexts = new List<CommandQueueDX11>();
             VertexFormatCache = new TypedObjectCache<IVertexType, VertexFormat>(VertexFormat.FromType);
-
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
-            _objectsToDispose = new ThreadedQueue<ContextObject>();
 
             HResult r = _builder.CreateDevice(_adapter, out PtrRef, out ID3D11DeviceContext4* deviceContext);
             if (r.IsFailure)
@@ -61,20 +58,6 @@ namespace Molten.Graphics
         internal void RecycleBufferSegment(BufferSegment segment)
         {
             _bufferSegmentPool.Recycle(segment);
-        }
-
-        public void MarkForRelease(ContextObject pObject)
-        {
-            if (IsDisposed)
-                pObject.PipelineRelease();
-            else
-                _objectsToDispose.Enqueue(pObject);
-        }
-
-        internal void DisposeMarkedObjects()
-        {
-            while (_objectsToDispose.TryDequeue(out ContextObject obj))
-                obj.PipelineRelease();
         }
 
         /// <summary>Gets a new deferred <see cref="CommandQueueDX11"/>.</summary>
@@ -127,9 +110,7 @@ namespace Molten.Graphics
             SamplerBank.Dispose();
 
             CmdList.Dispose();
-
             _bufferSegmentPool.Dispose();
-            DisposeMarkedObjects();
 
             base.OnDispose();
         }

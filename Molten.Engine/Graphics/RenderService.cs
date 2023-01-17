@@ -94,6 +94,7 @@ namespace Molten.Graphics
                 return;
 
             Profiler.Begin();
+            Device.DisposeMarkedObjects();
             OnPrePresent(time);
 
             if (_requestedMultiSampleLevel != MsaaLevel)
@@ -214,7 +215,7 @@ namespace Molten.Graphics
         /// <param name="settings"></param>
         protected override void OnInitialize(EngineSettings settings)
         {
-            OnInitializeApi(settings.Graphics);
+            DisplayManager = OnInitializeDisplayManager(settings.Graphics);
 
             try
             {
@@ -240,13 +241,24 @@ namespace Molten.Graphics
             }
             catch (Exception ex)
             {
-                Log.WriteLine("Failed to initialize renderer");
+                Log.Error("Failed to initialize renderer");
                 Log.Error(ex, true);
             }
 
             settings.Graphics.Log(Log, "Graphics");
             MsaaLevel = _requestedMultiSampleLevel = MsaaLevel;
             settings.Graphics.MSAA.OnChanged += MSAA_OnChanged;
+
+            try
+            {
+                Device = OnInitializeDevice(settings.Graphics, DisplayManager);
+                Log.WriteLine("Initialized graphics device");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Failed to initialize graphics device");
+                Log.Error(ex, true);
+            }
         } 
 
         private void MSAA_OnChanged(AntiAliasLevel oldValue, AntiAliasLevel newValue)
@@ -281,7 +293,9 @@ namespace Molten.Graphics
         /// Invoked during the first stage of service initialization to allow any api-related objects to be created/initialized prior to renderer initialization.
         /// </summary>
         /// <param name="settings">The <see cref="GraphicsSettings"/> bound to the current engine instance.</param>
-        protected abstract void OnInitializeApi(GraphicsSettings settings);
+        protected abstract GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings);
+
+        protected abstract GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsDisplayManager manager);
 
         /// <summary>
         /// Occurs when the render engine detects changes which usually require render surfaces to be rebuilt, such as the game window being resized, or certain graphics settings being changed.
@@ -291,7 +305,7 @@ namespace Molten.Graphics
         protected abstract void OnRebuildSurfaces(uint requiredWidth, uint requiredHeight);
 
         /// <summary>
-        /// Occurs before the render engine begins rendering all of the active scenes to be output to the user.
+        /// Occurs before the render engine begins rendering all of the active scenes to the active output(s).
         /// </summary>
         /// <param name="time">A timing instance.</param>
         protected abstract void OnPrePresent(Timing time);
@@ -332,6 +346,7 @@ namespace Molten.Graphics
 
             Log.Dispose();
         }
+
         protected abstract void OnDisposeBeforeRender();
 
         /// <summary>
@@ -342,7 +357,12 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the display manager bound to the renderer.
         /// </summary>
-        public abstract DisplayManager DisplayManager { get; }
+        public GraphicsDisplayManager DisplayManager { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="GraphicsDevice"/> bound to the current <see cref="RenderService"/>.
+        /// </summary>
+        protected internal GraphicsDevice Device { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="ResourceFactory"/> bound to the renderer.

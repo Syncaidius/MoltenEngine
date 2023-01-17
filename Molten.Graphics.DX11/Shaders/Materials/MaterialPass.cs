@@ -13,15 +13,15 @@ namespace Molten.Graphics
         Material _parent;
 
         internal MaterialPass(Material material, string name) : 
-            base(material.Device)
+            base(material.NativeDevice)
         {
             _parent = material;
             Name = name;
 
             VS = new VSComposition(material);
-            GS = new GSComposition(material);
             HS = new HSComposition(material);
             DS = new DSComposition(material);
+            GS = new GSComposition(material);
             PS = new PSComposition(material);
 
             Compositions = new ShaderComposition[5];
@@ -45,7 +45,7 @@ namespace Molten.Graphics
             return result;
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             for (int i = 0; i < Compositions.Length; i++)
                 Compositions[i].Dispose();

@@ -30,7 +30,7 @@ namespace Molten.Graphics
         RendererDX11 _renderer;
 
         internal TextureBase(RendererDX11 renderer, uint width, uint height, uint depth, uint mipCount, 
-            uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, TextureFlags flags) : base(renderer.Device,
+            uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, TextureFlags flags) : base(renderer.NativeDevice,
                 ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? ContextBindTypeFlags.Output : ContextBindTypeFlags.None) |
                 ((flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? ContextBindTypeFlags.Input : ContextBindTypeFlags.None))
         {
@@ -175,12 +175,12 @@ namespace Molten.Graphics
 
         protected virtual void OnDisposeForRecreation()
         {
-            PipelineRelease();
+            GraphicsRelease();
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
-            base.PipelineRelease();
+            base.GraphicsRelease();
 
             //TrackDeallocation();
             SilkUtil.ReleasePtr(ref _native);

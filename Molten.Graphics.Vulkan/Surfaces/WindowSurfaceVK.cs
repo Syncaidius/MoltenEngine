@@ -89,7 +89,7 @@ namespace Molten.Graphics
                 return;
 
             Native = new SurfaceKHR(surfaceHandle.Handle);
-            _presentQueue = renderer.Device.FindPresentQueue(this);
+            _presentQueue = renderer.NativeDevice.FindPresentQueue(this);
 
             if (_presentQueue == null)
             {

@@ -167,7 +167,7 @@ namespace Molten.Graphics
             ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
             buffer->GetDesc(ref bufferDesc);
 
-            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.Device, BufferMode.DynamicDiscard, buffer, ref bufferDesc);
+            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.NativeDevice, BufferMode.DynamicDiscard, buffer, ref bufferDesc);
             string localName = cBuffer.BufferName;
 
             if (cBuffer.BufferName == "$Globals")

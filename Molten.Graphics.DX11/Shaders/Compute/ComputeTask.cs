@@ -12,9 +12,10 @@
             Composition = new CSComposition(this, ShaderType.Compute);
         }
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             Composition.Dispose();
+            base.OnDispose();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics
 {
     internal abstract class GraphicsStateBank<T, E> : IDisposable
-        where T : ContextObject
+        where T : GraphicsObject
         where E: struct, IConvertible
     {
         protected T[] _presets;

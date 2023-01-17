@@ -28,7 +28,7 @@ namespace Molten.Graphics
         internal unsafe abstract void SetBytecode(ID3D10Blob* byteCode);
 
         internal ShaderComposition(HlslShader parentShader, ShaderType type) : 
-            base(parentShader.Device, ContextBindTypeFlags.Input)
+            base(parentShader.NativeDevice, ContextBindTypeFlags.Input)
         {
             Parent = parentShader;
             Type = type;
@@ -57,7 +57,7 @@ namespace Molten.Graphics
         /// <summary>The underlying, compiled HLSL shader object.</summary>
         internal T* PtrShader => _ptrShader;
 
-        internal override void PipelineRelease()
+        public override void GraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _ptrShader);
         }
