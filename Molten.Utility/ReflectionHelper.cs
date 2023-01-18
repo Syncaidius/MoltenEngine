@@ -33,7 +33,7 @@ namespace Molten
         public static IEnumerable<Type> FindTypeInParentAssembly<T>(bool includeAbstract = false)
         {
             Type bType = typeof(T);
-            return bType.Assembly.GetTypes().Where(t => t.IsSubclassOf(bType) && (includeAbstract || !t.IsAbstract));
+            return FindType<T>(bType.Assembly, includeAbstract);
         }
 
         public static IEnumerable<Type> FindType<T>(Assembly assembly, bool includeAbstract = false)
@@ -41,8 +41,11 @@ namespace Molten
             Type bType = typeof(T);
 
             return assembly.GetTypes().Where(t =>
-                !t.IsGenericType && (t.IsSubclassOf(bType) && (includeAbstract || !t.IsAbstract) || 
-                (bType.IsAssignableFrom(t) && !t.IsInterface)));
+            {
+                return !t.IsGenericType
+                && (includeAbstract || !t.IsAbstract)
+                && (t.IsSubclassOf(bType) || (bType.IsAssignableFrom(t) && !t.IsInterface));
+            });
         }
 
         public static IEnumerable<Type> FindTypesWithAttribute<T>(Assembly assembly, bool includeAbstract = false) where T : Attribute

@@ -53,11 +53,6 @@ namespace Molten.Graphics
             _compiler = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
         }
 
-        protected override List<Type> GetNodeParserList()
-        {
-            return new List<Type>();
-        }
-
         protected override void OnDispose()
         {
             SilkUtil.ReleasePtr(ref _compiler);

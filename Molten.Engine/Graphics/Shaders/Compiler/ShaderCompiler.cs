@@ -30,6 +30,7 @@ namespace Molten.Graphics
     /// </summary>
     /// <typeparam name="R"></typeparam>
     /// <typeparam name="S"></typeparam>
+    /// <typeparam name="N"></typeparam>
     public abstract class ShaderCompiler<R, S> : ShaderCompiler
         where R : RenderService
         where S : IShaderElement
@@ -61,8 +62,6 @@ namespace Molten.Graphics
             InitializeNodeParsers();
         }
 
-        protected abstract IEnumerable<Type> GetNodeParserList();
-
         /// <summary>
         /// Registers all <see cref="ShaderNodeParser{R, S}"/> types in the assembly.
         /// from type <typeparamref name="T"/>.
@@ -70,7 +69,8 @@ namespace Molten.Graphics
         /// <typeparam name="T">The base type of the node parsers to be detected and added.</typeparam>
         private void InitializeNodeParsers()
         {
-            List<Type> nParserList = GetNodeParserList().ToList();
+            Assembly nodeAssembly = GetType().Assembly;
+            List<Type> nParserList = ReflectionHelper.FindType<ShaderNodeParser<R,S>>(nodeAssembly).ToList();
             IEnumerable<Type> defaultNodeParsers = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<R,S>>();
             nParserList.AddRange(defaultNodeParsers);
 
