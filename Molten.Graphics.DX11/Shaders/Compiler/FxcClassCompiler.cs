@@ -44,25 +44,25 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected void BuildIO(FxcCompileResult result, ShaderComposition composition)
+        protected void BuildIO(ShaderClassResult result, ShaderComposition composition)
         {
             composition.InputStructure = new ShaderIOStructure(result, ShaderIOStructureType.Input);
             composition.OutputStructure = new ShaderIOStructure(result, ShaderIOStructureType.Output);
         }
 
         protected bool BuildStructure<T>(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            HlslShader shader, FxcCompileResult result, ShaderComposition<T> composition) 
+            HlslShader shader, ShaderClassResult result, ShaderComposition<T> composition) 
             where T : unmanaged
         {
-            for (uint r = 0; r < result.Reflection.Desc.BoundResources; r++)
+            for (int r = 0; r < result.Reflection.Inputs.Count; r++)
             {
-                HlslInputBindDescription bindDesc = result.Reflection.BindDescs[r];
-                uint bindPoint = bindDesc.Ptr->BindPoint;
+                ShaderInputInfo bindInfo = result.Reflection.Inputs[r];
+                uint bindPoint = bindInfo.BindPoint;
 
-                switch (bindDesc.Ptr->Type)
+                switch (bindInfo.InputType)
                 {
-                    case D3DShaderInputType.D3DSitCbuffer:
-                        ID3D11ShaderReflectionConstantBuffer* buffer = result.Reflection.Ptr->GetConstantBufferByName(bindDesc.Ptr->Name);
+                    case ShaderInputType.CBuffer:
+                        ID3D11ShaderReflectionConstantBuffer* buffer = result.Reflection.Ptr->GetConstantBufferByName(bindInfo.Name);
                         ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
                         buffer->GetDesc(ref bufferDesc);
 
@@ -72,8 +72,8 @@ namespace Molten.Graphics
                             if (bindPoint >= shader.ConstBuffers.Length)
                                 Array.Resize(ref shader.ConstBuffers, (int)bindPoint + 1);
 
-                            if(shader.ConstBuffers[bindPoint] != null && shader.ConstBuffers[bindPoint].BufferName != bindDesc.Name)
-                                context.AddMessage($"Shader constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindDesc.Name}' at the same register (b{bindPoint}).", 
+                            if(shader.ConstBuffers[bindPoint] != null && shader.ConstBuffers[bindPoint].BufferName != bindInfo.Name)
+                                context.AddMessage($"Shader constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindInfo.Name}' at the same register (b{bindPoint}).", 
                                     ShaderCompilerMessage.Kind.Warning);
 
                             shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, buffer);
@@ -82,16 +82,14 @@ namespace Molten.Graphics
 
                         break;
 
-                    case D3DShaderInputType.D3DSitTexture:
-                        OnBuildTextureVariable(context, shader, bindDesc);
-                        composition.ResourceIds.Add(bindDesc.Ptr->BindPoint);
+                    case ShaderInputType.Texture:
+                        OnBuildTextureVariable(context, shader, bindInfo);
+                        composition.ResourceIds.Add(bindInfo.BindPoint);
                         break;
 
-                    case D3DShaderInputType.D3DSitSampler:
-                        bool isComparison = ((D3DShaderInputFlags)bindDesc.Ptr->UFlags & D3DShaderInputFlags.D3DSifComparisonSampler) == 
-                            D3DShaderInputFlags.D3DSifComparisonSampler;
-
-                        ShaderSamplerVariable sampler = GetVariableResource<ShaderSamplerVariable>(context, shader, bindDesc);
+                    case ShaderInputType.Sampler:
+                        bool isComparison = bindInfo.HasInputFlags(ShaderInputFlags.ComparisonSampler);
+                        ShaderSamplerVariable sampler = GetVariableResource<ShaderSamplerVariable>(context, shader, bindInfo);
 
                         if (bindPoint >= shader.SamplerVariables.Length)
                         {
@@ -107,8 +105,8 @@ namespace Molten.Graphics
                         composition.SamplerIds.Add(bindPoint);
                         break;
 
-                    case D3DShaderInputType.D3DSitStructured:
-                        BufferVariable bVar = GetVariableResource<BufferVariable>(context, shader, bindDesc);
+                    case ShaderInputType.Structured:
+                        BufferVariable bVar = GetVariableResource<BufferVariable>(context, shader, bindInfo);
                         if (bindPoint >= shader.Resources.Length)
                             EngineUtil.ArrayResize(ref shader.Resources, bindPoint + 1);
 
@@ -117,7 +115,7 @@ namespace Molten.Graphics
                         break;
 
                     default:
-                        OnBuildVariableStructure(context, shader, result, bindDesc);
+                        OnBuildVariableStructure(context, shader, result, bindInfo);
                         break;
                 }
             }
@@ -126,31 +124,30 @@ namespace Molten.Graphics
         }
 
         protected abstract void OnBuildVariableStructure(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            HlslFoundation shader, FxcCompileResult result, HlslInputBindDescription bind);
-
+            HlslFoundation shader, ShaderClassResult result, ShaderInputInfo info);
 
         private void OnBuildTextureVariable(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            HlslShader shader, HlslInputBindDescription bind)
+            HlslShader shader, ShaderInputInfo info)
         {
             ShaderResourceVariable obj = null;
-            uint bindPoint = bind.Ptr->BindPoint;
+            uint bindPoint = info.BindPoint;
 
-            switch (bind.Ptr->Dimension)
+            switch (info.Dimension)
             {
-                case D3DSrvDimension.D3DSrvDimensionTexture1Darray:
-                case D3DSrvDimension.D3DSrvDimensionTexture1D:
-                    obj = GetVariableResource<Texture1DVariable>(context, shader, bind);
+                case ShaderResourceDimension.Texture1DArray:
+                case ShaderResourceDimension.Texture1D:
+                    obj = GetVariableResource<Texture1DVariable>(context, shader, info);
                     break;
 
-                case D3DSrvDimension.D3D101SrvDimensionTexture2Dms:
-                case D3DSrvDimension.D3D101SrvDimensionTexture2Dmsarray:
-                case D3DSrvDimension.D3DSrvDimensionTexture2Darray:
-                case D3DSrvDimension.D3DSrvDimensionTexture2D:
-                    obj = GetVariableResource<Texture2DVariable>(context, shader, bind);
+                case ShaderResourceDimension.Texture2DMS:
+                case ShaderResourceDimension.Texture2DMSArray:
+                case ShaderResourceDimension.Texture2DArray:
+                case ShaderResourceDimension.Texture2D:
+                    obj = GetVariableResource<Texture2DVariable>(context, shader, info);
                     break;
 
-                case D3DSrvDimension.D3DSrvDimensionTexturecube:
-                    obj = GetVariableResource<TextureCubeVariable>(context, shader, bind);
+                case ShaderResourceDimension.Texturecube:
+                    obj = GetVariableResource<TextureCubeVariable>(context, shader, info);
                     break;
             }
 
@@ -162,12 +159,9 @@ namespace Molten.Graphics
         }
 
         private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            HlslShader shader, ID3D11ShaderReflectionConstantBuffer* buffer)
+            HlslShader shader, ConstantBufferInfo info)
         {
-            ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
-            buffer->GetDesc(ref bufferDesc);
-
-            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.NativeDevice, BufferMode.DynamicDiscard, buffer, ref bufferDesc);
+            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.NativeDevice, BufferMode.DynamicDiscard, info);
             string localName = cBuffer.BufferName;
 
             if (cBuffer.BufferName == "$Globals")
@@ -219,14 +213,14 @@ namespace Molten.Graphics
         }
 
         protected T GetVariableResource<T>(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            HlslShader shader, HlslInputBindDescription desc) 
+            HlslShader shader, ShaderInputInfo info) 
             where T : class, IShaderValue
         {
             IShaderValue existing = null;
             T bVar = null;
             Type t = typeof(T);
 
-            if (shader.Variables.TryGetValue(desc.Name, out existing))
+            if (shader.Variables.TryGetValue(info.Name, out existing))
             {
                 T other = existing as T;
 
@@ -238,14 +232,14 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    context.AddMessage($"Resource '{t.Name}' creation failed. A resource with the name '{desc.Name}' already exists!");
+                    context.AddMessage($"Resource '{t.Name}' creation failed. A resource with the name '{info.Name}' already exists!");
                 }
             }
             else
             {
                 BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
                 bVar = Activator.CreateInstance(typeof(T), bindFlags, null, new object[] { shader }, null) as T;
-                bVar.Name = desc.Name;
+                bVar.Name = info.Name;
 
                 shader.Variables.Add(bVar.Name, bVar);
             }

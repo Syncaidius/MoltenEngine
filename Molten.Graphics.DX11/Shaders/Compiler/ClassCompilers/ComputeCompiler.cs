@@ -15,11 +15,11 @@ namespace Molten.Graphics
             try
             {
                 context.Compiler.ParserHeader(compute, in header, context);
-                FxcCompileResult result = null;
+                ShaderClassResult result = null;
                 if (context.Renderer.ShaderCompiler.CompileSource(compute.Composition.EntryPoint, ShaderType.Compute, context, out result))
                 {
                     if(BuildStructure(context, compute, result, compute.Composition))
-                        compute.Composition.SetBytecode(result.ByteCode);
+                        compute.Composition.SetBytecode((ID3D10Blob*)result.ByteCode);
                 }
             }
             catch (Exception e)
@@ -42,7 +42,7 @@ namespace Molten.Graphics
 
         protected override void OnBuildVariableStructure(
             ShaderCompilerContext<RendererDX11, HlslFoundation> context,
-            HlslFoundation shader, FxcCompileResult result, HlslInputBindDescription bind)
+            HlslFoundation shader, ShaderClassResult result, HlslInputBindDescription bind)
         {
             ComputeTask ct = shader as ComputeTask;
 

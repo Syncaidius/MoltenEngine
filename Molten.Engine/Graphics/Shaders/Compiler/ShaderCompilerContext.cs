@@ -7,7 +7,7 @@
         /// <summary>
         /// HLSL shader objects stored by entry-point name
         /// </summary>
-        public Dictionary<string, IShaderClassResult> Shaders { get; } 
+        public Dictionary<string, ShaderClassResult> Shaders { get; } 
 
         public ShaderCompileResult Result { get; }
 
@@ -31,7 +31,7 @@
             _messages = new List<ShaderCompilerMessage>();
             _resources = new Dictionary<Type, Dictionary<string, object>>();
             Messages = _messages.AsReadOnly();
-            Shaders = new Dictionary<string, IShaderClassResult>();
+            Shaders = new Dictionary<string, ShaderClassResult>();
             Result = new ShaderCompileResult();
             Compiler = compiler;
             Renderer = compiler.Renderer;

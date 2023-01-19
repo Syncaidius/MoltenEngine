@@ -16,38 +16,36 @@ namespace Molten.Graphics
         internal int Hash;
         byte* _constData;
 
-        internal ShaderConstantBuffer(DeviceDX11 device, BufferMode flags, 
-            ID3D11ShaderReflectionConstantBuffer* srConstBuffer, ref ShaderBufferDesc desc)
+        internal ShaderConstantBuffer(DeviceDX11 device, BufferMode flags, ConstantBufferInfo desc)
             : base(device, flags, BindFlag.ConstantBuffer, desc.Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
             _constData = (byte*)EngineUtil.Alloc(desc.Size);
 
             // Read sdescription data
-            BufferName = SilkMarshal.PtrToString((nint)desc.Name);
-            Flags = (D3DShaderCBufferFlags)desc.UFlags;
-            Type = desc.Type;
+            BufferName = desc.Name;
+            Flags = (D3DShaderCBufferFlags)desc.Flags;
+            Type = (D3DCBufferType)desc.Type;
 
             string hashString = BufferName;
-            uint variableCount = desc.Variables;
+            uint variableCount = (uint)desc.Variables.Count;
             Variables = new ShaderConstantVariable[variableCount];
 
             // Read all variables from the constant buffer
-            for (uint c = 0; c < variableCount; c++)
+            for (int c = 0; c < desc.Variables.Count; c++)
             {
-                ID3D11ShaderReflectionVariable* variable = srConstBuffer->GetVariableByIndex(c);
-                ShaderVariableInfo info = new ShaderVariableInfo(variable);
-                ShaderConstantVariable sv = GetShaderVariable(info);
+                ConstantBufferVariableInfo variable = desc.Variables[c];
+                ShaderConstantVariable sv = GetShaderVariable(variable);
 
                 // Throw exception if the variable type is unsupported.
                 if (sv == null) // TODO remove this exception!
-                    throw new NotSupportedException("Shader pipeline does not support HLSL variables of type: " + info.TypeDesc->Type + " -- " + info.TypeDesc->Class);
+                    throw new NotSupportedException("Shader pipeline does not support HLSL variables of type: " + variable.Type.Type + " -- " + variable.Type.Class);
 
-                sv.Name = SilkMarshal.PtrToString((nint)info.Desc->Name);
-                sv.ByteOffset = info.Desc->StartOffset;
+                sv.Name = variable.Name;
+                sv.ByteOffset = variable.StartOffset;
 
-                if(info.Desc->DefaultValue != null)
-                    sv.ValueFromPtr(info.Desc->DefaultValue);
+                if(variable.DefaultValue != null)
+                    sv.ValueFromPtr(variable.DefaultValue);
 
                 _varLookup.Add(sv.Name, sv);
                 Variables[c] = sv;
@@ -94,48 +92,48 @@ namespace Molten.Graphics
         /// <summary>Figures out what type to use for a shader variable.</summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        private unsafe ShaderConstantVariable GetShaderVariable(ShaderVariableInfo vInfo)
+        private unsafe ShaderConstantVariable GetShaderVariable(ConstantBufferVariableInfo vInfo)
         {
-            uint columns = vInfo.TypeDesc->Columns;
-            uint rows = vInfo.TypeDesc->Rows;
-            uint elementCount = vInfo.TypeDesc->Elements;
-            uint offset = vInfo.TypeDesc->Offset;
+            uint columns = vInfo.Type.ColumnCount;
+            uint rows = vInfo.Type.RowCount;
+            uint elementCount = vInfo.Type.Elements;
+            uint offset = vInfo.Type.Offset;
 
-            switch (vInfo.TypeDesc->Class)
+            switch (vInfo.Type.Class)
             {
                 default:
                     if (elementCount > 0)
                     {
-                        switch (vInfo.TypeDesc->Type)
+                        switch (vInfo.Type.Type)
                         {
-                            case D3DShaderVariableType.D3DSvtInt:
+                            case ShaderVariableType.Int:
                                 return new ScalarArray<int>(this, elementCount);
-                            case D3DShaderVariableType.D3DSvtUint:
+                            case ShaderVariableType.Uint:
                                 return new ScalarArray<uint>(this, elementCount);
-                            case D3DShaderVariableType.D3DSvtFloat:
+                            case ShaderVariableType.Float:
                                 return new ScalarArray<float>(this, elementCount);
                         }
                     }
                     else
                     {
-                        switch (vInfo.TypeDesc->Type)
+                        switch (vInfo.Type.Type)
                         {
-                            case D3DShaderVariableType.D3DSvtInt:
+                            case ShaderVariableType.Int:
                                 return new ScalarVariable<int>(this, rows, columns);
-                            case D3DShaderVariableType.D3DSvtUint:
+                            case ShaderVariableType.Uint:
                                 return new ScalarVariable<uint>(this, rows, columns);
-                            case D3DShaderVariableType.D3DSvtFloat:
+                            case ShaderVariableType.Float:
                                 return new ScalarVariable<float>(this, rows, columns);
                         }
                     }
                     break;
 
-                case D3DShaderVariableClass.D3DSvcMatrixColumns:
+                case ShaderVariableClass.MatrixColumns:
                     if (elementCount > 0)
                     {
-                        switch (vInfo.TypeDesc->Type)
+                        switch (vInfo.Type.Type)
                         {
-                            case D3DShaderVariableType.D3DSvtFloat:
+                            case ShaderVariableType.Float:
                                 if (columns == 4 && rows == 4)
                                     return new ScalarFloat4x4ArrayVariable(this, elementCount);
                                 else if (columns == 3 && rows == 3)
@@ -149,14 +147,14 @@ namespace Molten.Graphics
                     }
                     else
                     {
-                        switch (vInfo.TypeDesc->Type)
+                        switch (vInfo.Type.Type)
                         {
-                            case D3DShaderVariableType.D3DSvtFloat:
-                                if (vInfo.TypeDesc->Columns == 4 && rows == 4)
+                            case ShaderVariableType.Float:
+                                if (vInfo.Type.ColumnCount == 4 && rows == 4)
                                     return new ScalarFloat4x4Variable(this);
-                                else if (vInfo.TypeDesc->Columns == 2 && rows == 3)
+                                else if (vInfo.Type.ColumnCount == 2 && rows == 3)
                                     return new ScalarFloat3x2Variable(this);
-                                else if (vInfo.TypeDesc->Columns == 3 && rows == 3)
+                                else if (vInfo.Type.ColumnCount == 3 && rows == 3)
                                     return new ScalarFloat3x3Variable(this);
                                 else
                                     return new ScalarVariable<float>(this, rows, columns);

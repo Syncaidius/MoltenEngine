@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics
+﻿using Silk.NET.Core.Native;
+
+namespace Molten.Graphics
 {
     internal unsafe class MaterialCompiler : FxcClassCompiler
     {
@@ -101,7 +103,7 @@
                 }
 
                 material.InputStructure = material.Passes[0].VS.InputStructure;
-                material.InputStructureByteCode = firstPassResult[ShaderType.Vertex].ByteCode;
+                material.InputStructureByteCode = (ID3D10Blob*)firstPassResult[ShaderType.Vertex].ByteCode;
                 result.Add(material);
 
                 material.Scene = new SceneMaterialProperties(material);
@@ -135,12 +137,12 @@
                     continue;
                 }
 
-                FxcCompileResult cResult = null;
+                ShaderClassResult cResult = null;
                 if (context.Renderer.ShaderCompiler.CompileSource(sc.EntryPoint,
                     sc.Type, context, out cResult))
                 {
                     result[sc.Type] = cResult;
-                    sc.SetBytecode(cResult.ByteCode);
+                    sc.SetBytecode((ID3D10Blob*)cResult.ByteCode);
                     BuildIO(cResult, sc);
                 }
                 else
@@ -155,8 +157,8 @@
                 // Fill in any extra metadata
                 if (result[ShaderType.Geometry] != null)
                 {
-                    FxcCompileResult fcr = result[ShaderType.Geometry];
-                    pass.GeometryPrimitive = fcr.Reflection.Ptr->GetGSInputPrimitive();
+                    ShaderClassResult fcr = result[ShaderType.Geometry];
+                    pass.GeometryPrimitive = fcr.Reflection.GSInputPrimitive.ToApi();
                 }
 
                 // Validate I/O structure of each shader stage.
@@ -211,6 +213,6 @@
         }
 
         protected override void OnBuildVariableStructure(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            HlslFoundation foundation, FxcCompileResult result, HlslInputBindDescription bind) { }
+            HlslFoundation foundation, ShaderClassResult result, HlslInputBindDescription bind) { }
     }
 }

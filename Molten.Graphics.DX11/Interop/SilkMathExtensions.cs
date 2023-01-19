@@ -35,6 +35,34 @@ namespace Molten.Graphics
             return (D3DPrimitiveTopology)type;
         }
 
+        public static D3DPrimitive ToApi(this PrimitiveTopology type)
+        {
+            return (D3DPrimitive)type;
+        }
+
+        public static D3DSrvDimension ToApi(this ShaderResourceDimension dimension)
+        {
+            return (D3DSrvDimension)dimension;
+        }
+
+        public static D3DShaderInputType ToApi(this ShaderInputType type)
+        {
+            return (D3DShaderInputType)type;
+        }
+
+        public static D3DResourceReturnType ToApi(this ShaderReturnType type)
+        {
+            return (D3DResourceReturnType)type;
+        }
+
+        public static D3DShaderInputFlags ToApi(this ShaderInputFlags type)
+        {
+            return (D3DShaderInputFlags)type;
+        }
+        public static D3DCBufferType ToApi(this ConstantBufferType type)
+        {
+            return (D3DCBufferType)type;
+        }
 
 
         public static Silk.NET.Direct3D11.Viewport ToApi(this ViewportF r)
@@ -68,6 +96,36 @@ namespace Molten.Graphics
         public static VertexTopology FromApi(this D3DPrimitiveTopology topology)
         {
             return (VertexTopology)topology;
+        }
+
+        public static PrimitiveTopology FromApi(this D3DPrimitive topology)
+        {
+            return (PrimitiveTopology)topology;
+        }
+
+        public static ShaderResourceDimension FromApi(this D3DSrvDimension dimension)
+        {
+            return (ShaderResourceDimension)dimension;
+        }
+
+        public static ShaderInputType FromApi(this D3DShaderInputType type)
+        {
+            return (ShaderInputType)type;
+        }
+
+        public static ShaderReturnType FromApi(this D3DResourceReturnType type)
+        {
+            return (ShaderReturnType)type;
+        }
+
+        public static ShaderInputFlags FromApi(this D3DShaderInputFlags type)
+        {
+            return (ShaderInputFlags)type;
+        }
+
+        public static ConstantBufferType FromApi(this D3DCBufferType type)
+        {
+            return (ConstantBufferType)type;
         }
 
         public static Rectangle FromApi(this Rectangle<int> r)

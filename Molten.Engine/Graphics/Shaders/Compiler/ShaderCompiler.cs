@@ -30,7 +30,6 @@ namespace Molten.Graphics
     /// </summary>
     /// <typeparam name="R"></typeparam>
     /// <typeparam name="S"></typeparam>
-    /// <typeparam name="N"></typeparam>
     public abstract class ShaderCompiler<R, S> : ShaderCompiler
         where R : RenderService
         where S : IShaderElement
@@ -61,6 +60,8 @@ namespace Molten.Graphics
 
             InitializeNodeParsers();
         }
+
+        protected unsafe abstract ShaderReflection BuildReflection(ShaderCompilerContext<R, S> context, void* byteCode);
 
         /// <summary>
         /// Registers all <see cref="ShaderNodeParser{R, S}"/> types in the assembly.

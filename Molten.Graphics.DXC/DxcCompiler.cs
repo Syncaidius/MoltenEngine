@@ -78,7 +78,7 @@ namespace Molten.Graphics
         public bool CompileSource(string entryPoint, ShaderType type, 
             ShaderCompilerContext<R, S> context, out DxcCompileResult<R,S> result)
         {
-            IShaderClassResult classResult = null;
+            ShaderClassResult classResult = null;
 
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.

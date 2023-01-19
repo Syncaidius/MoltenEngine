@@ -72,8 +72,8 @@ namespace Molten.Graphics
             MaterialPassCompileResult pResult)
         {
             bool valid = true;
-            FxcCompileResult hs = pResult[ShaderType.Hull];
-            FxcCompileResult ds = pResult[ShaderType.Domain];
+            ShaderClassResult hs = pResult[ShaderType.Hull];
+            ShaderClassResult ds = pResult[ShaderType.Domain];
 
             if (hs != null && ds == null)
             {
@@ -92,9 +92,9 @@ namespace Molten.Graphics
         private bool CheckGeometryTessellationAdjacency(MaterialPassCompileResult pResult)
         {
             bool valid = true;
-            FxcCompileResult geometryRef = pResult[ShaderType.Geometry];
-            FxcCompileResult hullRef = pResult[ShaderType.Hull];
-            FxcCompileResult domainRef = pResult[ShaderType.Domain];
+            ShaderClassResult geometryRef = pResult[ShaderType.Geometry];
+            ShaderClassResult hullRef = pResult[ShaderType.Hull];
+            ShaderClassResult domainRef = pResult[ShaderType.Domain];
 
             if (geometryRef == null || hullRef == null || domainRef == null)
                 return valid;

@@ -7,14 +7,14 @@ namespace Molten.Graphics
         internal MaterialPassCompileResult(MaterialPass pass)
         {
             Pass = pass;
-            Results = new Dictionary<ShaderType, FxcCompileResult>();
+            Results = new Dictionary<ShaderType, ShaderClassResult>();
         }
 
-        public FxcCompileResult this[ShaderType type]
+        public ShaderClassResult this[ShaderType type]
         {
             get
             {
-                if (Results.TryGetValue(type, out FxcCompileResult result))
+                if (Results.TryGetValue(type, out ShaderClassResult result))
                     return result;
                 else
                     return null;
@@ -23,7 +23,7 @@ namespace Molten.Graphics
             set => Results[type] = value;
         }
 
-        internal Dictionary<ShaderType, FxcCompileResult> Results { get; } 
+        internal Dictionary<ShaderType, ShaderClassResult> Results { get; } 
 
         internal MaterialPass Pass { get; }
     }

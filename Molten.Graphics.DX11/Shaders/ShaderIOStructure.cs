@@ -15,7 +15,7 @@ namespace Molten.Graphics
         /// <summary>Creates a new instance of ShaderInputLayout.</summary>
         /// <param name="shaderRef">The shader reflection instance to extract input layout data from.</param>
         /// <param name="desc"></param>
-        internal ShaderIOStructure(FxcCompileResult result, ShaderIOStructureType type)
+        internal ShaderIOStructure(ShaderClassResult result, ShaderIOStructureType type)
         {
             uint count = 0;
             switch (type)

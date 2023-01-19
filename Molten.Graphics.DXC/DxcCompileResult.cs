@@ -10,7 +10,7 @@ namespace Molten.Graphics
     /// </summary>
     /// <typeparam name="R">Render service type</typeparam>
     /// <typeparam name="S">DXC shader type.</typeparam>
-    public unsafe class DxcCompileResult<R, S> : EngineObject, IShaderClassResult
+    public unsafe class DxcCompileResult<R, S> : ShaderClassResult
         where R : RenderService
         where S : DxcFoundation
     {
@@ -46,7 +46,7 @@ namespace Molten.Graphics
             OutKind[] outTypes = Enum.GetValues<OutKind>();
             foreach(OutKind kind in outTypes)
             {
-                if (kind == OutKind.OutNone)
+                if (kind == OutKind.None)
                     continue;
 
                 bool hasOutput = Result->HasOutput(kind) > 0;
@@ -59,14 +59,14 @@ namespace Molten.Graphics
                 switch (kind)
                 {
                     default:
-                    case OutKind.OutNone:
+                    case OutKind.None:
                         context.AddWarning($"\t Unsupported output-kind in DXC result: {kind}");
                         break;
 
-                    case OutKind.OutPdb: LoadPdbData(context); break;
-                    case OutKind.OutReflection: LoadReflection(context); break;
+                    case OutKind.Pdb: LoadPdbData(context); break;
+                    case OutKind.Reflection: LoadReflection(context); break;
 
-                    case OutKind.OutErrors: LoadErrors(context); break;
+                    case OutKind.Errors: LoadErrors(context); break;
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace Molten.Graphics
         private void LoadPdbData(ShaderCompilerContext<R, S> context)
         {
             IDxcBlobUtf16* pPdbPath = null;
-            GetDxcOutput(OutKind.OutPdb, ref _pdbData, &pPdbPath);
+            GetDxcOutput(OutKind.Pdb, ref _pdbData, &pPdbPath);
 
             PdbPath = pPdbPath->GetStringPointerS();
             nuint dataSize = _pdbData->GetBufferSize();
@@ -113,7 +113,7 @@ namespace Molten.Graphics
             void* pReflection = null;
             Guid guidReflection = DxcCompiler<R, S>.CLSID_DxcContainerReflection;
 
-            GetDxcOutput(OutKind.OutReflection, ref outData);
+            GetDxcOutput(OutKind.Reflection, ref outData);
             _utils->CreateReflection(reflectionBuffer, ref guidReflection, ref pReflection);
 
             nuint dataSize = outData->GetBufferSize();

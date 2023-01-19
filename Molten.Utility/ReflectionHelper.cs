@@ -28,7 +28,7 @@ namespace Molten
         }
 
         /// <summary>Finds all types that derive from the provided class type.</summary>
-        /// <typeparam name="T">The base type of other classes to search for.</typeparam>
+        /// <typeparam name="T">The base type of other types to find.</typeparam>
         /// <returns></returns>
         public static IEnumerable<Type> FindTypeInParentAssembly<T>(bool includeAbstract = false)
         {
@@ -36,6 +36,13 @@ namespace Molten
             return FindType<T>(bType.Assembly, includeAbstract);
         }
 
+        /// <summary>
+        /// Finds all types that derive from <typeparamref name="T"/> within the given <see cref="Assembly"/>.
+        /// </summary>
+        /// <typeparam name="T">The base-type of other types to find.</typeparam>
+        /// <param name="assembly">The assembly within which to find types.</param>
+        /// <param name="includeAbstract">If true, abstract types will also be included in the result. Default value is false.</param>
+        /// <returns></returns>
         public static IEnumerable<Type> FindType<T>(Assembly assembly, bool includeAbstract = false)
         {
             Type bType = typeof(T);
