@@ -62,12 +62,10 @@ namespace Molten.Graphics
                 switch (bindInfo.InputType)
                 {
                     case ShaderInputType.CBuffer:
-                        ID3D11ShaderReflectionConstantBuffer* buffer = result.Reflection.Ptr->GetConstantBufferByName(bindInfo.Name);
-                        ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
-                        buffer->GetDesc(ref bufferDesc);
-
+                        ConstantBufferInfo bufferInfo = result.Reflection.ConstantBuffers[bindInfo.Name];
+  
                         // Skip binding info buffers
-                        if (bufferDesc.Type != D3DCBufferType.D3DCTResourceBindInfo)
+                        if (bufferInfo.Type != ConstantBufferType.ResourceBindInfo)
                         {
                             if (bindPoint >= shader.ConstBuffers.Length)
                                 Array.Resize(ref shader.ConstBuffers, (int)bindPoint + 1);
@@ -76,7 +74,7 @@ namespace Molten.Graphics
                                 context.AddMessage($"Shader constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindInfo.Name}' at the same register (b{bindPoint}).", 
                                     ShaderCompilerMessage.Kind.Warning);
 
-                            shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, buffer);
+                            shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, bufferInfo);
                             composition.ConstBufferIds.Add(bindPoint);
                         }
 
