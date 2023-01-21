@@ -8,11 +8,33 @@ namespace Molten.Graphics
     /// Also generating useful metadata that can be used to validate vertex input at engine level.</summary>
     internal unsafe class ShaderIOStructure : EngineObject
     {
-        internal InputElementData Data;
+        internal struct InputElementMetadata
+        {
+            public string Name;
+
+            public D3DName SystemValueType;
+        }
+
+        internal InputElementDesc[] Elements { get; }
+
+        /// <summary>
+        /// Contains extra/helper information about input elements
+        /// </summary>
+        internal InputElementMetadata[] Metadata { get; }
 
         // Reference: http://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-reflection-automatic-input-layout-creation/
 
-        /// <summary>Creates a new instance of ShaderInputLayout.</summary>
+        /// <summary>
+        /// Creates a new, empty instance of <see cref="ShaderIOStructure"/>.
+        /// </summary>
+        /// <param name="elementCount"></param>
+        internal ShaderIOStructure(uint elementCount)
+        {
+            Elements = new InputElementDesc[elementCount];
+            Metadata = new InputElementMetadata[elementCount];
+        }
+
+        /// <summary>Creates a new instance of <see cref="ShaderIOStructure"/> from reflection info.</summary>
         /// <param name="shaderRef">The shader reflection instance to extract input layout data from.</param>
         /// <param name="desc"></param>
         internal ShaderIOStructure(ShaderClassResult result, ShaderIOStructureType type)
@@ -34,7 +56,8 @@ namespace Molten.Graphics
             }
 
             int count = parameters.Count;
-            Data = new InputElementData((uint)count);
+            Elements = new InputElementDesc[count];
+            Metadata = new InputElementMetadata[count];
 
             for (int i = 0; i < count; i++)
             {
@@ -99,8 +122,8 @@ namespace Molten.Graphics
                 }
 
                 // Store the element
-                Data.Elements[i] = el;
-                Data.Metadata[i] = new InputElementData.InputElementMetadata()
+                Elements[i] = el;
+                Metadata[i] = new InputElementMetadata()
                 {
                     Name = pDesc.SemanticName,
                     SystemValueType = (D3DName)pDesc.SystemValueType
@@ -108,9 +131,51 @@ namespace Molten.Graphics
             }
         }
 
+        public bool IsCompatible(ShaderIOStructure other)
+        {
+            return IsCompatible(other, 0);
+        }
+
+        public bool IsCompatible(ShaderIOStructure other, uint startIndex)
+        {
+            if (startIndex >= Elements.Length)
+            {
+                return false;
+            }
+            else
+            {
+                uint endIndex = startIndex + (uint)other.Elements.Length;
+                if (endIndex > Elements.Length)
+                {
+                    // If the remaining elements are system values (SV_ prefix), allow them.
+                    for (int i = Elements.Length; i < endIndex; i++)
+                    {
+                        if (other.Metadata[i].SystemValueType == D3DName.D3DNameUndefined)
+                            return false;
+                    }
+                }
+                else
+                {
+                    uint oi = 0;
+                    for (uint i = startIndex; i < endIndex; i++)
+                    {
+                        if (other.Metadata[oi].Name != Metadata[i].Name ||
+                            other.Elements[oi].SemanticIndex != Elements[i].SemanticIndex)
+                            return false;
+
+                        oi++;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         protected override void OnDispose()
         {
-            Data.Dispose();
+            // Dispose of element string pointers, since they were statically-allocated by Silk.NET
+            for (uint i = 0; i < Elements.Length; i++)
+                SilkMarshal.Free((nint)Elements[i].SemanticName);
         }
 
         /// <summary>Tests to see if the layout of a vertex format matches the layout of the shader input structure.</summary>
@@ -119,12 +184,7 @@ namespace Molten.Graphics
         /// <returns></returns>
         public bool IsCompatible(VertexFormat format, uint startElement)
         {
-            return Data.IsCompatible(format.Data, startElement);
-        }
-
-        public bool IsCompatible(ShaderIOStructure other)
-        {
-            return Data.IsCompatible(other.Data);
+            return IsCompatible(format.Structure, startElement);
         }
     }
 

@@ -17,16 +17,16 @@ namespace Molten.Graphics
 
         static IntPtrComparer _ptrComparer = new IntPtrComparer();
 
-        internal InputElementData Data { get; } 
+        internal ShaderIOStructure Structure { get; } 
 
         private unsafe VertexFormat(uint elementCount)
         {
-            Data = new InputElementData(elementCount);
+            Structure = new ShaderIOStructure(elementCount);
         }
 
         protected unsafe override void OnDispose()
         {
-            Data.Dispose();
+            Structure.Dispose();
         }
 
         /// <summary>Gets the total size of the Vertex Format, in bytes.</summary>
@@ -72,16 +72,16 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    vf.Data.Metadata[eCount].Name = GetSemanticName(att.Usage);
-                    vf.Data.Elements[eCount] = new InputElementDesc()
+                    vf.Structure.Metadata[eCount].Name = GetSemanticName(att.Usage);
+                    vf.Structure.Elements[eCount] = new InputElementDesc()
                     {
-                        SemanticName = (byte*)SilkMarshal.StringToPtr(vf.Data.Metadata[eCount].Name),
+                        SemanticName = (byte*)SilkMarshal.StringToPtr(vf.Structure.Metadata[eCount].Name),
                         SemanticIndex = att.SemanticIndex,
                         AlignedByteOffset = vf.SizeOf,
                         InputSlotClass = att.Classification.ToApi(),
                     };
 
-                    vf.SizeOf += CalculateElement(att.Type, ref vf.Data.Elements[eCount]);
+                    vf.SizeOf += CalculateElement(att.Type, ref vf.Structure.Elements[eCount]);
                 }
 
                 eCount++;
