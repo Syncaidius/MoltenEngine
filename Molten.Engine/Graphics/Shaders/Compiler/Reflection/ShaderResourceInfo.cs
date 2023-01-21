@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class ShaderInputInfo
+    /// <summary>
+    /// Reflection information about a shader resource binding.
+    /// </summary>
+    public class ShaderResourceInfo
     {
         public string Name;
 
@@ -14,7 +17,7 @@ namespace Molten.Graphics
 
         public uint BindCount;
 
-        public ShaderInputType InputType;
+        public ShaderInputType Type;
 
         public ShaderReturnType ResourceReturnType;
 

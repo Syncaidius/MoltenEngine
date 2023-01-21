@@ -213,6 +213,6 @@ namespace Molten.Graphics
         }
 
         protected override void OnBuildVariableStructure(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            HlslFoundation foundation, ShaderClassResult result, HlslInputBindDescription bind) { }
+            HlslFoundation shader, ShaderClassResult result, ShaderResourceInfo info) { }
     }
 }

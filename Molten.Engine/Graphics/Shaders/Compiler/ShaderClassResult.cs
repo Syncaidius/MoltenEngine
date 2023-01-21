@@ -6,6 +6,8 @@ namespace Molten.Graphics
     {
         void* _byteCode;
 
+        void* _debugData;
+
         public unsafe ShaderClassResult(ShaderReflection reflection, void* byteCode, nuint numBytes)
         {
             Reflection = reflection;
@@ -17,12 +19,20 @@ namespace Molten.Graphics
         public T* GetByteCodeAs<T>()
             where T : unmanaged
         {
-            return (T*)ByteCode;
+            return (T*)_byteCode;
+        }
+
+        public T* GetDebugDataAs<T>()
+            where T : unmanaged
+        {
+            return (T*)_debugData;
         }
 
         public ShaderReflection Reflection { get; }
 
         public void* ByteCode => _byteCode;
+
+        public void* DebugData => _debugData;
 
         public nuint NumBytes { get; }
     }

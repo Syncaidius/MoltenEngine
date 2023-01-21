@@ -34,9 +34,9 @@ namespace Molten.Graphics
             Compiler.Dispose();
         }
 
-        protected override unsafe ShaderReflection BuildReflection(ShaderCompilerContext<RendererDX11, HlslFoundation> context, void* byteCode)
+        protected override unsafe ShaderReflection BuildReflection(ShaderCompilerContext<RendererDX11, HlslFoundation> context, void* ptrData)
         {
-            ID3D10Blob* bCode = (ID3D10Blob*)byteCode;
+            ID3D10Blob* bCode = (ID3D10Blob*)ptrData;
             Guid guidReflect = ID3D11ShaderReflection.Guid;
             void* ppReflection = null;
 
@@ -56,22 +56,22 @@ namespace Molten.Graphics
                 ShaderInputBindDesc rDesc = new ShaderInputBindDesc();
                 fxcReflection.Ptr->GetResourceBindingDesc(i, &rDesc);
 
-                ShaderInputInfo bindInfo = new ShaderInputInfo()
+                ShaderResourceInfo bindInfo = new ShaderResourceInfo()
                 {
                     Name = SilkMarshal.PtrToString((nint)rDesc.Name),
                     BindCount = rDesc.BindCount,
                     BindPoint = rDesc.BindPoint,
                     Dimension = rDesc.Dimension.FromApi(),
-                    InputType = rDesc.Type.FromApi(),
+                    Type = rDesc.Type.FromApi(),
                     NumSamples = rDesc.NumSamples,
                     ResourceReturnType = rDesc.ReturnType.FromApi(),
                     Flags = ((D3DShaderInputFlags)rDesc.UFlags).FromApi()
                 };
 
-                r.Inputs.Add(bindInfo);
+                r.BoundResources.Add(bindInfo);
                 uint bindPoint = bindInfo.BindPoint;
 
-                switch (bindInfo.InputType)
+                switch (bindInfo.Type)
                 {
                     case ShaderInputType.CBuffer:
                         ID3D11ShaderReflectionConstantBuffer* buffer = fxcReflection.Ptr->GetConstantBufferByName(bindInfo.Name);
@@ -125,49 +125,66 @@ namespace Molten.Graphics
                             cVarInfo.Type.Elements = typeDesc.Elements;
                         }
                         break;
-
-                    case ShaderInputType.Texture:
-                        OnBuildTextureVariable(context, shader, bindInfo);
-                        composition.ResourceIds.Add(bindInfo.BindPoint);
-                        break;
-
-                    case ShaderInputType.Sampler:
-                        bool isComparison = bindInfo.HasInputFlags(ShaderInputFlags.ComparisonSampler);
-                        ShaderSamplerVariable sampler = GetVariableResource<ShaderSamplerVariable>(context, shader, bindInfo);
-
-                        if (bindPoint >= shader.SamplerVariables.Length)
-                        {
-                            int oldLength = shader.SamplerVariables.Length;
-                            EngineUtil.ArrayResize(ref shader.SamplerVariables, bindPoint + 1);
-                            for (int i = oldLength; i < shader.SamplerVariables.Length; i++)
-                                shader.SamplerVariables[i] = (i == bindPoint ? sampler : new ShaderSamplerVariable(shader));
-                        }
-                        else
-                        {
-                            shader.SamplerVariables[bindPoint] = sampler;
-                        }
-                        composition.SamplerIds.Add(bindPoint);
-                        break;
-
-                    case ShaderInputType.Structured:
-                        BufferVariable bVar = GetVariableResource<BufferVariable>(context, shader, bindInfo);
-                        if (bindPoint >= shader.Resources.Length)
-                            EngineUtil.ArrayResize(ref shader.Resources, bindPoint + 1);
-
-                        shader.Resources[bindPoint] = bVar;
-                        composition.ResourceIds.Add(bindPoint);
-                        break;
-
-                    default:
-                        OnBuildVariableStructure(context, shader, result, bindInfo);
-                        break;
                 }
             }
 
-            // TODO populate ShaderReflection object
+            PopulateReflectionParamters(r, fxcReflection, ShaderIOStructureType.Input);
+            PopulateReflectionParamters(r, fxcReflection, ShaderIOStructureType.Output);
 
             fxcReflection.Dispose();
             return r;
+        }
+
+        private void PopulateReflectionParamters(ShaderReflection reflection, FxcReflection fxcReflection, ShaderIOStructureType type)
+        {
+            uint count = 0;
+            List<ShaderParameterInfo> parameters;
+
+            switch (type)
+            {
+                case ShaderIOStructureType.Input:
+                    count = fxcReflection.Desc.InputParameters;
+                    parameters = reflection.InputParameters;
+                    break;
+
+                case ShaderIOStructureType.Output:
+                    count = fxcReflection.Desc.OutputParameters;
+                    parameters = reflection.OutputParameters;
+                    break;
+
+                default:
+                    return;
+            }
+
+            for (uint i = 0; i < count; i++)
+            {
+                SignatureParameterDesc pDesc = new SignatureParameterDesc();
+
+                switch (type)
+                {
+                    case ShaderIOStructureType.Input:
+                        fxcReflection.Ptr->GetInputParameterDesc(i, ref pDesc);
+                        break;
+
+                    case ShaderIOStructureType.Output:
+                        fxcReflection.Ptr->GetOutputParameterDesc(i, ref pDesc);
+                        break;
+                }
+
+                parameters.Add(new ShaderParameterInfo()
+                {
+                    ComponentType = (ShaderRegisterType)pDesc.ComponentType,
+                    Mask = (ShaderComponentMaskFlags)pDesc.Mask,
+                    ReadWriteMask = pDesc.ReadWriteMask,
+                    MinPrecision = (ShaderMinPrecision)pDesc.MinPrecision,
+                    Register = pDesc.Register,
+                    SemanticIndex = pDesc.SemanticIndex,
+                    SemanticName = SilkMarshal.PtrToString((nint)pDesc.SemanticName),
+                    SemanticNamePtr = pDesc.SemanticName,
+                    Stream = pDesc.Stream,
+                    SystemValueType = (ShaderSVType)pDesc.SystemValueType
+                });
+            }
         }
 
         /// <summary>Compiles HLSL source code and outputs the result. Returns true if successful, or false if there were errors.</summary>

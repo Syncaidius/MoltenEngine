@@ -61,7 +61,7 @@ namespace Molten.Graphics
             InitializeNodeParsers();
         }
 
-        protected unsafe abstract ShaderReflection BuildReflection(ShaderCompilerContext<R, S> context, void* byteCode);
+        protected unsafe abstract ShaderReflection BuildReflection(ShaderCompilerContext<R, S> context, void* ptrData);
 
         /// <summary>
         /// Registers all <see cref="ShaderNodeParser{R, S}"/> types in the assembly.

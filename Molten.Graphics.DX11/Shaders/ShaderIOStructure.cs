@@ -17,38 +17,32 @@ namespace Molten.Graphics
         /// <param name="desc"></param>
         internal ShaderIOStructure(ShaderClassResult result, ShaderIOStructureType type)
         {
-            uint count = 0;
+            List<ShaderParameterInfo> parameters;
+
             switch (type)
             {
                 case ShaderIOStructureType.Input:
-                    count = result.Reflection.Desc.InputParameters;
+                    parameters = result.Reflection.InputParameters;
                     break;
 
                 case ShaderIOStructureType.Output:
-                    count = result.Reflection.Desc.OutputParameters;
+                    parameters = result.Reflection.OutputParameters;
                     break;
+
+                default:
+                    return;
             }
 
-            Data = new InputElementData(count);
+            int count = parameters.Count;
+            Data = new InputElementData((uint)count);
 
-            for (uint i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                SignatureParameterDesc pDesc = new SignatureParameterDesc();
-
-                switch (type)
-                {
-                    case ShaderIOStructureType.Input:
-                        result.Reflection.Ptr->GetInputParameterDesc(i, ref pDesc);
-                        break;
-
-                    case ShaderIOStructureType.Output:
-                        result.Reflection.Ptr->GetOutputParameterDesc(i, ref pDesc);
-                        break;
-                }
+                ShaderParameterInfo pDesc = parameters[i];
 
                 InputElementDesc el = new InputElementDesc()
                 {
-                    SemanticName = pDesc.SemanticName,
+                    SemanticName = (byte*)pDesc.SemanticNamePtr,
                     SemanticIndex = pDesc.SemanticIndex,
                     InputSlot = 0, // This does not need to be set. A shader has a single layout, 
                     InstanceDataStepRate = 0, // This does not need to be set. The data is set via Context.DrawInstanced + vertex data/layout.
@@ -56,16 +50,16 @@ namespace Molten.Graphics
                     InputSlotClass = InputClassification.PerVertexData,
                 };
 
-                RegisterComponentMaskFlags pDescMask = (RegisterComponentMaskFlags)pDesc.Mask;
-                RegisterComponentMaskFlags usageMask = (pDescMask & RegisterComponentMaskFlags.ComponentX);
-                usageMask |= (pDescMask & RegisterComponentMaskFlags.ComponentY);
-                usageMask |= (pDescMask & RegisterComponentMaskFlags.ComponentZ);
-                usageMask |= (pDescMask & RegisterComponentMaskFlags.ComponentW);
+                ShaderComponentMaskFlags pDescMask = (ShaderComponentMaskFlags)pDesc.Mask;
+                ShaderComponentMaskFlags usageMask = (pDescMask & ShaderComponentMaskFlags.ComponentX);
+                usageMask |= (pDescMask & ShaderComponentMaskFlags.ComponentY);
+                usageMask |= (pDescMask & ShaderComponentMaskFlags.ComponentZ);
+                usageMask |= (pDescMask & ShaderComponentMaskFlags.ComponentW);
 
-                D3DRegisterComponentType comType = pDesc.ComponentType;
+                D3DRegisterComponentType comType = (D3DRegisterComponentType)pDesc.ComponentType;
                 switch (usageMask)
                 {
-                    case RegisterComponentMaskFlags.ComponentX:
+                    case ShaderComponentMaskFlags.ComponentX:
                         if (comType == D3DRegisterComponentType.D3DRegisterComponentUint32)
                             el.Format = Format.FormatR32Uint;
                         else if (comType == D3DRegisterComponentType.D3DRegisterComponentSint32)
@@ -74,7 +68,7 @@ namespace Molten.Graphics
                             el.Format = Format.FormatR32Float;
                         break;
 
-                    case RegisterComponentMaskFlags.ComponentX | RegisterComponentMaskFlags.ComponentY:
+                    case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY:
                         if (comType == D3DRegisterComponentType.D3DRegisterComponentUint32)
                             el.Format = Format.FormatR32G32Uint;
                         else if (comType == D3DRegisterComponentType.D3DRegisterComponentSint32)
@@ -83,8 +77,8 @@ namespace Molten.Graphics
                             el.Format = Format.FormatR32G32Float;
                         break;
 
-                    case RegisterComponentMaskFlags.ComponentX | RegisterComponentMaskFlags.ComponentY |
-                RegisterComponentMaskFlags.ComponentZ:
+                    case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY |
+                ShaderComponentMaskFlags.ComponentZ:
                         if (comType == D3DRegisterComponentType.D3DRegisterComponentUint32)
                             el.Format = Format.FormatR32G32B32Uint;
                         else if (comType == D3DRegisterComponentType.D3DRegisterComponentSint32)
@@ -93,8 +87,8 @@ namespace Molten.Graphics
                             el.Format = Format.FormatR32G32B32Float;
                         break;
 
-                    case RegisterComponentMaskFlags.ComponentX | RegisterComponentMaskFlags.ComponentY |
-                RegisterComponentMaskFlags.ComponentZ | RegisterComponentMaskFlags.ComponentW:
+                    case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY |
+                ShaderComponentMaskFlags.ComponentZ | ShaderComponentMaskFlags.ComponentW:
                         if (comType == D3DRegisterComponentType.D3DRegisterComponentUint32)
                             el.Format = Format.FormatR32G32B32A32Uint;
                         else if (comType == D3DRegisterComponentType.D3DRegisterComponentSint32)
@@ -108,8 +102,8 @@ namespace Molten.Graphics
                 Data.Elements[i] = el;
                 Data.Metadata[i] = new InputElementData.InputElementMetadata()
                 {
-                    Name = SilkMarshal.PtrToString((nint)pDesc.SemanticName),
-                    SystemValueType = pDesc.SystemValueType
+                    Name = pDesc.SemanticName,
+                    SystemValueType = (D3DName)pDesc.SystemValueType
                 };
             }
         }

@@ -45,7 +45,7 @@ namespace Molten.Graphics
                     if (output.Data.Elements.Length > 0)
                     {
                         for (int o = 0; o < output.Data.Elements.Length; o++)
-                            context.AddError($"\t\t[{o}] {output.Data.Metadata[o]} -- index: {output.Data.Elements[o].SemanticIndex}");
+                            context.AddError($"\t\t[{o}] {output.Data.Metadata[o].SystemValueType} -- index: {output.Data.Elements[o].SemanticIndex}");
                     }
                     else
                     {
@@ -54,7 +54,7 @@ namespace Molten.Graphics
 
                     context.AddError($"\tInput: {currentCompositionType}:");
                     for (int o = 0; o < input.Data.Elements.Length; o++)
-                        context.AddError($"\t\t[{o}] {input.Data.Metadata[o]} -- index: {input.Data.Elements[o].SemanticIndex}");
+                        context.AddError($"\t\t[{o}] {input.Data.Metadata[o].SystemValueType} -- index: {input.Data.Elements[o].SemanticIndex}");
 
                     valid = false;
                 }

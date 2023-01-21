@@ -54,12 +54,12 @@ namespace Molten.Graphics
             HlslShader shader, ShaderClassResult result, ShaderComposition<T> composition) 
             where T : unmanaged
         {
-            for (int r = 0; r < result.Reflection.Inputs.Count; r++)
+            for (int r = 0; r < result.Reflection.BoundResources.Count; r++)
             {
-                ShaderInputInfo bindInfo = result.Reflection.Inputs[r];
+                ShaderResourceInfo bindInfo = result.Reflection.BoundResources[r];
                 uint bindPoint = bindInfo.BindPoint;
 
-                switch (bindInfo.InputType)
+                switch (bindInfo.Type)
                 {
                     case ShaderInputType.CBuffer:
                         ConstantBufferInfo bufferInfo = result.Reflection.ConstantBuffers[bindInfo.Name];
@@ -122,13 +122,12 @@ namespace Molten.Graphics
         }
 
         protected abstract void OnBuildVariableStructure(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            HlslFoundation shader, ShaderClassResult result, ShaderInputInfo info);
+            HlslFoundation shader, ShaderClassResult result, ShaderResourceInfo info);
 
         private void OnBuildTextureVariable(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            HlslShader shader, ShaderInputInfo info)
+            HlslShader shader, ShaderResourceInfo info)
         {
             ShaderResourceVariable obj = null;
-            uint bindPoint = info.BindPoint;
 
             switch (info.Dimension)
             {
@@ -149,11 +148,11 @@ namespace Molten.Graphics
                     break;
             }
 
-            if (bindPoint >= shader.Resources.Length)
-                EngineUtil.ArrayResize(ref shader.Resources, bindPoint + 1);
+            if (info.BindPoint >= shader.Resources.Length)
+                EngineUtil.ArrayResize(ref shader.Resources, info.BindPoint + 1);
 
             //store the resource variable
-            shader.Resources[bindPoint] = obj;
+            shader.Resources[info.BindPoint] = obj;
         }
 
         private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
@@ -211,7 +210,7 @@ namespace Molten.Graphics
         }
 
         protected T GetVariableResource<T>(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            HlslShader shader, ShaderInputInfo info) 
+            HlslShader shader, ShaderResourceInfo info) 
             where T : class, IShaderValue
         {
             IShaderValue existing = null;

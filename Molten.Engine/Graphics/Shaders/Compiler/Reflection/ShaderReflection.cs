@@ -13,7 +13,11 @@ namespace Molten.Graphics
         /// </summary>
         public PrimitiveTopology GSInputPrimitive;
 
-        public List<ShaderInputInfo> Inputs { get; } = new List<ShaderInputInfo>();
+        public List<ShaderResourceInfo> BoundResources { get; } = new List<ShaderResourceInfo>();
+
+        public List<ShaderParameterInfo> InputParameters { get; } = new List<ShaderParameterInfo>();
+
+        public List<ShaderParameterInfo> OutputParameters { get; } = new List<ShaderParameterInfo>();
 
         public Dictionary<string, ConstantBufferInfo> ConstantBuffers { get; } = new Dictionary<string, ConstantBufferInfo>();
     }

@@ -42,30 +42,30 @@ namespace Molten.Graphics
 
         protected override void OnBuildVariableStructure(
             ShaderCompilerContext<RendererDX11, HlslFoundation> context,
-            HlslFoundation shader, ShaderClassResult result, HlslInputBindDescription bind)
+            HlslFoundation shader, ShaderClassResult result, ShaderResourceInfo info)
         {
             ComputeTask ct = shader as ComputeTask;
+            if (ct == null)
+                return;
 
-            switch (bind.Ptr->Type)
+            switch (info.Type)
             {
-                case D3DShaderInputType.D3D11SitUavRwstructured:
-                    if (ct != null)
-                        OnBuildRWStructuredVariable(context, ct, bind);
+                case ShaderInputType.UavRWStructured:
+                        OnBuildRWStructuredVariable(context, ct, info);
                     break;
 
-                case D3DShaderInputType.D3D11SitUavRwtyped:
-                    if (ct != null)
-                        OnBuildRWTypedVariable(context, ct, bind);
+                case ShaderInputType.UavRWTyped:
+                        OnBuildRWTypedVariable(context, ct, info);
                     break;
             }
         }
 
         protected void OnBuildRWStructuredVariable
             (ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            ComputeTask shader, HlslInputBindDescription bind)
+            ComputeTask shader, ShaderResourceInfo info)
         {
-            RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(context, shader, bind);
-            uint bindPoint = bind.Ptr->BindPoint;
+            RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(context, shader, info);
+            uint bindPoint = info.BindPoint;
 
             if (bindPoint >= shader.UAVs.Length)
                 EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
@@ -75,19 +75,19 @@ namespace Molten.Graphics
 
         protected void OnBuildRWTypedVariable(
             ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            ComputeTask shader, HlslInputBindDescription bind)
+            ComputeTask shader, ShaderResourceInfo info)
         {
             RWVariable resource = null;
-            uint bindPoint = bind.Ptr->BindPoint;
+            uint bindPoint = info.BindPoint;
 
-            switch (bind.Ptr->Dimension)
+            switch (info.Dimension)
             {
-                case D3DSrvDimension.D3D101SrvDimensionTexture1D:
-                    resource = GetVariableResource<RWTexture1DVariable>(context, shader, bind);
+                case ShaderResourceDimension.Texture1D:
+                    resource = GetVariableResource<RWTexture1DVariable>(context, shader, info);
                     break;
 
-                case D3DSrvDimension.D3D101SrvDimensionTexture2D:
-                    resource = GetVariableResource<RWTexture2DVariable>(context, shader, bind);
+                case ShaderResourceDimension.Texture2D:
+                    resource = GetVariableResource<RWTexture2DVariable>(context, shader, info);
                     break;
             }
 

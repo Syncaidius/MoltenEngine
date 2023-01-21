@@ -5,7 +5,7 @@
     /// </summary>	
     /// <unmanaged>D3D11_REGISTER_COMPONENT_MASK_FLAG</unmanaged>
     [Flags]
-    internal enum RegisterComponentMaskFlags : byte
+    public enum ShaderComponentMaskFlags : byte
     {
 
         /// <summary>	
