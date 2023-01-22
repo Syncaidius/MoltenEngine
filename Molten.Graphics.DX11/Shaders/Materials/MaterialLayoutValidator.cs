@@ -32,7 +32,7 @@ namespace Molten.Graphics
                 ShaderIOStructure input = stages[i].InputStructure;
 
                 // If the input expects anything, check compatibility. Skip compat check if input does not expect anything (length 0).
-                if (input.Elements.Length > 0 && !output.IsCompatible(input))
+                if (input.Metadata.Length > 0 && !output.IsCompatible(input))
                 {
                     ShaderType currentCompositionType =  stages[i].Type;
                     ShaderType previousCompositionType = previous.Type;
@@ -42,10 +42,10 @@ namespace Molten.Graphics
                     context.AddError($"\tFilename: {pass.Material.Filename ?? "N/A"}");
                     context.AddError($"\tOutput -- {previousCompositionType}:");
 
-                    if (output.Elements.Length > 0)
+                    if (output.Metadata.Length > 0)
                     {
-                        for (int o = 0; o < output.Elements.Length; o++)
-                            context.AddError($"\t\t[{o}] {output.Metadata[o].SystemValueType} -- index: {output.Elements[o].SemanticIndex}");
+                        for (int o = 0; o < output.Metadata.Length; o++)
+                            context.AddError($"\t\t[{o}] {output.Metadata[o].SystemValueType} -- index: {output.Metadata[o].SemanticIndex}");
                     }
                     else
                     {
@@ -53,8 +53,8 @@ namespace Molten.Graphics
                     }
 
                     context.AddError($"\tInput: {currentCompositionType}:");
-                    for (int o = 0; o < input.Elements.Length; o++)
-                        context.AddError($"\t\t[{o}] {input.Metadata[o].SystemValueType} -- index: {input.Elements[o].SemanticIndex}");
+                    for (int o = 0; o < input.Metadata.Length; o++)
+                        context.AddError($"\t\t[{o}] {input.Metadata[o].SystemValueType} -- index: {input.Metadata[o].SemanticIndex}");
 
                     valid = false;
                 }

@@ -1,6 +1,9 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using System.Reflection;
+using static Molten.Graphics.ShaderIOStructure;
+using System.Xml.Linq;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
@@ -44,10 +47,98 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected void BuildIO(ShaderClassResult result, ShaderComposition composition)
+        protected ShaderIOStructure BuildIO(ShaderClassResult result, ShaderComposition composition, ShaderIOStructureType type)
         {
-            composition.InputStructure = new ShaderIOStructure(result, ShaderIOStructureType.Input);
-            composition.OutputStructure = new ShaderIOStructure(result, ShaderIOStructureType.Output);
+            List<ShaderParameterInfo> parameters;
+
+            switch (type)
+            {
+                case ShaderIOStructureType.Input:
+                    parameters = result.Reflection.InputParameters;
+                    break;
+
+                case ShaderIOStructureType.Output:
+                    parameters = result.Reflection.OutputParameters;
+                    break;
+
+                default:
+                    return null;
+            }
+
+            int count = parameters.Count;
+            ShaderIOStructureDX11 structure = new ShaderIOStructureDX11((uint)count);
+
+            for (int i = 0; i < count; i++)
+            {
+                ShaderParameterInfo pDesc = parameters[i];
+
+                InputElementDesc el = new InputElementDesc()
+                {
+                    SemanticName = (byte*)pDesc.SemanticNamePtr,
+                    SemanticIndex = pDesc.SemanticIndex,
+                    InputSlot = 0, // This does not need to be set. A shader has a single layout, 
+                    InstanceDataStepRate = 0, // This does not need to be set. The data is set via Context.DrawInstanced + vertex data/layout.
+                    AlignedByteOffset = 16 * pDesc.Register,
+                    InputSlotClass = InputClassification.PerVertexData,
+                };
+
+                ShaderComponentMaskFlags usageMask = (pDesc.Mask & ShaderComponentMaskFlags.ComponentX);
+                usageMask |= (pDesc.Mask & ShaderComponentMaskFlags.ComponentY);
+                usageMask |= (pDesc.Mask & ShaderComponentMaskFlags.ComponentZ);
+                usageMask |= (pDesc.Mask & ShaderComponentMaskFlags.ComponentW);
+
+                ShaderRegisterType comType = pDesc.ComponentType;
+                switch (usageMask)
+                {
+                    case ShaderComponentMaskFlags.ComponentX:
+                        if (comType == ShaderRegisterType.UInt32)
+                            el.Format = Format.FormatR32Uint;
+                        else if (comType == ShaderRegisterType.SInt32)
+                            el.Format = Format.FormatR32Sint;
+                        else if (comType == ShaderRegisterType.Float32)
+                            el.Format = Format.FormatR32Float;
+                        break;
+
+                    case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY:
+                        if (comType == ShaderRegisterType.UInt32)
+                            el.Format = Format.FormatR32G32Uint;
+                        else if (comType == ShaderRegisterType.SInt32)
+                            el.Format = Format.FormatR32G32Sint;
+                        else if (comType == ShaderRegisterType.Float32)
+                            el.Format = Format.FormatR32G32Float;
+                        break;
+
+                    case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY |
+                ShaderComponentMaskFlags.ComponentZ:
+                        if (comType == ShaderRegisterType.UInt32)
+                            el.Format = Format.FormatR32G32B32Uint;
+                        else if (comType == ShaderRegisterType.SInt32)
+                            el.Format = Format.FormatR32G32B32Sint;
+                        else if (comType == ShaderRegisterType.Float32)
+                            el.Format = Format.FormatR32G32B32Float;
+                        break;
+
+                    case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY |
+                ShaderComponentMaskFlags.ComponentZ | ShaderComponentMaskFlags.ComponentW:
+                        if (comType == ShaderRegisterType.UInt32)
+                            el.Format = Format.FormatR32G32B32A32Uint;
+                        else if (comType == ShaderRegisterType.SInt32)
+                            el.Format = Format.FormatR32G32B32A32Sint;
+                        else if (comType == ShaderRegisterType.Float32)
+                            el.Format = Format.FormatR32G32B32A32Float;
+                        break;
+                }
+
+                // Store the element
+                structure.Elements[i] = el;
+                structure.Metadata[i] = new InputElementMetadata()
+                {
+                    Name = pDesc.SemanticName,
+                    SystemValueType = pDesc.SystemValueType
+                };
+            }
+
+            return structure;
         }
 
         protected bool BuildStructure<T>(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 

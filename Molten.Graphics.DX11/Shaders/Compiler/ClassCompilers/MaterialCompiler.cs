@@ -143,7 +143,8 @@ namespace Molten.Graphics
                 {
                     result[sc.Type] = cResult;
                     sc.SetBytecode((ID3D10Blob*)cResult.ByteCode);
-                    BuildIO(cResult, sc);
+                    sc.InputStructure = BuildIO(cResult, sc, ShaderIOStructureType.Input);
+                    sc.OutputStructure = BuildIO(cResult, sc, ShaderIOStructureType.Output);
                 }
                 else
                 {

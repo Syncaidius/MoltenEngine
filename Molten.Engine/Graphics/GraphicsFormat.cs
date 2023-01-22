@@ -2,6 +2,11 @@
 {
     public static class GraphicsFormatExtensions
     {
+        public static uint BytesPerPixel(this GraphicsFormat format)
+        {
+            return BitsPerPixel(format) / 8;
+        }
+
         public static uint BitsPerPixel(this GraphicsFormat format)
         {
             switch (format)
@@ -118,17 +123,6 @@
                 case GraphicsFormat.P8:
                     return 8;
 
-                case GraphicsFormat.R1_UNorm:
-                    return 1;
-
-                case GraphicsFormat.BC1_Typeless:
-                case GraphicsFormat.BC1_UNorm:
-                case GraphicsFormat.BC1_UNorm_SRgb:
-                case GraphicsFormat.BC4_Typeless:
-                case GraphicsFormat.BC4_UNorm:
-                case GraphicsFormat.BC4_SNorm:
-                    return 4;
-
                 case GraphicsFormat.BC2_Typeless:
                 case GraphicsFormat.BC2_UNorm:
                 case GraphicsFormat.BC2_UNorm_SRgb:
@@ -145,9 +139,20 @@
                 case GraphicsFormat.BC7_UNorm:
                 case GraphicsFormat.BC7_UNorm_SRgb:
                     return 8;
+
+                case GraphicsFormat.BC1_Typeless:
+                case GraphicsFormat.BC1_UNorm:
+                case GraphicsFormat.BC1_UNorm_SRgb:
+                case GraphicsFormat.BC4_Typeless:
+                case GraphicsFormat.BC4_UNorm:
+                case GraphicsFormat.BC4_SNorm:
+                    return 4;
+
+                case GraphicsFormat.R1_UNorm:
+                    return 1;                
             }
 
-            return 0;
+            throw new GraphicsFormatException(GraphicsFormat.Unknown, $"Failed to get bits-per-pixel for GraphicsFormat.{format}");
         }
     }
 

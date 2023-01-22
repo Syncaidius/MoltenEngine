@@ -31,14 +31,14 @@ namespace Molten.Graphics
                 /* Check if the current vertex segment's format matches 
                    the part of the shader's input structure that it's meant to represent. */
                 int startID = elements.Count;
-                if (!io.IsCompatible(format, (uint)startID))
+                if (!io.IsCompatible(format.Structure, (uint)startID))
                 {
                     _isValid = false;
                     break;
                 }
 
                 // Collate vertex format elements into layout and set the correct input slot for each element.
-                elements.AddRange(format.Structure.Elements);
+                elements.AddRange((format.Structure as ShaderIOStructureDX11).Elements);
 
                 for (int eID = startID; eID < elements.Count; eID++)
                 {
@@ -56,7 +56,7 @@ namespace Molten.Graphics
             if (elements.Count == 0)
             {
                 VertexFormat nullFormat = device.VertexFormatCache.Get<VertexWithID>();
-                elements.Add(nullFormat.Structure.Elements[0]);
+                elements.Add((nullFormat.Structure as ShaderIOStructureDX11).Elements[0]);
             }
 
             InputElementDesc[] finalElements = elements.ToArray();
@@ -80,8 +80,8 @@ namespace Molten.Graphics
                     format = vbSlots[i].BoundValue.VertexFormat;
 
                     device.Log.Warning("Format - Buffer slot " + i + ": ");
-                    for (int f = 0; f < format.Structure.Elements.Length; f++)
-                        device.Log.Warning($"\t[{f}]{format.Structure.Metadata[f]} -- index: {format.Structure.Elements[f].SemanticIndex} -- slot: {i}");
+                    for (int f = 0; f < format.Structure.Metadata.Length; f++)
+                        device.Log.Warning($"\t[{f}]{format.Structure.Metadata[f]} -- index: {format.Structure.Metadata[f].SemanticIndex} -- slot: {i}");
                 }
 
                 // List final input structure.

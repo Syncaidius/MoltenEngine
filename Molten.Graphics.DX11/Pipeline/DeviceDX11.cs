@@ -32,7 +32,21 @@ namespace Molten.Graphics
             _displayManager = adapter.Manager as DisplayManagerDXGI;
             _adapter = adapter as DisplayAdapterDXGI;
             _deferredContexts = new List<CommandQueueDX11>();
-            VertexFormatCache = new TypedObjectCache<IVertexType, VertexFormat>(VertexFormat.FromType);
+            VertexFormatCache = new VertexFormatCache<ShaderIOStructureDX11>(
+                (elementCount) => new ShaderIOStructureDX11(elementCount),
+                (att, structure, index, byteOffset) =>
+                {
+                    ShaderIOStructureDX11 dxStruct = structure as ShaderIOStructureDX11;
+
+                    dxStruct.Elements[index] = new InputElementDesc()
+                    {
+                        SemanticName = (byte*)SilkMarshal.StringToPtr(dxStruct.Metadata[index].Name),
+                        SemanticIndex = att.SemanticIndex,
+                        AlignedByteOffset = byteOffset,
+                        InputSlotClass = att.Classification.ToApi(),
+                        Format = att.Type.ToGraphicsFormat().ToApi()
+                    };
+                });
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
 
             HResult r = _builder.CreateDevice(_adapter, out PtrRef, out ID3D11DeviceContext4* deviceContext);
@@ -119,7 +133,7 @@ namespace Molten.Graphics
 
         public override DisplayAdapterDXGI Adapter => _adapter;
 
-        internal TypedObjectCache<IVertexType, VertexFormat> VertexFormatCache { get; }
+        internal VertexFormatCache<ShaderIOStructureDX11> VertexFormatCache { get; }
 
         /// <summary>
         /// Gets the device's blend state bank.
