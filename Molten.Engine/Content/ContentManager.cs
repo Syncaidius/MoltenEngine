@@ -13,7 +13,7 @@ namespace Molten
     {
         Dictionary<Type, IContentProcessor> _defaultProcessors;
         Dictionary<Type, IContentProcessor> _customProcessors;
-        ConcurrentDictionary<string, ContentHandle> _content;
+        ConcurrentDictionary<string, ContentFile> _content;
         ConcurrentDictionary<string, ContentWatcher> _watchers;
 
         Type[] _defaultServices = new Type[0];
@@ -62,7 +62,7 @@ namespace Molten
 
             // Store all the provided custom processors by type.
             _customProcessors = new Dictionary<Type, IContentProcessor>();
-            _content = new ConcurrentDictionary<string, ContentHandle>();
+            _content = new ConcurrentDictionary<string, ContentFile>();
             _workers = engine.Threading.CreateWorkerGroup("content workers", workerThreads, paused:true);
             _log = log;
 
@@ -161,12 +161,15 @@ namespace Molten
             {
                 handle.Status = ContentHandleStatus.Unloaded;
 
-                if (_content.Remove(handle.RelativePath, out ContentHandle cHandle))
+                if (_content.TryGetValue(handle.RelativePath, out ContentFile cFile))
                 {
-                    if (handle.Asset is IDisposable disposable)
-                        disposable.Dispose();
+                    if (cFile.Unload(handle))
+                    {
+                        if (handle.Asset is IDisposable disposable)
+                            disposable.Dispose();
 
-                    return true;
+                        return true;
+                    }
                 }
             }
 
@@ -222,14 +225,25 @@ namespace Molten
                 return null;
             }
 
-            if (!_content.TryGetValue(path, out ContentHandle handle))
+            if(!_content.TryGetValue(path, out ContentFile cFile))
+            {
+                cFile = new ContentFile();
+                if (!_content.TryAdd(path, cFile))
+                    cFile = _content[path];
+            }
+
+            if (!cFile.Handles.TryGetValue(contentType, out ContentHandle handle))
             {
                 handle = new ContentLoadHandle(this, path, parameters.PartCount, contentType, proc, parameters, completionCallback, canHotReload);
-                _content.TryAdd(path, handle);
-
-                if (dispatch)
-                    handle.Dispatch();
-
+                if (!cFile.Handles.TryAdd(contentType, handle))
+                {
+                    handle = cFile.Handles[contentType];
+                }
+                else
+                {
+                    if (dispatch)
+                        handle.Dispatch();
+                }
             }
             else
             {
@@ -252,14 +266,26 @@ namespace Molten
 
         public ContentLoadJsonHandle Deserialize(Type contentType, string path, ContentLoadCallbackHandler<object> completionCallback = null, JsonSerializerSettings settings = null, bool canHotReload = true, bool dispatch = true)
         {
-            if (!_content.TryGetValue(path, out ContentHandle handle))
+            if (!_content.TryGetValue(path, out ContentFile cFile))
+            {
+                cFile = new ContentFile();
+                if (!_content.TryAdd(path, cFile))
+                    cFile = _content[path];
+            }
+
+            if (!cFile.Handles.TryGetValue(contentType, out ContentHandle handle))
             {
                 settings = settings ?? _jsonSettings;
                 handle = new ContentLoadJsonHandle(this, path, contentType, completionCallback, settings, canHotReload);
-                _content.TryAdd(path, handle);
-
-                if (dispatch)
-                    handle.Dispatch();
+                if (!cFile.Handles.TryAdd(contentType, handle))
+                {
+                    handle = cFile.Handles[contentType] as ContentLoadJsonHandle;
+                }
+                else
+                {
+                    if (dispatch)
+                        handle.Dispatch();
+                }
             }
 
             return handle as ContentLoadJsonHandle;
