@@ -125,7 +125,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Adds one or more <see cref="ContentProcessor"/> to the current <see cref="ContentManager"/> instance.
+        /// Adds one or more <see cref="IContentProcessor"/> to the current <see cref="ContentManager"/> instance.
         /// </summary>
         /// <param name="processors"></param>
         public void AddCustomProcessors(params IContentProcessor[] processors)
@@ -207,7 +207,7 @@ namespace Molten
         {
             Type contentType = typeof(T);
             return Load(contentType, path, 
-                (asset, isReload) => completionCallback?.Invoke((T)asset, isReload), 
+                (asset, isReload, handle) => completionCallback?.Invoke((T)asset, isReload, handle), 
                 parameters, canHotReload, dispatch);
         }
 
@@ -234,7 +234,7 @@ namespace Molten
             else
             {
                 if (handle.Status == ContentHandleStatus.Completed)
-                    completionCallback?.Invoke(handle.Asset, false);
+                    completionCallback?.Invoke(handle.Asset, false, handle);
                 else
                     (handle as ContentLoadHandle).Callbacks += completionCallback;
             }
@@ -246,7 +246,7 @@ namespace Molten
         {
             Type contentType = typeof(T);
             return Deserialize(contentType, path,
-                (asset, isReload) => completionCallback?.Invoke((T)asset, isReload), 
+                (asset, isReload, handle) => completionCallback?.Invoke((T)asset, isReload, handle), 
                 settings, canHotReload, dispatch);
         }
 

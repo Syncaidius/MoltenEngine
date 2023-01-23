@@ -75,7 +75,7 @@ namespace Molten.UI
         {
             if (!string.IsNullOrWhiteSpace(_defaultFontName))
             {
-                Engine.Content.LoadFont(_defaultFontName, (font, isReload) => DefaultFont = font,
+                Engine.Content.LoadFont(_defaultFontName, (font, isReload, handle) => DefaultFont = font,
                 new SpriteFontParameters()
                 {
                     FontSize = DefaultFontSize

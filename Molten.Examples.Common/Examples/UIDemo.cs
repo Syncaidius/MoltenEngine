@@ -43,7 +43,7 @@ namespace Molten.Examples
                 GenerateMipmaps = true,
             });
 
-            loader.Deserialize<UITheme>("assets/test_theme.json", (theme, isReload) =>
+            loader.Deserialize<UITheme>("assets/test_theme.json", (theme, isReload, handle) =>
             {
                 UI.Root.Theme = theme;
             });

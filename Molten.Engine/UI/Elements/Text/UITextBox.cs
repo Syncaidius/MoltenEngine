@@ -767,7 +767,7 @@ namespace Molten.UI
                     _fontName = value;
                     if (!string.IsNullOrWhiteSpace(_fontName))
                     {
-                        Engine.Content.LoadFont(_fontName, (font, isReload) =>
+                        Engine.Content.LoadFont(_fontName, (font, isReload, handle) =>
                         {
                             DefaultFont = font;
                             DefaultLineHeight = (int)Math.Ceiling(DefaultFont.MeasureString(" ").Y);

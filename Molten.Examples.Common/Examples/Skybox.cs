@@ -21,7 +21,7 @@ namespace Molten.Examples
             _hTexture = loader.Load<ITexture2D>("assets/dds_dxt5.dds");
 
             loader.Load<ITextureCube>("assets/cubemap.dds",
-                (tex, isReload) => MainScene.SkyboxTeture = tex);
+                (tex, isReload, handle) => MainScene.SkyboxTeture = tex);
 
             loader.OnCompleted += Loader_OnCompleted;
         }

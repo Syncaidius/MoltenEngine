@@ -19,13 +19,13 @@ namespace Molten
         public event DispatchCompleteHandler OnCompleted;
 
         ThreadedList<ContentHandle> _handles;
-
-        volatile int _loadedCount;
+        ThreadedList<ContentHandle> _toLoad;
 
         internal ContentLoadBatch(ContentManager manager)
         {
             Manager = manager;
             _handles = new ThreadedList<ContentHandle>();
+            _toLoad = new ThreadedList<ContentHandle>();
         }
 
         /// <summary>
@@ -36,20 +36,27 @@ namespace Molten
             if (Status == ContentLoadBatchStatus.Dispatched)
                 throw new InvalidOperationException("ContentLoadBatch has not yet completed the previous Dispatch()");
 
+
+            _toLoad.Clear();
+            _handles.ForEach((handle) =>
+            {
+                if (handle.Status == ContentHandleStatus.NotProcessed)
+                    _toLoad.Add(handle);
+            });
+
             if (Status == ContentLoadBatchStatus.NotDispatched &&
-                _loadedCount == _handles.Count)
+                _toLoad.Count == 0)
             {
                 Status = ContentLoadBatchStatus.Completed;
                 OnCompleted?.Invoke(this);
                 return;
             }
 
-            _loadedCount = 0;
 
             _handles.For(0, 1, (index, handle) =>
             {
                 if (handle.Asset != null)
-                    _loadedCount++;
+                    _toLoad.Remove(handle);
 
                 if (handle.Status != ContentHandleStatus.Processing)
                     handle.Dispatch();
@@ -64,24 +71,12 @@ namespace Molten
             if (Status == ContentLoadBatchStatus.Dispatched)
                 throw new InvalidOperationException("Cannot load more content before Dispatch() is complete");
 
-            ContentLoadHandle handle = Manager.LoadFont(path, (asset, isReload) =>
-            {
-                if (!isReload)
-                {
-                    _loadedCount++;
+            ContentLoadHandle newHandle = Manager.LoadFont(path,
+            (asset, isReload, handle) => AssetLoadCallback(asset, isReload, handle, completionCallback), 
+            parameters, canHotReload, false);
 
-                    if (_loadedCount == _handles.Count)
-                    {
-                        Status = ContentLoadBatchStatus.Completed;
-                        OnCompleted?.Invoke(this);
-                    }
-                }
-
-                completionCallback?.Invoke(asset, isReload);
-            }, parameters, canHotReload, false);
-
-            _handles.Add(handle);
-            return handle;
+            _handles.Add(newHandle);
+            return newHandle;
         }
 
         public ContentLoadHandle Load<T>(string path, 
@@ -92,25 +87,13 @@ namespace Molten
             if (Status == ContentLoadBatchStatus.Dispatched)
                 throw new InvalidOperationException("Cannot load more content before Dispatch() is complete");
 
-            ContentLoadHandle handle = Manager.Load<T>(path, (asset, isReload) =>
-            {
-                if (!isReload)
-                {
-                    _loadedCount++;
+            ContentLoadHandle newHandle = Manager.Load<T>(path, 
+                (asset, isReload, handle) => AssetLoadCallback<T>(asset, isReload, handle, completionCallback),
+                parameters, canHotReload, false);
 
-                    if (_loadedCount == _handles.Count)
-                    {
-                        Status = ContentLoadBatchStatus.Completed;
-                        OnCompleted?.Invoke(this);
-                    }
-                }
+            _handles.Add(newHandle);
 
-                completionCallback?.Invoke(asset, isReload);
-            }, parameters, canHotReload, false);
-
-            _handles.Add(handle);
-
-            return handle;
+            return newHandle;
         }
 
         public ContentLoadJsonHandle Deserialize<T>(string path, ContentLoadCallbackHandler<T> completionCallback = null, JsonSerializerSettings settings = null, bool canHotReload = true)
@@ -118,25 +101,27 @@ namespace Molten
             if (Status == ContentLoadBatchStatus.Dispatched)
                 throw new InvalidOperationException("Cannot load more content before Dispatch() is complete");
 
-            ContentLoadJsonHandle handle = Manager.Deserialize<T>(path, (asset, isReload) =>
+            ContentLoadJsonHandle newHandle = Manager.Deserialize<T>(path, 
+                (asset, isReload, handle) => AssetLoadCallback<T>(asset, isReload, handle, completionCallback), 
+                settings, canHotReload, false);
+
+            _handles.Add(newHandle);
+
+            return newHandle;
+        }
+
+        private void AssetLoadCallback<T>(T asset, bool isReload, ContentHandle handle, ContentLoadCallbackHandler<T> completionCallback)
+        {
+            if (!isReload && _toLoad.Remove(handle))
             {
-                if (!isReload)
+                if (_toLoad.Count == 0)
                 {
-                    _loadedCount++;
-
-                    if (_loadedCount == _handles.Count)
-                    {
-                        Status = ContentLoadBatchStatus.Completed;
-                        OnCompleted?.Invoke(this);
-                    }
+                    Status = ContentLoadBatchStatus.Completed;
+                    OnCompleted?.Invoke(this);
                 }
+            }
 
-                completionCallback?.Invoke(asset, isReload);
-            }, settings, canHotReload, false);
-
-            _handles.Add(handle);
-
-            return handle;
+            completionCallback?.Invoke(asset, isReload, handle);
         }
 
         /// <summary>
@@ -152,7 +137,7 @@ namespace Molten
         /// <summary>
         /// Gets the number of handles that have finished loading for the first time via the current <see cref="ContentLoadBatch"/>.
         /// </summary>
-        public int LoadedHandleCount => _loadedCount;
+        public int LoadedCount => _toLoad.UnsafeCount;
 
         /// <summary>
         /// Gets the status of the current <see cref="ContentLoadBatch"/>.

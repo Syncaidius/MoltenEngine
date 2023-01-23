@@ -75,7 +75,7 @@ namespace Molten.Examples
 
         private void LoadFontFile(string loadString)
         {
-            ContentLoadHandle handle = Engine.Content.LoadFont($"assets/{loadString}", (font, isReload) =>
+            ContentLoadHandle handle = Engine.Content.LoadFont($"assets/{loadString}", (font, isReload, handle) =>
             {
                 _font2Test = font;
                 if (_font2Test == null)

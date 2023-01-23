@@ -91,15 +91,15 @@ namespace Molten.Examples
             }
 
             _loader = Engine.Content.GetLoadBatch();
-            _loader.LoadFont("assets/FiraSans-Bold.ttf", (font, isReload) =>
+            _loader.LoadFont("assets/FiraSans-Bold.ttf", (font, isReload, handle) =>
             {
                 _font = font;
                 Engine.Renderer.Overlay.Font = _font;
             });
 
-            _loader.Deserialize<UITheme>("assets/test_theme.json", (theme, isReload) => UI.Root.Theme = theme);
+            _loader.Deserialize<UITheme>("assets/test_theme.json", (theme, isReload, handle) => UI.Root.Theme = theme);
 
-            _loader.Load<ITexture2D>("assets/logo_64.png", (tex, isReload) =>
+            _loader.Load<ITexture2D>("assets/logo_64.png", (tex, isReload, handle) =>
             {
                 SpriteData sd = new SpriteData(tex);
                 _windowIcon = new Sprite();

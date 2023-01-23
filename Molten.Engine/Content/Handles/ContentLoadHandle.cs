@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public delegate void ContentLoadCallbackHandler<T>(T asset, bool isReload);
+    public delegate void ContentLoadCallbackHandler<T>(T asset, bool isReload, ContentHandle handle);
 
     public class ContentLoadHandle : ContentHandle
     {
@@ -96,7 +96,7 @@ namespace Molten
                     // Can we reuse the existing asset, or reinstantiate it?
                     if (att[0] is ContentReloadAttribute attReload)
                     {
-                        reinstantiate = attReload.Reinstantiate;
+                        reinstantiate = attReload.Recreate;
 
                         // Reinstantiating, so dispose of existing asset if possible.
                         if (Asset is IDisposable disposable)
@@ -164,7 +164,7 @@ namespace Molten
             return ContentHandleStatus.Failed;
         }
 
-        private void PartLoadComplete(object part, bool isReload)
+        private void PartLoadComplete(object part, bool isReload, ContentHandle handle)
         {
             // Build asset
             if (AllPartsCompleted())
@@ -206,7 +206,7 @@ namespace Molten
         protected void Complete()
         {
             Status = ContentHandleStatus.Completed;
-            Callbacks?.Invoke(Asset, IsLoaded);
+            Callbacks?.Invoke(Asset, IsLoaded, this);
             IsLoaded = true;
             UpdateWatcher();
         }

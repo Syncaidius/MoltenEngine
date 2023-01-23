@@ -14,15 +14,15 @@ namespace Molten
         /// <summary>
         /// Creates a new instance of <see cref="ContentReloadAttribute"/>.
         /// </summary>
-        /// <param name="reinstantiate">If true, the content should be re-instantiated if reloaded.</param>
-        public ContentReloadAttribute(bool reinstantiate)
+        /// <param name="recreate">If true, the content should be re-instantiated if reloaded.</param>
+        public ContentReloadAttribute(bool recreate)
         {
-            Reinstantiate = reinstantiate;
+            Recreate = recreate;
         }
 
         /// <summary>
         /// Gets whether the content should be re-instantiated if it is reloaded.
         /// </summary>
-        public bool Reinstantiate { get; }
+        public bool Recreate { get; }
     }
 }
