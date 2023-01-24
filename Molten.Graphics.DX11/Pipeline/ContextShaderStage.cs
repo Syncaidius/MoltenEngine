@@ -7,7 +7,7 @@ namespace Molten.Graphics
     {
         internal ContextShaderStage(DeviceContextState state, ShaderType type)
         {
-            Context = state.CmdList;
+            Context = state.Cmd;
             Type = type;
 
             GraphicsCapabilities cap = Context.DXDevice.Adapter.Capabilities;

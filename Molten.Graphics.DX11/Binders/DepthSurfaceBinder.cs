@@ -11,9 +11,9 @@ namespace Molten.Graphics
 
         internal override void Unbind(ContextSlot<DepthStencilSurface> slot, DepthStencilSurface value)
         {
-            uint maxRTs = slot.CmdList.DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
-            slot.CmdList.State.DSV = null;
-            slot.CmdList.Native->OMSetRenderTargets(maxRTs, (ID3D11RenderTargetView**)slot.CmdList.State.RTVs, slot.CmdList.State.DSV);
+            uint maxRTs = slot.Cmd.DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
+            slot.Cmd.State.DSV = null;
+            slot.Cmd.Native->OMSetRenderTargets(maxRTs, (ID3D11RenderTargetView**)slot.Cmd.State.RTVs, slot.Cmd.State.DSV);
         }
     }
 }

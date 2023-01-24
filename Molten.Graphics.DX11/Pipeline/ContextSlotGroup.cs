@@ -7,13 +7,13 @@ namespace Molten.Graphics
     {
         ContextSlot<T>[] _slots;
 
-        internal ContextSlotGroup(DeviceContextState parent, ContextGroupBinder<T> binder, ContextSlot<T>[] slots, GraphicsBindTypeFlags bindType, string namePrefix)
+        internal ContextSlotGroup(CommandQueueDX11 queue, ContextGroupBinder<T> binder, ContextSlot<T>[] slots, GraphicsBindTypeFlags bindType, string namePrefix)
         {
             _slots = slots;
             Binder = binder;
             Name = $"{namePrefix} slot group";
             BindType = bindType;
-            ParentState = parent;
+            Cmd = queue;
             SlotCount = (uint)slots.Length;
         }
 
@@ -98,12 +98,7 @@ namespace Molten.Graphics
         /// </summary>
         internal GraphicsBindTypeFlags BindType { get; }
 
-        /// <summary>
-        /// Gets the parent <see cref="DeviceContextState"/> of the current <see cref="ContextSlotGroup{T}"/>.
-        /// </summary>
-        internal DeviceContextState ParentState { get; }
-
-        internal CommandQueueDX11 Context => ParentState.CmdList;
+        internal CommandQueueDX11 Cmd { get; }
 
         internal uint SlotCount { get; }
 

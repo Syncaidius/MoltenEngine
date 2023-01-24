@@ -33,7 +33,7 @@ namespace Molten.Graphics
 
         internal DeviceContextState(CommandQueueDX11 context)
         {
-            CmdList = context;
+            Cmd = context;
             _slots = new List<ContextSlot>();
             AllSlots = _slots.AsReadOnly();
             _nullViewport = new ViewportF[1];
@@ -43,7 +43,7 @@ namespace Molten.Graphics
             _viewports = new ViewportF[maxRTs];
             _apiViewports = new Silk.NET.Direct3D11.Viewport[maxRTs];
 
-            uint maxVBuffers = CmdList.DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots;
+            uint maxVBuffers = Cmd.DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots;
             VertexBuffers = RegisterSlotGroup<BufferSegment, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
             IndexBuffer = RegisterSlot<BufferSegment, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
             _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(GraphicsBindTypeFlags.Input, "Vertex Input Layout", 0);
@@ -69,7 +69,7 @@ namespace Molten.Graphics
 
         internal void Clear()
         {
-            CmdList.Native->ClearState();
+            Cmd.Native->ClearState();
         }
 
         internal bool Bind(MaterialPass pass, StateConditions conditions, VertexTopology topology)
@@ -80,7 +80,7 @@ namespace Molten.Graphics
             if (_boundTopology != topology)
             {
                 _boundTopology = topology;
-                CmdList.Native->IASetPrimitiveTopology(_boundTopology.ToApi());
+                Cmd.Native->IASetPrimitiveTopology(_boundTopology.ToApi());
             }
 
             VS.Shader.Value = pass.VS;
@@ -103,9 +103,9 @@ namespace Molten.Graphics
             {
                 BufferSegment ib = IndexBuffer.BoundValue;
                 if (ib != null)
-                    CmdList.Native->IASetIndexBuffer(ib.Buffer, ib.DataFormat, ib.ByteOffset);
+                    Cmd.Native->IASetIndexBuffer(ib.Buffer, ib.DataFormat, ib.ByteOffset);
                 else
-                    CmdList.Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
+                    Cmd.Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
             }
 
             // Does the vertex input layout need updating?
@@ -127,7 +127,7 @@ namespace Molten.Graphics
             if (_scissorRectsDirty)
             {                
                 fixed (Rectangle* ptrRect = _scissorRects)
-                    CmdList.Native->RSSetScissorRects((uint)_scissorRects.Length, (Rectangle<int>*)ptrRect);
+                    Cmd.Native->RSSetScissorRects((uint)_scissorRects.Length, (Rectangle<int>*)ptrRect);
 
                 _scissorRectsDirty = false;
             }
@@ -138,7 +138,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < _viewports.Length; i++)
                     _apiViewports[i] = _viewports[i].ToApi();
 
-                CmdList.Native->RSSetViewports((uint)_viewports.Length, ref _apiViewports[0]);
+                Cmd.Native->RSSetViewports((uint)_viewports.Length, ref _apiViewports[0]);
                 _viewportsDirty = false;
             }
 
@@ -185,8 +185,8 @@ namespace Molten.Graphics
                     _boundDepthMode = depthWriteMode;
                 }
 
-                CmdList.Native->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)RTVs, DSV);
-                CmdList.Profiler.Current.SurfaceBindings++;
+                Cmd.Native->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)RTVs, DSV);
+                Cmd.Profiler.Current.SurfaceBindings++;
             }
 
             return bStateChanged || rStateChanged || dStateChanged || 
@@ -371,12 +371,12 @@ namespace Molten.Graphics
             // Retrieve layout list or create new one if needed.
             foreach (VertexInputLayout l in _cachedLayouts)
             {
-                if (l.IsMatch(CmdList.DXDevice.Log, VertexBuffers))
+                if (l.IsMatch(Cmd.DXDevice.Log, VertexBuffers))
                     return l;
             }
 
             Material mat = Material.BoundValue;
-            VertexInputLayout input = new VertexInputLayout(CmdList.DXDevice, VertexBuffers, (ID3D10Blob*)mat.InputStructureByteCode, mat.InputStructure);
+            VertexInputLayout input = new VertexInputLayout(Cmd.DXDevice, VertexBuffers, (ID3D10Blob*)mat.InputStructureByteCode, mat.InputStructure);
             _cachedLayouts.Add(input);
 
             return input;
@@ -468,7 +468,7 @@ namespace Molten.Graphics
         internal ContextSlot<T> RegisterSlot<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex, ContextSlotBinder<T> binder)
             where T : ContextBindable
         {
-            ContextSlot<T> slot = new ContextSlot<T>(this, binder, bindType, namePrefix, slotIndex);
+            ContextSlot<T> slot = new ContextSlot<T>(Cmd, binder, bindType, namePrefix, slotIndex);
             _slots.Add(slot);
             return slot;
         }
@@ -485,10 +485,10 @@ namespace Molten.Graphics
             where T : ContextBindable
         {
             ContextSlot<T>[] slots = new ContextSlot<T>[numSlots];
-            ContextSlotGroup<T> grp = new ContextSlotGroup<T>(this, binder, slots, bindType, namePrefix);
+            ContextSlotGroup<T> grp = new ContextSlotGroup<T>(Cmd, binder, slots, bindType, namePrefix);
 
             for (uint i = 0; i < numSlots; i++)
-                slots[i] = new ContextSlot<T>(this, grp, bindType, namePrefix, i);
+                slots[i] = new ContextSlot<T>(Cmd, grp, bindType, namePrefix, i);
 
             _slots.AddRange(slots);
 
@@ -500,7 +500,7 @@ namespace Molten.Graphics
             EngineUtil.FreePtrArray(ref RTVs);
         }
 
-        internal CommandQueueDX11 CmdList { get; }
+        internal CommandQueueDX11 Cmd { get; }
 
         internal IReadOnlyList<ContextSlot> AllSlots { get; }
 

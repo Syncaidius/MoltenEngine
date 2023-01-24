@@ -2,9 +2,9 @@
 {
     internal abstract class ContextSlot : EngineObject
     {
-        internal ContextSlot(DeviceContextState parent, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
+        internal ContextSlot(CommandQueueDX11 queue, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
         {
-            ParentState = parent; 
+            Cmd = queue; 
             BindType = bindType;
             SlotIndex = slotIndex;
             Name = $"{namePrefix}_slot_{slotIndex}";
@@ -18,11 +18,9 @@
 
         internal GraphicsBindTypeFlags BindType { get; }
 
-        internal DeviceContextState ParentState { get; }
-
         internal uint SlotIndex { get; }
 
-        internal CommandQueueDX11 CmdList => ParentState.CmdList;
+        internal CommandQueueDX11 Cmd { get; }
 
         internal protected uint PendingID { get; set; }
 
@@ -40,16 +38,16 @@
 
         uint _boundVersion;
 
-        public ContextSlot(DeviceContextState parent, ContextSlotBinder<T> binder, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
-            base(parent, bindType, namePrefix, slotIndex)
+        public ContextSlot(CommandQueueDX11 queue, ContextSlotBinder<T> binder, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
+            base(queue, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = false;
             _group = null;
             _binder = binder;
         }
 
-        public ContextSlot(DeviceContextState parent, ContextSlotGroup<T> grp, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) :
-            base(parent, bindType, namePrefix, slotIndex)
+        public ContextSlot(CommandQueueDX11 queue, ContextSlotGroup<T> grp, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) :
+            base(queue, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = true;
             _group = grp;
@@ -80,7 +78,7 @@
                         slot = _value.BoundTo[i];
 
                         // Only check slots on the same context.
-                        if (slot.CmdList != CmdList)
+                        if (slot.Cmd != Cmd)
                             continue;
 
                         // Are the slot bind types different, or can the object to be simultaneously bound to input and output slots?
@@ -102,7 +100,7 @@
                                 }
                                 else if (slot.PendingID == PendingID)
                                 {
-                                    CmdList.DXDevice.Log.Error($"{_value.Name} is will be bound on '{slot.Name}' and '{Name}' with the same pending BindID ({PendingID}). This is unexpected behaviour!");
+                                    Cmd.DXDevice.Log.Error($"{_value.Name} is will be bound on '{slot.Name}' and '{Name}' with the same pending BindID ({PendingID}). This is unexpected behaviour!");
                                     canBind = false;
                                 }
                             }
@@ -129,7 +127,7 @@
                             _boundValue.BoundTo.Remove(this);
                     }
 
-                    _value.Apply(CmdList);
+                    _value.Apply(Cmd);
                     _boundValue = _value;
                     _boundVersion = _boundValue.Version;
                     _value.BoundTo.Add(this);
@@ -137,7 +135,7 @@
                     if (!IsGroupMember)
                     {
                         _binder.Bind(this, _boundValue);
-                        CmdList.Profiler.Current.GpuBindings++;
+                        Cmd.Profiler.Current.GpuBindings++;
                     }
                 }
 
@@ -148,11 +146,11 @@
                 // Refresh the existing value.
                 if(_value != null)
                 {
-                    _value.Apply(this.CmdList);
+                    _value.Apply(this.Cmd);
                     if (_boundVersion != Value.Version)
                     {
                         _boundVersion = Value.Version;
-                        CmdList.Profiler.Current.GpuBindings++;
+                        Cmd.Profiler.Current.GpuBindings++;
                         return true;
                     }
                 }
