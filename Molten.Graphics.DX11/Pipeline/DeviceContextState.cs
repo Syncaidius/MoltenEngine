@@ -1,4 +1,5 @@
-﻿using Silk.NET.Direct3D11;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 using Silk.NET.Maths;
 
@@ -43,11 +44,11 @@ namespace Molten.Graphics
             _apiViewports = new Silk.NET.Direct3D11.Viewport[maxRTs];
 
             uint maxVBuffers = CmdList.DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots;
-            VertexBuffers = RegisterSlotGroup<BufferSegment, VertexBufferGroupBinder>(ContextBindTypeFlags.Input, "V-Buffer", maxVBuffers);
-            IndexBuffer = RegisterSlot<BufferSegment, IndexBufferBinder>(ContextBindTypeFlags.Input, "I-Buffer", 0);
-            _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(ContextBindTypeFlags.Input, "Vertex Input Layout", 0);
-            Material = RegisterSlot<Material, MaterialBinder>(ContextBindTypeFlags.Input, "Material", 0);
-            _compute = RegisterSlot<ComputeTask, ComputeTaskBinder>(ContextBindTypeFlags.Input, "Compute Task", 0);
+            VertexBuffers = RegisterSlotGroup<BufferSegment, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
+            IndexBuffer = RegisterSlot<BufferSegment, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
+            _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(GraphicsBindTypeFlags.Input, "Vertex Input Layout", 0);
+            Material = RegisterSlot<Material, MaterialBinder>(GraphicsBindTypeFlags.Input, "Material", 0);
+            _compute = RegisterSlot<ComputeTask, ComputeTaskBinder>(GraphicsBindTypeFlags.Input, "Compute Task", 0);
 
             VS = new ShaderVSStage(this);
             GS = new ShaderGSStage(this);
@@ -56,14 +57,14 @@ namespace Molten.Graphics
             PS = new ShaderPSStage(this);
             CS = new ShaderCSStage(this);
 
-            Blend = RegisterSlot<GraphicsBlendState, BlendBinder>(ContextBindTypeFlags.Output, "Blend State", 0);
-            Depth = RegisterSlot<GraphicsDepthState, DepthStencilBinder>(ContextBindTypeFlags.Output, "Depth-Stencil State", 0);
-            Rasterizer = RegisterSlot<GraphicsRasterizerState, RasterizerBinder>(ContextBindTypeFlags.Output, "Rasterizer State", 0);
+            Blend = RegisterSlot<GraphicsBlendState, BlendBinder>(GraphicsBindTypeFlags.Output, "Blend State", 0);
+            Depth = RegisterSlot<GraphicsDepthState, DepthStencilBinder>(GraphicsBindTypeFlags.Output, "Depth-Stencil State", 0);
+            Rasterizer = RegisterSlot<GraphicsRasterizerState, RasterizerBinder>(GraphicsBindTypeFlags.Output, "Rasterizer State", 0);
 
             RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
 
-            Surfaces = RegisterSlotGroup<RenderSurface2D, SurfaceGroupBinder>(ContextBindTypeFlags.Output, "Render Surface", maxRTs);
-            DepthSurface = RegisterSlot<DepthStencilSurface, DepthSurfaceBinder>(ContextBindTypeFlags.Output, "Depth Surface", 0);
+            Surfaces = RegisterSlotGroup<RenderSurface2D, SurfaceGroupBinder>(GraphicsBindTypeFlags.Output, "Render Surface", maxRTs);
+            DepthSurface = RegisterSlot<DepthStencilSurface, DepthSurfaceBinder>(GraphicsBindTypeFlags.Output, "Depth Surface", 0);
         }
 
         internal void Clear()
@@ -375,7 +376,7 @@ namespace Molten.Graphics
             }
 
             Material mat = Material.BoundValue;
-            VertexInputLayout input = new VertexInputLayout(CmdList.DXDevice, VertexBuffers, mat.InputStructureByteCode, mat.InputStructure);
+            VertexInputLayout input = new VertexInputLayout(CmdList.DXDevice, VertexBuffers, (ID3D10Blob*)mat.InputStructureByteCode, mat.InputStructure);
             _cachedLayouts.Add(input);
 
             return input;
@@ -456,7 +457,7 @@ namespace Molten.Graphics
                 return GraphicsBindResult.NonInstancedVertexLayout;
         }
 
-        internal ContextSlot<T> RegisterSlot<T, B>(ContextBindTypeFlags bindType, string namePrefix, uint slotIndex) 
+        internal ContextSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) 
             where T : ContextBindable
             where B : ContextSlotBinder<T>, new()
         {
@@ -464,7 +465,7 @@ namespace Molten.Graphics
             return RegisterSlot(bindType, namePrefix, slotIndex, binder);
         }
 
-        internal ContextSlot<T> RegisterSlot<T>(ContextBindTypeFlags bindType, string namePrefix, uint slotIndex, ContextSlotBinder<T> binder)
+        internal ContextSlot<T> RegisterSlot<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex, ContextSlotBinder<T> binder)
             where T : ContextBindable
         {
             ContextSlot<T> slot = new ContextSlot<T>(this, binder, bindType, namePrefix, slotIndex);
@@ -472,7 +473,7 @@ namespace Molten.Graphics
             return slot;
         }
 
-        internal ContextSlotGroup<T> RegisterSlotGroup<T, B>(ContextBindTypeFlags bindType, string namePrefix, uint numSlots)
+        internal ContextSlotGroup<T> RegisterSlotGroup<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots)
             where T : ContextBindable
             where B : ContextGroupBinder<T>, new()
         {
@@ -480,7 +481,7 @@ namespace Molten.Graphics
             return RegisterSlotGroup(bindType, namePrefix, numSlots, binder);
         }
 
-        internal ContextSlotGroup<T> RegisterSlotGroup<T>(ContextBindTypeFlags bindType, string namePrefix, uint numSlots, ContextGroupBinder<T> binder)
+        internal ContextSlotGroup<T> RegisterSlotGroup<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots, ContextGroupBinder<T> binder)
             where T : ContextBindable
         {
             ContextSlot<T>[] slots = new ContextSlot<T>[numSlots];

@@ -8,7 +8,7 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class ContextBindable : GraphicsObject<DeviceDX11>
     {
-        internal ContextBindable(DeviceDX11 device, ContextBindTypeFlags bindFlags) : base(device)
+        internal ContextBindable(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : base(device)
         {
             BoundTo = new List<ContextSlot>();
             BindFlags = bindFlags;
@@ -43,7 +43,7 @@ namespace Molten.Graphics
         /// </summary>
         internal uint BindID { get; set; }
 
-        internal ContextBindTypeFlags BindFlags { get; set; }
+        internal GraphicsBindTypeFlags BindFlags { get; set; }
 
         /// <summary>
         /// Gets the ID of the frame that the current <see cref="ContextBindable"/> was applied.
@@ -54,7 +54,7 @@ namespace Molten.Graphics
     public unsafe abstract class ContextBindable<T> : ContextBindable
         where T : unmanaged
     {
-        internal ContextBindable(DeviceDX11 device, ContextBindTypeFlags bindFlags) : 
+        internal ContextBindable(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
 

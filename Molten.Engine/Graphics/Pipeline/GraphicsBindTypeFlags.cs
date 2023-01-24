@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics
 {
     [Flags]
-    public enum ContextBindTypeFlags
+    public enum GraphicsBindTypeFlags
     {
         /// <summary>
         /// No bind type.

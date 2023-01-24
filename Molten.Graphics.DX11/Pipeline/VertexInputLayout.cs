@@ -14,7 +14,7 @@ namespace Molten.Graphics
         internal VertexInputLayout(DeviceDX11 device, 
             ContextSlotGroup<BufferSegment> vbSlots, 
             ID3D10Blob* vertexBytecode,
-            ShaderIOStructure io) : base(device, ContextBindTypeFlags.Input)
+            ShaderIOStructure io) : base(device, GraphicsBindTypeFlags.Input)
         {
             _expectedFormatIDs = new ulong[vbSlots.SlotCount];
             List<InputElementDesc> elements = new List<InputElementDesc>();

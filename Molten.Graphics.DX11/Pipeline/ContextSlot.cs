@@ -2,7 +2,7 @@
 {
     internal abstract class ContextSlot : EngineObject
     {
-        internal ContextSlot(DeviceContextState parent, ContextBindTypeFlags bindType, string namePrefix, uint slotIndex)
+        internal ContextSlot(DeviceContextState parent, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
         {
             ParentState = parent; 
             BindType = bindType;
@@ -16,7 +16,7 @@
 
         internal protected abstract void Clear();
 
-        internal ContextBindTypeFlags BindType { get; }
+        internal GraphicsBindTypeFlags BindType { get; }
 
         internal DeviceContextState ParentState { get; }
 
@@ -40,7 +40,7 @@
 
         uint _boundVersion;
 
-        public ContextSlot(DeviceContextState parent, ContextSlotBinder<T> binder, ContextBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
+        public ContextSlot(DeviceContextState parent, ContextSlotBinder<T> binder, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
             base(parent, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = false;
@@ -48,7 +48,7 @@
             _binder = binder;
         }
 
-        public ContextSlot(DeviceContextState parent, ContextSlotGroup<T> grp, ContextBindTypeFlags bindType, string namePrefix, uint slotIndex) :
+        public ContextSlot(DeviceContextState parent, ContextSlotGroup<T> grp, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) :
             base(parent, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = true;

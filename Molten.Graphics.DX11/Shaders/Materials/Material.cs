@@ -1,11 +1,14 @@
-﻿using Silk.NET.Core.Native;
-
+﻿
 namespace Molten.Graphics
 {
     public class Material : HlslShader, IMaterial
     {
         internal MaterialPass[] Passes = new MaterialPass[0];
-        internal unsafe ID3D10Blob* InputStructureByteCode;
+
+        /// <summary>
+        /// The bytecode of the first pass' vertex shader.
+        /// </summary>
+        internal unsafe void* InputStructureByteCode;
 
         // TODO move these to back to the HLSL compiler via a metadata system.
         internal string DefaultVSEntryPoint;

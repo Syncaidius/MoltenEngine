@@ -31,8 +31,8 @@ namespace Molten.Graphics
 
         internal TextureBase(RendererDX11 renderer, uint width, uint height, uint depth, uint mipCount, 
             uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, TextureFlags flags) : base(renderer.NativeDevice,
-                ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? ContextBindTypeFlags.Output : ContextBindTypeFlags.None) |
-                ((flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? ContextBindTypeFlags.Input : ContextBindTypeFlags.None))
+                ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
+                ((flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None))
         {
             _renderer = renderer;
             Flags = flags;

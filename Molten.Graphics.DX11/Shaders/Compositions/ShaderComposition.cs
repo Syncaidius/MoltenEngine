@@ -28,7 +28,7 @@ namespace Molten.Graphics
         internal unsafe abstract void SetBytecode(ID3D10Blob* byteCode);
 
         internal ShaderComposition(HlslShader parentShader, ShaderType type) : 
-            base(parentShader.NativeDevice, ContextBindTypeFlags.Input)
+            base(parentShader.NativeDevice, GraphicsBindTypeFlags.Input)
         {
             Parent = parentShader;
             Type = type;

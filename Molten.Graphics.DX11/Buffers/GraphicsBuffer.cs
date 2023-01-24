@@ -26,8 +26,8 @@ namespace Molten.Graphics
             StagingBufferFlags stagingType = StagingBufferFlags.None, 
             uint structuredStride = 0, 
             Array initialData = null) : base(device,
-                ((bindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess ? ContextBindTypeFlags.Output : ContextBindTypeFlags.None) |
-                ((bindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource ? ContextBindTypeFlags.Input : ContextBindTypeFlags.None))
+                ((bindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
+                ((bindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None))
         {
             _freeSegments = new List<BufferSegment>();
             Mode = mode;

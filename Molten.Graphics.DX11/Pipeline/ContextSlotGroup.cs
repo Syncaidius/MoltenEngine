@@ -7,7 +7,7 @@ namespace Molten.Graphics
     {
         ContextSlot<T>[] _slots;
 
-        internal ContextSlotGroup(DeviceContextState parent, ContextGroupBinder<T> binder, ContextSlot<T>[] slots, ContextBindTypeFlags bindType, string namePrefix)
+        internal ContextSlotGroup(DeviceContextState parent, ContextGroupBinder<T> binder, ContextSlot<T>[] slots, GraphicsBindTypeFlags bindType, string namePrefix)
         {
             _slots = slots;
             Binder = binder;
@@ -96,7 +96,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the bind type of the current <see cref="ContextSlotGroup{T}"/>.
         /// </summary>
-        internal ContextBindTypeFlags BindType { get; }
+        internal GraphicsBindTypeFlags BindType { get; }
 
         /// <summary>
         /// Gets the parent <see cref="DeviceContextState"/> of the current <see cref="ContextSlotGroup{T}"/>.

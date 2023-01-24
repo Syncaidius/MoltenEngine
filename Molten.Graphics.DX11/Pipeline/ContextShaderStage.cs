@@ -13,10 +13,10 @@ namespace Molten.Graphics
             GraphicsCapabilities cap = Context.DXDevice.Adapter.Capabilities;
             ShaderStageCapabilities shaderCap = cap[type];
             
-            Samplers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_Sampler", cap.MaxShaderSamplers, new SamplerGroupBinder<T>(this));
-            Resources = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_Resource", shaderCap.MaxInResources, new ResourceGroupBinder<T>(this));
-            ConstantBuffers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_C-Buffer", cap.ConstantBuffers.MaxSlots, new CBufferGroupBinder<T>(this));
-            Shader = state.RegisterSlot(ContextBindTypeFlags.Input, $"{type}_Shader", 0, new ShaderSlotBinder<T>(this));
+            Samplers = state.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Sampler", cap.MaxShaderSamplers, new SamplerGroupBinder<T>(this));
+            Resources = state.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Resource", shaderCap.MaxInResources, new ResourceGroupBinder<T>(this));
+            ConstantBuffers = state.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_C-Buffer", cap.ConstantBuffers.MaxSlots, new CBufferGroupBinder<T>(this));
+            Shader = state.RegisterSlot(GraphicsBindTypeFlags.Input, $"{type}_Shader", 0, new ShaderSlotBinder<T>(this));
         }
 
         internal virtual bool Bind()
