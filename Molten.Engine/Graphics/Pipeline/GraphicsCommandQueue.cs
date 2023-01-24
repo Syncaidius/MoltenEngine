@@ -188,5 +188,10 @@ namespace Molten.Graphics
             get => _profiler;
             set => _profiler = value ?? _defaultProfiler;
         }
+
+        /// <summary>
+        /// Gets or sets the override permission for depth writing.
+        /// </summary>
+        public GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;
     }
 }

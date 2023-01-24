@@ -10,7 +10,7 @@ namespace Molten.Graphics
         IRenderSurface2D[] _composition;
         int _curComposition;
 
-        internal RenderChainContext(RendererDX11 renderer)
+        internal RenderChainContext(RenderService renderer)
         {
             _composition = new IRenderSurface2D[]
             {

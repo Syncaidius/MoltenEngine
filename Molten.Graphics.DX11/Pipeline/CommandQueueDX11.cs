@@ -762,8 +762,6 @@ namespace Molten.Graphics
         /// <summary>Gets the number of applied viewports.</summary>
         public int ViewportCount => _viewports.Length;
 
-        internal GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;
-
         public ContextSlotGroup<RenderSurface2D> Surfaces { get; }
 
         /// <summary>
