@@ -1,31 +1,33 @@
-﻿using Silk.NET.DXGI;
-
+﻿
 namespace Molten.Graphics
 {
-    internal class DepthSurfaceTracker : IDisposable
+    public class SurfaceTracker : IDisposable
     {
         SurfaceSizeMode _mode;
-        Dictionary<AntiAliasLevel, DepthStencilSurface> _surfaces;
-        RendererDX11 _renderer;
+        Dictionary<AntiAliasLevel, IRenderSurface2D> _surfaces;
+        ResourceFactory _factory;
 
         uint _width;
         uint _height;
-        DepthFormat _format;
+        GraphicsFormat _format;
+        string _name;
 
-        internal DepthSurfaceTracker(
-            RendererDX11 renderer,
+        internal SurfaceTracker(
+            RenderService renderer,
             AntiAliasLevel[] aaLevels,
             uint width,
             uint height,
-            DepthFormat format,
+            GraphicsFormat format,
+            string name,
             SurfaceSizeMode mode = SurfaceSizeMode.Full)
         {
             _width = width;
             _height = height;
             _format = format;
+            _name = name;
             _mode = mode;
-            _renderer = renderer;
-            _surfaces = new Dictionary<AntiAliasLevel, DepthStencilSurface>();
+            _factory = renderer.Resources;
+            _surfaces = new Dictionary<AntiAliasLevel, IRenderSurface2D>();
         }
 
         internal void RefreshSize(uint minWidth, uint minHeight)
@@ -36,43 +38,35 @@ namespace Molten.Graphics
             switch (_mode)
             {
                 case SurfaceSizeMode.Full:
-                    foreach(DepthStencilSurface rs in _surfaces.Values)
+                    foreach(IRenderSurface2D rs in _surfaces.Values)
                         rs?.Resize(minWidth, minHeight);
                     break;
 
                 case SurfaceSizeMode.Half:
-                    foreach (DepthStencilSurface rs in _surfaces.Values)
+                    foreach (IRenderSurface2D rs in _surfaces.Values)
                         rs?.Resize((minWidth / 2) + 1, (minHeight / 2) + 1);
                     break;
             }
         }
 
-        internal DepthStencilSurface Create(AntiAliasLevel aa)
+        private IRenderSurface2D Create(AntiAliasLevel aa)
         {
-            DepthStencilSurface rs = new DepthStencilSurface(
-                _renderer, 
-                _width, 
-                _height, 
-                _format, 
-                name: $"depth_{aa}aa", 
-                aaLevel: aa
-            );
-
+            IRenderSurface2D rs = _factory.CreateSurface(_width, _height, _format, 1, 1, aa, TextureFlags.None, $"{_name}_{aa}aa");
             _surfaces[aa] = rs;
             return rs;
         }
 
         public void Dispose()
         {
-            foreach(DepthStencilSurface rs in _surfaces.Values)
+            foreach(IRenderSurface2D rs in _surfaces.Values)
                 rs.Dispose();
         }
 
-        internal DepthStencilSurface this[AntiAliasLevel aaLevel]
+        internal IRenderSurface2D this[AntiAliasLevel aaLevel]
         {
             get
             {
-                if (!_surfaces.TryGetValue(aaLevel, out DepthStencilSurface rs))
+                if (!_surfaces.TryGetValue(aaLevel, out IRenderSurface2D rs))
                 {
                     rs = Create(aaLevel);
                     _surfaces[aaLevel] = rs;

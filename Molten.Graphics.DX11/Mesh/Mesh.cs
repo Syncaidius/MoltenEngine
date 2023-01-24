@@ -40,7 +40,7 @@
 
         internal virtual void ApplyBuffers(CommandQueueDX11 context)
         {
-            context.State.VertexBuffers[0].Value = _vb;
+            context.VertexBuffers[0].Value = _vb;
         }
 
         private protected override void OnRender(CommandQueueDX11 cmd, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)

@@ -44,7 +44,7 @@
 
         internal void Render(CommandQueueDX11 cmd, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
-            cmd.State.DepthWriteOverride = data.DepthWriteOverride;
+            cmd.DepthWriteOverride = data.DepthWriteOverride;
             OnRender(cmd, renderer, camera, data);
         }
 

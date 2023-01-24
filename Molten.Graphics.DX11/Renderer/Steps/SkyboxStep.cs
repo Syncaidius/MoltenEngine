@@ -44,14 +44,14 @@
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 
             // We want to add to the previous composition, rather than completely overwrite it.
-            RenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
+            IRenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
 
-            cmd.State.ResetRenderSurfaces();
-            cmd.State.SetRenderSurface(destSurface, 0);
-            cmd.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
-            cmd.State.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
-            cmd.State.SetViewports(camera.Surface.Viewport);
-            cmd.State.SetScissorRectangle(bounds);
+            cmd.ResetRenderSurfaces();
+            cmd.SetRenderSurface(destSurface, 0);
+            cmd.DepthSurface.Value = renderer.Surfaces.GetDepth() as DepthStencilSurface;
+            cmd.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
+            cmd.SetViewports(camera.Surface.Viewport);
+            cmd.SetScissorRectangle(bounds);
 
             cmd.BeginDraw(context.BaseStateConditions);
             _skyboxData.RenderTransform = Matrix4F.Scaling(camera.MaxDrawDistance) * Matrix4F.CreateTranslation(camera.Position);
@@ -70,7 +70,6 @@
             float spherePitch = 0.0f;
             Matrix4F Rotationy = Matrix4F.Identity;
             Matrix4F Rotationx = Matrix4F.Identity;
-
             Vector3F currVertPos = new Vector3F(0.0f, 0.0f, 1.0f);
 
             vertices[0] = new Vertex(0, 0, 1.0f);

@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal abstract class ContextSlot : EngineObject
+    public abstract class ContextSlot : EngineObject
     {
         internal ContextSlot(CommandQueueDX11 queue, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
         {
@@ -27,7 +27,7 @@
         internal protected abstract ContextBindable RawValue { get; }
     }
 
-    internal class ContextSlot<T> : ContextSlot
+    public class ContextSlot<T> : ContextSlot
         where T : ContextBindable
     {
         ContextSlotBinder<T> _binder;
@@ -38,7 +38,7 @@
 
         uint _boundVersion;
 
-        public ContextSlot(CommandQueueDX11 queue, ContextSlotBinder<T> binder, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
+        internal ContextSlot(CommandQueueDX11 queue, ContextSlotBinder<T> binder, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
             base(queue, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = false;
@@ -46,7 +46,7 @@
             _binder = binder;
         }
 
-        public ContextSlot(CommandQueueDX11 queue, ContextSlotGroup<T> grp, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) :
+        internal ContextSlot(CommandQueueDX11 queue, ContextSlotGroup<T> grp, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) :
             base(queue, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = true;

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
-    internal unsafe class BufferSegment : ContextBindableResource<ID3D11Buffer>, IPoolable
+    public unsafe class BufferSegment : ContextBindableResource<ID3D11Buffer>, IPoolable
     {
         /// <summary>The size of the segment in bytes. This is <see cref="ElementCount"/> multiplied by <see cref="Stride"/>.</summary>
         internal uint ByteCount;

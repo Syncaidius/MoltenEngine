@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal class ContextSlotGroup<T> : EngineObject
+    public class ContextSlotGroup<T> : EngineObject
         where T : ContextBindable
     {
         ContextSlot<T>[] _slots;

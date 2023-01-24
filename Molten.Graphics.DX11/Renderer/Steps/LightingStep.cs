@@ -35,23 +35,23 @@ namespace Molten.Graphics
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
-            RenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
-            DepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
+            IRenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
+            IDepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
             CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
 
-            _surfaceLighting.Clear(cmd, context.Scene.AmbientLightColor);
-            cmd.State.ResetRenderSurfaces();
-            cmd.State.SetRenderSurface(_surfaceLighting, 0);
-            cmd.State.DepthSurface.Value = sDepth;
-            cmd.State.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
+            _surfaceLighting.Clear(context.Scene.AmbientLightColor, GraphicsPriority.Immediate);
+            cmd.ResetRenderSurfaces();
+            cmd.SetRenderSurface(_surfaceLighting, 0);
+            cmd.DepthSurface.Value = sDepth as DepthStencilSurface;
+            cmd.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
             RenderPointLights(renderer, cmd, camera, context.Scene, sDepth);
         }
 
-        private void RenderPointLights(RendererDX11 renderer, CommandQueueDX11 context, RenderCamera camera, SceneRenderData scene, DepthStencilSurface dsSurface)
+        private void RenderPointLights(RendererDX11 renderer, CommandQueueDX11 context, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)
         {
-            RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
-            RenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
+            IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
+            IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
 
             // Calculate camera-specific information for each point light
             LightInstance instance;
@@ -87,8 +87,8 @@ namespace Molten.Graphics
             };
 
             //set correct buffers and shaders
-            context.State.VertexBuffers[0].Value = null;
-            context.State.IndexBuffer.Value = null;
+            context.VertexBuffers[0].Value = null;
+            context.IndexBuffer.Value = null;
             uint pointCount = scene.PointLights.ElementCount * 2;
 
             context.BeginDraw(StateConditions.None); // TODO expand use of conditions here

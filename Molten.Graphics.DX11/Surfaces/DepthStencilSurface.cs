@@ -41,6 +41,8 @@ namespace Molten.Graphics
             _description.Format = GetFormat().ToApi();
             _depthDesc = new DepthStencilViewDesc();
             _depthDesc.Format = GetDSVFormat().ToApi();
+
+            name = name ?? "surface";
             Name = $"depth_{name}";
 
             if (MultiSampleLevel >= AntiAliasLevel.X2)
@@ -157,7 +159,7 @@ namespace Molten.Graphics
             UpdateViewport();
         }
 
-        internal void Clear(CommandQueueDX11 pipe, ClearFlag clearFlags = ClearFlag.Depth, float depth = 1.0f, byte stencil = 0)
+        internal void Clear(CommandQueueDX11 pipe, DepthClearFlags clearFlags = DepthClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
         {
             if (_depthView == null)
                 CreateTexture(false);
@@ -165,9 +167,20 @@ namespace Molten.Graphics
             pipe.Native->ClearDepthStencilView(_depthView, (uint)clearFlags, depth, stencil);
         }
 
-        public void Clear(DepthClearFlags flags, float depth = 1.0f, byte stencil = 0)
+        public void Clear(DepthClearFlags flags, GraphicsPriority priority, float depth = 1.0f, byte stencil = 0)
         {
-            Clear(NativeDevice.Cmd, (ClearFlag)flags, depth, stencil);
+            if (priority == GraphicsPriority.Immediate)
+            {
+                Clear(NativeDevice.Cmd, flags, depth, stencil);
+            }
+            else
+            {
+                QueueChange(new DepthClearChange()
+                {
+                    Flags = flags,
+                    Surface = this,
+                });
+            }
         }
 
         public override void GraphicsRelease()

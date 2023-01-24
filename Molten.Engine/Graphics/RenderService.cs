@@ -16,6 +16,7 @@ namespace Molten.Graphics
         bool _disposeRequested;
         bool _shouldPresent;
         bool _surfaceResizeRequired;
+        HashSet<ITexture2D> _clearedSurfaces;
         AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
         internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
 
@@ -24,6 +25,8 @@ namespace Molten.Graphics
         /// </summary>
         public RenderService()
         {
+            _clearedSurfaces = new HashSet<ITexture2D>();
+            Surfaces = new SurfaceManager(this);
             Overlay = new OverlayProvider();
             Log.WriteLine("Acquiring render chain");
         }
@@ -86,6 +89,7 @@ namespace Molten.Graphics
 
             if (_disposeRequested)
             {
+                Surfaces.Dispose();
                 DisposeBeforeRender();
                 return;
             }
@@ -143,7 +147,7 @@ namespace Molten.Graphics
             // Update surfaces if dirty. This may involve resizing or changing their format.
             if (_surfaceResizeRequired)
             {
-                OnRebuildSurfaces(BiggestWidth, BiggestHeight);
+                Surfaces.Rebuild(BiggestWidth, BiggestHeight);
                 _surfaceResizeRequired = false;
             }
 
@@ -192,6 +196,10 @@ namespace Molten.Graphics
                     sceneData.Profiler.Accumulate(camera.Profiler.Previous);
                     OnPostRenderCamera(sceneData, camera, time);
                 }
+                
+                // Clear the list of used surfaces, ready for the next frame.
+                _clearedSurfaces.Clear();
+
                 OnPostRenderScene(sceneData, time);
 
                 sceneData.Profiler.End(time);
@@ -213,7 +221,7 @@ namespace Molten.Graphics
         /// Occurs when the renderer is being initialized.
         /// </summary>
         /// <param name="settings"></param>
-        protected override void OnInitialize(EngineSettings settings)
+        protected override sealed void OnInitialize(EngineSettings settings)
         {
             DisplayManager = OnInitializeDisplayManager(settings.Graphics);
 
@@ -259,7 +267,25 @@ namespace Molten.Graphics
                 Log.Error("Failed to initialize graphics device");
                 Log.Error(ex, true);
             }
-        } 
+
+            OnInitializeRenderer(settings);
+
+            Surfaces.Initialize(BiggestWidth, BiggestHeight);
+        }
+
+        protected abstract void OnInitializeRenderer(EngineSettings settings);
+
+        public bool ClearIfFirstUse(IRenderSurface2D surface, Color color)
+        {
+            if (!_clearedSurfaces.Contains(surface))
+            {
+                surface.Clear(color, GraphicsPriority.Immediate);
+                _clearedSurfaces.Add(surface);
+                return true;
+            }
+
+            return false;
+        }
 
         private void MSAA_OnChanged(AntiAliasLevel oldValue, AntiAliasLevel newValue)
         {
@@ -296,13 +322,6 @@ namespace Molten.Graphics
         protected abstract GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings);
 
         protected abstract GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsDisplayManager manager);
-
-        /// <summary>
-        /// Occurs when the render engine detects changes which usually require render surfaces to be rebuilt, such as the game window being resized, or certain graphics settings being changed.
-        /// </summary>
-        /// <param name="requiredWidth">The new width required by the render engine.</param>
-        /// <param name="requiredHeight">The new height required by the render engine.</param>
-        protected abstract void OnRebuildSurfaces(uint requiredWidth, uint requiredHeight);
 
         /// <summary>
         /// Occurs before the render engine begins rendering all of the active scenes to the active output(s).
@@ -406,5 +425,7 @@ namespace Molten.Graphics
         /// Gets the renderer's <see cref="OverlayProvider"/> implementation.
         /// </summary>
         public OverlayProvider Overlay { get; }
+
+        public SurfaceManager Surfaces { get; }
     }
 }

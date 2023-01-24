@@ -5,18 +5,18 @@ namespace Molten.Graphics
     internal unsafe abstract class ContextShaderStage<T>
         where T : unmanaged
     {
-        internal ContextShaderStage(DeviceContextState state, ShaderType type)
+        internal ContextShaderStage(CommandQueueDX11 queue, ShaderType type)
         {
-            Context = state.Cmd;
+            Context = queue;
             Type = type;
 
             GraphicsCapabilities cap = Context.DXDevice.Adapter.Capabilities;
             ShaderStageCapabilities shaderCap = cap[type];
             
-            Samplers = state.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Sampler", cap.MaxShaderSamplers, new SamplerGroupBinder<T>(this));
-            Resources = state.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Resource", shaderCap.MaxInResources, new ResourceGroupBinder<T>(this));
-            ConstantBuffers = state.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_C-Buffer", cap.ConstantBuffers.MaxSlots, new CBufferGroupBinder<T>(this));
-            Shader = state.RegisterSlot(GraphicsBindTypeFlags.Input, $"{type}_Shader", 0, new ShaderSlotBinder<T>(this));
+            Samplers = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Sampler", cap.MaxShaderSamplers, new SamplerGroupBinder<T>(this));
+            Resources = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Resource", shaderCap.MaxInResources, new ResourceGroupBinder<T>(this));
+            ConstantBuffers = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_C-Buffer", cap.ConstantBuffers.MaxSlots, new CBufferGroupBinder<T>(this));
+            Shader = queue.RegisterSlot(GraphicsBindTypeFlags.Input, $"{type}_Shader", 0, new ShaderSlotBinder<T>(this));
         }
 
         internal virtual bool Bind()

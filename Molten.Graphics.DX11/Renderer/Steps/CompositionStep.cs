@@ -4,9 +4,9 @@
     {
         RenderCamera _orthoCamera;
         ObjectRenderData _dummyData;
-        RenderSurface2D _surfaceScene;
-        RenderSurface2D _surfaceLighting;
-        RenderSurface2D _surfaceEmissive;
+        IRenderSurface2D _surfaceScene;
+        IRenderSurface2D _surfaceLighting;
+        IRenderSurface2D _surfaceEmissive;
         Material _matCompose;
         IShaderValue _valLighting;
         IShaderValue _valEmissive;
@@ -39,13 +39,13 @@
             RectangleF vpBounds = camera.Surface.Viewport.Bounds;
             CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
 
-            context.CompositionSurface.Clear(context.Scene.BackgroundColor);
-            cmd.State.ResetRenderSurfaces();
-            cmd.State.SetRenderSurface(context.CompositionSurface, 0);
-            cmd.State.DepthSurface.Value = null;
-            cmd.State.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
-            cmd.State.SetViewports(camera.Surface.Viewport);
-            cmd.State.SetScissorRectangle((Rectangle)vpBounds);
+            context.CompositionSurface.Clear(context.Scene.BackgroundColor, GraphicsPriority.Immediate);
+            cmd.ResetRenderSurfaces();
+            cmd.SetRenderSurface(context.CompositionSurface, 0);
+            cmd.DepthSurface.Value = null;
+            cmd.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
+            cmd.SetViewports(camera.Surface.Viewport);
+            cmd.SetScissorRectangle((Rectangle)vpBounds);
 
             StateConditions conditions = context.BaseStateConditions | StateConditions.ScissorTest;
 

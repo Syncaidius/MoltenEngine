@@ -3,23 +3,21 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Molten.Collections;
-using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    internal class SurfaceManager : IDisposable
+    public class SurfaceManager : IDisposable
     {
         ConcurrentDictionary<string, SurfaceTracker> _surfacesByKey;
         ThreadedList<SurfaceTracker> _surfaces;
         SurfaceTracker[] _mainSurfaces;
 
         DepthSurfaceTracker _depthSurface;
-        RendererDX11 _renderer;
+        RenderService _renderer;
         AntiAliasLevel[] _aaLevels;
 
-        internal SurfaceManager(RendererDX11 renderer)
+        internal SurfaceManager(RenderService renderer)
         {
             _aaLevels = ReflectionHelper.GetEnumValues<AntiAliasLevel>();
             MainSurfaceType[] surfaceTypes = ReflectionHelper.GetEnumValues<MainSurfaceType>();
@@ -72,7 +70,7 @@ namespace Molten.Graphics
             key = key.ToLower();
             if (!_surfacesByKey.TryGetValue(key, out SurfaceTracker config))
             {
-                config = new SurfaceTracker(_renderer, _aaLevels, width, height, format.ToApi(), key, sizeMode);
+                config = new SurfaceTracker(_renderer, _aaLevels, width, height, format, key, sizeMode);
                 _surfacesByKey.TryAdd(key, config);
                 _surfaces.Add(config);
             }
@@ -80,12 +78,12 @@ namespace Molten.Graphics
             return config;
         }
 
-        internal RenderSurface2D this[MainSurfaceType type] => _mainSurfaces[(uint)type][MultiSampleLevel];
+        public IRenderSurface2D this[MainSurfaceType type] => _mainSurfaces[(uint)type][MultiSampleLevel];
 
-        internal RenderSurface2D this[string key] => _surfacesByKey[key][MultiSampleLevel];
+        public IRenderSurface2D this[string key] => _surfacesByKey[key][MultiSampleLevel];
 
-        internal DepthStencilSurface GetDepth() => _depthSurface[MultiSampleLevel];
+        public IDepthStencilSurface GetDepth() => _depthSurface[MultiSampleLevel];
 
-        internal AntiAliasLevel MultiSampleLevel { get; set; } = AntiAliasLevel.None;
+        public AntiAliasLevel MultiSampleLevel { get; set; } = AntiAliasLevel.None;
     }
 }

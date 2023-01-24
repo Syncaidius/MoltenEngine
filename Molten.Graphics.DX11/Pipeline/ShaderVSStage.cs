@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal class ShaderVSStage : ContextShaderStage<ID3D11VertexShader>
     {
-        public ShaderVSStage(DeviceContextState state) : base(state, ShaderType.Vertex)
+        public ShaderVSStage(CommandQueueDX11 queue) : base(queue, ShaderType.Vertex)
         {
         }
 

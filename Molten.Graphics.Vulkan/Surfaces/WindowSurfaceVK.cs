@@ -279,7 +279,12 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount = 0, uint newArraySize = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+        public void Resize(uint newWidth, uint newHeight)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount, uint newArraySize, GraphicsFormat newFormat)
         {
             throw new NotImplementedException();
         }
@@ -349,7 +354,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void Clear(Color color)
+        public void Clear(Color color, GraphicsPriority priority)
         {
             throw new NotImplementedException();
         }

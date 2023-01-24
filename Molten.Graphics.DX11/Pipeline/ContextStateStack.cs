@@ -3,15 +3,15 @@
     internal class ContextStateStack
     {
         const int STACK_INCREMENT = 5;
-        GraphicsPipeState[] _stack;
+        GraphicsState[] _stack;
         int _stackSize = 0;
         CommandQueueDX11 _context;
 
         internal ContextStateStack(CommandQueueDX11 context)
         {
-            _stack = new GraphicsPipeState[STACK_INCREMENT];
+            _stack = new GraphicsState[STACK_INCREMENT];
             for (int i = 0; i < _stack.Length; i++)
-                _stack[i] = new GraphicsPipeState(context);
+                _stack[i] = new GraphicsState(context);
 
             _context = context;
         }
@@ -28,7 +28,7 @@
 
                 // Initialize new additions
                 for (int i = _stackSize; i < _stack.Length; i++)
-                    _stack[i] = new GraphicsPipeState(_context);
+                    _stack[i] = new GraphicsState(_context);
             }
 
             _stack[id].Capture();
@@ -57,9 +57,9 @@
             }
         }
 
-        internal GraphicsPipeState FirstState => _stackSize > 0 ? _stack[0] : null;
+        internal GraphicsState FirstState => _stackSize > 0 ? _stack[0] : null;
 
-        internal GraphicsPipeState LastState
+        internal GraphicsState LastState
         {
             get
             {

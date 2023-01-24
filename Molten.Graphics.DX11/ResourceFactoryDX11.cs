@@ -22,10 +22,11 @@ namespace Molten.Graphics
             uint mipCount = 1,
             uint arraySize = 1,
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
-            TextureFlags flags = TextureFlags.None)
+            TextureFlags flags = TextureFlags.None, 
+            string name = "surface")
         {
             MSAAQuality msaa = MSAAQuality.CenterPattern;
-            return new DepthStencilSurface(_renderer, width, height, format, mipCount, arraySize, aaLevel, msaa, flags);
+            return new DepthStencilSurface(_renderer, width, height, format, mipCount, arraySize, aaLevel, msaa, flags, name);
         }
 
         public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1)
@@ -45,10 +46,11 @@ namespace Molten.Graphics
             uint mipCount = 1,
             uint arraySize = 1,
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
-            TextureFlags flags = TextureFlags.None)
+            TextureFlags flags = TextureFlags.None,
+            string name = null)
         {
             MSAAQuality msaa = MSAAQuality.CenterPattern;
-            return new RenderSurface2D(_renderer, width, height, (Format)format, mipCount, arraySize, aaLevel, msaa, flags);
+            return new RenderSurface2D(_renderer, width, height, (Format)format, mipCount, arraySize, aaLevel, msaa, flags, name);
         }
 
         public override ITexture CreateTexture1D(Texture1DProperties properties)

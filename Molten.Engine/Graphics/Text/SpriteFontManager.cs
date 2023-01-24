@@ -63,7 +63,7 @@ namespace Molten.Graphics
                 Flags = RenderCameraFlags.DoNotClear
             };
 
-            _camera.Surface.Clear(Color.Transparent);
+            _camera.Surface.Clear(Color.Transparent, GraphicsPriority.Immediate);
             _renderData.AddObject(_camera);
         }
 
@@ -80,7 +80,7 @@ namespace Molten.Graphics
                     (uint)PageSize,
                     arraySize: newArraySize,
                     flags: TextureFlags.AllowMipMapGeneration);
-                _camera.Surface.Clear(Color.Transparent);
+                _camera.Surface.Clear(Color.Transparent, GraphicsPriority.Immediate);
 
                 _camera.Surface = _camera.Surface;
 

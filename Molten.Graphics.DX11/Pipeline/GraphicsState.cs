@@ -1,9 +1,9 @@
 ﻿namespace Molten.Graphics
 {
     /// <summary>Stores the current state of a <see cref="CommandQueueDX11"/>.</summary>
-    internal class GraphicsPipeState
+    internal class GraphicsState
     {
-        CommandQueueDX11 _context;
+        CommandQueueDX11 _cmd;
         GraphicsBlendState _blendState;
         GraphicsDepthState _depthState;
         GraphicsRasterizerState _rasterState;
@@ -18,60 +18,60 @@
 
         ViewportF[] _viewports;
 
-        public GraphicsPipeState(CommandQueueDX11 context)
+        public GraphicsState(CommandQueueDX11 cmd)
         {
-            _context = context;
-            uint maxSurfaces = _context.DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
+            _cmd = cmd;
+            uint maxSurfaces = _cmd.DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
 
             _surfaces = new RenderSurface2D[maxSurfaces];
             _viewports = new ViewportF[maxSurfaces];
-            _vSegments = new BufferSegment[_context.DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots];
+            _vSegments = new BufferSegment[_cmd.DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots];
         }
 
         public void Capture()
         {
-            _blendState = _context.State.Blend.Value;
-            _depthState = _context.State.Depth.Value;
-            _rasterState = _context.State.Rasterizer.Value;
+            _blendState = _cmd.Blend.Value;
+            _depthState = _cmd.Depth.Value;
+            _rasterState = _cmd.Rasterizer.Value;
 
-            _context.State.VertexBuffers.Get(_vSegments);
-            _iSegment = _context.State.IndexBuffer.Value;
+            _cmd.VertexBuffers.Get(_vSegments);
+            _iSegment = _cmd.IndexBuffer.Value;
 
             //store viewports
-            int vpCount = _context.State.ViewportCount;
+            int vpCount = _cmd.ViewportCount;
             if (_viewports.Length < vpCount)
                 Array.Resize(ref _viewports, vpCount);
-            _context.State.GetViewports(_viewports);
+            _cmd.GetViewports(_viewports);
 
             // Store surfaces
-            _context.State.GetRenderSurfaces(_surfaces);
+            _cmd.GetRenderSurfaces(_surfaces);
 
-            _depthSurface = _context.State.DepthSurface.Value;
-            _depthWriteOverride = _context.State.DepthWriteOverride;
+            _depthSurface = _cmd.DepthSurface.Value;
+            _depthWriteOverride = _cmd.DepthWriteOverride;
         }
 
         public void Restore()
         {
             //states
-            _context.State.Blend.Value = _blendState;
-            _context.State.Depth.Value = _depthState;
-            _context.State.Rasterizer.Value = _rasterState;
+            _cmd.Blend.Value = _blendState;
+            _cmd.Depth.Value = _depthState;
+            _cmd.Rasterizer.Value = _rasterState;
 
             //buffers
-            _context.State.VertexBuffers.Set(_vSegments);
-            _context.State.IndexBuffer.Value = _iSegment;
+            _cmd.VertexBuffers.Set(_vSegments);
+            _cmd.IndexBuffer.Value = _iSegment;
 
             //restore viewports
-            _context.State.SetViewports(_viewports);
+            _cmd.SetViewports(_viewports);
 
             // Restore surfaces -- ensure surface 0 is correctly handled when null.
-            _context.State.SetRenderSurfaces(_surfaces);
+            _cmd.SetRenderSurfaces(_surfaces);
             if (_surfaces[0] == null)
-                _context.State.SetRenderSurface(null, 0);
+                _cmd.SetRenderSurface(null, 0);
 
 
-            _context.State.DepthSurface.Value = _depthSurface;
-            _context.State.DepthWriteOverride = _depthWriteOverride;
+            _cmd.DepthSurface.Value = _depthSurface;
+            _cmd.DepthWriteOverride = _depthWriteOverride;
         }
 
         /// <summary>Resets the pipe state, but does not apply it.</summary>

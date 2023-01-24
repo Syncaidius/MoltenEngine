@@ -54,7 +54,7 @@ namespace Molten.Graphics
             if (DataCount == 0)
                 return;
 
-            context.State.VertexBuffers[0].Value = null;
+            context.VertexBuffers[0].Value = null;
 
             ProcessBatches(camera, (firstRangeID, rangeCount, firstDataID, flushCount) => 
                 FlushBuffer(context, camera, data, firstRangeID, rangeCount, firstDataID, flushCount));
@@ -97,7 +97,7 @@ namespace Molten.Graphics
                     mat.SpriteBatch.TextureSize.Value = texSize;
                 }
 
-                context.State.SetScissorRectangles(range.Clip);
+                context.SetScissorRectangles(range.Clip);
 
                 mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
                 context.Draw(mat, range.VertexCount, VertexTopology.PointList);

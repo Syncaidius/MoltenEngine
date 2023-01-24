@@ -133,7 +133,22 @@ namespace Molten.Graphics
             _description.Format = newFormat;
         }
 
-        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount = 0, uint newArraySize = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+        public void Resize(uint newWidth, uint newHeight)
+        {
+            QueueChange(new TextureResize()
+            {
+                NewWidth = newWidth,
+                NewHeight = newHeight,
+                NewMipMapCount = MipMapCount,
+                NewArraySize = _description.ArraySize,
+                NewFormat = DxgiFormat,
+            });
+        }
+
+        public void Resize(uint newWidth, uint newHeight, 
+            uint newMipMapCount, 
+            uint newArraySize, 
+            GraphicsFormat newFormat)
         {
             QueueChange(new TextureResize()
             {
@@ -141,7 +156,7 @@ namespace Molten.Graphics
                 NewHeight = newHeight,
                 NewMipMapCount = newMipMapCount == 0 ? MipMapCount : newMipMapCount,
                 NewArraySize = newArraySize == 0 ? _description.ArraySize : newArraySize,
-                NewFormat = newFormat == GraphicsFormat.Unknown ? DxgiFormat : newFormat.ToApi()
+                NewFormat = newFormat.ToApi(),
             });
         }
     }

@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.Logging;
-using Molten.Collections;
+﻿using Molten.Collections;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
@@ -15,7 +14,6 @@ namespace Molten.Graphics
         RenderChainDX11 _chain;
         ResourceFactoryDX11 _resFactory;
         ComputeManager _compute;
-        HashSet<Texture2D> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
         internal SpriteBatcherDX11 SpriteBatcher;
@@ -31,7 +29,6 @@ namespace Molten.Graphics
         {
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
-            Surfaces = new SurfaceManager(this);
         }
 
         protected unsafe override GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings)
@@ -54,16 +51,13 @@ namespace Molten.Graphics
             return NativeDevice;
         }
 
-        protected override void OnInitialize(EngineSettings settings)
+        protected override void OnInitializeRenderer(EngineSettings settings)
         {
-            base.OnInitialize(settings);
-
             Assembly includeAssembly = GetType().Assembly;
             
             ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _resFactory = new ResourceFactoryDX11(this);
             _compute = new ComputeManager(NativeDevice);
-            _clearedSurfaces = new HashSet<Texture2D>();
 
             uint maxBufferSize = (uint)ByteMath.FromMegabytes(3.5);
             StaticVertexBuffer = new GraphicsBuffer(NativeDevice, BufferMode.Default, BindFlag.VertexBuffer | BindFlag.IndexBuffer, maxBufferSize);
@@ -72,7 +66,6 @@ namespace Molten.Graphics
             StagingBuffer = new StagingBuffer(NativeDevice, StagingBufferFlags.Write, maxBufferSize);
             SpriteBatcher = new SpriteBatcherDX11(this, 3000, 20);
 
-            Surfaces.Initialize(BiggestWidth, BiggestHeight);
             LoadDefaultShaders(includeAssembly);
         }
 
@@ -107,11 +100,7 @@ namespace Molten.Graphics
 
         protected override void OnPreRenderScene(SceneRenderData sceneData, Timing time) { }
 
-        protected override void OnPostRenderScene(SceneRenderData sceneData, Timing time)
-        {
-            // Clear the list of used surfaces, ready for the next frame.
-            _clearedSurfaces.Clear();
-        }
+        protected override void OnPostRenderScene(SceneRenderData sceneData, Timing time) { }
 
         protected override void OnPreRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
@@ -126,11 +115,6 @@ namespace Molten.Graphics
         protected override void OnPostPresent(Timing time)
         {
 
-        }
-
-        protected override void OnRebuildSurfaces(uint requiredWidth, uint requiredHeight)
-        {
-            Surfaces.Rebuild(requiredWidth, requiredHeight);
         }
 
         internal void RenderSceneLayer(CommandQueueDX11 pipe, LayerRenderData layerData, RenderCamera camera)
@@ -151,38 +135,10 @@ namespace Molten.Graphics
             }
         }
 
-        internal bool ClearIfFirstUse(CommandQueueDX11 context, RenderSurface2D surface, Color color)
-        {
-            if (!_clearedSurfaces.Contains(surface))
-            {
-                surface.Clear(context, color);
-                _clearedSurfaces.Add(surface);
-                return true;
-            }
-
-            return false;
-        }
-
-        internal bool ClearIfFirstUse(CommandQueueDX11 context, DepthStencilSurface surface,
-            ClearFlag flags = ClearFlag.Depth, 
-            float depth = 1.0f, byte stencil = 0)
-        {
-            if (!_clearedSurfaces.Contains(surface))
-            {
-                surface.Clear(context, flags, depth, stencil);
-                _clearedSurfaces.Add(surface);
-                return true;
-            }
-
-            return false;
-        }
-
         protected override void OnDisposeBeforeRender()
         {
             for (int i = 0; i < _stepList.Count; i++)
                 _stepList[i].Dispose();
-
-            Surfaces.Dispose();
 
             _resFactory.Dispose();
             _displayManager.Dispose();
@@ -207,7 +163,5 @@ namespace Molten.Graphics
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
         /// </summary>
         public override ResourceFactory Resources => _resFactory;
-
-        internal SurfaceManager Surfaces { get; }
     }
 }

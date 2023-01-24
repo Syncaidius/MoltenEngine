@@ -106,7 +106,9 @@ namespace Molten.Graphics
             _description.Format = newFormat;
         }
 
-        public void Resize(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+        public void Resize(uint newWidth, uint newHeight, uint newDepth, 
+            uint newMipMapCount = 0, 
+            GraphicsFormat newFormat = GraphicsFormat.Unknown)
         {
             QueueChange(new TextureResize()
             {

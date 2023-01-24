@@ -35,9 +35,9 @@ namespace Molten.Graphics
             return NativeDevice;
         }
 
-        protected override void OnInitialize(EngineSettings settings)
+        protected override void OnInitializeRenderer(EngineSettings settings)
         {
-            base.OnInitialize(settings);
+            
         }
 
         protected override SceneRenderData OnCreateRenderData()
@@ -71,11 +71,6 @@ namespace Molten.Graphics
         }
 
         protected override void OnPreRenderScene(SceneRenderData sceneData, Timing time)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void OnRebuildSurfaces(uint requiredWidth, uint requiredHeight)
         {
             throw new NotImplementedException();
         }

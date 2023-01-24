@@ -32,17 +32,6 @@ namespace Molten.Graphics
             };
         }
 
-        internal virtual void Clear(CommandQueueDX11 cmd, Color color)
-        {
-            OnApply(cmd);
-
-            if (RTV.Ptr != null)
-            {
-                Color4 c4 = color;
-                cmd.Native->ClearRenderTargetView((ID3D11RenderTargetView*)RTV.Ptr, (float*)&c4);
-            }
-        }
-
         protected override ID3D11Resource* CreateResource(bool resize)
         {
             RTV.Release();
@@ -87,13 +76,31 @@ namespace Molten.Graphics
             Viewport = new ViewportF(_vp.X, _vp.Y, newWidth, newHeight);
         }
 
-        public void Clear(Color color)
+        internal virtual void Clear(CommandQueueDX11 cmd, Color color)
         {
-            QueueChange(new SurfaceClearChange()
+            OnApply(cmd);
+
+            if (RTV.Ptr != null)
             {
-                Color = color,
-                Surface = this,
-            });
+                Color4 c4 = color;
+                cmd.Native->ClearRenderTargetView((ID3D11RenderTargetView*)RTV.Ptr, (float*)&c4);
+            }
+        }
+
+        public void Clear(Color color, GraphicsPriority priority = GraphicsPriority.PreRender)
+        {
+            if (priority == GraphicsPriority.Immediate)
+            {
+                Clear(NativeDevice.Cmd, color);
+            }
+            else
+            {
+                QueueChange(new SurfaceClearChange()
+                {
+                    Color = color,
+                    Surface = this,
+                });
+            }
         }
 
         /// <summary>Called when the render target needs to be disposed.</summary>

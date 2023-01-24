@@ -111,6 +111,70 @@ namespace Molten.Graphics
         /// <param name="groupsZ">The Z thread-group dimension.</param>
         public abstract void Dispatch(IComputeTask task, uint groupsX, uint groupsY, uint groupsZ);
 
+        /// <summary>Sets a list of render surfaces.</summary>
+        /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
+        public void SetRenderSurfaces(params IRenderSurface2D[] surfaces)
+        {
+            if (surfaces == null)
+                SetRenderSurfaces(null, 0);
+            else
+                SetRenderSurfaces(surfaces, (uint)surfaces.Length);
+        }
+
+        /// <summary>Sets a list of render surfaces.</summary>
+        /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
+        /// <param name="count">The number of render surfaces to set.</param>
+        public abstract void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count);
+
+        /// <summary>Sets a render surface.</summary>
+        /// <param name="surface">The surface to be set.</param>
+        /// <param name="slot">The ID of the slot that the surface is to be bound to.</param>
+        public abstract void SetRenderSurface(IRenderSurface2D surface, uint slot);
+
+        /// <summary>
+        /// Fills the provided array with a list of applied render surfaces.
+        /// </summary>
+        /// <param name="destinationArray">The array to fill with applied render surfaces.</param>
+        public abstract void GetRenderSurfaces(IRenderSurface2D[] destinationArray);
+
+        /// <summary>Returns the render surface that is bound to the requested slot ID. Returns null if the slot is empty.</summary>
+        /// <param name="slot">The ID of the slot to retrieve a surface from.</param>
+        /// <returns></returns>
+        public abstract IRenderSurface2D GetRenderSurface(uint slot);
+
+        /// <summary>
+        /// Resets the render surfaces.
+        /// </summary>
+        public abstract void ResetRenderSurfaces();
+
+        public abstract void SetScissorRectangle(Rectangle rect, int slot = 0);
+
+        public abstract void SetScissorRectangles(params Rectangle[] rects);
+
+        /// <summary>
+        /// Applies the provided viewport value to the specified viewport slot.
+        /// </summary>
+        /// <param name="vp">The viewport value.</param>
+        /// <param name="slot">The viewport slot.</param>
+        public abstract void SetViewport(ViewportF vp, int slot);
+
+        /// <summary>
+        /// Applies the specified viewport to all viewport slots.
+        /// </summary>
+        /// <param name="vp">The viewport value.</param>
+        public abstract void SetViewports(ViewportF vp);
+
+        /// <summary>
+        /// Sets the provided viewports on to their respective viewport slots. <para/>
+        /// If less than the total number of viewport slots was provided, the remaining ones will be set to whatever the same value as the first viewport slot.
+        /// </summary>
+        /// <param name="viewports"></param>
+        public abstract void SetViewports(ViewportF[] viewports);
+
+        public abstract void GetViewports(ViewportF[] outArray);
+
+        public abstract ViewportF GetViewport(int index);
+
         protected BatchDrawInfo DrawInfo { get; }
 
         /// <summary>

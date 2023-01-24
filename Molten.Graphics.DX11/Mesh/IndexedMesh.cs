@@ -55,7 +55,7 @@
         internal override void ApplyBuffers(CommandQueueDX11 context)
         {
             base.ApplyBuffers(context);
-            context.State.IndexBuffer.Value = _ib;
+            context.IndexBuffer.Value = _ib;
         }
 
         private protected override void OnRender(CommandQueueDX11 context, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)

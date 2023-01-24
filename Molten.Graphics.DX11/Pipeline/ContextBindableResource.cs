@@ -24,7 +24,7 @@ namespace Molten.Graphics
         }
     }
 
-    internal unsafe abstract class ContextBindableResource<T> : ContextBindableResource
+    public unsafe abstract class ContextBindableResource<T> : ContextBindableResource
         where T : unmanaged
     {
         internal ContextBindableResource(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : 

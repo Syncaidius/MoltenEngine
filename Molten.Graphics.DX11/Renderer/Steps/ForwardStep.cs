@@ -10,15 +10,15 @@
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
-            RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
+            IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
 
             CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
-            sScene.Clear(Color.Transparent);
+            sScene.Clear(Color.Transparent, GraphicsPriority.Immediate);
 
-            cmd.State.SetRenderSurface(sScene, 0);
-            cmd.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
-            cmd.State.SetViewports(camera.Surface.Viewport);
-            cmd.State.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
+            cmd.SetRenderSurface(sScene, 0);
+            cmd.DepthSurface.Value = renderer.Surfaces.GetDepth() as DepthStencilSurface;
+            cmd.SetViewports(camera.Surface.Viewport);
+            cmd.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
 
             StateConditions conditions = context.BaseStateConditions | StateConditions.ScissorTest;
 

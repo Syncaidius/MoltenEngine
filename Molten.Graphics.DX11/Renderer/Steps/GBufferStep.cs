@@ -6,21 +6,21 @@
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
-            RenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
-            RenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
-            RenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
+            IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
+            IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
+            IRenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
 
             CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
 
-            cmd.State.SetRenderSurface(sScene, 0);
-            cmd.State.SetRenderSurface(sNormals, 1);
-            cmd.State.SetRenderSurface(sEmissive, 2);
-            cmd.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
+            cmd.SetRenderSurface(sScene, 0);
+            cmd.SetRenderSurface(sNormals, 1);
+            cmd.SetRenderSurface(sEmissive, 2);
+            cmd.DepthSurface.Value = renderer.Surfaces.GetDepth() as DepthStencilSurface;
 
-            SetMaterialCommon(renderer.StandardMeshMaterial, camera, sScene);
-            SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, sScene);
+            SetMaterialCommon(renderer.StandardMeshMaterial, camera, sScene as RenderSurface2D);
+            SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, sScene as RenderSurface2D);
 
-            cmd.State.SetViewports(camera.Surface.Viewport);
+            cmd.SetViewports(camera.Surface.Viewport);
 
             cmd.BeginDraw(context.BaseStateConditions);
             renderer.RenderSceneLayer(cmd, context.Layer, camera);
