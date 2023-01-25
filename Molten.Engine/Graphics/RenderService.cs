@@ -381,7 +381,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the <see cref="GraphicsDevice"/> bound to the current <see cref="RenderService"/>.
         /// </summary>
-        protected internal GraphicsDevice Device { get; private set; }
+        public GraphicsDevice Device { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="ResourceFactory"/> bound to the renderer.

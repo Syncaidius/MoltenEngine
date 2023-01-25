@@ -29,7 +29,6 @@
         internal HlslFoundation(DeviceDX11 device) : base(device, GraphicsBindTypeFlags.Input)
         {
             Samplers = new ShaderStateBank<ShaderSampler>[0];
-            Parent = this;
         }
 
         protected override sealed void OnApply(CommandQueueDX11 pipe) { }
@@ -38,7 +37,5 @@
         /// Gets or sets the number of iterations the shader/component should be run.
         /// </summary>
         public int Iterations { get; set; } = 1;
-
-        public HlslFoundation Parent { get; internal set; }
     }
 }

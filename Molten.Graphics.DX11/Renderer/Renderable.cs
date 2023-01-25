@@ -4,7 +4,7 @@
     {
         IShaderResource[] _resources;
 
-        internal Renderable(DeviceDX11 device)
+        internal Renderable(GraphicsDevice device)
         {
             Device = device;
             IsVisible = false;
@@ -53,6 +53,6 @@
         /// <summary>Gets or sets whether or not the renderable should be drawn.</summary>
         public bool IsVisible { get; set; }
 
-        internal DeviceDX11 Device { get; private set; }
+        internal GraphicsDevice Device { get; private set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace Molten.Graphics
 {
-    public class Mesh<T> : Renderable, IMesh<T> where T : unmanaged, IVertexType
+    public class Mesh<T> : Renderable, IMesh<T> 
+        where T : unmanaged, IVertexType
     {
         // private protected is new in C# 7.2. See: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/private-protected
         private protected RendererDX11 _renderer;
@@ -10,7 +11,7 @@
         private protected bool _isDynamic;
 
         internal Mesh(RendererDX11 renderer, uint maxVertices, VertexTopology topology, bool dynamic) :
-            base(renderer.NativeDevice)
+            base(renderer.Device)
         {
             _renderer = renderer;
             MaxVertices = maxVertices;
@@ -38,9 +39,9 @@
             _vb.SetData(_renderer.NativeDevice.Cmd, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        internal virtual void ApplyBuffers(CommandQueueDX11 context)
+        internal virtual void ApplyBuffers(CommandQueueDX11 cmd)
         {
-            context.VertexBuffers[0].Value = _vb;
+            cmd.VertexBuffers[0].Value = _vb;
         }
 
         private protected override void OnRender(CommandQueueDX11 cmd, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)

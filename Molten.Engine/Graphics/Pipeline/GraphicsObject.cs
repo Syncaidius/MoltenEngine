@@ -25,19 +25,4 @@ namespace Molten.Graphics
         /// </summary>
         public GraphicsDevice Device { get; }
     }
-
-    public abstract class GraphicsObject<D> : GraphicsObject
-        where D : GraphicsDevice
-    {
-        protected GraphicsObject(D device) : base(device)
-        {
-            NativeDevice = device;
-        }
-
-        /// <summary>
-        /// Gets the platform or API-specific implementation of <see cref="GraphicsDevice"/>.
-        /// </summary>
-        public D NativeDevice { get; }
-
-    }
 }

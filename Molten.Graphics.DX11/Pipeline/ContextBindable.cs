@@ -6,13 +6,14 @@ namespace Molten.Graphics
     /// <summary>
     /// Represents a DX11 bindable pipeline object.
     /// </summary>
-    public abstract class ContextBindable : GraphicsObject<DeviceDX11>
+    public abstract class ContextBindable : GraphicsObject
     {
         internal ContextBindable(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : base(device)
         {
             BoundTo = new List<ContextSlot>();
             BindFlags = bindFlags;
             LastUsedFrameID = device.Cmd.Profiler.FrameID;
+            NativeDevice = device;
         }
 
         /// <summary>
@@ -49,6 +50,8 @@ namespace Molten.Graphics
         /// Gets the ID of the frame that the current <see cref="ContextBindable"/> was applied.
         /// </summary>
         internal uint LastUsedFrameID { get; private set; }
+
+        internal DeviceDX11 NativeDevice { get; }
     }
 
     public unsafe abstract class ContextBindable<T> : ContextBindable
