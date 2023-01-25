@@ -94,18 +94,10 @@ namespace Molten.Graphics
             };
         }
 
-        internal DepthStateDX11(DeviceDX11 device, DepthStateDX11 source) : 
-            base(device, source)
-        {
-            _desc = source._desc;
-            _frontFace = new FaceDX11(this, ref _desc.FrontFace);
-            _backFace = new FaceDX11(this, ref _desc.BackFace);
-        }
-
-        internal DepthStateDX11(DeviceDX11 device) : 
+        internal DepthStateDX11(DeviceDX11 device, DepthStateDX11 source = null) : 
             base(device)
         {
-            _desc = _defaultDesc;
+            _desc = source != null ? source._desc : _defaultDesc;
             _frontFace = new FaceDX11(this, ref _desc.FrontFace);
             _backFace = new FaceDX11(this, ref _desc.BackFace);
         }
@@ -116,26 +108,6 @@ namespace Molten.Graphics
                 return Equals(other);
             else
                 return false;
-        }
-
-        public bool Equals(DepthStateDX11 other)
-        {
-            if (!CompareOperation(ref _desc.BackFace, ref other._desc.BackFace) || !CompareOperation(ref _desc.FrontFace, ref other._desc.FrontFace))
-                return false;
-
-            return _desc.DepthFunc == other._desc.DepthFunc &&
-                _desc.DepthEnable == other._desc.DepthEnable &&
-                _desc.StencilEnable == other._desc.StencilEnable &&
-                _desc.StencilReadMask == other._desc.StencilReadMask &&
-                _desc.StencilWriteMask == other._desc.StencilWriteMask;
-        }
-
-        private static bool CompareOperation(ref DepthStencilopDesc op, ref DepthStencilopDesc other)
-        {
-            return op.StencilFunc == other.StencilFunc &&
-                op.StencilDepthFailOp == other.StencilDepthFailOp &&
-                op.StencilFailOp == other.StencilFailOp &&
-                op.StencilPassOp == other.StencilPassOp;
         }
 
         public void SetFrontFace(DepthStencilopDesc desc)

@@ -24,6 +24,20 @@
             public abstract LogicOperation LogicOp { get; set; }
 
             public abstract ColorWriteFlags RenderTargetWriteMask { get; set; }
+
+            public void Set(RenderSurfaceBlend other)
+            {
+                BlendEnable = other.BlendEnable;
+                LogicOpEnable = other.LogicOpEnable;
+                SrcBlend = other.SrcBlend;
+                DestBlend = other.DestBlend;
+                BlendOp = other.BlendOp;
+                SrcBlendAlpha = other.SrcBlendAlpha;
+                DestBlendAlpha = other.DestBlendAlpha;
+                BlendOpAlpha = other.BlendOpAlpha;
+                LogicOp = other.LogicOp;
+                RenderTargetWriteMask = other.RenderTargetWriteMask;
+            }
         }
 
         RenderSurfaceBlend[] _surfaceBlends;
@@ -31,21 +45,22 @@
         protected GraphicsBlendState(GraphicsDevice device, GraphicsBlendState source) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
-            BlendFactor = source.BlendFactor;
-            BlendSampleMask = source.BlendSampleMask;
-            _surfaceBlends = new RenderSurfaceBlend[source._surfaceBlends.Length];
-            for (int i = 0; i < _surfaceBlends.Length; i++)
-                _surfaceBlends[i] = InitializeSurfaceBlend(i, source._surfaceBlends[i]);
-        }
-
-        protected GraphicsBlendState(GraphicsDevice device) : 
-            base(device, GraphicsBindTypeFlags.Input)
-        {
-            BlendFactor = new Color4(1, 1, 1, 1);
-            BlendSampleMask = 0xffffffff;
-            _surfaceBlends = new RenderSurfaceBlend[device.Adapter.Capabilities.PixelShader.MaxOutResources];
-            for (int i = 0; i < _surfaceBlends.Length; i++)
-                _surfaceBlends[i] = InitializeSurfaceBlend(i, null);
+            if (source != null)
+            {
+                BlendFactor = source.BlendFactor;
+                BlendSampleMask = source.BlendSampleMask;
+                _surfaceBlends = new RenderSurfaceBlend[source._surfaceBlends.Length];
+                for (int i = 0; i < _surfaceBlends.Length; i++)
+                    _surfaceBlends[i] = InitializeSurfaceBlend(i, source._surfaceBlends[i]);
+            }
+            else
+            {
+                BlendFactor = new Color4(1, 1, 1, 1);
+                BlendSampleMask = 0xffffffff;
+                _surfaceBlends = new RenderSurfaceBlend[device.Adapter.Capabilities.PixelShader.MaxOutResources];
+                for (int i = 0; i < _surfaceBlends.Length; i++)
+                    _surfaceBlends[i] = InitializeSurfaceBlend(i, null);
+            }
         }
 
         protected abstract RenderSurfaceBlend InitializeSurfaceBlend(int index, RenderSurfaceBlend source);
@@ -101,7 +116,7 @@
         /// </summary>
         /// <param name="rtIndex">The render target/surface blend index.</param>
         /// <returns></returns>
-        internal RenderSurfaceBlend this[int rtIndex] => _surfaceBlends[rtIndex];
+        public RenderSurfaceBlend this[int rtIndex] => _surfaceBlends[rtIndex];
 
         /// <summary>
         /// Gets or sets the blend sample mask.

@@ -2,8 +2,12 @@
 {
     public class DepthStateBank : GraphicsStateBank<GraphicsDepthState, DepthStencilPreset>
     {
+        GraphicsDevice _device;
+
         internal DepthStateBank(GraphicsDevice device)
         {
+            _device = device;
+
             GraphicsDepthState state = device.CreateDepthState();
             state.IsStencilEnabled = true;
             AddPreset(DepthStencilPreset.Default, state);
@@ -28,6 +32,11 @@
         public override GraphicsDepthState GetPreset(DepthStencilPreset value)
         {
             return _presets[(int)value];
+        }
+
+        public GraphicsDepthState NewFromPreset(DepthStencilPreset value)
+        {
+            return _device.CreateDepthState(_presets[(int)value]);
         }
     }
 

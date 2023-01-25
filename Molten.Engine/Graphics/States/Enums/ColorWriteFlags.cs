@@ -8,7 +8,7 @@ using Silk.NET.Core.Attributes;
 namespace Molten.Graphics
 {
     [Flags]
-    public enum ColorWriteFlags
+    public enum ColorWriteFlags : byte
     {
         None = 0,
 

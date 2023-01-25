@@ -14,10 +14,6 @@
             public abstract DepthStencilOperation DepthFailOperation { get; set; }
         }
 
-        protected GraphicsDepthState(GraphicsDevice device, GraphicsDepthState source) :
-            base(device, GraphicsBindTypeFlags.Input)
-        { }
-
         protected GraphicsDepthState(GraphicsDevice device) :
             base(device, GraphicsBindTypeFlags.Input)
         { }

@@ -4,8 +4,12 @@ namespace Molten.Graphics
 {
     public class BlendStateBank : GraphicsStateBank<GraphicsBlendState, BlendPreset>
     {
+        GraphicsDevice _device;
+
         internal BlendStateBank(GraphicsDevice device)
         {
+            _device = device;
+
             GraphicsBlendState state = device.CreateBlendState();
             AddPreset(BlendPreset.Default, state);
 
@@ -17,7 +21,7 @@ namespace Molten.Graphics
             sBlend.SrcBlendAlpha = BlendType.One;
             sBlend.DestBlendAlpha = BlendType.One;
             sBlend.BlendOpAlpha = BlendOperation.Add;
-            sBlend.RenderTargetWriteMask = (byte)ColorWriteEnable.All;
+            sBlend.RenderTargetWriteMask = ColorWriteFlags.All;
             sBlend.BlendEnable = 1;
             sBlend.LogicOp = LogicOperation.Noop;
             sBlend.LogicOpEnable = false;
@@ -35,7 +39,7 @@ namespace Molten.Graphics
             sBlend.SrcBlendAlpha = BlendType.InvDestAlpha;
             sBlend.DestBlendAlpha = BlendType.One;
             sBlend.BlendOpAlpha = BlendOperation.Add;
-            sBlend.RenderTargetWriteMask = (byte)ColorWriteEnable.All;
+            sBlend.RenderTargetWriteMask = ColorWriteFlags.All;
             sBlend.BlendEnable = 1;
             sBlend.LogicOp = LogicOperation.Noop;
             sBlend.LogicOpEnable = false;
@@ -49,6 +53,11 @@ namespace Molten.Graphics
         public override GraphicsBlendState GetPreset(BlendPreset value)
         {
             return _presets[(int)value];
+        }
+
+        public GraphicsBlendState NewFromPreset(BlendPreset value)
+        {
+            return _device.CreateBlendState(_presets[(int)value]);
         }
     }
 

@@ -111,9 +111,14 @@ namespace Molten.Graphics
             // TODO add the context's profiler stats to the device's main profiler.
         }
 
-        public override GraphicsDepthState CreateDepthState()
+        public override GraphicsDepthState CreateDepthState(GraphicsDepthState source = null)
         {
-            return new DepthStateDX11(this);
+            return new DepthStateDX11(this, source as DepthStateDX11);
+        }
+
+        public override GraphicsBlendState CreateBlendState(GraphicsBlendState source = null)
+        {
+            return new BlendStateDX11(this, source as BlendStateDX11);
         }
 
         /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>

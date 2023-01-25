@@ -11,7 +11,7 @@ namespace Molten.Graphics
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            DepthStateDX11 state = null;
+            GraphicsDepthState state = null;
             DepthStencilPreset preset = DepthStencilPreset.Default;
 
             if (node.ValueType == ShaderHeaderValueType.Preset)
@@ -20,7 +20,7 @@ namespace Molten.Graphics
                     InvalidEnumMessage<DepthStencilPreset>(context, (node.Name, node.Value), "depth-stencil preset");
             }
 
-            state = new DepthStateDX11(foundation.Device as DeviceDX11, foundation.Device.DepthBank.GetPreset(preset) as DepthStateDX11);
+            state = foundation.Device.DepthBank.NewFromPreset(preset);
 
             foreach ((string Name, string Value) c in node.ChildValues)
             {
@@ -105,9 +105,9 @@ namespace Molten.Graphics
             state = foundation.Device.DepthBank.AddOrRetrieveExisting(state) as DepthStateDX11;
 
             if (node.Conditions == StateConditions.None)
-                foundation.DepthState.FillMissingWith(state);
+                foundation.DepthState.FillMissingWith(state as DepthStateDX11);
             else
-                foundation.DepthState[node.Conditions] = state;
+                foundation.DepthState[node.Conditions] = state as DepthStateDX11;
         }
 
         private void ParseFaceNode(ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode faceNode, GraphicsDepthState.Face face)
