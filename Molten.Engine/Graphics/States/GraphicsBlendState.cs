@@ -51,7 +51,10 @@
                 BlendSampleMask = source.BlendSampleMask;
                 _surfaceBlends = new RenderSurfaceBlend[source._surfaceBlends.Length];
                 for (int i = 0; i < _surfaceBlends.Length; i++)
-                    _surfaceBlends[i] = InitializeSurfaceBlend(i, source._surfaceBlends[i]);
+                {
+                    _surfaceBlends[i] = CreateSurfaceBlend(i);
+                    _surfaceBlends[i].Set(source._surfaceBlends[i]);
+                }
             }
             else
             {
@@ -59,11 +62,11 @@
                 BlendSampleMask = 0xffffffff;
                 _surfaceBlends = new RenderSurfaceBlend[device.Adapter.Capabilities.PixelShader.MaxOutResources];
                 for (int i = 0; i < _surfaceBlends.Length; i++)
-                    _surfaceBlends[i] = InitializeSurfaceBlend(i, null);
+                    _surfaceBlends[i] = CreateSurfaceBlend(i);
             }
         }
 
-        protected abstract RenderSurfaceBlend InitializeSurfaceBlend(int index, RenderSurfaceBlend source);
+        protected abstract RenderSurfaceBlend CreateSurfaceBlend(int index);
 
         internal RenderSurfaceBlend GetSurfaceBlendState(int index)
         {

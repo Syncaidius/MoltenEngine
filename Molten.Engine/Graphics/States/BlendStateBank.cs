@@ -1,6 +1,4 @@
-﻿using Silk.NET.Direct3D11;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public class BlendStateBank : GraphicsStateBank<GraphicsBlendState, BlendPreset>
     {
@@ -26,7 +24,8 @@ namespace Molten.Graphics
             sBlend.LogicOp = LogicOperation.Noop;
             sBlend.LogicOpEnable = false;
 
-            state = device.CreateBlendState(sBlend);
+            state = device.CreateBlendState();
+            state[0].Set(sBlend);
             state.AlphaToCoverageEnable = false;
             state.IndependentBlendEnable = false;
             AddPreset(BlendPreset.Additive, state);
@@ -44,7 +43,8 @@ namespace Molten.Graphics
             sBlend.LogicOp = LogicOperation.Noop;
             sBlend.LogicOpEnable = false;
 
-            state = device.CreateBlendState(sBlend);
+            state = device.CreateBlendState();
+            state[0].Set(sBlend);
             state.AlphaToCoverageEnable = false;
             state.IndependentBlendEnable = false;
             AddPreset(BlendPreset.PreMultipliedAlpha, state);

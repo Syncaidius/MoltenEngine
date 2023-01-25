@@ -180,7 +180,7 @@ namespace Molten.Graphics
 
         bool _dirty;
 
-        protected override RenderSurfaceBlend InitializeSurfaceBlend(int index, RenderSurfaceBlend source)
+        protected override RenderSurfaceBlend CreateSurfaceBlend(int index)
         {
             return new SurfaceBlendDX11(this, index);
         }

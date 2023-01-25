@@ -69,13 +69,6 @@ namespace Molten.Graphics
         /// <summary>
         /// Requests a new <see cref="GraphicsBlendState"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default blend settings.
         /// </summary>
-        /// <param name="surfaceBlend">The default surface blend configuration.</param>
-        /// <returns></returns>
-        public abstract GraphicsBlendState CreateBlendState(GraphicsBlendState.RenderSurfaceBlend surfaceBlend);
-
-        /// <summary>
-        /// Requests a new <see cref="GraphicsBlendState"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default blend settings.
-        /// </summary>
         /// <param name="source">A source blend state to use as a template configuration.</param>
         /// <returns></returns>
         public abstract GraphicsBlendState CreateBlendState(GraphicsBlendState source = null);
