@@ -22,10 +22,10 @@
         /// <summary>The destination array to store the retrieved data.</summary>
         internal T[] DestinationArray;
 
-        public void Process(CommandQueueDX11 context)
+        public void Process(GraphicsCommandQueue cmd)
         {
             DestinationArray = DestinationArray ?? new T[Count];
-            SourceSegment.Buffer.Get<T>(context, DestinationArray, 0, ByteOffset, DataStride, Count);
+            SourceSegment.Buffer.Get<T>(cmd, DestinationArray, 0, ByteOffset, DataStride, Count);
 
             CompletionCallback.Invoke(DestinationArray);
         }

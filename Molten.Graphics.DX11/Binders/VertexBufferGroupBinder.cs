@@ -2,9 +2,9 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class VertexBufferGroupBinder : ContextGroupBinder<BufferSegment>
+    internal unsafe class VertexBufferGroupBinder : GraphicsGroupBinder<BufferSegment>
     {
-        internal override void Bind(ContextSlotGroup<BufferSegment> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<BufferSegment> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             int iNumChanged = (int)numChanged;
 
@@ -37,10 +37,10 @@ namespace Molten.Graphics
                 p++;
             }
 
-            grp.Cmd.Native->IASetVertexBuffers(startIndex, numChanged, pBuffers, pStrides, pOffsets);
+            (grp.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(startIndex, numChanged, pBuffers, pStrides, pOffsets);
         }
 
-        internal override void Bind(ContextSlot<BufferSegment> slot, BufferSegment value)
+        public override void Bind(GraphicsSlot<BufferSegment> slot, BufferSegment value)
         {
             BufferSegment seg = slot.BoundValue;
 
@@ -64,10 +64,10 @@ namespace Molten.Graphics
                 pOffsets[0] = 0;
             }
 
-            slot.Cmd.Native->IASetVertexBuffers(slot.SlotIndex, 0, pBuffers, pStrides, pOffsets);
+            (slot.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(slot.SlotIndex, 0, pBuffers, pStrides, pOffsets);
         }
 
-        internal override void Unbind(ContextSlotGroup<BufferSegment> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<BufferSegment> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             int iNumChanged = (int)numChanged;
 
@@ -85,10 +85,10 @@ namespace Molten.Graphics
                 p++;
             }
 
-            grp.Cmd.Native->IASetVertexBuffers(startIndex, numChanged, pBuffers, pStrides, pOffsets);
+            (grp.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(startIndex, numChanged, pBuffers, pStrides, pOffsets);
         }
 
-        internal override void Unbind(ContextSlot<BufferSegment> slot, BufferSegment value)
+        public override void Unbind(GraphicsSlot<BufferSegment> slot, BufferSegment value)
         {
             BufferSegment seg = slot.BoundValue;
 
@@ -100,7 +100,7 @@ namespace Molten.Graphics
             pStrides[0] = 0;
             pOffsets[0] = 0;
 
-            slot.Cmd.Native->IASetVertexBuffers(slot.SlotIndex, 0, pBuffers, pStrides, pOffsets);
+            (slot.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(slot.SlotIndex, 0, pBuffers, pStrides, pOffsets);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal abstract class ShaderComposition : ContextBindable
+    internal abstract class ShaderComposition : GraphicsObject
     {
         /// <summary>A list of const buffers the shader stage requires to be bound.</summary>
         internal List<uint> ConstBufferIds = new List<uint>();
@@ -28,13 +28,13 @@ namespace Molten.Graphics
         internal unsafe abstract void SetBytecode(ID3D10Blob* byteCode);
 
         internal ShaderComposition(HlslShader parentShader, ShaderType type) : 
-            base(parentShader.NativeDevice, GraphicsBindTypeFlags.Input)
+            base(parentShader.Device, GraphicsBindTypeFlags.Input)
         {
             Parent = parentShader;
             Type = type;
         }
 
-        protected override void OnApply(CommandQueueDX11 context) { }
+        protected override void OnApply(GraphicsCommandQueue context) { }
     }
 
     internal abstract unsafe class ShaderComposition<T> : ShaderComposition 

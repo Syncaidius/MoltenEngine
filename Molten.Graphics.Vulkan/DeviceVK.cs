@@ -38,6 +38,16 @@ namespace Molten.Graphics
             _loader = new DeviceLoaderVK(renderer, adapter, requiredCap);
         }
 
+        protected override void OnInitialize()
+        {
+            
+        }
+
+        public override GraphicsDepthState CreateDepthState()
+        {
+            throw new NotImplementedException();
+        }
+
         internal void AddExtension<E>(Action<E> loadCallback = null, Action<E> destroyCallback = null)
             where E : NativeExtension<Vk>
         {
@@ -138,7 +148,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the underlying <see cref="CommandQueueVK"/> that should execute graphics commands.
         /// </summary>
-        internal CommandQueueVK GraphicsQueue => _gfxQueue;
+        public override CommandQueueVK Cmd => _gfxQueue;
 
         internal Vk VK => _renderer.VK;
 

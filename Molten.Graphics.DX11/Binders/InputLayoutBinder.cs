@@ -1,15 +1,15 @@
 ﻿namespace Molten.Graphics
 {
-    internal unsafe class InputLayoutBinder : ContextSlotBinder<VertexInputLayout>
+    internal unsafe class InputLayoutBinder : GraphicsSlotBinder<VertexInputLayout>
     {
-        internal override void Bind(ContextSlot<VertexInputLayout> slot, VertexInputLayout value)
+        public override void Bind(GraphicsSlot<VertexInputLayout> slot, VertexInputLayout value)
         {
-            slot.Cmd.Native->IASetInputLayout(slot.BoundValue);
+            (slot.Cmd as CommandQueueDX11).Native->IASetInputLayout(slot.BoundValue);
         }
 
-        internal override void Unbind(ContextSlot<VertexInputLayout> slot, VertexInputLayout value)
+        public override void Unbind(GraphicsSlot<VertexInputLayout> slot, VertexInputLayout value)
         {
-            slot.Cmd.Native->IASetInputLayout(null);
+            (slot.Cmd as CommandQueueDX11).Native->IASetInputLayout(null);
         }
     }
 }

@@ -8,9 +8,9 @@
 
         internal Action CompletionCallback;
 
-        public void Process(CommandQueueDX11 context)
+        public void Process(GraphicsCommandQueue cmd)
         {
-            SourceBuffer.CopyTo(context, DestinationBuffer);
+            SourceBuffer.CopyTo(cmd, DestinationBuffer);
             CompletionCallback?.Invoke();
         }
     }

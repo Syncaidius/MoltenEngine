@@ -3,7 +3,7 @@
 namespace Molten.Graphics
 {
     /// <summary>Stores a blend state for use with a <see cref="CommandQueueDX11"/>.</summary>
-    internal unsafe class GraphicsBlendState : ContextBindable<ID3D11BlendState1>, IEquatable<GraphicsBlendState>
+    public unsafe class BlendStateDX11 : GraphicsBlendState
     {
         public static readonly BlendDesc1 _defaultDesc;
 
@@ -17,7 +17,7 @@ namespace Molten.Graphics
         /// </summary>
         public Color4 BlendFactor { get; set; }
 
-        static GraphicsBlendState()
+        static BlendStateDX11()
         {
             _defaultDesc = new BlendDesc1()
             {
@@ -40,28 +40,35 @@ namespace Molten.Graphics
             };
         }
 
-        internal override unsafe ID3D11BlendState1* NativePtr => _native;
+        public unsafe ID3D11BlendState1* NativePtr => _native;
 
         ID3D11BlendState1* _native;
         BlendDesc1 _desc;
 
         bool _dirty;
 
-        internal GraphicsBlendState(DeviceDX11 device, GraphicsBlendState source) : base(device, GraphicsBindTypeFlags.Input)
+        protected override RenderSurfaceBlend InitializeSurfaceBlend(int index, RenderSurfaceBlend source)
+        {
+            throw new NotImplementedException();
+        }
+
+        public BlendStateDX11(DeviceDX11 device, BlendStateDX11 source) : base(device, source)
         {
             _desc = source._desc;
             BlendFactor = source.BlendFactor;
             BlendSampleMask = source.BlendSampleMask;
         }
 
-        internal GraphicsBlendState(DeviceDX11 device) : base(device, GraphicsBindTypeFlags.Input)
+        internal BlendStateDX11(DeviceDX11 device) : 
+            base(device)
         {
             _desc = _defaultDesc;
             BlendFactor = new Color4(1, 1, 1, 1);
             BlendSampleMask = 0xffffffff;
         }
 
-        internal GraphicsBlendState(DeviceDX11 device, RenderTargetBlendDesc1 rtDesc) : base(device, GraphicsBindTypeFlags.Input)
+        internal BlendStateDX11(DeviceDX11 device, RenderTargetBlendDesc1 rtDesc) : 
+            base(device)
         {
             _desc = _defaultDesc;
             _desc.RenderTarget[0] = rtDesc;
@@ -74,15 +81,7 @@ namespace Molten.Graphics
             return _desc.RenderTarget[index];
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is GraphicsBlendState other)
-                return Equals(other);
-            else
-                return false;
-        }
-
-        public bool Equals(GraphicsBlendState other)
+        public bool Equals(BlendStateDX11 other)
         {
             if (_desc.IndependentBlendEnable != other._desc.IndependentBlendEnable)
                 return false;
@@ -111,7 +110,7 @@ namespace Molten.Graphics
             return true;
         }
 
-        protected override void OnApply(CommandQueueDX11 pipe)
+        protected override void OnApply(GraphicsCommandQueue cmd)
         {
             if (_native == null || _dirty)
             {
@@ -119,16 +118,16 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 // Create new state
-                NativeDevice.Ptr->CreateBlendState1(ref _desc, ref _native);
+                (cmd as CommandQueueDX11).DXDevice.Ptr->CreateBlendState1(ref _desc, ref _native);
             }
         }
 
-        public static implicit operator ID3D11BlendState1*(GraphicsBlendState state)
+        public static implicit operator ID3D11BlendState1*(BlendStateDX11 state)
         {
             return state._native;
         }
 
-        public static implicit operator ID3D11BlendState*(GraphicsBlendState state)
+        public static implicit operator ID3D11BlendState*(BlendStateDX11 state)
         {
             return (ID3D11BlendState*)state._native;
         }
@@ -138,7 +137,7 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _native);
         }
 
-        public bool AlphaToCoverageEnable
+        public override bool AlphaToCoverageEnable
         {
             get => _desc.AlphaToCoverageEnable > 0;
             set
@@ -148,27 +147,12 @@ namespace Molten.Graphics
             }
         }
 
-        public bool IndependentBlendEnable
+        public override bool IndependentBlendEnable
         {
             get => _desc.IndependentBlendEnable > 0;
             set
             {
                 _desc.IndependentBlendEnable = value ? 1 : 0;
-                _dirty = true;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a render target blend description at the specified index.
-        /// </summary>
-        /// <param name="rtIndex">The render target/surface blend index.</param>
-        /// <returns></returns>
-        internal RenderTargetBlendDesc1 this[int rtIndex]
-        {
-            get => _desc.RenderTarget[rtIndex];
-            set
-            {
-                _desc.RenderTarget[rtIndex] = value;
                 _dirty = true;
             }
         }

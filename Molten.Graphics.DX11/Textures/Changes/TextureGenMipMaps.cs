@@ -2,9 +2,9 @@
 {
     internal struct TexturegenMipMaps : ITextureTask
     {
-        public bool Process(CommandQueueDX11 pipe, TextureBase texture)
+        public bool Process(CommandQueueDX11 cmd, TextureBase texture)
         {
-            texture.GenerateMipMaps(pipe);
+            texture.GenerateMipMaps(cmd);
             return true;
         }
     }

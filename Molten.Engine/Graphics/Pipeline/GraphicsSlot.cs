@@ -1,44 +1,44 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract class ContextSlot : EngineObject
+    public abstract class GraphicsSlot : EngineObject
     {
-        internal ContextSlot(CommandQueueDX11 queue, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
+        internal GraphicsSlot(GraphicsCommandQueue cmd, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
         {
-            Cmd = queue; 
+            Cmd = cmd; 
             BindType = bindType;
             SlotIndex = slotIndex;
             Name = $"{namePrefix}_slot_{slotIndex}";
         }
 
-        internal abstract bool Bind();
+        public abstract bool Bind();
 
-        internal abstract void Unbind();
+        public abstract void Unbind();
 
-        internal protected abstract void Clear();
+        public abstract void Clear();
 
-        internal GraphicsBindTypeFlags BindType { get; }
+        public GraphicsBindTypeFlags BindType { get; }
 
-        internal uint SlotIndex { get; }
+        public uint SlotIndex { get; }
 
-        internal CommandQueueDX11 Cmd { get; }
+        public GraphicsCommandQueue Cmd { get; }
 
-        internal protected uint PendingID { get; set; }
+        public uint PendingID { get; internal set; }
 
-        internal protected abstract ContextBindable RawValue { get; }
+        public abstract GraphicsObject RawValue { get; }
     }
 
-    public class ContextSlot<T> : ContextSlot
-        where T : ContextBindable
+    public class GraphicsSlot<T> : GraphicsSlot
+        where T : GraphicsObject
     {
-        ContextSlotBinder<T> _binder;
-        ContextSlotGroup<T> _group;
+        GraphicsSlotBinder<T> _binder;
+        GraphicsSlotGroup<T> _group;
 
         T _value;
         T _boundValue;
 
         uint _boundVersion;
 
-        internal ContextSlot(CommandQueueDX11 queue, ContextSlotBinder<T> binder, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
+        public GraphicsSlot(GraphicsCommandQueue queue, GraphicsSlotBinder<T> binder, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
             base(queue, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = false;
@@ -46,7 +46,7 @@
             _binder = binder;
         }
 
-        internal ContextSlot(CommandQueueDX11 queue, ContextSlotGroup<T> grp, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) :
+        public GraphicsSlot(GraphicsCommandQueue queue, GraphicsSlotGroup<T> grp, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) :
             base(queue, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = true;
@@ -58,7 +58,7 @@
         /// 
         /// </summary>
         /// <returns>True if a binding changed occurred. False if no change has occurred.</returns>
-        internal override bool Bind()
+        public override bool Bind()
         {
             if (_value != _boundValue)
             {
@@ -71,7 +71,7 @@
                 {
                     // Check other bound slots that should be unbound.
                     bool canBind = true;
-                    ContextSlot slot = null;
+                    GraphicsSlot slot = null;
 
                     for (int i = _value.BoundTo.Count - 1; i >= 0; i--)
                     {
@@ -100,7 +100,7 @@
                                 }
                                 else if (slot.PendingID == PendingID)
                                 {
-                                    Cmd.DXDevice.Log.Error($"{_value.Name} is will be bound on '{slot.Name}' and '{Name}' with the same pending BindID ({PendingID}). This is unexpected behaviour!");
+                                    Cmd.Device.Log.Error($"{_value.Name} is will be bound on '{slot.Name}' and '{Name}' with the same pending BindID ({PendingID}). This is unexpected behaviour!");
                                     canBind = false;
                                 }
                             }
@@ -159,14 +159,14 @@
             return false;
         }
 
-        internal override void Unbind()
+        public override void Unbind()
         {
             _binder.Unbind(this, _boundValue);
             _boundValue.BoundTo.Remove(this);
             _boundValue = null;
         }
 
-        internal protected override void Clear()
+        public override void Clear()
         {
             if (_boundValue != null && _boundValue == _value)
                 Unbind();
@@ -182,7 +182,7 @@
 
         protected override void OnDispose() { }
 
-        internal T Value
+        public T Value
         {
             get => _value;
             set
@@ -193,9 +193,9 @@
             }
         }
 
-        internal T BoundValue => _boundValue;
+        public T BoundValue => _boundValue;
 
-        internal protected override ContextBindable RawValue => _value;
+        public override GraphicsObject RawValue => _value;
 
         internal bool IsGroupMember { get; }
     }

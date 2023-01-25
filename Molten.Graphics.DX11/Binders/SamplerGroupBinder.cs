@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class SamplerGroupBinder<T> : ContextGroupBinder<ShaderSampler>
+    internal unsafe class SamplerGroupBinder<T> : GraphicsGroupBinder<ShaderSampler>
         where T: unmanaged
     {
         ContextShaderStage<T> _stage;
@@ -12,7 +12,7 @@ namespace Molten.Graphics
             _stage = stage;
         }
 
-        internal override void Bind(ContextSlotGroup<ShaderSampler> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<ShaderSampler> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             ID3D11SamplerState** samplers = stackalloc ID3D11SamplerState*[(int)numChanged];
 
@@ -23,14 +23,14 @@ namespace Molten.Graphics
             _stage.SetSamplers(startIndex, numChanged, samplers);
         }
 
-        internal override void Bind(ContextSlot<ShaderSampler> slot, ShaderSampler value)
+        public override void Bind(GraphicsSlot<ShaderSampler> slot, ShaderSampler value)
         {
             ID3D11SamplerState** samplers = stackalloc ID3D11SamplerState*[1];
             samplers[0] = slot.BoundValue;
             _stage.SetSamplers(slot.SlotIndex, 1, samplers);
         }
 
-        internal override void Unbind(ContextSlotGroup<ShaderSampler> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<ShaderSampler> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             ID3D11SamplerState** samplers = stackalloc ID3D11SamplerState*[(int)numChanged];
 
@@ -40,7 +40,7 @@ namespace Molten.Graphics
             _stage.SetSamplers(startIndex, numChanged, samplers);
         }
 
-        internal override void Unbind(ContextSlot<ShaderSampler> slot, ShaderSampler value)
+        public override void Unbind(GraphicsSlot<ShaderSampler> slot, ShaderSampler value)
         {
             ID3D11SamplerState** samplers = stackalloc ID3D11SamplerState*[1];
             samplers[0] = null;

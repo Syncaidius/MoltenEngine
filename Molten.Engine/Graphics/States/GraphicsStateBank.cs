@@ -1,13 +1,13 @@
 ﻿namespace Molten.Graphics
 {
-    internal abstract class GraphicsStateBank<T, E> : IDisposable
+    public abstract class GraphicsStateBank<T, E> : IDisposable
         where T : GraphicsObject
         where E: struct, IConvertible
     {
         protected T[] _presets;
         List<T> _states;
 
-        internal GraphicsStateBank()
+        protected GraphicsStateBank()
         {
             IConvertible last = ReflectionHelper.GetLastEnumValue<E>();
             int presetArraySize = (int)last + 1;
@@ -34,7 +34,7 @@
         /// </summary>
         /// <param name="state">The state to add.</param>
         /// <returns></returns>
-        internal T AddOrRetrieveExisting(T state)
+        public T AddOrRetrieveExisting(T state)
         {
             foreach (T existing in _states)
             {
@@ -51,6 +51,6 @@
             return state;
         }
 
-        internal abstract T GetPreset(E value);
+        public abstract T GetPreset(E value);
     }
 }

@@ -6,7 +6,7 @@
 
         public Action<TextureData> Callback;
 
-        public bool Process(CommandQueueDX11 pipe, TextureBase texture)
+        public bool Process(CommandQueueDX11 cmd, TextureBase texture)
         {
             if (!StagingTexture.HasFlags(TextureFlags.Staging))
                 throw new TextureFlagException(StagingTexture.Flags, "Provided staging texture does not have the staging flag set.");
@@ -17,7 +17,7 @@
                 StagingTexture.Depth != texture.Depth)
                 throw new TextureCopyException(texture, StagingTexture, "Staging texture dimensions do not match current texture.");
 
-            TextureData data = texture.GetAllData(pipe, StagingTexture);
+            TextureData data = texture.GetAllData(cmd, StagingTexture);
             Callback(data);
 
             return false;

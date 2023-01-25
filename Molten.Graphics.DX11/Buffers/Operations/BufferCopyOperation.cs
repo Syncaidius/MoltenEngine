@@ -18,7 +18,7 @@ namespace Molten.Graphics
 
         internal Action CompletionCallback;
 
-        public void Process(CommandQueueDX11 context)
+        public void Process(GraphicsCommandQueue cmd)
         {
             CompletionCallback?.Invoke();
         }

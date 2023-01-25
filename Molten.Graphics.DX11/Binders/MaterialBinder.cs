@@ -1,9 +1,9 @@
 ﻿namespace Molten.Graphics
 {
-    internal unsafe class MaterialBinder : ContextSlotBinder<Material>
+    internal unsafe class MaterialBinder : GraphicsSlotBinder<Material>
     {
-        internal override void Bind(ContextSlot<Material> slot, Material value) { }
+        public override void Bind(GraphicsSlot<Material> slot, Material value) { }
 
-        internal override void Unbind(ContextSlot<Material> slot, Material value) { }
+        public override void Unbind(GraphicsSlot<Material> slot, Material value) { }
     }
 }

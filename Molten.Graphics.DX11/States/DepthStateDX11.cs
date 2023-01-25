@@ -3,71 +3,71 @@
 namespace Molten.Graphics
 {
     /// <summary>Stores a depth-stencil state for use with a <see cref="CommandQueueDX11"/>.</summary>
-    internal unsafe class GraphicsDepthState : ContextBindable<ID3D11DepthStencilState>, IEquatable<GraphicsDepthState>
+    internal unsafe class DepthStateDX11 : GraphicsDepthState
     {
-        public class Face
+        public class FaceDX11 : Face
         {
             internal DepthStencilopDesc _desc;
-            GraphicsDepthState _parent;
+            DepthStateDX11 _parent;
 
-            internal Face(GraphicsDepthState parent, ref DepthStencilopDesc defaultDesc)
+            internal FaceDX11(DepthStateDX11 parent, ref DepthStencilopDesc defaultDesc)
             {
                 _parent = parent;
                 _desc = defaultDesc;
             }
 
-            public ComparisonFunc Comparison
+            public override ComparisonFunction Comparison
             {
-                get { return _desc.StencilFunc; }
+                get { return (ComparisonFunction)_desc.StencilFunc; }
                 set
                 {
-                    _desc.StencilFunc = value;
+                    _desc.StencilFunc = (ComparisonFunc)value;
                     _parent._dirty = true;
                 }
             }
 
-            public StencilOp PassOperation
+            public override DepthStencilOperation PassOperation
             {
-                get { return _desc.StencilPassOp; }
+                get { return (DepthStencilOperation)_desc.StencilPassOp; }
                 set
                 {
-                    _desc.StencilPassOp = value;
+                    _desc.StencilPassOp = (StencilOp)value;
                     _parent._dirty = true;
                 }
             }
 
-            public StencilOp FailOperation
+            public override DepthStencilOperation FailOperation
             {
-                get { return _desc.StencilFailOp; }
+                get { return (DepthStencilOperation)_desc.StencilFailOp; }
                 set
                 {
-                    _desc.StencilFailOp = value;
+                    _desc.StencilFailOp = (StencilOp)value;
                     _parent._dirty = true;
                 }
             }
 
-            public StencilOp DepthFailOperation
+            public override DepthStencilOperation DepthFailOperation
             {
-                get { return _desc.StencilDepthFailOp; }
+                get { return (DepthStencilOperation)_desc.StencilDepthFailOp; }
                 set
                 {
-                    _desc.StencilDepthFailOp = value;
+                    _desc.StencilDepthFailOp = (StencilOp)value;
                     _parent._dirty = true;
                 }
             }
         }
 
         static DepthStencilDesc _defaultDesc;
-
-        internal override unsafe ID3D11DepthStencilState* NativePtr => _native;
+        
+        public unsafe ID3D11DepthStencilState* NativePtr => _native;
         ID3D11DepthStencilState* _native;
         DepthStencilDesc _desc;
         internal bool _dirty;
 
-        Face _frontFace;
-        Face _backFace;
+        FaceDX11 _frontFace;
+        FaceDX11 _backFace;
 
-        static GraphicsDepthState()
+        static DepthStateDX11()
         {
             _defaultDesc = new DepthStencilDesc()
             {
@@ -94,29 +94,31 @@ namespace Molten.Graphics
             };
         }
 
-        internal GraphicsDepthState(DeviceDX11 device, GraphicsDepthState source) : base(device, GraphicsBindTypeFlags.Input)
+        internal DepthStateDX11(DeviceDX11 device, DepthStateDX11 source) : 
+            base(device, source)
         {
             _desc = source._desc;
-            _frontFace = new Face(this, ref _desc.FrontFace);
-            _backFace = new Face(this, ref _desc.BackFace);
+            _frontFace = new FaceDX11(this, ref _desc.FrontFace);
+            _backFace = new FaceDX11(this, ref _desc.BackFace);
         }
 
-        internal GraphicsDepthState(DeviceDX11 device) : base(device, GraphicsBindTypeFlags.Input)
+        internal DepthStateDX11(DeviceDX11 device) : 
+            base(device)
         {
             _desc = _defaultDesc;
-            _frontFace = new Face(this, ref _desc.FrontFace);
-            _backFace = new Face(this, ref _desc.BackFace);
+            _frontFace = new FaceDX11(this, ref _desc.FrontFace);
+            _backFace = new FaceDX11(this, ref _desc.BackFace);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is GraphicsDepthState other)
+            if (obj is DepthStateDX11 other)
                 return Equals(other);
             else
                 return false;
         }
 
-        public bool Equals(GraphicsDepthState other)
+        public bool Equals(DepthStateDX11 other)
         {
             if (!CompareOperation(ref _desc.BackFace, ref other._desc.BackFace) || !CompareOperation(ref _desc.FrontFace, ref other._desc.FrontFace))
                 return false;
@@ -148,7 +150,7 @@ namespace Molten.Graphics
             _dirty = true;
         }
 
-        protected override void OnApply(CommandQueueDX11 pipe)
+        protected override void OnApply(GraphicsCommandQueue cmd)
         {
             if (_native == null || _dirty)
             {
@@ -160,7 +162,7 @@ namespace Molten.Graphics
                 _desc.BackFace = _backFace._desc;
 
                 //create new state
-                NativeDevice.Ptr->CreateDepthStencilState(ref _desc, ref _native);
+                (cmd as CommandQueueDX11).DXDevice.Ptr->CreateDepthStencilState(ref _desc, ref _native);
             }
         }
 
@@ -169,7 +171,7 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _native);
         }
 
-        internal bool IsDepthEnabled
+        public override bool IsDepthEnabled
         {
             get { return _desc.DepthEnable > 0; }
             set
@@ -179,7 +181,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal bool IsStencilEnabled
+        public override bool IsStencilEnabled
         {
             get { return _desc.StencilEnable > 0; }
             set
@@ -189,27 +191,27 @@ namespace Molten.Graphics
             }
         }
 
-        internal DepthWriteMask DepthWriteMask
+        public override DepthWriteFlags WriteFlags
         {
-            get { return _desc.DepthWriteMask; }
+            get { return (DepthWriteFlags)_desc.DepthWriteMask; }
             set
             {
-                _desc.DepthWriteMask = value;
+                _desc.DepthWriteMask = (DepthWriteMask)value;
                 _dirty = true;
             }
         }
 
-        internal ComparisonFunc DepthComparison
+        public override ComparisonFunction DepthComparison
         {
-            get { return _desc.DepthFunc; }
+            get { return (ComparisonFunction)_desc.DepthFunc; }
             set
             {
-                _desc.DepthFunc = value;
+                _desc.DepthFunc = (ComparisonFunc)value;
                 _dirty = true;
             }
         }
 
-        internal byte StencilReadMask
+        public override byte StencilReadMask
         {
             get { return _desc.StencilReadMask; }
             set
@@ -219,7 +221,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal byte StencilWriteMask
+        public override byte StencilWriteMask
         {
             get { return _desc.StencilWriteMask; }
             set
@@ -230,23 +232,14 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the description for the front-face depth operation description.</summary>
-        internal Face FrontFace
-        {
-            get { return _frontFace; }
-        }
+        public override Face FrontFace => _frontFace;
 
         /// <summary>Gets the description for the back-face depth operation description.</summary>
-        internal Face BackFace
+        public override Face BackFace => _backFace;
+
+        public static implicit operator ID3D11DepthStencilState*(DepthStateDX11 bindable)
         {
-            get { return _backFace; }
+            return bindable.NativePtr;
         }
-
-        /// <summary>Gets or sets the stencil reference value. The default value is 0.</summary>
-        public uint StencilReference { get; set; }
-
-        /// <summary>
-        /// Gets or sets the depth write permission. the default value is <see cref="GraphicsDepthWritePermission.Enabled"/>.
-        /// </summary>
-        public GraphicsDepthWritePermission WritePermission { get; set; } = GraphicsDepthWritePermission.Enabled;
     }
 }

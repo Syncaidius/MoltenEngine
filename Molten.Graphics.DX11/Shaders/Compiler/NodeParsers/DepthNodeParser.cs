@@ -11,7 +11,7 @@ namespace Molten.Graphics
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            GraphicsDepthState state = null;
+            DepthStateDX11 state = null;
             DepthStencilPreset preset = DepthStencilPreset.Default;
 
             if (node.ValueType == ShaderHeaderValueType.Preset)
@@ -20,7 +20,7 @@ namespace Molten.Graphics
                     InvalidEnumMessage<DepthStencilPreset>(context, (node.Name, node.Value), "depth-stencil preset");
             }
 
-            state = new GraphicsDepthState(foundation.NativeDevice, foundation.NativeDevice.DepthBank.GetPreset(preset));
+            state = new DepthStateDX11(foundation.Device as DeviceDX11, foundation.Device.DepthBank.GetPreset(preset) as DepthStateDX11);
 
             foreach ((string Name, string Value) c in node.ChildValues)
             {
@@ -48,14 +48,14 @@ namespace Molten.Graphics
                         break;
 
                     case "writemask":
-                        if (EngineUtil.TryParseEnum(c.Value, out DepthWriteMask writeMask))
-                            state.DepthWriteMask = writeMask;
+                        if (EngineUtil.TryParseEnum(c.Value, out DepthWriteFlags writeFlags))
+                            state.WriteFlags = writeFlags;
                         else
                             InvalidEnumMessage<DepthWriteMask>(context, c, "depth write mask");
                         break;
 
                     case "comparison":
-                        if (EngineUtil.TryParseEnum(c.Value, out ComparisonFunc comparison))
+                        if (EngineUtil.TryParseEnum(c.Value, out ComparisonFunction comparison))
                             state.DepthComparison = comparison;
                         else
                             InvalidEnumMessage<ComparisonFunc>(context, c, "depth comparison");
@@ -102,7 +102,7 @@ namespace Molten.Graphics
                 }
             }
 
-            state = foundation.NativeDevice.DepthBank.AddOrRetrieveExisting(state);
+            state = foundation.Device.DepthBank.AddOrRetrieveExisting(state) as DepthStateDX11;
 
             if (node.Conditions == StateConditions.None)
                 foundation.DepthState.FillMissingWith(state);
@@ -118,31 +118,31 @@ namespace Molten.Graphics
 
                 switch (c.Name) {
                     case "comparison":
-                        if (EngineUtil.TryParseEnum(c.Value, out ComparisonFunc comparison))
+                        if (EngineUtil.TryParseEnum(c.Value, out ComparisonFunction comparison))
                             face.Comparison = comparison;
                         else
-                            InvalidEnumMessage<ComparisonFunc>(context, cv, $"{faceNode.Name}-face comparison");
+                            InvalidEnumMessage<ComparisonFunction>(context, cv, $"{faceNode.Name}-face comparison");
                         break;
 
                     case "stencilpass":
-                        if (EngineUtil.TryParseEnum(c.Value, out StencilOp stencilpassOp))
+                        if (EngineUtil.TryParseEnum(c.Value, out DepthStencilOperation stencilpassOp))
                             face.PassOperation = stencilpassOp;
                         else
-                            InvalidEnumMessage<StencilOp>(context, cv, $"{faceNode.Name}-face stencil pass operation");
+                            InvalidEnumMessage<DepthStencilOperation>(context, cv, $"{faceNode.Name}-face stencil pass operation");
                         break;
 
                     case "stencilfail":
-                        if (EngineUtil.TryParseEnum(c.Value, out StencilOp stencilFailOp))
+                        if (EngineUtil.TryParseEnum(c.Value, out DepthStencilOperation stencilFailOp))
                             face.FailOperation = stencilFailOp;
                         else
-                            InvalidEnumMessage<StencilOp>(context, cv, $"{faceNode.Name}-face stencil fail operation");
+                            InvalidEnumMessage<DepthStencilOperation>(context, cv, $"{faceNode.Name}-face stencil fail operation");
                         break;
 
                     case "fail":
-                        if (EngineUtil.TryParseEnum(c.Value, out StencilOp failOp))
+                        if (EngineUtil.TryParseEnum(c.Value, out DepthStencilOperation failOp))
                             face.DepthFailOperation = failOp;
                         else
-                            InvalidEnumMessage<StencilOp>(context, cv, $"{faceNode.Name}-face depth fail operation");
+                            InvalidEnumMessage<DepthStencilOperation>(context, cv, $"{faceNode.Name}-face depth fail operation");
                         break;
 
                     default:

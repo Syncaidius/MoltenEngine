@@ -14,8 +14,6 @@ namespace Molten.Graphics
         DisplayManagerDXGI _displayManager;
 
         RasterizerStateBank _rasterizerBank;
-        BlendStateBank _blendBank;
-        DepthStateBank _depthBank;
         SamplerBank _samplerBank;
 
         ObjectPool<BufferSegment> _bufferSegmentPool;
@@ -32,6 +30,7 @@ namespace Molten.Graphics
             _displayManager = adapter.Manager as DisplayManagerDXGI;
             _adapter = adapter as DisplayAdapterDXGI;
             _deferredContexts = new List<CommandQueueDX11>();
+
             VertexFormatCache = new VertexFormatCache<ShaderIOStructureDX11>(
                 (elementCount) => new ShaderIOStructureDX11(elementCount),
                 (att, structure, index, byteOffset) =>
@@ -47,8 +46,12 @@ namespace Molten.Graphics
                         Format = att.Type.ToGraphicsFormat().ToApi()
                     };
                 });
-            _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
 
+            _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
+        }
+
+        protected override void OnInitialize()
+        {
             HResult r = _builder.CreateDevice(_adapter, out PtrRef, out ID3D11DeviceContext4* deviceContext);
             if (r.IsFailure)
             {
@@ -59,8 +62,6 @@ namespace Molten.Graphics
             CmdList = new CommandQueueDX11(this, deviceContext);
 
             _rasterizerBank = new RasterizerStateBank(this);
-            _blendBank = new BlendStateBank(this);
-            _depthBank = new DepthStateBank(this);
             _samplerBank = new SamplerBank(this);
         }
 
@@ -110,6 +111,11 @@ namespace Molten.Graphics
             // TODO add the context's profiler stats to the device's main profiler.
         }
 
+        public override GraphicsDepthState CreateDepthState()
+        {
+            return new DepthStateDX11(this);
+        }
+
         /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
@@ -120,10 +126,7 @@ namespace Molten.Graphics
             VertexFormatCache.Dispose();
             RasterizerBank.Dispose();
             BlendBank.Dispose();
-            DepthBank.Dispose();
             SamplerBank.Dispose();
-
-            CmdList.Dispose();
             _bufferSegmentPool.Dispose();
 
             base.OnDispose();
@@ -135,29 +138,20 @@ namespace Molten.Graphics
 
         internal VertexFormatCache<ShaderIOStructureDX11> VertexFormatCache { get; }
 
-        /// <summary>
-        /// Gets the device's blend state bank.
-        /// </summary>
-        internal BlendStateBank BlendBank => _blendBank;
+
 
         /// <summary>
         /// Gets the device's rasterizer state bank.
         /// </summary>
         internal RasterizerStateBank RasterizerBank => _rasterizerBank;
 
-        /// <summary>
-        /// Gets the device's depth-stencil state bank.
-        /// </summary>
-        internal DepthStateBank DepthBank => _depthBank;
 
         /// <summary>
         /// Gets the device's texture sampler bank.
         /// </summary>
         internal SamplerBank SamplerBank => _samplerBank;
 
-        /// <summary>
-        /// The main <see cref="CommandQueueDX11"/> of the current <see cref="DeviceDX11"/>. This is used for issuing immediate commands to the GPU.
-        /// </summary>
-        internal CommandQueueDX11 Cmd => CmdList;
+        /// <inheritdoc/>
+        public override CommandQueueDX11 Cmd => CmdList;
     }
 }

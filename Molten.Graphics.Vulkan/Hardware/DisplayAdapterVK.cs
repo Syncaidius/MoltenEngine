@@ -9,7 +9,7 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    public unsafe class DisplayAdapterVK : NativeObjectVK<PhysicalDevice>, IDisplayAdapter
+    public unsafe class DisplayAdapterVK : EngineObject, IDisplayAdapter
     {
         public event DisplayOutputChanged OnOutputActivated;
         public event DisplayOutputChanged OnOutputDeactivated;
@@ -158,5 +158,7 @@ namespace Molten.Graphics
 
         /// <inheritdoc/>
         public IReadOnlyList<IDisplayOutput> ActiveOutputs { get; private set; }
+
+        internal PhysicalDevice Native { get; private set; }
     }
 }

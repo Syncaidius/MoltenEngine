@@ -12,7 +12,7 @@
             });
         }
 
-        internal override ShaderSampler GetPreset(SamplerPreset value)
+        public override ShaderSampler GetPreset(SamplerPreset value)
         {
             return _presets[(int)value];
         }

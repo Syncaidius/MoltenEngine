@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Core.Attributes;
 
 namespace Molten.Graphics
 {
-    public abstract class NativeObjectVK<T> : EngineObject
-        where T : unmanaged
+    [Flags]
+    public enum DepthWriteFlags
     {
-        internal T Native { get; private protected set; }
+
+        Zero = 0x0,
+
+
+        All = 0x1
     }
 }

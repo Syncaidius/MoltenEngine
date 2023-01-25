@@ -4,7 +4,7 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics
 {
     /// <summary>A helper class that safely wraps InputLayout.</summary>
-    internal unsafe class VertexInputLayout : ContextBindable<ID3D11InputLayout>
+    internal unsafe class VertexInputLayout : GraphicsObject<ID3D11InputLayout>
     {
         ID3D11InputLayout* _native;
         bool _isValid = true;
@@ -12,7 +12,7 @@ namespace Molten.Graphics
         ulong[] _expectedFormatIDs;
 
         internal VertexInputLayout(DeviceDX11 device, 
-            ContextSlotGroup<BufferSegment> vbSlots, 
+            GraphicsSlotGroup<BufferSegment> vbSlots, 
             ID3D10Blob* vertexBytecode,
             ShaderIOStructure io) : base(device, GraphicsBindTypeFlags.Input)
         {
@@ -91,12 +91,12 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnApply(CommandQueueDX11 context)
+        protected override void OnApply(GraphicsCommandQueue context)
         {
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }
 
-        public bool IsMatch(Logger log, ContextSlotGroup<BufferSegment> grp)
+        public bool IsMatch(Logger log, GraphicsSlotGroup<BufferSegment> grp)
         {
             for (uint i = 0; i < grp.SlotCount; i++)
             {
@@ -137,6 +137,6 @@ namespace Molten.Graphics
         /// <summary>Gets whether or not the vertex input layout is designed for use with instanced draw calls.</summary>
         public bool IsInstanced => _isInstanced;
 
-        internal override unsafe ID3D11InputLayout* NativePtr => _native;
+        public override unsafe ID3D11InputLayout* NativePtr => _native;
     }
 }

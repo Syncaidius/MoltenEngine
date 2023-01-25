@@ -110,6 +110,7 @@ namespace Molten.Graphics
         /// <param name="initialDataPtr">A pointer to data that the buffer should initially be populated with.</param>
         protected virtual void InitializeBuffer(Array initialData)
         {
+            DeviceDX11 nDevice = Device as DeviceDX11;
             if (Mode == BufferMode.Immutable && initialData == null)
                 throw new ArgumentNullException("Initial data cannot be null when buffer mode is Immutable.");
 
@@ -122,18 +123,18 @@ namespace Molten.Graphics
                 {
                     SubresourceData srd = new SubresourceData(null, numBytes, numBytes);
                     srd.PSysMem = ptr.ToPointer();
-                    NativeDevice.Ptr->CreateBuffer(ref Description, ref srd, ref _native);
+                    nDevice.Ptr->CreateBuffer(ref Description, ref srd, ref _native);
                 });
             }
             else
             {
-                NativeDevice.Ptr->CreateBuffer(ref Description, null, ref _native);
+                nDevice.Ptr->CreateBuffer(ref Description, null, ref _native);
             }
 
             Device.AllocateVRAM(numBytes);
 
             // Allocate the first segment.
-            _firstSegment = NativeDevice.GetBufferSegment();
+            _firstSegment = nDevice.GetBufferSegment();
             _firstSegment.BindFlags = BindFlags;
             _firstSegment.Buffer = this;
             _firstSegment.ByteOffset = 0;
@@ -153,30 +154,30 @@ namespace Molten.Graphics
         }
 
         /// <summary>Copies all the data in the current <see cref="GraphicsBuffer"/> to the destination <see cref="GraphicsBuffer"/>.</summary>
-        /// <param name="context">The <see cref="CommandQueueDX11"/> that will perform the copy.</param>
+        /// <param name="cmd">The <see cref="CommandQueueDX11"/> that will perform the copy.</param>
         /// <param name="destination">The <see cref="GraphicsBuffer"/> to copy to.</param>
-        internal void CopyTo(CommandQueueDX11 context, GraphicsBuffer destination)
+        internal void CopyTo(GraphicsCommandQueue cmd, GraphicsBuffer destination)
         {
             if (destination.Description.ByteWidth < Description.ByteWidth)
                 throw new Exception("The destination buffer is not large enough.");
 
             // If the current buffer is a staging buffer, initialize and apply all its pending changes.
             if (Description.Usage == Usage.Staging)
-                ApplyChanges(context);
+                ApplyChanges(cmd);
 
             ValidateCopyBufferUsage(destination);
-            context.Native->CopyResource(this, destination);
+            (cmd as CommandQueueDX11).Native->CopyResource(this, destination);
         }
 
-        internal void CopyTo(CommandQueueDX11 context, GraphicsBuffer destination, Box sourceRegion, uint destByteOffset = 0)
+        internal void CopyTo(GraphicsCommandQueue cmd, GraphicsBuffer destination, Box sourceRegion, uint destByteOffset = 0)
         {
             // If the current buffer is a staging buffer, initialize and apply all its pending changes.
             if (Description.Usage == Usage.Staging)
-                ApplyChanges(context);
+                ApplyChanges(cmd);
 
             ValidateCopyBufferUsage(destination);
-            context.CopyResourceRegion(this, 0, ref sourceRegion, destination, 0, new Vector3UI(destByteOffset,0,0));
-            context.Profiler.Current.CopySubresourceCount++;
+            (cmd as CommandQueueDX11).CopyResourceRegion(this, 0, ref sourceRegion, destination, 0, new Vector3UI(destByteOffset,0,0));
+            cmd.Profiler.Current.CopySubresourceCount++;
         }
 
         private void ValidateCopyBufferUsage(GraphicsBuffer destination)
@@ -316,16 +317,18 @@ namespace Molten.Graphics
         }
 
         /// <summary>Retrieves data from a <see cref="GraphicsBuffer"/>.</summary>
-        /// <param name="context">The <see cref="CommandQueueDX11"/> that will perform the 'get' operation.</param>
+        /// <param name="cmd">The <see cref="CommandQueueDX11"/> that will perform the 'get' operation.</param>
         /// <param name="destination">The destination array. Must be big enough to contain the retrieved data.</param>
         /// <param name="startIndex">The start index within the destination array at which to place the retrieved data.</param>
         /// <param name="count">The number of elements to retrieve</param>
         /// <param name="dataStride">The size of the data being retrieved. The default value is 0. 
         /// A value of 0 will force the stride of <see cref="{T}"/> to be automatically calculated, which may cause a tiny performance hit.</param>
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        internal void Get<T>(CommandQueueDX11 context, T[] destination, uint startIndex, uint count, uint dataStride, uint byteOffset = 0)
+        internal void Get<T>(GraphicsCommandQueue cmd, T[] destination, uint startIndex, uint count, uint dataStride, uint byteOffset = 0)
             where T : unmanaged
         {
+            CommandQueueDX11 dx11Cmd = cmd as CommandQueueDX11;
+
             uint readOffset = startIndex * dataStride;
 
             if ((Description.CPUAccessFlags & (uint)CpuAccessFlag.Read) != (uint)CpuAccessFlag.Read)
@@ -336,19 +339,19 @@ namespace Molten.Graphics
 
             //now set the structured variable's data
             RawStream stream = null;
-            MappedSubresource dataBox = context.MapResource(NativePtr, 0, Map.Read, 0, out stream);
-            context.Profiler.Current.MapReadCount++;
+            MappedSubresource dataBox = dx11Cmd.MapResource(NativePtr, 0, Map.Read, 0, out stream);
+            cmd.Profiler.Current.MapReadCount++;
             stream.Position = byteOffset;
             stream.ReadRange<T>(destination, readOffset, count);
 
             // Unmap
-            context.UnmapResource(NativePtr, 0);
+            dx11Cmd.UnmapResource(NativePtr, 0);
         }
 
         /// <summary>Applies any pending changes onto the buffer.</summary>
         /// <param name="context">The graphics pipe to use when process changes.</param>
         /// <param name="forceInitialize">If set to true, the buffer will be initialized if not done so already.</param>
-        protected void ApplyChanges(CommandQueueDX11 context)
+        protected void ApplyChanges(GraphicsCommandQueue context)
         {
             if (_pendingChanges.Count > 0)
             {
@@ -373,7 +376,7 @@ namespace Molten.Graphics
             return ((CpuAccessFlag)Description.CPUAccessFlags & flag) == flag;
         }
 
-        protected override void OnApply(CommandQueueDX11 context)
+        protected override void OnApply(GraphicsCommandQueue context)
         {
             ApplyChanges(context);
         }
@@ -481,6 +484,8 @@ namespace Molten.Graphics
         /// <param name="segment">The segment.</param>
         internal void Deallocate(BufferSegment segment)
         {
+            DeviceDX11 nDevice = Device as DeviceDX11;
+
             bool mergePrev = segment.Previous != null && segment.Previous.IsFree;
             bool mergeNext = segment.Next != null && segment.Next.IsFree;
 
@@ -494,14 +499,14 @@ namespace Molten.Graphics
                 // The next one will be listed in _freeSegments, so removei t.
                 _freeSegments.Remove(segment.Next);
 
-                NativeDevice.RecycleBufferSegment(segment.Next);
-                NativeDevice.RecycleBufferSegment(segment);
+                nDevice.RecycleBufferSegment(segment.Next);
+                nDevice.RecycleBufferSegment(segment);
             }
             else if (mergePrev)
             {
                 segment.Previous.ByteCount += segment.ByteCount;
                 segment.Previous.LinkNext(segment.Next);
-                NativeDevice.RecycleBufferSegment(segment);
+                nDevice.RecycleBufferSegment(segment);
             }
             else if (mergeNext)
             {
@@ -509,7 +514,7 @@ namespace Molten.Graphics
                 segment.LinkNext(segment.Next.Next);
                 segment.IsFree = true;
 
-                NativeDevice.RecycleBufferSegment(segment.Next);
+                nDevice.RecycleBufferSegment(segment.Next);
                 _freeSegments.Add(segment);
             }
         }
@@ -619,7 +624,7 @@ namespace Molten.Graphics
         /// <summary>Gets the underlying DirectX 11 buffer. </summary>
         internal override ID3D11Buffer* ResourcePtr => _native;
 
-        internal override unsafe ID3D11Resource* NativePtr => (ID3D11Resource*)_native;
+        public override unsafe ID3D11Resource* NativePtr => (ID3D11Resource*)_native;
 
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
         public ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Description.MiscFlags;

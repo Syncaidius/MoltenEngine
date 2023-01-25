@@ -65,7 +65,7 @@ namespace Molten.Graphics
                 EngineUtil.Free(ref _data);
         }
 
-        public unsafe bool Process(CommandQueueDX11 context, TextureBase texture)
+        public unsafe bool Process(CommandQueueDX11 cmd, TextureBase texture)
         {
             // Calculate size of a single array slice
             uint arraySliceBytes = 0;
@@ -110,7 +110,7 @@ namespace Molten.Graphics
             {
                 RawStream stream = null;
 
-                MappedSubresource destBox = context.MapResource(
+                MappedSubresource destBox = cmd.MapResource(
                     texture.NativePtr,
                     subLevel,
                     Map.WriteDiscard,
@@ -139,8 +139,8 @@ namespace Molten.Graphics
                     stream.WriteRange(ptrData, NumElements);
                 }
 
-                context.UnmapResource(texture.NativePtr, subLevel);
-                context.Profiler.Current.MapDiscardCount++;
+                cmd.UnmapResource(texture.NativePtr, subLevel);
+                cmd.Profiler.Current.MapDiscardCount++;
             }
             else
             {
@@ -152,7 +152,7 @@ namespace Molten.Graphics
                     uint bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
 
                     // TODO support copy flags (DX11.1 feature)
-                    context.UpdateResource(texture, subLevel, null, ptrData, bcPitch, arraySliceBytes);
+                    cmd.UpdateResource(texture, subLevel, null, ptrData, bcPitch, arraySliceBytes);
                 }
                 else
                 {
@@ -169,7 +169,7 @@ namespace Molten.Graphics
                         region.Right = rect.Right;
 
                         uint numBytes = NumElements * Stride;
-                        context.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, numBytes);
+                        cmd.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, numBytes);
                     }
                     else
                     {
@@ -177,7 +177,7 @@ namespace Molten.Graphics
                         //uint y = 0;
                         //uint w = Math.Max(texture.Width >> (int)MipLevel, 1);
                         //uint h = Math.Max(texture.Height >> (int)MipLevel, 1);
-                        context.UpdateResource(texture, subLevel, null, ptrData, Pitch, arraySliceBytes);
+                        cmd.UpdateResource(texture, subLevel, null, ptrData, Pitch, arraySliceBytes);
                     }
                 }
             }

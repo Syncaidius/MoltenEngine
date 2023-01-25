@@ -1,16 +1,17 @@
 ﻿namespace Molten.Graphics
 {
-    internal unsafe class RasterizerBinder : ContextSlotBinder<GraphicsRasterizerState>
+    internal unsafe class RasterizerBinder : GraphicsSlotBinder<GraphicsRasterizerState>
     {
-        internal override void Bind(ContextSlot<GraphicsRasterizerState> slot, GraphicsRasterizerState value)
+        public override void Bind(GraphicsSlot<GraphicsRasterizerState> slot, GraphicsRasterizerState value)
         {
-            value = value ?? slot.Cmd.DXDevice.RasterizerBank.GetPreset(RasterizerPreset.Default);
-            slot.Cmd.Native->RSSetState(value);
+            CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
+            value = value ?? cmd.DXDevice.RasterizerBank.GetPreset(RasterizerPreset.Default);
+            cmd.Native->RSSetState(value);
         }
 
-        internal override void Unbind(ContextSlot<GraphicsRasterizerState> slot, GraphicsRasterizerState value)
+        public override void Unbind(GraphicsSlot<GraphicsRasterizerState> slot, GraphicsRasterizerState value)
         {
-            slot.Cmd.Native->RSSetState(null);
+            (slot.Cmd as CommandQueueDX11).Native->RSSetState(null);
         }
     }
 }

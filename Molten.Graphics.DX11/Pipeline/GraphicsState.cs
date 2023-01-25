@@ -4,8 +4,8 @@
     internal class GraphicsState
     {
         CommandQueueDX11 _cmd;
-        GraphicsBlendState _blendState;
-        GraphicsDepthState _depthState;
+        BlendStateDX11 _blendState;
+        DepthStateDX11 _depthState;
         GraphicsRasterizerState _rasterState;
 
         BufferSegment[] _vSegments;

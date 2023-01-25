@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class CBufferGroupBinder<T> : ContextGroupBinder<ShaderConstantBuffer>
+    internal unsafe class CBufferGroupBinder<T> : GraphicsGroupBinder<ShaderConstantBuffer>
         where T : unmanaged
     {
         ContextShaderStage<T> _stage;
@@ -12,7 +12,7 @@ namespace Molten.Graphics
             _stage = stage;
         }
 
-        internal override void Bind(ContextSlotGroup<ShaderConstantBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<ShaderConstantBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             int nChanged = (int)numChanged;
             ID3D11Buffer** cBuffers = stackalloc ID3D11Buffer*[nChanged];
@@ -42,14 +42,14 @@ namespace Molten.Graphics
             _stage.SetConstantBuffers(startIndex, numChanged, cBuffers);
         }
 
-        internal override void Bind(ContextSlot<ShaderConstantBuffer> slot, ShaderConstantBuffer value)
+        public override void Bind(GraphicsSlot<ShaderConstantBuffer> slot, ShaderConstantBuffer value)
         {
             ID3D11Buffer** buffers = stackalloc ID3D11Buffer*[1];
             buffers[0] = slot.BoundValue;
             _stage.SetConstantBuffers(slot.SlotIndex, 1, buffers);
         }
 
-        internal override void Unbind(ContextSlotGroup<ShaderConstantBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<ShaderConstantBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             ID3D11Buffer** buffers = stackalloc ID3D11Buffer*[(int)numChanged];
 
@@ -59,7 +59,7 @@ namespace Molten.Graphics
             _stage.SetConstantBuffers(startIndex, numChanged, buffers);
         }
 
-        internal override void Unbind(ContextSlot<ShaderConstantBuffer> slot, ShaderConstantBuffer value)
+        public override void Unbind(GraphicsSlot<ShaderConstantBuffer> slot, ShaderConstantBuffer value)
         {
             ID3D11Buffer** buffers = stackalloc ID3D11Buffer*[1];
             buffers[0] = null;

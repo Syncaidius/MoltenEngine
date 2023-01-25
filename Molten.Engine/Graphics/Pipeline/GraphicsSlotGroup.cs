@@ -2,12 +2,12 @@
 
 namespace Molten.Graphics
 {
-    public class ContextSlotGroup<T> : EngineObject
-        where T : ContextBindable
+    public class GraphicsSlotGroup<T> : EngineObject
+        where T : GraphicsObject
     {
-        ContextSlot<T>[] _slots;
+        GraphicsSlot<T>[] _slots;
 
-        internal ContextSlotGroup(CommandQueueDX11 queue, ContextGroupBinder<T> binder, ContextSlot<T>[] slots, GraphicsBindTypeFlags bindType, string namePrefix)
+        public GraphicsSlotGroup(GraphicsCommandQueue queue, GraphicsGroupBinder<T> binder, GraphicsSlot<T>[] slots, GraphicsBindTypeFlags bindType, string namePrefix)
         {
             _slots = slots;
             Binder = binder;
@@ -20,14 +20,14 @@ namespace Molten.Graphics
         protected override void OnDispose() { }
 
         /// <summary>
-        /// Binds all pending <see cref="ContextBindable"/> objects on to the current <see cref="ContextSlotGroup{T}"/>
+        /// Binds all pending <see cref="GraphicsObject"/> objects on to the current <see cref="GraphicsSlotGroup{T}"/>
         /// </summary>
-        internal bool BindAll()
+        public bool BindAll()
         {
             uint firstChanged = uint.MaxValue;
             uint lastChanged = uint.MinValue;
 
-            foreach (ContextSlot<T> slot in _slots)
+            foreach (GraphicsSlot<T> slot in _slots)
             {
                 if (slot.Bind())
                 {
@@ -50,7 +50,7 @@ namespace Molten.Graphics
             return false;
         }
 
-        internal void Set(T[] values)
+        public void Set(T[] values)
         {
             if (values.Length > _slots.Length)
                 throw new Exception($"The provided array is larger than the group slot count");
@@ -58,7 +58,7 @@ namespace Molten.Graphics
             Set(values, 0, (uint)values.Length, 0);
         }
 
-        internal void Set(T[] values, uint valueStartIndex, uint numValues, uint slotStartIndex)
+        public void Set(T[] values, uint valueStartIndex, uint numValues, uint slotStartIndex)
         {
             uint valEndIndex = valueStartIndex + numValues;
             uint slotID = slotStartIndex;
@@ -72,7 +72,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal void Get(T[] destination)
+        public void Get(T[] destination)
         {
             // TODO rewrite group to store slot values in an array.
             // TODO add ContextGroupedSlot<T> : ContextSlot with group-specific implementation
@@ -80,7 +80,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Unbinds all bound <see cref="ContextBindable"/> objects from the current <see cref="ContextSlotGroup{T}"/>.
+        /// Unbinds all bound <see cref="GraphicsObject"/> objects from the current <see cref="GraphicsSlotGroup{T}"/>.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void UnbindAll()
@@ -89,20 +89,20 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Gets the <see cref="ContextGroupBinder{T}"/> bound to the current <see cref="ContextSlotGroup{T}"/>.
+        /// Gets the <see cref="GraphicsGroupBinder{T}"/> bound to the current <see cref="GraphicsSlotGroup{T}"/>.
         /// </summary>
-        internal ContextGroupBinder<T> Binder { get; }
+        internal GraphicsGroupBinder<T> Binder { get; }
 
         /// <summary>
-        /// Gets the bind type of the current <see cref="ContextSlotGroup{T}"/>.
+        /// Gets the bind type of the current <see cref="GraphicsSlotGroup{T}"/>.
         /// </summary>
-        internal GraphicsBindTypeFlags BindType { get; }
+        public GraphicsBindTypeFlags BindType { get; }
 
-        internal CommandQueueDX11 Cmd { get; }
+        public GraphicsCommandQueue Cmd { get; }
 
-        internal uint SlotCount { get; }
+        public uint SlotCount { get; }
 
-        internal ContextSlot<T> this[uint slotIndex]
+        public GraphicsSlot<T> this[uint slotIndex]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _slots[slotIndex];

@@ -1,9 +1,9 @@
 ﻿namespace Molten.Graphics
 {
-    internal unsafe class ComputeTaskBinder : ContextSlotBinder<ComputeTask>
+    internal unsafe class ComputeTaskBinder : GraphicsSlotBinder<ComputeTask>
     {
-        internal override void Bind(ContextSlot<ComputeTask> slot, ComputeTask value) { }
+        public override void Bind(GraphicsSlot<ComputeTask> slot, ComputeTask value) { }
 
-        internal override void Unbind(ContextSlot<ComputeTask> slot, ComputeTask value) { }
+        public override void Unbind(GraphicsSlot<ComputeTask> slot, ComputeTask value) { }
     }
 }

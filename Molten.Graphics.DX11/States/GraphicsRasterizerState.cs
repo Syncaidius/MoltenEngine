@@ -4,11 +4,11 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics
 {
     /// <summary>Stores a rasterizer state for use with a <see cref="CommandQueueDX11"/>.</summary>
-    internal unsafe class GraphicsRasterizerState : ContextBindable<ID3D11RasterizerState2>
+    internal unsafe class GraphicsRasterizerState : GraphicsObject<ID3D11RasterizerState2>
     {
         static RasterizerDesc2 _defaultDesc;
 
-        internal override unsafe ID3D11RasterizerState2* NativePtr => _native;
+        public override unsafe ID3D11RasterizerState2* NativePtr => _native;
 
         ID3D11RasterizerState2* _native;
         RasterizerDesc2 _desc;
@@ -73,7 +73,7 @@ namespace Molten.Graphics
                 _desc.ForcedSampleCount == other._desc.ForcedSampleCount;
         }
 
-        protected override void OnApply(CommandQueueDX11 pipe)
+        protected override void OnApply(GraphicsCommandQueue cmd)
         {
             if (_native == null || _dirty)
             {
@@ -81,7 +81,7 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 //create new state
-                NativeDevice.Ptr->CreateRasterizerState2(ref _desc, ref _native);
+                (cmd as CommandQueueDX11).DXDevice.Ptr->CreateRasterizerState2(ref _desc, ref _native);
             }
         }
 

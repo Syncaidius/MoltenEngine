@@ -75,21 +75,21 @@ namespace Molten.Graphics
 
         /// Gets the slots for binding <see cref="ShaderSampler"/> to the current <see cref="PipeShaderStage"/>.
         /// </summary>
-        internal ContextSlotGroup<ShaderSampler> Samplers { get; }
+        internal GraphicsSlotGroup<ShaderSampler> Samplers { get; }
 
         /// <summary>
         /// Gets the slots for binding <see cref="ContextBindableResource"/> to the current <see cref="PipeShaderStage"/>.
         /// </summary>
-        internal ContextSlotGroup<ContextBindableResource> Resources { get; }
+        internal GraphicsSlotGroup<ContextBindableResource> Resources { get; }
 
         /// <summary>
         /// Gets the slots for binding <see cref="ShaderConstantBuffer"/> to the current <see cref="PipeShaderStage"/>/
         /// </summary>
-        internal ContextSlotGroup<ShaderConstantBuffer> ConstantBuffers { get; }
+        internal GraphicsSlotGroup<ShaderConstantBuffer> ConstantBuffers { get; }
 
         /// <summary>
         /// Gets the shader bind slot for the current <see cref="PipeShaderStage{T, S}"/>
         /// </summary>
-        internal ContextSlot<ShaderComposition<T>> Shader { get; }
+        internal GraphicsSlot<ShaderComposition<T>> Shader { get; }
     }
 }

@@ -24,11 +24,11 @@ namespace Molten.Graphics
         bool _viewportsDirty;
         ViewportF[] _nullViewport;
 
-        List<ContextSlot> _slots;
-        ContextSlot<ComputeTask> _compute;
+        List<GraphicsSlot> _slots;
+        GraphicsSlot<ComputeTask> _compute;
 
         VertexTopology _boundTopology;
-        ContextSlot<VertexInputLayout> _vertexLayout;
+        GraphicsSlot<VertexInputLayout> _vertexLayout;
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 
         GraphicsDepthWritePermission _boundDepthMode = GraphicsDepthWritePermission.Enabled;
@@ -48,7 +48,7 @@ namespace Molten.Graphics
             else
                 Type = GraphicsContextType.Deferred;
 
-            _slots = new List<ContextSlot>();
+            _slots = new List<GraphicsSlot>();
             _nullViewport = new ViewportF[1];
 
             uint maxRTs = DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
@@ -70,8 +70,8 @@ namespace Molten.Graphics
             PS = new ShaderPSStage(this);
             CS = new ShaderCSStage(this);
 
-            Blend = RegisterSlot<GraphicsBlendState, BlendBinder>(GraphicsBindTypeFlags.Output, "Blend State", 0);
-            Depth = RegisterSlot<GraphicsDepthState, DepthStencilBinder>(GraphicsBindTypeFlags.Output, "Depth-Stencil State", 0);
+            Blend = RegisterSlot<BlendStateDX11, BlendBinder>(GraphicsBindTypeFlags.Output, "Blend State", 0);
+            Depth = RegisterSlot<DepthStateDX11, DepthStencilBinder>(GraphicsBindTypeFlags.Output, "Depth-Stencil State", 0);
             Rasterizer = RegisterSlot<GraphicsRasterizerState, RasterizerBinder>(GraphicsBindTypeFlags.Output, "Rasterizer State", 0);
 
             RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
@@ -682,38 +682,38 @@ namespace Molten.Graphics
                 return GraphicsBindResult.NonInstancedVertexLayout;
         }
 
-        internal ContextSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
-    where T : ContextBindable
-    where B : ContextSlotBinder<T>, new()
+        public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
+    where T : GraphicsObject
+    where B : GraphicsSlotBinder<T>, new()
         {
             B binder = new B();
             return RegisterSlot(bindType, namePrefix, slotIndex, binder);
         }
 
-        internal ContextSlot<T> RegisterSlot<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex, ContextSlotBinder<T> binder)
-            where T : ContextBindable
+        public GraphicsSlot<T> RegisterSlot<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex, GraphicsSlotBinder<T> binder)
+            where T : GraphicsObject
         {
-            ContextSlot<T> slot = new ContextSlot<T>(this, binder, bindType, namePrefix, slotIndex);
+            GraphicsSlot<T> slot = new GraphicsSlot<T>(this, binder, bindType, namePrefix, slotIndex);
             _slots.Add(slot);
             return slot;
         }
 
-        internal ContextSlotGroup<T> RegisterSlotGroup<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots)
-            where T : ContextBindable
-            where B : ContextGroupBinder<T>, new()
+        public GraphicsSlotGroup<T> RegisterSlotGroup<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots)
+            where T : GraphicsObject
+            where B : GraphicsGroupBinder<T>, new()
         {
             B binder = new B();
             return RegisterSlotGroup(bindType, namePrefix, numSlots, binder);
         }
 
-        internal ContextSlotGroup<T> RegisterSlotGroup<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots, ContextGroupBinder<T> binder)
-            where T : ContextBindable
+        internal GraphicsSlotGroup<T> RegisterSlotGroup<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots, GraphicsGroupBinder<T> binder)
+            where T : GraphicsObject
         {
-            ContextSlot<T>[] slots = new ContextSlot<T>[numSlots];
-            ContextSlotGroup<T> grp = new ContextSlotGroup<T>(this, binder, slots, bindType, namePrefix);
+            GraphicsSlot<T>[] slots = new GraphicsSlot<T>[numSlots];
+            GraphicsSlotGroup<T> grp = new GraphicsSlotGroup<T>(this, binder, slots, bindType, namePrefix);
 
             for (uint i = 0; i < numSlots; i++)
-                slots[i] = new ContextSlot<T>(this, grp, bindType, namePrefix, i);
+                slots[i] = new GraphicsSlot<T>(this, grp, bindType, namePrefix, i);
 
             _slots.AddRange(slots);
 
@@ -747,26 +747,26 @@ namespace Molten.Graphics
         internal ShaderPSStage PS { get; }
         internal ShaderCSStage CS { get; }
 
-        public ContextSlotGroup<BufferSegment> VertexBuffers { get; }
+        public GraphicsSlotGroup<BufferSegment> VertexBuffers { get; }
 
-        public ContextSlot<BufferSegment> IndexBuffer { get; }
+        public GraphicsSlot<BufferSegment> IndexBuffer { get; }
 
-        public ContextSlot<Material> Material { get; }
+        public GraphicsSlot<Material> Material { get; }
 
-        internal ContextSlot<GraphicsBlendState> Blend { get; }
+        internal GraphicsSlot<BlendStateDX11> Blend { get; }
 
-        internal ContextSlot<GraphicsRasterizerState> Rasterizer { get; }
+        internal GraphicsSlot<GraphicsRasterizerState> Rasterizer { get; }
 
-        internal ContextSlot<GraphicsDepthState> Depth { get; }
+        internal GraphicsSlot<DepthStateDX11> Depth { get; }
 
         /// <summary>Gets the number of applied viewports.</summary>
         public int ViewportCount => _viewports.Length;
 
-        public ContextSlotGroup<RenderSurface2D> Surfaces { get; }
+        public GraphicsSlotGroup<RenderSurface2D> Surfaces { get; }
 
         /// <summary>
         /// Gets or sets the output depth surface.
         /// </summary>
-        public ContextSlot<DepthStencilSurface> DepthSurface { get; }
+        public GraphicsSlot<DepthStencilSurface> DepthSurface { get; }
     }
 }

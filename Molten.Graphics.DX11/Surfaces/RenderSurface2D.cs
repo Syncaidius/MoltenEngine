@@ -91,7 +91,7 @@ namespace Molten.Graphics
         {
             if (priority == GraphicsPriority.Immediate)
             {
-                Clear(NativeDevice.Cmd, color);
+                Clear(Device.Cmd as CommandQueueDX11, color);
             }
             else
             {

@@ -19,6 +19,11 @@ namespace Molten.Graphics
             _adapter = adapter as DisplayAdapterDXGI;
             _displayManager = _adapter.Manager as DisplayManagerDXGI;
 
+
+        }
+
+        protected override void OnInitialize()
+        {
             HResult r = _builder.CreateDevice(_adapter, out PtrRef);
             if (!_builder.CheckResult(r, () => $"Failed to initialize {nameof(DeviceDX12)}"))
                 return;
@@ -31,6 +36,11 @@ namespace Molten.Graphics
             _qDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         }
 
+        public override GraphicsDepthState CreateDepthState()
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void OnDispose()
         {
             _qDirect.Dispose();
@@ -40,5 +50,7 @@ namespace Molten.Graphics
         internal DisplayManagerDXGI DisplayManager => _displayManager;
 
         public override DisplayAdapterDXGI Adapter => _adapter;
+
+        public override CommandQueueDX12 Cmd => _qDirect;
     }
 }

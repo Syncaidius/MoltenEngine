@@ -2,9 +2,9 @@
 
 namespace Molten.Graphics
 {
-    public unsafe class ShaderSampler : ContextBindable<ID3D11SamplerState>, IShaderSampler
+    public unsafe class ShaderSampler : GraphicsObject<ID3D11SamplerState>, IShaderSampler
     {
-        internal override unsafe ID3D11SamplerState* NativePtr => _native;
+        public override unsafe ID3D11SamplerState* NativePtr => _native;
 
         ID3D11SamplerState* _native;
         SamplerDesc _desc;
@@ -45,7 +45,7 @@ namespace Molten.Graphics
                     _desc.Filter <= Filter.ComparisonAnisotropic;
         }
 
-        protected override void OnApply(CommandQueueDX11 pipe)
+        protected override void OnApply(GraphicsCommandQueue cmd)
         {
             // If the sampler was actually dirty, recreate it.
             if (_isDirty)
@@ -53,7 +53,7 @@ namespace Molten.Graphics
                 int fVal = (int)_desc.Filter;
                 GraphicsRelease();
 
-                pipe.DXDevice.Ptr->CreateSamplerState(ref _desc, ref _native);
+                (cmd as CommandQueueDX11).DXDevice.Ptr->CreateSamplerState(ref _desc, ref _native);
                 _isDirty = false;
                 Version++;
             }

@@ -2,18 +2,20 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class DepthSurfaceBinder : ContextSlotBinder<DepthStencilSurface>
+    internal unsafe class DepthSurfaceBinder : GraphicsSlotBinder<DepthStencilSurface>
     {
-        internal override void Bind(ContextSlot<DepthStencilSurface> slot, DepthStencilSurface value)
+        public override void Bind(GraphicsSlot<DepthStencilSurface> slot, DepthStencilSurface value)
         {
             
         }
 
-        internal override void Unbind(ContextSlot<DepthStencilSurface> slot, DepthStencilSurface value)
+        public override void Unbind(GraphicsSlot<DepthStencilSurface> slot, DepthStencilSurface value)
         {
-            uint maxRTs = slot.Cmd.DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
-            slot.Cmd.DSV = null;
-            slot.Cmd.Native->OMSetRenderTargets(maxRTs, (ID3D11RenderTargetView**)slot.Cmd.RTVs, slot.Cmd.DSV);
+            CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
+
+            uint maxRTs = cmd.DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
+            cmd.DSV = null;
+            cmd.Native->OMSetRenderTargets(maxRTs, (ID3D11RenderTargetView**)cmd.RTVs, cmd.DSV);
         }
     }
 }

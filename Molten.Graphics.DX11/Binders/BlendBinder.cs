@@ -1,17 +1,19 @@
 ﻿namespace Molten.Graphics
 {
-    internal unsafe class BlendBinder : ContextSlotBinder<GraphicsBlendState>
+    internal unsafe class BlendBinder : GraphicsSlotBinder<BlendStateDX11>
     {
-        internal override void Bind(ContextSlot<GraphicsBlendState> slot, GraphicsBlendState value)
+        public override void Bind(GraphicsSlot<BlendStateDX11> slot, BlendStateDX11 value)
         {
-            value = value ?? slot.Cmd.DXDevice.BlendBank.GetPreset(BlendPreset.Default);
+            CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
+
+            value = value ?? cmd.DXDevice.BlendBank.GetPreset(BlendPreset.Default);
             Color4 tmp = value.BlendFactor;
-            slot.Cmd.Native->OMSetBlendState(value, (float*)&tmp, value.BlendSampleMask);
+            cmd.Native->OMSetBlendState(value, (float*)&tmp, value.BlendSampleMask);
         }
 
-        internal override void Unbind(ContextSlot<GraphicsBlendState> slot, GraphicsBlendState value)
+        public override void Unbind(GraphicsSlot<BlendStateDX11> slot, BlendStateDX11 value)
         {
-            slot.Cmd.Native->OMSetBlendState(null, null, 0);
+            (slot.Cmd as CommandQueueDX11).Native->OMSetBlendState(null, null, 0);
         }
     }
 }

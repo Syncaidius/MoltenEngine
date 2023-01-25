@@ -23,9 +23,9 @@
 
         internal StagingBuffer Staging;
 
-        public void Process(CommandQueueDX11 context)
+        public void Process(GraphicsCommandQueue cmd)
         {
-            DestinationSegment.Buffer.Set<T>(context, Data, StartIndex, Count, DataStride, ByteOffset, Staging);
+            DestinationSegment.Buffer.Set<T>(cmd as CommandQueueDX11, Data, StartIndex, Count, DataStride, ByteOffset, Staging);
             CompletionCallback?.Invoke();
         }
     }

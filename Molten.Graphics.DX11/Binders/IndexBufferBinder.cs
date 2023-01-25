@@ -2,16 +2,16 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class IndexBufferBinder : ContextSlotBinder<BufferSegment>
+    internal unsafe class IndexBufferBinder : GraphicsSlotBinder<BufferSegment>
     {
-        internal override void Bind(ContextSlot<BufferSegment> slot, BufferSegment value)
+        public override void Bind(GraphicsSlot<BufferSegment> slot, BufferSegment value)
         {
-            slot.Cmd.Native->IASetIndexBuffer(value, value.DataFormat, value.ByteOffset);
+            (slot.Cmd as CommandQueueDX11).Native->IASetIndexBuffer(value, value.DataFormat, value.ByteOffset);
         }
 
-        internal override void Unbind(ContextSlot<BufferSegment> slot, BufferSegment value)
+        public override void Unbind(GraphicsSlot<BufferSegment> slot, BufferSegment value)
         {
-            slot.Cmd.Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
+            (slot.Cmd as CommandQueueDX11).Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
         }
     }
 }

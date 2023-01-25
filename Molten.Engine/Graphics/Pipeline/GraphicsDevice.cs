@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Molten.Collections;
 
 namespace Molten.Graphics
 {
+    /// <summary>
+    /// The base class for an API-specific implementation of a graphics device, which provides command/resource access to a GPU.
+    /// </summary>
     public abstract class GraphicsDevice : EngineObject
     {
         long _allocatedVRAM;
@@ -24,6 +25,16 @@ namespace Molten.Graphics
             Log = log;
             _objectsToDispose = new ThreadedQueue<GraphicsObject>();
         }
+
+        internal void Initialize()
+        {
+            OnInitialize();
+
+            DepthBank = new DepthStateBank(this);
+            BlendBank = new BlendStateBank(this);
+        }
+
+        protected abstract void OnInitialize();
 
         internal void DisposeMarkedObjects()
         {
@@ -42,7 +53,30 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             DisposeMarkedObjects();
+
+            Cmd?.Dispose();
+            DepthBank?.Dispose();
+            BlendBank?.Dispose();
         }
+
+        /// <summary>
+        /// Requests a new <see cref="GraphicsDepthState"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default depth-stencil settings.
+        /// </summary>
+        /// <returns></returns>
+        public abstract GraphicsDepthState CreateDepthState();
+
+        /// <summary>
+        /// Requests a new <see cref="GraphicsBlendState"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default blend settings.
+        /// </summary>
+        /// <param name="surfaceBlend">The default surface blend configuration.</param>
+        /// <returns></returns>
+        public abstract GraphicsBlendState CreateBlendState(GraphicsBlendState.RenderSurfaceBlend surfaceBlend = null);
+
+        /// <summary>
+        /// Requests the default <see cref="GraphicsBlendState.RenderSurfaceBlend"/> configuration from the current <see cref="GraphicsDevice"/>.
+        /// </summary>
+        /// <returns></returns>
+        public abstract GraphicsBlendState.RenderSurfaceBlend GetDefaultSurfaceBlend();
 
         /// <summary>Track a VRAM allocation.</summary>
         /// <param name="bytes">The number of bytes that were allocated.</param>
@@ -78,6 +112,21 @@ namespace Molten.Graphics
         /// Gets the <see cref="IDisplayAdapter"/> that the current <see cref="GraphicsDevice"/> is bound to.
         /// </summary>
         public abstract IDisplayAdapter Adapter { get; }
+
+        /// <summary>
+        /// The main <see cref="GraphicsCommandQueue"/> of the current <see cref="GraphicsDevice"/>. This is used for issuing immediate commands to the GPU.
+        /// </summary>
+        public abstract GraphicsCommandQueue Cmd { get; }
+
+        /// <summary>
+        /// Gets the device's depth-stencil state bank.
+        /// </summary>
+        public DepthStateBank DepthBank { get; private set; }
+
+        /// <summary>
+        /// Gets the device's blend state bank.
+        /// </summary>
+        public BlendStateBank BlendBank { get; private set; }
     }
 
     /// <summary>

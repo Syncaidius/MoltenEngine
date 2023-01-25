@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public unsafe abstract class ContextBindableResource : ContextBindable<ID3D11Resource>
+    public unsafe abstract class ContextBindableResource : GraphicsObject<ID3D11Resource>
     {
         /// <summary>Gets or sets the <see cref="ID3D11UnorderedAccessView1"/> attached to the object.</summary>
         internal UAView UAV { get; }

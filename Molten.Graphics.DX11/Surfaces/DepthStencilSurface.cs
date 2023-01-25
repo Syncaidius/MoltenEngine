@@ -143,11 +143,12 @@ namespace Molten.Graphics
             SubresourceData* subData = null;
             ID3D11Resource* res = (ID3D11Resource*)NativeTexture;
 
-            NativeDevice.Ptr->CreateDepthStencilView(res, ref _depthDesc, ref _depthView);
+            DeviceDX11 device = Device as DeviceDX11;
+            device.Ptr->CreateDepthStencilView(res, ref _depthDesc, ref _depthView);
 
             // Create read-only depth view for passing to shaders.
             _depthDesc.Flags = (uint)GetReadOnlyFlags();
-            NativeDevice.Ptr->CreateDepthStencilView(res, ref _depthDesc, ref _readOnlyView);
+            device.Ptr->CreateDepthStencilView(res, ref _depthDesc, ref _readOnlyView);
             _depthDesc.Flags = 0U; // DsvFlag.None;
 
             return res;
@@ -159,19 +160,19 @@ namespace Molten.Graphics
             UpdateViewport();
         }
 
-        internal void Clear(CommandQueueDX11 pipe, DepthClearFlags clearFlags = DepthClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
+        internal void Clear(CommandQueueDX11 cmd, DepthClearFlags clearFlags = DepthClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
         {
             if (_depthView == null)
                 CreateTexture(false);
 
-            pipe.Native->ClearDepthStencilView(_depthView, (uint)clearFlags, depth, stencil);
+            cmd.Native->ClearDepthStencilView(_depthView, (uint)clearFlags, depth, stencil);
         }
 
         public void Clear(DepthClearFlags flags, GraphicsPriority priority, float depth = 1.0f, byte stencil = 0)
         {
             if (priority == GraphicsPriority.Immediate)
             {
-                Clear(NativeDevice.Cmd, flags, depth, stencil);
+                Clear((Device as DeviceDX11).Cmd, flags, depth, stencil);
             }
             else
             {

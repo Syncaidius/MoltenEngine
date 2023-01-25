@@ -81,7 +81,7 @@ namespace Molten.Graphics
             return _displayManager;
         }
 
-        protected override GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
+        protected override GraphicsDevice OnCreateDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
         {
             DisplayAdapterVK adapter = _displayManager.SelectedAdapter as DisplayAdapterVK;
             NativeDevice = new DeviceVK(this, adapter, _instance, CommandSetCapabilityFlags.Graphics);

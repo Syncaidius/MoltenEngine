@@ -12,7 +12,7 @@ using Image = Silk.NET.Vulkan.Image;
 
 namespace Molten.Graphics
 {
-    internal unsafe class WindowSurfaceVK : NativeObjectVK<SurfaceKHR>, INativeSurface
+    internal unsafe class WindowSurfaceVK : GraphicsObject, INativeSurface
     {
         struct BackBuffer
         {
@@ -54,7 +54,8 @@ namespace Molten.Graphics
         KhrSwapchain _extSwapChain;
 
         internal unsafe WindowSurfaceVK(DeviceVK device, GraphicsFormat format, string title, uint width, uint height,
-            PresentModeKHR presentMode = PresentModeKHR.MailboxKhr)
+            PresentModeKHR presentMode = PresentModeKHR.MailboxKhr) : 
+            base(device, GraphicsBindTypeFlags.Input | GraphicsBindTypeFlags.Output)
         {
             _format = format.ToApi();
             Device = device;
@@ -132,7 +133,7 @@ namespace Molten.Graphics
             };
 
             // Detect swap-chain sharing mode.
-            (createInfo.ImageSharingMode, CommandQueueVK[] sharingWith) = Device.GetSharingMode(Device.GraphicsQueue, _presentQueue);
+            (createInfo.ImageSharingMode, CommandQueueVK[] sharingWith) = Device.GetSharingMode(Device.Cmd, _presentQueue);
             uint* familyIndices = stackalloc uint[sharingWith.Length];
 
             for (int i = 0; i < sharingWith.Length; i++)
@@ -365,6 +366,16 @@ namespace Molten.Graphics
                 Device.Renderer.GLFW.SetWindowShouldClose(_window, true);
         }
 
+        protected override void OnApply(GraphicsCommandQueue context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void GraphicsRelease()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Gets the <see cref="RendererVK"/> instance that the current <see cref="WindowSurfaceVK"/> is bound to.
         /// </summary>
@@ -415,5 +426,7 @@ namespace Molten.Graphics
             }
         }
         public bool IsVisible { get; set; }
+
+        internal SurfaceKHR Native { get; private set; }
     }
 }

@@ -43,6 +43,6 @@ namespace Molten.Graphics
             Context.Native->CSSetUnorderedAccessViews(startSlot, numUAVs, (ID3D11UnorderedAccessView**)ppUnorderedAccessViews, pUAVInitialCounts);
         }
 
-        internal ContextSlotGroup<ContextBindableResource> UAVs { get; }
+        internal GraphicsSlotGroup<ContextBindableResource> UAVs { get; }
     }
 }

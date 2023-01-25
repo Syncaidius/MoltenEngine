@@ -67,8 +67,10 @@ namespace Molten.Graphics
             base.GraphicsRelease();
         }
 
-        protected override void OnApply(CommandQueueDX11 context)
+        protected override void OnApply(GraphicsCommandQueue cmd)
         {
+            CommandQueueDX11 dx11Cmd = cmd as CommandQueueDX11;
+
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
             if (DirtyVariables)
             {
@@ -79,13 +81,13 @@ namespace Molten.Graphics
                 foreach(ShaderConstantVariable v in Variables)
                     v.Write(_constData + v.ByteOffset);
 
-                MappedSubresource data = context.MapResource(NativePtr, 0, Map.WriteDiscard, 0);
+                MappedSubresource data = dx11Cmd.MapResource(NativePtr, 0, Map.WriteDiscard, 0);
                 Buffer.MemoryCopy(_constData, data.PData, data.DepthPitch, Description.ByteWidth);
-                context.UnmapResource(NativePtr, 0);
+                dx11Cmd.UnmapResource(NativePtr, 0);
             }
             else
             {
-                ApplyChanges(context);
+                ApplyChanges(cmd);
             }
         }
 

@@ -2,33 +2,37 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class SurfaceGroupBinder : ContextGroupBinder<RenderSurface2D>
+    internal unsafe class SurfaceGroupBinder : GraphicsGroupBinder<RenderSurface2D>
     {
-        internal override void Bind(ContextSlotGroup<RenderSurface2D> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<RenderSurface2D> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             
         }
 
-        internal override void Bind(ContextSlot<RenderSurface2D> slot, RenderSurface2D value)
+        public override void Bind(GraphicsSlot<RenderSurface2D> slot, RenderSurface2D value)
         {
             
         }
 
-        internal override void Unbind(ContextSlotGroup<RenderSurface2D> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<RenderSurface2D> grp, uint startIndex, uint endIndex, uint numChanged)
         {
+            CommandQueueDX11 cmd = grp.Cmd as CommandQueueDX11;
+
             uint numRTs = endIndex + 1;
-            var rtvs = grp.Cmd.RTVs;
+            var rtvs = cmd.RTVs;
             for (uint i = 0; i < numRTs; i++)
                 rtvs[i] = null;
 
-            grp.Cmd.Native->OMSetRenderTargets(numRTs, (ID3D11RenderTargetView**)rtvs, grp.Cmd.DSV);
+            cmd.Native->OMSetRenderTargets(numRTs, (ID3D11RenderTargetView**)rtvs, cmd.DSV);
         }
 
-        internal override void Unbind(ContextSlot<RenderSurface2D> slot, RenderSurface2D value)
+        public override void Unbind(GraphicsSlot<RenderSurface2D> slot, RenderSurface2D value)
         {
-            var rtvs = slot.Cmd.RTVs;
+            CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
+
+            var rtvs = cmd.RTVs;
             rtvs[slot.SlotIndex] = null;
-            slot.Cmd.Native->OMSetRenderTargets(1, (ID3D11RenderTargetView**)rtvs, slot.Cmd.DSV);
+            cmd.Native->OMSetRenderTargets(1, (ID3D11RenderTargetView**)rtvs, cmd.DSV);
         }
     }
 }

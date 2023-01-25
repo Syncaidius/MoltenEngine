@@ -11,7 +11,7 @@ namespace Molten.Graphics
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            GraphicsBlendState template = foundation.NativeDevice.BlendBank.GetPreset(BlendPreset.Default);
+            BlendStateDX11 template = foundation.Device.BlendBank.GetPreset(BlendPreset.Default) as BlendStateDX11;
             RenderTargetBlendDesc1 rtBlendDesc = template.GetSurfaceBlendState(0); // Use the default preset's first (0) RT blend description.
 
             if(node.ValueType == ShaderHeaderValueType.Preset)
@@ -19,7 +19,7 @@ namespace Molten.Graphics
                 if (Enum.TryParse(node.Value, true, out BlendPreset preset))
                 {
                     // Use a template preset's first (0) RT blend description.
-                    template = foundation.NativeDevice.BlendBank.GetPreset(preset);
+                    template = foundation.Device.BlendBank.GetPreset(preset) as BlendStateDX11;
                     rtBlendDesc = template.GetSurfaceBlendState(0);
                 }
                 else
@@ -28,7 +28,7 @@ namespace Molten.Graphics
                 }
             }
 
-            GraphicsBlendState state = new GraphicsBlendState(foundation.NativeDevice, foundation.BlendState[node.Conditions] ?? foundation.NativeDevice.BlendBank.GetPreset(BlendPreset.Default));
+            BlendStateDX11 state = new BlendStateDX11(foundation.NativeDevice, foundation.BlendState[node.Conditions] ?? foundation.NativeDevice.BlendBank.GetPreset(BlendPreset.Default));
             state.IndependentBlendEnable = (state.IndependentBlendEnable || (node.SlotID > 0));
 
             foreach ((string Name, string Value) c in node.ChildValues)
@@ -50,49 +50,49 @@ namespace Molten.Graphics
                         break;
 
                     case "source":
-                        if (Enum.TryParse(c.Value, true, out Blend sourceBlend))
+                        if (Enum.TryParse(c.Value, true, out BlendType sourceBlend))
                             rtBlendDesc.SrcBlend = sourceBlend;
                         else
                             InvalidEnumMessage<Blend>(context, c, "source blend option");
                         break;
 
                     case "destination":
-                        if (Enum.TryParse(c.Value, true, out Blend destBlend))
+                        if (Enum.TryParse(c.Value, true, out BlendType destBlend))
                             rtBlendDesc.DestBlend = destBlend;
                         else
                             InvalidEnumMessage<Blend>(context, c, "destination blend option");
                         break;
 
                     case "operation":
-                        if (Enum.TryParse(c.Value, true, out BlendOp blendOp))
+                        if (Enum.TryParse(c.Value, true, out BlendOperation blendOp))
                             rtBlendDesc.BlendOp = blendOp;
                         else
                             InvalidEnumMessage<BlendOp>(context, c, "blend operation");
                         break;
 
                     case "sourcealpha":
-                        if (Enum.TryParse(c.Value, true, out Blend sourceAlpha))
+                        if (Enum.TryParse(c.Value, true, out BlendType sourceAlpha))
                             rtBlendDesc.SrcBlendAlpha = sourceAlpha;
                         else
                             InvalidEnumMessage<Blend>(context, c, "source alpha option");
                         break;
 
                     case "destinationalpha":
-                        if (Enum.TryParse(c.Value, true, out Blend destAlpha))
+                        if (Enum.TryParse(c.Value, true, out BlendType destAlpha))
                             rtBlendDesc.DestBlendAlpha = destAlpha;
                         else
                             InvalidEnumMessage<Blend>(context, c, "destination alpha option");
                         break;
 
                     case "alphaoperation":
-                        if (Enum.TryParse(c.Value, true, out BlendOp alphaOperation))
+                        if (Enum.TryParse(c.Value, true, out BlendOperation alphaOperation))
                             rtBlendDesc.BlendOpAlpha = alphaOperation;
                         else
                             InvalidEnumMessage<BlendOp>(context, c, "alpha-blend operation");
                         break;
 
                     case "writemask":
-                        if (Enum.TryParse(c.Value, true, out ColorWriteEnable rtWriteMask))
+                        if (Enum.TryParse(c.Value, true, out ColorWriteFlags rtWriteMask))
                             rtBlendDesc.RenderTargetWriteMask = (byte)rtWriteMask;
                         else
                             InvalidEnumMessage<ColorWriteEnable>(context, c, "render surface/target write mask");

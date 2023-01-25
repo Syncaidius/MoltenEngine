@@ -29,7 +29,8 @@ namespace Molten.Graphics
             return _displayManager;
         }
 
-        protected override GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
+
+        protected override GraphicsDevice OnCreateDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
         {
             NativeDevice = new DeviceDX12(settings, Builder, Log, _displayManager.SelectedAdapter);
             return NativeDevice;

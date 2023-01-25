@@ -8,9 +8,9 @@ namespace Molten.Graphics
 
         public DepthClearFlags Flags;
 
-        public bool Process(CommandQueueDX11 queue, TextureBase texture)
+        public bool Process(CommandQueueDX11 cmd, TextureBase texture)
         {
-            Surface.Clear(queue, Flags);
+            Surface.Clear(cmd, Flags);
             return false;
         }
     }

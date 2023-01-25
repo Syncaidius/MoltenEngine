@@ -38,7 +38,7 @@ namespace Molten.Graphics
             });
         }
 
-        internal override GraphicsRasterizerState GetPreset(RasterizerPreset value)
+        public override GraphicsRasterizerState GetPreset(RasterizerPreset value)
         {
             return _presets[(int)value];
         }

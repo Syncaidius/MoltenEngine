@@ -336,7 +336,7 @@ namespace Molten.Graphics
             });
         }
 
-        internal TextureData GetAllData(CommandQueueDX11 context, TextureBase staging)
+        internal TextureData GetAllData(CommandQueueDX11 cmd, TextureBase staging)
         {
             if (staging == null && !HasFlags(TextureFlags.Staging))
                 throw new TextureCopyException(this, null, "A null staging texture was provided, but this is only valid if the current texture is a staging texture. A staging texture is required to retrieve data from non-staged textures.");
@@ -350,14 +350,14 @@ namespace Molten.Graphics
                 staging.Depth != Depth)
                 throw new TextureCopyException(this, staging, "Staging texture dimensions do not match current texture.");
 
-            staging.OnApply(context);
+            staging.OnApply(cmd);
 
             ID3D11Resource* resToMap = _native;
 
             if (staging != null)
             {
-                context.Native->CopyResource(staging.NativePtr, _native);
-                context.Profiler.Current.CopyResourceCount++;
+                cmd.Native->CopyResource(staging.NativePtr, _native);
+                cmd.Profiler.Current.CopyResourceCount++;
                 resToMap = staging._native;
             }
 
@@ -380,7 +380,7 @@ namespace Molten.Graphics
                 for (uint i = 0; i < MipMapCount; i++)
                 {
                     uint subID = (a * MipMapCount) + i;
-                    data.Levels[subID] = GetSliceData(context, staging, i, a);
+                    data.Levels[subID] = GetSliceData(cmd, staging, i, a);
                 }
             }
 
@@ -388,28 +388,29 @@ namespace Molten.Graphics
         }
 
         /// <summary>A private helper method for retrieving the data of a subresource.</summary>
-        /// <param name="pipe">The pipe to perform the retrieval.</param>
+        /// <param name="cmd">The command queue that is to perform the retrieval.</param>
         /// <param name="staging">The staging texture to copy the data to.</param>
         /// <param name="level">The mip-map level.</param>
         /// <param name="arraySlice">The array slice.</param>
         /// <returns></returns>
-        internal unsafe TextureSlice GetSliceData(CommandQueueDX11 pipe, TextureBase staging, uint level, uint arraySlice)
+        internal unsafe TextureSlice GetSliceData(GraphicsCommandQueue cmd, TextureBase staging, uint level, uint arraySlice)
         {
             uint subID = (arraySlice * MipMapCount) + level;
             uint subWidth = Width >> (int)level;
             uint subHeight = Height >> (int)level;
 
             ID3D11Resource* resToMap = _native;
+            CommandQueueDX11 cmdNative = cmd as CommandQueueDX11;
 
             if (staging != null)
             {
-                pipe.CopyResourceRegion(_native, subID, null, staging._native, subID, Vector3UI.Zero);
-                pipe.Profiler.Current.CopySubresourceCount++;
+                cmdNative.CopyResourceRegion(_native, subID, null, staging._native, subID, Vector3UI.Zero);
+                cmd.Profiler.Current.CopySubresourceCount++;
                 resToMap = staging._native;
             }
 
             // Now pull data from it
-            MappedSubresource mapping = pipe.MapResource(resToMap, subID, Map.Read, 0);
+            MappedSubresource mapping = cmdNative.MapResource(resToMap, subID, Map.Read, 0);
             // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
             // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
 
@@ -436,7 +437,7 @@ namespace Molten.Graphics
                     p += mapping.RowPitch;
                 }
             }
-            pipe.UnmapResource(_native, subID);
+            cmdNative.UnmapResource(_native, subID);
 
             TextureSlice slice = new TextureSlice(subWidth, subHeight, sliceData)
             {
@@ -564,8 +565,8 @@ namespace Molten.Graphics
 
         /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the
         /// GPU may be using the texture will cause unexpected behaviour.</summary>
-        /// <param name="pipe"></param>
-        protected override void OnApply(CommandQueueDX11 pipe)
+        /// <param name="cmd"></param>
+        protected override void OnApply(GraphicsCommandQueue cmd)
         {
             if (IsDisposed)
                 return;
@@ -575,11 +576,13 @@ namespace Molten.Graphics
 
             bool altered = false;
 
+            CommandQueueDX11 cmdNative = cmd as CommandQueueDX11;
+
             // process all changes for the current pipe.
             while (_pendingChanges.Count > 0)
             {
                 if (_pendingChanges.TryDequeue(out ITextureTask change))
-                    altered = change.Process(pipe, this) || altered;
+                    altered = change.Process(cmdNative, this) || altered;
             }
 
             if (altered)
@@ -626,7 +629,7 @@ namespace Molten.Graphics
 
         public bool IsValid { get; protected set; }
 
-        internal override unsafe ID3D11Resource* NativePtr => _native;
+        public override unsafe ID3D11Resource* NativePtr => _native;
 
         /// <summary>
         /// Gets the renderer that the texture is bound to.

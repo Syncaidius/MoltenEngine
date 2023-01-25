@@ -27,7 +27,7 @@ namespace Molten.Graphics
 
         internal override ID3D11Buffer* ResourcePtr => Buffer.ResourcePtr;
 
-        internal override unsafe ID3D11Resource* NativePtr => Buffer.NativePtr;
+        public override unsafe ID3D11Resource* NativePtr => Buffer.NativePtr;
 
         /// <summary>
         /// The byte offset within the <see cref="Buffer"/> <see cref="GraphicsBuffer"/>.
@@ -50,12 +50,12 @@ namespace Molten.Graphics
 
         internal void SetVertexFormat<T>() where T: struct, IVertexType
         {
-            VertexFormat = Buffer.NativeDevice.VertexFormatCache.Get<T>();
+            VertexFormat = (Buffer.Device as DeviceDX11).VertexFormatCache.Get<T>();
         }
 
         internal void SetVertexFormat(Type vertexType)
         {
-            VertexFormat = Buffer.NativeDevice.VertexFormatCache.Get(vertexType);
+            VertexFormat = (Buffer.Device as DeviceDX11).VertexFormatCache.Get(vertexType);
         }
 
         internal void SetIndexFormat(IndexBufferFormat format)
@@ -227,9 +227,9 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnApply(CommandQueueDX11 context)
+        protected override void OnApply(GraphicsCommandQueue cmd)
         {
-            Buffer.Apply(context);
+            Buffer.Apply(cmd);
         }
 
         /// <summary>Releases the buffer space reserved by the segment.</summary>
@@ -291,7 +291,7 @@ namespace Molten.Graphics
             if(Previous.ByteCount == 0)
             {
                 LinkPrevious(Previous.Previous);
-                NativeDevice.RecycleBufferSegment(Previous);
+                (Device as DeviceDX11).RecycleBufferSegment(Previous);
             }
         }
 
@@ -308,13 +308,13 @@ namespace Molten.Graphics
             if (Next.ByteCount == 0)
             {
                 LinkNext(Next.Next);
-                NativeDevice.RecycleBufferSegment(Next);
+                (Device as DeviceDX11).RecycleBufferSegment(Next);
             }
         }
 
         internal BufferSegment SplitFromBack(uint bytesToTake)
         {
-            BufferSegment seg = NativeDevice.GetBufferSegment();
+            BufferSegment seg = (Device as DeviceDX11).GetBufferSegment();
             seg.LinkNext(this);
             seg.LinkPrevious(Previous);
 
@@ -331,7 +331,7 @@ namespace Molten.Graphics
 
         internal BufferSegment SplitFromFront(uint bytesToTake)
         {
-            BufferSegment seg = NativeDevice.GetBufferSegment();
+            BufferSegment seg = (Device as DeviceDX11).GetBufferSegment();
             seg.LinkNext(Next);
             seg.LinkPrevious(this);
 

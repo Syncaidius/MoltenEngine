@@ -1,16 +1,18 @@
 ﻿namespace Molten.Graphics
 {
-    internal unsafe class DepthStencilBinder : ContextSlotBinder<GraphicsDepthState>
+    internal unsafe class DepthStencilBinder : GraphicsSlotBinder<DepthStateDX11>
     {
-        internal override void Bind(ContextSlot<GraphicsDepthState> slot, GraphicsDepthState value)
+        public override void Bind(GraphicsSlot<DepthStateDX11> slot, DepthStateDX11 value)
         {
-            value = value ?? slot.Cmd.DXDevice.DepthBank.GetPreset(DepthStencilPreset.Default);
-            slot.Cmd.Native->OMSetDepthStencilState(value.NativePtr, value.StencilReference);
+            CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
+            value = value ?? cmd.Device.DepthBank.GetPreset(DepthStencilPreset.Default) as DepthStateDX11;
+            cmd.Native->OMSetDepthStencilState(value.NativePtr, value.StencilReference);
         }
 
-        internal override void Unbind(ContextSlot<GraphicsDepthState> slot, GraphicsDepthState value)
+        public override void Unbind(GraphicsSlot<DepthStateDX11> slot, DepthStateDX11 value)
         {
-            slot.Cmd.Native->OMSetDepthStencilState(null, 0);
+            CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
+            cmd.Native->OMSetDepthStencilState(null, 0);
         }
     }
 }

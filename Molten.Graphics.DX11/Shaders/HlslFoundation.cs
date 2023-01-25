@@ -3,7 +3,7 @@
     /// <summary>
     /// An a base class implementation of key shader components (e.g. name, render states, samplers, etc).
     /// </summary>
-    public abstract class HlslFoundation : ContextBindable, IShaderElement
+    public abstract class HlslFoundation : GraphicsObject, IShaderElement
     {
 
         /// <summary>
@@ -19,19 +19,19 @@
         /// <summary>
         /// The available blend state.
         /// </summary>
-        internal ShaderStateBank<GraphicsBlendState> BlendState = new ShaderStateBank<GraphicsBlendState>();
+        internal ShaderStateBank<BlendStateDX11> BlendState = new ShaderStateBank<BlendStateDX11>();
 
         /// <summary>
         ///The available depth state.
         /// </summary>
-        internal ShaderStateBank<GraphicsDepthState> DepthState = new ShaderStateBank<GraphicsDepthState>();
+        internal ShaderStateBank<DepthStateDX11> DepthState = new ShaderStateBank<DepthStateDX11>();
 
-        internal HlslFoundation(DeviceDX11 device) : base(device, GraphicsBindTypeFlags.Input)
+        internal HlslFoundation(GraphicsDevice device) : base(device, GraphicsBindTypeFlags.Input)
         {
             Samplers = new ShaderStateBank<ShaderSampler>[0];
         }
 
-        protected override sealed void OnApply(CommandQueueDX11 pipe) { }
+        protected override sealed void OnApply(GraphicsCommandQueue pipe) { }
 
         /// <summary>
         /// Gets or sets the number of iterations the shader/component should be run.

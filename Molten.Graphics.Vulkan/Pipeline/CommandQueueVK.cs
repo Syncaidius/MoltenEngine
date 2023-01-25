@@ -8,11 +8,12 @@ using Silk.NET.Vulkan.Extensions.KHR;
 
 namespace Molten.Graphics
 {
-    internal class CommandQueueVK : NativeObjectVK<Queue>
+    internal class CommandQueueVK : GraphicsCommandQueue
     {
         DeviceVK _device;
 
-        internal CommandQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set)
+        internal CommandQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
+            base(device)
         {
             VK = renderer.VK;
             Log = renderer.Log;
@@ -31,6 +32,91 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             
+        }
+
+        public override GraphicsBindResult Draw(IMaterial material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsBindResult DrawInstanced(IMaterial material, uint vertexCountPerInstance, uint instanceCount, VertexTopology topology, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsBindResult DrawIndexed(IMaterial material, uint indexCount, VertexTopology topology, int vertexIndexOffset = 0, uint startIndex = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsBindResult DrawIndexedInstanced(IMaterial material, uint indexCountPerInstance, uint instanceCount, VertexTopology topology, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Dispatch(IComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetRenderSurface(IRenderSurface2D surface, uint slot)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void GetRenderSurfaces(IRenderSurface2D[] destinationArray)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IRenderSurface2D GetRenderSurface(uint slot)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ResetRenderSurfaces()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetScissorRectangle(Rectangle rect, int slot = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetScissorRectangles(params Rectangle[] rects)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetViewport(ViewportF vp, int slot)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetViewports(ViewportF vp)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetViewports(ViewportF[] viewports)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void GetViewports(ViewportF[] outArray)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ViewportF GetViewport(int index)
+        {
+            throw new NotImplementedException();
         }
 
         internal Vk VK { get; }
@@ -55,5 +141,7 @@ namespace Molten.Graphics
         internal SupportedCommandSet Set { get; }
 
         internal CommandSetCapabilityFlags Flags { get; }
+
+        internal Queue Native { get; private set; }
     }
 }
