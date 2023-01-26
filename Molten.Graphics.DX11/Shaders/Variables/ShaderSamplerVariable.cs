@@ -7,7 +7,7 @@
         internal ShaderSamplerVariable(HlslShader shader)
         {
             Parent = shader;
-            Sampler = shader.NativeDevice.SamplerBank.GetPreset(SamplerPreset.Default);
+            Sampler = shader.Device.SamplerBank.GetPreset(SamplerPreset.Default);
         }
 
         public IShader Parent { get; private set; }

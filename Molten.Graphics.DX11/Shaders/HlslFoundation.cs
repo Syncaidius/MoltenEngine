@@ -14,7 +14,7 @@
         /// <summary>
         /// The available rasterizer state.
         /// </summary>
-        internal ShaderStateBank<GraphicsRasterizerState> RasterizerState = new ShaderStateBank<GraphicsRasterizerState>();
+        internal ShaderStateBank<RasterizerStateDX11> RasterizerState = new ShaderStateBank<RasterizerStateDX11>();
 
         /// <summary>
         /// The available blend state.

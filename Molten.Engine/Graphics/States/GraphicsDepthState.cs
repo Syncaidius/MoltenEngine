@@ -12,11 +12,32 @@
             public abstract DepthStencilOperation FailOperation { get; set; }
 
             public abstract DepthStencilOperation DepthFailOperation { get; set; }
+
+            public void Set(Face other)
+            {
+                Comparison = other.Comparison;
+                PassOperation = other.PassOperation;
+                FailOperation = other.FailOperation;
+                DepthFailOperation = other.DepthFailOperation;
+            }
         }
 
-        protected GraphicsDepthState(GraphicsDevice device) :
+        protected GraphicsDepthState(GraphicsDevice device, GraphicsDepthState source) :
             base(device, GraphicsBindTypeFlags.Input)
-        { }
+        { 
+            if(source != null)
+            {
+                BackFace.Set(source.BackFace);
+                FrontFace.Set(source.FrontFace);
+                IsDepthEnabled = source.IsDepthEnabled;
+                IsStencilEnabled = source.IsStencilEnabled;
+                WriteFlags = source.WriteFlags;
+                DepthComparison = source.DepthComparison;
+                StencilReadMask = source.StencilReadMask;
+                StencilWriteMask = source.StencilWriteMask;
+                StencilReference = source.StencilReference;
+            }
+        }
 
         public override bool Equals(object obj)
         {

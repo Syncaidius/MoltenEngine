@@ -12,8 +12,6 @@ namespace Molten.Graphics
         DeviceBuilderDX11 _builder;
         DisplayAdapterDXGI _adapter;
         DisplayManagerDXGI _displayManager;
-
-        RasterizerStateBank _rasterizerBank;
         SamplerBank _samplerBank;
 
         ObjectPool<BufferSegment> _bufferSegmentPool;
@@ -60,8 +58,6 @@ namespace Molten.Graphics
             }
 
             CmdList = new CommandQueueDX11(this, deviceContext);
-
-            _rasterizerBank = new RasterizerStateBank(this);
             _samplerBank = new SamplerBank(this);
         }
 
@@ -121,6 +117,11 @@ namespace Molten.Graphics
             return new BlendStateDX11(this, source as BlendStateDX11);
         }
 
+        public override GraphicsRasterizerState CreateRasterizerState(GraphicsRasterizerState source = null)
+        {
+            return new RasterizerStateDX11(this, source as RasterizerStateDX11);
+        }
+
         /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
@@ -129,7 +130,6 @@ namespace Molten.Graphics
 
             // TODO dispose of all bound IGraphicsResource
             VertexFormatCache.Dispose();
-            RasterizerBank.Dispose();
             BlendBank.Dispose();
             SamplerBank.Dispose();
             _bufferSegmentPool.Dispose();
@@ -137,19 +137,11 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        internal DisplayManagerDXGI DisplayManager => _displayManager;
+        public override DisplayManagerDXGI DisplayManager => _displayManager;
 
         public override DisplayAdapterDXGI Adapter => _adapter;
 
         internal VertexFormatCache<ShaderIOStructureDX11> VertexFormatCache { get; }
-
-
-
-        /// <summary>
-        /// Gets the device's rasterizer state bank.
-        /// </summary>
-        internal RasterizerStateBank RasterizerBank => _rasterizerBank;
-
 
         /// <summary>
         /// Gets the device's texture sampler bank.

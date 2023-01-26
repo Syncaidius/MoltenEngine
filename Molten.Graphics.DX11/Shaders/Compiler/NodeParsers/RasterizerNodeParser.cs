@@ -11,7 +11,7 @@ namespace Molten.Graphics
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            GraphicsRasterizerState state = null;
+            RasterizerStateDX11 state = null;
             RasterizerPreset preset = RasterizerPreset.Default;
 
             if (node.ValueType == ShaderHeaderValueType.Preset)
@@ -27,10 +27,10 @@ namespace Molten.Graphics
                 switch (c.Name)
                 {
                     case "cull":
-                        if (EngineUtil.TryParseEnum(c.Value, out CullMode mode))
-                            state.CullMode = mode;
+                        if (EngineUtil.TryParseEnum(c.Value, out RasterizerCullingMode mode))
+                            state.CullingMode = mode;
                         else
-                            InvalidEnumMessage<CullMode>(context, c, "cull mode");
+                            InvalidEnumMessage<RasterizerCullingMode>(context, c, "cull mode");
                         break;
 
                     case "depthbias":
@@ -48,10 +48,10 @@ namespace Molten.Graphics
                         break;
 
                     case "fill":
-                        if (EngineUtil.TryParseEnum(c.Value, out FillMode fillMode))
-                            state.FillMode = fillMode;
+                        if (EngineUtil.TryParseEnum(c.Value, out RasterizerFillingMode fillMode))
+                            state.FillingMode = fillMode;
                         else
-                            InvalidEnumMessage<FillMode>(context, c, "fill mode");
+                            InvalidEnumMessage<RasterizerFillingMode>(context, c, "fill mode");
                         break;
 
                     case "aaline": // IsAntialiasedLineEnabled
@@ -99,7 +99,7 @@ namespace Molten.Graphics
                         break;
                 }
             }
-            state = foundation.NativeDevice.RasterizerBank.AddOrRetrieveExisting(state);
+            state = foundation.Device.RasterizerBank.AddOrRetrieveExisting(state) as RasterizerStateDX11;
 
             if (node.Conditions == StateConditions.None)
                 foundation.RasterizerState.FillMissingWith(state);

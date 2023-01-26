@@ -44,6 +44,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public override GraphicsRasterizerState CreateRasterizerState(GraphicsRasterizerState source = null)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void OnDispose()
         {
             _qDirect.Dispose();

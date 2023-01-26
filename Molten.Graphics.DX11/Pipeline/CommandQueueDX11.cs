@@ -72,7 +72,7 @@ namespace Molten.Graphics
 
             Blend = RegisterSlot<BlendStateDX11, BlendBinder>(GraphicsBindTypeFlags.Output, "Blend State", 0);
             Depth = RegisterSlot<DepthStateDX11, DepthStencilBinder>(GraphicsBindTypeFlags.Output, "Depth-Stencil State", 0);
-            Rasterizer = RegisterSlot<GraphicsRasterizerState, RasterizerBinder>(GraphicsBindTypeFlags.Output, "Rasterizer State", 0);
+            Rasterizer = RegisterSlot<RasterizerStateDX11, RasterizerBinder>(GraphicsBindTypeFlags.Output, "Rasterizer State", 0);
 
             RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
 
@@ -755,7 +755,7 @@ namespace Molten.Graphics
 
         internal GraphicsSlot<BlendStateDX11> Blend { get; }
 
-        internal GraphicsSlot<GraphicsRasterizerState> Rasterizer { get; }
+        internal GraphicsSlot<RasterizerStateDX11> Rasterizer { get; }
 
         internal GraphicsSlot<DepthStateDX11> Depth { get; }
 

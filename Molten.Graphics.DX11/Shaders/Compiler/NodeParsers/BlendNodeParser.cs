@@ -53,49 +53,49 @@ namespace Molten.Graphics
                         if (Enum.TryParse(c.Value, true, out BlendType sourceBlend))
                             rtBlend.SrcBlend = sourceBlend;
                         else
-                            InvalidEnumMessage<Blend>(context, c, "source blend option");
+                            InvalidEnumMessage<BlendType>(context, c, "source blend option");
                         break;
 
                     case "destination":
                         if (Enum.TryParse(c.Value, true, out BlendType destBlend))
                             rtBlend.DestBlend = destBlend;
                         else
-                            InvalidEnumMessage<Blend>(context, c, "destination blend option");
+                            InvalidEnumMessage<BlendType>(context, c, "destination blend option");
                         break;
 
                     case "operation":
                         if (Enum.TryParse(c.Value, true, out BlendOperation blendOp))
                             rtBlend.BlendOp = blendOp;
                         else
-                            InvalidEnumMessage<BlendOp>(context, c, "blend operation");
+                            InvalidEnumMessage<BlendOperation>(context, c, "blend operation");
                         break;
 
                     case "sourcealpha":
                         if (Enum.TryParse(c.Value, true, out BlendType sourceAlpha))
                             rtBlend.SrcBlendAlpha = sourceAlpha;
                         else
-                            InvalidEnumMessage<Blend>(context, c, "source alpha option");
+                            InvalidEnumMessage<BlendType>(context, c, "source alpha option");
                         break;
 
                     case "destinationalpha":
                         if (Enum.TryParse(c.Value, true, out BlendType destAlpha))
                             rtBlend.DestBlendAlpha = destAlpha;
                         else
-                            InvalidEnumMessage<Blend>(context, c, "destination alpha option");
+                            InvalidEnumMessage<BlendType>(context, c, "destination alpha option");
                         break;
 
                     case "alphaoperation":
                         if (Enum.TryParse(c.Value, true, out BlendOperation alphaOperation))
                             rtBlend.BlendOpAlpha = alphaOperation;
                         else
-                            InvalidEnumMessage<BlendOp>(context, c, "alpha-blend operation");
+                            InvalidEnumMessage<BlendOperation>(context, c, "alpha-blend operation");
                         break;
 
                     case "writemask":
                         if (Enum.TryParse(c.Value, true, out ColorWriteFlags rtWriteMask))
                             rtBlend.RenderTargetWriteMask = rtWriteMask;
                         else
-                            InvalidEnumMessage<ColorWriteEnable>(context, c, "render surface/target write mask");
+                            InvalidEnumMessage<ColorWriteFlags>(context, c, "render surface/target write mask");
                         break;
 
                     case "samplemask":

@@ -4,17 +4,17 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics
 {
     /// <summary>Stores a rasterizer state for use with a <see cref="CommandQueueDX11"/>.</summary>
-    internal unsafe class GraphicsRasterizerState : GraphicsObject<ID3D11RasterizerState2>
+    internal unsafe class RasterizerStateDX11 : GraphicsRasterizerState
     {
         static RasterizerDesc2 _defaultDesc;
 
-        public override unsafe ID3D11RasterizerState2* NativePtr => _native;
+        public unsafe ID3D11RasterizerState2* NativePtr => _native;
 
         ID3D11RasterizerState2* _native;
         RasterizerDesc2 _desc;
         bool _dirty;
 
-        static GraphicsRasterizerState()
+        static RasterizerStateDX11()
         {
             _defaultDesc = new RasterizerDesc2()
             {
@@ -34,30 +34,33 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// 
+        /// Creates a new instance of <see cref="RasterizerStateDX11"/>.
         /// </summary>
-        /// <param name="source">An existing <see cref="GraphicsRasterizerState"/> instance from which to copy settings."/></param>
-        internal GraphicsRasterizerState(DeviceDX11 device, GraphicsRasterizerState source) : base(device, GraphicsBindTypeFlags.Input)
+        /// <param name="source">An existing <see cref="RasterizerStateDX11"/> instance from which to copy settings."/></param>
+        internal RasterizerStateDX11(DeviceDX11 device, RasterizerStateDX11 source = null) : 
+            base(device, source)
         {
-            _desc = source._desc;
-            _dirty = true;
-        }
-
-        internal GraphicsRasterizerState(DeviceDX11 device) : base(device, GraphicsBindTypeFlags.Input)
-        {
-            _desc = _defaultDesc;
-            _dirty = true;
+            if (source != null)
+            {
+                _desc = source._desc;
+                _dirty = true;
+            }
+            else
+            {
+                _desc = _defaultDesc;
+                _dirty = true;
+            }
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is GraphicsRasterizerState other)
+            if (obj is RasterizerStateDX11 other)
                 return Equals(other);
             else
                 return false;
         }
 
-        public bool Equals(GraphicsRasterizerState other)
+        public bool Equals(RasterizerStateDX11 other)
         {
             return _desc.CullMode == other._desc.CullMode &&
                 _desc.DepthBias == other._desc.DepthBias &&
@@ -90,27 +93,27 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _native);
         }
 
-        public static implicit operator ID3D11RasterizerState2* (GraphicsRasterizerState state)
+        public static implicit operator ID3D11RasterizerState2* (RasterizerStateDX11 state)
         {
             return state._native;
         }
 
-        public static implicit operator ID3D11RasterizerState*(GraphicsRasterizerState state)
+        public static implicit operator ID3D11RasterizerState*(RasterizerStateDX11 state)
         {
             return (ID3D11RasterizerState*)state._native;
         }
 
-        public CullMode CullMode
+        public override RasterizerCullingMode CullingMode
         {
-            get { return _desc.CullMode; }
+            get { return (RasterizerCullingMode)_desc.CullMode; }
             set
             {
-                _desc.CullMode = value;
+                _desc.CullMode = (CullMode)value;
                 _dirty = true;
             }
         }
 
-        public int DepthBias
+        public override int DepthBias
         {
             get { return _desc.DepthBias; }
             set
@@ -120,7 +123,7 @@ namespace Molten.Graphics
             }
         }
 
-        public float DepthBiasClamp
+        public override float DepthBiasClamp
         {
             get { return _desc.DepthBiasClamp; }
             set
@@ -130,17 +133,17 @@ namespace Molten.Graphics
             }
         }
 
-        public FillMode FillMode
+        public override RasterizerFillingMode FillingMode
         {
-            get { return _desc.FillMode; }
+            get { return (RasterizerFillingMode)_desc.FillMode; }
             set
             {
-                _desc.FillMode = value;
+                _desc.FillMode = (FillMode)value;
                 _dirty = true;
             }
         }
 
-        public bool IsAntialiasedLineEnabled
+        public override bool IsAntialiasedLineEnabled
         {
             get { return _desc.AntialiasedLineEnable > 0; }
             set
@@ -150,7 +153,7 @@ namespace Molten.Graphics
             }
         }
 
-        public bool IsDepthClipEnabled
+        public override bool IsDepthClipEnabled
         {
             get { return _desc.DepthClipEnable > 0; }
             set
@@ -160,7 +163,7 @@ namespace Molten.Graphics
             }
         }
 
-        public bool IsFrontCounterClockwise
+        public override bool IsFrontCounterClockwise
         {
             get { return _desc.FrontCounterClockwise > 0; }
             set
@@ -170,7 +173,7 @@ namespace Molten.Graphics
             }
         }
 
-        public bool IsMultisampleEnabled
+        public override bool IsMultisampleEnabled
         {
             get { return _desc.MultisampleEnable > 0; }
             set
@@ -180,7 +183,7 @@ namespace Molten.Graphics
             }
         }
 
-        public bool IsScissorEnabled
+        public override bool IsScissorEnabled
         {
             get { return _desc.ScissorEnable > 0; }
             set
@@ -190,7 +193,7 @@ namespace Molten.Graphics
             }
         }
 
-        public float SlopeScaledDepthBias
+        public override float SlopeScaledDepthBias
         {
             get { return _desc.SlopeScaledDepthBias; }
             set
@@ -200,17 +203,17 @@ namespace Molten.Graphics
             }
         }
 
-        public ConservativeRasterizationMode ConservativeRaster
+        public override ConservativeRasterizerMode ConservativeRaster
         {
-            get => _desc.ConservativeRaster;
+            get => (ConservativeRasterizerMode)_desc.ConservativeRaster;
             set
             {
-                _desc.ConservativeRaster = value;
+                _desc.ConservativeRaster = (ConservativeRasterizationMode)value;
                 _dirty = true;
             }
         }
 
-        public uint ForcedSampleCount
+        public override uint ForcedSampleCount
         {
             get => _desc.ForcedSampleCount;
             set

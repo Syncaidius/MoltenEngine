@@ -6,7 +6,7 @@
         CommandQueueDX11 _cmd;
         BlendStateDX11 _blendState;
         DepthStateDX11 _depthState;
-        GraphicsRasterizerState _rasterState;
+        RasterizerStateDX11 _rasterState;
 
         BufferSegment[] _vSegments;
         BufferSegment _iSegment;

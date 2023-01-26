@@ -53,6 +53,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public override GraphicsRasterizerState CreateRasterizerState(GraphicsRasterizerState source = null)
+        {
+            throw new NotImplementedException();
+        }
+
         internal void AddExtension<E>(Action<E> loadCallback = null, Action<E> destroyCallback = null)
             where E : NativeExtension<Vk>
         {
@@ -144,7 +149,9 @@ namespace Molten.Graphics
         /// Gets the underlying <see cref="DisplayAdapterVK"/> that the current <see cref="DeviceVK"/> is bound to.
         /// </summary>
         public override DisplayAdapterVK Adapter { get; }
-       
+
+        public override GraphicsDisplayManager DisplayManager => _renderer.DisplayManager;
+
         /// <summary>
         /// Gets the <see cref="Instance"/> that the current <see cref="DeviceVK"/> is bound to.
         /// </summary>

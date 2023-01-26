@@ -32,6 +32,7 @@ namespace Molten.Graphics
 
             DepthBank = new DepthStateBank(this);
             BlendBank = new BlendStateBank(this);
+            RasterizerBank = new RasterizerStateBank(this);
         }
 
         protected abstract void OnInitialize();
@@ -57,6 +58,7 @@ namespace Molten.Graphics
             Cmd?.Dispose();
             DepthBank?.Dispose();
             BlendBank?.Dispose();
+            RasterizerBank?.Dispose();
         }
 
         /// <summary>
@@ -72,6 +74,13 @@ namespace Molten.Graphics
         /// <param name="source">A source blend state to use as a template configuration.</param>
         /// <returns></returns>
         public abstract GraphicsBlendState CreateBlendState(GraphicsBlendState source = null);
+
+        /// <summary>
+        /// Requests a new <see cref="GraphicsRasterizerState"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default rasterizer settings.
+        /// </summary>
+        /// <param name="source">A source rasterizer state to use as a template configuration.</param>
+        /// <returns></returns>
+        public abstract GraphicsRasterizerState CreateRasterizerState(GraphicsRasterizerState source = null);
 
         /// <summary>Track a VRAM allocation.</summary>
         /// <param name="bytes">The number of bytes that were allocated.</param>
@@ -109,6 +118,11 @@ namespace Molten.Graphics
         public abstract IDisplayAdapter Adapter { get; }
 
         /// <summary>
+        /// Gets the <see cref="GraphicsDisplayManager"/> that owns the current <see cref="GraphicsDevice"/>.
+        /// </summary>
+        public abstract GraphicsDisplayManager DisplayManager { get; }
+
+        /// <summary>
         /// The main <see cref="GraphicsCommandQueue"/> of the current <see cref="GraphicsDevice"/>. This is used for issuing immediate commands to the GPU.
         /// </summary>
         public abstract GraphicsCommandQueue Cmd { get; }
@@ -122,6 +136,11 @@ namespace Molten.Graphics
         /// Gets the device's blend state bank.
         /// </summary>
         public BlendStateBank BlendBank { get; private set; }
+
+        /// <summary>
+        /// Gets the device's rasterizer state bank.
+        /// </summary>
+        public RasterizerStateBank RasterizerBank { get; private set; }
     }
 
     /// <summary>
