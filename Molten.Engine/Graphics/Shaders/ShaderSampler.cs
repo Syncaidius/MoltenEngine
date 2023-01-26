@@ -34,7 +34,7 @@
             CheckIfComparisonSampler();
         }
 
-        private void CheckIfComparisonSampler()
+        protected void CheckIfComparisonSampler()
         {
             IsComparisonSampler = FilterMode >= SamplerFilter.ComparisonMinMagMipPoint &&
                     FilterMode <= SamplerFilter.ComparisonAnisotropic;

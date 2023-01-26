@@ -49,13 +49,18 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public override ShaderSampler CreateSampler(ShaderSampler source = null)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void OnDispose()
         {
             _qDirect.Dispose();
             base.OnDispose();
         }
 
-        internal DisplayManagerDXGI DisplayManager => _displayManager;
+        public override DisplayManagerDXGI DisplayManager => _displayManager;
 
         public override DisplayAdapterDXGI Adapter => _adapter;
 

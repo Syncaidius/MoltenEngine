@@ -10,7 +10,6 @@ namespace Molten.Graphics
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            ShaderSamplerDX11 sampler = null;
             SamplerPreset preset = SamplerPreset.Default;
 
             if (node.ValueType == ShaderHeaderValueType.Preset)
@@ -20,7 +19,7 @@ namespace Molten.Graphics
             }
 
             // Retrieve existing state if available and create a new one from it to avoid editing the existing one.
-            sampler = new ShaderSampler(foundation.NativeDevice, foundation.NativeDevice.SamplerBank.GetPreset(preset));
+            ShaderSampler sampler = foundation.Device.CreateSampler(foundation.Device.SamplerBank.GetPreset(preset));
 
             foreach ((string Name, string Value) c in node.ChildValues)
             {
@@ -107,11 +106,11 @@ namespace Molten.Graphics
                 int oldLength = foundation.Samplers.Length;
                 Array.Resize(ref foundation.Samplers, node.SlotID + 1);
                 for (int i = oldLength; i < foundation.Samplers.Length; i++)
-                    foundation.Samplers[i] = new ShaderStateBank<ShaderSamplerDX11>();
+                    foundation.Samplers[i] = new ShaderStateBank<ShaderSampler>();
             }
 
             sampler = foundation.Device.SamplerBank.AddOrRetrieveExisting(sampler);
-            foundation.Samplers[node.SlotID][node.Conditions] = sampler;
+            foundation.Samplers[node.SlotID][node.Conditions] = sampler as ShaderSamplerDX11;
         }
     }
 }

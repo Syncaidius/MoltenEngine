@@ -18,7 +18,7 @@ namespace Molten.Graphics
 
             uint sid = startIndex;
             for (uint i = 0; i < numChanged; i++)
-                samplers[i] = grp[sid++].BoundValue;
+                samplers[i] = grp[sid++].BoundValue.NativePtr;
 
             _stage.SetSamplers(startIndex, numChanged, samplers);
         }
@@ -26,7 +26,7 @@ namespace Molten.Graphics
         public override void Bind(GraphicsSlot<ShaderSamplerDX11> slot, ShaderSamplerDX11 value)
         {
             ID3D11SamplerState** samplers = stackalloc ID3D11SamplerState*[1];
-            samplers[0] = slot.BoundValue;
+            samplers[0] = slot.BoundValue.NativePtr;
             _stage.SetSamplers(slot.SlotIndex, 1, samplers);
         }
 

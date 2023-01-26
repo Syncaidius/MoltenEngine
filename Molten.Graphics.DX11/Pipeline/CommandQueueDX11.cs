@@ -380,9 +380,9 @@ namespace Molten.Graphics
                 _vertexLayout.Bind();
             }
 
-            Blend.Value = pass.BlendState[conditions];
-            Rasterizer.Value = pass.RasterizerState[conditions];
-            Depth.Value = pass.DepthState[conditions];
+            Blend.Value = pass.BlendState[conditions] as BlendStateDX11;
+            Rasterizer.Value = pass.RasterizerState[conditions] as RasterizerStateDX11;
+            Depth.Value = pass.DepthState[conditions] as DepthStateDX11;
 
             bool bStateChanged = Blend.Bind();
             bool rStateChanged = Rasterizer.Bind();

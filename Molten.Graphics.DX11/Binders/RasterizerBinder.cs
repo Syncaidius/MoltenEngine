@@ -5,7 +5,7 @@
         public override void Bind(GraphicsSlot<RasterizerStateDX11> slot, RasterizerStateDX11 value)
         {
             CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
-            value = value ?? cmd.DXDevice.RasterizerBank.GetPreset(RasterizerPreset.Default);
+            value = value ?? cmd.DXDevice.RasterizerBank.GetPreset(RasterizerPreset.Default) as RasterizerStateDX11;
             cmd.Native->RSSetState(value);
         }
 

@@ -58,6 +58,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public override ShaderSampler CreateSampler(ShaderSampler source = null)
+        {
+            throw new NotImplementedException();
+        }
+
         internal void AddExtension<E>(Action<E> loadCallback = null, Action<E> destroyCallback = null)
             where E : NativeExtension<Vk>
         {

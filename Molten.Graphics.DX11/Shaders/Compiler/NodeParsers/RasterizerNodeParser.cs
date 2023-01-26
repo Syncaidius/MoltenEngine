@@ -11,7 +11,6 @@ namespace Molten.Graphics
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
         {
-            RasterizerStateDX11 state = null;
             RasterizerPreset preset = RasterizerPreset.Default;
 
             if (node.ValueType == ShaderHeaderValueType.Preset)
@@ -20,7 +19,7 @@ namespace Molten.Graphics
                     InvalidEnumMessage<RasterizerPreset>(context, (node.Name, node.Value), "rasterizer preset");
             }
 
-            state = new GraphicsRasterizerState(foundation.NativeDevice, foundation.NativeDevice.RasterizerBank.GetPreset(preset));
+            GraphicsRasterizerState state = foundation.Device.CreateRasterizerState(foundation.Device.RasterizerBank.GetPreset(preset));
 
             foreach ((string Name, string Value) c in node.ChildValues)
             {
@@ -99,7 +98,7 @@ namespace Molten.Graphics
                         break;
                 }
             }
-            state = foundation.Device.RasterizerBank.AddOrRetrieveExisting(state) as RasterizerStateDX11;
+            state = foundation.Device.RasterizerBank.AddOrRetrieveExisting(state);
 
             if (node.Conditions == StateConditions.None)
                 foundation.RasterizerState.FillMissingWith(state);

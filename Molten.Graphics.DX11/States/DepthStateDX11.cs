@@ -64,9 +64,6 @@ namespace Molten.Graphics
         DepthStencilDesc _desc;
         internal bool _dirty;
 
-        FaceDX11 _frontFace;
-        FaceDX11 _backFace;
-
         internal DepthStateDX11(DeviceDX11 device, DepthStateDX11 source = null) :
             base(device, source)
         { }
@@ -95,8 +92,8 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 //copy the front and back-face settings into the main description
-                _desc.FrontFace = _frontFace._desc;
-                _desc.BackFace = _backFace._desc;
+                _desc.FrontFace = (FrontFace as FaceDX11)._desc;
+                _desc.BackFace = (BackFace as FaceDX11)._desc;
 
                 //create new state
                 (cmd as CommandQueueDX11).DXDevice.Ptr->CreateDepthStencilState(ref _desc, ref _native);
@@ -167,12 +164,6 @@ namespace Molten.Graphics
                 _dirty = true;
             }
         }
-
-        /// <summary>Gets the description for the front-face depth operation description.</summary>
-        public override Face FrontFace => _frontFace;
-
-        /// <summary>Gets the description for the back-face depth operation description.</summary>
-        public override Face BackFace => _backFace;
 
         public static implicit operator ID3D11DepthStencilState*(DepthStateDX11 bindable)
         {

@@ -45,7 +45,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < composition.SamplerIds.Count; i++)
                 {
                     uint slotID = composition.SamplerIds[i];
-                    Samplers[slotID].Value = composition.Parent.SamplerVariables[slotID]?.Sampler;
+                    Samplers[slotID].Value = composition.Parent.SamplerVariables[slotID]?.Sampler as ShaderSamplerDX11;
                 }
 
                 Samplers.BindAll();

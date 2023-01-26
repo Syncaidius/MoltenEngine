@@ -61,11 +61,11 @@ namespace Molten.Graphics
             if (!context.HasErrors)
             {
                 // Populate missing material states with default.
-                material.DepthState.FillMissingWith(renderer.NativeDevice.DepthBank.GetPreset(DepthStencilPreset.Default) as DepthStateDX11);
+                material.DepthState.FillMissingWith(renderer.NativeDevice.DepthBank.GetPreset(DepthStencilPreset.Default));
                 material.RasterizerState.FillMissingWith(renderer.NativeDevice.RasterizerBank.GetPreset(RasterizerPreset.Default));
-                material.BlendState.FillMissingWith(renderer.NativeDevice.BlendBank.GetPreset(BlendPreset.Default) as BlendStateDX11);
+                material.BlendState.FillMissingWith(renderer.NativeDevice.BlendBank.GetPreset(BlendPreset.Default));
 
-                ShaderSamplerDX11 defaultSampler = renderer.NativeDevice.SamplerBank.GetPreset(SamplerPreset.Default);
+                ShaderSampler defaultSampler = renderer.Device.SamplerBank.GetPreset(SamplerPreset.Default);
                 for (int i = 0; i < material.Samplers.Length; i++)
                     material.Samplers[i].FillMissingWith(defaultSampler);
 
@@ -88,7 +88,7 @@ namespace Molten.Graphics
                         int oldLength = pass.Samplers.Length;
                         Array.Resize(ref pass.Samplers, material.Samplers.Length);
                         for (int i = oldLength; i < pass.Samplers.Length; i++)
-                            pass.Samplers[i] = new ShaderStateBank<ShaderSamplerDX11>();
+                            pass.Samplers[i] = new ShaderStateBank<ShaderSampler>();
                     }
 
                     for (int i = 0; i < pass.Samplers.Length; i++)

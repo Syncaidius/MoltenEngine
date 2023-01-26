@@ -9,29 +9,29 @@
         /// <summary>
         /// The texture samplers to be used with the shader/component.
         /// </summary>
-        internal ShaderStateBank<ShaderSamplerDX11>[] Samplers;
+        internal ShaderStateBank<ShaderSampler>[] Samplers;
 
         /// <summary>
         /// The available rasterizer state.
         /// </summary>
-        internal ShaderStateBank<RasterizerStateDX11> RasterizerState = new ShaderStateBank<RasterizerStateDX11>();
+        internal ShaderStateBank<GraphicsRasterizerState> RasterizerState = new ShaderStateBank<GraphicsRasterizerState>();
 
         /// <summary>
         /// The available blend state.
         /// </summary>
-        internal ShaderStateBank<BlendStateDX11> BlendState = new ShaderStateBank<BlendStateDX11>();
+        internal ShaderStateBank<GraphicsBlendState> BlendState = new ShaderStateBank<GraphicsBlendState>();
 
         /// <summary>
         ///The available depth state.
         /// </summary>
-        internal ShaderStateBank<DepthStateDX11> DepthState = new ShaderStateBank<DepthStateDX11>();
+        internal ShaderStateBank<GraphicsDepthState> DepthState = new ShaderStateBank<GraphicsDepthState>();
 
         internal HlslFoundation(GraphicsDevice device) : base(device, GraphicsBindTypeFlags.Input)
         {
-            Samplers = new ShaderStateBank<ShaderSamplerDX11>[0];
+            Samplers = new ShaderStateBank<ShaderSampler>[0];
         }
 
-        protected override sealed void OnApply(GraphicsCommandQueue pipe) { }
+        protected override sealed void OnApply(GraphicsCommandQueue cmd) { }
 
         /// <summary>
         /// Gets or sets the number of iterations the shader/component should be run.

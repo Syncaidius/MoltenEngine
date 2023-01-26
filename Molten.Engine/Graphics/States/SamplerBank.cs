@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal class SamplerBank : GraphicsStateBank<ShaderSampler, SamplerPreset>
+    public class SamplerBank : GraphicsStateBank<ShaderSampler, SamplerPreset>
     {
         internal SamplerBank(GraphicsDevice device)
         {
