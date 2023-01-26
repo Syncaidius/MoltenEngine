@@ -43,7 +43,12 @@ namespace Molten.Graphics
             
         }
 
-        public override GraphicsDepthState CreateDepthState()
+        public override GraphicsDepthState CreateDepthState(GraphicsDepthState source = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsBlendState CreateBlendState(GraphicsBlendState source = null)
         {
             throw new NotImplementedException();
         }

@@ -73,12 +73,6 @@ namespace Molten.Graphics
         /// <returns></returns>
         public abstract GraphicsBlendState CreateBlendState(GraphicsBlendState source = null);
 
-        /// <summary>
-        /// Requests the default <see cref="GraphicsBlendState.RenderSurfaceBlend"/> configuration from the current <see cref="GraphicsDevice"/>.
-        /// </summary>
-        /// <returns></returns>
-        public abstract GraphicsBlendState.RenderSurfaceBlend GetDefaultSurfaceBlend();
-
         /// <summary>Track a VRAM allocation.</summary>
         /// <param name="bytes">The number of bytes that were allocated.</param>
         public void AllocateVRAM(long bytes)

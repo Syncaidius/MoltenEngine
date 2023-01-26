@@ -86,7 +86,7 @@ namespace Molten.Graphics
             };
 
             // Ignore all windows events
-            NativeDevice.DisplayManager.DxgiFactory->MakeWindowAssociation(_control.Handle, (uint)WindowAssociationFlags.NoAltEnter);
+            (Device as DeviceDX11).DisplayManager.DxgiFactory->MakeWindowAssociation(_control.Handle, (uint)WindowAssociationFlags.NoAltEnter);
         }
 
         protected abstract void CreateControl(string title, out T control, out IntPtr handle);

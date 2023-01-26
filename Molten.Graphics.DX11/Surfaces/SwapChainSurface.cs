@@ -27,7 +27,8 @@ namespace Molten.Graphics
 
         protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)
         {
-            NativeSwapChain = NativeDevice.DisplayManager.CreateSwapChain(mode, Device.Settings, Device.Log, (IUnknown*)NativeDevice.Ptr, controlHandle);
+            DeviceDX11 nativeDevice = (Device as DeviceDX11);
+            NativeSwapChain = nativeDevice.DisplayManager.CreateSwapChain(mode, Device.Settings, Device.Log, (IUnknown*)nativeDevice.Ptr, controlHandle);
         }
 
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
@@ -85,7 +86,7 @@ namespace Molten.Graphics
 
         public void Present()
         {
-            OnApply(NativeDevice.Cmd);
+            OnApply(Device.Cmd);
 
             if (OnPresent() && NativeSwapChain != null)
             {

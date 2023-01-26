@@ -6,7 +6,7 @@
         {
             CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
 
-            value = value ?? cmd.DXDevice.BlendBank.GetPreset(BlendPreset.Default);
+            value = value ?? cmd.DXDevice.BlendBank.GetPreset(BlendPreset.Default) as BlendStateDX11;
             Color4 tmp = value.BlendFactor;
             cmd.Native->OMSetBlendState(value, (float*)&tmp, value.BlendSampleMask);
         }

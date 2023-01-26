@@ -18,8 +18,6 @@ namespace Molten.Graphics
             _builder = deviceBuilder;
             _adapter = adapter as DisplayAdapterDXGI;
             _displayManager = _adapter.Manager as DisplayManagerDXGI;
-
-
         }
 
         protected override void OnInitialize()
@@ -36,7 +34,12 @@ namespace Molten.Graphics
             _qDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         }
 
-        public override GraphicsDepthState CreateDepthState()
+        public override GraphicsDepthState CreateDepthState(GraphicsDepthState source = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsBlendState CreateBlendState(GraphicsBlendState source = null)
         {
             throw new NotImplementedException();
         }

@@ -110,7 +110,7 @@ namespace Molten.Graphics
                     foundation.Samplers[i] = new ShaderStateBank<ShaderSampler>();
             }
 
-            sampler = foundation.NativeDevice.SamplerBank.AddOrRetrieveExisting(sampler);
+            sampler = foundation.Device.SamplerBank.AddOrRetrieveExisting(sampler);
             foundation.Samplers[node.SlotID][node.Conditions] = sampler;
         }
     }

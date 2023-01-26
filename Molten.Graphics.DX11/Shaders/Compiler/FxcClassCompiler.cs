@@ -4,6 +4,7 @@ using System.Reflection;
 using static Molten.Graphics.ShaderIOStructure;
 using System.Xml.Linq;
 using Silk.NET.DXGI;
+using Silk.NET.Direct3D.Compilers;
 
 namespace Molten.Graphics
 {
@@ -249,7 +250,7 @@ namespace Molten.Graphics
         private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
             HlslShader shader, ConstantBufferInfo info)
         {
-            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.NativeDevice, BufferMode.DynamicDiscard, info);
+            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.Device as DeviceDX11, BufferMode.DynamicDiscard, info);
             string localName = cBuffer.BufferName;
 
             if (cBuffer.BufferName == "$Globals")

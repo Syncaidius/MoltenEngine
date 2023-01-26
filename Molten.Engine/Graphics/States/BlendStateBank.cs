@@ -12,7 +12,8 @@
             AddPreset(BlendPreset.Default, state);
 
             // Additive blending preset.
-            GraphicsBlendState.RenderSurfaceBlend sBlend = device.GetDefaultSurfaceBlend();
+            state = device.CreateBlendState();
+            GraphicsBlendState.RenderSurfaceBlend sBlend = state[0];
             sBlend.SrcBlend = BlendType.One;
             sBlend.DestBlend = BlendType.One;
             sBlend.BlendOp = BlendOperation.Add;
@@ -23,15 +24,13 @@
             sBlend.BlendEnable = 1;
             sBlend.LogicOp = LogicOperation.Noop;
             sBlend.LogicOpEnable = false;
-
-            state = device.CreateBlendState();
-            state[0].Set(sBlend);
             state.AlphaToCoverageEnable = false;
             state.IndependentBlendEnable = false;
             AddPreset(BlendPreset.Additive, state);
 
             // Pre-multiplied alpha
-            sBlend = device.GetDefaultSurfaceBlend();
+            state = device.CreateBlendState();
+            sBlend = state[0];
             sBlend.SrcBlend = BlendType.SrcAlpha;
             sBlend.DestBlend = BlendType.InvSrcAlpha;
             sBlend.BlendOp = BlendOperation.Add;
@@ -42,9 +41,6 @@
             sBlend.BlendEnable = 1;
             sBlend.LogicOp = LogicOperation.Noop;
             sBlend.LogicOpEnable = false;
-
-            state = device.CreateBlendState();
-            state[0].Set(sBlend);
             state.AlphaToCoverageEnable = false;
             state.IndependentBlendEnable = false;
             AddPreset(BlendPreset.PreMultipliedAlpha, state);
