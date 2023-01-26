@@ -6,32 +6,11 @@ namespace Molten.Graphics
     /// <summary>Stores a rasterizer state for use with a <see cref="CommandQueueDX11"/>.</summary>
     internal unsafe class RasterizerStateDX11 : GraphicsRasterizerState
     {
-        static RasterizerDesc2 _defaultDesc;
-
         public unsafe ID3D11RasterizerState2* NativePtr => _native;
 
         ID3D11RasterizerState2* _native;
         RasterizerDesc2 _desc;
         bool _dirty;
-
-        static RasterizerStateDX11()
-        {
-            _defaultDesc = new RasterizerDesc2()
-            {
-                FillMode = FillMode.Solid,
-                CullMode = CullMode.Back,
-                FrontCounterClockwise = 0,
-                DepthBias = 0,
-                SlopeScaledDepthBias = 0.0f,
-                DepthBiasClamp = 0.0f,
-                DepthClipEnable = 1,
-                ScissorEnable = 0,
-                MultisampleEnable = 0,
-                AntialiasedLineEnable = 0,
-                ConservativeRaster = ConservativeRasterizationMode.Off,
-                ForcedSampleCount = 0
-            };
-        }
 
         /// <summary>
         /// Creates a new instance of <see cref="RasterizerStateDX11"/>.
@@ -40,16 +19,7 @@ namespace Molten.Graphics
         internal RasterizerStateDX11(DeviceDX11 device, RasterizerStateDX11 source = null) : 
             base(device, source)
         {
-            if (source != null)
-            {
-                _desc = source._desc;
-                _dirty = true;
-            }
-            else
-            {
-                _desc = _defaultDesc;
-                _dirty = true;
-            }
+            _dirty = true;
         }
 
         public override bool Equals(object obj)

@@ -2,7 +2,7 @@
 {
     public class ShaderSamplerVariable : IShaderValue
     {
-        internal ShaderSampler Sampler { get; private set; }
+        internal ShaderSamplerDX11 Sampler { get; private set; }
 
         internal ShaderSamplerVariable(HlslShader shader)
         {
@@ -21,7 +21,7 @@
             {
                 if (value != Sampler)
                 {
-                    ShaderSampler newSampler = value as ShaderSampler;
+                    ShaderSamplerDX11 newSampler = value as ShaderSamplerDX11;
                     if (value != null && newSampler == null)
                         throw new InvalidOperationException("Cannot set non-DirectX 11 sampler on material in DX11 renderer.");
                     else

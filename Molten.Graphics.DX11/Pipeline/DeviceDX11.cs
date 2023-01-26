@@ -12,7 +12,6 @@ namespace Molten.Graphics
         DeviceBuilderDX11 _builder;
         DisplayAdapterDXGI _adapter;
         DisplayManagerDXGI _displayManager;
-        SamplerBank _samplerBank;
 
         ObjectPool<BufferSegment> _bufferSegmentPool;
 
@@ -58,7 +57,6 @@ namespace Molten.Graphics
             }
 
             CmdList = new CommandQueueDX11(this, deviceContext);
-            _samplerBank = new SamplerBank(this);
         }
 
         internal BufferSegment GetBufferSegment()
@@ -122,6 +120,11 @@ namespace Molten.Graphics
             return new RasterizerStateDX11(this, source as RasterizerStateDX11);
         }
 
+        public override ShaderSampler CreateSampler(ShaderSampler source = null)
+        {
+            return new ShaderSamplerDX11(this, source as ShaderSamplerDX11);
+        }
+
         /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
@@ -131,7 +134,6 @@ namespace Molten.Graphics
             // TODO dispose of all bound IGraphicsResource
             VertexFormatCache.Dispose();
             BlendBank.Dispose();
-            SamplerBank.Dispose();
             _bufferSegmentPool.Dispose();
 
             base.OnDispose();
@@ -142,11 +144,6 @@ namespace Molten.Graphics
         public override DisplayAdapterDXGI Adapter => _adapter;
 
         internal VertexFormatCache<ShaderIOStructureDX11> VertexFormatCache { get; }
-
-        /// <summary>
-        /// Gets the device's texture sampler bank.
-        /// </summary>
-        internal SamplerBank SamplerBank => _samplerBank;
 
         /// <inheritdoc/>
         public override CommandQueueDX11 Cmd => CmdList;

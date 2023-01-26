@@ -2,14 +2,14 @@
 {
     internal class SamplerBank : GraphicsStateBank<ShaderSampler, SamplerPreset>
     {
-        internal SamplerBank(DeviceDX11 device)
+        internal SamplerBank(GraphicsDevice device)
         {
-            AddPreset(SamplerPreset.Default, new ShaderSampler(device)
-            {
-                AddressU = SamplerAddressMode.Wrap,
-                AddressV = SamplerAddressMode.Wrap,
-                AddressW = SamplerAddressMode.Wrap,
-            });
+            ShaderSampler sampler = device.CreateSampler();
+            sampler.AddressU = SamplerAddressMode.Wrap;
+            sampler.AddressV = SamplerAddressMode.Wrap;
+            sampler.AddressW = SamplerAddressMode.Wrap;
+
+            AddPreset(SamplerPreset.Default, sampler);
         }
 
         public override ShaderSampler GetPreset(SamplerPreset value)

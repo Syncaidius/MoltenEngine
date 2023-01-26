@@ -1,5 +1,7 @@
 ﻿
 
+using System.IO;
+
 namespace Molten.Graphics
 {
     /// <summary>Stores a rasterizer state for use with a <see cref="GraphicsCommandQueue"/>.</summary>
@@ -13,7 +15,36 @@ namespace Molten.Graphics
         protected GraphicsRasterizerState(GraphicsDevice device, GraphicsRasterizerState source) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
-            
+            if(source != null)
+            {
+                FillingMode = source.FillingMode;
+                CullingMode = source.CullingMode;
+                IsFrontCounterClockwise = source.IsFrontCounterClockwise;
+                DepthBias = source.DepthBias;
+                SlopeScaledDepthBias = source.SlopeScaledDepthBias;
+                DepthBiasClamp = source.DepthBiasClamp;
+                IsDepthClipEnabled = source.IsDepthClipEnabled;
+                IsScissorEnabled = source.IsScissorEnabled;
+                IsMultisampleEnabled = source.IsMultisampleEnabled;
+                IsAntialiasedLineEnabled = source.IsAntialiasedLineEnabled;
+                ConservativeRaster = source.ConservativeRaster;
+                ForcedSampleCount = source.ForcedSampleCount;
+            }
+            else
+            {
+                FillingMode = RasterizerFillingMode.Solid;
+                CullingMode = RasterizerCullingMode.Back;
+                IsFrontCounterClockwise = false;
+                DepthBias = 0;
+                SlopeScaledDepthBias = 0.0f;
+                DepthBiasClamp = 0.0f;
+                IsDepthClipEnabled = true;
+                IsScissorEnabled = false;
+                IsMultisampleEnabled = false;
+                IsAntialiasedLineEnabled = false;
+                ConservativeRaster = ConservativeRasterizerMode.Off;
+                ForcedSampleCount = 0;
+            }
         }
 
         public override bool Equals(object obj)

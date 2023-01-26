@@ -73,9 +73,9 @@ namespace Molten.Graphics
         internal ShaderType Type { get; }
 
 
-        /// Gets the slots for binding <see cref="ShaderSampler"/> to the current <see cref="PipeShaderStage"/>.
+        /// Gets the slots for binding <see cref="ShaderSamplerDX11"/> to the current <see cref="PipeShaderStage"/>.
         /// </summary>
-        internal GraphicsSlotGroup<ShaderSampler> Samplers { get; }
+        internal GraphicsSlotGroup<ShaderSamplerDX11> Samplers { get; }
 
         /// <summary>
         /// Gets the slots for binding <see cref="ContextBindableResource"/> to the current <see cref="PipeShaderStage"/>.

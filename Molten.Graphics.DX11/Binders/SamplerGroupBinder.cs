@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class SamplerGroupBinder<T> : GraphicsGroupBinder<ShaderSampler>
+    internal unsafe class SamplerGroupBinder<T> : GraphicsGroupBinder<ShaderSamplerDX11>
         where T: unmanaged
     {
         ContextShaderStage<T> _stage;
@@ -12,7 +12,7 @@ namespace Molten.Graphics
             _stage = stage;
         }
 
-        public override void Bind(GraphicsSlotGroup<ShaderSampler> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<ShaderSamplerDX11> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             ID3D11SamplerState** samplers = stackalloc ID3D11SamplerState*[(int)numChanged];
 
@@ -23,14 +23,14 @@ namespace Molten.Graphics
             _stage.SetSamplers(startIndex, numChanged, samplers);
         }
 
-        public override void Bind(GraphicsSlot<ShaderSampler> slot, ShaderSampler value)
+        public override void Bind(GraphicsSlot<ShaderSamplerDX11> slot, ShaderSamplerDX11 value)
         {
             ID3D11SamplerState** samplers = stackalloc ID3D11SamplerState*[1];
             samplers[0] = slot.BoundValue;
             _stage.SetSamplers(slot.SlotIndex, 1, samplers);
         }
 
-        public override void Unbind(GraphicsSlotGroup<ShaderSampler> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<ShaderSamplerDX11> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             ID3D11SamplerState** samplers = stackalloc ID3D11SamplerState*[(int)numChanged];
 
@@ -40,7 +40,7 @@ namespace Molten.Graphics
             _stage.SetSamplers(startIndex, numChanged, samplers);
         }
 
-        public override void Unbind(GraphicsSlot<ShaderSampler> slot, ShaderSampler value)
+        public override void Unbind(GraphicsSlot<ShaderSamplerDX11> slot, ShaderSamplerDX11 value)
         {
             ID3D11SamplerState** samplers = stackalloc ID3D11SamplerState*[1];
             samplers[0] = null;

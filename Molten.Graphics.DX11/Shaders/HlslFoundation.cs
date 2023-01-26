@@ -9,7 +9,7 @@
         /// <summary>
         /// The texture samplers to be used with the shader/component.
         /// </summary>
-        internal ShaderStateBank<ShaderSampler>[] Samplers;
+        internal ShaderStateBank<ShaderSamplerDX11>[] Samplers;
 
         /// <summary>
         /// The available rasterizer state.
@@ -28,7 +28,7 @@
 
         internal HlslFoundation(GraphicsDevice device) : base(device, GraphicsBindTypeFlags.Input)
         {
-            Samplers = new ShaderStateBank<ShaderSampler>[0];
+            Samplers = new ShaderStateBank<ShaderSamplerDX11>[0];
         }
 
         protected override sealed void OnApply(GraphicsCommandQueue pipe) { }

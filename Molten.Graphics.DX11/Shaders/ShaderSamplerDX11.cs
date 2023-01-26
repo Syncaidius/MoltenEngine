@@ -2,40 +2,18 @@
 
 namespace Molten.Graphics
 {
-    public unsafe class ShaderSampler : GraphicsObject<ID3D11SamplerState>, IShaderSampler
+    public unsafe class ShaderSamplerDX11 : ShaderSampler
     {
-        public override unsafe ID3D11SamplerState* NativePtr => _native;
+        public unsafe ID3D11SamplerState* NativePtr => _native;
 
         ID3D11SamplerState* _native;
         SamplerDesc _desc;
         Color4 _borderColor;
         bool _isDirty;
 
-        internal ShaderSampler(DeviceDX11 device, ShaderSampler source) : base(device, GraphicsBindTypeFlags.Input)
+        internal ShaderSamplerDX11(DeviceDX11 device, ShaderSamplerDX11 source = null) : 
+            base(device, source)
         {
-            _desc = source._desc;
-            _isDirty = true;
-        }
-
-        internal ShaderSampler(DeviceDX11 device) : base(device, GraphicsBindTypeFlags.Input)
-        {
-            // See for defaults: https://docs.microsoft.com/en-us/windows/win32/api/d3d11/ns-d3d11-d3d11_sampler_desc
-            _desc = new SamplerDesc()
-            {
-                Filter = Filter.MinMagMipLinear,
-                AddressU = TextureAddressMode.Clamp,
-                AddressV = TextureAddressMode.Clamp,
-                AddressW = TextureAddressMode.Clamp,
-                MinLOD = float.MinValue,
-                MaxLOD = float.MaxValue,
-                MipLODBias = 0f,
-                MaxAnisotropy = 1,
-                ComparisonFunc = Silk.NET.Direct3D11.ComparisonFunc.Never
-            };
-
-            BorderColor = Color4.White;
-
-            CheckIfComparisonSampler();
             _isDirty = true;
         }
 

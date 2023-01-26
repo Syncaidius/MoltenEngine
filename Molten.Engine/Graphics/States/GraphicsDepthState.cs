@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics
 {
     /// <summary>Stores a depth-stencil state for use with a <see cref="GraphicsCommandQueue"/>.</summary>
-    public unsafe abstract class GraphicsDepthState : GraphicsObject, IEquatable<GraphicsDepthState>
+    public abstract class GraphicsDepthState : GraphicsObject, IEquatable<GraphicsDepthState>
     {
         public abstract class Face
         {  
@@ -24,7 +24,10 @@
 
         protected GraphicsDepthState(GraphicsDevice device, GraphicsDepthState source) :
             base(device, GraphicsBindTypeFlags.Input)
-        { 
+        {
+            FrontFace = CreateFace(true);
+            BackFace = CreateFace(false);
+
             if(source != null)
             {
                 BackFace.Set(source.BackFace);
@@ -37,7 +40,24 @@
                 StencilWriteMask = source.StencilWriteMask;
                 StencilReference = source.StencilReference;
             }
+            else
+            {
+                // Based on the default DX11 values: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ns-d3d11-d3d11_depth_stencil_desc
+                IsDepthEnabled = true;
+                WriteFlags = DepthWriteFlags.All;
+                DepthComparison = ComparisonFunction.Less;
+                IsStencilEnabled = false;
+                StencilReadMask = 255;
+                StencilWriteMask = 255;
+                FrontFace.Comparison = ComparisonFunction.Always;
+                FrontFace.DepthFailOperation = DepthStencilOperation.Keep;
+                FrontFace.PassOperation = DepthStencilOperation.Keep;
+                FrontFace.FailOperation = DepthStencilOperation.Keep;
+                BackFace.Set(FrontFace);
+            }
         }
+
+        protected abstract Face CreateFace(bool isFrontFace);
 
         public override bool Equals(object obj)
         {
@@ -80,10 +100,10 @@
         public abstract byte StencilWriteMask { get; set; }
 
         /// <summary>Gets the description for the front-face depth operation description.</summary>
-        public abstract Face FrontFace { get; }
+        public Face FrontFace { get; }
 
         /// <summary>Gets the description for the back-face depth operation description.</summary>
-        public abstract Face BackFace { get; }
+        public Face BackFace { get; }
 
         /// <summary>Gets or sets the stencil reference value. The default value is 0.</summary>
         public uint StencilReference { get; set; }

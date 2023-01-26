@@ -67,39 +67,16 @@ namespace Molten.Graphics
         FaceDX11 _frontFace;
         FaceDX11 _backFace;
 
-        static DepthStateDX11()
-        {
-            _defaultDesc = new DepthStencilDesc()
-            {
-                DepthEnable = 1,
-                DepthWriteMask = DepthWriteMask.All,
-                DepthFunc = ComparisonFunc.Less,
-                StencilEnable = 0,
-                StencilReadMask = D3D11.DefaultStencilReadMask,
-                StencilWriteMask = D3D11.DefaultStencilWriteMask,
-                FrontFace = new DepthStencilopDesc()
-                {
-                    StencilFunc = ComparisonFunc.Always,
-                    StencilDepthFailOp = StencilOp.Keep,
-                    StencilPassOp = StencilOp.Keep,
-                    StencilFailOp = StencilOp.Keep,
-                },
-                BackFace = new DepthStencilopDesc()
-                {
-                    StencilFunc = ComparisonFunc.Always,
-                    StencilDepthFailOp = StencilOp.Keep,
-                    StencilPassOp = StencilOp.Keep,
-                    StencilFailOp = StencilOp.Keep,
-                }
-            };
-        }
+        internal DepthStateDX11(DeviceDX11 device, DepthStateDX11 source = null) :
+            base(device, source)
+        { }
 
-        internal DepthStateDX11(DeviceDX11 device, DepthStateDX11 source = null) : 
-            base(device)
+        protected override Face CreateFace(bool isFrontFace)
         {
-            _desc = source != null ? source._desc : _defaultDesc;
-            _frontFace = new FaceDX11(this, ref _desc.FrontFace);
-            _backFace = new FaceDX11(this, ref _desc.BackFace);
+            if(isFrontFace)
+                return new FaceDX11(this, ref _desc.FrontFace);
+            else
+                return new FaceDX11(this, ref _desc.BackFace);
         }
 
         public override bool Equals(object obj)
@@ -108,18 +85,6 @@ namespace Molten.Graphics
                 return Equals(other);
             else
                 return false;
-        }
-
-        public void SetFrontFace(DepthStencilopDesc desc)
-        {
-            _frontFace._desc = desc;
-            _dirty = true;
-        }
-
-        public void SetBackFace(DepthStencilopDesc desc)
-        {
-            _backFace._desc = desc;
-            _dirty = true;
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)

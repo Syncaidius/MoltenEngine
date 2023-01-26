@@ -33,6 +33,7 @@ namespace Molten.Graphics
             DepthBank = new DepthStateBank(this);
             BlendBank = new BlendStateBank(this);
             RasterizerBank = new RasterizerStateBank(this);
+            SamplerBank = new SamplerBank(this);
         }
 
         protected abstract void OnInitialize();
@@ -59,6 +60,7 @@ namespace Molten.Graphics
             DepthBank?.Dispose();
             BlendBank?.Dispose();
             RasterizerBank?.Dispose();
+            SamplerBank?.Dispose();
         }
 
         /// <summary>
@@ -81,6 +83,13 @@ namespace Molten.Graphics
         /// <param name="source">A source rasterizer state to use as a template configuration.</param>
         /// <returns></returns>
         public abstract GraphicsRasterizerState CreateRasterizerState(GraphicsRasterizerState source = null);
+
+        /// <summary>
+        /// Requests a new <see cref="ShaderSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
+        /// </summary>
+        /// <param name="source">A source shader sampler to use as a template for the new one.</param>
+        /// <returns></returns>
+        public abstract ShaderSampler CreateSampler(ShaderSampler source = null);
 
         /// <summary>Track a VRAM allocation.</summary>
         /// <param name="bytes">The number of bytes that were allocated.</param>
@@ -141,6 +150,11 @@ namespace Molten.Graphics
         /// Gets the device's rasterizer state bank.
         /// </summary>
         public RasterizerStateBank RasterizerBank { get; private set; }
+
+        /// <summary>
+        /// Gets the device's texture sampler bank.
+        /// </summary>
+        public SamplerBank SamplerBank { get; private set; }
     }
 
     /// <summary>
