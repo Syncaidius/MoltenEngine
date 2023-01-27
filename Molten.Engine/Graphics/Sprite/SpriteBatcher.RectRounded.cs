@@ -9,7 +9,7 @@ namespace Molten.Graphics
     public abstract partial class SpriteBatcher
     {
         public void DrawRoundedRect(RectangleF dest, Color fillColor, float rotation,
-            Vector2F origin, float cornerRadius, IMaterial material = null, uint surfaceSlice = 0)
+            Vector2F origin, float cornerRadius, Material material = null, uint surfaceSlice = 0)
         {
             RoundedRectStyle style = new RoundedRectStyle()
             {
@@ -23,7 +23,7 @@ namespace Molten.Graphics
         }
 
         public void DrawRoundedRect(RectangleF dest, Color fillColor, float rotation,
-            Vector2F origin, CornerInfo cornerRadius, IMaterial material = null, uint surfaceSlice = 0)
+            Vector2F origin, CornerInfo cornerRadius, Material material = null, uint surfaceSlice = 0)
         {
             RoundedRectStyle style = new RoundedRectStyle()
             {
@@ -37,7 +37,7 @@ namespace Molten.Graphics
         }
 
         public void DrawRoundedRect(RectangleF dest, Color fillColor, Color borderColor, float rotation, 
-            Vector2F origin, float cornerRadius, float borderThickness = 0, IMaterial material = null, uint surfaceSlice = 0)
+            Vector2F origin, float cornerRadius, float borderThickness = 0, Material material = null, uint surfaceSlice = 0)
         {
             RoundedRectStyle style = new RoundedRectStyle()
             {
@@ -51,7 +51,7 @@ namespace Molten.Graphics
         }
 
         public void DrawRoundedRect(RectangleF dest, Color fillColor, Color borderColor, float rotation, 
-            Vector2F origin, CornerInfo cornerRadius, float borderThickness = 0, IMaterial material = null, uint surfaceSlice = 0)
+            Vector2F origin, CornerInfo cornerRadius, float borderThickness = 0, Material material = null, uint surfaceSlice = 0)
         {
             RoundedRectStyle style = new RoundedRectStyle()
             {
@@ -64,7 +64,7 @@ namespace Molten.Graphics
             DrawRoundedRect(dest, rotation, origin, ref style, material);
         }
 
-        public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, ref RoundedRectStyle style, IMaterial material = null, uint surfaceSlice = 0)
+        public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, ref RoundedRectStyle style, Material material = null, uint surfaceSlice = 0)
         {
             ref CornerInfo corners = ref style.CornerRadius;
 

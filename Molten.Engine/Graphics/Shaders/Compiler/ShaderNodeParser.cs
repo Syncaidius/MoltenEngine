@@ -2,20 +2,18 @@
 
 namespace Molten.Graphics
 {
-    public abstract class ShaderNodeParser<R, S>
-        where R : RenderService
-        where S : IShaderElement
+    public abstract class ShaderNodeParser
     {
         static string[] _colorDelimiters = new string[] { ",", " " };
 
         /// <summary>
-        /// Gets a list of <see cref="IShaderElement"/> types that the current <see cref="ShaderNodeParser{R, S}"/> accepts. If null, all <typeparamref name="S"/> will be accepted.
+        /// Gets a list of <see cref="IShaderElement"/> types that the current <see cref="ShaderNodeParser"/> accepts. If null, all <typeparamref name="S"/> will be accepted.
         /// </summary>
         public abstract Type[] TypeFilter { get; }
 
         public abstract ShaderNodeType NodeType { get; }
 
-        public void Parse(S foundation, ShaderCompilerContext<R, S> context, XmlNode node)
+        public void Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
         {
             if(TypeFilter != null)
             {
@@ -49,7 +47,7 @@ namespace Molten.Graphics
             OnParse(foundation, context, shn);
         }
 
-        private ShaderHeaderNode ParseNode(ShaderCompilerContext<R, S> context, XmlNode node)
+        private ShaderHeaderNode ParseNode(ShaderCompilerContext context, XmlNode node)
         {
             ShaderHeaderNode shn = new ShaderHeaderNode(node);
 
@@ -128,20 +126,20 @@ namespace Molten.Graphics
             return shn;
         }
 
-        protected abstract void OnParse(S foundation, ShaderCompilerContext<R, S> context, ShaderHeaderNode node);
+        protected abstract void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node);
 
-        protected void InvalidValueMessage(ShaderCompilerContext<R, S> context, (string Name, string Value) node, string friendlyTagName, string friendlyValueName)
+        protected void InvalidValueMessage(ShaderCompilerContext context, (string Name, string Value) node, string friendlyTagName, string friendlyValueName)
         {
             context.AddWarning($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.Value}'. Must be a {friendlyValueName} value");
         }
 
-        protected void UnsupportedTagMessage(ShaderCompilerContext<R, S> context, string parentName, (string Name, string Value) node)
+        protected void UnsupportedTagMessage(ShaderCompilerContext context, string parentName, (string Name, string Value) node)
         {
             parentName = parentName ?? "root";
             context.AddWarning($"Ignoring unsupported {parentName} tag '{node.Name}'.");
         }
 
-        protected void InvalidEnumMessage<T>(ShaderCompilerContext<R, S> context, (string Name, string Value) node, string friendlyTagName)
+        protected void InvalidEnumMessage<T>(ShaderCompilerContext context, (string Name, string Value) node, string friendlyTagName)
             where T : struct, IComparable
         {
             Type t = typeof(T);
@@ -167,7 +165,7 @@ namespace Molten.Graphics
             context.AddWarning($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.Value}'. Must be {mustBe}{strPossibleVals}");
         }
 
-        protected Color4 ParseColor4(ShaderCompilerContext<R, S> context, string value, bool fromRgb)
+        protected Color4 ParseColor4(ShaderCompilerContext context, string value, bool fromRgb)
         {
             string[] vals = value.Split(_colorDelimiters, StringSplitOptions.RemoveEmptyEntries);
             int maxVals = Math.Min(4, vals.Length);

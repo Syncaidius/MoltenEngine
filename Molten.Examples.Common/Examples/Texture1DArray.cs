@@ -17,7 +17,7 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
 
-            _hMaterial = loader.Load<IMaterial>("assets/BasicTexture1D.mfx");
+            _hMaterial = loader.Load<Material>("assets/BasicTexture1D.mfx");
             _hTexture = loader.Load<ITexture>("assets/1d_1.png");
             loader.OnCompleted += Loader_OnCompleted;
         }
@@ -30,7 +30,7 @@ namespace Molten.Examples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get<IMaterial>();
+            Material mat = _hMaterial.Get<Material>();
             ITexture texture = _hTexture.Get<ITexture>();
 
             mat.SetDefaultResource(texture, 0);

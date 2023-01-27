@@ -26,7 +26,7 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
 
-            _hMaterial = loader.Load<IMaterial>("assets/BasicTexture.mfx");
+            _hMaterial = loader.Load<Material>("assets/BasicTexture.mfx");
             _hTexMesh = loader.Load<ITexture2D>("assets/logo_512_bc7.dds", parameters: new TextureParameters()
             {
                 GenerateMipmaps = true,
@@ -98,7 +98,7 @@ namespace Molten.Examples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get<IMaterial>();
+            Material mat = _hMaterial.Get<Material>();
             ITexture2D texMesh = _hTexMesh.Get<ITexture2D>();
             mat.SetDefaultResource(texMesh, 0);
             TestMesh.Material = mat;

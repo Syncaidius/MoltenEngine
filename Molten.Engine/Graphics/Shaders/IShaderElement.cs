@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents an implementation of a shader, or part of a shader, such as a material pass.
     /// </summary>
-    public interface IShaderElement
+    public interface IShaderElement : IDisposable
     {
         /// <summary>
         /// Gets the name of the shader element.

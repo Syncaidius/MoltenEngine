@@ -428,5 +428,7 @@ namespace Molten.Graphics
         public OverlayProvider Overlay { get; }
 
         public SurfaceManager Surfaces { get; }
+
+        public abstract ShaderCompiler Compiler { get; }
     }
 }

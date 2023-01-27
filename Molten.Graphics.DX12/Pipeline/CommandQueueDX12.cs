@@ -47,22 +47,22 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _ptr);
         }
 
-        public override GraphicsBindResult Draw(IMaterial material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
+        public override GraphicsBindResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
         {
             throw new NotImplementedException();
         }
 
-        public override GraphicsBindResult DrawInstanced(IMaterial material, uint vertexCountPerInstance, uint instanceCount, VertexTopology topology, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
+        public override GraphicsBindResult DrawInstanced(Material material, uint vertexCountPerInstance, uint instanceCount, VertexTopology topology, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
         {
             throw new NotImplementedException();
         }
 
-        public override GraphicsBindResult DrawIndexed(IMaterial material, uint indexCount, VertexTopology topology, int vertexIndexOffset = 0, uint startIndex = 0)
+        public override GraphicsBindResult DrawIndexed(Material material, uint indexCount, VertexTopology topology, int vertexIndexOffset = 0, uint startIndex = 0)
         {
             throw new NotImplementedException();
         }
 
-        public override GraphicsBindResult DrawIndexedInstanced(IMaterial material, uint indexCountPerInstance, uint instanceCount, VertexTopology topology, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
+        public override GraphicsBindResult DrawIndexedInstanced(Material material, uint indexCountPerInstance, uint instanceCount, VertexTopology topology, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
         {
             throw new NotImplementedException();
         }

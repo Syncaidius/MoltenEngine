@@ -91,5 +91,7 @@ namespace Molten.Graphics
         public override IComputeManager Compute => throw new NotImplementedException();
 
         protected override IRenderChain Chain => _chain;
+
+        public override DxcCompiler Compiler { get; }
     }
 }

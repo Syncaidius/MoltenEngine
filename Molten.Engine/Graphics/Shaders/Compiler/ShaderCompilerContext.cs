@@ -1,8 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public class ShaderCompilerContext<R, S>
-        where R : RenderService
-        where S : IShaderElement
+    public class ShaderCompilerContext
     {
         /// <summary>
         /// HLSL shader objects stored by entry-point name
@@ -19,14 +17,12 @@
 
         public ShaderCompileFlags Flags { get; set; }
 
-        public ShaderCompiler<R, S> Compiler { get; }
-
-        public R Renderer { get; }
+        public ShaderCompiler Compiler { get; }
 
         List<ShaderCompilerMessage> _messages;
         Dictionary<Type, Dictionary<string, object>> _resources;
 
-        public ShaderCompilerContext(ShaderCompiler<R,S> compiler)
+        public ShaderCompilerContext(ShaderCompiler compiler)
         {
             _messages = new List<ShaderCompilerMessage>();
             _resources = new Dictionary<Type, Dictionary<string, object>>();
@@ -34,7 +30,6 @@
             Shaders = new Dictionary<string, ShaderClassResult>();
             Result = new ShaderCompileResult();
             Compiler = compiler;
-            Renderer = compiler.Renderer;
         }
 
         public void AddResource<T>(string name, T resource) 

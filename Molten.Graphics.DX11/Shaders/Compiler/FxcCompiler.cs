@@ -1,15 +1,11 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Direct3D11;
-using System;
-using System.Net;
 using System.Reflection;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Windows.Forms;
 
 namespace Molten.Graphics
 {
-    internal unsafe class FxcCompiler : ShaderCompiler<RendererDX11, HlslFoundation>
+    public unsafe class FxcCompiler : ShaderCompiler
     {
         internal D3DCompiler Compiler { get; }
 
@@ -34,7 +30,7 @@ namespace Molten.Graphics
             Compiler.Dispose();
         }
 
-        protected override unsafe ShaderReflection BuildReflection(ShaderCompilerContext<RendererDX11, HlslFoundation> context, void* ptrData)
+        protected override unsafe ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData)
         {
             ID3D10Blob* bCode = (ID3D10Blob*)ptrData;
             Guid guidReflect = ID3D11ShaderReflection.Guid;
@@ -194,7 +190,7 @@ namespace Molten.Graphics
         /// <param name="result"></param>
         /// <returns></returns>
         internal bool CompileSource(string entryPoint, ShaderType type, 
-            ShaderCompilerContext<RendererDX11, HlslFoundation> context, out ShaderClassResult result)
+            ShaderCompilerContext context, out ShaderClassResult result)
         {
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
@@ -247,7 +243,7 @@ namespace Molten.Graphics
             return !context.HasErrors;
         }
 
-        private void ParseErrors(ShaderCompilerContext<RendererDX11, HlslFoundation> context, HResult hr, ID3D10Blob* errors)
+        private void ParseErrors(ShaderCompilerContext context, HResult hr, ID3D10Blob* errors)
         {
             if (errors == null)
                 return;

@@ -63,6 +63,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public override ShaderComposition CreateShaderComposition(ShaderType type, HlslShader parent)
+        {
+            throw new NotImplementedException();
+        }
+
         internal void AddExtension<E>(Action<E> loadCallback = null, Action<E> destroyCallback = null)
             where E : NativeExtension<Vk>
         {

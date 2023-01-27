@@ -19,7 +19,7 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
 
-            _hMaterial = loader.Load<IMaterial>("assets/BasicTexture.mfx");
+            _hMaterial = loader.Load<Material>("assets/BasicTexture.mfx");
             _hTexture = loader.Load<ITexture2D>("assets/png_test.png");
             _hSpriteTexture = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
             {
@@ -36,7 +36,7 @@ namespace Molten.Examples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get<IMaterial>();
+            Material mat = _hMaterial.Get<Material>();
             ITexture2D tex = _hTexture.Get<ITexture2D>();
             mat.SetDefaultResource(tex, 0);
             TestMesh.Material = mat;

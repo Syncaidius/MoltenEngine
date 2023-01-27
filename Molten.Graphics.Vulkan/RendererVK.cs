@@ -24,6 +24,7 @@ namespace Molten.Graphics
         Instance* _instance;
         DebugUtilsMessengerEXT* _debugMessengerHandle;
         List<DeviceVK> _devices;
+        DxcCompiler _shaderCompiler;
 
         public RendererVK()
         {
@@ -96,8 +97,8 @@ namespace Molten.Graphics
         protected override void OnInitializeRenderer(EngineSettings settings)
         {
             Assembly includeAssembly = GetType().Assembly;
-            ShaderCompiler = new DxcCompiler<RendererVK, SpirVShader>(this, "\\Assets\\HLSL\\include\\", includeAssembly);
-            _resFactory = new ResourceFactoryVK(this, ShaderCompiler);
+            _shaderCompiler = new DxcCompiler(this, "\\Assets\\HLSL\\include\\", includeAssembly);
+            _resFactory = new ResourceFactoryVK(this, _shaderCompiler);
         }
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -234,7 +235,7 @@ namespace Molten.Graphics
 
         protected override void OnDisposeBeforeRender()
         {
-            ShaderCompiler.Dispose();
+            _shaderCompiler.Dispose();
 
             foreach (DeviceVK device in _devices)
                 device.Dispose();
@@ -280,7 +281,7 @@ namespace Molten.Graphics
         /// </summary>
         internal DeviceVK NativeDevice { get; private set; }
 
-        internal DxcCompiler<RendererVK, SpirVShader> ShaderCompiler { get; private set; }
+        public override DxcCompiler Compiler => _shaderCompiler;
 
         internal VersionVK ApiVersion { get; }
 

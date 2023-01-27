@@ -5,7 +5,7 @@ namespace Molten.Content
 {
     public class ShaderProcessor : ContentProcessor<ShaderParameters>
     {
-        public override Type[] AcceptedTypes { get; } = new Type[] { typeof(IShader) };
+        public override Type[] AcceptedTypes { get; } = new Type[] { typeof(IComputeShader), typeof(Material) };
 
         public override Type[] RequiredServices { get; } = { typeof(RenderService) };
 

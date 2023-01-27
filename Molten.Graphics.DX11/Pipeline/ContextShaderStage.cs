@@ -23,7 +23,7 @@ namespace Molten.Graphics
         {
             bool shaderChanged = Shader.Bind();
 
-            ShaderComposition<T> composition = Shader.BoundValue;
+            ShaderCompositionDX11<T> composition = Shader.BoundValue;
 
             if (composition.PtrShader != null)
             {
@@ -31,14 +31,14 @@ namespace Molten.Graphics
                 for (int i = 0; i < composition.ConstBufferIds.Count; i++)
                 {
                     uint slotID = composition.ConstBufferIds[i];
-                    ConstantBuffers[slotID].Value = composition.Parent.ConstBuffers[slotID];
+                    ConstantBuffers[slotID].Value = composition.Parent.ConstBuffers[slotID] as ShaderConstantBuffer;
                 }
 
                 // Apply pass resources to slots
                 for (int i = 0; i < composition.ResourceIds.Count; i++)
                 {
                     uint slotID = composition.ResourceIds[i];
-                    Resources[slotID].Value = composition.Parent.Resources[slotID]?.Resource;
+                    Resources[slotID].Value = composition.Parent.Resources[slotID]?.Resource as ContextBindableResource;
                 }
 
                 // Apply pass samplers to slots
@@ -90,6 +90,6 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the shader bind slot for the current <see cref="PipeShaderStage{T, S}"/>
         /// </summary>
-        internal GraphicsSlot<ShaderComposition<T>> Shader { get; }
+        internal GraphicsSlot<ShaderCompositionDX11<T>> Shader { get; }
     }
 }

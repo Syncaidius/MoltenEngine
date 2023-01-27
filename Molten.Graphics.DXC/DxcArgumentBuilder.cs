@@ -11,9 +11,7 @@ namespace Molten.Graphics
     /// <para>https://simoncoenen.com/blog/programming/graphics/DxcCompiling</para>
     /// <para>For vulkan-specific arguments, see: https://github.com/Microsoft/DirectXShaderCompiler/blob/main/docs/SPIR-V.rst#vulkan-specific-options</para>
     /// </summary>
-    internal unsafe class DxcArgumentBuilder<R,S>
-        where R : RenderService
-        where S : DxcFoundation
+    internal unsafe class DxcArgumentBuilder
     {
         static Dictionary<DxcCompilerArg, string> _argLookup = new Dictionary<DxcCompilerArg, string>()
         {
@@ -63,9 +61,9 @@ namespace Molten.Graphics
         };
 
         Dictionary<DxcCompilerArg, string> _args;
-        ShaderCompilerContext<R, S> _context;
+        ShaderCompilerContext _context;
 
-        internal DxcArgumentBuilder(ShaderCompilerContext<R, S> context)
+        internal DxcArgumentBuilder(ShaderCompilerContext context)
         {
             _args = new Dictionary<DxcCompilerArg, string>();
             _context = context;

@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal unsafe class ShaderSlotBinder<T> : GraphicsSlotBinder<ShaderComposition<T>>
+    internal unsafe class ShaderSlotBinder<T> : GraphicsSlotBinder<ShaderCompositionDX11<T>>
         where T : unmanaged
     {
         ContextShaderStage<T> _stage;
@@ -10,12 +10,12 @@
             _stage = stage;
         }
 
-        public override void Bind(GraphicsSlot<ShaderComposition<T>> slot, ShaderComposition<T> value)
+        public override void Bind(GraphicsSlot<ShaderCompositionDX11<T>> slot, ShaderCompositionDX11<T> value)
         {
             _stage.SetShader(value.PtrShader, null, 0);
         }
 
-        public override void Unbind(GraphicsSlot<ShaderComposition<T>> slot, ShaderComposition<T> value)
+        public override void Unbind(GraphicsSlot<ShaderCompositionDX11<T>> slot, ShaderCompositionDX11<T> value)
         {
             _stage.SetShader(null, null, 0);
         }

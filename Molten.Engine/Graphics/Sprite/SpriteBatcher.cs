@@ -14,7 +14,7 @@ namespace Molten.Graphics
         {
             public uint VertexCount;        // 4-bytes
             public ITexture2D Texture;      // 8-bytes (64-bit reference)
-            public IMaterial Material;      // 8-bytes (64-bit reference)
+            public Material Material;      // 8-bytes (64-bit reference)
             public Rectangle Clip;          // Clipping rectangle.
             public RangeType Type;           // 1-byte
 
@@ -134,7 +134,7 @@ namespace Molten.Graphics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected ref GpuData GetData(RangeType type, ITexture2D texture, IMaterial material)
+        protected ref GpuData GetData(RangeType type, ITexture2D texture, Material material)
         {
             ref SpriteRange range = ref Ranges[_curRange];
             if (range.Type != type ||
@@ -185,7 +185,7 @@ namespace Molten.Graphics
         }
 
         public void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, Color cellColor, Color lineColor, float lineThickness, 
-            ITexture2D cellTexture = null, IMaterial material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+            ITexture2D cellTexture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             GridStyle style = new GridStyle()
             {
@@ -198,7 +198,7 @@ namespace Molten.Graphics
         }
 
         public void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, Color cellColor, 
-            Color lineColor, Vector2F lineThickness, ITexture2D cellTexture = null, IMaterial material = null, 
+            Color lineColor, Vector2F lineThickness, ITexture2D cellTexture = null, Material material = null, 
             uint arraySlice = 0, uint surfaceSlice = 0)
         {
             GridStyle style = new GridStyle()
@@ -217,7 +217,7 @@ namespace Molten.Graphics
             Vector2F origin, 
             ref GridStyle style, 
             ITexture2D cellTexture = null, 
-            IMaterial material = null, 
+            Material material = null, 
             uint arraySlice = 0, 
             uint surfaceSlice = 0)
         {
@@ -249,7 +249,7 @@ namespace Molten.Graphics
         /// <param name="color">Sets the color of the sprite. This overrides <see cref="SpriteStyle.PrimaryColor"/> of the active <see cref="SpriteStyle"/>.</param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
-        public void Draw(RectangleF destination, Color color, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(RectangleF destination, Color color, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             _rectStyle.FillColor = color;
             _rectStyle.BorderThickness.Zero();
@@ -273,7 +273,7 @@ namespace Molten.Graphics
         /// <param name="color">Sets the color of the sprite. This overrides <see cref="SpriteStyle.PrimaryColor"/> of the active <see cref="SpriteStyle"/>.</param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
-        public void Draw(RectangleF source, RectangleF destination, Color color, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(RectangleF source, RectangleF destination, Color color, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             _rectStyle.FillColor = color;
             _rectStyle.BorderThickness.Zero();
@@ -300,7 +300,7 @@ namespace Molten.Graphics
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
         /// <param name="surfaceSlice"></param>
-        public void Draw(RectangleF source, RectangleF destination, ref RectStyle style, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(RectangleF source, RectangleF destination, ref RectStyle style, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             Draw(texture,
                 source,
@@ -320,7 +320,7 @@ namespace Molten.Graphics
         /// <param name="texture"></param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
-        public void Draw(RectangleF destination, ref RectStyle style, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(RectangleF destination, ref RectStyle style, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
             Draw(texture, src, destination.TopLeft, destination.Size, 0, Vector2F.Zero, ref style, material, arraySlice, surfaceSlice);
@@ -337,7 +337,7 @@ namespace Molten.Graphics
         public void Draw(RectangleF destination, float rotation, Vector2F origin, 
             ref RectStyle style, 
             ITexture2D texture = null, 
-            IMaterial material = null, 
+            Material material = null, 
             uint arraySlice = 0, 
             uint surfaceSlice = 0)
         {
@@ -352,7 +352,7 @@ namespace Molten.Graphics
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
         /// <param name="surfaceSlice"></param>
-        public void Draw(Vector2F position, ref RectStyle style, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(Vector2F position, ref RectStyle style, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
             Draw(texture, src, position, new Vector2F(src.Width, src.Height), 0, Vector2F.Zero, ref style, material, arraySlice, surfaceSlice);
@@ -384,7 +384,7 @@ namespace Molten.Graphics
         /// <param name="material">The material to use when rendering the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
         /// <param name="surfaceSlice">The destination slice of a bound <see cref="IRenderSurface"/>. This is only used when rendering to a render surface array.</param>
-        public void Draw(Vector2F position, float rotation, Vector2F origin, ITexture2D texture, ref RectStyle style, IMaterial material = null, float arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(Vector2F position, float rotation, Vector2F origin, ITexture2D texture, ref RectStyle style, Material material = null, float arraySlice = 0, uint surfaceSlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
             Draw(texture, src, position, new Vector2F(src.Width, src.Height), rotation, origin, ref style, material, arraySlice, surfaceSlice);
@@ -410,7 +410,7 @@ namespace Molten.Graphics
             float rotation,
             Vector2F origin,
             ref RectStyle style,
-            IMaterial material,
+            Material material,
             float arraySlice, uint surfaceSlice)
         {
             ref GpuData vertex = ref GetData(RangeType.Sprite, texture, material);

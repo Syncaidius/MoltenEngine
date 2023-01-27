@@ -49,6 +49,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public override ShaderComposition CreateShaderComposition(ShaderType type, HlslShader parent)
+        {
+            throw new NotImplementedException();
+        }
+
         public override ShaderSampler CreateSampler(ShaderSampler source = null)
         {
             throw new NotImplementedException();

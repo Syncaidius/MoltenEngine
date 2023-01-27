@@ -2,13 +2,13 @@
 
 namespace Molten.Graphics
 {
-    internal class ShaderPassParser : FxcNodeParser
+    internal class ShaderPassParser : ShaderNodeParser
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Pass;
 
         public override Type[] TypeFilter { get; } = { typeof(Material) };
 
-        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, ShaderHeaderNode node)
+        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             Material mat = foundation as Material;
             MaterialPass pass = new MaterialPass(mat, "<Unnamed Material Pass>");

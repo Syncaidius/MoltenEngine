@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal class VSComposition : ShaderComposition<ID3D11VertexShader>
+    internal class VSComposition : ShaderCompositionDX11<ID3D11VertexShader>
     {
         public VSComposition(HlslShader parentShader) : 
             base(parentShader, ShaderType.Vertex)

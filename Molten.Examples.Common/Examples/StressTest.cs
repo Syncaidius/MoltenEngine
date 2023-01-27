@@ -27,7 +27,7 @@ namespace Molten.Examples
         protected override void OnLoadContent(ContentLoadBatch loader)
         {
             base.OnLoadContent(loader);
-            _hMaterial = loader.Load<IMaterial>("assets/BasicColor.mfx");
+            _hMaterial = loader.Load<Material>("assets/BasicColor.mfx");
 
 
             loader.OnCompleted += Loader_OnCompleted;
@@ -40,7 +40,7 @@ namespace Molten.Examples
                 return;
             }
 
-            TestMesh.Material = _hMaterial.Get<IMaterial>();
+            TestMesh.Material = _hMaterial.Get<Material>();
         }
 
         private void SpawnRandomTestCube(IMesh mesh, int spawnRadius)

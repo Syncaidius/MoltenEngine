@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
-    internal unsafe partial class GraphicsBuffer : ContextBindableResource<ID3D11Buffer>
+    internal unsafe partial class GraphicsBuffer : ContextBindableResource<ID3D11Buffer>, IShaderResource
     {
         ID3D11Buffer* _native;
         uint _ringPos;

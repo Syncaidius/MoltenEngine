@@ -60,14 +60,14 @@
 
         private protected override void OnRender(CommandQueueDX11 context, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
-            if (_material == null)
+            if (Material == null)
                 return;
 
             ApplyBuffers(context);
-            ApplyResources(_material);
-            _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
+            ApplyResources(Material);
+            Material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
-            renderer.NativeDevice.Cmd.DrawIndexed(_material, _indexCount, Topology);
+            renderer.NativeDevice.Cmd.DrawIndexed(Material, _indexCount, Topology);
         }
 
         public uint MaxIndices { get; }

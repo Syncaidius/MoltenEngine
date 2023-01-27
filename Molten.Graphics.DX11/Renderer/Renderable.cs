@@ -32,8 +32,6 @@
 
         protected void ApplyResources(Material material)
         {
-            uint resCount = (uint)Math.Min(_resources.Length, material.Resources.Length);
-
             // Set as many custom resources from the renderable as possible, or use the material's default when needed.
             for (uint i = 0; i < _resources.Length; i++)
                 material.Resources[i].Value = _resources[i] ?? material.DefaultResources[i];

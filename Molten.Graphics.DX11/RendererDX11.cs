@@ -16,6 +16,8 @@ namespace Molten.Graphics
         ComputeManager _compute;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
+        FxcCompiler _shaderCompiler;
+
         internal SpriteBatcherDX11 SpriteBatcher;
 
         internal GraphicsBuffer StaticVertexBuffer;
@@ -55,7 +57,7 @@ namespace Molten.Graphics
         {
             Assembly includeAssembly = GetType().Assembly;
             
-            ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
+            _shaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _resFactory = new ResourceFactoryDX11(this);
             _compute = new ComputeManager(NativeDevice);
 
@@ -156,7 +158,7 @@ namespace Molten.Graphics
 
         protected override IRenderChain Chain => _chain;
 
-        internal FxcCompiler ShaderCompiler { get; private set; }
+        public override FxcCompiler Compiler => _shaderCompiler;
 
         /// <summary>
         /// Gets the resource manager bound to the renderer.

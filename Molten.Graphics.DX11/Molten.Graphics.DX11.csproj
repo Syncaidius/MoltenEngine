@@ -80,4 +80,8 @@
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Shaders\Materials\" />
+  </ItemGroup>
+
 </Project>

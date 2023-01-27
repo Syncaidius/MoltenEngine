@@ -91,6 +91,8 @@ namespace Molten.Graphics
         /// <returns></returns>
         public abstract ShaderSampler CreateSampler(ShaderSampler source = null);
 
+        public abstract ShaderComposition CreateShaderComposition(ShaderType type, HlslShader parent);
+
         /// <summary>Track a VRAM allocation.</summary>
         /// <param name="bytes">The number of bytes that were allocated.</param>
         public void AllocateVRAM(long bytes)

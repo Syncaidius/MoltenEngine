@@ -49,4 +49,8 @@
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Shaders\Compiler\NodeParsers\" />
+  </ItemGroup>
+
 </Project>

@@ -19,7 +19,7 @@ namespace Molten.Graphics
         /// <param name="material">The custom material, or null if none.</param>
         /// <param name="rotation">The rotation angle, in radians.</param>
         /// <param name="texture">The texture, or null if none.</param>
-        public void DrawEllipse(ref Ellipse e, Color color, float rotation = 0, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void DrawEllipse(ref Ellipse e, Color color, float rotation = 0, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             _ellipseStyle.FillColor = color;
             _ellipseStyle.BorderThickness = 0;
@@ -37,7 +37,7 @@ namespace Molten.Graphics
         /// <param name="rotation">The rotation angle, in radians.</param>
         /// <param name="texture">The texture, or null if none.</param>
         /// <param name="style">The style to use when drawing the ellipse.</param>
-        public void DrawEllipse(ref Ellipse e, ref EllipseStyle style, float rotation = 0, ITexture2D texture = null, IMaterial material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void DrawEllipse(ref Ellipse e, ref EllipseStyle style, float rotation = 0, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             DrawEllipse(ref e, DEFAULT_ORIGIN_CENTER, ref style, rotation, texture, material, arraySlice, surfaceSlice);
         }
@@ -53,7 +53,7 @@ namespace Molten.Graphics
         /// <param name="origin">The origin of the ellipse, between 0f and 1.0f. An origin of 0.5f,0.5f would be the center of the sprite.</param>
         /// <param name="style">The style to use when drawing the ellipse.</param>
         public unsafe void DrawEllipse(ref Ellipse e, Vector2F origin, ref EllipseStyle style, float rotation = 0, ITexture2D texture = null, 
-            IMaterial material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+            Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             RectangleF source = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
 

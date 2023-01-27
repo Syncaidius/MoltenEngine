@@ -227,7 +227,7 @@ namespace Molten.Graphics
             return vResult;
         }
 
-        public override GraphicsBindResult Draw(IMaterial material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
+        public override GraphicsBindResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
         {
             return DrawCommon(material as Material, GraphicsValidationMode.Unindexed, topology, (pass) =>
             {
@@ -242,7 +242,7 @@ namespace Molten.Graphics
         }
 
         /// <inheritdoc/>
-        public override GraphicsBindResult DrawInstanced(IMaterial material,
+        public override GraphicsBindResult DrawInstanced(Material material,
             uint vertexCountPerInstance,
             uint instanceCount,
             VertexTopology topology,
@@ -262,7 +262,7 @@ namespace Molten.Graphics
         }
 
         /// <inheritdoc/>
-        public override GraphicsBindResult DrawIndexed(IMaterial material,
+        public override GraphicsBindResult DrawIndexed(Material material,
             uint indexCount,
             VertexTopology topology,
             int vertexIndexOffset = 0,
@@ -281,7 +281,7 @@ namespace Molten.Graphics
         }
 
         /// <inheritdoc/>
-        public override GraphicsBindResult DrawIndexedInstanced(IMaterial material,
+        public override GraphicsBindResult DrawIndexedInstanced(Material material,
             uint indexCountPerInstance,
             uint instanceCount,
             VertexTopology topology,
@@ -348,11 +348,11 @@ namespace Molten.Graphics
                 Native->IASetPrimitiveTopology(_boundTopology.ToApi());
             }
 
-            VS.Shader.Value = pass.VS;
-            GS.Shader.Value = pass.GS;
-            HS.Shader.Value = pass.HS;
-            DS.Shader.Value = pass.DS;
-            PS.Shader.Value = pass.PS;
+            VS.Shader.Value = pass.VS as ShaderCompositionDX11<ID3D11VertexShader>;
+            GS.Shader.Value = pass.GS as ShaderCompositionDX11<ID3D11GeometryShader>;
+            HS.Shader.Value = pass.HS as ShaderCompositionDX11<ID3D11HullShader>;
+            DS.Shader.Value = pass.DS as ShaderCompositionDX11<ID3D11DomainShader>;
+            PS.Shader.Value = pass.PS as ShaderCompositionDX11<ID3D11PixelShader>;
 
             bool vsChanged = VS.Bind();
             bool gsChanged = GS.Bind();
@@ -473,7 +473,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < CS.Shader.BoundValue.UnorderedAccessIds.Count; i++)
                 {
                     uint slotID = CS.Shader.BoundValue.UnorderedAccessIds[i];
-                    CS.UAVs[slotID].Value = _compute.BoundValue.UAVs[slotID]?.UnorderedResource;
+                    CS.UAVs[slotID].Value = _compute.BoundValue.UAVs[slotID]?.UnorderedResource as ContextBindableResource;
                 }
             }
 

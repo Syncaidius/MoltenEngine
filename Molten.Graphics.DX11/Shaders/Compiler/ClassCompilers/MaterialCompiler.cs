@@ -9,11 +9,11 @@ namespace Molten.Graphics
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
         ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
 
-        public override List<IShaderElement> Parse(ShaderCompilerContext<RendererDX11, HlslFoundation> context,
-            RendererDX11 renderer, in string header)
+        public override List<IShaderElement> Parse(ShaderCompilerContext context,
+            RenderService renderer, in string header)
         {
             List<IShaderElement> result = new List<IShaderElement>();
-            Material material = new Material(renderer.NativeDevice, context.Source.Filename);
+            Material material = new Material(renderer.Device, context.Source.Filename);
             try
             {
                 context.Compiler.ParserHeader(material, in header, context);
@@ -30,7 +30,7 @@ namespace Molten.Graphics
             catch (Exception e)
             {
                 context.AddError($"{context.Source.Filename ?? "Material header error"}: {e.Message}");
-                renderer.NativeDevice.Log.Error(e);
+                renderer.Device.Log.Error(e);
                 return result;
             }
 
@@ -61,9 +61,9 @@ namespace Molten.Graphics
             if (!context.HasErrors)
             {
                 // Populate missing material states with default.
-                material.DepthState.FillMissingWith(renderer.NativeDevice.DepthBank.GetPreset(DepthStencilPreset.Default));
-                material.RasterizerState.FillMissingWith(renderer.NativeDevice.RasterizerBank.GetPreset(RasterizerPreset.Default));
-                material.BlendState.FillMissingWith(renderer.NativeDevice.BlendBank.GetPreset(BlendPreset.Default));
+                material.DepthState.FillMissingWith(renderer.Device.DepthBank.GetPreset(DepthStencilPreset.Default));
+                material.RasterizerState.FillMissingWith(renderer.Device.RasterizerBank.GetPreset(RasterizerPreset.Default));
+                material.BlendState.FillMissingWith(renderer.Device.BlendBank.GetPreset(BlendPreset.Default));
 
                 ShaderSampler defaultSampler = renderer.Device.SamplerBank.GetPreset(SamplerPreset.Default);
                 for (int i = 0; i < material.Samplers.Length; i++)
@@ -121,10 +121,11 @@ namespace Molten.Graphics
         }
 
         private MaterialPassCompileResult CompilePass(
-            ShaderCompilerContext<RendererDX11, HlslFoundation> context,
+            ShaderCompilerContext context,
             MaterialPass pass)
         {
             MaterialPassCompileResult result = new MaterialPassCompileResult(pass);
+            FxcCompiler fxc = context.Compiler as FxcCompiler;
 
             // Compile each stage of the material pass.
             foreach(ShaderComposition sc in pass.Compositions)
@@ -138,13 +139,13 @@ namespace Molten.Graphics
                 }
 
                 ShaderClassResult cResult = null;
-                if (context.Renderer.ShaderCompiler.CompileSource(sc.EntryPoint,
+                if (fxc.CompileSource(sc.EntryPoint,
                     sc.Type, context, out cResult))
                 {
                     result[sc.Type] = cResult;
-                    sc.SetBytecode((ID3D10Blob*)cResult.ByteCode);
-                    sc.InputStructure = BuildIO(cResult, sc, ShaderIOStructureType.Input);
-                    sc.OutputStructure = BuildIO(cResult, sc, ShaderIOStructureType.Output);
+                    sc.BuildShader(cResult.ByteCode);
+                    sc.InputStructure = BuildIO(cResult, ShaderIOStructureType.Input);
+                    sc.OutputStructure = BuildIO(cResult, ShaderIOStructureType.Output);
                 }
                 else
                 {
@@ -159,7 +160,7 @@ namespace Molten.Graphics
                 if (result[ShaderType.Geometry] != null)
                 {
                     ShaderClassResult fcr = result[ShaderType.Geometry];
-                    pass.GeometryPrimitive = fcr.Reflection.GSInputPrimitive.ToApi();
+                    pass.GeometryPrimitive = fcr.Reflection.GSInputPrimitive;
                 }
 
                 // Validate I/O structure of each shader stage.
@@ -171,7 +172,7 @@ namespace Molten.Graphics
         }
 
         private void BuildPassStructure(
-            ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
+            ShaderCompilerContext context, 
             MaterialPassCompileResult pResult)
         {
             MaterialPass pass = pResult.Pass;
@@ -213,7 +214,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnBuildVariableStructure(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
+        protected override void OnBuildVariableStructure(ShaderCompilerContext context, 
             HlslFoundation shader, ShaderClassResult result, ShaderResourceInfo info) { }
     }
 }

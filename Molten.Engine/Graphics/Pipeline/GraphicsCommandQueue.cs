@@ -58,7 +58,7 @@ namespace Molten.Graphics
         /// <param name="vertexStartIndex">The vertex to start drawing from.</param>
         /// <param name="topology">The primitive topology to use when drawing with a NULL vertex buffer. 
         /// Vertex buffers always override this when applied.</param>
-        public abstract GraphicsBindResult Draw(IMaterial material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0);
+        public abstract GraphicsBindResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0);
 
         /// <summary>Draw instanced, unindexed primitives. </summary>
         /// <param name="material">The <see cref="IMaterial"/> to apply when drawing.</param>
@@ -67,7 +67,7 @@ namespace Molten.Graphics
         /// <param name="topology">The expected topology of the indexed vertex data.</param>
         /// <param name="vertexStartIndex">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public abstract GraphicsBindResult DrawInstanced(IMaterial material,
+        public abstract GraphicsBindResult DrawInstanced(Material material,
             uint vertexCountPerInstance,
             uint instanceCount,
             VertexTopology topology,
@@ -80,7 +80,7 @@ namespace Molten.Graphics
         /// <param name="indexCount">The number of indices to be drawn.</param>
         /// <param name="startIndex">The index to start drawing from.</param>
         /// <param name="topology">The toplogy to apply when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
-        public abstract GraphicsBindResult DrawIndexed(IMaterial material,
+        public abstract GraphicsBindResult DrawIndexed(Material material,
             uint indexCount,
             VertexTopology topology,
             int vertexIndexOffset = 0,
@@ -94,7 +94,7 @@ namespace Molten.Graphics
         /// <param name="startIndex">The start index.</param>
         /// <param name="vertexIndexOffset">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public abstract GraphicsBindResult DrawIndexedInstanced(IMaterial material,
+        public abstract GraphicsBindResult DrawIndexedInstanced(Material material,
             uint indexCountPerInstance,
             uint instanceCount,
             VertexTopology topology,

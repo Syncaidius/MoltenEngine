@@ -6,79 +6,63 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    public abstract class ShaderCompiler : EngineObject
-    {
-        /// <summary>
-        /// Gets the <see cref="Logger"/> bound to the current <see cref="ShaderCompiler"/> instance.
-        /// </summary>
-        public Logger Log { get; }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="ShaderCompiler"/>.
-        /// </summary>
-        /// <param name="log">The <see cref="Logger"/> to use for outputting shader compiler information.</param>
-        protected ShaderCompiler(Logger log)
-        {
-            Log = log;
-        }
-
-        public abstract ShaderCompileResult CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace);
-    }
-
     /// <summary>
     /// Provides a base for implementing a shader compiler.
     /// </summary>
-    /// <typeparam name="R"></typeparam>
-    /// <typeparam name="S"></typeparam>
-    public abstract class ShaderCompiler<R, S> : ShaderCompiler
-        where R : RenderService
-        where S : IShaderElement
+    public abstract class ShaderCompiler : EngineObject
     {
         string[] _newLineSeparator = { "\n", Environment.NewLine };
         string[] _includeReplacements = { "#include", "<", ">", "\"" };
         static Regex _includeCommas = new Regex("(#include) \"([^\"]*)\"");
         static Regex _includeBrackets = new Regex("(#include) <([.+])>");
 
-        public R Renderer { get; }
-
         ConcurrentDictionary<string, ShaderSource> _sources;
-        Dictionary<ShaderNodeType, ShaderNodeParser<R, S>> _nodeParsers;
-        List<ShaderClassCompiler<R, S>> _classCompilers;
+        Dictionary<ShaderNodeType, ShaderNodeParser> _nodeParsers;
+        List<ShaderClassCompiler> _classCompilers;
 
         Assembly _defaultIncludeAssembly;
         string _defaultIncludePath;
 
-        protected ShaderCompiler(R renderer, string includePath, Assembly includeAssembly) : base(renderer.Log)
+        /// <summary>
+        /// Creates a new instance of <see cref="ShaderCompiler"/>.
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <param name="includePath"></param>
+        /// <param name="includeAssembly"></param>
+        protected ShaderCompiler(RenderService renderer, string includePath, Assembly includeAssembly)
         {
+            Log = renderer.Log;
             _defaultIncludePath = includePath;
             _defaultIncludeAssembly = includeAssembly;
 
-            _nodeParsers = new Dictionary<ShaderNodeType, ShaderNodeParser<R, S>>();
-            _classCompilers = new List<ShaderClassCompiler<R, S>>();
+            _nodeParsers = new Dictionary<ShaderNodeType, ShaderNodeParser>();
+            _classCompilers = new List<ShaderClassCompiler>();
             _sources = new ConcurrentDictionary<string, ShaderSource>();
             Renderer = renderer;
 
             InitializeNodeParsers();
         }
 
-        protected unsafe abstract ShaderReflection BuildReflection(ShaderCompilerContext<R, S> context, void* ptrData);
+        protected unsafe abstract ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData);
 
         /// <summary>
-        /// Registers all <see cref="ShaderNodeParser{R, S}"/> types in the assembly.
-        /// from type <typeparamref name="T"/>.
+        /// Registers all <see cref="ShaderNodeParser"/> types in the assembly.
         /// </summary>
         /// <typeparam name="T">The base type of the node parsers to be detected and added.</typeparam>
         private void InitializeNodeParsers()
         {
+            // Find custom and additional node parsers
             Assembly nodeAssembly = GetType().Assembly;
-            List<Type> nParserList = ReflectionHelper.FindType<ShaderNodeParser<R,S>>(nodeAssembly).ToList();
-            IEnumerable<Type> defaultNodeParsers = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<R,S>>();
+            List<Type> nParserList = ReflectionHelper.FindType<ShaderNodeParser>(nodeAssembly).ToList();
+
+            // Find default/common node parsers.
+            IEnumerable<Type> defaultNodeParsers = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser>();
             nParserList.AddRange(defaultNodeParsers);
 
             foreach (Type t in nParserList)
             {
                 BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                ShaderNodeParser<R,S> nParser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<R, S>;
+                ShaderNodeParser nParser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser;
 
                 if (_nodeParsers.ContainsKey(nParser.NodeType))
                 {
@@ -95,7 +79,7 @@ namespace Molten.Graphics
 
             // Validate parsers to find missing ones.
             ShaderNodeType[] nTypes = Enum.GetValues<ShaderNodeType>();
-            foreach(ShaderNodeType t in nTypes)
+            foreach (ShaderNodeType t in nTypes)
             {
                 if (!_nodeParsers.ContainsKey(t))
                     Log.Error($"Shader compiler '{GetType()}' doesn't provide node parser for '{t}' nodes. May prevent shader compilation.");
@@ -103,7 +87,7 @@ namespace Molten.Graphics
         }
 
         protected void AddClassCompiler<T>()
-            where T : ShaderClassCompiler<R, S>, new()
+            where T : ShaderClassCompiler, new()
         {
             Type t = typeof(T);
             BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
@@ -111,12 +95,12 @@ namespace Molten.Graphics
             _classCompilers.Add(scc);
         }
 
-        public override sealed ShaderCompileResult CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
+        public ShaderCompileResult CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
         {
-            ShaderCompilerContext<R, S> context = new ShaderCompilerContext<R, S>(this);
+            ShaderCompilerContext context = new ShaderCompilerContext(this);
             context.Flags = flags;
 
-            Dictionary<ShaderClassCompiler<R, S>, List<string>> headers = new Dictionary<ShaderClassCompiler<R, S>, List<string>>();
+            Dictionary<ShaderClassCompiler, List<string>> headers = new Dictionary<ShaderClassCompiler, List<string>>();
             string finalSource = source;
 
 
@@ -126,7 +110,7 @@ namespace Molten.Graphics
             int originalLineCount = source.Split(_newLineSeparator, StringSplitOptions.None).Length;
 
             // Check the source for all supportead class types.
-            foreach (ShaderClassCompiler<R,S> scc in _classCompilers)
+            foreach (ShaderClassCompiler scc in _classCompilers)
             {
                 List<string> classHeaders = scc.GetHeaders(in source);
                 if (classHeaders.Count > 0)
@@ -155,7 +139,7 @@ namespace Molten.Graphics
             context.Source = ParseSource(context, filename, ref finalSource, isEmbedded, assembly, nameSpace, originalLineCount);
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
-            foreach (ShaderClassCompiler<R, S> classCompiler in headers.Keys)
+            foreach (ShaderClassCompiler classCompiler in headers.Keys)
             {
                 List<string> nodeHeaders = headers[classCompiler];
                 foreach (string header in nodeHeaders)
@@ -175,7 +159,7 @@ namespace Molten.Graphics
             return context.Result;
         }
 
-        private ShaderSource ParseSource(ShaderCompilerContext<R,S> context, string filename, ref string hlsl,
+        private ShaderSource ParseSource(ShaderCompilerContext context, string filename, ref string hlsl,
             bool isEmbedded, Assembly assembly, string nameSpace, int originalLineCount)
         {
             ShaderSource source = new ShaderSource(filename, in hlsl, isEmbedded, originalLineCount, assembly, nameSpace);
@@ -202,7 +186,7 @@ namespace Molten.Graphics
             return null;
         }
 
-        public void ParserHeader(S shader, in string header, ShaderCompilerContext<R, S> context)
+        public void ParserHeader(HlslFoundation shader, in string header, ShaderCompilerContext context)
         {
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(header);
@@ -211,7 +195,7 @@ namespace Molten.Graphics
             ParseNode(shader, rootNode, context);
         }
 
-        public void ParseNode(S shader, XmlNode parentNode, ShaderCompilerContext<R, S> context)
+        public void ParseNode(HlslFoundation shader, XmlNode parentNode, ShaderCompilerContext context)
         {
             foreach (XmlNode node in parentNode.ChildNodes)
             {
@@ -227,7 +211,7 @@ namespace Molten.Graphics
                     continue;
                 }
 
-                ShaderNodeParser<R, S> parser = null;
+                ShaderNodeParser parser = null;
                 if (!_nodeParsers.TryGetValue(nodeType, out parser))
                 {
                     context.AddWarning($"The node '{nodeName}' is not supported by compiler '{this.GetType().Name}'");
@@ -268,7 +252,7 @@ namespace Molten.Graphics
             return dependency;
         }
 
-        private void ParseDependencies(ShaderCompilerContext<R, S> context, ShaderSource source, Regex regex, bool allowRelativePath, Assembly assembly)
+        private void ParseDependencies(ShaderCompilerContext context, ShaderSource source, Regex regex, bool allowRelativePath, Assembly assembly)
         {
             HashSet<string> dependencies = new HashSet<string>();
             Match m = regex.Match(source.SourceCode);
@@ -357,6 +341,13 @@ namespace Molten.Graphics
                 m = m.NextMatch();
             }
         }
+
+        public RenderService Renderer { get; }
+
+        /// <summary>
+        /// Gets the <see cref="Logger"/> bound to the current <see cref="ShaderCompiler"/> instance.
+        /// </summary>
+        public Logger Log { get; }
     }
 
     /*

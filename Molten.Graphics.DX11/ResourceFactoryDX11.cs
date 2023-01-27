@@ -8,7 +8,7 @@ namespace Molten.Graphics
         RendererDX11 _renderer;
 
         internal ResourceFactoryDX11(RendererDX11 renderer) : 
-            base(renderer, renderer.ShaderCompiler)
+            base(renderer, renderer.Compiler)
         {
             _renderer = renderer;
         }

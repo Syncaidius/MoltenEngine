@@ -1,17 +1,13 @@
-﻿using Silk.NET.Core.Native;
-using Silk.NET.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 using System.Reflection;
-using static Molten.Graphics.ShaderIOStructure;
-using System.Xml.Linq;
 using Silk.NET.DXGI;
-using Silk.NET.Direct3D.Compilers;
 
 namespace Molten.Graphics
 {
     internal unsafe abstract class FxcClassCompiler : 
-        ShaderClassCompiler<RendererDX11, HlslFoundation>
+        ShaderClassCompiler
     {
-        protected bool HasConstantBuffer(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
+        protected bool HasConstantBuffer(ShaderCompilerContext context, 
             HlslShader shader, string bufferName, string[] varNames)
         {
             foreach (ShaderConstantBuffer buffer in shader.ConstBuffers)
@@ -48,7 +44,7 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected ShaderIOStructure BuildIO(ShaderClassResult result, ShaderComposition composition, ShaderIOStructureType type)
+        protected ShaderIOStructure BuildIO(ShaderClassResult result, ShaderIOStructureType type)
         {
             List<ShaderParameterInfo> parameters;
 
@@ -132,7 +128,7 @@ namespace Molten.Graphics
 
                 // Store the element
                 structure.Elements[i] = el;
-                structure.Metadata[i] = new InputElementMetadata()
+                structure.Metadata[i] = new ShaderIOStructure.InputElementMetadata()
                 {
                     Name = pDesc.SemanticName,
                     SystemValueType = pDesc.SystemValueType
@@ -142,9 +138,8 @@ namespace Molten.Graphics
             return structure;
         }
 
-        protected bool BuildStructure<T>(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            HlslShader shader, ShaderClassResult result, ShaderComposition<T> composition) 
-            where T : unmanaged
+        protected bool BuildStructure(ShaderCompilerContext context, 
+            HlslShader shader, ShaderClassResult result, ShaderComposition composition) 
         {
             for (int r = 0; r < result.Reflection.BoundResources.Count; r++)
             {
@@ -213,10 +208,10 @@ namespace Molten.Graphics
             return true;
         }
 
-        protected abstract void OnBuildVariableStructure(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
+        protected abstract void OnBuildVariableStructure(ShaderCompilerContext context, 
             HlslFoundation shader, ShaderClassResult result, ShaderResourceInfo info);
 
-        private void OnBuildTextureVariable(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
+        private void OnBuildTextureVariable(ShaderCompilerContext context, 
             HlslShader shader, ShaderResourceInfo info)
         {
             ShaderResourceVariable obj = null;
@@ -247,7 +242,7 @@ namespace Molten.Graphics
             shader.Resources[info.BindPoint] = obj;
         }
 
-        private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
+        private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext context, 
             HlslShader shader, ConstantBufferInfo info)
         {
             ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.Device as DeviceDX11, BufferMode.DynamicDiscard, info);
@@ -301,7 +296,7 @@ namespace Molten.Graphics
             return cBuffer;
         }
 
-        protected T GetVariableResource<T>(ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
+        protected T GetVariableResource<T>(ShaderCompilerContext context, 
             HlslShader shader, ShaderResourceInfo info) 
             where T : class, IShaderValue
         {

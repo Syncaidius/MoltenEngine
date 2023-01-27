@@ -26,7 +26,7 @@ namespace Molten.Graphics
         /// <param name="color">The color of the text.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, IMaterial material = null, uint surfaceSlice = 0)
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Material material = null, uint surfaceSlice = 0)
         {
             DrawString(font, text, position, color, Vector2F.One, material, surfaceSlice);
         }
@@ -37,7 +37,7 @@ namespace Molten.Graphics
         /// <param name="position">The position of the text.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DrawString(SpriteFont font, string text, Vector2F position, ref TextStyle style, IMaterial material = null, uint surfaceSlice = 0)
+        public void DrawString(SpriteFont font, string text, Vector2F position, ref TextStyle style, Material material = null, uint surfaceSlice = 0)
         {
             DrawString(font, text, position, Vector2F.One, ref style, material, surfaceSlice);
         }
@@ -49,7 +49,7 @@ namespace Molten.Graphics
         /// <param name="color">The color of the text.</param>
         /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
-        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, IMaterial material = null, uint surfaceSlice = 0)
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, Material material = null, uint surfaceSlice = 0)
         {
             if (string.IsNullOrEmpty(text))
                 return;
@@ -68,7 +68,7 @@ namespace Molten.Graphics
         /// <param name="color">The color of the text.</param>
         /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
-        public void DrawString(SpriteFont font, string text, Vector2F position, Vector2F scale, ref TextStyle style, IMaterial material = null, uint surfaceSlice = 0)
+        public void DrawString(SpriteFont font, string text, Vector2F position, Vector2F scale, ref TextStyle style, Material material = null, uint surfaceSlice = 0)
         {
             if (string.IsNullOrEmpty(text))
                 return;

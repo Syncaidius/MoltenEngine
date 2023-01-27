@@ -48,7 +48,7 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
 
-            _hMaterial = loader.Load<IMaterial>("assets/BasicTexture.mfx");
+            _hMaterial = loader.Load<Material>("assets/BasicTexture.mfx");
             _hTexture = loader.Load<ITexture2D>("assets/logo_512_bc7.dds", parameters: new TextureParameters()
             {
                 GenerateMipmaps = true
@@ -66,7 +66,7 @@ namespace Molten.Examples
 
             LoadFontFile("FiraSans-Regular.ttf");
 
-            IMaterial mat = _hMaterial.Get<IMaterial>();
+            Material mat = _hMaterial.Get<Material>();
             ITexture2D texture = _hTexture.Get<ITexture2D>();
 
             mat.SetDefaultResource(texture, 0);

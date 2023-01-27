@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal class PSComposition : ShaderComposition<ID3D11PixelShader>
+    internal class PSComposition : ShaderCompositionDX11<ID3D11PixelShader>
     {
         public PSComposition(HlslShader parentShader) : 
             base(parentShader, ShaderType.Pixel)

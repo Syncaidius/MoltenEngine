@@ -17,7 +17,7 @@
         VertexTopology Topology { get; }
 
         /// <summary>Gets or sets the material applied to the current mesh.</summary>
-        IMaterial Material { get; set; }
+        Material Material { get; set; }
 
         /// <summary>Applies a shader resource to the mesh at the specified slot.</summary>
         /// <param name="res">The resource.</param>

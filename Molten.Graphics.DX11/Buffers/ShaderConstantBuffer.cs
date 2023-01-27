@@ -5,14 +5,13 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    internal unsafe class ShaderConstantBuffer : GraphicsBuffer
+    internal unsafe class ShaderConstantBuffer : GraphicsBuffer, IConstantBuffer
     {
         internal D3DShaderCBufferFlags Flags;
         internal D3DCBufferType Type;
         internal ShaderConstantVariable[] Variables;
         internal bool DirtyVariables;
         internal Dictionary<string, ShaderConstantVariable> _varLookup;
-        internal string BufferName;
         internal int Hash;
         byte* _constData;
 
@@ -171,7 +170,7 @@ namespace Molten.Graphics
         }
 
 
-        public string ConstantBufferName => BufferName;
+        public string BufferName { get; }
 
         internal byte* DataPtr => _constData;
     }

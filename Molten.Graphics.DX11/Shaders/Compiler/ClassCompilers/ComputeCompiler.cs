@@ -7,19 +7,21 @@ namespace Molten.Graphics
         public override ShaderClassType ClassType => ShaderClassType.Compute;
 
         public override List<IShaderElement> Parse(
-            ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
-            RendererDX11 renderer, in string header)
+            ShaderCompilerContext context, 
+            RenderService renderer, in string header)
         {
             List<IShaderElement> shaders = new List<IShaderElement>();
-            ComputeTask compute = new ComputeTask(renderer.NativeDevice, context.Source.Filename);
+            FxcCompiler fxc = context.Compiler as FxcCompiler;
+
+            ComputeTask compute = new ComputeTask(renderer.Device, context.Source.Filename);
             try
             {
                 context.Compiler.ParserHeader(compute, in header, context);
                 ShaderClassResult result = null;
-                if (context.Renderer.ShaderCompiler.CompileSource(compute.Composition.EntryPoint, ShaderType.Compute, context, out result))
+                if (fxc.CompileSource(compute.Composition.EntryPoint, ShaderType.Compute, context, out result))
                 {
                     if(BuildStructure(context, compute, result, compute.Composition))
-                        compute.Composition.SetBytecode((ID3D10Blob*)result.ByteCode);
+                        compute.Composition.BuildShader(result.ByteCode);
                 }
             }
             catch (Exception e)
@@ -41,7 +43,7 @@ namespace Molten.Graphics
         }
 
         protected override void OnBuildVariableStructure(
-            ShaderCompilerContext<RendererDX11, HlslFoundation> context,
+            ShaderCompilerContext context,
             HlslFoundation shader, ShaderClassResult result, ShaderResourceInfo info)
         {
             ComputeTask ct = shader as ComputeTask;
@@ -61,7 +63,7 @@ namespace Molten.Graphics
         }
 
         protected void OnBuildRWStructuredVariable
-            (ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
+            (ShaderCompilerContext context, 
             ComputeTask shader, ShaderResourceInfo info)
         {
             RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(context, shader, info);
@@ -74,7 +76,7 @@ namespace Molten.Graphics
         }
 
         protected void OnBuildRWTypedVariable(
-            ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
+            ShaderCompilerContext context, 
             ComputeTask shader, ShaderResourceInfo info)
         {
             RWVariable resource = null;

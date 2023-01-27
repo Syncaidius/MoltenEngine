@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal class HSComposition : ShaderComposition<ID3D11HullShader>
+    internal class HSComposition : ShaderCompositionDX11<ID3D11HullShader>
     {
         public HSComposition(HlslShader parentShader) : 
             base(parentShader, ShaderType.Hull)

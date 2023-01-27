@@ -1,14 +1,11 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
 using System.Reflection;
-using static Molten.Graphics.ShaderCompilerMessage;
 using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
-    public unsafe class DxcCompiler<R, S> : ShaderCompiler<R, S>
-        where R : RenderService
-        where S : DxcFoundation
+    public unsafe class DxcCompiler : ShaderCompiler
     {
         // For reference or help see the following:
         // See: https://github.com/microsoft/DirectXShaderCompiler/blob/master/include/dxc/dxcapi.h
@@ -30,7 +27,7 @@ namespace Molten.Graphics
             0xba, 0x3a, 0x16, 0x75, 0xe4, 0x72, 0x8b, 0x91);
 
 
-        Dictionary<string, DxcClassCompiler<R,S>> _shaderParsers;
+        Dictionary<string, DxcClassCompiler> _shaderParsers;
        
         IDxcCompiler3* _compiler;
         IDxcUtils* _utils;
@@ -40,13 +37,12 @@ namespace Molten.Graphics
         /// Creates a new instance of <see cref="DxcCompiler"/>.
         /// </summary>
         /// <param name="renderer">The renderer which owns the compiler.</param>
-        /// <param name="log"></param>
         /// <param name="includePath">The default path for engine/game HLSL include files.</param>
         /// <param name="includeAssembly"></param>
-        public DxcCompiler(R renderer, string includePath, Assembly includeAssembly) : 
+        public DxcCompiler(RenderService renderer, string includePath, Assembly includeAssembly) : 
             base(renderer, includePath, includeAssembly)
         {
-            _shaderParsers = new Dictionary<string, DxcClassCompiler<R,S>>();
+            _shaderParsers = new Dictionary<string, DxcClassCompiler>();
             _sourceBlobs = new Dictionary<ShaderSource, DxcSourceBlob>();
 
             Dxc = DXC.GetApi();
@@ -69,7 +65,7 @@ namespace Molten.Graphics
             return (T*)ppv;
         }
 
-        protected override unsafe ShaderReflection BuildReflection(ShaderCompilerContext<R, S> context, void* ptrData)
+        protected override unsafe ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData)
         {
             IDxcResult* dxcResult = (IDxcResult*)ptrData;
             IDxcContainerReflection* containerReflection;
@@ -90,13 +86,13 @@ namespace Molten.Graphics
         /// <returns></returns>
         /// 
         public bool CompileSource(string entryPoint, ShaderType type, 
-            ShaderCompilerContext<R, S> context, out ShaderClassResult result)
+            ShaderCompilerContext context, out ShaderClassResult result)
         {
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
             if (!context.Shaders.TryGetValue(entryPoint, out result))
             {
-                DxcArgumentBuilder<R,S> args = new DxcArgumentBuilder<R,S>(context);
+                DxcArgumentBuilder args = new DxcArgumentBuilder(context);
                 args.SetEntryPoint(entryPoint);
                 args.SetShaderProfile(ShaderModel.Model5_0, type);
 
@@ -151,7 +147,7 @@ namespace Molten.Graphics
             return true;
         }
 
-        private void LoadPdbData(ShaderCompilerContext<R, S> context, IDxcResult* dxcResult, ref IDxcBlob* data, ref string pdbPath)
+        private void LoadPdbData(ShaderCompilerContext context, IDxcResult* dxcResult, ref IDxcBlob* data, ref string pdbPath)
         {
             IDxcBlobUtf16* pPdbPath = null;
 
@@ -165,7 +161,7 @@ namespace Molten.Graphics
             }
         }
 
-        private IDxcContainerReflection* LoadReflection(ShaderCompilerContext<R, S> context, IDxcResult* dxcResult)
+        private IDxcContainerReflection* LoadReflection(ShaderCompilerContext context, IDxcResult* dxcResult)
         {
             IDxcBlob* outData = null;
             DxcBuffer* reflectionBuffer = null;
@@ -183,7 +179,7 @@ namespace Molten.Graphics
             return (IDxcContainerReflection*)pReflection;
         }
 
-        private void LoadErrors(ShaderCompilerContext<R, S> context, IDxcResult* dxcResult)
+        private void LoadErrors(ShaderCompilerContext context, IDxcResult* dxcResult)
         {
             if (dxcResult->HasOutput(OutKind.Errors) == 0)
                 return;
@@ -208,7 +204,7 @@ namespace Molten.Graphics
         /// <param name="result"></param>
         /// <param name="outData"></param>
         /// <param name="outPath"></param>
-        private bool GetDxcOutput(ShaderCompilerContext<R, S> context, OutKind outputType, IDxcResult* dxcResult,
+        private bool GetDxcOutput(ShaderCompilerContext context, OutKind outputType, IDxcResult* dxcResult,
             ref IDxcBlob* outData, IDxcBlobUtf16** outPath = null)
         {
             if (dxcResult->HasOutput(outputType) == 0)

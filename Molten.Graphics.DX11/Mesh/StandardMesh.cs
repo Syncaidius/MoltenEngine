@@ -12,24 +12,23 @@
         {
             ApplyBuffers(cmd);
             IShaderResource normal = GetResource(1);
-            Material mat = _material;
 
-            if (mat == null)
+            if (Material == null)
             {
                 // Use whichever default one fits the current configuration.
                 if (normal == null)
-                    mat = renderer.StandardMeshMaterial_NoNormalMap;
+                    Material = renderer.StandardMeshMaterial_NoNormalMap;
                 else
-                    mat = renderer.StandardMeshMaterial;
+                    Material = renderer.StandardMeshMaterial;
 
-                mat.Object.EmissivePower.Value = EmissivePower;
+                Material.Object.EmissivePower.Value = EmissivePower;
             }
 
-            mat.Object.World.Value = data.RenderTransform;
-            mat.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
+            Material.Object.World.Value = data.RenderTransform;
+            Material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
-            ApplyResources(mat);
-            cmd.Draw(mat, VertexCount, Topology);
+            ApplyResources(Material);
+            cmd.Draw(Material, VertexCount, Topology);
         }
     }
 }

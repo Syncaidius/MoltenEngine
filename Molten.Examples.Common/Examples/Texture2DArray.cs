@@ -17,7 +17,7 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
 
-            _hMaterial = loader.Load<IMaterial>("assets/BasicTextureArray2D.mfx");
+            _hMaterial = loader.Load<Material>("assets/BasicTextureArray2D.mfx");
             _hTexture = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
             {
                 PartCount = 3,
@@ -33,7 +33,7 @@ namespace Molten.Examples
                 return;
             }
 
-            IMaterial mat = _hMaterial.Get<IMaterial>();
+            Material mat = _hMaterial.Get<Material>();
             ITexture2D texture = _hTexture.Get<ITexture2D>();
 
             mat.SetDefaultResource(texture, 0);

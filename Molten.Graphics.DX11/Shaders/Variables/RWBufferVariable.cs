@@ -6,7 +6,7 @@
 
         internal RWBufferVariable(HlslShader shader) : base(shader) { }
 
-        protected override ContextBindableResource OnSetUnorderedResource(object value)
+        protected override IShaderResource OnSetUnorderedResource(object value)
         {
             _buffer = value as GraphicsBuffer;
             if (_buffer != null && _buffer.IsUnorderedAccess == false)

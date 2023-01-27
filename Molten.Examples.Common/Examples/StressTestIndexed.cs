@@ -29,7 +29,7 @@ namespace Molten.Examples
             }
 
             ShaderCompileResult shaders = Engine.Renderer.Resources.CompileShaders(ref source, fn);
-            IMaterial material = shaders[ShaderClassType.Material, 0] as IMaterial;
+            Material material = shaders[ShaderClassType.Material, 0] as Material;
 
             IIndexedMesh<VertexColor> mesh = Engine.Renderer.Resources.CreateIndexedMesh<VertexColor>(24, 36);
             if (material == null)
@@ -42,10 +42,10 @@ namespace Molten.Examples
             mesh.SetVertices(SampleVertexData.IndexedTexturedCubeVertices);
             mesh.SetIndices(SampleVertexData.TexturedCubeIndices);
             for (int i = 0; i < CUBE_COUNT; i++)
-                SpawnRandomTestCube(material, mesh, 70);
+                SpawnRandomTestCube(mesh, 70);
         }
 
-        private void SpawnRandomTestCube(IMaterial material, IMesh mesh, int spawnRadius)
+        private void SpawnRandomTestCube(IMesh mesh, int spawnRadius)
         {
             int maxRange = spawnRadius * 2;
             SceneObject obj = MainScene.CreateObject(new Vector3F()

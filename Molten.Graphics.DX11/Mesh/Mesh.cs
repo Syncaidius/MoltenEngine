@@ -6,7 +6,6 @@
         // private protected is new in C# 7.2. See: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/private-protected
         private protected RendererDX11 _renderer;
         private protected BufferSegment _vb;
-        private protected Material _material;
         private protected uint _vertexCount;
         private protected bool _isDynamic;
 
@@ -46,15 +45,15 @@
 
         private protected override void OnRender(CommandQueueDX11 cmd, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
-            if (_material == null)
+            if (Material == null)
                 return;
 
             ApplyBuffers(cmd);
-            ApplyResources(_material);
-            _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
-            _material.Object.World.Value = data.RenderTransform;
+            ApplyResources(Material);
+            Material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
+            Material.Object.World.Value = data.RenderTransform;
 
-            cmd.Draw(_material, _vertexCount, Topology);
+            cmd.Draw(Material, _vertexCount, Topology);
 
             /* TODO: According to: https://www.gamedev.net/forums/topic/667328-vertices-and-indices-in-the-same-buffer/
             *  - A buffer can be bound as both a vertex and index buffer
@@ -72,17 +71,7 @@
 
         public VertexTopology Topology { get; }
 
-        internal Material Material
-        {
-            get => _material;
-            set => _material = value;
-        }
-
-        IMaterial IMesh.Material
-        {
-            get => _material;
-            set => Material = value as Material;
-        }
+        public Material Material { get; set; }
 
         public uint VertexCount => _vertexCount;
 
