@@ -54,7 +54,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override void Dispatch(IComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
+        public override void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
         {
             throw new NotImplementedException();
         }

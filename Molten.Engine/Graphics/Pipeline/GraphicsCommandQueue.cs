@@ -109,7 +109,7 @@ namespace Molten.Graphics
         /// <param name="groupsX">The X thread-group dimension.</param>
         /// <param name="groupsY">The Y thread-group dimension.</param>
         /// <param name="groupsZ">The Z thread-group dimension.</param>
-        public abstract void Dispatch(IComputeTask task, uint groupsX, uint groupsY, uint groupsZ);
+        public abstract void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ);
 
         /// <summary>Sets a list of render surfaces.</summary>
         /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>

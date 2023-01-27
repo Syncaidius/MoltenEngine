@@ -286,7 +286,5 @@ namespace Molten.Graphics
         internal VersionVK ApiVersion { get; }
 
         public override ResourceFactory Resources => _resFactory;
-
-        public override IComputeManager Compute { get; }
     }
 }

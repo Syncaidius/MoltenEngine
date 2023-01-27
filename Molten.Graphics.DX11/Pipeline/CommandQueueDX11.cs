@@ -303,7 +303,7 @@ namespace Molten.Graphics
         }
 
         /// <inheritdoc/>
-        public override void Dispatch(IComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
+        public override void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
         {
             bool csChanged = Bind(task as ComputeTask);
 
@@ -463,7 +463,7 @@ namespace Molten.Graphics
         {
             _compute.Value = task;
             _compute.Bind();
-            CS.Shader.Value = _compute.BoundValue.Composition;
+            CS.Shader.Value = _compute.BoundValue.Composition as ShaderCompositionDX11<ID3D11ComputeShader>;
 
             bool csChanged = CS.Bind();
 

@@ -88,8 +88,6 @@ namespace Molten.Graphics
 
         public override ResourceFactory Resources { get; }
 
-        public override IComputeManager Compute => throw new NotImplementedException();
-
         protected override IRenderChain Chain => _chain;
 
         public override DxcCompiler Compiler { get; }

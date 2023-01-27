@@ -32,7 +32,7 @@ namespace Molten.Graphics
             if(!context.HasErrors)
             {
                 shaders.Add(compute);
-                (renderer.Compute as ComputeManager).AddTask(compute);
+                renderer.Compute.AddTask(compute);
             }
 
             // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.

@@ -270,6 +270,7 @@ namespace Molten.Graphics
             }
 
             OnInitializeRenderer(settings);
+            Compute = new ComputeManager(Device);
 
             Surfaces.Initialize(BiggestWidth, BiggestHeight);
         }
@@ -393,7 +394,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the compute manager attached to the current renderer.
         /// </summary>
-        public abstract IComputeManager Compute { get; }
+        public ComputeManager Compute { get; private set; }
 
         /// <summary>
         /// Gets the implemented <see cref="IRenderChain"/> instance for the current <see cref="RenderService"/>.

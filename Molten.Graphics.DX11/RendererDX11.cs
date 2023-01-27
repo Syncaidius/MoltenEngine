@@ -13,7 +13,6 @@ namespace Molten.Graphics
         DeviceBuilderDX11 _deviceBuilder;
         RenderChainDX11 _chain;
         ResourceFactoryDX11 _resFactory;
-        ComputeManager _compute;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
         FxcCompiler _shaderCompiler;
@@ -59,7 +58,6 @@ namespace Molten.Graphics
             
             _shaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _resFactory = new ResourceFactoryDX11(this);
-            _compute = new ComputeManager(NativeDevice);
 
             uint maxBufferSize = (uint)ByteMath.FromMegabytes(3.5);
             StaticVertexBuffer = new GraphicsBuffer(NativeDevice, BufferMode.Default, BindFlag.VertexBuffer | BindFlag.IndexBuffer, maxBufferSize);
@@ -153,8 +151,6 @@ namespace Molten.Graphics
         }
 
         internal DeviceDX11 NativeDevice { get; private set; }
-
-        public override IComputeManager Compute => _compute;
 
         protected override IRenderChain Chain => _chain;
 

@@ -50,7 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Shaders\Compiler\NodeParsers\" />
+    <Folder Include="Shaders\" />
   </ItemGroup>
 
 </Project>
