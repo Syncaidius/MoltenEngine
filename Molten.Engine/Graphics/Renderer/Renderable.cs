@@ -4,7 +4,7 @@
     {
         IShaderResource[] _resources;
 
-        internal Renderable(GraphicsDevice device)
+        protected Renderable(GraphicsDevice device)
         {
             Device = device;
             IsVisible = false;
@@ -40,13 +40,13 @@
                 material.Resources[i].Value = material.DefaultResources[i];
         }
 
-        internal void Render(CommandQueueDX11 cmd, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        public void Render(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             cmd.DepthWriteOverride = data.DepthWriteOverride;
             OnRender(cmd, renderer, camera, data);
         }
 
-        private protected abstract void OnRender(CommandQueueDX11 cmd, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data);
+        protected abstract void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data);
 
         /// <summary>Gets or sets whether or not the renderable should be drawn.</summary>
         public bool IsVisible { get; set; }

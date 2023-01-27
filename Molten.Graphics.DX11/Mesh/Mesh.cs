@@ -9,14 +9,14 @@
         private protected uint _vertexCount;
         private protected bool _isDynamic;
 
-        internal Mesh(RendererDX11 renderer, uint maxVertices, VertexTopology topology, bool dynamic) :
+        internal Mesh(RenderService renderer, uint maxVertices, VertexTopology topology, bool dynamic) :
             base(renderer.Device)
         {
-            _renderer = renderer;
+            _renderer = renderer as RendererDX11;
             MaxVertices = maxVertices;
             Topology = topology;
 
-            GraphicsBuffer vBuffer = dynamic ? renderer.DynamicVertexBuffer : renderer.StaticVertexBuffer;
+            GraphicsBuffer vBuffer = dynamic ? _renderer.DynamicVertexBuffer : _renderer.StaticVertexBuffer;
 
             _vb = vBuffer.Allocate<T>(MaxVertices);
             _vb.SetVertexFormat<T>();
@@ -38,12 +38,12 @@
             _vb.SetData(_renderer.NativeDevice.Cmd, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        internal virtual void ApplyBuffers(CommandQueueDX11 cmd)
+        internal virtual void ApplyBuffers(GraphicsCommandQueue cmd)
         {
-            cmd.VertexBuffers[0].Value = _vb;
+            (cmd as CommandQueueDX11).VertexBuffers[0].Value = _vb;
         }
 
-        private protected override void OnRender(CommandQueueDX11 cmd, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        protected override void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (Material == null)
                 return;

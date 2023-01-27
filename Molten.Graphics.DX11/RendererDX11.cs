@@ -16,8 +16,7 @@ namespace Molten.Graphics
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
         FxcCompiler _shaderCompiler;
-
-        internal SpriteBatcherDX11 SpriteBatcher;
+        SpriteBatcherDX11 _spriteBatcher;
 
         internal GraphicsBuffer StaticVertexBuffer;
         internal GraphicsBuffer DynamicVertexBuffer;
@@ -64,7 +63,7 @@ namespace Molten.Graphics
             DynamicVertexBuffer = new GraphicsBuffer(NativeDevice, BufferMode.DynamicRing, BindFlag.VertexBuffer | BindFlag.IndexBuffer, maxBufferSize);
 
             StagingBuffer = new StagingBuffer(NativeDevice, StagingBufferFlags.Write, maxBufferSize);
-            SpriteBatcher = new SpriteBatcherDX11(this, 3000, 20);
+            _spriteBatcher = new SpriteBatcherDX11(this, 3000, 20);
 
             LoadDefaultShaders(includeAssembly);
         }
@@ -117,7 +116,7 @@ namespace Molten.Graphics
 
         }
 
-        internal void RenderSceneLayer(CommandQueueDX11 pipe, LayerRenderData layerData, RenderCamera camera)
+        internal void RenderSceneLayer(GraphicsCommandQueue cmd, LayerRenderData layerData, RenderCamera camera)
         {
             // TODO To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later
@@ -130,7 +129,7 @@ namespace Molten.Graphics
                 {
                     // TODO replace below with render prediction to interpolate between the current and target transform.
                     data.RenderTransform = data.TargetTransform;
-                    p.Key.Render(pipe, this, camera, data);
+                    p.Key.Render(cmd, this, camera, data);
                 }
             }
         }
@@ -142,7 +141,7 @@ namespace Molten.Graphics
 
             _resFactory.Dispose();
             _displayManager.Dispose();
-            SpriteBatcher.Dispose();
+            SpriteBatch.Dispose();
 
             StaticVertexBuffer.Dispose();
             DynamicVertexBuffer.Dispose();
@@ -161,5 +160,7 @@ namespace Molten.Graphics
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
         /// </summary>
         public override ResourceFactory Resources => _resFactory;
+
+        public override SpriteBatcherDX11 SpriteBatch => _spriteBatcher;
     }
 }

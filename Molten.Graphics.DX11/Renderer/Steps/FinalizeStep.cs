@@ -41,12 +41,12 @@
             RectStyle style = RectStyle.Default;
 
             cmd.BeginDraw(conditions);
-            renderer.SpriteBatcher.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Bounds.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
+            renderer.SpriteBatch.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Bounds.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
 
             if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
-                renderer.Overlay.Render(time, renderer.SpriteBatcher, renderer.Profiler, context.Scene.Profiler, camera);
+                renderer.Overlay.Render(time, renderer.SpriteBatch, renderer.Profiler, context.Scene.Profiler, camera);
 
-            renderer.SpriteBatcher.Flush(cmd, _orthoCamera, _dummyData);
+            renderer.SpriteBatch.Flush(cmd, _orthoCamera, _dummyData);
             cmd.EndDraw();
         }
     }

@@ -431,5 +431,7 @@ namespace Molten.Graphics
         public SurfaceManager Surfaces { get; }
 
         public abstract ShaderCompiler Compiler { get; }
+
+        public abstract SpriteBatcher SpriteBatch { get; }
     }
 }

@@ -52,22 +52,22 @@
             _ib.SetData(_renderer.NativeDevice.Cmd, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        internal override void ApplyBuffers(CommandQueueDX11 context)
+        internal override void ApplyBuffers(GraphicsCommandQueue cmd)
         {
-            base.ApplyBuffers(context);
-            context.IndexBuffer.Value = _ib;
+            base.ApplyBuffers(cmd);
+            (cmd as CommandQueueDX11).IndexBuffer.Value = _ib;
         }
 
-        private protected override void OnRender(CommandQueueDX11 context, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        protected override void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (Material == null)
                 return;
 
-            ApplyBuffers(context);
+            ApplyBuffers(cmd);
             ApplyResources(Material);
             Material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
-            renderer.NativeDevice.Cmd.DrawIndexed(Material, _indexCount, Topology);
+            renderer.Device.Cmd.DrawIndexed(Material, _indexCount, Topology);
         }
 
         public uint MaxIndices { get; }

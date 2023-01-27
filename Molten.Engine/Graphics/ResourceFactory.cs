@@ -100,13 +100,6 @@ namespace Molten.Graphics
         public abstract void ResolveTexture(ITexture source, ITexture destination, uint sourceMipLevel, uint sourceArraySlice, uint destMiplevel, uint destArraySlice);
 
         /// <summary>
-        /// Creates a renderer for drawing sprites and primitives with a <see cref="SpriteBatcher"/> via the provided callback.
-        /// </summary>
-        /// <param name="callback"></param>
-        /// <returns></returns>
-        public abstract ISpriteRenderer CreateSpriteRenderer(Action<SpriteBatcher> callback = null);
-
-        /// <summary>
         /// Creates a standard mesh. Standard meshes enforce stricter rules aimed at deferred rendering.
         /// </summary>
         /// <param name="maxVertices"></param>

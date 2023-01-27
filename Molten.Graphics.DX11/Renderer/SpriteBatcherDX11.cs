@@ -49,15 +49,17 @@ namespace Molten.Graphics
             _checkers[(int)RangeType.Grid] = CheckGridRange;
         }
 
-        internal unsafe void Flush(CommandQueueDX11 context, RenderCamera camera, ObjectRenderData data)
+        public override void Flush(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data)
         {
             if (DataCount == 0)
                 return;
 
-            context.VertexBuffers[0].Value = null;
+            CommandQueueDX11 cmdDx11 = cmd as CommandQueueDX11;
+
+            cmdDx11.VertexBuffers[0].Value = null;
 
             ProcessBatches(camera, (firstRangeID, rangeCount, firstDataID, flushCount) => 
-                FlushBuffer(context, camera, data, firstRangeID, rangeCount, firstDataID, flushCount));
+                FlushBuffer(cmdDx11, camera, data, firstRangeID, rangeCount, firstDataID, flushCount));
         }
 
         private void FlushBuffer(CommandQueueDX11 context, RenderCamera camera, ObjectRenderData data, uint firstRangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)

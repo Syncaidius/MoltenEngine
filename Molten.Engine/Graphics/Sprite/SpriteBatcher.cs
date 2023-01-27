@@ -481,6 +481,8 @@ namespace Molten.Graphics
             Reset();
         }
 
+        public abstract void Flush(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data);
+
         public abstract void Dispose();
 
         /// <summary>

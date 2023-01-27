@@ -48,7 +48,7 @@ namespace Molten.Graphics
             LayerRenderData layer = _renderData.CreateLayerData("font chars");
             _renderData.AddLayer(layer);
 
-            ISpriteRenderer _spriteRenderer = _engine.Renderer.Resources.CreateSpriteRenderer(OnDraw);
+            SpriteRenderer _spriteRenderer = new SpriteRenderer(_engine.Renderer.Device, OnDraw);
 
             ObjectRenderData ord = new ObjectRenderData()
             {

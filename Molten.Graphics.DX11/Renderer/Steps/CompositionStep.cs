@@ -57,8 +57,8 @@
             RectStyle style = RectStyle.Default;
 
             cmd.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-            renderer.SpriteBatcher.Draw(sourceSurface, vpBounds, Vector2F.Zero, vpBounds.Size, 0, Vector2F.Zero, ref style, _matCompose, 0, 0);
-            renderer.SpriteBatcher.Flush(cmd, _orthoCamera, _dummyData);
+            renderer.SpriteBatch.Draw(sourceSurface, vpBounds, Vector2F.Zero, vpBounds.Size, 0, Vector2F.Zero, ref style, _matCompose, 0, 0);
+            renderer.SpriteBatch.Flush(cmd, _orthoCamera, _dummyData);
             cmd.EndDraw();
 
             context.SwapComposition();

@@ -4,7 +4,7 @@ namespace Molten
 {
     public abstract class SpriteRenderComponent : SceneComponent
     {
-        protected ISpriteRenderer _spriteRenderer;
+        protected SpriteRenderer _spriteRenderer;
         protected bool _visible = true;
         protected bool _inScene = false;
 
@@ -20,7 +20,7 @@ namespace Molten
             obj.OnAddedToScene += Obj_OnAddedToScene;
 
             if (obj.Engine.Renderer != null)
-                _spriteRenderer = obj.Engine.Renderer.Resources.CreateSpriteRenderer(OnRender);
+                _spriteRenderer = new SpriteRenderer(obj.Engine.Renderer.Device, OnRender);
 
             base.OnInitialize(obj);
         }

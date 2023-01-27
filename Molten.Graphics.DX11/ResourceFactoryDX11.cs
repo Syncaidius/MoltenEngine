@@ -188,11 +188,6 @@ namespace Molten.Graphics
             _renderer.PushTask(task);
         }
 
-        public override ISpriteRenderer CreateSpriteRenderer(Action<SpriteBatcher> callback = null)
-        {
-            return new SpriteRendererDX11(_renderer.NativeDevice, callback);
-        }
-
         public override IMesh<GBufferVertex> CreateMesh(uint maxVertices, VertexTopology topology, bool dynamic)
         {
             return new StandardMesh(_renderer, maxVertices, topology, dynamic);
