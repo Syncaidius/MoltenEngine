@@ -1,19 +1,17 @@
-﻿using Silk.NET.Direct3D11;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
-    internal class StartStep : RenderStepBase
+    public class StartStep : RenderStepBase
     {
         public override void Dispose() { }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
             IRenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
             IDepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
+            GraphicsCommandQueue cmd = renderer.Device.Cmd;
 
             cmd.SetRenderSurfaces(null);
             bool newSurface = renderer.ClearIfFirstUse(sScene, context.Scene.BackgroundColor);

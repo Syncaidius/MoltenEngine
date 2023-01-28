@@ -4,26 +4,27 @@
     {
         public override void Dispose() { }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
             IRenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
 
-            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
+            RendererDX11 dx11Renderer = renderer as RendererDX11;
+            CommandQueueDX11 cmd = renderer.Device.Cmd as CommandQueueDX11;
 
             cmd.SetRenderSurface(sScene, 0);
             cmd.SetRenderSurface(sNormals, 1);
             cmd.SetRenderSurface(sEmissive, 2);
             cmd.DepthSurface.Value = renderer.Surfaces.GetDepth() as DepthStencilSurface;
 
-            SetMaterialCommon(renderer.StandardMeshMaterial, camera, sScene as RenderSurface2D);
-            SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, sScene as RenderSurface2D);
+            SetMaterialCommon(dx11Renderer.StandardMeshMaterial, camera, sScene as RenderSurface2D);
+            SetMaterialCommon(dx11Renderer.StandardMeshMaterial_NoNormalMap, camera, sScene as RenderSurface2D);
 
             cmd.SetViewports(camera.Surface.Viewport);
 
             cmd.BeginDraw(context.BaseStateConditions);
-            renderer.RenderSceneLayer(cmd, context.Layer, camera);
+            dx11Renderer.RenderSceneLayer(cmd, context.Layer, camera);
             cmd.EndDraw();
         }
 

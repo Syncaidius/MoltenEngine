@@ -11,7 +11,7 @@
         IShaderValue _valLighting;
         IShaderValue _valEmissive;
 
-        internal override void Initialize(RendererDX11 renderer)
+        public override void Initialize(RenderService renderer)
         {
             _surfaceScene = renderer.Surfaces[MainSurfaceType.Scene];
             _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
@@ -32,12 +32,12 @@
             _matCompose.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF vpBounds = camera.Surface.Viewport.Bounds;
-            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
+            CommandQueueDX11 cmd = renderer.Device.Cmd as CommandQueueDX11;
 
             context.CompositionSurface.Clear(context.Scene.BackgroundColor, GraphicsPriority.Immediate);
             cmd.ResetRenderSurfaces();

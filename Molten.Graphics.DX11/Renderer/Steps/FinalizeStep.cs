@@ -5,7 +5,7 @@
         RenderCamera _orthoCamera;
         ObjectRenderData _dummyData;
 
-        internal override void Initialize(RendererDX11 renderer)
+        public override void Initialize(RenderService renderer)
         {
             _dummyData = new ObjectRenderData();
             _orthoCamera = new RenderCamera(RenderCameraMode.Orthographic);
@@ -16,12 +16,12 @@
 
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF bounds = new RectangleF(0, 0, camera.Surface.Width, camera.Surface.Height);
-            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
+            CommandQueueDX11 cmd = renderer.Device.Cmd as CommandQueueDX11;
             IRenderSurface2D finalSurface = camera.Surface as RenderSurface2D;
 
             if (!camera.HasFlags(RenderCameraFlags.DoNotClear))

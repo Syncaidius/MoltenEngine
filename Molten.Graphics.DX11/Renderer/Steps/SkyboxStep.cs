@@ -9,7 +9,7 @@
         IndexedMesh<Vertex> _sphereMesh;
         ObjectRenderData _skyboxData;
 
-        internal override void Initialize(RendererDX11 renderer)
+        public override void Initialize(RenderService renderer)
         {
             _skyboxData = new ObjectRenderData();
 
@@ -19,7 +19,7 @@
             Vertex[] vertices;
             int[] indices;
             MakeSphere(4, 4, out vertices, out indices);
-            _sphereMesh = new IndexedMesh<Vertex>(renderer, (uint)vertices.Length, (uint)indices.Length, 
+            _sphereMesh = new IndexedMesh<Vertex>(renderer as RendererDX11, (uint)vertices.Length, (uint)indices.Length, 
                 VertexTopology.TriangleList, IndexBufferFormat.Unsigned32Bit, false);
             _sphereMesh.SetVertices(vertices);
             _sphereMesh.SetIndices(indices);
@@ -32,14 +32,14 @@
             _sphereMesh.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             // No skybox texture or we're not on the first layer.
             if (context.Scene.SkyboxTexture == null || context.Scene.Layers.First() != context.Layer)
                 return;
 
             Rectangle bounds = (Rectangle)camera.Surface.Viewport.Bounds;
-            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
+            CommandQueueDX11 cmd = renderer.Device.Cmd as CommandQueueDX11;
 
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 

@@ -13,8 +13,6 @@ namespace Molten.Graphics
         DeviceBuilderDX11 _deviceBuilder;
         RenderChainDX11 _chain;
         ResourceFactoryDX11 _resFactory;
-        Dictionary<Type, RenderStepBase> _steps;
-        List<RenderStepBase> _stepList;
         FxcCompiler _shaderCompiler;
         SpriteBatcherDX11 _spriteBatcher;
 
@@ -24,12 +22,6 @@ namespace Molten.Graphics
 
         internal Material StandardMeshMaterial;
         internal Material StandardMeshMaterial_NoNormalMap;
-
-        public RendererDX11()
-        {
-            _steps = new Dictionary<Type, RenderStepBase>();
-            _stepList = new List<RenderStepBase>();
-        }
 
         protected unsafe override GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings)
         {
@@ -73,21 +65,6 @@ namespace Molten.Graphics
             ShaderCompileResult result = Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer.mfx", includeAssembly);
             StandardMeshMaterial = result[ShaderClassType.Material, "gbuffer"] as Material;
             StandardMeshMaterial_NoNormalMap = result[ShaderClassType.Material, "gbuffer-sans-nmap"] as Material;
-        }
-
-        internal T GetRenderStep<T>() where T : RenderStepBase, new()
-        {
-            Type t = typeof(T);
-            RenderStepBase step;
-            if (!_steps.TryGetValue(t, out step))
-            {
-                step = new T();
-                step.Initialize(this);
-                _steps.Add(t, step);
-                _stepList.Add(step);
-            }
-
-            return step as T;
         }
 
         protected override SceneRenderData OnCreateRenderData()
@@ -136,9 +113,6 @@ namespace Molten.Graphics
 
         protected override void OnDisposeBeforeRender()
         {
-            for (int i = 0; i < _stepList.Count; i++)
-                _stepList[i].Dispose();
-
             _resFactory.Dispose();
             _displayManager.Dispose();
             SpriteBatch.Dispose();

@@ -10,12 +10,12 @@ namespace Molten.Graphics
         GraphicsBuffer _lightDataBuffer;
         BufferSegment _lightSegment;
 
-        internal override void Initialize(RendererDX11 renderer)
+        public override void Initialize(RenderService renderer)
         {
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings
             uint bufferByteSize = stride * maxLights;
-            _lightDataBuffer = new GraphicsBuffer(renderer.NativeDevice, BufferMode.DynamicRing, 
+            _lightDataBuffer = new GraphicsBuffer(renderer.Device as DeviceDX11, BufferMode.DynamicRing, 
                 BindFlag.ShaderResource, bufferByteSize, ResourceMiscFlag.BufferStructured, structuredStride: stride);
             _lightSegment = _lightDataBuffer.Allocate<LightData>(maxLights);
 
@@ -33,12 +33,12 @@ namespace Molten.Graphics
             _matDebugPoint.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             IRenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
             IDepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
+            CommandQueueDX11 cmd = renderer.Device.Cmd as CommandQueueDX11;
 
             _surfaceLighting.Clear(context.Scene.AmbientLightColor, GraphicsPriority.Immediate);
             cmd.ResetRenderSurfaces();
@@ -48,7 +48,7 @@ namespace Molten.Graphics
             RenderPointLights(renderer, cmd, camera, context.Scene, sDepth);
         }
 
-        private void RenderPointLights(RendererDX11 renderer, CommandQueueDX11 context, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)
+        private void RenderPointLights(RenderService renderer, CommandQueueDX11 context, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)
         {
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];

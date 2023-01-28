@@ -8,11 +8,11 @@
         public override void Dispose()
         { }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
 
-            CommandQueueDX11 cmd = renderer.NativeDevice.Cmd;
+            CommandQueueDX11 cmd = renderer.Device.Cmd as CommandQueueDX11;
             sScene.Clear(Color.Transparent, GraphicsPriority.Immediate);
 
             cmd.SetRenderSurface(sScene, 0);
@@ -23,7 +23,7 @@
             StateConditions conditions = context.BaseStateConditions | StateConditions.ScissorTest;
 
             cmd.BeginDraw(conditions);
-            renderer.RenderSceneLayer(cmd, context.Layer, camera);
+            (renderer as RendererDX11).RenderSceneLayer(cmd, context.Layer, camera);
             cmd.EndDraw();
         }
     }

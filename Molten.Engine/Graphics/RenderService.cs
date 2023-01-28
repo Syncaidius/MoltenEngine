@@ -17,6 +17,8 @@ namespace Molten.Graphics
         bool _shouldPresent;
         bool _surfaceResizeRequired;
         HashSet<ITexture2D> _clearedSurfaces;
+        Dictionary<Type, RenderStepBase> _steps;
+        List<RenderStepBase> _stepList;
         AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
         internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
 
@@ -26,6 +28,9 @@ namespace Molten.Graphics
         public RenderService()
         {
             _clearedSurfaces = new HashSet<ITexture2D>();
+            _steps = new Dictionary<Type, RenderStepBase>();
+            _stepList = new List<RenderStepBase>();
+
             Surfaces = new SurfaceManager(this);
             Overlay = new OverlayProvider();
             Log.WriteLine("Acquiring render chain");
@@ -317,6 +322,21 @@ namespace Molten.Graphics
             Tasks.Enqueue(task);
         }
 
+        public T GetRenderStep<T>() where T : RenderStepBase, new()
+        {
+            Type t = typeof(T);
+            RenderStepBase step;
+            if (!_steps.TryGetValue(t, out step))
+            {
+                step = new T();
+                step.Initialize(this);
+                _steps.Add(t, step);
+                _stepList.Add(step);
+            }
+
+            return step as T;
+        }
+
         /// <summary>
         /// Invoked during the first stage of service initialization to allow any api-related objects to be created/initialized prior to renderer initialization.
         /// </summary>
@@ -357,11 +377,16 @@ namespace Molten.Graphics
         {
             base.OnDispose();
 
+            // Dispose of any registered output services.
             OutputSurfaces.For(0, 1, (index, surface) =>
             {
                 surface.Dispose();
                 return false;
             });
+
+            // Dispose of render steps
+            for (int i = 0; i < _stepList.Count; i++)
+                _stepList[i].Dispose();
 
             OnDisposeBeforeRender();
 
