@@ -3,7 +3,7 @@
 namespace Molten.Graphics
 {
     public class GraphicsSlotGroup<T> : EngineObject
-        where T : GraphicsObject
+        where T : class, IGraphicsObject
     {
         GraphicsSlot<T>[] _slots;
 

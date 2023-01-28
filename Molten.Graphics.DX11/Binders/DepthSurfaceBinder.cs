@@ -2,14 +2,14 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class DepthSurfaceBinder : GraphicsSlotBinder<DepthStencilSurface>
+    internal unsafe class DepthSurfaceBinder : GraphicsSlotBinder<IDepthStencilSurface>
     {
-        public override void Bind(GraphicsSlot<DepthStencilSurface> slot, DepthStencilSurface value)
+        public override void Bind(GraphicsSlot<IDepthStencilSurface> slot, IDepthStencilSurface value)
         {
             
         }
 
-        public override void Unbind(GraphicsSlot<DepthStencilSurface> slot, DepthStencilSurface value)
+        public override void Unbind(GraphicsSlot<IDepthStencilSurface> slot, IDepthStencilSurface value)
         {
             CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
 

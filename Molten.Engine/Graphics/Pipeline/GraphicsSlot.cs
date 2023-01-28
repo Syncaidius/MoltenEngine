@@ -24,11 +24,11 @@
 
         public uint PendingID { get; internal set; }
 
-        public abstract GraphicsObject RawValue { get; }
+        public abstract IGraphicsObject RawValue { get; }
     }
 
     public class GraphicsSlot<T> : GraphicsSlot
-        where T : GraphicsObject
+        where T : class, IGraphicsObject
     {
         GraphicsSlotBinder<T> _binder;
         GraphicsSlotGroup<T> _group;
@@ -195,7 +195,7 @@
 
         public T BoundValue => _boundValue;
 
-        public override GraphicsObject RawValue => _value;
+        public override IGraphicsObject RawValue => _value;
 
         internal bool IsGroupMember { get; }
     }

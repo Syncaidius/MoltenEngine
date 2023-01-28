@@ -8,7 +8,7 @@ using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    public abstract class GraphicsObject : EngineObject
+    public abstract class GraphicsObject : EngineObject, IGraphicsObject
     {
         protected GraphicsObject(GraphicsDevice device, GraphicsBindTypeFlags bindFlags)
         {
@@ -46,17 +46,17 @@ namespace Molten.Graphics
         /// Gets the instance-specific version of the current <see cref="GraphicsObject"/>. Any change which will require a device
         /// update should increase this value. E.g. Resizing a texture, recompiling a shader/material, etc.
         /// </summary>
-        internal protected uint Version { get; protected set; }
+        public uint Version { get; set; }
 
         /// <summary>
         /// Gets a list of slots that the current <see cref="GraphicsObject"/> is bound to.
         /// </summary>
-        internal List<GraphicsSlot> BoundTo { get; }
+        public List<GraphicsSlot> BoundTo { get; }
 
         /// <summary>
         /// Gets the current binding ID.
         /// </summary>
-        internal uint BindID { get; set; }
+        public uint BindID { get; set; }
 
         /// <summary>
         /// Gets or sets the slot bind type of the current <see cref="GraphicsObject"/>.
@@ -66,7 +66,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the ID of the frame that the current <see cref="GraphicsObject"/> was applied.
         /// </summary>
-        internal uint LastUsedFrameID { get; private set; }
+        public uint LastUsedFrameID { get; private set; }
     }
 
     public unsafe abstract class GraphicsObject<T> : GraphicsObject

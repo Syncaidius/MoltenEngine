@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics
 {
     public abstract class GraphicsSlotBinder<T>
-        where T : GraphicsObject
+        where T : class, IGraphicsObject
     {
         public abstract void Bind(GraphicsSlot<T> slot, T value);
 

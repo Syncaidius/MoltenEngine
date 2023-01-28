@@ -24,7 +24,6 @@ namespace Molten.Graphics
         bool _viewportsDirty;
         ViewportF[] _nullViewport;
 
-        List<GraphicsSlot> _slots;
         GraphicsSlot<ComputeTask> _compute;
 
         VertexTopology _boundTopology;
@@ -48,7 +47,6 @@ namespace Molten.Graphics
             else
                 Type = GraphicsContextType.Deferred;
 
-            _slots = new List<GraphicsSlot>();
             _nullViewport = new ViewportF[1];
 
             uint maxRTs = DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
@@ -77,7 +75,7 @@ namespace Molten.Graphics
             RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
 
             Surfaces = RegisterSlotGroup<RenderSurface2D, SurfaceGroupBinder>(GraphicsBindTypeFlags.Output, "Render Surface", maxRTs);
-            DepthSurface = RegisterSlot<DepthStencilSurface, DepthSurfaceBinder>(GraphicsBindTypeFlags.Output, "Depth Surface", 0);
+            DepthSurface = RegisterSlot<IDepthStencilSurface, DepthSurfaceBinder>(GraphicsBindTypeFlags.Output, "Depth Surface", 0);
 
             _stateStack = new ContextStateStack(this);
 
@@ -437,10 +435,11 @@ namespace Molten.Graphics
                 {
                     if (DepthSurface.BoundValue != null && depthWriteMode != GraphicsDepthWritePermission.Disabled)
                     {
+                        DepthStencilSurface dss = DepthSurface.BoundValue as DepthStencilSurface;
                         if (depthWriteMode == GraphicsDepthWritePermission.ReadOnly)
-                            DSV = DepthSurface.BoundValue.ReadOnlyView;
+                            DSV = dss.ReadOnlyView;
                         else
-                            DSV = DepthSurface.BoundValue.DepthView;
+                            DSV = dss.DepthView;
                     }
                     else
                     {
@@ -682,44 +681,6 @@ namespace Molten.Graphics
                 return GraphicsBindResult.NonInstancedVertexLayout;
         }
 
-        public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
-    where T : GraphicsObject
-    where B : GraphicsSlotBinder<T>, new()
-        {
-            B binder = new B();
-            return RegisterSlot(bindType, namePrefix, slotIndex, binder);
-        }
-
-        public GraphicsSlot<T> RegisterSlot<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex, GraphicsSlotBinder<T> binder)
-            where T : GraphicsObject
-        {
-            GraphicsSlot<T> slot = new GraphicsSlot<T>(this, binder, bindType, namePrefix, slotIndex);
-            _slots.Add(slot);
-            return slot;
-        }
-
-        public GraphicsSlotGroup<T> RegisterSlotGroup<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots)
-            where T : GraphicsObject
-            where B : GraphicsGroupBinder<T>, new()
-        {
-            B binder = new B();
-            return RegisterSlotGroup(bindType, namePrefix, numSlots, binder);
-        }
-
-        internal GraphicsSlotGroup<T> RegisterSlotGroup<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots, GraphicsGroupBinder<T> binder)
-            where T : GraphicsObject
-        {
-            GraphicsSlot<T>[] slots = new GraphicsSlot<T>[numSlots];
-            GraphicsSlotGroup<T> grp = new GraphicsSlotGroup<T>(this, binder, slots, bindType, namePrefix);
-
-            for (uint i = 0; i < numSlots; i++)
-                slots[i] = new GraphicsSlot<T>(this, grp, bindType, namePrefix, i);
-
-            _slots.AddRange(slots);
-
-            return grp;
-        }
-
         /// <summary>Dispoes of the current <see cref="Graphics.CommandQueueDX11"/> instance.</summary>
         protected override void OnDispose()
         {
@@ -763,10 +724,5 @@ namespace Molten.Graphics
         public int ViewportCount => _viewports.Length;
 
         public GraphicsSlotGroup<RenderSurface2D> Surfaces { get; }
-
-        /// <summary>
-        /// Gets or sets the output depth surface.
-        /// </summary>
-        public GraphicsSlot<DepthStencilSurface> DepthSurface { get; }
     }
 }

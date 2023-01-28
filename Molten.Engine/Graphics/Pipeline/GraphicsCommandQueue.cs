@@ -22,11 +22,13 @@ namespace Molten.Graphics
 
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
+        List<GraphicsSlot> _slots;
 
         protected GraphicsCommandQueue(GraphicsDevice device)
         {
             DrawInfo = new BatchDrawInfo();
             Device = device;
+            _slots = new List<GraphicsSlot>();
             _defaultProfiler = _profiler = new RenderProfiler();
         }
 
@@ -111,6 +113,44 @@ namespace Molten.Graphics
         /// <param name="groupsZ">The Z thread-group dimension.</param>
         public abstract void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ);
 
+        public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
+where T : class, IGraphicsObject
+where B : GraphicsSlotBinder<T>, new()
+        {
+            B binder = new B();
+            return RegisterSlot(bindType, namePrefix, slotIndex, binder);
+        }
+
+        public GraphicsSlot<T> RegisterSlot<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex, GraphicsSlotBinder<T> binder)
+            where T : class, IGraphicsObject
+        {
+            GraphicsSlot<T> slot = new GraphicsSlot<T>(this, binder, bindType, namePrefix, slotIndex);
+            _slots.Add(slot);
+            return slot;
+        }
+
+        public GraphicsSlotGroup<T> RegisterSlotGroup<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots)
+            where T : class, IGraphicsObject
+            where B : GraphicsGroupBinder<T>, new()
+        {
+            B binder = new B();
+            return RegisterSlotGroup(bindType, namePrefix, numSlots, binder);
+        }
+
+        public GraphicsSlotGroup<T> RegisterSlotGroup<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots, GraphicsGroupBinder<T> binder)
+            where T : class, IGraphicsObject
+        {
+            GraphicsSlot<T>[] slots = new GraphicsSlot<T>[numSlots];
+            GraphicsSlotGroup<T> grp = new GraphicsSlotGroup<T>(this, binder, slots, bindType, namePrefix);
+
+            for (uint i = 0; i < numSlots; i++)
+                slots[i] = new GraphicsSlot<T>(this, grp, bindType, namePrefix, i);
+
+            _slots.AddRange(slots);
+
+            return grp;
+        }
+
         /// <summary>Sets a list of render surfaces.</summary>
         /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
         public void SetRenderSurfaces(params IRenderSurface2D[] surfaces)
@@ -193,5 +233,10 @@ namespace Molten.Graphics
         /// Gets or sets the override permission for depth writing.
         /// </summary>
         public GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;
+
+        /// <summary>
+        /// Gets or sets the output depth surface.
+        /// </summary>
+        public GraphicsSlot<IDepthStencilSurface> DepthSurface { get; protected set; }
     }
 }

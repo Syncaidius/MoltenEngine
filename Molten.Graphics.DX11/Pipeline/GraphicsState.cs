@@ -13,7 +13,7 @@
 
         RenderSurface2D[] _surfaces;
 
-        DepthStencilSurface _depthSurface;
+        IDepthStencilSurface _depthSurface;
         GraphicsDepthWritePermission _depthWriteOverride;
 
         ViewportF[] _viewports;

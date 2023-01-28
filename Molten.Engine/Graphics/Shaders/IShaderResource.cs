@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public interface IShaderResource : IDisposable
+    public interface IShaderResource : IGraphicsObject
     {
     }
 }
