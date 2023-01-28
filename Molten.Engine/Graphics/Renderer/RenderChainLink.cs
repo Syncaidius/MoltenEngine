@@ -7,10 +7,10 @@ namespace Molten.Graphics
         List<RenderChainLink> _previous = new List<RenderChainLink>();
         List<RenderChainLink> _next = new List<RenderChainLink>();
         RenderStepBase _step;
-        RenderChainDX11 _chain;
+        RenderChain _chain;
         bool _completed;
 
-        internal RenderChainLink(RenderChainDX11 chain)
+        internal RenderChainLink(RenderChain chain)
         {
             _chain = chain;
         }
@@ -28,7 +28,7 @@ namespace Molten.Graphics
             _step = _chain.Renderer.GetRenderStep<T>();
         }
 
-        internal RenderChainLink Next<T>() where T : RenderStepBase, new()
+        public RenderChainLink Next<T>() where T : RenderStepBase, new()
         {
             RenderChainLink next = _chain.LinkPool.GetInstance();
             next.Set<T>();
@@ -73,7 +73,7 @@ namespace Molten.Graphics
             link._chain.LinkPool.Recycle(link);
         }
 
-        internal void Run(RendererDX11 renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        internal void Run(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             bool canStart = true;
 

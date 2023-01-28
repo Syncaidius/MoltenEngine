@@ -17,7 +17,6 @@ namespace Molten.Graphics
     {
         internal unsafe delegate Result EnumerateCallback<T>(uint* count, T* info) where T : unmanaged;
 
-        RenderChainVK _chain;
         ResourceFactoryVK _resFactory;
         DisplayManagerVK _displayManager;
         InstanceLoaderVK _instanceLoader;
@@ -36,7 +35,6 @@ namespace Molten.Graphics
             _devices = new List<DeviceVK>();
             _instanceLoader = new InstanceLoaderVK(this);
             _displayManager = new DisplayManagerVK(this);
-            _chain = new RenderChainVK(this);
             ApiVersion = new VersionVK(1, 1, 0);
         }
 
@@ -231,8 +229,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        protected override IRenderChain Chain => _chain;
-
         protected override void OnDisposeBeforeRender()
         {
             _shaderCompiler.Dispose();
@@ -252,6 +248,11 @@ namespace Molten.Graphics
 
             GLFW.Dispose();
             VK.Dispose();
+        }
+
+        public override void BuildRenderChain(RenderChainLink first, SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

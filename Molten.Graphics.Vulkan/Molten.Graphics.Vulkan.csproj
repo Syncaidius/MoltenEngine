@@ -50,6 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Renderer\" />
     <Folder Include="Shaders\" />
   </ItemGroup>
 

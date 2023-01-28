@@ -19,6 +19,7 @@ namespace Molten.Graphics
         HashSet<ITexture2D> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
+        RenderChain _chain;
         AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
         internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
 
@@ -192,8 +193,8 @@ namespace Molten.Graphics
                         if ((camera.LayerMask & layerBitVal) == layerBitVal)
                             continue;
 
-                        Chain.Build(sceneData, layer, camera);
-                        Chain.Render(sceneData, layer, camera, time);
+                        _chain.Build(sceneData, layer, camera);
+                        _chain.Render(sceneData, layer, camera, time);
                     }
 
                     camera.Profiler.End(time);
@@ -229,23 +230,7 @@ namespace Molten.Graphics
         protected override sealed void OnInitialize(EngineSettings settings)
         {
             DisplayManager = OnInitializeDisplayManager(settings.Graphics);
-
-            try
-            {
-                if (Chain != null)
-                    Log.WriteLine("Render chain acquired");
-                else
-                {
-                    Log.Error("Render chain acquisition failed: Null chain");
-                    throw new NullReferenceException("The provided render chain was null.");
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Error("Render chain acquisition failed. See exception details below");
-                Log.Error(e, true);
-                throw e;
-            }
+            _chain = new RenderChain(this);
 
             try
             {
@@ -337,6 +322,8 @@ namespace Molten.Graphics
             return step as T;
         }
 
+        public abstract void BuildRenderChain(RenderChainLink first, SceneRenderData scene, LayerRenderData layerData, RenderCamera camera);
+
         /// <summary>
         /// Invoked during the first stage of service initialization to allow any api-related objects to be created/initialized prior to renderer initialization.
         /// </summary>
@@ -420,11 +407,6 @@ namespace Molten.Graphics
         /// Gets the compute manager attached to the current renderer.
         /// </summary>
         public ComputeManager Compute { get; private set; }
-
-        /// <summary>
-        /// Gets the implemented <see cref="IRenderChain"/> instance for the current <see cref="RenderService"/>.
-        /// </summary>
-        protected abstract IRenderChain Chain { get; }
 
         /// <summary>
         /// Gets a list of all the output <see cref="ISwapChainSurface"/> instances attached to the renderer. These are automatically presented to the graphics device by the renderer, if active.

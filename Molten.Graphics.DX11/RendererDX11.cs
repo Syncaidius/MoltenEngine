@@ -11,7 +11,6 @@ namespace Molten.Graphics
         D3D11 _api;
         DisplayManagerDXGI _displayManager;
         DeviceBuilderDX11 _deviceBuilder;
-        RenderChainDX11 _chain;
         ResourceFactoryDX11 _resFactory;
         FxcCompiler _shaderCompiler;
         SpriteBatcherDX11 _spriteBatcher;
@@ -26,7 +25,6 @@ namespace Molten.Graphics
         protected unsafe override GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings)
         {
             _api = D3D11.GetApi();
-            _chain = new RenderChainDX11(this);
             _deviceBuilder = new DeviceBuilderDX11(_api, this, 
                 D3DFeatureLevel.Level111,
                 D3DFeatureLevel.Level110, 
@@ -111,6 +109,14 @@ namespace Molten.Graphics
             }
         }
 
+        public override void BuildRenderChain(RenderChainLink first, SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
+        {
+            if (camera.Flags.HasFlag(RenderCameraFlags.Deferred))
+                first.Next<GBufferStep>().Next<LightingStep>().Next<CompositionStep>().Next<SkyboxStep>().Next<FinalizeStep>();
+            else
+                first.Next<ForwardStep>().Next<SkyboxStep>().Next<FinalizeStep>();
+        }
+
         protected override void OnDisposeBeforeRender()
         {
             _resFactory.Dispose();
@@ -124,8 +130,6 @@ namespace Molten.Graphics
         }
 
         internal DeviceDX11 NativeDevice { get; private set; }
-
-        protected override IRenderChain Chain => _chain;
 
         public override FxcCompiler Compiler => _shaderCompiler;
 

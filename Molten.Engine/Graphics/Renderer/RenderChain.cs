@@ -2,31 +2,28 @@
 
 namespace Molten.Graphics
 {
-    internal partial class RenderChainDX11 : IRenderChain
+    internal class RenderChain
     {
         RenderChainLink _first;
         internal readonly ObjectPool<RenderChainLink> LinkPool;
         internal readonly ObjectPool<RenderChainContext> ContextPool;
 
-        internal RenderChainDX11(RendererDX11 renderer)
+        internal RenderChain(RenderService renderer)
         {
             Renderer = renderer;
             LinkPool = new ObjectPool<RenderChainLink>(() => new RenderChainLink(this));
             ContextPool = new ObjectPool<RenderChainContext>(() => new RenderChainContext(Renderer));
         }
 
-        public void Build(SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
+        internal void Build(SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
         {
             _first = LinkPool.GetInstance();
             _first.Set<StartStep>();
 
-            if (camera.Flags.HasFlag(RenderCameraFlags.Deferred))
-                _first.Next<GBufferStep>().Next<LightingStep>().Next<CompositionStep>().Next<SkyboxStep>().Next<FinalizeStep>();
-            else
-                _first.Next<ForwardStep>().Next<SkyboxStep>().Next<FinalizeStep>();
+            Renderer.BuildRenderChain(_first, scene, layerData, camera);
         }
 
-        public void Render(SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera, Timing time)
+        internal void Render(SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera, Timing time)
         {
             RenderChainContext context = ContextPool.GetInstance();
             context.Layer = layerData as LayerRenderData<Renderable>;
@@ -41,6 +38,6 @@ namespace Molten.Graphics
             RenderChainLink.Recycle(_first);
         }
 
-        internal RendererDX11 Renderer { get; }
+        internal RenderService Renderer { get; }
     }
 }

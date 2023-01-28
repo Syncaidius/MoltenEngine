@@ -12,7 +12,6 @@ namespace Molten.Graphics
     public class RendererDX12 : RenderService
     {
         D3D12 _api;
-        RenderChainDX12 _chain;
         DisplayManagerDXGI _displayManager;
 
         public RendererDX12()
@@ -23,7 +22,6 @@ namespace Molten.Graphics
         protected override GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings)
         {
             _api = D3D12.GetApi();
-            _chain = new RenderChainDX12(this);
             Builder = new DeviceBuilderDX12(_api, this);
             _displayManager = new DisplayManagerDXGI(Builder.GetCapabilities);
             return _displayManager;
@@ -82,13 +80,16 @@ namespace Molten.Graphics
             _api.Dispose();
         }
 
+        public override void BuildRenderChain(RenderChainLink first, SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
+        {
+            throw new NotImplementedException();
+        }
+
         internal DeviceDX12 NativeDevice { get; private set; }
 
         internal DeviceBuilderDX12 Builder { get; private set; }
 
         public override ResourceFactory Resources { get; }
-
-        protected override IRenderChain Chain => _chain;
 
         public override DxcCompiler Compiler { get; }
 
