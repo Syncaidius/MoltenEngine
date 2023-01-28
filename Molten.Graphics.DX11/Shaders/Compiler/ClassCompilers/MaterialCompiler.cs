@@ -176,7 +176,7 @@ namespace Molten.Graphics
             MaterialPassCompileResult pResult)
         {
             MaterialPass pass = pResult.Pass;
-            Material material = pass.Material as Material;
+            Material material = pass.Material;
 
             // Vertex Shader
             if (pResult[ShaderType.Vertex] != null)

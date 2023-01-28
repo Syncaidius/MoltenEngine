@@ -1,8 +1,8 @@
-﻿using Molten.IO;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Molten.IO;
 
 namespace Molten.Graphics
 {

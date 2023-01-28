@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using Molten.Collections;
 
 namespace Molten
 {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Molten.Graphics.Dxgi;
-using Molten.Windows32;
+﻿using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.DXGI;
 

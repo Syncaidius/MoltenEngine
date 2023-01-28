@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Molten.Graphics;
-
-namespace Molten
+﻿namespace Molten
 {
     public class ShaderParameters : ContentParameters
     {

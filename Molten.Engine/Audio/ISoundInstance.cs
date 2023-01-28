@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Audio
+﻿namespace Molten.Audio
 {
     /// <summary>
-     /// Represents an implementation of an audio instance.
-     /// </summary>
+    /// Represents an implementation of an audio instance.
+    /// </summary>
     public interface ISoundInstance : IDisposable
     {
         void Play();

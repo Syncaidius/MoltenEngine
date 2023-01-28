@@ -1,6 +1,6 @@
-﻿using Silk.NET.Core.Native;
+﻿using System.Reflection;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
-using System.Reflection;
 using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics

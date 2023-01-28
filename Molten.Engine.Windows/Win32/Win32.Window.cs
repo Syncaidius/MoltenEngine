@@ -143,7 +143,7 @@ namespace Molten.Windows32
 
             IntPtr returnCode = CallWindowProc(_wndProc, hWnd, msg, wParam, lParam);
             WndProcMessageType msgType = (WndProcMessageType)msg;
-            uint wp = (uint)((long)wParam & uint.MaxValue);
+            uint wp = (uint)(wParam & uint.MaxValue);
 
             int lp = IntPtr.Size == 8 ?
                 (int)(lParam.ToInt64() & int.MaxValue) :
@@ -152,7 +152,7 @@ namespace Molten.Windows32
             switch (msgType)
             {
                 case WndProcMessageType.WM_GETDLGCODE:
-                    returnCode = (IntPtr)(returnCode.ToInt32() | DLGC_WANTALLKEYS);
+                    returnCode = returnCode.ToInt32() | DLGC_WANTALLKEYS;
                     break;
 
                 case WndProcMessageType.WM_IME_SETCONTEXT:
@@ -162,7 +162,7 @@ namespace Molten.Windows32
 
                 case WndProcMessageType.WM_INPUTLANGCHANGE:
                     ImmAssociateContext(hWnd, _hIMC);
-                    returnCode = (IntPtr)1;
+                    returnCode = 1;
                     break;
             }
 

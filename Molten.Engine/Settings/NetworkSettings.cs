@@ -1,5 +1,5 @@
-﻿using Molten.Net;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
+using Molten.Net;
 
 namespace Molten
 {

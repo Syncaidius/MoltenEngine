@@ -1,10 +1,9 @@
-﻿using Molten.Collections;
+﻿using System.Collections.Concurrent;
+using System.Reflection;
 using Molten.Font;
 using Molten.Graphics;
 using Molten.Threading;
 using Newtonsoft.Json;
-using System.Collections.Concurrent;
-using System.Reflection;
 
 namespace Molten
 {

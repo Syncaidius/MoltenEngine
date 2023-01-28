@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Silk.NET.Core;
-using Silk.NET.Vulkan;
-using Silk.NET.Vulkan.Extensions.KHR;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {

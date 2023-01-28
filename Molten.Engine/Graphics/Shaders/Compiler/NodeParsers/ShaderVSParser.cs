@@ -1,6 +1,4 @@
-﻿using System.Xml;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>An entry-point tag parser used by <see cref="ComputeTask"/> headers.</summary>
     internal class ShaderVSParser : ShaderNodeParser

@@ -1,7 +1,6 @@
-﻿using Molten.Collections;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text;
+using Molten.Collections;
 
 namespace Molten
 {

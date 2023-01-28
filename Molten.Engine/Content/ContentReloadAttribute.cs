@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten
+﻿namespace Molten
 {
     /// <summary>
     /// Used to determine how a content asset behaves when reloaded after changes.

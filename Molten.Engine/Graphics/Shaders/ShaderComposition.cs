@@ -1,6 +1,4 @@
-﻿using Silk.NET.Core.Native;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public unsafe abstract class ShaderComposition : GraphicsObject
     {

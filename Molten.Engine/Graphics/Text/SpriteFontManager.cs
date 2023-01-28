@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Molten.Collections;
+﻿using Molten.Collections;
 using Molten.Font;
 using Molten.Graphics.SDF;
-using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
@@ -98,8 +91,8 @@ namespace Molten.Graphics
                 RectangleF gBounds = (RectangleF)binding.Glyph.Bounds;
                 Vector2F glyphScale = new Vector2F()
                 {
-                    X = (float)binding.PWidth / gBounds.Width,
-                    Y = (float)binding.PHeight / gBounds.Height,
+                    X = binding.PWidth / gBounds.Width,
+                    Y = binding.PHeight / gBounds.Height,
                 };
 
                 Vector2F glyphOffset = new Vector2F()

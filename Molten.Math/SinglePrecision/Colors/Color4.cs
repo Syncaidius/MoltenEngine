@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -7,7 +6,7 @@ using Molten.DoublePrecision;
 
 namespace Molten
 {
-	/// <summary>
+    /// <summary>
     /// Represents a color in the form of red, green, blue, alpha.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -916,13 +915,13 @@ namespace Molten
 		///<summary>Casts a <see cref="Color4"/> to a <see cref="Color3D"/>.</summary>
 		public static explicit operator Color3D(Color4 value)
 		{
-			return new Color3D((double)value.R, (double)value.G, (double)value.B);
+			return new Color3D(value.R, value.G, value.B);
 		}
 
 		///<summary>Casts a <see cref="Color4"/> to a <see cref="Color4D"/>.</summary>
 		public static explicit operator Color4D(Color4 value)
 		{
-			return new Color4D((double)value.R, (double)value.G, (double)value.B, (double)value.A);
+			return new Color4D(value.R, value.G, value.B, value.A);
 		}
 
         /// <summary>

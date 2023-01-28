@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using Molten.Collections;
-using Silk.NET.Core.Attributes;
-using Silk.NET.Core.Native;
-using Silk.NET.OpenAL;
-using Silk.NET.OpenAL.Extensions;
-using Silk.NET.OpenAL.Extensions.Enumeration;
+﻿using Molten.Collections;
 
 namespace Molten.Audio.OpenAL
 {

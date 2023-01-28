@@ -1,6 +1,4 @@
-﻿using Molten.Utility;
-
-namespace Molten.Input
+﻿namespace Molten.Input
 {
     public abstract class TouchDevice : PointingDevice
     {

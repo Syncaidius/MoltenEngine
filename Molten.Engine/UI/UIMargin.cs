@@ -1,8 +1,4 @@
-﻿using System.Runtime.Serialization;
-using Molten.Graphics;
-using Newtonsoft.Json.Linq;
-
-namespace Molten.UI
+﻿namespace Molten.UI
 {
     public class UIMargin
     {

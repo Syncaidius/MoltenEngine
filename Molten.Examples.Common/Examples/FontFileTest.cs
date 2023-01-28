@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Molten.Font;
+﻿using Molten.Font;
 using Molten.Graphics;
 using Molten.Input;
 
@@ -221,7 +216,7 @@ namespace Molten.Examples
             // when left mouse button is clicked.
             if (Mouse.IsTapped(PointerButton.Left))
             {
-                _clickPoint = (Vector2F)Mouse.Position;
+                _clickPoint = Mouse.Position;
                 _clickColor = Color.Red;
 
                 if (_shape != null)

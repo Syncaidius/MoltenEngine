@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -6,8 +5,8 @@ using System.Runtime.Serialization;
 
 namespace Molten
 {
-	///<summary>Represents a four dimensional mathematical QuaternionF.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = 4)]
+    ///<summary>Represents a four dimensional mathematical QuaternionF.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Serializable]
 	public partial struct QuaternionF : IFormattable, IEquatable<QuaternionF>
 	{

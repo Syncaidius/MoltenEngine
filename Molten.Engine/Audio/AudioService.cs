@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Molten.Collections;
+﻿using Molten.Collections;
 using Molten.Threading;
-using Newtonsoft.Json.Linq;
 
 namespace Molten.Audio
 {
@@ -84,7 +78,7 @@ namespace Molten.Audio
 
         private void Buffer_OnDisposed(AudioBuffer obj)
         {
-            _buffers.Remove(obj as AudioBuffer);
+            _buffers.Remove(obj);
         }
 
         protected override void OnServiceDisposing()

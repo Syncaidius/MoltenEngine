@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Molten.Collections;
-using Molten.Threading;
-using Newtonsoft.Json.Linq;
-using Silk.NET.Core.Attributes;
+﻿using Silk.NET.Core.Attributes;
 using Silk.NET.OpenAL;
 using Silk.NET.OpenAL.Extensions;
 using Silk.NET.OpenAL.Extensions.Enumeration;

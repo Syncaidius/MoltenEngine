@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.Devices;
-using Molten.IO;
+﻿using Molten.IO;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
@@ -227,7 +226,7 @@ namespace Molten.Graphics
 
         public override GraphicsBindResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
         {
-            return DrawCommon(material as Material, GraphicsValidationMode.Unindexed, topology, (pass) =>
+            return DrawCommon(material, GraphicsValidationMode.Unindexed, topology, (pass) =>
             {
                 _context->Draw(vertexCount, vertexStartIndex);
             },
@@ -247,7 +246,7 @@ namespace Molten.Graphics
             uint vertexStartIndex = 0,
             uint instanceStartIndex = 0)
         {
-            return DrawCommon(material as Material, GraphicsValidationMode.Instanced, topology, (pass) =>
+            return DrawCommon(material, GraphicsValidationMode.Instanced, topology, (pass) =>
             {
                 _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
             },
@@ -266,7 +265,7 @@ namespace Molten.Graphics
             int vertexIndexOffset = 0,
             uint startIndex = 0)
         {
-            return DrawCommon(material as Material, GraphicsValidationMode.Indexed, topology, (pass) =>
+            return DrawCommon(material, GraphicsValidationMode.Indexed, topology, (pass) =>
             {
                 _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset);
             },
@@ -287,7 +286,7 @@ namespace Molten.Graphics
             int vertexIndexOffset = 0,
             uint instanceStartIndex = 0)
         {
-            return DrawCommon(material as Material, GraphicsValidationMode.InstancedIndexed, topology, (pass) =>
+            return DrawCommon(material, GraphicsValidationMode.InstancedIndexed, topology, (pass) =>
             {
                 _context->DrawIndexedInstanced(indexCountPerInstance, instanceCount,
                     startIndex, vertexIndexOffset, instanceStartIndex);
@@ -303,7 +302,7 @@ namespace Molten.Graphics
         /// <inheritdoc/>
         public override void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
         {
-            bool csChanged = Bind(task as ComputeTask);
+            bool csChanged = Bind(task);
 
             if (CS.Shader.BoundValue == null)
             {

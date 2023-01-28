@@ -1,5 +1,5 @@
-﻿using Silk.NET.Direct3D11;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {

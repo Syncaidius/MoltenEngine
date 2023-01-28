@@ -43,8 +43,8 @@
 * THE SOFTWARE.
 */
 
-using Molten.Windows32;
 using System.ComponentModel;
+using Molten.Windows32;
 
 namespace Molten.Graphics
 {

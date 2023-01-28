@@ -1,8 +1,4 @@
-﻿using Molten.Comparers;
-using System.Reflection;
-using System.Runtime.InteropServices;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public sealed class VertexFormat : EngineObject
     {

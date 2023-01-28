@@ -1,6 +1,4 @@
-﻿using Silk.NET.Direct3D11;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     internal struct DepthClearChange : ITextureTask
     {

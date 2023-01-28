@@ -1,5 +1,5 @@
-﻿using Molten.Graphics;
-using System.Text;
+﻿using System.Text;
+using Molten.Graphics;
 
 namespace Molten.Content
 {

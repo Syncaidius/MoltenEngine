@@ -12,8 +12,8 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 
-using Molten.Collections;
 using System.Diagnostics;
+using Molten.Collections;
 
 namespace Molten.Graphics.Textures
 {

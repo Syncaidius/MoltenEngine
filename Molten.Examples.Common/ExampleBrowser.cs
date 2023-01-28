@@ -1,12 +1,11 @@
-﻿using Molten.Audio;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Reflection;
+using Molten.Audio;
 using Molten.Collections;
 using Molten.Graphics;
 using Molten.Input;
-using Molten.Net;
 using Molten.UI;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Reflection;
 
 namespace Molten.Examples
 {

@@ -1,5 +1,5 @@
-﻿using Molten.Utility;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
+using Molten.Utility;
 
 namespace Molten
 {

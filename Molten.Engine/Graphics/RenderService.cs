@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using Molten.Collections;
+﻿using Molten.Collections;
 using Molten.Graphics.Overlays;
 using Molten.Threading;
 

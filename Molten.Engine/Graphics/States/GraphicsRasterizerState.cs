@@ -1,8 +1,4 @@
-﻿
-
-using System.IO;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>Stores a rasterizer state for use with a <see cref="GraphicsCommandQueue"/>.</summary>
     public abstract class GraphicsRasterizerState : GraphicsObject, IEquatable<GraphicsRasterizerState>

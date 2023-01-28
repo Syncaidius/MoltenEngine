@@ -1,6 +1,4 @@
-﻿using Silk.NET.Core.Attributes;
-
-namespace Molten
+﻿namespace Molten
 {
     public enum ConservativeRasterizerMode
     {

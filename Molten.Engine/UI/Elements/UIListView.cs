@@ -1,7 +1,4 @@
-﻿using System.Xml.Linq;
-using Molten.Graphics;
-
-namespace Molten.UI
+﻿namespace Molten.UI
 {
     /// <summary>
     /// A control for listing <see cref="UIListViewItem"/> 

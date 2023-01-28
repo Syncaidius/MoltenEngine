@@ -1,10 +1,9 @@
-﻿using Molten.Graphics;
+﻿using System.Runtime.Serialization;
+using System.Text;
 using Molten.Input;
 using Molten.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System.Runtime.Serialization;
-using System.Text;
 
 namespace Molten
 {

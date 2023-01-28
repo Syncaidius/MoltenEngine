@@ -1,6 +1,4 @@
-﻿using Silk.NET.Core.Native;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     internal unsafe class ComputeCompiler : FxcClassCompiler
     {

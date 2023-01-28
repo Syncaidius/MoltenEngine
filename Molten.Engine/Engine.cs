@@ -4,7 +4,6 @@ using Molten.Graphics;
 using Molten.Input;
 using Molten.Net;
 using Molten.Threading;
-using Molten.UI;
 
 namespace Molten
 {

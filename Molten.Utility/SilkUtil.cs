@@ -1,5 +1,4 @@
 ﻿using Silk.NET.Core.Native;
-using System.Text.RegularExpressions;
 
 namespace Molten
 {

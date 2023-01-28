@@ -1,6 +1,6 @@
-﻿using Molten.Threading;
+﻿using System.Diagnostics;
+using Molten.Threading;
 using Molten.Utility;
-using System.Diagnostics;
 
 namespace Molten
 {

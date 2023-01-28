@@ -1,7 +1,7 @@
-﻿using Molten.Graphics.Dxgi;
+﻿using System.Runtime.InteropServices;
+using Molten.Graphics.Dxgi;
 using Molten.Windows32;
 using Silk.NET.DXGI;
-using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {

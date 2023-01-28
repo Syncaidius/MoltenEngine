@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Molten.DoublePrecision;
+﻿using Molten.DoublePrecision;
 
 namespace Molten.Graphics.SDF
 {
@@ -86,7 +81,7 @@ namespace Molten.Graphics.SDF
 
         public void Merge(MultiDistanceSelector other)
         {
-            MultiDistanceSelector md = other as MultiDistanceSelector;
+            MultiDistanceSelector md = other;
             R.Merge(md.R);
             G.Merge(md.G);
             B.Merge(md.B);

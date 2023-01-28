@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Molten.Input;
+﻿using Molten.Input;
 using Molten.UI;
 
 namespace Molten

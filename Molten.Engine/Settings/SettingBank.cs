@@ -1,5 +1,4 @@
-﻿using Molten.Collections;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Concurrent;
 
 namespace Molten

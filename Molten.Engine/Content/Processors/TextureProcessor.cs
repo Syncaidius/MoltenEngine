@@ -1,7 +1,7 @@
-﻿using Molten.Graphics;
+﻿using System.Text;
+using Molten.Graphics;
 using Molten.Graphics.Textures;
 using Molten.Graphics.Textures.DDS;
-using System.Text;
 
 namespace Molten.Content
 {

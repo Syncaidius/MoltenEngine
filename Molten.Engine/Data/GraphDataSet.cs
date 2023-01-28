@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Data
-{    
+﻿namespace Molten.Data
+{
     /// <summary>
     /// A dataset with a fixed capacity. Adding new values once the dataset is full will replace the oldest value, when added via <see cref="Add(T)"/>.
     /// </summary>

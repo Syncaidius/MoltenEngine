@@ -1,7 +1,6 @@
 ﻿using Molten.Graphics;
 using Molten.Threading;
 using Molten.Windows32;
-using System.Reflection;
 
 namespace Molten.Input
 {

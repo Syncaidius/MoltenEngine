@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Molten.Collections;
-using Molten.Font;
-using Molten.Graphics;
-using Silk.NET.Core.Native;
-using static System.Net.Mime.MediaTypeNames;
-
-namespace Molten.UI
+﻿namespace Molten.UI
 {
     public enum UITextInsertType
     {

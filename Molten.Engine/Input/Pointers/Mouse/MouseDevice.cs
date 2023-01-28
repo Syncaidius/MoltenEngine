@@ -1,6 +1,4 @@
-﻿using Molten.Graphics;
-
-namespace Molten.Input
+﻿namespace Molten.Input
 {
     //public delegate void MouseEventHandler(MouseDevice mouse, in MouseButtonState state);
 

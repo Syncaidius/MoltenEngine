@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 using Molten.DoublePrecision;
 
 namespace Molten.Graphics.SDF
@@ -154,7 +149,7 @@ namespace Molten.Graphics.SDF
                 // Multiple corners
                 else
                 {
-                    int cornerCount = (int)corners.Count;
+                    int cornerCount = corners.Count;
                     int spline = 0;
                     int start = corners[0];
                     int m = contour.Edges.Count;
@@ -372,22 +367,22 @@ namespace Molten.Graphics.SDF
                         color = 1;
                         break;
                     case 3:
-                        color = (int)seed & 1;
+                        color = seed & 1;
                         seed >>= 1;
                         break;
                     case 4:
                         color = 2;
                         break;
                     case 5:
-                        color = ((int)seed + 1 & 1) << 1;
+                        color = (seed + 1 & 1) << 1;
                         seed >>= 1;
                         break;
                     case 6:
-                        color = ((int)seed & 1) + 1;
+                        color = (seed & 1) + 1;
                         seed >>= 1;
                         break;
                     case 7:
-                        color = (int)((seed + i) % 3);
+                        color = (seed + i) % 3;
                         seed /= 3;
                         break;
                 }

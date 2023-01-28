@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using Molten.Input;
 
 namespace Molten

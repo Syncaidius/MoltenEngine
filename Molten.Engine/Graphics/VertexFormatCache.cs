@@ -1,9 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Molten.Collections;
 using Molten.Comparers;
-using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {

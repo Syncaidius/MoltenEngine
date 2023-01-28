@@ -3,7 +3,6 @@
 
 using System.Diagnostics.Contracts;
 using System.Numerics;
-using Molten.DoublePrecision;
 
 namespace Molten
 {

@@ -1,6 +1,4 @@
-﻿using System.Xml;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     internal class DescriptionParser : ShaderNodeParser
     {

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Silk.NET.Core.Native;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public interface IGraphicsObject : IDisposable
     {

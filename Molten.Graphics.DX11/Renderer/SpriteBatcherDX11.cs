@@ -77,7 +77,7 @@ namespace Molten.Graphics
                 if (range.Type == RangeType.None)
                     continue;
 
-                Material mat = (range.Material as Material) ?? _checkers[(int)range.Type](context, range, data);
+                Material mat = range.Material ?? _checkers[(int)range.Type](context, range, data);
 
                 mat["spriteData"].Value = _bufferData;
                 mat["vertexOffset"].Value = bufferOffset;

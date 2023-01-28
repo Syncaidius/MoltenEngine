@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Molten.DoublePrecision;
+﻿using Molten.DoublePrecision;
 
 namespace Molten.Graphics.SDF
 {
@@ -42,7 +37,7 @@ namespace Molten.Graphics.SDF
             _invRange = 1 / range;
             _minDeviationRatio = SdfConfig.defaultMinDeviationRatio;
             _minImproveRatio = SdfConfig.defaultMinImproveRatio;
-            EngineUtil.MemSet(_stencil.Data, 0, (nuint)(sizeof(byte) * _stencil.Width * _stencil.Height));
+            EngineUtil.MemSet(_stencil.Data, 0, sizeof(byte) * _stencil.Width * _stencil.Height);
         }
 
         public void SetMinDeviationRatio(double minDeviationRatio)

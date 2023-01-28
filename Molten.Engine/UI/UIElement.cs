@@ -1,7 +1,6 @@
-﻿using Molten.Graphics;
+﻿using System.Runtime.Serialization;
+using Molten.Graphics;
 using Molten.Input;
-using System.Runtime.Serialization;
-using System.Xml.Linq;
 
 namespace Molten.UI
 {
