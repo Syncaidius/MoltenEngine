@@ -473,7 +473,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < CS.Shader.BoundValue.UnorderedAccessIds.Count; i++)
                 {
                     uint slotID = CS.Shader.BoundValue.UnorderedAccessIds[i];
-                    CS.UAVs[slotID].Value = _compute.BoundValue.UAVs[slotID]?.UnorderedResource as ContextBindableResource;
+                    CS.UAVs[slotID].Value = _compute.BoundValue.UAVs[slotID]?.UnorderedResource as GraphicsResourceDX11;
                 }
             }
 

@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     public delegate void TextureEvent(TextureBase texture);
 
-    public unsafe abstract partial class TextureBase : ContextBindableResource, ITexture
+    public unsafe abstract partial class TextureBase : GraphicsResourceDX11, ITexture
     {
         ThreadedQueue<ITextureTask> _pendingChanges;
 

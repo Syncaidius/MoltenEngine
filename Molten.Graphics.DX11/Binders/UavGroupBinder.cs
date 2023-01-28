@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class UavGroupBinder : GraphicsGroupBinder<ContextBindableResource>
+    internal unsafe class UavGroupBinder : GraphicsGroupBinder<GraphicsResourceDX11>
     {
         ShaderCSStage _stage;
 
@@ -11,7 +11,7 @@ namespace Molten.Graphics
             _stage = stage;
         }
 
-        public override void Bind(GraphicsSlotGroup<ContextBindableResource> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<GraphicsResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             // Set unordered access resources
             ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[(int)numChanged];
@@ -28,7 +28,7 @@ namespace Molten.Graphics
             _stage.SetUnorderedAccessViews(startIndex, numChanged, pUavs, pInitialCounts);
         }
 
-        public override void Bind(GraphicsSlot<ContextBindableResource> slot, ContextBindableResource value)
+        public override void Bind(GraphicsSlot<GraphicsResourceDX11> slot, GraphicsResourceDX11 value)
         {
             ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[1];
             uint* pInitialCounts = stackalloc uint[1];
@@ -37,7 +37,7 @@ namespace Molten.Graphics
             _stage.SetUnorderedAccessViews(slot.SlotIndex, 1, pUavs, pInitialCounts);
         }
 
-        public override void Unbind(GraphicsSlotGroup<ContextBindableResource> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<GraphicsResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             // Set unordered access resources
             ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[(int)numChanged];
@@ -53,7 +53,7 @@ namespace Molten.Graphics
             _stage.SetUnorderedAccessViews(startIndex, numChanged, pUavs, pInitialCounts);
         }
 
-        public override void Unbind(GraphicsSlot<ContextBindableResource> slot, ContextBindableResource value)
+        public override void Unbind(GraphicsSlot<GraphicsResourceDX11> slot, GraphicsResourceDX11 value)
         {
             ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[1];
             uint* pInitialCounts = stackalloc uint[1];
