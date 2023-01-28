@@ -3,10 +3,10 @@
     /// <summary>
     /// The skybox step.
     /// </summary>
-    internal class SkyboxStep : RenderStepBase
+    public class SkyboxStep : RenderStepBase
     {
         Material _matSky;
-        IndexedMesh<Vertex> _sphereMesh;
+        IIndexedMesh<Vertex> _sphereMesh;
         ObjectRenderData _skyboxData;
 
         public override void Initialize(RenderService renderer)
@@ -19,7 +19,7 @@
             Vertex[] vertices;
             int[] indices;
             MakeSphere(4, 4, out vertices, out indices);
-            _sphereMesh = new IndexedMesh<Vertex>(renderer as RendererDX11, (uint)vertices.Length, (uint)indices.Length, 
+            _sphereMesh = renderer.Resources.CreateIndexedMesh<Vertex>((uint)vertices.Length, (uint)indices.Length, 
                 VertexTopology.TriangleList, IndexBufferFormat.Unsigned32Bit, false);
             _sphereMesh.SetVertices(vertices);
             _sphereMesh.SetIndices(indices);
@@ -39,7 +39,7 @@
                 return;
 
             Rectangle bounds = (Rectangle)camera.Surface.Viewport.Bounds;
-            CommandQueueDX11 cmd = renderer.Device.Cmd as CommandQueueDX11;
+            GraphicsCommandQueue cmd = renderer.Device.Cmd;
 
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 
@@ -48,7 +48,7 @@
 
             cmd.ResetRenderSurfaces();
             cmd.SetRenderSurface(destSurface, 0);
-            cmd.DepthSurface.Value = renderer.Surfaces.GetDepth() as DepthStencilSurface;
+            cmd.DepthSurface.Value = renderer.Surfaces.GetDepth();
             cmd.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
             cmd.SetViewports(camera.Surface.Viewport);
             cmd.SetScissorRectangle(bounds);

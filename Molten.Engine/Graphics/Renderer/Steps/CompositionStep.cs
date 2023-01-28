@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal class CompositionStep : RenderStepBase
+    public class CompositionStep : RenderStepBase
     {
         RenderCamera _orthoCamera;
         ObjectRenderData _dummyData;
@@ -37,7 +37,7 @@
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF vpBounds = camera.Surface.Viewport.Bounds;
-            CommandQueueDX11 cmd = renderer.Device.Cmd as CommandQueueDX11;
+            GraphicsCommandQueue cmd = renderer.Device.Cmd;
 
             context.CompositionSurface.Clear(context.Scene.BackgroundColor, GraphicsPriority.Immediate);
             cmd.ResetRenderSurfaces();

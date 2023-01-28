@@ -12,7 +12,7 @@
         {
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
 
-            CommandQueueDX11 cmd = renderer.Device.Cmd as CommandQueueDX11;
+            GraphicsCommandQueue cmd = renderer.Device.Cmd;
             sScene.Clear(Color.Transparent, GraphicsPriority.Immediate);
 
             cmd.SetRenderSurface(sScene, 0);

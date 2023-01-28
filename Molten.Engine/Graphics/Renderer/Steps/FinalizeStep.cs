@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal class FinalizeStep : RenderStepBase
+    public class FinalizeStep : RenderStepBase
     {
         RenderCamera _orthoCamera;
         ObjectRenderData _dummyData;
@@ -21,8 +21,8 @@
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF bounds = new RectangleF(0, 0, camera.Surface.Width, camera.Surface.Height);
-            CommandQueueDX11 cmd = renderer.Device.Cmd as CommandQueueDX11;
-            IRenderSurface2D finalSurface = camera.Surface as RenderSurface2D;
+            GraphicsCommandQueue cmd = renderer.Device.Cmd;
+            IRenderSurface2D finalSurface = camera.Surface;
 
             if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
                 renderer.ClearIfFirstUse(finalSurface, context.Scene.BackgroundColor);

@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal class GBufferStep : RenderStepBase
+    public class GBufferStep : RenderStepBase
     {
         public override void Dispose() { }
 
@@ -11,7 +11,7 @@
             IRenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
 
             RendererDX11 dx11Renderer = renderer as RendererDX11;
-            CommandQueueDX11 cmd = renderer.Device.Cmd as CommandQueueDX11;
+            GraphicsCommandQueue cmd = renderer.Device.Cmd;
 
             cmd.SetRenderSurface(sScene, 0);
             cmd.SetRenderSurface(sNormals, 1);
