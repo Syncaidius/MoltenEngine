@@ -51,11 +51,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override ISpriteRenderer CreateSpriteRenderer(Action<SpriteBatcher> callback = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public override IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm, 
             uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, 
             TextureFlags flags = TextureFlags.None, string name = null)

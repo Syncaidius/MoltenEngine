@@ -8,7 +8,7 @@
 
         }
 
-        private protected override void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+        protected override void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             ApplyBuffers(cmd);
             IShaderResource normal = GetResource(1);

@@ -9,18 +9,20 @@
             base(renderer, maxVertices, maxIndices, topology, indexFormat, dynamic)
         { }
 
-        private protected override void OnRender(CommandQueueDX11 cmd, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        protected override void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             ApplyBuffers(cmd);
             IShaderResource normal = GetResource(1);
 
             if (Material == null)
             {
+                RendererDX11 dx11Renderer = renderer as RendererDX11;
+
                 // Use whichever default one fits the current configuration.
                 if (normal == null)
-                    Material = renderer.StandardMeshMaterial_NoNormalMap;
+                    Material = dx11Renderer.StandardMeshMaterial_NoNormalMap;
                 else
-                    Material = renderer.StandardMeshMaterial;
+                    Material = dx11Renderer.StandardMeshMaterial;
 
                 Material.Object.EmissivePower.Value = EmissivePower;
             }

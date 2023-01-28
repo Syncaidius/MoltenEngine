@@ -91,5 +91,7 @@ namespace Molten.Graphics
         protected override IRenderChain Chain => _chain;
 
         public override DxcCompiler Compiler { get; }
+
+        public override SpriteBatcher SpriteBatch => throw new NotImplementedException();
     }
 }
