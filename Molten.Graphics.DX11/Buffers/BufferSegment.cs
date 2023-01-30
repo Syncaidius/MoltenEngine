@@ -6,49 +6,28 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public unsafe class BufferSegment : ContextBindableResource<ID3D11Buffer>, IPoolable, IShaderResource
+    public unsafe class BufferSegment : ContextBindableResource<ID3D11Buffer>, IPoolable, IGraphicsBufferSegment
     {
-        /// <summary>The size of the segment in bytes. This is <see cref="ElementCount"/> multiplied by <see cref="Stride"/>.</summary>
-        internal uint ByteCount;
-
-        /// <summary>The number of elements that the segment can hold.</summary>
-        internal uint ElementCount;
-
         /// <summary>The previous segment (if any) within the mapped buffer.</summary>
         internal BufferSegment Previous;
 
         /// <summary>The next segment (if any) within the mapped buffer.</summary>
         internal BufferSegment Next;
 
-        /// <summary>
-        /// The <see cref="GraphicsBuffer"/> that contains the current <see cref="BufferSegment"/>
-        /// </summary>
-        internal GraphicsBuffer Buffer;
+        internal override ID3D11Buffer* ResourcePtr => _buffer.ResourcePtr;
 
-        internal override ID3D11Buffer* ResourcePtr => Buffer.ResourcePtr;
-
-        public override unsafe ID3D11Resource* NativePtr => Buffer.NativePtr;
-
-        /// <summary>
-        /// The byte offset within the <see cref="Buffer"/> <see cref="GraphicsBuffer"/>.
-        /// </summary>
-        internal uint ByteOffset;
-
-        /// <summary>
-        /// The size of each element within the buffer, in bytes.
-        /// </summary>
-        internal uint Stride;
-
-        internal VertexFormat VertexFormat;
+        public override unsafe ID3D11Resource* NativePtr => _buffer.NativePtr;
 
         internal Format DataFormat;
 
         /// <summary>If true, the segment is not used.</summary>
         internal bool IsFree;
 
+        GraphicsBuffer _buffer;
+
         internal BufferSegment(DeviceDX11 device) : base(device, GraphicsBindTypeFlags.None) { }
 
-        internal void SetVertexFormat<T>() where T: struct, IVertexType
+        public void SetVertexFormat<T>() where T: struct, IVertexType
         {
             VertexFormat = (Buffer.Device as DeviceDX11).VertexFormatCache.Get<T>();
         }
@@ -58,7 +37,7 @@ namespace Molten.Graphics
             VertexFormat = (Buffer.Device as DeviceDX11).VertexFormatCache.Get(vertexType);
         }
 
-        internal void SetIndexFormat(IndexBufferFormat format)
+        public void SetIndexFormat(IndexBufferFormat format)
         {
             switch (format)
             {
@@ -74,19 +53,19 @@ namespace Molten.Graphics
 
         /// <summary>Copies an array of elements into the buffer.</summary>
         /// <param name="data">The elements to set </param>
-        internal void SetData<T>(CommandQueueDX11 context, T[] data) where T : unmanaged
+        public void SetData<T>(T[] data) where T : unmanaged
         {
-            SetData<T>(context, data, 0, (uint)data.Length);
+            SetData<T>(data, 0, (uint)data.Length);
         }
 
         /// <summary>Copies element data into the buffer.</summary>
         /// <param name="data">The source of elements to copy into the buffer.</param>
         /// <param name="offset">The ID of the first element in the buffer at which to copy the source data into.</param>
         /// <param name="count">The number of elements to copy from the source array.</param>
-        internal void SetData<T>(CommandQueueDX11 context, T[] data, uint count)
+        public void SetData<T>(T[] data, uint count)
             where T : unmanaged
         {
-            SetData<T>(context, data, 0, count);
+            SetData<T>(data, 0, count);
         }
 
         /// <summary>Copies element data into the buffer.</summary>
@@ -96,7 +75,7 @@ namespace Molten.Graphics
         /// <param name="elementOffset">The number of elements from the beginning of the <see cref="BufferSegment"/> to offset the destination of the provided data.
         /// The number of bytes the data is offset is based on the <see cref="Stride"/> value of the buffer segment.</param>
         /// <param name="completionCallback">The callback to invoke when the set-data operation has been completed.</param>
-        internal void SetData<T>(CommandQueueDX11 context, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null, Action completionCallback = null) 
+        public void SetData<T>(T[] data, uint startIndex, uint count, uint elementOffset = 0, IStagingBuffer staging = null, Action completionCallback = null) 
             where T : unmanaged
         {
             uint tStride = (uint)Marshal.SizeOf(typeof(T));
@@ -123,7 +102,7 @@ namespace Molten.Graphics
 
             // Copy data and queue operation.
             Array.Copy(data, startIndex, op.Data, 0, count);
-            Buffer.QueueOperation(op);
+            _buffer.QueueOperation(op);
         }
 
         /// <summary>Immediately sets the data on the buffer.</summary>
@@ -146,7 +125,7 @@ namespace Molten.Graphics
             if (finalBytePos > segmentBounds)
                 throw new OverflowException($"Provided data's final byte position {finalBytePos} would exceed the segment's bounds (byte {segmentBounds})");
 
-            Buffer.Set<T>(context, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
+            _buffer.Set<T>(context, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
         }
 
         internal void Map(CommandQueueDX11 context, Action<GraphicsBuffer, RawStream> callback, GraphicsBuffer staging = null)
@@ -154,7 +133,7 @@ namespace Molten.Graphics
             uint curByteOffset = ByteOffset;
             uint curStride = Stride;
 
-            Buffer.GetStream(context, ByteOffset, Stride * ElementCount, (buffer, stream) =>
+            _buffer.GetStream(context, ByteOffset, Stride * ElementCount, (buffer, stream) =>
             {
                 if (Buffer.Mode == BufferMode.DynamicRing)
                     ByteOffset = (uint)stream.Position;
@@ -175,7 +154,7 @@ namespace Molten.Graphics
             Action<T[]> completionCallback = null) 
             where T : unmanaged
         {
-            BufferGetOperation<T> op = new BufferGetOperation<T>()
+            _buffer.QueueOperation(new BufferGetOperation<T>()
             {
                 ByteOffset = ByteOffset,
                 DestinationArray = destination,
@@ -184,9 +163,7 @@ namespace Molten.Graphics
                 DataStride = (uint)sizeof(T),
                 CompletionCallback = completionCallback,
                 SourceSegment = this,
-            };
-
-            Buffer.QueueOperation(op);
+            });
         }
 
         internal void CopyTo(CommandQueueDX11 context, uint sourceByteOffset, BufferSegment destination, uint destByteOffset, uint count, bool isImmediate = false, Action completionCallback = null)
@@ -209,21 +186,19 @@ namespace Molten.Graphics
 
             if (isImmediate)
             {
-                Buffer.CopyTo(context, destination.Buffer, sourceRegion, destination.ByteOffset + destByteOffset);
+                _buffer.CopyTo(context, destination._buffer, sourceRegion, destination.ByteOffset + destByteOffset);
             }
             else
             {
-                BufferCopyOperation op = new BufferCopyOperation()
+                _buffer.QueueOperation(new BufferCopyOperation()
                 {
                     CompletionCallback = completionCallback,
-                    SourceBuffer = Buffer,
-                    DestinationBuffer = destination.Buffer,
+                    SourceBuffer = _buffer,
+                    DestinationBuffer = destination._buffer,
                     DataStride = Stride,
                     DestinationByteOffset = destination.ByteOffset + destByteOffset,
                     SourceRegion = sourceRegion,
-                };
-
-                Buffer.QueueOperation(op);
+                });
             }
         }
 
@@ -233,7 +208,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Releases the buffer space reserved by the segment.</summary>
-        internal void Release()
+        public void Release()
         {
             UAV.Release();
             SRV.Release();
@@ -342,5 +317,32 @@ namespace Molten.Graphics
             seg.Buffer = Buffer;
             return seg;
         }
+
+        /// <summary>
+        /// The <see cref="GraphicsBuffer"/> that contains the current <see cref="BufferSegment"/>
+        /// </summary>
+        public IGraphicsBuffer Buffer
+        {
+            get => _buffer;
+            internal set => _buffer = value as GraphicsBuffer;
+        }
+
+        /// <summary>The size of the segment in bytes. This is <see cref="ElementCount"/> multiplied by <see cref="Stride"/>.</summary>
+        public uint ByteCount { get; internal set; }
+
+        /// <summary>The number of elements that the segment can hold.</summary>
+        public uint ElementCount { get; internal set; }
+
+        /// <summary>
+        /// The size of each element within the buffer, in bytes.
+        /// </summary>
+        public uint Stride { get; internal set; }
+
+        /// <summary>
+        /// The byte offset within the <see cref="Buffer"/> <see cref="GraphicsBuffer"/>.
+        /// </summary>
+        public uint ByteOffset { get; internal set; }
+
+        public VertexFormat VertexFormat { get; internal set; }
     }
 }

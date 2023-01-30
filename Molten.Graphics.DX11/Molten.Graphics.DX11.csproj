@@ -81,6 +81,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Mesh\" />
     <Folder Include="Shaders\Materials\" />
   </ItemGroup>
 

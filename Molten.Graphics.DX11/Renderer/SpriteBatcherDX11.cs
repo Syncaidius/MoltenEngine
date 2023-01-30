@@ -5,7 +5,7 @@ namespace Molten.Graphics
     public class SpriteBatcherDX11 : SpriteBatcher
     {
         GraphicsBuffer _buffer;
-        BufferSegment _bufferData;
+        IGraphicsBufferSegment _bufferData;
 
   
         Func<CommandQueueDX11, SpriteRange, ObjectRenderData, Material>[] _checkers;
@@ -62,10 +62,10 @@ namespace Molten.Graphics
                 FlushBuffer(cmdDx11, camera, data, firstRangeID, rangeCount, firstDataID, flushCount));
         }
 
-        private void FlushBuffer(CommandQueueDX11 context, RenderCamera camera, ObjectRenderData data, uint firstRangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
+        private void FlushBuffer(CommandQueueDX11 cmd, RenderCamera camera, ObjectRenderData data, uint firstRangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
         {
             SpriteRange range;
-            _bufferData.Map(context, (buffer, stream) => stream.WriteRange(Data, vertexStartIndex, vertexCount));
+            (_bufferData as BufferSegment).Map(cmd, (buffer, stream) => stream.WriteRange(Data, vertexStartIndex, vertexCount));
 
             // Draw calls
             uint bufferOffset = 0;
@@ -77,7 +77,7 @@ namespace Molten.Graphics
                 if (range.Type == RangeType.None)
                     continue;
 
-                Material mat = range.Material ?? _checkers[(int)range.Type](context, range, data);
+                Material mat = range.Material ?? _checkers[(int)range.Type](cmd, range, data);
 
                 mat["spriteData"].Value = _bufferData;
                 mat["vertexOffset"].Value = bufferOffset;
@@ -99,10 +99,10 @@ namespace Molten.Graphics
                     mat.SpriteBatch.TextureSize.Value = texSize;
                 }
 
-                context.SetScissorRectangles(range.Clip);
+                cmd.SetScissorRectangles(range.Clip);
 
                 mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-                context.Draw(mat, range.VertexCount, VertexTopology.PointList);
+                cmd.Draw(mat, range.VertexCount, VertexTopology.PointList);
 
                 bufferOffset += range.VertexCount;
             }

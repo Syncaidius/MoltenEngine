@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using System.Reflection;
+using Molten.Collections;
 using Molten.Graphics.Overlays;
 using Molten.Threading;
 
@@ -20,7 +21,14 @@ namespace Molten.Graphics
         List<RenderStepBase> _stepList;
         RenderChain _chain;
         AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
+
         internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
+        internal Material StandardMeshMaterial;
+        internal Material StandardMeshMaterial_NoNormalMap;
+
+        internal IGraphicsBuffer StaticVertexBuffer;
+        internal IGraphicsBuffer DynamicVertexBuffer;
+        internal IStagingBuffer StagingBuffer;
 
         /// <summary>
         /// Creates a new instance of a <see cref="RenderService"/> sub-type.
@@ -222,6 +230,24 @@ namespace Molten.Graphics
             Profiler.End(time);
         }
 
+        internal void RenderSceneLayer(GraphicsCommandQueue cmd, LayerRenderData layerData, RenderCamera camera)
+        {
+            // TODO To start with we're just going to draw ALL objects in the render tree.
+            // Sorting and culling will come later
+            LayerRenderData<Renderable> layer = layerData as LayerRenderData<Renderable>;
+
+            foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in layer.Renderables)
+            {
+                // TODO sort by material and textures
+                foreach (ObjectRenderData data in p.Value)
+                {
+                    // TODO replace below with render prediction to interpolate between the current and target transform.
+                    data.RenderTransform = data.TargetTransform;
+                    p.Key.Render(cmd, this, camera, data);
+                }
+            }
+        }
+
         /// <summary>
         /// Occurs when the renderer is being initialized.
         /// </summary>
@@ -261,7 +287,22 @@ namespace Molten.Graphics
             OnInitializeRenderer(settings);
             Compute = new ComputeManager(Device);
 
+            uint maxBufferSize = (uint)ByteMath.FromMegabytes(3.5);
+            StaticVertexBuffer = Device.CreateBuffer(GraphicsBufferFlags.Vertex | GraphicsBufferFlags.Index, BufferMode.Default, maxBufferSize);
+            DynamicVertexBuffer = Device.CreateBuffer(GraphicsBufferFlags.Vertex | GraphicsBufferFlags.Index, BufferMode.DynamicRing, maxBufferSize);
+            StagingBuffer = Device.CreateStagingBuffer(StagingBufferFlags.Write, maxBufferSize);
+
+            LoadDefaultShaders();
+
             Surfaces.Initialize(BiggestWidth, BiggestHeight);
+        }
+
+        private void LoadDefaultShaders()
+        {
+            Assembly includeAssembly = this.GetType().Assembly;
+            ShaderCompileResult result = Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer.mfx", includeAssembly);
+            StandardMeshMaterial = result[ShaderClassType.Material, "gbuffer"] as Material;
+            StandardMeshMaterial_NoNormalMap = result[ShaderClassType.Material, "gbuffer-sans-nmap"] as Material;
         }
 
         protected abstract void OnInitializeRenderer(EngineSettings settings);
@@ -306,7 +347,7 @@ namespace Molten.Graphics
             Tasks.Enqueue(task);
         }
 
-        public T GetRenderStep<T>() where T : RenderStepBase, new()
+        internal T GetRenderStep<T>() where T : RenderStepBase, new()
         {
             Type t = typeof(T);
             RenderStepBase step;
@@ -320,8 +361,6 @@ namespace Molten.Graphics
 
             return step as T;
         }
-
-        public abstract void BuildRenderChain(RenderChainLink first, SceneRenderData scene, LayerRenderData layerData, RenderCamera camera);
 
         /// <summary>
         /// Invoked during the first stage of service initialization to allow any api-related objects to be created/initialized prior to renderer initialization.
@@ -373,6 +412,10 @@ namespace Molten.Graphics
             // Dispose of render steps
             for (int i = 0; i < _stepList.Count; i++)
                 _stepList[i].Dispose();
+
+            SpriteBatch.Dispose();
+            StaticVertexBuffer.Dispose();
+            DynamicVertexBuffer.Dispose();
 
             OnDisposeBeforeRender();
 

@@ -8,7 +8,7 @@
         public override void Dispose()
         { }
 
-        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
 
@@ -16,14 +16,14 @@
             sScene.Clear(Color.Transparent, GraphicsPriority.Immediate);
 
             cmd.SetRenderSurface(sScene, 0);
-            cmd.DepthSurface.Value = renderer.Surfaces.GetDepth() as DepthStencilSurface;
+            cmd.DepthSurface.Value = renderer.Surfaces.GetDepth();
             cmd.SetViewports(camera.Surface.Viewport);
             cmd.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
 
             StateConditions conditions = context.BaseStateConditions | StateConditions.ScissorTest;
 
             cmd.BeginDraw(conditions);
-            (renderer as RendererDX11).RenderSceneLayer(cmd, context.Layer, camera);
+            renderer.RenderSceneLayer(cmd, context.Layer, camera);
             cmd.EndDraw();
         }
     }

@@ -17,15 +17,16 @@
         /// <summary>The data to be set.</summary>
         public T[] Data;
 
-        public BufferSegment DestinationSegment;
+        public IGraphicsBufferSegment DestinationSegment;
 
         internal Action CompletionCallback;
 
-        internal StagingBuffer Staging;
+        internal IStagingBuffer Staging;
 
         public void Process(GraphicsCommandQueue cmd)
         {
-            DestinationSegment.Buffer.Set<T>(cmd as CommandQueueDX11, Data, StartIndex, Count, DataStride, ByteOffset, Staging);
+            GraphicsBuffer buffer = DestinationSegment.Buffer as GraphicsBuffer;
+            buffer.Set(cmd as CommandQueueDX11, Data, StartIndex, Count, DataStride, ByteOffset, Staging as StagingBuffer);
             CompletionCallback?.Invoke();
         }
     }

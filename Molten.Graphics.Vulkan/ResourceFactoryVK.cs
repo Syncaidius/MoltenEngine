@@ -25,26 +25,6 @@
             return new WindowSurfaceVK(_renderer.NativeDevice, GraphicsFormat.B8G8R8A8_UNorm, formTitle, 1024, 800);
         }
 
-        public override IIndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices, uint maxIndices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IIndexedMesh<T> CreateIndexedMesh<T>(uint maxVertices, uint maxIndices, VertexTopology topology = VertexTopology.TriangleList, IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit, bool dynamic = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IMesh<GBufferVertex> CreateMesh(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IMesh<T> CreateMesh<T>(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false)
-        {
-            throw new NotImplementedException();
-        }
-
         public override IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm, 
             uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, 
             TextureFlags flags = TextureFlags.None, string name = null)

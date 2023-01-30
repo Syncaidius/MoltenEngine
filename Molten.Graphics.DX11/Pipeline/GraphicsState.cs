@@ -8,10 +8,10 @@
         DepthStateDX11 _depthState;
         RasterizerStateDX11 _rasterState;
 
-        BufferSegment[] _vSegments;
-        BufferSegment _iSegment;
+        IGraphicsBufferSegment[] _vSegments;
+        IGraphicsBufferSegment _iSegment;
 
-        RenderSurface2D[] _surfaces;
+        IRenderSurface2D[] _surfaces;
 
         IDepthStencilSurface _depthSurface;
         GraphicsDepthWritePermission _depthWriteOverride;
@@ -23,9 +23,9 @@
             _cmd = cmd;
             uint maxSurfaces = _cmd.DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
 
-            _surfaces = new RenderSurface2D[maxSurfaces];
+            _surfaces = new IRenderSurface2D[maxSurfaces];
             _viewports = new ViewportF[maxSurfaces];
-            _vSegments = new BufferSegment[_cmd.DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots];
+            _vSegments = new IGraphicsBufferSegment[_cmd.DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots];
         }
 
         public void Capture()
@@ -80,13 +80,11 @@
             _blendState = null;
             _depthState = null;
             _rasterState = null;
+            _iSegment = null;
+            _depthSurface = null;
 
             for (int i = 0; i < _vSegments.Length; i++)
                 _vSegments[i] = null;
-
-            _iSegment = null;
-
-            _depthSurface = null;
 
             for (int i = 0; i < _surfaces.Length; i++)
                 _surfaces[i] = null;

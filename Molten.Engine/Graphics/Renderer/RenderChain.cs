@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using System.Collections.Generic;
+using Molten.Collections;
 
 namespace Molten.Graphics
 {
@@ -20,7 +21,10 @@ namespace Molten.Graphics
             _first = LinkPool.GetInstance();
             _first.Set<StartStep>();
 
-            Renderer.BuildRenderChain(_first, scene, layerData, camera);
+            if (camera.Flags.HasFlag(RenderCameraFlags.Deferred))
+                _first.Next<GBufferStep>().Next<LightingStep>().Next<CompositionStep>().Next<SkyboxStep>().Next<FinalizeStep>();
+            else
+                _first.Next<ForwardStep>().Next<SkyboxStep>().Next<FinalizeStep>();
         }
 
         internal void Render(SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera, Timing time)

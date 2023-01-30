@@ -106,41 +106,61 @@ namespace Molten.Graphics
         /// <param name="topology"></param>
         /// <param name="dynamic"></param>
         /// <returns></returns>
-        public abstract IMesh<GBufferVertex> CreateMesh(uint maxVertices,
-            VertexTopology topology = VertexTopology.TriangleList,
-            bool dynamic = false);
+        public Mesh<GBufferVertex> CreateMesh(uint maxVertices, VertexTopology topology, bool dynamic)
+        {
+            return new StandardMesh(_renderer, maxVertices, topology, dynamic);
+        }
 
         /// <summary>
-        /// Creates the indexed mesh.
+        /// Creates an indexed mesh.
         /// </summary>
-        /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
-        /// <param name="dedicatedResource">if set to <c>true</c> [dedicated resource].</param>
+        /// <param name="maxVertices"></param>
+        /// <param name="maxIndices"></param>
+        /// <param name="topology"></param>
+        /// <param name="dynamic"></param>
         /// <returns></returns>
-        public abstract IIndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices, uint maxIndices,
-            VertexTopology topology = VertexTopology.TriangleList,
-            bool dynamic = false);
-
-        /// <summary>Creates a new unindexed mesh. Unindexed meshes do not contain an index buffer to reduce vertex data size.</summary>
-        /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
-        /// <param name="dedicatedResource">if set to <c>true</c>, the mesh is given its own dedicated resource buffer.</param>
-        /// <returns></returns>
-        public abstract IMesh<T> CreateMesh<T>(
-            uint maxVertices,
+        public IndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices,
+            uint maxIndices,
             VertexTopology topology = VertexTopology.TriangleList,
             bool dynamic = false)
-            where T : unmanaged, IVertexType;
+        {
+            return new StandardIndexedMesh(_renderer, maxVertices, maxIndices, topology, IndexBufferFormat.Unsigned32Bit, dynamic);
+        }
 
         /// <summary>
-        /// Creates the indexed mesh.
+        /// Creates a new unindexed mesh. Unindexed meshes do not contain an index buffer to reduce vertex data size.
         /// </summary>
-        /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
-        /// <param name="dedicatedResource">if set to <c>true</c> [dedicated resource].</param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="maxVertices"></param>
+        /// <param name="topology"></param>
+        /// <param name="dynamic"></param>
         /// <returns></returns>
-        public abstract IIndexedMesh<T> CreateIndexedMesh<T>(uint maxVertices, uint maxIndices,
+        public Mesh<T> CreateMesh<T>(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false)
+            where T : unmanaged, IVertexType
+        {
+            return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
+        }
+
+        /// <summary>
+        /// Creates an indexed mesh. Indexed meshes allow primitives to share vertices within the same draw call to reduce data overhead.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="maxVertices"></param>
+        /// <param name="maxIndices"></param>
+        /// <param name="topology"></param>
+        /// <param name="indexFormat"></param>
+        /// <param name="dynamic"></param>
+        /// <returns></returns>
+        public IndexedMesh<T> CreateIndexedMesh<T>(
+            uint maxVertices,
+            uint maxIndices,
             VertexTopology topology = VertexTopology.TriangleList,
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit,
             bool dynamic = false)
-            where T : unmanaged, IVertexType;
+            where T : unmanaged, IVertexType
+        {
+            return new IndexedMesh<T>(_renderer, maxVertices, maxIndices, topology, indexFormat, dynamic);
+        }
 
         /// <summary>
         /// Loads an embedded shader from the target assembly. If an assembly is not provided, the current renderer's assembly is used instead.

@@ -25,7 +25,7 @@
         public void Process(GraphicsCommandQueue cmd)
         {
             DestinationArray = DestinationArray ?? new T[Count];
-            SourceSegment.Buffer.Get<T>(cmd, DestinationArray, 0, ByteOffset, DataStride, Count);
+            (SourceSegment.Buffer as GraphicsBuffer).Get<T>(cmd, DestinationArray, 0, ByteOffset, DataStride, Count);
 
             CompletionCallback.Invoke(DestinationArray);
         }

@@ -38,7 +38,7 @@ namespace Molten.Examples
             TestMesh.Material = _hMaterial.Get<Material>();
         }
 
-        private void SpawnRandomTestCube(IMesh mesh, int spawnRadius)
+        private void SpawnRandomTestCube(Mesh mesh, int spawnRadius)
         {
             int maxRange = spawnRadius * 2;
             SceneObject obj = MainScene.CreateObject(new Vector3F()

@@ -18,7 +18,7 @@
             return normal;
         }
 
-        public static IIndexedMesh<GBufferVertex> Cube(RenderService renderer)
+        public static IndexedMesh<GBufferVertex> Cube(RenderService renderer)
         {
             Vector3F nFront = new Vector3F(0, 0, -1);
             Vector3F nBack = new Vector3F(0, 0, 1);
@@ -70,13 +70,13 @@
 
             CalculateTangents(vertices, indices);
 
-            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh((uint)vertices.Length, (uint)indices.Length);
+            IndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh((uint)vertices.Length, (uint)indices.Length);
             mesh.SetVertices(vertices);
             mesh.SetIndices(indices);
             return mesh;
         }
 
-        public static IIndexedMesh<GBufferVertex> PlainCentered(RenderService renderer, float uvTiling = 1.0f)
+        public static IndexedMesh<GBufferVertex> PlainCentered(RenderService renderer, float uvTiling = 1.0f)
         {
             GBufferVertex[] vertices = new GBufferVertex[4];
             Vector3F normal = new Vector3F(0, 1, 0);
@@ -96,13 +96,13 @@
 
             CalculateTangents(vertices, indices);
 
-            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh((uint)vertices.Length, (uint)indices.Length);
+            IndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh((uint)vertices.Length, (uint)indices.Length);
             mesh.SetVertices(vertices);
             mesh.SetIndices(indices);
             return mesh;
         }
 
-        public static IIndexedMesh<GBufferVertex> Plain(RenderService renderer, float uvTiling = 1.0f)
+        public static IndexedMesh<GBufferVertex> Plain(RenderService renderer, float uvTiling = 1.0f)
         {
             GBufferVertex[] vertices = new GBufferVertex[4];
             Vector3F normal = new Vector3F(0, 1, 0);
@@ -122,7 +122,7 @@
 
             CalculateTangents(vertices, indices);
 
-            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh<GBufferVertex>((uint)vertices.Length, (uint)indices.Length);
+            IndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh<GBufferVertex>((uint)vertices.Length, (uint)indices.Length);
             mesh.SetVertices(vertices);
             mesh.SetIndices(indices);
             return mesh;

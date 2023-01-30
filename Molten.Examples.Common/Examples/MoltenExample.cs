@@ -99,14 +99,14 @@ namespace Molten.Examples
             MainScene.AddObject(Player);
         }
 
-        protected virtual IMesh GetTestCubeMesh()
+        protected virtual Mesh GetTestCubeMesh()
         {
-            IMesh<VertexTexture> cube = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
+            Mesh<VertexTexture> cube = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
             cube.SetVertices(SampleVertexData.TexturedCube);
             return cube;
         }
 
-        private SceneObject SpawnTestCube(IMesh mesh, Vector3F pos)
+        private SceneObject SpawnTestCube(Mesh mesh, Vector3F pos)
         {
             SceneObject obj = MainScene.CreateObject(pos);
             MeshComponent meshCom = obj.Components.Add<MeshComponent>();
@@ -114,7 +114,7 @@ namespace Molten.Examples
             return obj;
         }
 
-        protected void SpawnParentChild(IMesh mesh, Vector3F origin, out SceneObject parent, out SceneObject child)
+        protected void SpawnParentChild(Mesh mesh, Vector3F origin, out SceneObject parent, out SceneObject child)
         {
             parent = SpawnTestCube(mesh, Vector3F.Zero);
             child = SpawnTestCube(mesh, Vector3F.Zero);
@@ -195,7 +195,7 @@ namespace Molten.Examples
         /// </summary>
         public Scene MainScene { get; private set; }
 
-        protected IMesh TestMesh { get; private set; }
+        protected Mesh TestMesh { get; private set; }
 
         public SceneObject Player { get; private set; }
 

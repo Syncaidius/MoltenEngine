@@ -74,11 +74,6 @@ namespace Molten.Graphics
             _api.Dispose();
         }
 
-        public override void BuildRenderChain(RenderChainLink first, SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
-        {
-            throw new NotImplementedException();
-        }
-
         internal DeviceDX12 NativeDevice { get; private set; }
 
         internal DeviceBuilderDX12 Builder { get; private set; }

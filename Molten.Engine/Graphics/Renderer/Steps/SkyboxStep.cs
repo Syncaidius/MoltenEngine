@@ -3,13 +3,13 @@
     /// <summary>
     /// The skybox step.
     /// </summary>
-    public class SkyboxStep : RenderStepBase
+    internal class SkyboxStep : RenderStepBase
     {
         Material _matSky;
-        IIndexedMesh<Vertex> _sphereMesh;
+        IndexedMesh<Vertex> _sphereMesh;
         ObjectRenderData _skyboxData;
 
-        public override void Initialize(RenderService renderer)
+        internal override void Initialize(RenderService renderer)
         {
             _skyboxData = new ObjectRenderData();
 
@@ -32,7 +32,7 @@
             _sphereMesh.Dispose();
         }
 
-        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             // No skybox texture or we're not on the first layer.
             if (context.Scene.SkyboxTexture == null || context.Scene.Layers.First() != context.Layer)

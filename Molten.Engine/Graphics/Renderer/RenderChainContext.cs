@@ -2,10 +2,10 @@
 
 namespace Molten.Graphics
 {
-    public class RenderChainContext : IPoolable
+    internal class RenderChainContext : IPoolable
     {
-        public SceneRenderData<Renderable> Scene;
-        public LayerRenderData<Renderable> Layer;
+        internal SceneRenderData<Renderable> Scene;
+        internal LayerRenderData<Renderable> Layer;
 
         IRenderSurface2D[] _composition;
         int _curComposition;

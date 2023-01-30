@@ -187,33 +187,5 @@ namespace Molten.Graphics
             task.Destination = destination as TextureBase;
             _renderer.PushTask(task);
         }
-
-        public override IMesh<GBufferVertex> CreateMesh(uint maxVertices, VertexTopology topology, bool dynamic)
-        {
-            return new StandardMesh(_renderer, maxVertices, topology, dynamic);
-        }
-
-        public override IIndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices,
-            uint maxIndices, 
-            VertexTopology topology = VertexTopology.TriangleList, 
-            bool dynamic = false)
-        {
-            return new StandardIndexedMesh(_renderer, maxVertices, maxIndices, topology, IndexBufferFormat.Unsigned32Bit, dynamic);
-        }
-
-        public override IMesh<T> CreateMesh<T>(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
-        {
-            return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
-        }
-
-        public  override IIndexedMesh<T> CreateIndexedMesh<T>(
-            uint maxVertices, 
-            uint maxIndices, 
-            VertexTopology topology = VertexTopology.TriangleList, 
-            IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit, 
-            bool dynamic = false)
-        {
-            return new IndexedMesh<T>(_renderer, maxVertices, maxIndices, topology, indexFormat, dynamic);
-        }
     }
 }

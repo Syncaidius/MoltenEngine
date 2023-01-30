@@ -83,9 +83,9 @@ namespace Molten.Examples
             });
         }
 
-        protected override IMesh GetTestCubeMesh()
+        protected override Mesh GetTestCubeMesh()
         {
-            IMesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
+            Mesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
             cube.SetVertices(SampleVertexData.TextureArrayCubeVertices);
             return cube;
         }

@@ -11,6 +11,9 @@
             _resources = new IShaderResource[0];
         }
 
+        /// <summary>Applies a shader resource to the mesh at the specified slot.</summary>
+        /// <param name="resource">The resource.</param>
+        /// <param name="slot">The slot ID.</param>
         public void SetResource(IShaderResource resource, uint slot)
         {
             if (slot >= Device.Adapter.Capabilities.PixelShader.MaxInResources)
@@ -22,6 +25,9 @@
             _resources[slot] = resource;
         }
 
+        /// <summary>Gets the shader resource applied to the mesh at the specified slot.</summary>
+        /// <param name="slot">The slot ID.</param>
+        /// <returns>An <see cref="IShaderResource"/> that was applied at the specified slot.</returns>
         public IShaderResource GetResource(uint slot)
         {
             if (slot >= _resources.Length)

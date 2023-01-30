@@ -1,11 +1,11 @@
 ﻿namespace Molten.Graphics
 {
-    public class FinalizeStep : RenderStepBase
+    internal class FinalizeStep : RenderStepBase
     {
         RenderCamera _orthoCamera;
         ObjectRenderData _dummyData;
 
-        public override void Initialize(RenderService renderer)
+        internal override void Initialize(RenderService renderer)
         {
             _dummyData = new ObjectRenderData();
             _orthoCamera = new RenderCamera(RenderCameraMode.Orthographic);
@@ -16,7 +16,7 @@
 
         }
 
-        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             _orthoCamera.Surface = camera.Surface;
 

@@ -453,6 +453,6 @@ namespace Molten.Examples
 
         public UIManagerComponent UI { get; private set; }
 
-        protected IMesh TestMesh { get; private set; }
+        protected Mesh TestMesh { get; private set; }
     }
 }

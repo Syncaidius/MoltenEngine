@@ -246,11 +246,6 @@ namespace Molten.Graphics
             VK.Dispose();
         }
 
-        public override void BuildRenderChain(RenderChainLink first, SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Gets the underlying <see cref="Vk"/> API instance.
         /// </summary>

@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public class RenderChainLink : IPoolable
+    internal class RenderChainLink : IPoolable
     {
         List<RenderChainLink> _previous = new List<RenderChainLink>();
         List<RenderChainLink> _next = new List<RenderChainLink>();
@@ -28,7 +28,7 @@ namespace Molten.Graphics
             _step = _chain.Renderer.GetRenderStep<T>();
         }
 
-        public RenderChainLink Next<T>() where T : RenderStepBase, new()
+        internal RenderChainLink Next<T>() where T : RenderStepBase, new()
         {
             RenderChainLink next = _chain.LinkPool.GetInstance();
             next.Set<T>();

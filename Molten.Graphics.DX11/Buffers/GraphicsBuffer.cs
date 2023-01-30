@@ -6,7 +6,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    internal unsafe partial class GraphicsBuffer : ContextBindableResource<ID3D11Buffer>, IShaderResource
+    internal unsafe partial class GraphicsBuffer : ContextBindableResource<ID3D11Buffer>, IGraphicsBuffer
     {
         ID3D11Buffer* _native;
         uint _ringPos;
@@ -41,7 +41,7 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(op);
         }
 
-        internal void Defragment()
+        public void Defragment()
         {
             throw new NotImplementedException("Needs to move data around in the underlying GPU buffers when defragmenting. Run every few frames, if needed.");
             // TODO also consider removing map sectors from the end of the list if we end up with more than 1 that is completely empty after defragmentation.
@@ -323,7 +323,7 @@ namespace Molten.Graphics
         /// <param name="dataStride">The size of the data being retrieved. The default value is 0. 
         /// A value of 0 will force the stride of <see cref="{T}"/> to be automatically calculated, which may cause a tiny performance hit.</param>
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        internal void Get<T>(GraphicsCommandQueue cmd, T[] destination, uint startIndex, uint count, uint dataStride, uint byteOffset = 0)
+        public void Get<T>(GraphicsCommandQueue cmd, T[] destination, uint startIndex, uint count, uint dataStride, uint byteOffset = 0)
             where T : unmanaged
         {
             CommandQueueDX11 dx11Cmd = cmd as CommandQueueDX11;
@@ -437,7 +437,7 @@ namespace Molten.Graphics
             CreateResources(segment.Stride, segment.ByteOffset, segment.ElementCount, segment.SRV, segment.UAV);
         }
 
-        internal BufferSegment Allocate<T>(uint count) where T : unmanaged
+        public IGraphicsBufferSegment Allocate<T>(uint count) where T : unmanaged
         {
             uint stride = (uint)sizeof(T);
             OnValidateAllocationStride(stride);
@@ -481,9 +481,10 @@ namespace Molten.Graphics
 
         /// <summary>Release the buffer space held by the specified segment.</summary>
         /// <param name="segment">The segment.</param>
-        internal void Deallocate(BufferSegment segment)
+        public void Deallocate(IGraphicsBufferSegment seg)
         {
             DeviceDX11 nDevice = Device as DeviceDX11;
+            BufferSegment segment = seg as BufferSegment;
 
             bool mergePrev = segment.Previous != null && segment.Previous.IsFree;
             bool mergeNext = segment.Next != null && segment.Next.IsFree;
@@ -522,9 +523,11 @@ namespace Molten.Graphics
         /// <param name="existing">The existing segment to be updated or reallocated if neccessary.</param>
         /// <param name="count">The new element count.</param>
         /// <returns></returns>
-        internal BufferSegment UpdateAllocation<T>(BufferSegment existing, uint count) 
+        public IGraphicsBufferSegment UpdateAllocation<T>(IGraphicsBufferSegment existingSeg, uint count) 
             where T : unmanaged
         {
+            BufferSegment existing = existingSeg as BufferSegment;
+
             uint newStride = (uint)sizeof(T);
             OnValidateAllocationStride(newStride);
 
@@ -585,7 +588,7 @@ namespace Molten.Graphics
             // If we've reached this far, there's not enough free space nearby. Find a new location.
             if (existing.ByteCount != newBytes)
             {
-                BufferSegment newSeg = Allocate<T>(count);
+                IGraphicsBufferSegment newSeg = Allocate<T>(count);
 
                 // TODO queue copy to move data from old to new segment (if allowed).
 

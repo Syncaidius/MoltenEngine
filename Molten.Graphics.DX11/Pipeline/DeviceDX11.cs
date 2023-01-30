@@ -125,6 +125,30 @@ namespace Molten.Graphics
             return new ShaderSamplerDX11(this, source as ShaderSamplerDX11);
         }
 
+        public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0)
+        {
+            // Translate to bind flags
+            BindFlag flag = BindFlag.ShaderResource;
+            if ((flags & GraphicsBufferFlags.Vertex) == GraphicsBufferFlags.Vertex)
+                flag |= BindFlag.VertexBuffer;
+
+            if ((flags & GraphicsBufferFlags.Index) == GraphicsBufferFlags.Index)
+                flag |= BindFlag.IndexBuffer;
+
+            // Translate to resource flags
+            ResourceMiscFlag rFlag = ResourceMiscFlag.None;
+            if ((flags & GraphicsBufferFlags.Structured) == GraphicsBufferFlags.Structured)
+                rFlag |= ResourceMiscFlag.BufferStructured;
+
+            return new GraphicsBuffer(this, BufferMode.DynamicRing,
+                flag, byteCapacity, rFlag, StagingBufferFlags.None, structuredStride: stride);
+        }
+
+        public override IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity)
+        {
+            return new StagingBuffer(this, staging, byteCapacity);
+        }
+
         public override ShaderComposition CreateShaderComposition(ShaderType type, HlslShader parent)
         {
             switch (type)

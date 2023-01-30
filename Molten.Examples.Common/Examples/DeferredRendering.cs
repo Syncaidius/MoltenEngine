@@ -20,8 +20,8 @@ namespace Molten.Examples
         ContentLoadHandle _hTexSkybox;
 
         List<ParentChildPair> _pairs;
-        IMesh<GBufferVertex> _mesh;
-        IMesh<GBufferVertex> _floorMesh;
+        Mesh<GBufferVertex> _mesh;
+        Mesh<GBufferVertex> _floorMesh;
 
         protected override void OnLoadContent(ContentLoadBatch loader)
         {

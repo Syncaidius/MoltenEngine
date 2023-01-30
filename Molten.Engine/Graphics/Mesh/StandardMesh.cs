@@ -2,11 +2,9 @@
 {
     public class StandardMesh : Mesh<GBufferVertex>
     {
-        internal StandardMesh(RendererDX11 renderer, uint maxVertices, VertexTopology topology, bool dynamic) : 
+        internal StandardMesh(RenderService renderer, uint maxVertices, VertexTopology topology, bool dynamic) :
             base(renderer, maxVertices, topology, dynamic)
-        {
-
-        }
+        { }
 
         protected override void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
@@ -15,12 +13,11 @@
 
             if (Material == null)
             {
-                RendererDX11 dx11Renderer = renderer as RendererDX11;
                 // Use whichever default one fits the current configuration.
                 if (normal == null)
-                    Material = dx11Renderer.StandardMeshMaterial_NoNormalMap;
+                    Material = renderer.StandardMeshMaterial_NoNormalMap;
                 else
-                    Material = dx11Renderer.StandardMeshMaterial;
+                    Material = renderer.StandardMeshMaterial;
 
                 Material.Object.EmissivePower.Value = EmissivePower;
             }

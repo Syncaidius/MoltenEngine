@@ -1,10 +1,10 @@
 ﻿namespace Molten.Graphics
 {
-    public class StartStep : RenderStepBase
+    internal class StartStep : RenderStepBase
     {
         public override void Dispose() { }
 
-        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];

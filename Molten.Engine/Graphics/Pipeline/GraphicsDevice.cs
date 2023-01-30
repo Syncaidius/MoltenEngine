@@ -90,6 +90,10 @@ namespace Molten.Graphics
 
         public abstract ShaderComposition CreateShaderComposition(ShaderType type, HlslShader parent);
 
+        public abstract IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0);
+
+        public abstract IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity);
+
         /// <summary>Track a VRAM allocation.</summary>
         /// <param name="bytes">The number of bytes that were allocated.</param>
         public void AllocateVRAM(long bytes)

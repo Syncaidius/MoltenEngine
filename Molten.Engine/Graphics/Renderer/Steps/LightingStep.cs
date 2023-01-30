@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
@@ -7,16 +6,15 @@ namespace Molten.Graphics
     {
         Material _matPoint;
         Material _matDebugPoint;
-        GraphicsBuffer _lightDataBuffer;
-        BufferSegment _lightSegment;
+        IGraphicsBuffer _lightDataBuffer;
+        IGraphicsBufferSegment _lightSegment;
 
-        public override void Initialize(RenderService renderer)
+        internal override void Initialize(RenderService renderer)
         {
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings
             uint bufferByteSize = stride * maxLights;
-            _lightDataBuffer = new GraphicsBuffer(renderer.Device as DeviceDX11, BufferMode.DynamicRing, 
-                BindFlag.ShaderResource, bufferByteSize, ResourceMiscFlag.BufferStructured, structuredStride: stride);
+            _lightDataBuffer = renderer.Device.CreateBuffer(GraphicsBufferFlags.Structured, BufferMode.DynamicRing, bufferByteSize, stride);
             _lightSegment = _lightDataBuffer.Allocate<LightData>(maxLights);
 
             // Load shaders
@@ -33,7 +31,7 @@ namespace Molten.Graphics
             _matDebugPoint.Dispose();
         }
 
-        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             IRenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
             IDepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
@@ -43,12 +41,12 @@ namespace Molten.Graphics
             _surfaceLighting.Clear(context.Scene.AmbientLightColor, GraphicsPriority.Immediate);
             cmd.ResetRenderSurfaces();
             cmd.SetRenderSurface(_surfaceLighting, 0);
-            cmd.DepthSurface.Value = sDepth as DepthStencilSurface;
+            cmd.DepthSurface.Value = sDepth;
             cmd.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
-            RenderPointLights(renderer, cmd as CommandQueueDX11, camera, context.Scene, sDepth);
+            RenderPointLights(renderer, cmd, camera, context.Scene, sDepth);
         }
 
-        private void RenderPointLights(RenderService renderer, CommandQueueDX11 context, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)
+        private void RenderPointLights(RenderService renderer, GraphicsCommandQueue cmd, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)
         {
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
@@ -70,7 +68,7 @@ namespace Molten.Graphics
                 scene.PointLights.Data[i] = ld;
             }
 
-            _lightSegment.SetData(context, scene.PointLights.Data);
+            _lightSegment.SetData(scene.PointLights.Data);
 
             // Set data buffer on domain and pixel shaders
             _matPoint.Light.Data.Value = _lightSegment; // TODO Need to implement a dynamic structured buffer we can reuse here.
@@ -87,18 +85,18 @@ namespace Molten.Graphics
             };
 
             //set correct buffers and shaders
-            context.VertexBuffers[0].Value = null;
-            context.IndexBuffer.Value = null;
+            cmd.VertexBuffers[0].Value = null;
+            cmd.IndexBuffer.Value = null;
             uint pointCount = scene.PointLights.ElementCount * 2;
 
-            context.BeginDraw(StateConditions.None); // TODO expand use of conditions here
-            context.Draw(_matPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
-            context.EndDraw();
+            cmd.BeginDraw(StateConditions.None); // TODO expand use of conditions here
+            cmd.Draw(_matPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
+            cmd.EndDraw();
 
             // Draw debug light volumes
-            context.BeginDraw(StateConditions.Debug);
-            context.Draw(_matDebugPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
-            context.EndDraw();
+            cmd.BeginDraw(StateConditions.Debug);
+            cmd.Draw(_matDebugPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
+            cmd.EndDraw();
         }
     }
 }

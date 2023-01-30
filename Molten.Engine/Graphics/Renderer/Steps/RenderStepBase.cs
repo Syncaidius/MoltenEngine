@@ -3,11 +3,11 @@
     /// <summary>
     /// A base class for render steps.
     /// </summary>
-    public abstract class RenderStepBase : IDisposable
+    internal abstract class RenderStepBase : IDisposable
     {
-        public virtual void Initialize(RenderService renderer) { }
+        internal virtual void Initialize(RenderService renderer) { }
 
-        public abstract void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time);
+        internal abstract void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time);
 
         public abstract void Dispose();
     }

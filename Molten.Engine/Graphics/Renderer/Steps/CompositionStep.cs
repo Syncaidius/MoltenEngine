@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public class CompositionStep : RenderStepBase
+    internal class CompositionStep : RenderStepBase
     {
         RenderCamera _orthoCamera;
         ObjectRenderData _dummyData;
@@ -11,7 +11,7 @@
         IShaderValue _valLighting;
         IShaderValue _valEmissive;
 
-        public override void Initialize(RenderService renderer)
+        internal override void Initialize(RenderService renderer)
         {
             _surfaceScene = renderer.Surfaces[MainSurfaceType.Scene];
             _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
@@ -32,7 +32,7 @@
             _matCompose.Dispose();
         }
 
-        public override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             _orthoCamera.Surface = camera.Surface;
 

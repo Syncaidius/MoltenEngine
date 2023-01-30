@@ -232,5 +232,9 @@ where B : GraphicsSlotBinder<T>, new()
         /// Gets or sets the output depth surface.
         /// </summary>
         public GraphicsSlot<IDepthStencilSurface> DepthSurface { get; protected set; }
+
+        public GraphicsSlotGroup<IGraphicsBufferSegment> VertexBuffers { get; protected set; }
+
+        public GraphicsSlot<IGraphicsBufferSegment> IndexBuffer { get; protected set; }
     }
 }

@@ -12,7 +12,7 @@ namespace Molten.Graphics
         ulong[] _expectedFormatIDs;
 
         internal VertexInputLayout(DeviceDX11 device, 
-            GraphicsSlotGroup<BufferSegment> vbSlots, 
+            GraphicsSlotGroup<IGraphicsBufferSegment> vbSlots, 
             ID3D10Blob* vertexBytecode,
             ShaderIOStructure io) : base(device, GraphicsBindTypeFlags.Input)
         {
@@ -96,11 +96,11 @@ namespace Molten.Graphics
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }
 
-        public bool IsMatch(Logger log, GraphicsSlotGroup<BufferSegment> grp)
+        public bool IsMatch(Logger log, GraphicsSlotGroup<IGraphicsBufferSegment> grp)
         {
             for (uint i = 0; i < grp.SlotCount; i++)
             {
-                BufferSegment seg = grp[i].BoundValue;
+                BufferSegment seg = grp[i].BoundValue as BufferSegment;
 
                 // If null vertex buffer, check if shader actually need one to be present.
                 if (seg == null)

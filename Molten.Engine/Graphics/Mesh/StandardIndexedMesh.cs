@@ -2,10 +2,9 @@
 {
     /// <summary>Represents an indexed mesh. These store mesh data by referring to vertices using index values stored in an index buffer. 
     /// In most cases this reduces the vertex data size drastically.</summary>
-    /// <seealso cref="Molten.Graphics.IIndexedMesh" />
     public class StandardIndexedMesh : IndexedMesh<GBufferVertex>
     {
-        internal StandardIndexedMesh(RendererDX11 renderer, uint maxVertices, uint maxIndices, VertexTopology topology, IndexBufferFormat indexFormat, bool dynamic) :
+        internal StandardIndexedMesh(RenderService renderer, uint maxVertices, uint maxIndices, VertexTopology topology, IndexBufferFormat indexFormat, bool dynamic) :
             base(renderer, maxVertices, maxIndices, topology, indexFormat, dynamic)
         { }
 
@@ -16,13 +15,11 @@
 
             if (Material == null)
             {
-                RendererDX11 dx11Renderer = renderer as RendererDX11;
-
                 // Use whichever default one fits the current configuration.
                 if (normal == null)
-                    Material = dx11Renderer.StandardMeshMaterial_NoNormalMap;
+                    Material = renderer.StandardMeshMaterial_NoNormalMap;
                 else
-                    Material = dx11Renderer.StandardMeshMaterial;
+                    Material = renderer.StandardMeshMaterial;
 
                 Material.Object.EmissivePower.Value = EmissivePower;
             }

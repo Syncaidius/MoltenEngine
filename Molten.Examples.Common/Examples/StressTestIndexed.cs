@@ -26,7 +26,7 @@ namespace Molten.Examples
             ShaderCompileResult shaders = Engine.Renderer.Resources.CompileShaders(ref source, fn);
             Material material = shaders[ShaderClassType.Material, 0] as Material;
 
-            IIndexedMesh<VertexColor> mesh = Engine.Renderer.Resources.CreateIndexedMesh<VertexColor>(24, 36);
+            IndexedMesh<VertexColor> mesh = Engine.Renderer.Resources.CreateIndexedMesh<VertexColor>(24, 36);
             if (material == null)
             {
                 Close();
@@ -40,7 +40,7 @@ namespace Molten.Examples
                 SpawnRandomTestCube(mesh, 70);
         }
 
-        private void SpawnRandomTestCube(IMesh mesh, int spawnRadius)
+        private void SpawnRandomTestCube(Mesh mesh, int spawnRadius)
         {
             int maxRange = spawnRadius * 2;
             SceneObject obj = MainScene.CreateObject(new Vector3F()

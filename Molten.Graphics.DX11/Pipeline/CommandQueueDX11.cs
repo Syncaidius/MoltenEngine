@@ -54,8 +54,8 @@ namespace Molten.Graphics
             _apiViewports = new Silk.NET.Direct3D11.Viewport[maxRTs];
 
             uint maxVBuffers = DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots;
-            VertexBuffers = RegisterSlotGroup<BufferSegment, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
-            IndexBuffer = RegisterSlot<BufferSegment, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
+            VertexBuffers = RegisterSlotGroup<IGraphicsBufferSegment, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
+            IndexBuffer = RegisterSlot<IGraphicsBufferSegment, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
             _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(GraphicsBindTypeFlags.Input, "Vertex Input Layout", 0);
             Material = RegisterSlot<Material, MaterialBinder>(GraphicsBindTypeFlags.Input, "Material", 0);
             _compute = RegisterSlot<ComputeTask, ComputeTaskBinder>(GraphicsBindTypeFlags.Input, "Compute Task", 0);
@@ -363,9 +363,10 @@ namespace Molten.Graphics
             // Check index buffer
             if (ibChanged)
             {
-                BufferSegment ib = IndexBuffer.BoundValue;
+                BufferSegment ib = IndexBuffer.BoundValue as BufferSegment;
+
                 if (ib != null)
-                    Native->IASetIndexBuffer(ib.Buffer, ib.DataFormat, ib.ByteOffset);
+                    Native->IASetIndexBuffer(ib, ib.DataFormat, ib.ByteOffset);
                 else
                     Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
             }
@@ -706,10 +707,6 @@ namespace Molten.Graphics
         internal ShaderDSStage DS { get; }
         internal ShaderPSStage PS { get; }
         internal ShaderCSStage CS { get; }
-
-        public GraphicsSlotGroup<BufferSegment> VertexBuffers { get; }
-
-        public GraphicsSlot<BufferSegment> IndexBuffer { get; }
 
         public GraphicsSlot<Material> Material { get; }
 
