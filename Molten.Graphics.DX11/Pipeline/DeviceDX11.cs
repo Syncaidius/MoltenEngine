@@ -135,6 +135,9 @@ namespace Molten.Graphics
             if ((flags & GraphicsBufferFlags.Index) == GraphicsBufferFlags.Index)
                 flag |= BindFlag.IndexBuffer;
 
+            if ((flags & GraphicsBufferFlags.UnorderedAccess) == GraphicsBufferFlags.UnorderedAccess)
+                flag |= BindFlag.UnorderedAccess;
+
             // Translate to resource flags
             ResourceMiscFlag rFlag = ResourceMiscFlag.None;
             if ((flags & GraphicsBufferFlags.Structured) == GraphicsBufferFlags.Structured)
