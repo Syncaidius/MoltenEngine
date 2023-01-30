@@ -146,7 +146,7 @@
                 // Refresh the existing value.
                 if(_value != null)
                 {
-                    _value.Apply(this.Cmd);
+                    _value.Apply(Cmd);
                     if (_boundVersion != Value.Version)
                     {
                         _boundVersion = Value.Version;

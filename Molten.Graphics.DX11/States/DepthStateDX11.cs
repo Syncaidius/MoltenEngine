@@ -97,6 +97,7 @@ namespace Molten.Graphics
 
                 //create new state
                 (cmd as CommandQueueDX11).DXDevice.Ptr->CreateDepthStencilState(ref _desc, ref _native);
+                Version++;
             }
         }
 

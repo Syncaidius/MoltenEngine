@@ -215,6 +215,7 @@ namespace Molten.Graphics
 
                 // Create new state
                 (cmd as CommandQueueDX11).DXDevice.Ptr->CreateBlendState1(ref _desc, ref _native);
+                Version++;
             }
         }
 

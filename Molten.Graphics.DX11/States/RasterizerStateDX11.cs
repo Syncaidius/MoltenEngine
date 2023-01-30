@@ -54,6 +54,7 @@ namespace Molten.Graphics
 
                 //create new state
                 (cmd as CommandQueueDX11).DXDevice.Ptr->CreateRasterizerState2(ref _desc, ref _native);
+                Version++;
             }
         }
 
