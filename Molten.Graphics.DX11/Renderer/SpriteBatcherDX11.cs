@@ -4,9 +4,8 @@ namespace Molten.Graphics
 {
     public class SpriteBatcherDX11 : SpriteBatcher
     {
-        GraphicsBuffer _buffer;
+        IGraphicsBuffer _buffer;
         IGraphicsBufferSegment _bufferData;
-
   
         Func<CommandQueueDX11, SpriteRange, ObjectRenderData, Material>[] _checkers;
         Material _matDefault; 
@@ -20,12 +19,11 @@ namespace Molten.Graphics
 
         internal unsafe SpriteBatcherDX11(RendererDX11 renderer, uint dataCapacity, uint rangeCapcity) : base(dataCapacity, rangeCapcity)
         {
-            _buffer = new GraphicsBuffer(renderer.NativeDevice, BufferMode.DynamicDiscard, 
-                BindFlag.ShaderResource, 
+            _buffer = renderer.Device.CreateBuffer(
+                GraphicsBufferFlags.Structured | GraphicsBufferFlags.ShaderResource,
+                BufferMode.DynamicDiscard,
                 (uint)sizeof(GpuData) * dataCapacity,
-                ResourceMiscFlag.BufferStructured,
-                StagingBufferFlags.None,
-                (uint)sizeof(GpuData));
+                (uint)sizeof(GpuData)); 
             _bufferData = _buffer.Allocate<GpuData>(dataCapacity);
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "sprite.mfx");

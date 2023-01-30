@@ -128,7 +128,10 @@ namespace Molten.Graphics
         public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0)
         {
             // Translate to bind flags
-            BindFlag flag = BindFlag.ShaderResource;
+            BindFlag flag = BindFlag.None;
+            if ((flags & GraphicsBufferFlags.ShaderResource) == GraphicsBufferFlags.ShaderResource)
+                flag |= BindFlag.ShaderResource;
+
             if ((flags & GraphicsBufferFlags.Vertex) == GraphicsBufferFlags.Vertex)
                 flag |= BindFlag.VertexBuffer;
 
