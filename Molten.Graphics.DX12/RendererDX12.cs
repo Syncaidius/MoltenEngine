@@ -81,7 +81,5 @@ namespace Molten.Graphics
         public override ResourceFactory Resources { get; }
 
         public override DxcCompiler Compiler { get; }
-
-        public override SpriteBatcher SpriteBatch => throw new NotImplementedException();
     }
 }

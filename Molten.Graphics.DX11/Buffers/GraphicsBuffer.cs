@@ -193,7 +193,7 @@ namespace Molten.Graphics
             uint byteOffset, 
             uint dataSize, 
             Action<GraphicsBuffer, RawStream> callback, 
-            GraphicsBuffer staging = null)
+            StagingBuffer staging = null)
         {
             // Check buffer type.
             bool isDynamic = Description.Usage == Usage.Dynamic;

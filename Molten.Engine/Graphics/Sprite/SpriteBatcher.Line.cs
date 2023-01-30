@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract partial class SpriteBatcher
+    public partial class SpriteBatcher
     {
         Color[] _singleColorList = new Color[] { Color.White };
 

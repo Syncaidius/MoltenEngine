@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract partial class SpriteBatcher
+    public partial class SpriteBatcher
     {
         EllipseStyle _ellipseStyle = EllipseStyle.Default;
 

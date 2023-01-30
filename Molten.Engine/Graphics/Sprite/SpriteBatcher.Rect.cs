@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract partial class SpriteBatcher
+    public partial class SpriteBatcher
     {
         /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatcher"/>.</summary>
         /// <param name="destination">The rectangle defining the draw destination.</param>

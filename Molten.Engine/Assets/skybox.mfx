@@ -40,7 +40,6 @@ PS_IN VS(float3 pos : POSITION)
 }
 
 
-
 float4 PS(PS_IN input) : SV_Target
 {
   return mapSky.Sample(skySampler, input.uv);

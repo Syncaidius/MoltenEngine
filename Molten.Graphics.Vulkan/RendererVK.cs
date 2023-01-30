@@ -278,7 +278,5 @@ namespace Molten.Graphics
         internal VersionVK ApiVersion { get; }
 
         public override ResourceFactory Resources => _resFactory;
-
-        public override SpriteBatcher SpriteBatch => throw new NotImplementedException();
     }
 }

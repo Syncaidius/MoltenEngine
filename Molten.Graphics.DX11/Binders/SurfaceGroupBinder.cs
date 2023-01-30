@@ -2,19 +2,19 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class SurfaceGroupBinder : GraphicsGroupBinder<RenderSurface2D>
+    internal unsafe class SurfaceGroupBinder : GraphicsGroupBinder<IRenderSurface2D>
     {
-        public override void Bind(GraphicsSlotGroup<RenderSurface2D> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<IRenderSurface2D> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             
         }
 
-        public override void Bind(GraphicsSlot<RenderSurface2D> slot, RenderSurface2D value)
+        public override void Bind(GraphicsSlot<IRenderSurface2D> slot, IRenderSurface2D value)
         {
             
         }
 
-        public override void Unbind(GraphicsSlotGroup<RenderSurface2D> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<IRenderSurface2D> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             CommandQueueDX11 cmd = grp.Cmd as CommandQueueDX11;
 
@@ -26,7 +26,7 @@ namespace Molten.Graphics
             cmd.Native->OMSetRenderTargets(numRTs, (ID3D11RenderTargetView**)rtvs, cmd.DSV);
         }
 
-        public override void Unbind(GraphicsSlot<RenderSurface2D> slot, RenderSurface2D value)
+        public override void Unbind(GraphicsSlot<IRenderSurface2D> slot, IRenderSurface2D value)
         {
             CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
 

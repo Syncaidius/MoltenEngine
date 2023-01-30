@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public abstract partial class SpriteBatcher
+    public partial class SpriteBatcher
     {
         /// <summary>
         /// A struct which represents sprite data to be sent to the GPU via a structured buffer.

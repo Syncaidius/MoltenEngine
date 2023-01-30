@@ -1,19 +1,19 @@
 ﻿namespace Molten.Graphics
 {
-    internal class ContextStateStack
+    internal class CommandStateStack
     {
         const int STACK_INCREMENT = 5;
         GraphicsState[] _stack;
         int _stackSize = 0;
-        CommandQueueDX11 _context;
+        GraphicsCommandQueue cmd;
 
-        internal ContextStateStack(CommandQueueDX11 context)
+        internal CommandStateStack(GraphicsCommandQueue cmd)
         {
             _stack = new GraphicsState[STACK_INCREMENT];
             for (int i = 0; i < _stack.Length; i++)
-                _stack[i] = new GraphicsState(context);
+                _stack[i] = new GraphicsState(cmd);
 
-            _context = context;
+            this.cmd = cmd;
         }
 
         /// <summary>Pushes the current state of a pipe onto the stack.</summary>
@@ -28,7 +28,7 @@
 
                 // Initialize new additions
                 for (int i = _stackSize; i < _stack.Length; i++)
-                    _stack[i] = new GraphicsState(_context);
+                    _stack[i] = new GraphicsState(cmd);
             }
 
             _stack[id].Capture();

@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Molten.Graphics
 {
     /// <summary>
     /// A base class for sprite batcher implementations.
     /// </summary>
-    public abstract partial class SpriteBatcher : IDisposable
+    public partial class SpriteBatcher : IDisposable
     {
         protected delegate void FlushRangeCallback(uint firstRangeID, uint rangeCount, uint dataStartIndex, uint numDataInBuffer);
 
@@ -64,14 +65,27 @@ namespace Molten.Graphics
 
         ushort _curClipID;
         uint _curRange;
-        protected uint DataCount;
+        uint _dataCount;
+
+        IGraphicsBuffer _buffer;
+        IGraphicsBufferSegment _bufferData;
+
+        Func<GraphicsCommandQueue, SpriteRange, ObjectRenderData, Material>[] _checkers;
+        Material _matDefault;
+        Material _matDefaultMS;
+        Material _matDefaultNoTexture;
+        Material _matLine;
+        Material _matGrid;
+        Material _matCircle;
+        Material _matCircleNoTexture;
+        Material _matMsdf;
 
         /// <summary>
         /// Placeholder for internal rectangle/sprite styling.
         /// </summary>
         RectStyle _rectStyle;
 
-        public SpriteBatcher(uint dataCapacity, uint rangeCapacity)
+        public unsafe SpriteBatcher(RenderService renderer, uint dataCapacity, uint rangeCapacity)
         {
             _rectStyle = RectStyle.Default;
 
@@ -83,6 +97,33 @@ namespace Molten.Graphics
 
             ClipStack = new Rectangle[256];
             Reset();
+
+            _buffer = renderer.Device.CreateBuffer(
+            GraphicsBufferFlags.Structured | GraphicsBufferFlags.ShaderResource,
+            BufferMode.DynamicDiscard,
+            (uint)sizeof(GpuData) * dataCapacity,
+            (uint)sizeof(GpuData));
+            _bufferData = _buffer.Allocate<GpuData>(dataCapacity);
+
+            ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "sprite.mfx");
+            _matDefaultNoTexture = result[ShaderClassType.Material, "sprite-no-texture"] as Material;
+            _matDefault = result[ShaderClassType.Material, "sprite-texture"] as Material;
+            _matCircle = result[ShaderClassType.Material, "circle"] as Material;
+            _matCircleNoTexture = result[ShaderClassType.Material, "circle-no-texture"] as Material;
+            _matLine = result[ShaderClassType.Material, "line"] as Material;
+            _matGrid = result[ShaderClassType.Material, "grid"] as Material;
+            //_matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
+
+            ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "sprite_sdf.mfx");
+            _matMsdf = resultSdf[ShaderClassType.Material, "sprite-msdf"] as Material;
+
+            _checkers = new Func<GraphicsCommandQueue, SpriteRange, ObjectRenderData, Material>[7];
+            _checkers[(int)RangeType.None] = NoCheckRange;
+            _checkers[(int)RangeType.Sprite] = CheckSpriteRange;
+            _checkers[(int)RangeType.MSDF] = CheckMsdfRange;
+            _checkers[(int)RangeType.Line] = CheckLineRange;
+            _checkers[(int)RangeType.Ellipse] = CheckEllipseRange;
+            _checkers[(int)RangeType.Grid] = CheckGridRange;
         }
 
         /// <summary>
@@ -150,10 +191,10 @@ namespace Molten.Graphics
 
             range.VertexCount++;
 
-            if (DataCount == Data.Length) // Increase length by 50%
+            if (_dataCount == Data.Length) // Increase length by 50%
                 Array.Resize(ref Data, Data.Length + (Data.Length / 2));
 
-            return ref Data[DataCount++];
+            return ref Data[_dataCount++];
         }
 
         /// <summary>Inserts a new sprite range, without any <see cref="GpuData"/>. 
@@ -178,7 +219,7 @@ namespace Molten.Graphics
         {
             _curRange = 0;
             _curClipID = 0;
-            DataCount = 0;
+            _dataCount = 0;
             Ranges[_curRange].Type = RangeType.None;
             Ranges[_curRange].Clip = ClipStack[_curClipID];
         }
@@ -450,7 +491,7 @@ namespace Molten.Graphics
             uint dataID = 0;
             uint rangeID = 0;
 
-            while (dataID < DataCount && rangeID <= _curRange)
+            while (dataID < _dataCount && rangeID <= _curRange)
             {
                 uint flushCount = 0; // Number of data elements to flush.
 
@@ -480,9 +521,119 @@ namespace Molten.Graphics
             Reset();
         }
 
-        public abstract void Flush(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data);
+        public void Flush(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data)
+        {
+            if (_dataCount == 0)
+                return;
 
-        public abstract void Dispose();
+            cmd.VertexBuffers[0].Value = null;
+
+            ProcessBatches(camera, (firstRangeID, rangeCount, firstDataID, flushCount) =>
+                FlushBuffer(cmd, camera, data, firstRangeID, rangeCount, firstDataID, flushCount));
+        }
+
+        private void FlushBuffer(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data, uint firstRangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
+        {
+            SpriteRange range;
+            _bufferData.GetStream(GraphicsPriority.Immediate, (buffer, stream) => stream.WriteRange(Data, vertexStartIndex, vertexCount));
+
+            // Draw calls
+            uint bufferOffset = 0;
+            uint rangeID = firstRangeID;
+
+            for (uint i = 0; i < rangeCount; i++)
+            {
+                range = Ranges[rangeID++];
+                if (range.Type == RangeType.None)
+                    continue;
+
+                Material mat = range.Material ?? _checkers[(int)range.Type](cmd, range, data);
+
+                mat["spriteData"].Value = _bufferData;
+                mat["vertexOffset"].Value = bufferOffset;
+
+                // Set common material properties
+                if (range.Texture != null)
+                {
+                    if (range.Texture.IsMultisampled)
+                    {
+                        mat.Textures.DiffuseTextureMS.Value = range.Texture;
+                        mat.Textures.SampleCount.Value = (uint)range.Texture.MultiSampleLevel;
+                    }
+                    else
+                    {
+                        mat.Textures.DiffuseTexture.Value = range.Texture;
+                    }
+
+                    Vector2F texSize = new Vector2F(range.Texture.Width, range.Texture.Height);
+                    mat.SpriteBatch.TextureSize.Value = texSize;
+                }
+
+                cmd.SetScissorRectangles(range.Clip);
+
+                mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
+                cmd.Draw(mat, range.VertexCount, VertexTopology.PointList);
+
+                bufferOffset += range.VertexCount;
+            }
+        }
+
+        private Material CheckSpriteRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        {
+            if (range.Texture != null)
+                return range.Texture.IsMultisampled ? _matDefaultMS : _matDefault;
+            else
+                return _matDefaultNoTexture;
+        }
+
+        private Material CheckMsdfRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        {
+            if (range.Texture != null)
+            {
+                if (range.Texture.IsMultisampled)
+                    return _matDefaultMS; // TODO Implement MSDF Multi-sampling
+                else
+                    return _matMsdf;
+            }
+            else
+            {
+                return _matDefaultNoTexture;
+            }
+        }
+
+        private Material CheckLineRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        {
+            return _matLine;
+        }
+
+        private Material CheckEllipseRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        {
+            return range.Texture != null ? _matCircle : _matCircleNoTexture;
+        }
+
+        private Material CheckGridRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        {
+            return _matGrid; // range.Texture != null ? _matCircle : _matCircleNoTexture;
+        }
+
+        private Material NoCheckRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        {
+            return null;
+        }
+
+        public void Dispose()
+        {
+            _matDefault.Dispose();
+            _matDefaultNoTexture.Dispose();
+            _matMsdf.Dispose();
+            _matGrid.Dispose();
+            _matLine.Dispose();
+            _matCircle.Dispose();
+            _matCircleNoTexture.Dispose();
+
+            _bufferData.Dispose();
+            _buffer.Dispose();
+        }
 
         /// <summary>
         /// Gets the maximum number of sprites that the current <see cref="SpriteBatcher"/> can render at a time when flushing.

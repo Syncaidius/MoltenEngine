@@ -128,18 +128,29 @@ namespace Molten.Graphics
             _buffer.Set<T>(context, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
         }
 
-        internal void Map(CommandQueueDX11 context, Action<GraphicsBuffer, RawStream> callback, GraphicsBuffer staging = null)
+        public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, RawStream> callback, IStagingBuffer staging = null)
         {
             uint curByteOffset = ByteOffset;
             uint curStride = Stride;
 
-            _buffer.GetStream(context, ByteOffset, Stride * ElementCount, (buffer, stream) =>
+            if (priority == GraphicsPriority.Immediate)
             {
-                if (Buffer.Mode == BufferMode.DynamicRing)
-                    ByteOffset = (uint)stream.Position;
+                _buffer.GetStream(Device.Cmd as CommandQueueDX11, ByteOffset, Stride * ElementCount, (buffer, stream) =>
+                {
+                    if (Buffer.Mode == BufferMode.DynamicRing)
+                        ByteOffset = (uint)stream.Position;
 
-                callback(buffer, stream);
-            }, staging);
+                    callback(buffer, stream);
+                }, staging as StagingBuffer);
+            }
+            else
+            {
+                _buffer.QueueOperation(new BufferGetStreamOperation()
+                {
+                    Segment = this,
+                    StreamCallback = callback
+                });
+            }
 
             // Do we need to update version due to data changes?
             if (curByteOffset != ByteOffset || curStride != Stride)

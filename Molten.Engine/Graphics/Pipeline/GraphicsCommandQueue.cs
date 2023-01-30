@@ -17,6 +17,7 @@
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
         List<GraphicsSlot> _slots;
+        CommandStateStack _stateStack;
 
         protected GraphicsCommandQueue(GraphicsDevice device)
         {
@@ -24,6 +25,18 @@
             Device = device;
             _slots = new List<GraphicsSlot>();
             _defaultProfiler = _profiler = new RenderProfiler();
+
+            _stateStack = new CommandStateStack(this);
+        }
+
+        public int PushState()
+        {
+            return _stateStack.Push();
+        }
+
+        public void PopState()
+        {
+            _stateStack.Pop();
         }
 
         public void BeginDraw(StateConditions conditions)
@@ -236,5 +249,15 @@ where B : GraphicsSlotBinder<T>, new()
         public GraphicsSlotGroup<IGraphicsBufferSegment> VertexBuffers { get; protected set; }
 
         public GraphicsSlot<IGraphicsBufferSegment> IndexBuffer { get; protected set; }
+
+        public GraphicsSlot<Material> Material { get; protected set; }
+
+        public GraphicsSlot<GraphicsBlendState> Blend { get; protected set; }
+
+        public GraphicsSlot<GraphicsRasterizerState> Rasterizer { get; protected set; }
+
+        public GraphicsSlot<GraphicsDepthState> Depth { get; protected set; }
+
+        public GraphicsSlotGroup<IRenderSurface2D> Surfaces { get; protected set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public abstract partial class SpriteBatcher
+    public partial class SpriteBatcher
     {
         delegate void DirectionFunc(ref Vector2F charPos, ref Vector2F scale);
 

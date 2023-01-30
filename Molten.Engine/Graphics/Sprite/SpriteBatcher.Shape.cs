@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract partial class SpriteBatcher
+    public partial class SpriteBatcher
     {
         public void DrawShapeOutline(Shape shape, Color color, float thickness, uint surfaceSlice = 0)
         {

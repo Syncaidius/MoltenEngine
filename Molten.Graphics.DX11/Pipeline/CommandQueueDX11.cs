@@ -13,7 +13,6 @@ namespace Molten.Graphics
     public unsafe partial class CommandQueueDX11 : GraphicsCommandQueue
     {
         ID3D11DeviceContext4* _context;
-        ContextStateStack _stateStack;
 
         Rectangle[] _scissorRects;
         bool _scissorRectsDirty;
@@ -67,16 +66,14 @@ namespace Molten.Graphics
             PS = new ShaderPSStage(this);
             CS = new ShaderCSStage(this);
 
-            Blend = RegisterSlot<BlendStateDX11, BlendBinder>(GraphicsBindTypeFlags.Output, "Blend State", 0);
-            Depth = RegisterSlot<DepthStateDX11, DepthStencilBinder>(GraphicsBindTypeFlags.Output, "Depth-Stencil State", 0);
-            Rasterizer = RegisterSlot<RasterizerStateDX11, RasterizerBinder>(GraphicsBindTypeFlags.Output, "Rasterizer State", 0);
+            Blend = RegisterSlot<GraphicsBlendState, BlendBinder>(GraphicsBindTypeFlags.Output, "Blend State", 0);
+            Depth = RegisterSlot<GraphicsDepthState, DepthStencilBinder>(GraphicsBindTypeFlags.Output, "Depth-Stencil State", 0);
+            Rasterizer = RegisterSlot<GraphicsRasterizerState, RasterizerBinder>(GraphicsBindTypeFlags.Output, "Rasterizer State", 0);
 
             RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
 
-            Surfaces = RegisterSlotGroup<RenderSurface2D, SurfaceGroupBinder>(GraphicsBindTypeFlags.Output, "Render Surface", maxRTs);
+            Surfaces = RegisterSlotGroup<IRenderSurface2D, SurfaceGroupBinder>(GraphicsBindTypeFlags.Output, "Render Surface", maxRTs);
             DepthSurface = RegisterSlot<IDepthStencilSurface, DepthSurfaceBinder>(GraphicsBindTypeFlags.Output, "Depth Surface", 0);
-
-            _stateStack = new ContextStateStack(this);
 
             // Apply the surface of the graphics device's output initialally.
             SetRenderSurfaces(null);
@@ -161,18 +158,8 @@ namespace Molten.Graphics
             Profiler.Current.UpdateSubresourceCount++;
         }
 
-        public int PushState()
-        {
-            return _stateStack.Push();
-        }
-
-        public void PopState()
-        {
-            _stateStack.Pop();
-        }
-
         private GraphicsBindResult ApplyState(MaterialPass pass,
-            GraphicsValidationMode mode,
+            QueueValidationMode mode,
             VertexTopology topology)
         {
             if (topology == VertexTopology.Undefined)
@@ -186,7 +173,7 @@ namespace Molten.Graphics
             return result;
         }
 
-        private GraphicsBindResult DrawCommon(Material mat, GraphicsValidationMode mode, VertexTopology topology, 
+        private GraphicsBindResult DrawCommon(Material mat, QueueValidationMode mode, VertexTopology topology, 
             ContextDrawCallback drawCallback, ContextDrawFailCallback failCallback)
         {
             GraphicsBindResult vResult = GraphicsBindResult.Successful;
@@ -226,7 +213,7 @@ namespace Molten.Graphics
 
         public override GraphicsBindResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
         {
-            return DrawCommon(material, GraphicsValidationMode.Unindexed, topology, (pass) =>
+            return DrawCommon(material, QueueValidationMode.Unindexed, topology, (pass) =>
             {
                 _context->Draw(vertexCount, vertexStartIndex);
             },
@@ -246,7 +233,7 @@ namespace Molten.Graphics
             uint vertexStartIndex = 0,
             uint instanceStartIndex = 0)
         {
-            return DrawCommon(material, GraphicsValidationMode.Instanced, topology, (pass) =>
+            return DrawCommon(material, QueueValidationMode.Instanced, topology, (pass) =>
             {
                 _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
             },
@@ -265,7 +252,7 @@ namespace Molten.Graphics
             int vertexIndexOffset = 0,
             uint startIndex = 0)
         {
-            return DrawCommon(material, GraphicsValidationMode.Indexed, topology, (pass) =>
+            return DrawCommon(material, QueueValidationMode.Indexed, topology, (pass) =>
             {
                 _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset);
             },
@@ -286,7 +273,7 @@ namespace Molten.Graphics
             int vertexIndexOffset = 0,
             uint instanceStartIndex = 0)
         {
-            return DrawCommon(material, GraphicsValidationMode.InstancedIndexed, topology, (pass) =>
+            return DrawCommon(material, QueueValidationMode.InstancedIndexed, topology, (pass) =>
             {
                 _context->DrawIndexedInstanced(indexCountPerInstance, instanceCount,
                     startIndex, vertexIndexOffset, instanceStartIndex);
@@ -422,7 +409,7 @@ namespace Molten.Graphics
                         if (Surfaces[i].BoundValue != null)
                         {
                             _numRTVs = (i + 1);
-                            RTVs[i] = Surfaces[i].BoundValue.RTV.Ptr;
+                            RTVs[i] = (Surfaces[i].BoundValue as RenderSurface2D).RTV.Ptr;
                         }
                         else
                         {
@@ -607,7 +594,7 @@ namespace Molten.Graphics
             return input;
         }
 
-        private GraphicsBindResult Validate(GraphicsValidationMode mode)
+        private GraphicsBindResult Validate(QueueValidationMode mode)
         {
             GraphicsBindResult result = GraphicsBindResult.Successful;
 
@@ -616,17 +603,17 @@ namespace Molten.Graphics
             // Validate and update mode-specific data if needed.
             switch (mode)
             {
-                case GraphicsValidationMode.Indexed:
+                case QueueValidationMode.Indexed:
                     result |= CheckVertexSegment();
                     result |= CheckIndexSegment();
                     break;
 
-                case GraphicsValidationMode.Instanced:
+                case QueueValidationMode.Instanced:
                     result |= CheckVertexSegment();
                     result |= CheckInstancing();
                     break;
 
-                case GraphicsValidationMode.InstancedIndexed:
+                case QueueValidationMode.InstancedIndexed:
                     result |= CheckVertexSegment();
                     result |= CheckIndexSegment();
                     result |= CheckInstancing();
@@ -707,18 +694,5 @@ namespace Molten.Graphics
         internal ShaderDSStage DS { get; }
         internal ShaderPSStage PS { get; }
         internal ShaderCSStage CS { get; }
-
-        public GraphicsSlot<Material> Material { get; }
-
-        internal GraphicsSlot<BlendStateDX11> Blend { get; }
-
-        internal GraphicsSlot<RasterizerStateDX11> Rasterizer { get; }
-
-        internal GraphicsSlot<DepthStateDX11> Depth { get; }
-
-        /// <summary>Gets the number of applied viewports.</summary>
-        public int ViewportCount => _viewports.Length;
-
-        public GraphicsSlotGroup<RenderSurface2D> Surfaces { get; }
     }
 }

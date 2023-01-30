@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract partial class SpriteBatcher
+    public partial class SpriteBatcher
     {
         public void DrawRoundedRect(RectangleF dest, Color fillColor, float rotation,
             Vector2F origin, float cornerRadius, Material material = null, uint surfaceSlice = 0)

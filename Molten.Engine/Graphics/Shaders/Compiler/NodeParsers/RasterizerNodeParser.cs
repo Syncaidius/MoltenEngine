@@ -16,7 +16,8 @@
                     InvalidEnumMessage<RasterizerPreset>(context, (node.Name, node.Value), "rasterizer preset");
             }
 
-            GraphicsRasterizerState state = foundation.Device.CreateRasterizerState(foundation.Device.RasterizerBank.GetPreset(preset));
+            GraphicsRasterizerState template = foundation.RasterizerState[node.Conditions] ?? foundation.Device.RasterizerBank.GetPreset(preset);
+            GraphicsRasterizerState state = foundation.Device.CreateRasterizerState(template);
 
             foreach ((string Name, string Value) c in node.ChildValues)
             {

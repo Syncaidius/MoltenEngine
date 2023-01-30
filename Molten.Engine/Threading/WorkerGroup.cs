@@ -44,8 +44,9 @@ namespace Molten.Threading
                 return;
 
             for (int i = 0; i < _threads.Count; i++)
-                _threads[i].ExitAndJoin();
+                _threads[i].Exit();
 
+            Reset.Set();
             _threads.Clear();
 
             _manager.DestroyGroup(this);

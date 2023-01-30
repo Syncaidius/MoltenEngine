@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics
+﻿using Molten.IO;
+
+namespace Molten.Graphics
 {
     public interface IGraphicsBufferSegment : IShaderResource
     {
@@ -16,6 +18,8 @@
         void SetVertexFormat<T>() where T : struct, IVertexType;
 
         void SetIndexFormat(IndexBufferFormat format);
+
+        void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, RawStream> callback, IStagingBuffer staging = null);
 
         /// <summary>
         /// Gets the parent <see cref="IGraphicsBuffer"/> of the current <see cref="IGraphicsBufferSegment"/>.

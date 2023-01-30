@@ -12,7 +12,6 @@ namespace Molten.Graphics
         DeviceBuilderDX11 _deviceBuilder;
         ResourceFactoryDX11 _resFactory;
         FxcCompiler _shaderCompiler;
-        SpriteBatcherDX11 _spriteBatcher;
 
         protected unsafe override GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings)
         {
@@ -39,8 +38,6 @@ namespace Molten.Graphics
             
             _shaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _resFactory = new ResourceFactoryDX11(this);
-
-            _spriteBatcher = new SpriteBatcherDX11(this, 3000, 20);
         }
 
         protected override SceneRenderData OnCreateRenderData()
@@ -84,7 +81,5 @@ namespace Molten.Graphics
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
         /// </summary>
         public override ResourceFactory Resources => _resFactory;
-
-        public override SpriteBatcherDX11 SpriteBatch => _spriteBatcher;
     }
 }

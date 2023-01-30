@@ -33,11 +33,6 @@
         {
             return _presets[(int)value];
         }
-
-        public GraphicsDepthState NewFromPreset(DepthStencilPreset value)
-        {
-            return _device.CreateDepthState(_presets[(int)value]);
-        }
     }
 
     public enum DepthStencilPreset

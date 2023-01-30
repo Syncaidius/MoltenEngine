@@ -14,11 +14,11 @@ namespace Molten.Graphics
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings
             uint bufferByteSize = stride * maxLights;
-            _lightDataBuffer = renderer.Device.CreateBuffer(GraphicsBufferFlags.Structured, BufferMode.DynamicRing, bufferByteSize, stride);
+            _lightDataBuffer = renderer.Device.CreateBuffer(GraphicsBufferFlags.Structured | GraphicsBufferFlags.ShaderResource, BufferMode.DynamicRing, bufferByteSize, stride);
             _lightSegment = _lightDataBuffer.Allocate<LightData>(maxLights);
 
             // Load shaders
-            ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "light_point.mfx");
+            ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "light_point.mfx");
             _matPoint = result[ShaderClassType.Material, "light-point"] as Material;
             _matDebugPoint = result[ShaderClassType.Material, "light-point-debug"] as Material;
         }

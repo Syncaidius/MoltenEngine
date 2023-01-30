@@ -172,7 +172,7 @@ namespace Molten.Graphics
         public ShaderCompileResult LoadEmbeddedShader(string nameSpace, string filename, Assembly assembly = null)
         {
             string src = "";
-            assembly = assembly ?? _renderer.GetType().Assembly;
+            assembly = assembly ?? typeof(RenderService).Assembly;
             Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{filename}", assembly);
             if(stream != null)
             {

@@ -10,10 +10,11 @@
         {
             GraphicsBlendState template = foundation.Device.BlendBank.NewFromPreset(BlendPreset.Default);
             GraphicsBlendState.RenderSurfaceBlend rtBlend = template[0]; // Use the default preset's first (0) RT blend description.
+            BlendPreset preset = BlendPreset.Default;
 
-            if(node.ValueType == ShaderHeaderValueType.Preset)
+            if (node.ValueType == ShaderHeaderValueType.Preset)
             {
-                if (Enum.TryParse(node.Value, true, out BlendPreset preset))
+                if (Enum.TryParse(node.Value, true, out preset))
                 {
                     // Use a template preset's first (0) RT blend description.
                     template = foundation.Device.BlendBank.GetPreset(preset);
@@ -25,7 +26,8 @@
                 }
             }
 
-            GraphicsBlendState state = foundation.Device.CreateBlendState(foundation.BlendState[node.Conditions]) ?? foundation.Device.BlendBank.GetPreset(BlendPreset.Default);
+            template = foundation.BlendState[node.Conditions] ?? foundation.Device.BlendBank.GetPreset(preset);
+            GraphicsBlendState state = foundation.Device.CreateBlendState(template);
             state.IndependentBlendEnable = (state.IndependentBlendEnable || (node.SlotID > 0));
 
             foreach ((string Name, string Value) c in node.ChildValues)

@@ -29,7 +29,8 @@ namespace Molten.Threading
                     }
                     else
                     {
-                        Group.Reset.Reset();
+                        if(!_shouldExit && Group.Reset.Reset())
+                            Group.Reset.WaitOne();
                     }
                 }
             });
@@ -53,10 +54,14 @@ namespace Molten.Threading
             _shouldExit = true;
         }
 
-        internal void ExitAndJoin()
+        internal void ExitAndJoin(TimeSpan? timeout = null)
         {
             Exit();
-            _thread.Join();
+
+            if (timeout.HasValue)
+                _thread.Join(timeout.Value);
+            else
+                _thread.Join();
         }
 
 

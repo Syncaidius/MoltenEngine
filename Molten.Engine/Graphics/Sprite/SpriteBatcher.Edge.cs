@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public abstract partial class SpriteBatcher
+    public partial class SpriteBatcher
     {
         /// <summary>Draws .</summary>
         /// <param name="edge">The edge to draw.</param>

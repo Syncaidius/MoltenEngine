@@ -291,6 +291,7 @@ namespace Molten.Graphics
             StaticVertexBuffer = Device.CreateBuffer(GraphicsBufferFlags.Vertex | GraphicsBufferFlags.Index, BufferMode.Default, maxBufferSize);
             DynamicVertexBuffer = Device.CreateBuffer(GraphicsBufferFlags.Vertex | GraphicsBufferFlags.Index, BufferMode.DynamicRing, maxBufferSize);
             StagingBuffer = Device.CreateStagingBuffer(StagingBufferFlags.Write, maxBufferSize);
+            SpriteBatch = new SpriteBatcher(this, 3000, 20);
 
             LoadDefaultShaders();
 
@@ -299,8 +300,7 @@ namespace Molten.Graphics
 
         private void LoadDefaultShaders()
         {
-            Assembly includeAssembly = this.GetType().Assembly;
-            ShaderCompileResult result = Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer.mfx", includeAssembly);
+            ShaderCompileResult result = Resources.LoadEmbeddedShader("Molten.Assets", "gbuffer.mfx");
             StandardMeshMaterial = result[ShaderClassType.Material, "gbuffer"] as Material;
             StandardMeshMaterial_NoNormalMap = result[ShaderClassType.Material, "gbuffer-sans-nmap"] as Material;
         }
@@ -481,6 +481,6 @@ namespace Molten.Graphics
 
         public abstract ShaderCompiler Compiler { get; }
 
-        public abstract SpriteBatcher SpriteBatch { get; }
+        public SpriteBatcher SpriteBatch { get; private set; }
     }
 }

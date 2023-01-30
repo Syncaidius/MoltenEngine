@@ -53,6 +53,7 @@ namespace Molten.Threading
                 _thread.TrySetApartmentState(apartmentState);
             }
             catch { }
+
             _thread.Start();
 
             if (startNow)

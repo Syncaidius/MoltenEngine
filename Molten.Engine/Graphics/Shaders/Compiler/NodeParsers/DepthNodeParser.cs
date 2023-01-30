@@ -8,7 +8,6 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            GraphicsDepthState state = null;
             DepthStencilPreset preset = DepthStencilPreset.Default;
 
             if (node.ValueType == ShaderHeaderValueType.Preset)
@@ -17,7 +16,8 @@
                     InvalidEnumMessage<DepthStencilPreset>(context, (node.Name, node.Value), "depth-stencil preset");
             }
 
-            state = foundation.Device.DepthBank.NewFromPreset(preset);
+            GraphicsDepthState template = foundation.DepthState[node.Conditions] ?? foundation.Device.DepthBank.GetPreset(preset);
+            GraphicsDepthState state = foundation.Device.CreateDepthState(template);
 
             foreach ((string Name, string Value) c in node.ChildValues)
             {
@@ -73,7 +73,7 @@
                         break;
 
                     case "reference":
-                        if (byte.TryParse(c.Value, out byte stencilRef))
+                        if (uint.TryParse(c.Value, out uint stencilRef))
                             state.StencilReference = stencilRef;
                         else
                             InvalidValueMessage(context, c, "stencil reference", "integer");

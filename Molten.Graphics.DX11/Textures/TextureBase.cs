@@ -514,8 +514,8 @@ namespace Molten.Graphics
                 Destination = destination as TextureBase,
             });
 
-            TextureApply applyTask = TextureApply.Get();
-            applyTask.Texture = this;
+            ApplyObjectTask applyTask = ApplyObjectTask.Get();
+            applyTask.Object = this;
             _renderer.PushTask(applyTask);
         }
 
@@ -557,8 +557,8 @@ namespace Molten.Graphics
                 DestinationSlice = destSlice,
             });
 
-            TextureApply applyTask = TextureApply.Get();
-            applyTask.Texture = this;
+            ApplyObjectTask applyTask = ApplyObjectTask.Get();
+            applyTask.Object = this;
             _renderer.PushTask(applyTask);
         }
 

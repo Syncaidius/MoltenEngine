@@ -3,10 +3,10 @@
     /// <summary>Stores the current state of a <see cref="CommandQueueDX11"/>.</summary>
     internal class GraphicsState
     {
-        CommandQueueDX11 _cmd;
-        BlendStateDX11 _blendState;
-        DepthStateDX11 _depthState;
-        RasterizerStateDX11 _rasterState;
+        GraphicsCommandQueue _cmd;
+        GraphicsBlendState _blendState;
+        GraphicsDepthState _depthState;
+        GraphicsRasterizerState _rasterState;
 
         IGraphicsBufferSegment[] _vSegments;
         IGraphicsBufferSegment _iSegment;
@@ -18,14 +18,14 @@
 
         ViewportF[] _viewports;
 
-        public GraphicsState(CommandQueueDX11 cmd)
+        public GraphicsState(GraphicsCommandQueue cmd)
         {
             _cmd = cmd;
-            uint maxSurfaces = _cmd.DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
+            uint maxSurfaces = _cmd.Device.Adapter.Capabilities.PixelShader.MaxOutResources;
 
             _surfaces = new IRenderSurface2D[maxSurfaces];
             _viewports = new ViewportF[maxSurfaces];
-            _vSegments = new IGraphicsBufferSegment[_cmd.DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots];
+            _vSegments = new IGraphicsBufferSegment[_cmd.Device.Adapter.Capabilities.VertexBuffers.MaxSlots];
         }
 
         public void Capture()
@@ -37,8 +37,9 @@
             _cmd.VertexBuffers.Get(_vSegments);
             _iSegment = _cmd.IndexBuffer.Value;
 
-            //store viewports
-            int vpCount = _cmd.ViewportCount;
+            // Store viewports
+            int vpCount = (int)_cmd.Device.Adapter.Capabilities.PixelShader.MaxOutResources;
+
             if (_viewports.Length < vpCount)
                 Array.Resize(ref _viewports, vpCount);
             _cmd.GetViewports(_viewports);
