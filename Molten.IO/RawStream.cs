@@ -25,6 +25,8 @@ namespace Molten.IO
         /// <remarks>Resets <see cref="Position"/> to zero and updates <see cref="Length"/>.</remarks>
         /// <param name="ptrData">A pointer to the source data.</param>
         /// <param name="numBytes">The number of bytes that <paramref name="ptrData"/> represents</param>.
+        /// <param name="canRead"></param>
+        /// <param name="canWrite"></param>
         public void SetSource(void* ptrData, uint numBytes, bool canRead, bool canWrite)
         {
             _ptrData = (byte*)ptrData;

@@ -28,6 +28,7 @@
                 MaxMipMapLod = float.MaxValue;
                 LodBias = 0f;
                 MaxAnisotropy = 1;
+                BorderColor = Color.White;
                 ComparisonFunc = ComparisonMode.Never;
             }
 

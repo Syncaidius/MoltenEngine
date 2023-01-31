@@ -22,7 +22,6 @@ namespace Molten.Graphics
             // If the sampler was actually dirty, recreate it.
             if (_isDirty)
             {
-                int fVal = (int)_desc.Filter;
                 GraphicsRelease();
 
                 (cmd as CommandQueueDX11).DXDevice.Ptr->CreateSamplerState(ref _desc, ref _native);
