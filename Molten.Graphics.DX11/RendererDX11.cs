@@ -42,20 +42,6 @@ namespace Molten.Graphics
 
         protected override void OnPrePresent(Timing time) { }
 
-        protected override void OnPreRenderScene(SceneRenderData sceneData, Timing time) { }
-
-        protected override void OnPostRenderScene(SceneRenderData sceneData, Timing time) { }
-
-        protected override void OnPreRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time)
-        {
-            NativeDevice.Cmd.Profiler = camera.Profiler;
-        }
-
-        protected override void OnPostRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time)
-        {
-            NativeDevice.Cmd.Profiler = null;
-        }
-
         protected override void OnPostPresent(Timing time) { }
 
         protected override void OnDisposeBeforeRender()

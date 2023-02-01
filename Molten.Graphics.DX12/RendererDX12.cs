@@ -38,27 +38,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        protected override void OnPostRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void OnPostRenderScene(SceneRenderData sceneData, Timing time)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void OnPrePresent(Timing time)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void OnPreRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void OnPreRenderScene(SceneRenderData sceneData, Timing time)
         {
             throw new NotImplementedException();
         }

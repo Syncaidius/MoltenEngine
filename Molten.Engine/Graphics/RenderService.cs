@@ -178,25 +178,22 @@ namespace Molten.Graphics
                         return 0;
                 });
 
-                OnPreRenderScene(sceneData, time);
                 foreach (RenderCamera camera in sceneData.Cameras)
                 {
                     if (camera.Skip)
                         continue;
 
-                    OnPreRenderCamera(sceneData, camera, time);
+                    Device.Cmd.Profiler = camera.Profiler;
                     camera.Profiler.Begin();
                     _chain.Render(sceneData, camera, time);
                     camera.Profiler.End(time);
                     Profiler.Accumulate(camera.Profiler.Previous);
                     sceneData.Profiler.Accumulate(camera.Profiler.Previous);
-                    OnPostRenderCamera(sceneData, camera, time);
+                    Device.Cmd.Profiler = null;
                 }
                 
                 // Clear the list of used surfaces, ready for the next frame.
                 _clearedSurfaces.Clear();
-
-                OnPostRenderScene(sceneData, time);
 
                 sceneData.Profiler.End(time);
                 sceneData.PostRenderInvoke(this);
@@ -340,14 +337,6 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="time">A timing instance.</param>
         protected abstract void OnPrePresent(Timing time);
-
-        protected abstract void OnPreRenderScene(SceneRenderData sceneData, Timing time);
-
-        protected abstract void OnPostRenderScene(SceneRenderData sceneData, Timing time);
-
-        protected abstract void OnPreRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time);
-
-        protected abstract void OnPostRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time);
 
         /// <summary>
         /// Occurs after render presentation is completed and profiler timing has been finalized for the current frame. Useful if you need to do some per-frame cleanup/resetting.
