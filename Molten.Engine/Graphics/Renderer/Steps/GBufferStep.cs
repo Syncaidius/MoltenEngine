@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal class GBufferStep : RenderStepBase
+    internal class GBufferStep : RenderStep
     {
         public override void Dispose() { }
 

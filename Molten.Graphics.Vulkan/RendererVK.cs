@@ -190,11 +190,6 @@ namespace Molten.Graphics
             return _instanceLoader.GetExtension<E>();
         }
 
-        protected override SceneRenderData OnCreateRenderData()
-        {
-            throw new NotImplementedException();
-        }        
-
         protected override void OnPostPresent(Timing time)
         {
             throw new NotImplementedException();

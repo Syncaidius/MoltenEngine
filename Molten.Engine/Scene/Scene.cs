@@ -42,7 +42,7 @@ namespace Molten
 
             if (RenderData != null)
             {
-                layerData = RenderData.CreateLayerData(name);
+                layerData = new LayerRenderData(name);
                 RenderData.AddLayer(layerData);
             }
 

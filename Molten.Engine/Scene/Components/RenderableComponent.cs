@@ -2,10 +2,9 @@
 
 namespace Molten
 {
-    public abstract class RenderableComponent<T> : SceneComponent
-        where T : class, IRenderable
+    public abstract class RenderableComponent : SceneComponent
     {
-        protected T _renderable;
+        protected Renderable _renderable;
         protected bool _visible = true;
         protected bool _inScene = false;
         protected ObjectRenderData _data;
@@ -75,7 +74,7 @@ namespace Molten
         }
 
         /// <summary>The renderable object (e.g. a mesh or sprite) that should be drawn at the location of the component's parent object.</summary>
-        public T RenderedObject
+        public Renderable RenderedObject
         {
             get => _renderable;
             set

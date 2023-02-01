@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Molten.Collections;
+﻿using Molten.Collections;
 using Molten.Graphics.Overlays;
 using Molten.Threading;
 
@@ -17,8 +16,6 @@ namespace Molten.Graphics
         bool _shouldPresent;
         bool _surfaceResizeRequired;
         HashSet<ITexture2D> _clearedSurfaces;
-        Dictionary<Type, RenderStepBase> _steps;
-        List<RenderStepBase> _stepList;
         RenderChain _chain;
         AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
 
@@ -36,8 +33,6 @@ namespace Molten.Graphics
         public RenderService()
         {
             _clearedSurfaces = new HashSet<ITexture2D>();
-            _steps = new Dictionary<Type, RenderStepBase>();
-            _stepList = new List<RenderStepBase>();
 
             Surfaces = new SurfaceManager(this);
             Overlay = new OverlayProvider();
@@ -191,19 +186,7 @@ namespace Molten.Graphics
 
                     OnPreRenderCamera(sceneData, camera, time);
                     camera.Profiler.Begin();
-
-                    LayerRenderData layer;
-                    for (int i = 0; i < sceneData.Layers.Count; i++)
-                    {
-                        layer = sceneData.Layers[i];
-                        SceneLayerMask layerBitVal = (SceneLayerMask)(1UL << i);
-                        if ((camera.LayerMask & layerBitVal) == layerBitVal)
-                            continue;
-
-                        _chain.Build(sceneData, layer, camera);
-                        _chain.Render(sceneData, layer, camera, time);
-                    }
-
+                    _chain.Render(sceneData, camera, time);
                     camera.Profiler.End(time);
                     Profiler.Accumulate(camera.Profiler.Previous);
                     sceneData.Profiler.Accumulate(camera.Profiler.Previous);
@@ -234,9 +217,8 @@ namespace Molten.Graphics
         {
             // TODO To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later
-            LayerRenderData<Renderable> layer = layerData as LayerRenderData<Renderable>;
 
-            foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in layer.Renderables)
+            foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in layerData.Renderables)
             {
                 // TODO sort by material and textures
                 foreach (ObjectRenderData data in p.Value)
@@ -326,14 +308,12 @@ namespace Molten.Graphics
 
         internal SceneRenderData CreateRenderData()
         {
-            SceneRenderData rd = OnCreateRenderData();
+            SceneRenderData rd = new SceneRenderData();
             RendererAddScene task = RendererAddScene.Get();
             task.Data = rd;
             PushTask(task);
             return rd;
         }
-
-        protected abstract SceneRenderData OnCreateRenderData();
 
         public void DestroyRenderData(SceneRenderData data)
         {
@@ -345,21 +325,6 @@ namespace Molten.Graphics
         public void PushTask(RendererTask task)
         {
             Tasks.Enqueue(task);
-        }
-
-        internal T GetRenderStep<T>() where T : RenderStepBase, new()
-        {
-            Type t = typeof(T);
-            RenderStepBase step;
-            if (!_steps.TryGetValue(t, out step))
-            {
-                step = new T();
-                step.Initialize(this);
-                _steps.Add(t, step);
-                _stepList.Add(step);
-            }
-
-            return step as T;
         }
 
         /// <summary>
@@ -409,10 +374,7 @@ namespace Molten.Graphics
                 return false;
             });
 
-            // Dispose of render steps
-            for (int i = 0; i < _stepList.Count; i++)
-                _stepList[i].Dispose();
-
+            _chain.Dispose();
             SpriteBatch.Dispose();
             StaticVertexBuffer.Dispose();
             DynamicVertexBuffer.Dispose();

@@ -3,13 +3,16 @@
     /// <summary>
     /// The forward-rendering step.
     /// </summary>
-    internal class ForwardStep : RenderStepBase
+    internal class ForwardStep : RenderStep
     {
         public override void Dispose()
         { }
 
         internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
+            if (context.Layer.Renderables.Count == 0)
+                return;
+
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
 
             GraphicsCommandQueue cmd = renderer.Device.Cmd;

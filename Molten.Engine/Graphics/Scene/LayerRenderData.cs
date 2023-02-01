@@ -1,23 +1,19 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract class LayerRenderData
+    public class LayerRenderData
     {
+        public readonly Dictionary<Renderable, List<ObjectRenderData>> Renderables = new Dictionary<Renderable, List<ObjectRenderData>>();
+
+        internal LayerRenderData(string name)
+        {
+            Name = name;
+        }
+
+        public override string ToString()
+        {
+            return $"Layer '{Name}' - {Renderables.Count} objects";
+        }
+
         public string Name { get; set; }
-
-        public override string ToString()
-        {
-            return $"{base.ToString()} - {Name}";
-        }
-    }
-
-    public class LayerRenderData<R> : LayerRenderData
-        where R : IRenderable
-    {
-        public readonly Dictionary<R, List<ObjectRenderData>> Renderables = new Dictionary<R, List<ObjectRenderData>>();
-
-        public override string ToString()
-        {
-            return $"{base.ToString()} - {Renderables.Count} objects";
-        }
     }
 }

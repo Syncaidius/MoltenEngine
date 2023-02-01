@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal class LightingStep : RenderStepBase
+    internal class LightingStep : RenderStep
     {
         Material _matPoint;
         Material _matDebugPoint;

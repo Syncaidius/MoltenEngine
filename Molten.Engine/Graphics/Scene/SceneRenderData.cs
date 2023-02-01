@@ -7,7 +7,7 @@ namespace Molten.Graphics
     /// <summary>
     /// A class for storing renderer-specific information about a scene.
     /// </summary>
-    public abstract class SceneRenderData : EngineObject
+    public class SceneRenderData
     {
         /// <summary>
         /// Occurs just before the scene is about to be rendered.
@@ -36,8 +36,6 @@ namespace Molten.Graphics
 
         public List<LayerRenderData> Layers = new List<LayerRenderData>();
         protected readonly ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
-
-        public abstract LayerRenderData CreateLayerData(string name);
 
         public void AddLayer(LayerRenderData data)
         {
@@ -80,9 +78,23 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public abstract void AddObject(IRenderable obj, ObjectRenderData renderData, LayerRenderData layer);
+        public void AddObject(Renderable obj, ObjectRenderData renderData, LayerRenderData layer)
+        {
+            RenderableAdd change = RenderableAdd.Get();
+            change.Renderable = obj;
+            change.Data = renderData;
+            change.LayerData = layer as LayerRenderData;
+            _pendingChanges.Enqueue(change);
+        }
 
-        public abstract void RemoveObject(IRenderable obj, ObjectRenderData renderData, LayerRenderData layer);
+        public void RemoveObject(Renderable obj, ObjectRenderData renderData, LayerRenderData layer)
+        {
+            RenderableRemove change = RenderableRemove.Get();
+            change.Renderable = obj;
+            change.Data = renderData;
+            change.LayerData = layer;
+            _pendingChanges.Enqueue(change);
+        }
 
         internal void ProcessChanges()
         {
@@ -117,37 +129,5 @@ namespace Molten.Graphics
         /// Gets or sets the skybox cube-map texture.
         /// </summary>
         public ITextureCube SkyboxTexture { get; set; }
-    }
-
-    public class SceneRenderData<R> : SceneRenderData
-        where R : class, IRenderable
-    {
-        public override LayerRenderData CreateLayerData(string name)
-        {
-            return new LayerRenderData<R>()
-            {
-                Name = name,
-            };
-        }
-
-        public override void AddObject(IRenderable obj, ObjectRenderData renderData, LayerRenderData layer)
-        {
-            RenderableAdd<R> change = RenderableAdd<R>.Get();
-            change.Renderable = obj as R;
-            change.Data = renderData;
-            change.LayerData = layer as LayerRenderData<R>;
-            _pendingChanges.Enqueue(change);
-        }
-
-        public override void RemoveObject(IRenderable obj, ObjectRenderData renderData, LayerRenderData layer)
-        {
-            RenderableRemove<R> change = RenderableRemove<R>.Get();
-            change.Renderable = obj as R;
-            change.Data = renderData;
-            change.LayerData = layer as LayerRenderData<R>;
-            _pendingChanges.Enqueue(change);
-        }
-
-        protected override void OnDispose() { }
     }
 }

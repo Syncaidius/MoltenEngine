@@ -3,7 +3,7 @@
     /// <summary>
     /// A base class for render steps.
     /// </summary>
-    internal abstract class RenderStepBase : IDisposable
+    internal abstract class RenderStep : IDisposable
     {
         internal virtual void Initialize(RenderService renderer) { }
 

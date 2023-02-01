@@ -1,14 +1,13 @@
 ﻿namespace Molten.Graphics
 {
     /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="IRenderable"/> to the root of a scene.</summary>
-    internal class RenderableAdd<R> : RenderSceneChange<RenderableAdd<R>>
-        where R : class, IRenderable
+    internal class RenderableAdd : RenderSceneChange<RenderableAdd>
     {
-        public R Renderable;
+        public Renderable Renderable;
 
         public ObjectRenderData Data;
 
-        public LayerRenderData<R> LayerData;
+        public LayerRenderData LayerData;
 
         public override void ClearForPool()
         {

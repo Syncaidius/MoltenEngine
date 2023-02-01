@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal class StartStep : RenderStepBase
+    internal class StartStep : RenderStep
     {
         public override void Dispose() { }
 

@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract class Renderable : IRenderable
+    public abstract class Renderable
     {
         IShaderResource[] _resources;
 

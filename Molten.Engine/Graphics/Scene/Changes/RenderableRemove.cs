@@ -1,14 +1,13 @@
 ﻿namespace Molten.Graphics
 {
     /// <summary>A <see cref="RenderSceneChange"/> for removing a <see cref="IRenderable"/> from the root of a scene.</summary>
-    internal class RenderableRemove<R> : RenderSceneChange<RenderableRemove<R>>
-        where R : class, IRenderable
+    internal class RenderableRemove : RenderSceneChange<RenderableRemove>
     {
-        public R Renderable;
+        public Renderable Renderable;
 
         public ObjectRenderData Data;
 
-        public LayerRenderData<R> LayerData;
+        public LayerRenderData LayerData;
 
         public override void ClearForPool()
         {

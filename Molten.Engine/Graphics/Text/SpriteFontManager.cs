@@ -38,7 +38,7 @@ namespace Molten.Graphics
             _renderData = _engine.Renderer.CreateRenderData();
             _renderData.BackgroundColor = Color.Transparent;
             _renderData.IsVisible = false;
-            LayerRenderData layer = _renderData.CreateLayerData("font chars");
+            LayerRenderData layer = new LayerRenderData("font chars");
             _renderData.AddLayer(layer);
 
             SpriteRenderer _spriteRenderer = new SpriteRenderer(_engine.Renderer.Device, OnDraw);
@@ -244,7 +244,6 @@ namespace Molten.Graphics
             _camera.Surface?.Dispose();
             _rtTransfer?.Dispose();
             _engine.Renderer.DestroyRenderData(_renderData);
-            _renderData.Dispose();
         }
 
         /// <summary>

@@ -40,11 +40,6 @@ namespace Molten.Graphics
             _resFactory = new ResourceFactoryDX11(this);
         }
 
-        protected override SceneRenderData OnCreateRenderData()
-        {
-            return new SceneRenderData<Renderable>();
-        }
-
         protected override void OnPrePresent(Timing time) { }
 
         protected override void OnPreRenderScene(SceneRenderData sceneData, Timing time) { }

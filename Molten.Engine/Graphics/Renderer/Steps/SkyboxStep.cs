@@ -3,7 +3,7 @@
     /// <summary>
     /// The skybox step.
     /// </summary>
-    internal class SkyboxStep : RenderStepBase
+    internal class SkyboxStep : RenderStep
     {
         Material _matSky;
         IndexedMesh<Vertex> _sphereMesh;

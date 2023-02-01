@@ -6,7 +6,7 @@ namespace Molten.Graphics
     {
         List<RenderChainLink> _previous = new List<RenderChainLink>();
         List<RenderChainLink> _next = new List<RenderChainLink>();
-        RenderStepBase _step;
+        RenderStep _step;
         RenderChain _chain;
         bool _completed;
 
@@ -23,12 +23,13 @@ namespace Molten.Graphics
             _completed = false;
         }
 
-        internal void Set<T>() where T : RenderStepBase, new()
+        internal RenderChainLink Set<T>() where T : RenderStep, new()
         {
-            _step = _chain.Renderer.GetRenderStep<T>();
+            _step = _chain.GetRenderStep<T>();
+            return this;
         }
 
-        internal RenderChainLink Next<T>() where T : RenderStepBase, new()
+        internal RenderChainLink Next<T>() where T : RenderStep, new()
         {
             RenderChainLink next = _chain.LinkPool.GetInstance();
             next.Set<T>();
@@ -43,7 +44,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <typeparam name="T">The type of step to converge at.</typeparam>
         /// <returns>The latest <see cref="RenderChainLink"/> that was added as a result of the requested step being added.</returns>
-        internal RenderChainLink ConvergeAt<T>() where T : RenderStepBase, new()
+        internal RenderChainLink ConvergeAt<T>() where T : RenderStep, new()
         {
             RenderChainLink next = _chain.LinkPool.GetInstance();
             next.Set<T>();

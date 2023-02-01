@@ -3,9 +3,10 @@ using Molten.Collections;
 
 namespace Molten.Graphics
 {
-    internal class RenderChain
+    internal class RenderChain : EngineObject
     {
-        RenderChainLink _first;
+        Dictionary<Type, RenderStep> _steps;
+        List<RenderStep> _stepList;
         internal readonly ObjectPool<RenderChainLink> LinkPool;
         internal readonly ObjectPool<RenderChainContext> ContextPool;
 
@@ -14,33 +15,93 @@ namespace Molten.Graphics
             Renderer = renderer;
             LinkPool = new ObjectPool<RenderChainLink>(() => new RenderChainLink(this));
             ContextPool = new ObjectPool<RenderChainContext>(() => new RenderChainContext(Renderer));
+            _steps = new Dictionary<Type, RenderStep>();
+            _stepList = new List<RenderStep>();
         }
 
-        internal void Build(SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
+        internal T GetRenderStep<T>() where T : RenderStep, new()
         {
-            _first = LinkPool.GetInstance();
-            _first.Set<StartStep>();
+            Type t = typeof(T);
+            RenderStep step;
+            if (!_steps.TryGetValue(t, out step))
+            {
+                step = new T();
+                step.Initialize(Renderer);
+                _steps.Add(t, step);
+                _stepList.Add(step);
+            }
+
+            return step as T;
+        }
+
+        private RenderChainLink BuildPreRender(SceneRenderData scene, RenderCamera camera)
+        {
+            RenderChainLink first = LinkPool.GetInstance();
+            first.Set<StartStep>();
+            return first;
+        }
+
+        private RenderChainLink BuildRender(SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
+        {
+            RenderChainLink first = LinkPool.GetInstance();
 
             if (camera.Flags.HasFlag(RenderCameraFlags.Deferred))
-                _first.Next<GBufferStep>().Next<LightingStep>().Next<CompositionStep>().Next<SkyboxStep>().Next<FinalizeStep>();
+                first.Set<StartStep>().Next<GBufferStep>();
             else
-                _first.Next<ForwardStep>().Next<SkyboxStep>().Next<FinalizeStep>();
+                first.Set<StartStep>().Next<ForwardStep>();
+
+            return first;
         }
 
-        internal void Render(SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera, Timing time)
+        private RenderChainLink BuildPostRender(SceneRenderData scene, RenderCamera camera)
+        {
+            RenderChainLink first = LinkPool.GetInstance();
+
+            if (camera.Flags.HasFlag(RenderCameraFlags.Deferred))
+                first.Set<LightingStep>().Next<CompositionStep>().Next<SkyboxStep>().Next<FinalizeStep>();
+            else
+                first.Set<SkyboxStep>().Next<FinalizeStep>();
+
+            return first;
+        }
+
+        internal void Render(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
             RenderChainContext context = ContextPool.GetInstance();
-            context.Layer = layerData as LayerRenderData<Renderable>;
-            context.Scene = sceneData as SceneRenderData<Renderable>;
-
             Renderer.Surfaces.MultiSampleLevel = camera.MultiSampleLevel;
+            context.Scene = sceneData;
 
             if (camera.MultiSampleLevel >= AntiAliasLevel.X2)
                 context.BaseStateConditions = StateConditions.Multisampling;
 
-            _first.Run(Renderer, camera, context, time);
-            RenderChainLink.Recycle(_first);
+            RenderChainLink stepPreRender = BuildPreRender(sceneData, camera);
+            stepPreRender.Run(Renderer, camera, context, time);
+            RenderChainLink.Recycle(stepPreRender);
+
+            for (int i = 0; i < sceneData.Layers.Count; i++)
+            {
+                SceneLayerMask layerBitVal = (SceneLayerMask)(1UL << i);
+                if ((camera.LayerMask & layerBitVal) == layerBitVal)
+                    continue;
+
+                context.Layer = sceneData.Layers[i];
+                RenderChainLink stepRender = BuildRender(sceneData, context.Layer, camera);
+                stepRender.Run(Renderer, camera, context, time);
+                RenderChainLink.Recycle(stepRender);
+            }
+
+            RenderChainLink stepPostRender = BuildPostRender(sceneData, camera);
+            stepPostRender.Run(Renderer, camera, context, time);
+            RenderChainLink.Recycle(stepPostRender);
         }
+
+        protected override void OnDispose()
+        {
+            // Dispose of render steps
+            for (int i = 0; i < _stepList.Count; i++)
+                _stepList[i].Dispose();
+        }
+
 
         internal RenderService Renderer { get; }
     }

@@ -2,7 +2,7 @@
 
 namespace Molten
 {
-    public class MeshComponent : RenderableComponent<Mesh>
+    public class MeshComponent : RenderableComponent
     {
         protected override void OnDispose() { }
     }

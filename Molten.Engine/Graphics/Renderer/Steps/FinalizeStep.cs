@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal class FinalizeStep : RenderStepBase
+    internal class FinalizeStep : RenderStep
     {
         RenderCamera _orthoCamera;
         ObjectRenderData _dummyData;
