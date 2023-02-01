@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract class ShaderSampler : GraphicsObject, IShaderSampler
+    public abstract class ShaderSampler : GraphicsObject
     {
         protected ShaderSampler(GraphicsDevice device, ShaderSampler source) : 
             base(device, GraphicsBindTypeFlags.Input)

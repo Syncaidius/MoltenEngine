@@ -150,6 +150,7 @@
                     if (_boundVersion != Value.Version)
                     {
                         _boundVersion = Value.Version;
+                        _binder.Bind(this, _boundValue);
                         Cmd.Profiler.Current.GpuBindings++;
                         return true;
                     }

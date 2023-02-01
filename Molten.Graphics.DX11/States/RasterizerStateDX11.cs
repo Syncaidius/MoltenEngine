@@ -78,98 +78,134 @@ namespace Molten.Graphics
             get { return (RasterizerCullingMode)_desc.CullMode; }
             set
             {
-                _desc.CullMode = (CullMode)value;
-                _dirty = true;
+                if (_desc.CullMode != (CullMode)value)
+                {
+                    _desc.CullMode = (CullMode)value;
+                    _dirty = true;
+                }
             }
         }
 
         public override int DepthBias
         {
-            get { return _desc.DepthBias; }
+            get => _desc.DepthBias;
             set
             {
-                _desc.DepthBias = value;
-                _dirty = true;
+                if (_desc.DepthBias != value)
+                {
+                    _desc.DepthBias = value;
+                    _dirty = true;
+                }
+
             }
         }
 
         public override float DepthBiasClamp
         {
-            get { return _desc.DepthBiasClamp; }
+            get => _desc.DepthBiasClamp;
             set
             {
-                _desc.DepthBiasClamp = value;
-                _dirty = true;
+                if (_desc.DepthBiasClamp != value)
+                {
+                    _desc.DepthBiasClamp = value;
+                    _dirty = true;
+                }
             }
         }
 
         public override RasterizerFillingMode FillingMode
         {
-            get { return (RasterizerFillingMode)_desc.FillMode; }
+            get => (RasterizerFillingMode)_desc.FillMode;
             set
             {
-                _desc.FillMode = (FillMode)value;
-                _dirty = true;
+                if (_desc.FillMode != (FillMode)value)
+                {
+                    _desc.FillMode = (FillMode)value;
+                    _dirty = true;
+                }
             }
         }
 
         public override bool IsAntialiasedLineEnabled
         {
-            get { return _desc.AntialiasedLineEnable > 0; }
+            get => _desc.AntialiasedLineEnable > 0;
             set
             {
-                _desc.AntialiasedLineEnable = value ? 1 : 0;
-                _dirty = true;
+                int val = value ? 1 : 0;
+                if (_desc.AntialiasedLineEnable != val)
+                {
+                    _desc.AntialiasedLineEnable = val;
+                    _dirty = true;
+                }
             }
         }
 
         public override bool IsDepthClipEnabled
         {
-            get { return _desc.DepthClipEnable > 0; }
+            get => _desc.DepthClipEnable > 0;
             set
             {
-                _desc.DepthClipEnable = value ? 1 : 0;
-                _dirty = true;
+                int val = value ? 1 : 0;
+                if (_desc.DepthClipEnable != val)
+                {
+                    _desc.DepthClipEnable = val;
+                    _dirty = true;
+                }
             }
         }
 
         public override bool IsFrontCounterClockwise
         {
-            get { return _desc.FrontCounterClockwise > 0; }
+            get => _desc.FrontCounterClockwise > 0;
             set
             {
-                _desc.FrontCounterClockwise = value ? 1 : 0;
-                _dirty = true;
+                int val = value ? 1 : 0;
+                if (_desc.FrontCounterClockwise != val)
+                {
+                    _desc.FrontCounterClockwise = val;
+                    _dirty = true;
+                }
             }
         }
 
         public override bool IsMultisampleEnabled
         {
-            get { return _desc.MultisampleEnable > 0; }
+            get => _desc.MultisampleEnable > 0;
             set
             {
-                _desc.MultisampleEnable = value ? 1 : 0;
-                _dirty = true;
+                int val = value ? 1 : 0;
+                if (_desc.MultisampleEnable != val)
+                {
+                    _desc.MultisampleEnable = val;
+                    _dirty = true;
+                }
             }
         }
 
         public override bool IsScissorEnabled
         {
-            get { return _desc.ScissorEnable > 0; }
+            get => _desc.ScissorEnable > 0;
             set
             {
-                _desc.ScissorEnable = value ? 1 : 0;
-                _dirty = true;
+                int val = value ? 1 : 0;
+                if (_desc.ScissorEnable != val)
+                {
+                    _desc.ScissorEnable = val;
+                    _dirty = true;
+                }
             }
         }
 
         public override float SlopeScaledDepthBias
         {
-            get { return _desc.SlopeScaledDepthBias; }
+            get => _desc.SlopeScaledDepthBias;
             set
             {
-                _desc.SlopeScaledDepthBias = value;
-                _dirty = true;
+                if (_desc.SlopeScaledDepthBias != value)
+                {
+                    _desc.SlopeScaledDepthBias = value;
+                    _dirty = true;
+                }
             }
         }
 
@@ -178,8 +214,11 @@ namespace Molten.Graphics
             get => (ConservativeRasterizerMode)_desc.ConservativeRaster;
             set
             {
-                _desc.ConservativeRaster = (ConservativeRasterizationMode)value;
-                _dirty = true;
+                if (_desc.ConservativeRaster != (ConservativeRasterizationMode)value)
+                {
+                    _desc.ConservativeRaster = (ConservativeRasterizationMode)value;
+                    _dirty = true;
+                }
             }
         }
 
@@ -188,8 +227,11 @@ namespace Molten.Graphics
             get => _desc.ForcedSampleCount;
             set
             {
-                _desc.ForcedSampleCount = value;
-                _dirty = true;
+                if (_desc.ForcedSampleCount != value)
+                {
+                    _desc.ForcedSampleCount = value;
+                    _dirty = true;
+                }
             }
         }
     }

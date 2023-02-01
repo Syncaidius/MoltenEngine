@@ -18,41 +18,53 @@ namespace Molten.Graphics
 
             public override ComparisonFunction Comparison
             {
-                get { return (ComparisonFunction)_desc.StencilFunc; }
+                get => (ComparisonFunction)_desc.StencilFunc;
                 set
                 {
-                    _desc.StencilFunc = (ComparisonFunc)value;
-                    _parent._dirty = true;
+                    if (_desc.StencilFunc != (ComparisonFunc)value)
+                    {
+                        _desc.StencilFunc = (ComparisonFunc)value;
+                        _parent._dirty = true;
+                    }
                 }
             }
 
             public override DepthStencilOperation PassOperation
             {
-                get { return (DepthStencilOperation)_desc.StencilPassOp; }
+                get => (DepthStencilOperation)_desc.StencilPassOp;
                 set
                 {
-                    _desc.StencilPassOp = (StencilOp)value;
-                    _parent._dirty = true;
+                    if (_desc.StencilPassOp != (StencilOp)value)
+                    {
+                        _desc.StencilPassOp = (StencilOp)value;
+                        _parent._dirty = true;
+                    }
                 }
             }
 
             public override DepthStencilOperation FailOperation
             {
-                get { return (DepthStencilOperation)_desc.StencilFailOp; }
+                get => (DepthStencilOperation)_desc.StencilFailOp;
                 set
                 {
-                    _desc.StencilFailOp = (StencilOp)value;
-                    _parent._dirty = true;
+                    if (_desc.StencilFailOp != (StencilOp)value)
+                    {
+                        _desc.StencilFailOp = (StencilOp)value;
+                        _parent._dirty = true;
+                    }
                 }
             }
 
             public override DepthStencilOperation DepthFailOperation
             {
-                get { return (DepthStencilOperation)_desc.StencilDepthFailOp; }
+                get => (DepthStencilOperation)_desc.StencilDepthFailOp;
                 set
                 {
-                    _desc.StencilDepthFailOp = (StencilOp)value;
-                    _parent._dirty = true;
+                    if (_desc.StencilDepthFailOp != (StencilOp)value)
+                    {
+                        _desc.StencilDepthFailOp = (StencilOp)value;
+                        _parent._dirty = true;
+                    }
                 }
             }
         }
@@ -108,61 +120,81 @@ namespace Molten.Graphics
 
         public override bool IsDepthEnabled
         {
-            get { return _desc.DepthEnable > 0; }
+            get => _desc.DepthEnable > 0;
             set
             {
-                _desc.DepthEnable = value ? 1 : 0;
-                _dirty = true;
+                int val = value ? 1 : 0;
+                if (_desc.DepthEnable != val)
+                {
+                    _desc.DepthEnable = val;
+                    _dirty = true;
+                }
             }
         }
 
         public override bool IsStencilEnabled
         {
-            get { return _desc.StencilEnable > 0; }
+            get => _desc.StencilEnable > 0;
             set
             {
-                _desc.StencilEnable = value ? 1 : 0;
-                _dirty = true;
+                int val = value ? 1 : 0;
+                if (_desc.StencilEnable != val)
+                {
+                    _desc.StencilEnable = val;
+                    _dirty = true;
+                }
             }
         }
 
         public override DepthWriteFlags WriteFlags
         {
-            get { return (DepthWriteFlags)_desc.DepthWriteMask; }
+            get => (DepthWriteFlags)_desc.DepthWriteMask;
             set
             {
-                _desc.DepthWriteMask = (DepthWriteMask)value;
-                _dirty = true;
+                if (_desc.DepthWriteMask != (DepthWriteMask)value)
+                {
+                    _desc.DepthWriteMask = (DepthWriteMask)value;
+                    _dirty = true;
+                }
             }
         }
 
         public override ComparisonFunction DepthComparison
         {
-            get { return (ComparisonFunction)_desc.DepthFunc; }
+            get => (ComparisonFunction)_desc.DepthFunc;
             set
             {
-                _desc.DepthFunc = (ComparisonFunc)value;
-                _dirty = true;
+                if (_desc.DepthFunc != (ComparisonFunc)value)
+                {
+                    _desc.DepthFunc = (ComparisonFunc)value;
+                    _dirty = true;
+                }
             }
         }
 
         public override byte StencilReadMask
         {
-            get { return _desc.StencilReadMask; }
+            get => _desc.StencilReadMask;
             set
             {
-                _desc.StencilReadMask = value;
-                _dirty = true;
+                if (_desc.StencilReadMask != value)
+                {
+                    _desc.StencilReadMask = value;
+                    _dirty = true;
+                }
             }
         }
 
         public override byte StencilWriteMask
         {
-            get { return _desc.StencilWriteMask; }
+            get => _desc.StencilWriteMask;
             set
             {
-                _desc.StencilWriteMask = value;
-                _dirty = true;
+                if (_desc.StencilWriteMask != value)
+                {
+                    _desc.StencilWriteMask = value;
+                    _dirty = true;
+                }
             }
         }
 
