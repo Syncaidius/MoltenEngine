@@ -437,7 +437,7 @@ namespace Molten.Graphics
         /// <param name="source"></param>
         /// <param name="position"></param>
         /// <param name="size">The width and height of the sprite..</param>
-        /// <param name="color"></param>
+        /// <param name="style"></param>
         /// <param name="rotation">Rotation in radians.</param>
         /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
@@ -480,8 +480,13 @@ namespace Molten.Graphics
             }
         }
 
-        protected void ProcessBatches(RenderCamera camera, FlushRangeCallback flushCallback)
+        public void Flush(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data)
         {
+            if (_dataCount == 0)
+                return;
+
+            cmd.VertexBuffers[0].Value = null;
+
             ClipStack[0] = (Rectangle)camera.Surface.Viewport.Bounds;
 
             SpriteRange t = new SpriteRange();
@@ -498,7 +503,7 @@ namespace Molten.Graphics
                 uint firstRangeID = rangeID;
                 uint firstDataID = dataID;
 
-                for(; rangeID <= _curRange; rangeID++)
+                for (; rangeID <= _curRange; rangeID++)
                 {
                     range = ref Ranges[rangeID];
 
@@ -515,26 +520,14 @@ namespace Molten.Graphics
                 dataID += flushCount;
 
                 if (flushCount > 0)
-                    flushCallback(firstRangeID, rangeCount, firstDataID, flushCount);
+                    FlushBuffer(cmd, camera, data, firstRangeID, rangeCount, firstDataID, flushCount);
             }
 
             Reset();
         }
 
-        public void Flush(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data)
-        {
-            if (_dataCount == 0)
-                return;
-
-            cmd.VertexBuffers[0].Value = null;
-
-            ProcessBatches(camera, (firstRangeID, rangeCount, firstDataID, flushCount) =>
-                FlushBuffer(cmd, camera, data, firstRangeID, rangeCount, firstDataID, flushCount));
-        }
-
         private void FlushBuffer(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data, uint firstRangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
         {
-            SpriteRange range;
             _bufferData.GetStream(GraphicsPriority.Immediate, (buffer, stream) => stream.WriteRange(Data, vertexStartIndex, vertexCount));
 
             // Draw calls
@@ -543,7 +536,7 @@ namespace Molten.Graphics
 
             for (uint i = 0; i < rangeCount; i++)
             {
-                range = Ranges[rangeID++];
+                ref SpriteRange range = ref Ranges[rangeID++];
                 if (range.Type == RangeType.None)
                     continue;
 
