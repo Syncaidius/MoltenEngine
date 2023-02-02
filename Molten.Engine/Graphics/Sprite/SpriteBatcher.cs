@@ -284,7 +284,6 @@ namespace Molten.Graphics
 
         /// <summary>Adds a sprite to the batch.</summary>
         /// <param name="texture"></param>
-        /// <param name="source"></param>
         /// <param name="destination"></param>
         /// <param name="color">Sets the color of the sprite. This overrides <see cref="SpriteStyle.PrimaryColor"/> of the active <see cref="SpriteStyle"/>.</param>
         /// <param name="material"></param>
@@ -482,45 +481,45 @@ namespace Molten.Graphics
 
         public void Flush(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data)
         {
-            if (_dataCount == 0)
-                return;
-
-            cmd.VertexBuffers[0].Value = null;
-
-            ClipStack[0] = (Rectangle)camera.Surface.Viewport.Bounds;
-
-            SpriteRange t = new SpriteRange();
-            ref SpriteRange range = ref t;
-
-            // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.            
-            uint dataID = 0;
-            uint rangeID = 0;
-
-            while (dataID < _dataCount && rangeID <= _curRange)
+            if (_dataCount > 0)
             {
-                uint flushCount = 0; // Number of data elements to flush.
+                cmd.VertexBuffers[0].Value = null;
 
-                uint firstRangeID = rangeID;
-                uint firstDataID = dataID;
+                ClipStack[0] = (Rectangle)camera.Surface.Viewport.Bounds;
 
-                for (; rangeID <= _curRange; rangeID++)
+                SpriteRange t = new SpriteRange();
+                ref SpriteRange range = ref t;
+
+                // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.            
+                uint dataID = 0;
+                uint rangeID = 0;
+
+                while (dataID < _dataCount && rangeID <= _curRange)
                 {
-                    range = ref Ranges[rangeID];
+                    uint flushCount = 0; // Number of data elements to flush.
 
-                    if (range.Type == RangeType.None || range.VertexCount == 0)
-                        continue;
+                    uint firstRangeID = rangeID;
+                    uint firstDataID = dataID;
 
-                    if (flushCount + range.VertexCount > FlushCapacity)
-                        break;
+                    for (; rangeID <= _curRange; rangeID++)
+                    {
+                        range = ref Ranges[rangeID];
 
-                    flushCount += range.VertexCount;
+                        if (range.Type == RangeType.None || range.VertexCount == 0)
+                            continue;
+
+                        if (flushCount + range.VertexCount > FlushCapacity)
+                            break;
+
+                        flushCount += range.VertexCount;
+                    }
+
+                    uint rangeCount = rangeID - firstRangeID;
+                    dataID += flushCount;
+
+                    if (flushCount > 0)
+                        FlushBuffer(cmd, camera, data, firstRangeID, rangeCount, firstDataID, flushCount);
                 }
-
-                uint rangeCount = rangeID - firstRangeID;
-                dataID += flushCount;
-
-                if (flushCount > 0)
-                    FlushBuffer(cmd, camera, data, firstRangeID, rangeCount, firstDataID, flushCount);
             }
 
             Reset();
@@ -537,7 +536,7 @@ namespace Molten.Graphics
             for (uint i = 0; i < rangeCount; i++)
             {
                 ref SpriteRange range = ref Ranges[rangeID++];
-                if (range.Type == RangeType.None)
+                if (range.Type == RangeType.None || range.VertexCount == 0)
                     continue;
 
                 Material mat = range.Material ?? _checkers[(int)range.Type](cmd, range, data);

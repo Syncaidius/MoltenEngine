@@ -68,8 +68,6 @@ namespace Molten.Graphics
                 }
             }
         }
-
-        static DepthStencilDesc _defaultDesc;
         
         public unsafe ID3D11DepthStencilState* NativePtr => _native;
         ID3D11DepthStencilState* _native;
@@ -78,7 +76,9 @@ namespace Molten.Graphics
 
         internal DepthStateDX11(DeviceDX11 device, DepthStateDX11 source = null) :
             base(device, source)
-        { }
+        {
+            _dirty = true;
+        }
 
         protected override Face CreateFace(bool isFrontFace)
         {
@@ -86,14 +86,6 @@ namespace Molten.Graphics
                 return new FaceDX11(this, ref _desc.FrontFace);
             else
                 return new FaceDX11(this, ref _desc.BackFace);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is DepthStateDX11 other)
-                return Equals(other);
-            else
-                return false;
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)

@@ -8,11 +8,12 @@
         /// Draws an ellipse..
         /// </summary>
         /// <param name="e">The <see cref="Ellipse"/> to be drawn</param>
-        /// <param name="color">The color of the ellipse. Overrides the <see cref="SpriteStyle.PrimaryColor"/> of the current <see cref="SpriteStyle"/>.</param>
+        /// <param name="color">The color of the ellipse. Overrides the <see cref="EllipseStyle.FillColor"/> of the default <see cref="EllipseStyle"/>.</param>
         /// <param name="arraySlice">The texture array slice. This is ignored if <paramref name="texture"/> is null.</param>
         /// <param name="material">The custom material, or null if none.</param>
         /// <param name="rotation">The rotation angle, in radians.</param>
         /// <param name="texture">The texture, or null if none.</param>
+        /// <param name="surfaceSlice"></param>
         public void DrawEllipse(ref Ellipse e, Color color, float rotation = 0, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             _ellipseStyle.FillColor = color;
@@ -73,7 +74,7 @@
                 data.Extra.D2 = 0;
             }
 
-            data.Extra.D3 = e.GetAngleRange();            
+            data.Extra.D3 = e.GetAngleRange();
         }
     }
 }

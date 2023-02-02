@@ -148,31 +148,6 @@ namespace Molten.Graphics
             }
         }
 
-        public static readonly BlendDesc1 _defaultDesc;
-
-        static BlendStateDX11()
-        {
-            _defaultDesc = new BlendDesc1()
-            {
-                AlphaToCoverageEnable = 0,
-                IndependentBlendEnable = 0,
-            };
-
-            _defaultDesc.RenderTarget[0] = new RenderTargetBlendDesc1()
-            {
-                SrcBlend = Blend.One,
-                DestBlend = Blend.Zero,
-                BlendOp = BlendOp.Add,
-                SrcBlendAlpha = Blend.One,
-                DestBlendAlpha = Blend.Zero,
-                BlendOpAlpha = BlendOp.Add,
-                RenderTargetWriteMask = (byte)ColorWriteEnable.All,
-                BlendEnable = 1,
-                LogicOp = LogicOp.Noop,
-                LogicOpEnable = 0,
-            };
-        }
-
         public unsafe ID3D11BlendState1* NativePtr => _native;
 
         ID3D11BlendState1* _native;
@@ -187,23 +162,7 @@ namespace Molten.Graphics
 
         public BlendStateDX11(DeviceDX11 device, BlendStateDX11 source = null) : base(device, source)
         {
-            if (source != null)
-            {
-                _desc = source._desc;
-                BlendFactor = source.BlendFactor;
-                BlendSampleMask = source.BlendSampleMask;
-            }
-            else
-            {
-                _desc = _defaultDesc;
-                BlendFactor = new Color4(1, 1, 1, 1);
-                BlendSampleMask = 0xffffffff;
-            }
-        }
-
-        internal RenderTargetBlendDesc1 GetSurfaceBlendState(int index)
-        {
-            return _desc.RenderTarget[index];
+            _dirty = true;
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)

@@ -63,6 +63,18 @@
                 _surfaceBlends = new RenderSurfaceBlend[device.Adapter.Capabilities.PixelShader.MaxOutResources];
                 for (int i = 0; i < _surfaceBlends.Length; i++)
                     _surfaceBlends[i] = CreateSurfaceBlend(i);
+
+                RenderSurfaceBlend b0 = _surfaceBlends[0];
+                b0.SrcBlend = BlendType.One;
+                b0.DestBlend = BlendType.Zero;
+                b0.BlendOp = BlendOperation.Add;
+                b0.SrcBlendAlpha = BlendType.One;
+                b0.DestBlendAlpha = BlendType.Zero;
+                b0.BlendOpAlpha = BlendOperation.Add;
+                b0.RenderTargetWriteMask = ColorWriteFlags.All;
+                b0.BlendEnable = 1;
+                b0.LogicOp = LogicOperation.Noop;
+                b0.LogicOpEnable = false;
             }
         }
 
