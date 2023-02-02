@@ -146,7 +146,7 @@ namespace Molten.Graphics
             if ((flags & GraphicsBufferFlags.Structured) == GraphicsBufferFlags.Structured)
                 rFlag |= ResourceMiscFlag.BufferStructured;
 
-            return new GraphicsBuffer(this, BufferMode.DynamicRing,
+            return new GraphicsBuffer(this, mode,
                 flag, byteCapacity, rFlag, StagingBufferFlags.None, structuredStride: stride);
         }
 

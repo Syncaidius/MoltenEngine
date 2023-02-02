@@ -27,8 +27,7 @@
             if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
                 renderer.ClearIfFirstUse(finalSurface, context.Scene.BackgroundColor);
 
-            cmd.SetRenderSurfaces(null);
-            cmd.SetRenderSurface(finalSurface, 0);
+            cmd.SetRenderSurfaces(finalSurface);
             cmd.DepthSurface.Value = null;
             cmd.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
             cmd.SetViewports(camera.Surface.Viewport);

@@ -10,6 +10,7 @@ namespace Molten.Graphics
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         protected internal struct GpuData
         {
+            [StructLayout(LayoutKind.Sequential, Pack = 1)]
             public struct ExtraData
             {
                 public float D1;
@@ -18,6 +19,7 @@ namespace Molten.Graphics
                 public float D4;
             }
 
+            [StructLayout(LayoutKind.Sequential, Pack = 1)]
             public struct ArrayData
             {
                 public float SrcArraySlice;

@@ -103,11 +103,11 @@ namespace Molten.Graphics
                 _dirty = false;
                 SilkUtil.ReleasePtr(ref _native);
 
-                //copy the front and back-face settings into the main description
+                // Copy the front and back-face settings into the main description
                 _desc.FrontFace = (FrontFace as FaceDX11)._desc;
                 _desc.BackFace = (BackFace as FaceDX11)._desc;
 
-                //create new state
+                // Create new state
                 (cmd as CommandQueueDX11).DXDevice.Ptr->CreateDepthStencilState(ref _desc, ref _native);
                 Version++;
             }
