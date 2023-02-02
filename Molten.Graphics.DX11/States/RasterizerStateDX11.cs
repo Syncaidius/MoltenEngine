@@ -21,30 +21,6 @@ namespace Molten.Graphics
             _dirty = true;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is RasterizerStateDX11 other)
-                return Equals(other);
-            else
-                return false;
-        }
-
-        public bool Equals(RasterizerStateDX11 other)
-        {
-            return _desc.CullMode == other._desc.CullMode &&
-                _desc.DepthBias == other._desc.DepthBias &&
-                _desc.DepthBiasClamp == other._desc.DepthBiasClamp &&
-                _desc.FillMode == other._desc.FillMode &&
-                _desc.AntialiasedLineEnable == other._desc.AntialiasedLineEnable &&
-                _desc.DepthClipEnable == other._desc.DepthClipEnable &&
-                _desc.FrontCounterClockwise == other._desc.FrontCounterClockwise &&
-                _desc.MultisampleEnable == other._desc.MultisampleEnable &&
-                _desc.ScissorEnable == other._desc.ScissorEnable &&
-                _desc.SlopeScaledDepthBias == other._desc.SlopeScaledDepthBias &&
-                _desc.ConservativeRaster == other._desc.ConservativeRaster &&
-                _desc.ForcedSampleCount == other._desc.ForcedSampleCount;
-        }
-
         protected override void OnApply(GraphicsCommandQueue cmd)
         {
             if (_native == null || _dirty)
