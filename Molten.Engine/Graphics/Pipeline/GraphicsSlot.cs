@@ -16,6 +16,8 @@
 
         public abstract void Clear();
 
+        public abstract void LogState();
+
         public GraphicsBindTypeFlags BindType { get; }
 
         public uint SlotIndex { get; }
@@ -52,6 +54,26 @@
             IsGroupMember = true;
             _group = grp;
             _binder = grp.Binder;
+        }
+
+        public override void LogState()
+        {
+            if (_value == null && _boundValue == null)
+                return;
+
+            Cmd.Device.Log.Debug($"      {Name}: Pending: {_value} - Bound: {_boundValue}");
+
+            if (_value != null && _boundValue != _value)
+            {
+                Cmd.Device.Log.Debug($"         Pending Value state:");
+                _value.LogState();
+            }
+
+            if (_boundValue != null)
+            {
+                Cmd.Device.Log.Debug($"         Bound Value state:");
+                _boundValue.LogState();
+            }
         }
 
         /// <summary>
@@ -167,6 +189,9 @@
             _boundValue = null;
         }
 
+        /// <summary>
+        /// Clears and unbinds the <see cref="BoundValue"/> from the current <see cref="GraphicsSlot{T}"/>.
+        /// </summary>
         public override void Clear()
         {
             if (_boundValue != null && _boundValue == _value)
@@ -183,6 +208,9 @@
 
         protected override void OnDispose() { }
 
+        /// <summary>
+        /// Gets the pending value of the current <see cref="GraphicsSlot{T}"/>.
+        /// </summary>
         public T Value
         {
             get => _value;
@@ -194,8 +222,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets the value bound to the slot. This is updated during a <see cref="Bind"/> call.
+        /// </summary>
         public T BoundValue => _boundValue;
 
+        /// <summary>
+        /// Gets the pending value as a <see cref="IGraphicsObject"/>, if any.
+        /// </summary>
         public override IGraphicsObject RawValue => _value;
 
         internal bool IsGroupMember { get; }

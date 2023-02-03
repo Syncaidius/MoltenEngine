@@ -180,9 +180,10 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnLogState(Logger log)
+        public override void LogState()
         {
-            LogDescription(log, Device, _desc);
+            base.LogState();
+            LogDescription(Device.Log, Device, _desc);
         }
 
         internal static void LogDescription(Logger log, GraphicsDevice device, BlendDesc1 desc)

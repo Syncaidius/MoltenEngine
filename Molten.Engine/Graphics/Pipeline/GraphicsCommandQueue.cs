@@ -62,7 +62,7 @@
 
         /// <summary>Draw non-indexed, non-instanced primitives. 
         /// All queued compute shader dispatch requests are also processed</summary>
-        /// <param name="material">The <see cref="IMaterial"/> to apply when drawing.</param>
+        /// <param name="material">The <see cref="Material"/> to apply when drawing.</param>
         /// <param name="vertexCount">The number of vertices to draw from the provided vertex buffer(s).</param>
         /// <param name="vertexStartIndex">The vertex to start drawing from.</param>
         /// <param name="topology">The primitive topology to use when drawing with a NULL vertex buffer. 
@@ -70,7 +70,7 @@
         public abstract GraphicsBindResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0);
 
         /// <summary>Draw instanced, unindexed primitives. </summary>
-        /// <param name="material">The <see cref="IMaterial"/> to apply when drawing.</param>
+        /// <param name="material">The <see cref="Material"/> to apply when drawing.</param>
         /// <param name="vertexCountPerInstance">The expected number of vertices per instance.</param>
         /// <param name="instanceCount">The expected number of instances.</param>
         /// <param name="topology">The expected topology of the indexed vertex data.</param>
@@ -84,7 +84,7 @@
             uint instanceStartIndex = 0);
 
         /// <summary>Draw indexed, non-instanced primitives.</summary>
-        /// <param name="material">The <see cref="IMaterial"/> to apply when drawing.</param>
+        /// <param name="material">The <see cref="Material"/> to apply when drawing.</param>
         /// <param name="vertexIndexOffset">A value added to each index before reading from the vertex buffer.</param>
         /// <param name="indexCount">The number of indices to be drawn.</param>
         /// <param name="startIndex">The index to start drawing from.</param>
@@ -96,7 +96,7 @@
             uint startIndex = 0);
 
         /// <summary>Draw indexed, instanced primitives.</summary>
-        /// <param name="material">The <see cref="IMaterial"/> to apply when drawing.</param>
+        /// <param name="material">The <see cref="Material"/> to apply when drawing.</param>
         /// <param name="indexCountPerInstance">The expected number of indices per instance.</param>
         /// <param name="instanceCount">The expected number of instances.</param>
         /// <param name="topology">The expected topology of the indexed vertex data.</param>
@@ -112,7 +112,7 @@
             uint instanceStartIndex = 0);
 
         /// <summary>
-        /// Queues a <see cref="IComputeTask"/> for execution, at the descretion of the device it is executed on.
+        /// Queues a <see cref="ComputeTask"/> for execution, at the descretion of the device it is executed on.
         /// </summary>
         /// <param name="task">The task to be dispatched.</param>
         /// <param name="groupsX">The X thread-group dimension.</param>
@@ -228,7 +228,8 @@ where B : GraphicsSlotBinder<T>, new()
         public virtual void LogState()
         {
             Device.Log.Debug($"Frame {Profiler.FrameID} state of {Name}:");
-            Blend.Value?.LogState();
+            foreach (GraphicsSlot slot in _slots)
+                slot.LogState();
         }
 
         protected BatchDrawInfo DrawInfo { get; }

@@ -8,6 +8,8 @@
         /// <param name="cmd">The <see cref="GraphicsCommandQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
         void Apply(GraphicsCommandQueue cmd);
 
+        void LogState();
+
         void GraphicsRelease();
 
         /// <summary>

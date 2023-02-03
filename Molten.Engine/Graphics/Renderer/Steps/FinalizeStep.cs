@@ -39,9 +39,9 @@
             ITexture2D sourceSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
             RectStyle style = RectStyle.Default;
 
-
             cmd.BeginDraw(StateConditions.ScissorTest);
             renderer.SpriteBatch.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Bounds.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
+            renderer.SpriteBatch.Draw(new RectangleF(300, 300, 512, 512), Color.White, Engine.Current.Fonts.UnderlyingTexture);
 
             if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
                 renderer.Overlay.Render(time, renderer.SpriteBatch, renderer.Profiler, context.Scene.Profiler, camera);

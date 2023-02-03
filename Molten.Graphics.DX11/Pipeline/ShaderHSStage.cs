@@ -27,15 +27,5 @@ namespace Molten.Graphics
         {
             Cmd.Native->HSSetShader((ID3D11HullShader*)shader, classInstances, numClassInstances);
         }
-
-        protected override unsafe void GetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** ptrViews)
-        {
-            Cmd.Native->HSGetShaderResources(startSlot, numViews, ptrViews);
-        }
-
-        protected override unsafe void GetShader(void** shader, ID3D11ClassInstance** classInstances, uint* numClassInstances)
-        {
-            Cmd.Native->HSGetShader((ID3D11HullShader**)shader, classInstances, numClassInstances);
-        }
     }
 }

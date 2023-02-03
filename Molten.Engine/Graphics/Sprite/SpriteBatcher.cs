@@ -525,17 +525,17 @@ namespace Molten.Graphics
             Reset();
         }
 
-        private void FlushBuffer(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data, uint firstRangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
+        private void FlushBuffer(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data, uint rangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
         {
             _bufferData.GetStream(GraphicsPriority.Immediate, (buffer, stream) => stream.WriteRange(Data, vertexStartIndex, vertexCount));
 
             // Draw calls
             uint bufferOffset = 0;
-            uint rangeID = firstRangeID;
 
             for (uint i = 0; i < rangeCount; i++)
             {
                 ref SpriteRange range = ref Ranges[rangeID++];
+
                 if (range.Type == RangeType.None || range.VertexCount == 0)
                     continue;
 

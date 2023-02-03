@@ -22,19 +22,6 @@ namespace Molten.Graphics
             // If the sampler was actually dirty, recreate it.
             if (_isDirty)
             {
-
-                Device.Log.Debug($"Building {nameof(ShaderSamplerDX11)} {EOID} with state:");
-                Device.Log.Debug($"   Address U: {AddressU}");
-                Device.Log.Debug($"   Address V: {AddressV}");
-                Device.Log.Debug($"   Address W: {AddressW}");
-                Device.Log.Debug($"   Border Color: {_borderColor}");
-                Device.Log.Debug($"   Comparison Func: {ComparisonFunc}");
-                Device.Log.Debug($"   Filter Mode: {FilterMode}");
-                Device.Log.Debug($"   Max Anisotrophy: {MaxAnisotropy}");
-                Device.Log.Debug($"   Min Mip-map LOD: {MinMipMapLod}");
-                Device.Log.Debug($"   Max Mip-map LOD: {MaxMipMapLod}");
-                Device.Log.Debug($"   LOD Bias: {LodBias}");
-
                 _isDirty = false;
                 GraphicsRelease();
 

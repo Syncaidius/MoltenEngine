@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Resources;
+using System.Runtime.CompilerServices;
 
 namespace Molten.Graphics
 {
@@ -98,10 +99,21 @@ namespace Molten.Graphics
         /// </summary>
         public GraphicsBindTypeFlags BindType { get; }
 
+        /// <summary>
+        /// Gets the <see cref="GraphicsCommandQueue"/> that the current <see cref="GraphicsSlotGroup{T}"/> is bound to.
+        /// </summary>
         public GraphicsCommandQueue Cmd { get; }
 
+        /// <summary>
+        /// Gets the number of <see cref="GraphicsSlot{T}"/> in the current <see cref="GraphicsSlotGroup{T}"/>.
+        /// </summary>
         public uint SlotCount { get; }
 
+        /// <summary>
+        /// Gets the <see cref="GraphicsSlot{T}"/> at a given index.
+        /// </summary>
+        /// <param name="slotIndex">The slot index.</param>
+        /// <returns></returns>
         public GraphicsSlot<T> this[uint slotIndex]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

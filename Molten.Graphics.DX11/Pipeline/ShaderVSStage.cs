@@ -28,15 +28,5 @@ namespace Molten.Graphics
         {
             Cmd.Native->VSSetShader((ID3D11VertexShader*)shader, classInstances, numClassInstances);
         }
-
-        protected override unsafe void GetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** ptrViews)
-        {
-            Cmd.Native->VSGetShaderResources(0, numViews, ptrViews);
-        }
-
-        protected override unsafe void GetShader(void** shader, ID3D11ClassInstance** classInstances, uint* numClassInstances)
-        {
-            Cmd.Native->VSGetShader((ID3D11VertexShader**)shader, classInstances, numClassInstances);
-        }
     }
 }

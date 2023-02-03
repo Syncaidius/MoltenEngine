@@ -43,16 +43,6 @@ namespace Molten.Graphics
             Cmd.Native->CSSetUnorderedAccessViews(startSlot, numUAVs, (ID3D11UnorderedAccessView**)ppUnorderedAccessViews, pUAVInitialCounts);
         }
 
-        protected override unsafe void GetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** ptrViews)
-        {
-            Cmd.Native->CSGetShaderResources(startSlot, numViews, ptrViews);
-        }
-
-        protected override unsafe void GetShader(void** shader, ID3D11ClassInstance** classInstances, uint* numClassInstances)
-        {
-            Cmd.Native->CSGetShader((ID3D11ComputeShader**)shader, classInstances, numClassInstances);
-        }
-
         internal GraphicsSlotGroup<GraphicsResourceDX11> UAVs { get; }
     }
 }

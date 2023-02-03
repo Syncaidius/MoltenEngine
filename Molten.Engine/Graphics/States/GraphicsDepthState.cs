@@ -1,18 +1,36 @@
-﻿namespace Molten.Graphics
+﻿using static Molten.Graphics.GraphicsBlendState;
+
+namespace Molten.Graphics
 {
     /// <summary>Stores a depth-stencil state for use with a <see cref="GraphicsCommandQueue"/>.</summary>
     public abstract class GraphicsDepthState : GraphicsObject, IEquatable<GraphicsDepthState>
     {
         public abstract class Face
         {  
+            /// <summary>
+            /// Gets or sets the comparison function for the current depth-stencil facing.
+            /// </summary>
             public abstract ComparisonFunction Comparison { get; set; }
 
+            /// <summary>
+            /// Gets or sets the stencil pass operation for the current depth-stencil facing.
+            /// </summary>
             public abstract DepthStencilOperation PassOperation { get; set; }
 
+            /// <summary>
+            /// Gets or sets the stencil fail operation for the current depth-stencil facing.
+            /// </summary>
             public abstract DepthStencilOperation FailOperation { get; set; }
 
+            /// <summary>
+            /// Gets or sets the depth fail operation for the current depth-stencil facing.
+            /// </summary>
             public abstract DepthStencilOperation DepthFailOperation { get; set; }
 
+            /// <summary>
+            /// Sets the values of the current <see cref="Face"/> to match that of another.
+            /// </summary>
+            /// <param name="other">The <see cref="Face"/> from which to copy values.</param>
             public void Set(Face other)
             {
                 Comparison = other.Comparison;
@@ -57,6 +75,32 @@
             }
         }
 
+        public override void LogState()
+        {
+            base.LogState();
+            Device.Log.Debug($"      Depth Enabled: {IsDepthEnabled}");
+            Device.Log.Debug($"      Stencil Enabled: {IsStencilEnabled}");
+            Device.Log.Debug($"      Write Flags: {WriteFlags}");
+            Device.Log.Debug($"      Depth Comparison: {DepthComparison}");
+            Device.Log.Debug($"      Stencil Read mask: {StencilReadMask}");
+            Device.Log.Debug($"      Stencil Write Mask: {StencilWriteMask}");
+            Device.Log.Debug($"      Front Face:");
+            Device.Log.Debug($"         Fail Op: {FrontFace.FailOperation}");
+            Device.Log.Debug($"         Pass Op: {FrontFace.PassOperation}");
+            Device.Log.Debug($"         Depth Fail Op: {FrontFace.DepthFailOperation}");
+            Device.Log.Debug($"         Comparison: {FrontFace.Comparison}");
+            Device.Log.Debug($"      Back Face:");
+            Device.Log.Debug($"         Fail Op: {BackFace.FailOperation}");
+            Device.Log.Debug($"         Pass Op: {BackFace.PassOperation}");
+            Device.Log.Debug($"         Depth Fail Op: {BackFace.DepthFailOperation}");
+            Device.Log.Debug($"         Comparison: {BackFace.Comparison}");
+        }
+
+        /// <summary>
+        /// Invoked when a new <see cref="Face"/> instance is required for the current <see cref="GraphicsDepthState"/>.
+        /// </summary>
+        /// <param name="isFrontFace"></param>
+        /// <returns></returns>
         protected abstract Face CreateFace(bool isFrontFace);
 
         public override bool Equals(object obj)
@@ -87,16 +131,34 @@
                 op.PassOperation == other.PassOperation;
         }
 
+        /// <summary>
+        /// Gets or sets whether or not depth-mapping is enabled.
+        /// </summary>
         public abstract bool IsDepthEnabled { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether or not stencil-mapping is enabled.
+        /// </summary>
         public abstract bool IsStencilEnabled { get; set; }
 
+        /// <summary>
+        /// Gets or sets the depth write flags.
+        /// </summary>
         public abstract DepthWriteFlags WriteFlags { get; set; }
 
+        /// <summary>
+        /// Gets or sets the depth comparison function.
+        /// </summary>
         public abstract ComparisonFunction DepthComparison { get; set; }
 
+        /// <summary>
+        /// Gets or sets the stencil read mask.
+        /// </summary>
         public abstract byte StencilReadMask { get; set; }
 
+        /// <summary>
+        /// Gets or sets the stencil write mask.
+        /// </summary>
         public abstract byte StencilWriteMask { get; set; }
 
         /// <summary>Gets the description for the front-face depth operation description.</summary>

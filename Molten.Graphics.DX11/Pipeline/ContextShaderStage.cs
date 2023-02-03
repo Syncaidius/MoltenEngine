@@ -68,56 +68,6 @@ namespace Molten.Graphics
 
         internal abstract void SetShader(void* shader, ID3D11ClassInstance** classInstances, uint numClassInstances);
 
-        protected abstract void GetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** ptrViews);
-
-        protected abstract void GetShader(void** shader, ID3D11ClassInstance** classInstances, uint* numClassInstances);
-
-        internal void LogState()
-        {
-            Cmd.Device.Log.Debug($"   {Type} Shader State:");
-
-            for (uint i = 0; i < Resources.SlotCount; i++)
-            {
-                if (Resources[i].Value == null)
-                    continue;
-
-                Cmd.Device.Log.Debug($"      Resource {i}/{Resources.SlotCount}: {Resources[i].Value}");
-            }
-
-            for (uint i = 0; i < Samplers.SlotCount; i++)
-            {
-                if (Samplers[i].Value == null)
-                    continue;
-
-                Cmd.Device.Log.Debug($"      Sampler {i}/{Samplers.SlotCount}: {Samplers[i].Value}");
-            }
-
-            for (uint i = 0; i < ConstantBuffers.SlotCount; i++)
-            {
-                if (ConstantBuffers[i].Value == null)
-                    continue;
-
-                Cmd.Device.Log.Debug($"      C-Buffer {i}/{ConstantBuffers.SlotCount}: {ConstantBuffers[i].Value}");
-            }
-
-            void* ptr = null;
-            GetShader(&ptr, null, null);
-            Cmd.Device.Log.Debug($"      Shader Ptr: {(nuint)ptr}");
-
-            uint numViews = Resources.SlotCount;
-            void* ptrSRVs = EngineUtil.Alloc((nuint)(sizeof(ID3D11ShaderResourceView*) * numViews));
-            ID3D11ShaderResourceView** srvs = (ID3D11ShaderResourceView**)ptrSRVs;
-
-            GetResources(0, numViews, srvs);
-            for (uint i = 0; i < Resources.SlotCount; i++)
-            {
-                if (srvs[i] != null)
-                    Cmd.Device.Log.Debug($"      SRV {i} Ptr: {(nuint)srvs[i]}");
-            }
-
-            EngineUtil.Free(ref ptrSRVs);
-        }
-
         internal CommandQueueDX11 Cmd { get; }
 
         internal ShaderType Type { get; }
