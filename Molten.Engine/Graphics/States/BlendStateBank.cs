@@ -21,7 +21,7 @@
             sBlend.DestBlendAlpha = BlendType.One;
             sBlend.BlendOpAlpha = BlendOperation.Add;
             sBlend.RenderTargetWriteMask = ColorWriteFlags.All;
-            sBlend.BlendEnable = 1;
+            sBlend.BlendEnable = true;
             sBlend.LogicOp = LogicOperation.Noop;
             sBlend.LogicOpEnable = false;
             state.AlphaToCoverageEnable = false;
@@ -38,7 +38,7 @@
             sBlend.DestBlendAlpha = BlendType.One;
             sBlend.BlendOpAlpha = BlendOperation.Add;
             sBlend.RenderTargetWriteMask = ColorWriteFlags.All;
-            sBlend.BlendEnable = 1;
+            sBlend.BlendEnable = true;
             sBlend.LogicOp = LogicOperation.Noop;
             sBlend.LogicOpEnable = false;
             state.AlphaToCoverageEnable = false;

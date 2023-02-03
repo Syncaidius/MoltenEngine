@@ -576,6 +576,18 @@ namespace Molten.Graphics
             return _viewports[index];
         }
 
+        public override void LogState()
+        {
+            base.LogState();
+
+            VS.LogState();
+            HS.LogState();
+            DS.LogState();
+            GS.LogState();
+            PS.LogState();
+            CS.LogState();
+        }
+
         /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>
         /// <returns>An instance of InputLayout.</returns>
         private VertexInputLayout GetInputLayout()

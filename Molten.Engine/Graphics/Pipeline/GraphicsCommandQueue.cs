@@ -222,6 +222,15 @@ where B : GraphicsSlotBinder<T>, new()
 
         public abstract ViewportF GetViewport(int index);
 
+        /// <summary>
+        /// Outputs the state of the current <see cref="GraphicsCommandQueue"/> to its parent renderer log.
+        /// </summary>
+        public virtual void LogState()
+        {
+            Device.Log.Debug($"Frame {Profiler.FrameID} state of {Name}:");
+            Blend.Value?.LogState();
+        }
+
         protected BatchDrawInfo DrawInfo { get; }
 
         /// <summary>

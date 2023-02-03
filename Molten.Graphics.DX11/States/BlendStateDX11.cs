@@ -1,4 +1,5 @@
-﻿using Silk.NET.Direct3D11;
+﻿using Silk.NET.Direct3D.Compilers;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
@@ -16,14 +17,15 @@ namespace Molten.Graphics
                 _index = index;
             }
 
-            public override int BlendEnable
+            public override bool BlendEnable
             {
-                get => _parent._desc.RenderTarget[_index].BlendEnable;
+                get => _parent._desc.RenderTarget[_index].BlendEnable == 1;
                 set
                 {
-                    if(_parent._desc.RenderTarget[_index].BlendEnable != value)
+                    int val = value ? 1 : 0;
+                    if(_parent._desc.RenderTarget[_index].BlendEnable != val)
                     {
-                        _parent._desc.RenderTarget[_index].BlendEnable = value;
+                        _parent._desc.RenderTarget[_index].BlendEnable = val;
                         _parent._dirty = true;
                     }
                 }
@@ -170,11 +172,41 @@ namespace Molten.Graphics
             if (_native == null || _dirty)
             {
                 _dirty = false;
-                SilkUtil.ReleasePtr(ref _native);
+                GraphicsRelease();
 
                 // Create new state
                 (cmd as CommandQueueDX11).DXDevice.Ptr->CreateBlendState1(ref _desc, ref _native);
                 Version++;
+            }
+        }
+
+        protected override void OnLogState(Logger log)
+        {
+            LogDescription(log, Device, _desc);
+        }
+
+        internal static void LogDescription(Logger log, GraphicsDevice device, BlendDesc1 desc)
+        {
+            log.Debug($"   DX11 {desc.GetType().Name}:");
+            log.Debug($"      Alpha to Coverage: {desc.AlphaToCoverageEnable}");
+            log.Debug($"      Independent Blend: {desc.IndependentBlendEnable}");
+
+            for (int i = 0; i < device.Adapter.Capabilities.PixelShader.MaxOutResources; i++)
+            {
+                ref RenderTargetBlendDesc1 b = ref desc.RenderTarget[i];
+                log.Debug($"      RT {i} Blend Enabled: {b.BlendEnable}");
+                if (b.BlendEnable == 1)
+                {
+                    log.Debug($"          Src Blend: {b.SrcBlend}");
+                    log.Debug($"          Src Blend Alpha: {b.SrcBlendAlpha}");
+                    log.Debug($"          Dest Blend: {b.DestBlend}");
+                    log.Debug($"          Dest Blend Alpha: {b.DestBlendAlpha}");
+                    log.Debug($"          Blend Op: {b.BlendOp}");
+                    log.Debug($"          Blend Op Alpha: {b.BlendOpAlpha}");
+                    log.Debug($"          Logic Op Enabled: {b.LogicOpEnable}");
+                    log.Debug($"          Logic Op: {b.LogicOp}");
+                    log.Debug($"          Write Mask: {b.RenderTargetWriteMask}");
+                }
             }
         }
 

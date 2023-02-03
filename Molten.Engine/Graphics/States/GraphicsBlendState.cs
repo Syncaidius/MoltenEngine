@@ -5,7 +5,7 @@
     {
         public abstract class RenderSurfaceBlend
         {
-            public abstract int BlendEnable { get; set; }
+            public abstract bool BlendEnable { get; set; }
 
             public abstract bool LogicOpEnable { get; set; }
 
@@ -72,11 +72,40 @@
                 b0.DestBlendAlpha = BlendType.Zero;
                 b0.BlendOpAlpha = BlendOperation.Add;
                 b0.RenderTargetWriteMask = ColorWriteFlags.All;
-                b0.BlendEnable = 1;
+                b0.BlendEnable = true;
                 b0.LogicOp = LogicOperation.Noop;
                 b0.LogicOpEnable = false;
             }
         }
+
+        internal void LogState()
+        {
+            Device.Log.Debug($"{GetType().Name} {EOID} with state:");
+            Device.Log.Debug($"   Alpha to Coverage: {AlphaToCoverageEnable}");
+            Device.Log.Debug($"   Independent Blend: {IndependentBlendEnable}");
+
+            for (int i = 0; i < Device.Adapter.Capabilities.PixelShader.MaxOutResources; i++)
+            {
+                ref RenderSurfaceBlend b = ref _surfaceBlends[i];
+                Device.Log.Debug($"   RT {i} Blend Enabled: {b.BlendEnable}");
+                if (b.BlendEnable)
+                {
+                    Device.Log.Debug($"      Src Blend: {b.SrcBlend}");
+                    Device.Log.Debug($"      Src Blend Alpha: {b.SrcBlendAlpha}");
+                    Device.Log.Debug($"      Dest Blend: {b.DestBlend}");
+                    Device.Log.Debug($"      Dest Blend Alpha: {b.DestBlendAlpha}");
+                    Device.Log.Debug($"      Blend Op: {b.BlendOp}");
+                    Device.Log.Debug($"      Blend Op Alpha: {b.BlendOpAlpha}");
+                    Device.Log.Debug($"      Logic Op Enabled: {b.LogicOpEnable}");
+                    Device.Log.Debug($"      Logic Op: {b.LogicOp}");
+                    Device.Log.Debug($"      Write Mask: {b.RenderTargetWriteMask}");
+                }
+            }
+
+            OnLogState(Device.Log);
+        }
+
+        protected virtual void OnLogState(Logger log) { }
 
         protected abstract RenderSurfaceBlend CreateSurfaceBlend(int index);
 

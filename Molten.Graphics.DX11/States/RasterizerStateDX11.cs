@@ -25,8 +25,21 @@ namespace Molten.Graphics
         {
             if (_native == null || _dirty)
             {
+                Device.Log.Debug($"Building {nameof(RasterizerStateDX11)} {EOID} with state:");
+                Device.Log.Debug($"   Culling mode: {CullingMode}");
+                Device.Log.Debug($"   Depth bias: {DepthBias}");
+                Device.Log.Debug($"   Depth Bias Clamp: {DepthBiasClamp}");
+                Device.Log.Debug($"   Filling Mode: {FillingMode}");
+                Device.Log.Debug($"   AA Line Enabled: {IsAntialiasedLineEnabled}");
+                Device.Log.Debug($"   Depth Clip Enabled: {IsDepthClipEnabled}");
+                Device.Log.Debug($"   Front-face is counter-clockwise: {IsFrontCounterClockwise}");
+                Device.Log.Debug($"   Multisample Enabled: {IsMultisampleEnabled}");
+                Device.Log.Debug($"   Scissor Enabled: {IsScissorEnabled}");
+                Device.Log.Debug($"   Slope Scaled Depth Bias: {SlopeScaledDepthBias}");
+                Device.Log.Debug($"   Conservative Raster: {ConservativeRaster}");
+                Device.Log.Debug($"   Forced Sample Count: {ForcedSampleCount}");
                 _dirty = false;
-                SilkUtil.ReleasePtr(ref _native);
+                GraphicsRelease();
 
                 //create new state
                 (cmd as CommandQueueDX11).DXDevice.Ptr->CreateRasterizerState2(ref _desc, ref _native);

@@ -36,7 +36,7 @@
                 {
                     case "enabled":
                         if (bool.TryParse(c.Value, out bool blendEnabled))
-                            rtBlend.BlendEnable = blendEnabled ? 1 : 0;
+                            rtBlend.BlendEnable = blendEnabled;
                         else
                             InvalidValueMessage(context, c, "blend enabled", "boolean");
                         break;

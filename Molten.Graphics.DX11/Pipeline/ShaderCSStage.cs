@@ -20,27 +20,37 @@ namespace Molten.Graphics
 
         internal override unsafe void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** buffers)
         {
-            Context.Native->CSSetConstantBuffers(startSlot, numBuffers, buffers);
+            Cmd.Native->CSSetConstantBuffers(startSlot, numBuffers, buffers);
         }
 
         internal override unsafe void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView1** views)
         {
-            Context.Native->CSSetShaderResources(startSlot, numViews, (ID3D11ShaderResourceView**)views);
+            Cmd.Native->CSSetShaderResources(startSlot, numViews, (ID3D11ShaderResourceView**)views);
         }
 
         internal override unsafe void SetSamplers(uint startSlot, uint numSamplers, ID3D11SamplerState** states)
         {
-            Context.Native->CSSetSamplers(startSlot, numSamplers, states);
+            Cmd.Native->CSSetSamplers(startSlot, numSamplers, states);
         }
 
         internal override unsafe void SetShader(void* shader, ID3D11ClassInstance** classInstances, uint numClassInstances)
         {
-            Context.Native->CSSetShader((ID3D11ComputeShader*)shader, classInstances, numClassInstances);
+            Cmd.Native->CSSetShader((ID3D11ComputeShader*)shader, classInstances, numClassInstances);
         }
 
         internal unsafe void SetUnorderedAccessViews(uint startSlot, uint numUAVs, ID3D11UnorderedAccessView1** ppUnorderedAccessViews, uint* pUAVInitialCounts)
         {
-            Context.Native->CSSetUnorderedAccessViews(startSlot, numUAVs, (ID3D11UnorderedAccessView**)ppUnorderedAccessViews, pUAVInitialCounts);
+            Cmd.Native->CSSetUnorderedAccessViews(startSlot, numUAVs, (ID3D11UnorderedAccessView**)ppUnorderedAccessViews, pUAVInitialCounts);
+        }
+
+        protected override unsafe void GetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** ptrViews)
+        {
+            Cmd.Native->CSGetShaderResources(startSlot, numViews, ptrViews);
+        }
+
+        protected override unsafe void GetShader(void** shader, ID3D11ClassInstance** classInstances, uint* numClassInstances)
+        {
+            Cmd.Native->CSGetShader((ID3D11ComputeShader**)shader, classInstances, numClassInstances);
         }
 
         internal GraphicsSlotGroup<GraphicsResourceDX11> UAVs { get; }

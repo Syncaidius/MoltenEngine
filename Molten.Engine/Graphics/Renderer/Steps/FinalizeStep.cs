@@ -16,6 +16,8 @@
 
         }
 
+        int _frameCounter = 0;
+
         internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             _orthoCamera.Surface = camera.Surface;
@@ -37,6 +39,7 @@
             ITexture2D sourceSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
             RectStyle style = RectStyle.Default;
 
+
             cmd.BeginDraw(StateConditions.ScissorTest);
             renderer.SpriteBatch.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Bounds.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
 
@@ -45,6 +48,14 @@
 
             renderer.SpriteBatch.Flush(cmd, _orthoCamera, _dummyData);
             cmd.EndDraw();
+
+            if (_frameCounter >= 300)
+            {
+                _frameCounter -= 300;
+                cmd.LogState();
+            }
+
+            _frameCounter++;
         }
     }
 }

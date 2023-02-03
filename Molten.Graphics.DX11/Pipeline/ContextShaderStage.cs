@@ -7,10 +7,10 @@ namespace Molten.Graphics
     {
         internal ContextShaderStage(CommandQueueDX11 queue, ShaderType type)
         {
-            Context = queue;
+            Cmd = queue;
             Type = type;
 
-            GraphicsCapabilities cap = Context.DXDevice.Adapter.Capabilities;
+            GraphicsCapabilities cap = Cmd.DXDevice.Adapter.Capabilities;
             ShaderStageCapabilities shaderCap = cap[type];
             
             Samplers = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Sampler", cap.MaxShaderSamplers, new SamplerGroupBinder<T>(this));
@@ -68,27 +68,77 @@ namespace Molten.Graphics
 
         internal abstract void SetShader(void* shader, ID3D11ClassInstance** classInstances, uint numClassInstances);
 
-        internal CommandQueueDX11 Context { get; }
+        protected abstract void GetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** ptrViews);
+
+        protected abstract void GetShader(void** shader, ID3D11ClassInstance** classInstances, uint* numClassInstances);
+
+        internal void LogState()
+        {
+            Cmd.Device.Log.Debug($"   {Type} Shader State:");
+
+            for (uint i = 0; i < Resources.SlotCount; i++)
+            {
+                if (Resources[i].Value == null)
+                    continue;
+
+                Cmd.Device.Log.Debug($"      Resource {i}/{Resources.SlotCount}: {Resources[i].Value}");
+            }
+
+            for (uint i = 0; i < Samplers.SlotCount; i++)
+            {
+                if (Samplers[i].Value == null)
+                    continue;
+
+                Cmd.Device.Log.Debug($"      Sampler {i}/{Samplers.SlotCount}: {Samplers[i].Value}");
+            }
+
+            for (uint i = 0; i < ConstantBuffers.SlotCount; i++)
+            {
+                if (ConstantBuffers[i].Value == null)
+                    continue;
+
+                Cmd.Device.Log.Debug($"      C-Buffer {i}/{ConstantBuffers.SlotCount}: {ConstantBuffers[i].Value}");
+            }
+
+            void* ptr = null;
+            GetShader(&ptr, null, null);
+            Cmd.Device.Log.Debug($"      Shader Ptr: {(nuint)ptr}");
+
+            uint numViews = Resources.SlotCount;
+            void* ptrSRVs = EngineUtil.Alloc((nuint)(sizeof(ID3D11ShaderResourceView*) * numViews));
+            ID3D11ShaderResourceView** srvs = (ID3D11ShaderResourceView**)ptrSRVs;
+
+            GetResources(0, numViews, srvs);
+            for (uint i = 0; i < Resources.SlotCount; i++)
+            {
+                if (srvs[i] != null)
+                    Cmd.Device.Log.Debug($"      SRV {i} Ptr: {(nuint)srvs[i]}");
+            }
+
+            EngineUtil.Free(ref ptrSRVs);
+        }
+
+        internal CommandQueueDX11 Cmd { get; }
 
         internal ShaderType Type { get; }
 
 
-        /// Gets the slots for binding <see cref="ShaderSamplerDX11"/> to the current <see cref="PipeShaderStage"/>.
+        /// Gets the slots for binding <see cref="ShaderSamplerDX11"/> to the current <see cref="ContextShaderStage{T}"/>.
         /// </summary>
         internal GraphicsSlotGroup<ShaderSamplerDX11> Samplers { get; }
 
         /// <summary>
-        /// Gets the slots for binding <see cref="GraphicsResourceDX11"/> to the current <see cref="PipeShaderStage"/>.
+        /// Gets the slots for binding <see cref="GraphicsResourceDX11"/> to the current <see cref="ContextShaderStage{T}"/>.
         /// </summary>
         internal GraphicsSlotGroup<GraphicsResourceDX11> Resources { get; }
 
         /// <summary>
-        /// Gets the slots for binding <see cref="ShaderConstantBuffer"/> to the current <see cref="PipeShaderStage"/>/
+        /// Gets the slots for binding <see cref="ShaderConstantBuffer"/> to the current <see cref="ContextShaderStage{T}"/>/
         /// </summary>
         internal GraphicsSlotGroup<ShaderConstantBuffer> ConstantBuffers { get; }
 
         /// <summary>
-        /// Gets the shader bind slot for the current <see cref="PipeShaderStage{T, S}"/>
+        /// Gets the shader bind slot for the current <see cref="ContextShaderStage{T}"/>
         /// </summary>
         internal GraphicsSlot<ShaderCompositionDX11<T>> Shader { get; }
     }

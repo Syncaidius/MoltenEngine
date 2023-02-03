@@ -22,10 +22,23 @@ namespace Molten.Graphics
             // If the sampler was actually dirty, recreate it.
             if (_isDirty)
             {
+
+                Device.Log.Debug($"Building {nameof(ShaderSamplerDX11)} {EOID} with state:");
+                Device.Log.Debug($"   Address U: {AddressU}");
+                Device.Log.Debug($"   Address V: {AddressV}");
+                Device.Log.Debug($"   Address W: {AddressW}");
+                Device.Log.Debug($"   Border Color: {_borderColor}");
+                Device.Log.Debug($"   Comparison Func: {ComparisonFunc}");
+                Device.Log.Debug($"   Filter Mode: {FilterMode}");
+                Device.Log.Debug($"   Max Anisotrophy: {MaxAnisotropy}");
+                Device.Log.Debug($"   Min Mip-map LOD: {MinMipMapLod}");
+                Device.Log.Debug($"   Max Mip-map LOD: {MaxMipMapLod}");
+                Device.Log.Debug($"   LOD Bias: {LodBias}");
+
+                _isDirty = false;
                 GraphicsRelease();
 
                 (cmd as CommandQueueDX11).DXDevice.Ptr->CreateSamplerState(ref _desc, ref _native);
-                _isDirty = false;
                 Version++;
             }
         }
@@ -47,7 +60,7 @@ namespace Molten.Graphics
         /// <summary>Gets or sets the method to use for resolving a U texture coordinate that is outside the 0 to 1 range.</summary>
         public override SamplerAddressMode AddressU
         {
-            get { return _desc.AddressU.FromApi(); }
+            get => _desc.AddressU.FromApi();
             set
             {
                 _desc.AddressU = value.ToApi();
@@ -58,7 +71,7 @@ namespace Molten.Graphics
         /// <summary>Gets or sets the method to use for resolving a V texture coordinate that is outside the 0 to 1 range.</summary>
         public override SamplerAddressMode AddressV
         {
-            get { return _desc.AddressV.FromApi(); }
+            get => _desc.AddressV.FromApi();
             set
             {
                 _desc.AddressV = value.ToApi();
@@ -69,7 +82,7 @@ namespace Molten.Graphics
         /// <summary>Gets or sets the method to use for resolving a W texture coordinate that is outside the 0 to 1 range.</summary>
         public override SamplerAddressMode AddressW
         {
-            get { return _desc.AddressW.FromApi(); }
+            get => _desc.AddressW.FromApi();
             set
             {
                 _desc.AddressW = value.ToApi();
@@ -97,7 +110,7 @@ namespace Molten.Graphics
         /// The function options are listed in SharpDX.Direct3D11.Comparison.</summary>
         public override ComparisonMode ComparisonFunc
         {
-            get { return _desc.ComparisonFunc.FromApi(); }
+            get => _desc.ComparisonFunc.FromApi();
             set
             {
                 _desc.ComparisonFunc = value.ToApi();
@@ -109,7 +122,7 @@ namespace Molten.Graphics
         /// <summary>Gets or sets the filtering method to use when sampling a texture (see SharpDX.Direct3D11.Filter).</summary>
         public override SamplerFilter FilterMode
         {
-            get { return _desc.Filter.FromApi(); }
+            get => _desc.Filter.FromApi();
             set
             {
                 _desc.Filter = value.ToApi();
@@ -122,7 +135,7 @@ namespace Molten.Graphics
         /// is specified in SamplerFilter. Valid values are between 1 and 16.</summary>
         public override uint MaxAnisotropy
         {
-            get { return _desc.MaxAnisotropy; }
+            get => _desc.MaxAnisotropy;
             set
             {
                 _desc.MaxAnisotropy = value;
@@ -135,7 +148,7 @@ namespace Molten.Graphics
         ///     on LOD set this to a large value such as D3D11_FLOAT32_MAX.</summary>
         public override float MaxMipMapLod
         {
-            get { return _desc.MaxLOD; }
+            get => _desc.MaxLOD;
             set
             {
                 _desc.MaxLOD = value;
@@ -147,7 +160,7 @@ namespace Molten.Graphics
         /// and any level higher than that is less detailed.</summary>
         public override float MinMipMapLod
         {
-            get { return _desc.MinLOD; }
+            get => _desc.MinLOD;
             set
             {
                 _desc.MinLOD = value;
@@ -160,7 +173,7 @@ namespace Molten.Graphics
         /// the texture will be sampled at mipmap level 5.</summary>
         public override float LodBias
         {
-            get { return _desc.MipLODBias; }
+            get => _desc.MipLODBias;
             set
             {
                 _desc.MipLODBias = value;
