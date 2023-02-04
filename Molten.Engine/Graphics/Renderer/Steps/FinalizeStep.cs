@@ -16,8 +16,6 @@
 
         }
 
-        int _frameCounter = 0;
-
         internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             _orthoCamera.Surface = camera.Surface;
@@ -48,14 +46,6 @@
 
             renderer.SpriteBatch.Flush(cmd, _orthoCamera, _dummyData);
             cmd.EndDraw();
-
-            if (_frameCounter >= 300)
-            {
-                _frameCounter -= 300;
-                cmd.LogState();
-            }
-
-            _frameCounter++;
         }
     }
 }

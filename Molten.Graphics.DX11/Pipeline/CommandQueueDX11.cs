@@ -197,12 +197,14 @@ namespace Molten.Graphics
                         for (int k = 0; k < pass.Iterations; k++)
                         {
                             drawCallback(pass);
+                            (Device as DeviceDX11).ProcessDebugLayerMessages();
                             Profiler.Current.DrawCalls++;
                         }
                     }
                     else
                     {
                         failCallback(pass, i, j, vResult);
+                        (Device as DeviceDX11).ProcessDebugLayerMessages();
                         break;
                     }
                 }

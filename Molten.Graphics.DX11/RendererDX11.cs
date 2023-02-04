@@ -48,7 +48,6 @@ namespace Molten.Graphics
         {
             _resFactory.Dispose();
             _displayManager.Dispose();
-
             NativeDevice?.Dispose();
             _api.Dispose();
         }

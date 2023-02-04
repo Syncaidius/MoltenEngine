@@ -1,7 +1,9 @@
-﻿using Molten.Collections;
+﻿using System.Diagnostics;
+using Molten.Collections;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
+using Message = Silk.NET.Direct3D11.Message;
 
 namespace Molten.Graphics
 {
@@ -17,6 +19,9 @@ namespace Molten.Graphics
 
         CommandQueueDX11 CmdList;
         List<CommandQueueDX11> _deferredContexts;
+
+        ID3D11Debug* _debug;
+        ID3D11InfoQueue* _debugInfo;
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The physical display adapter to bind the new device to.</param>
@@ -47,6 +52,30 @@ namespace Molten.Graphics
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
         }
 
+        internal unsafe void ProcessDebugLayerMessages()
+        {
+            if(_debug != null)
+            {
+                Log.Debug($"Frame {Cmd.Profiler.FrameID}");
+                ulong count = _debugInfo->GetNumStoredMessages();
+                for(ulong i = 0; i < count; i++)
+                {
+                    nuint msgSize = 0;
+                    _debugInfo->GetMessageA(i, null, &msgSize);
+
+                    void* ptrMsg = EngineUtil.Alloc(msgSize);
+                    Message* msg = (Message*)ptrMsg;
+
+                    _debugInfo->GetMessageA(i, msg, &msgSize);
+
+                    string desc = SilkMarshal.PtrToString((nint)msg->PDescription, NativeStringEncoding.LPStr);
+                    Log.Error($"[DX11 DEBUG] {desc}");
+                }
+
+                _debugInfo->ClearStoredMessages();
+            }
+        }
+
         protected override void OnInitialize()
         {
             HResult r = _builder.CreateDevice(_adapter, out PtrRef, out ID3D11DeviceContext4* deviceContext);
@@ -54,6 +83,19 @@ namespace Molten.Graphics
             {
                 Log.Error($"Failed to initialize {nameof(DeviceDX11)}. Code: {r}");
                 return;
+            }
+
+            if (Settings.EnableDebugLayer)
+            {
+                Guid guidDebug = ID3D11Debug.Guid;
+                void* ptr = null;
+                Ptr->QueryInterface(&guidDebug, &ptr);
+                _debug = (ID3D11Debug*)ptr;
+
+                Guid guidDebugInfo = ID3D11InfoQueue.Guid;
+                _debug->QueryInterface(&guidDebugInfo, &ptr);
+                _debugInfo = (ID3D11InfoQueue*)ptr;
+                _debugInfo->PushEmptyStorageFilter();
             }
 
             CmdList = new CommandQueueDX11(this, deviceContext);
@@ -179,6 +221,14 @@ namespace Molten.Graphics
             VertexFormatCache.Dispose();
             BlendBank.Dispose();
             _bufferSegmentPool.Dispose();
+
+            if (_debug != null)
+            {
+                ProcessDebugLayerMessages();
+                _debug->ReportLiveDeviceObjects(RldoFlags.Detail);
+                SilkUtil.ReleasePtr(ref _debugInfo);
+                SilkUtil.ReleasePtr(ref _debug);
+            }
 
             base.OnDispose();
         }
