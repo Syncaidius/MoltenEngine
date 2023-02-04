@@ -7,8 +7,6 @@ namespace Molten.Graphics
     internal unsafe class VertexInputLayout : GraphicsObject<ID3D11InputLayout>
     {
         ID3D11InputLayout* _native;
-        bool _isValid = true;
-        bool _isInstanced = false;
         ulong[] _expectedFormatIDs;
 
         internal VertexInputLayout(DeviceDX11 device, 
@@ -16,6 +14,7 @@ namespace Molten.Graphics
             ID3D10Blob* vertexBytecode,
             ShaderIOStructure io) : base(device, GraphicsBindTypeFlags.Input)
         {
+            IsValid = true;
             _expectedFormatIDs = new ulong[vbSlots.SlotCount];
             List<InputElementDesc> elements = new List<InputElementDesc>();
             VertexFormat format = null;
@@ -33,7 +32,7 @@ namespace Molten.Graphics
                 int startID = elements.Count;
                 if (!io.IsCompatible(format.Structure, (uint)startID))
                 {
-                    _isValid = false;
+                    IsValid = false;
                     break;
                 }
 
@@ -46,7 +45,7 @@ namespace Molten.Graphics
                     e.InputSlot = i; // Vertex buffer input slot.
                     elements[eID] = e;
 
-                    _isInstanced = _isInstanced || e.InputSlotClass == InputClassification.PerInstanceData;
+                    IsInstanced = IsInstanced || e.InputSlotClass == InputClassification.PerInstanceData;
                 }
 
                 _expectedFormatIDs[i] = format.EOID;
@@ -57,12 +56,13 @@ namespace Molten.Graphics
             {
                 VertexFormat nullFormat = device.VertexFormatCache.Get<VertexWithID>();
                 elements.Add((nullFormat.Structure as ShaderIOStructureDX11).Elements[0]);
+                IsNullBuffer = true;
             }
 
             InputElementDesc[] finalElements = elements.ToArray();
 
             // Attempt creation of input layout.
-            if (_isValid)
+            if (IsValid)
             {
                 void* ptrByteCode = vertexBytecode->GetBufferPointer();
                 nuint numBytes = vertexBytecode->GetBufferSize();
@@ -132,10 +132,15 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets whether or not the input layout is valid.</summary>
-        internal bool IsValid => _isValid;
+        internal bool IsValid { get; }
 
         /// <summary>Gets whether or not the vertex input layout is designed for use with instanced draw calls.</summary>
-        public bool IsInstanced => _isInstanced;
+        public bool IsInstanced { get; }
+
+        /// <summary>
+        /// Gets whether the current <see cref="VertexInputLayout"/> can represent a null vertex buffer. e.g. Contains SV_VertexID as the only vertex element.
+        /// </summary>
+        public bool IsNullBuffer { get; }
 
         public override unsafe ID3D11InputLayout* NativePtr => _native;
     }
