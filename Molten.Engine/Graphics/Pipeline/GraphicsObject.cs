@@ -13,13 +13,6 @@ namespace Molten.Graphics
             LastUsedFrameID = device.Cmd.Profiler.FrameID;
         }
 
-        public virtual void LogState()
-        {
-            Device.Log.Debug($"{Name} State:");
-            Device.Log.Debug($"   LastUsedFrameID: {LastUsedFrameID}");
-            Device.Log.Debug($"   Version: {Version}");
-        }
-
         /// <summary>
         /// Invoked when the current <see cref="GraphicsObject"/> should apply any changes before being bound to a GPU context.
         /// </summary>

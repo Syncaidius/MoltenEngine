@@ -180,37 +180,6 @@ namespace Molten.Graphics
             }
         }
 
-        public override void LogState()
-        {
-            base.LogState();
-            LogDescription(Device.Log, Device, _desc);
-        }
-
-        internal static void LogDescription(Logger log, GraphicsDevice device, BlendDesc1 desc)
-        {
-            log.Debug($"   DX11 {desc.GetType().Name}:");
-            log.Debug($"      Alpha to Coverage: {desc.AlphaToCoverageEnable}");
-            log.Debug($"      Independent Blend: {desc.IndependentBlendEnable}");
-
-            for (int i = 0; i < device.Adapter.Capabilities.PixelShader.MaxOutResources; i++)
-            {
-                ref RenderTargetBlendDesc1 b = ref desc.RenderTarget[i];
-                log.Debug($"      RT {i} Blend Enabled: {b.BlendEnable}");
-                if (b.BlendEnable == 1)
-                {
-                    log.Debug($"          Src Blend: {b.SrcBlend}");
-                    log.Debug($"          Src Blend Alpha: {b.SrcBlendAlpha}");
-                    log.Debug($"          Dest Blend: {b.DestBlend}");
-                    log.Debug($"          Dest Blend Alpha: {b.DestBlendAlpha}");
-                    log.Debug($"          Blend Op: {b.BlendOp}");
-                    log.Debug($"          Blend Op Alpha: {b.BlendOpAlpha}");
-                    log.Debug($"          Logic Op Enabled: {b.LogicOpEnable}");
-                    log.Debug($"          Logic Op: {b.LogicOp}");
-                    log.Debug($"          Write Mask: {b.RenderTargetWriteMask}");
-                }
-            }
-        }
-
         public static implicit operator ID3D11BlendState1*(BlendStateDX11 state)
         {
             return state._native;

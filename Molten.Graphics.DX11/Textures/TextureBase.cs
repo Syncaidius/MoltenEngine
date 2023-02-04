@@ -1,5 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Graphics.Textures;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
@@ -29,11 +30,12 @@ namespace Molten.Graphics
         RendererDX11 _renderer;
 
         internal TextureBase(RendererDX11 renderer, uint width, uint height, uint depth, uint mipCount, 
-            uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, TextureFlags flags) : base(renderer.NativeDevice,
+            uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, TextureFlags flags, string name) : base(renderer.NativeDevice,
                 ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
                 ((flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None))
         {
             _renderer = renderer;
+            Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{width}x{height}" : name;
             Flags = flags;
             ValidateFlagCombination();
 
@@ -142,6 +144,7 @@ namespace Molten.Graphics
             // Dispose of old resources
             OnDisposeForRecreation();
             _native = CreateResource(resize);
+            SetDebugName(Name);
 
             if (_native != null)
             {
@@ -149,12 +152,14 @@ namespace Molten.Graphics
                 {
                     SetSRVDescription(ref SRV.Desc);
                     SRV.Create(_native);
+                    SRV.SetDebugName($"{Name}_SRV");
                 }
 
                 if (HasFlags(TextureFlags.AllowUAV))
                 {
                     SetUAVDescription(ref SRV.Desc, ref UAV.Desc);
                     UAV.Create(_native);
+                    SRV.SetDebugName($"{Name}_UAV");
                 }
 
                 Version++;

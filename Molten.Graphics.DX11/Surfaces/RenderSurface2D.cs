@@ -18,7 +18,7 @@ namespace Molten.Graphics
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
             MSAAQuality msaa = MSAAQuality.Default,
             TextureFlags flags = TextureFlags.None, string name = null)
-            : base(renderer, width, height, format, mipCount, arraySize, flags, aaLevel, msaa)
+            : base(renderer, width, height, format, mipCount, arraySize, flags, aaLevel, msaa, name)
         {
             Viewport = new ViewportF(0, 0, width, height);
 

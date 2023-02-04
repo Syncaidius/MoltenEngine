@@ -113,11 +113,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override void LogState()
-        {
-            throw new NotImplementedException();
-        }
-
         internal Vk VK { get; }
 
         internal Logger Log { get; }

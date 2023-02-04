@@ -11,18 +11,35 @@ namespace Molten.Graphics
 
         /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
-        /// <param name="descTexture"></param>
-        /// <param name="flags">A set of flags to override those of the provided texture.</param>
+        /// <param name="descTexture">The <see cref="Texture2D"/> to use as a template configuration for a new <see cref="Texture2D"/> instance.</param>
+        /// <param name="flags">A set of flags to override those of the provided template texture.</param>
         internal Texture2D(Texture2D descTexture, TextureFlags flags)
-            : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, 
-                  descTexture.DxgiFormat, descTexture.MipMapCount, descTexture.ArraySize, flags)
+            : this(descTexture.Renderer as RendererDX11, 
+                  descTexture.Width,
+                  descTexture.Height, 
+                  descTexture.DxgiFormat, 
+                  descTexture.MipMapCount, 
+                  descTexture.ArraySize, 
+                  flags, 
+                  descTexture.MultiSampleLevel, 
+                  descTexture.SampleQuality, 
+                  descTexture.Name)
         { }
 
         /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
-        /// <param name="descTexture"></param>
+        /// <param name="descTexture">The <see cref="Texture2D"/> to use as a template configuration for a new <see cref="Texture2D"/> instance.</param>
         internal Texture2D(Texture2D descTexture)
-            : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, descTexture.DxgiFormat, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags)
+            : this(descTexture.Renderer as RendererDX11, 
+                  descTexture.Width, 
+                  descTexture.Height, 
+                  descTexture.DxgiFormat, 
+                  descTexture.MipMapCount, 
+                  descTexture.ArraySize, 
+                  descTexture.Flags, 
+                  descTexture.MultiSampleLevel,
+                  descTexture.SampleQuality,
+                  descTexture.Name)
         { }
 
         internal Texture2D(
@@ -34,8 +51,9 @@ namespace Molten.Graphics
             uint arraySize = 1,
             TextureFlags flags = TextureFlags.None,
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
-            MSAAQuality msaa = MSAAQuality.Default)
-            : base(renderer, width, height, 1, mipCount, arraySize, aaLevel, msaa, format, flags)
+            MSAAQuality msaa = MSAAQuality.Default,
+            string name = null)
+            : base(renderer, width, height, 1, mipCount, arraySize, aaLevel, msaa, format, flags, name)
         {
             _description = new Texture2DDesc1()
             {

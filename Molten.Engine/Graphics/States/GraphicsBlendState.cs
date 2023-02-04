@@ -78,33 +78,6 @@
             }
         }
 
-        public override void LogState()
-        {
-            base.LogState();
-
-            Device.Log.Debug($"   {GetType().Name} {EOID} with state:");
-            Device.Log.Debug($"      Alpha to Coverage: {AlphaToCoverageEnable}");
-            Device.Log.Debug($"      Independent Blend: {IndependentBlendEnable}");
-
-            for (int i = 0; i < Device.Adapter.Capabilities.PixelShader.MaxOutResources; i++)
-            {
-                ref RenderSurfaceBlend b = ref _surfaceBlends[i];
-                Device.Log.Debug($"      RT {i} Blend Enabled: {b.BlendEnable}");
-                if (b.BlendEnable)
-                {
-                    Device.Log.Debug($"         Src Blend: {b.SrcBlend}");
-                    Device.Log.Debug($"         Src Blend Alpha: {b.SrcBlendAlpha}");
-                    Device.Log.Debug($"         Dest Blend: {b.DestBlend}");
-                    Device.Log.Debug($"         Dest Blend Alpha: {b.DestBlendAlpha}");
-                    Device.Log.Debug($"         Blend Op: {b.BlendOp}");
-                    Device.Log.Debug($"         Blend Op Alpha: {b.BlendOpAlpha}");
-                    Device.Log.Debug($"         Logic Op Enabled: {b.LogicOpEnable}");
-                    Device.Log.Debug($"         Logic Op: {b.LogicOp}");
-                    Device.Log.Debug($"         Write Mask: {b.RenderTargetWriteMask}");
-                }
-            }
-        }
-
         protected abstract RenderSurfaceBlend CreateSurfaceBlend(int index);
 
         internal RenderSurfaceBlend GetSurfaceBlendState(int index)

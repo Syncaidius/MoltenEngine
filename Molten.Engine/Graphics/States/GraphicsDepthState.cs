@@ -75,27 +75,6 @@ namespace Molten.Graphics
             }
         }
 
-        public override void LogState()
-        {
-            base.LogState();
-            Device.Log.Debug($"      Depth Enabled: {IsDepthEnabled}");
-            Device.Log.Debug($"      Stencil Enabled: {IsStencilEnabled}");
-            Device.Log.Debug($"      Write Flags: {WriteFlags}");
-            Device.Log.Debug($"      Depth Comparison: {DepthComparison}");
-            Device.Log.Debug($"      Stencil Read mask: {StencilReadMask}");
-            Device.Log.Debug($"      Stencil Write Mask: {StencilWriteMask}");
-            Device.Log.Debug($"      Front Face:");
-            Device.Log.Debug($"         Fail Op: {FrontFace.FailOperation}");
-            Device.Log.Debug($"         Pass Op: {FrontFace.PassOperation}");
-            Device.Log.Debug($"         Depth Fail Op: {FrontFace.DepthFailOperation}");
-            Device.Log.Debug($"         Comparison: {FrontFace.Comparison}");
-            Device.Log.Debug($"      Back Face:");
-            Device.Log.Debug($"         Fail Op: {BackFace.FailOperation}");
-            Device.Log.Debug($"         Pass Op: {BackFace.PassOperation}");
-            Device.Log.Debug($"         Depth Fail Op: {BackFace.DepthFailOperation}");
-            Device.Log.Debug($"         Comparison: {BackFace.Comparison}");
-        }
-
         /// <summary>
         /// Invoked when a new <see cref="Face"/> instance is required for the current <see cref="GraphicsDepthState"/>.
         /// </summary>

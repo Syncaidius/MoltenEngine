@@ -32,8 +32,9 @@ namespace Molten.Graphics
             uint depth,
             Format format = Format.FormatR8G8B8A8Unorm,
             uint mipCount = 1,
-            TextureFlags flags = TextureFlags.None)
-            : base(renderer, width, height, depth, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags)
+            TextureFlags flags = TextureFlags.None,
+            string name = null)
+            : base(renderer, width, height, depth, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
         {
             _description = new Texture3DDesc1()
             {

@@ -43,24 +43,6 @@
             }
         }
 
-        public override void LogState()
-        {
-            base.LogState();
-
-            Device.Log.Debug($"      Culling mode: {CullingMode}");
-            Device.Log.Debug($"      Depth bias: {DepthBias}");
-            Device.Log.Debug($"      Depth Bias Clamp: {DepthBiasClamp}");
-            Device.Log.Debug($"      Filling Mode: {FillingMode}");
-            Device.Log.Debug($"      AA Line Enabled: {IsAntialiasedLineEnabled}");
-            Device.Log.Debug($"      Depth Clip Enabled: {IsDepthClipEnabled}");
-            Device.Log.Debug($"      Front-face is counter-clockwise: {IsFrontCounterClockwise}");
-            Device.Log.Debug($"      Multisample Enabled: {IsMultisampleEnabled}");
-            Device.Log.Debug($"      Scissor Enabled: {IsScissorEnabled}");
-            Device.Log.Debug($"      Slope Scaled Depth Bias: {SlopeScaledDepthBias}");
-            Device.Log.Debug($"      Conservative Raster: {ConservativeRaster}");
-            Device.Log.Debug($"      Forced Sample Count: {ForcedSampleCount}");
-        }
-
         public override bool Equals(object obj)
         {
             if (obj is GraphicsRasterizerState other)

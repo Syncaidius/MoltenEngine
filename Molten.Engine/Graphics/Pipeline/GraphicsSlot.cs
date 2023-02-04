@@ -16,8 +16,6 @@
 
         public abstract void Clear();
 
-        public abstract void LogState();
-
         public GraphicsBindTypeFlags BindType { get; }
 
         public uint SlotIndex { get; }
@@ -54,26 +52,6 @@
             IsGroupMember = true;
             _group = grp;
             _binder = grp.Binder;
-        }
-
-        public override void LogState()
-        {
-            if (_value == null && _boundValue == null)
-                return;
-
-            Cmd.Device.Log.Debug($"      {Name}: Pending: {_value} - Bound: {_boundValue}");
-
-            if (_value != null && _boundValue != _value)
-            {
-                Cmd.Device.Log.Debug($"         Pending Value state:");
-                _value.LogState();
-            }
-
-            if (_boundValue != null)
-            {
-                Cmd.Device.Log.Debug($"         Bound Value state:");
-                _boundValue.LogState();
-            }
         }
 
         /// <summary>

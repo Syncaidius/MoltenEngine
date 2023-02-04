@@ -11,8 +11,8 @@ namespace Molten.Graphics
 
         internal TextureCubeDX11(RendererDX11 renderer, uint width,
             uint height, Format format = Format.FormatR8G8B8A8Unorm, uint mipCount = 1, 
-            uint cubeCount = 1, TextureFlags flags = TextureFlags.None)
-            : base(renderer, width, height, 1, mipCount, 6, AntiAliasLevel.None, MSAAQuality.Default, format, flags)
+            uint cubeCount = 1, TextureFlags flags = TextureFlags.None, string name = null)
+            : base(renderer, width, height, 1, mipCount, 6, AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
         {
             CubeCount = cubeCount;
             _description = new Texture2DDesc1()

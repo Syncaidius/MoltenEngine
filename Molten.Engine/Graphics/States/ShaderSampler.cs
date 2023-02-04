@@ -35,22 +35,6 @@
             CheckIfComparisonSampler();
         }
 
-        public override void LogState()
-        {
-            base.LogState();
-
-            Device.Log.Debug($"   Address U: {AddressU}");
-            Device.Log.Debug($"   Address V: {AddressV}");
-            Device.Log.Debug($"   Address W: {AddressW}");
-            Device.Log.Debug($"   Border Color: {BorderColor}");
-            Device.Log.Debug($"   Comparison Func: {ComparisonFunc}");
-            Device.Log.Debug($"   Filter Mode: {FilterMode}");
-            Device.Log.Debug($"   Max Anisotrophy: {MaxAnisotropy}");
-            Device.Log.Debug($"   Min Mip-map LOD: {MinMipMapLod}");
-            Device.Log.Debug($"   Max Mip-map LOD: {MaxMipMapLod}");
-            Device.Log.Debug($"   LOD Bias: {LodBias}");
-        }
-
         protected void CheckIfComparisonSampler()
         {
             IsComparisonSampler = FilterMode >= SamplerFilter.ComparisonMinMagMipPoint &&
