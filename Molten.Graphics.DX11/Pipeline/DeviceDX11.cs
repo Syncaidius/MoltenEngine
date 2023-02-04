@@ -56,7 +56,6 @@ namespace Molten.Graphics
         {
             if(_debug != null)
             {
-                Log.Debug($"Frame {Cmd.Profiler.FrameID}");
                 ulong count = _debugInfo->GetNumStoredMessages();
                 for(ulong i = 0; i < count; i++)
                 {
@@ -69,7 +68,7 @@ namespace Molten.Graphics
                     _debugInfo->GetMessageA(i, msg, &msgSize);
 
                     string desc = SilkMarshal.PtrToString((nint)msg->PDescription, NativeStringEncoding.LPStr);
-                    Log.Error($"[DX11 DEBUG] {desc}");
+                    Log.Error($"[DX11 DEBUG] [Frame {Cmd.Profiler.FrameID}] [{msg->Severity}] [{msg->Category}] {desc}");
                 }
 
                 _debugInfo->ClearStoredMessages();
