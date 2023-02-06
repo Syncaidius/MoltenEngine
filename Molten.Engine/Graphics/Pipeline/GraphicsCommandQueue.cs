@@ -222,6 +222,21 @@ where B : GraphicsSlotBinder<T>, new()
 
         public abstract ViewportF GetViewport(int index);
 
+        /// <summary>
+        /// Starts a new event. Must be paired with a call to <see cref="EndEvent()"/> once finished. Events can aid debugging using the API's debugging toolset, if available.
+        /// </summary>
+        public abstract void BeginEvent(string label);
+
+        /// <summary>
+        /// Ends an event that was started with <see cref="BeginEvent(string)"/>. Events can aid debugging using the API's debugging toolset, if available.
+        /// </summary>
+        public abstract void EndEvent();
+
+        /// <summary>
+        /// Sets an API marker (if supported), to aid the use of the API's debugging toolset.
+        /// </summary>
+        public abstract void SetMarket(string label);
+
         protected BatchDrawInfo DrawInfo { get; }
 
         /// <summary>

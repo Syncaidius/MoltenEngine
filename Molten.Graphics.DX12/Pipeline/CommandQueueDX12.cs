@@ -126,6 +126,21 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public override void BeginEvent(string label)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void EndEvent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetMarket(string label)
+        {
+            throw new NotImplementedException();
+        }
+
         internal DeviceDX12 Device { get; }
 
         internal Logger Log { get; }

@@ -159,6 +159,7 @@ namespace Molten.Graphics
                 _surfaceResizeRequired = false;
             }
 
+            Device.Cmd.BeginEvent("Draw Scene");
             foreach (SceneRenderData sceneData in Scenes)
             {
                 if (!sceneData.IsVisible)
@@ -198,6 +199,7 @@ namespace Molten.Graphics
                 sceneData.Profiler.End(time);
                 sceneData.PostRenderInvoke(this);
             }
+            Device.Cmd.EndEvent();
 
             // Present all output surfaces
             OutputSurfaces.For(0, 1, (index, surface) =>

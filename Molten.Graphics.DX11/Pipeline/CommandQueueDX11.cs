@@ -21,6 +21,7 @@ namespace Molten.Graphics
         ViewportF[] _viewports;
         bool _viewportsDirty;
         ViewportF[] _nullViewport;
+        ID3DUserDefinedAnnotation* _debugAnnotation;
 
         GraphicsSlot<ComputeTask> _compute;
 
@@ -47,6 +48,11 @@ namespace Molten.Graphics
 
             _nullViewport = new ViewportF[1];
 
+            Guid debugGuid = ID3DUserDefinedAnnotation.Guid;
+            void* ptrDebug = null;
+            _context->QueryInterface(ref debugGuid, &ptrDebug);
+            _debugAnnotation = (ID3DUserDefinedAnnotation*)ptrDebug;
+   
             uint maxRTs = DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
             _scissorRects = new Rectangle[maxRTs];
             _viewports = new ViewportF[maxRTs];
@@ -173,6 +179,23 @@ namespace Molten.Graphics
             return result;
         }
 
+        public override void BeginEvent(string label)
+        {
+            fixed(char* ptr = label)
+                _debugAnnotation->BeginEvent(ptr);
+        }
+
+        public override void EndEvent()
+        {
+            _debugAnnotation->EndEvent();
+        }
+
+        public override void SetMarket(string label)
+        {
+            fixed (char* ptr = label)
+                _debugAnnotation->SetMarker(ptr);
+        }
+
         private GraphicsBindResult DrawCommon(Material mat, QueueValidationMode mode, VertexTopology topology, 
             ContextDrawCallback drawCallback, ContextDrawFailCallback failCallback)
         {
@@ -184,10 +207,12 @@ namespace Molten.Graphics
             Material.Value = mat;
 
             // Re-render the same material for mat.Iterations.
+            BeginEvent($"Draw '{mode}' Call");
             for (uint i = 0; i < mat.Iterations; i++)
             {
                 for (uint j = 0; j < mat.PassCount; j++)
                 {
+                    BeginEvent($"Iteration {i} - Pass {j} call");
                     MaterialPass pass = mat.Passes[j];
                     vResult = ApplyState(pass, mode, topology);
 
@@ -195,20 +220,24 @@ namespace Molten.Graphics
                     {
                         // Re-render the same pass for K iterations.
                         for (int k = 0; k < pass.Iterations; k++)
-                        {
+                        {                                
                             drawCallback(pass);
                             (Device as DeviceDX11).ProcessDebugLayerMessages();
                             Profiler.Current.DrawCalls++;
                         }
+
+                        EndEvent();
                     }
                     else
                     {
+                        EndEvent();
                         failCallback(pass, i, j, vResult);
                         (Device as DeviceDX11).ProcessDebugLayerMessages();
                         break;
                     }
                 }
             }
+            EndEvent();
 
             return vResult;
         }
@@ -674,6 +703,7 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             EngineUtil.FreePtrArray(ref RTVs);
+            SilkUtil.ReleasePtr(ref _debugAnnotation);
 
             // Dispose context.
             if (Type != GraphicsContextType.Immediate)

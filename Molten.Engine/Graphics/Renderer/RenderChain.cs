@@ -67,6 +67,7 @@ namespace Molten.Graphics
 
         internal void Render(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
+            GraphicsCommandQueue cmd = Renderer.Device.Cmd;
             RenderChainContext context = ContextPool.GetInstance();
             Renderer.Surfaces.MultiSampleLevel = camera.MultiSampleLevel;
             context.Scene = sceneData;
@@ -74,9 +75,11 @@ namespace Molten.Graphics
             if (camera.MultiSampleLevel >= AntiAliasLevel.X2)
                 context.BaseStateConditions = StateConditions.Multisampling;
 
+            cmd.BeginEvent($"Pre-Render");
             RenderChainLink stepPreRender = BuildPreRender(sceneData, camera);
             stepPreRender.Run(Renderer, camera, context, time);
             RenderChainLink.Recycle(stepPreRender);
+            cmd.EndEvent();
 
             for (int i = 0; i < sceneData.Layers.Count; i++)
             {
@@ -84,15 +87,19 @@ namespace Molten.Graphics
                 if ((camera.LayerMask & layerBitVal) == layerBitVal)
                     continue;
 
+                cmd.BeginEvent($"Render Layer {i}/{sceneData.Layers.Count}");
                 context.Layer = sceneData.Layers[i];
                 RenderChainLink stepRender = BuildRender(sceneData, context.Layer, camera);
                 stepRender.Run(Renderer, camera, context, time);
                 RenderChainLink.Recycle(stepRender);
+                cmd.EndEvent();
             }
 
+            cmd.BeginEvent($"Post-Render");
             RenderChainLink stepPostRender = BuildPostRender(sceneData, camera);
             stepPostRender.Run(Renderer, camera, context, time);
             RenderChainLink.Recycle(stepPostRender);
+            cmd.EndEvent();
         }
 
         protected override void OnDispose()

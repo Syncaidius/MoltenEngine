@@ -17,6 +17,9 @@
             cmd.SetRenderSurface(sEmissive, 2);
             cmd.DepthSurface.Value = renderer.Surfaces.GetDepth();
 
+            if (context.Layer.Renderables.Count == 0)
+                return;
+
             SetMaterialCommon(renderer.StandardMeshMaterial, camera, sScene);
             SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, sScene);
 
