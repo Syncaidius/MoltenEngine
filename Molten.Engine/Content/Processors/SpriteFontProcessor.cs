@@ -6,16 +6,23 @@ namespace Molten.Content
     {
         public override Type[] AcceptedTypes { get; } = new Type[] { typeof(SpriteFont) };
 
-        public override Type[] RequiredServices => null;
+        public override Type[] RequiredServices { get; } = new Type[] { typeof(RenderService) };
 
         public override Type PartType => typeof(SpriteFont);
 
         protected override bool OnReadPart(ContentLoadHandle handle, Stream stream, SpriteFontParameters parameters, object existingPart, out object partAsset)
         {
-            partAsset = handle.Manager.Engine.Fonts.GetFont(handle.RelativePath, parameters.FontSize);
+            RenderService renderer = handle.Manager.Engine.Renderer;
+            partAsset = renderer.Fonts.GetFont(handle.RelativePath, parameters.FontSize);
+
+            if (renderer.Fonts == null)
+            {
+                handle.LogError($"Unable to load. Renderer does not provide a font manager. RenderService.Fonts is null.");
+                return false;
+            }
 
             if(partAsset == null)
-                partAsset = handle.Manager.Engine.Fonts.LoadFont(stream, handle.RelativePath, parameters.FontSize);
+                partAsset = renderer.Fonts.LoadFont(stream, handle.RelativePath, parameters.FontSize);
 
             return true;
         }

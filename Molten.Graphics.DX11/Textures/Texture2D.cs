@@ -71,7 +71,7 @@ namespace Molten.Graphics
                 },
                 Usage = GetUsageFlags(),
                 MiscFlags = (uint)GetResourceFlags(),
-                TextureLayout = TextureLayout.None
+                TextureLayout = TextureLayout.None,
             };
         }
 
@@ -86,6 +86,7 @@ namespace Molten.Graphics
                 Format = DataFormat,
                 MipMapLevels = MipMapCount,
                 MultiSampleLevel = MultiSampleLevel,
+                Name = Name,
             };
         }
 

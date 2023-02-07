@@ -12,5 +12,7 @@
         public uint ArraySize = 1;
 
         public TextureFlags Flags = TextureFlags.None;
+
+        public string Name = null;
     }
 }

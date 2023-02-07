@@ -277,6 +277,8 @@ namespace Molten.Graphics
             LoadDefaultShaders();
 
             Surfaces.Initialize(BiggestWidth, BiggestHeight);
+            Fonts = new SpriteFontManager(Log, this);
+            Fonts.Initialize();
         }
 
         private void LoadDefaultShaders()
@@ -435,5 +437,10 @@ namespace Molten.Graphics
         public abstract ShaderCompiler Compiler { get; }
 
         public SpriteBatcher SpriteBatch { get; private set; }
+
+        /// <summary>
+        /// Gets the internal <see cref="SpriteFontManager"/> bound to the current <see cref="RenderService"/>.
+        /// </summary>
+        internal SpriteFontManager Fonts { get; private set; }
     }
 }

@@ -6,6 +6,8 @@
 
         public AntiAliasLevel MultiSampleLevel =  AntiAliasLevel.None;
 
+        public MSAAQuality SampleQuality = MSAAQuality.Default;
+
         /// <summary>
         /// Sets <see cref="ArraySize"/> by multiplying the provided value by 6 (the number of sides/slices per cubemap).
         /// </summary>

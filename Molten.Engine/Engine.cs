@@ -45,7 +45,6 @@ namespace Molten
             _taskQueue = new ThreadedQueue<EngineTask>();
             _services = new List<EngineService>(Settings.StartupServices);
             Content = new ContentManager(Log, this, Settings.ContentWorkerThreads, Settings.AllowContentHotReload);
-            Fonts = new SpriteFontManager(Log, this);
             Scenes = new SceneManager();
 
             Renderer = GetService<RenderService>();
@@ -120,8 +119,6 @@ namespace Molten
         {
             foreach (EngineService service in _services)
                 service.Start(Threading, Log);
-
-            Fonts.Initialize();
 
             Content.Workers.IsPaused = false;
 
@@ -251,11 +248,6 @@ namespace Molten
         /// Gets the internal scene manager for the current <see cref="Engine"/> instance.
         /// </summary>
         internal SceneManager Scenes { get; }
-
-        /// <summary>
-        /// Gets the internal <see cref="SpriteFontManager"/> bound to the current <see cref="Engine"/> instance.
-        /// </summary>
-        internal SpriteFontManager Fonts { get; }
 
         /// <summary>
         /// Gets whether or not the current <see cref="Engine"/> instance has been disposed.

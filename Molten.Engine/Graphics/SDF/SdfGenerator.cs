@@ -57,7 +57,8 @@ namespace Molten.Graphics.SDF
             {
                 Width = src.Width,
                 Height = src.Height,
-                Format = GraphicsFormat.R8G8B8A8_UNorm
+                Format = GraphicsFormat.R8G8B8A8_UNorm,
+                Name = $"SDF_{src.Width}x{src.Height}",
             });
 
             fixed (Color* ptr = finalData)

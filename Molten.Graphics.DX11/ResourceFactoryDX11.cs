@@ -74,7 +74,9 @@ namespace Molten.Graphics
                 properties.MipMapLevels,
                 properties.ArraySize,
                 properties.Flags,
-                properties.MultiSampleLevel);
+                properties.MultiSampleLevel,
+                properties.SampleQuality,
+                properties.Name);
         }
 
         public override ITexture2D CreateTexture2D(TextureData data)

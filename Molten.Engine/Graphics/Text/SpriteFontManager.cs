@@ -8,7 +8,7 @@ namespace Molten.Graphics
     {
         public const char PLACEHOLDER_CHAR = ' ';
 
-        Engine _engine;
+        RenderService _renderer;
         Dictionary<string, SpriteFontBinding> _fonts;
         SceneRenderData _renderData;
         RenderCamera _camera;
@@ -20,9 +20,9 @@ namespace Molten.Graphics
         Interlocker _pageLocker;
         SdfGenerator _sdf;
 
-        internal SpriteFontManager(Logger log, Engine engine)
+        internal SpriteFontManager(Logger log, RenderService renderer)
         {
-            _engine = engine;
+            _renderer = renderer;
             _fontLocker = new Interlocker();
             _pageLocker = new Interlocker();
             _fonts = new Dictionary<string, SpriteFontBinding>();
@@ -35,13 +35,13 @@ namespace Molten.Graphics
 
         internal void Initialize()
         {
-            _renderData = _engine.Renderer.CreateRenderData();
+            _renderData = _renderer.CreateRenderData();
             _renderData.BackgroundColor = Color.Transparent;
             _renderData.IsVisible = false;
             LayerRenderData layer = new LayerRenderData("font chars");
             _renderData.AddLayer(layer);
 
-            SpriteRenderer _spriteRenderer = new SpriteRenderer(_engine.Renderer.Device, OnDraw);
+            SpriteRenderer _spriteRenderer = new SpriteRenderer(_renderer.Device, OnDraw);
 
             ObjectRenderData ord = new ObjectRenderData()
             {
@@ -52,7 +52,7 @@ namespace Molten.Graphics
             _renderData.OnPostRender += _renderData_OnPostRender;
             _camera = new RenderCamera(RenderCameraMode.Orthographic)
             {
-                Surface = _engine.Renderer.Resources.CreateSurface((uint)PageSize, (uint)PageSize, arraySize: 1, flags: TextureFlags.AllowMipMapGeneration),
+                Surface = _renderer.Resources.CreateSurface((uint)PageSize, (uint)PageSize, arraySize: 1, flags: TextureFlags.AllowMipMapGeneration),
                 Flags = RenderCameraFlags.DoNotClear
             };
 
@@ -64,11 +64,11 @@ namespace Molten.Graphics
         {
             RectStyle style = RectStyle.Default;
 
-            if(_pages.Count > _camera.Surface.ArraySize)
+            if (_pages.Count > _camera.Surface.ArraySize)
             {
                 uint newArraySize = (uint)_pages.Count;
                 _rtTransfer = _camera.Surface;
-                _camera.Surface = _engine.Renderer.Resources.CreateSurface(
+                _camera.Surface = _renderer.Resources.CreateSurface(
                     (uint)PageSize,
                     (uint)PageSize,
                     arraySize: newArraySize,
@@ -108,7 +108,7 @@ namespace Molten.Graphics
                 TextureSliceRef<Color3> sdfRef = _sdf.Generate((uint)binding.PWidth, (uint)binding.PHeight, shape, SdfProjection.Default, 6, FillRule.NonZero);
                 _sdf.To8Bit(sdfRef);
 
-                ITexture2D tex = _sdf.ConvertToTexture(_engine.Renderer, sdfRef);
+                ITexture2D tex = _sdf.ConvertToTexture(_renderer, sdfRef);
                 sb.Draw((RectangleF)binding.Location, ref style, tex, null, 0, (uint)binding.PageID);
 
                 sdfRef.Slice.Dispose();
@@ -243,7 +243,7 @@ namespace Molten.Graphics
         {
             _camera.Surface?.Dispose();
             _rtTransfer?.Dispose();
-            _engine.Renderer.DestroyRenderData(_renderData);
+            _renderer.DestroyRenderData(_renderData);
         }
 
         /// <summary>

@@ -231,6 +231,7 @@ namespace Molten.Content
                             MipMapLevels = texCube.MipMapCount,
                             MultiSampleLevel = texCube.MultiSampleLevel,
                             Width = texCube.Width,
+                            Name = handle.Info.Name,
                         });
                         break;
 
@@ -244,6 +245,7 @@ namespace Molten.Content
                             MipMapLevels = tex2D.MipMapCount,
                             MultiSampleLevel = tex2D.MultiSampleLevel,
                             Width = tex2D.Width,
+                            Name = handle.Info.Name,
                         });
                         break;
 
@@ -255,6 +257,7 @@ namespace Molten.Content
                             ArraySize = tex1D.ArraySize,
                             MipMapLevels = tex1D.MipMapCount,
                             Width = tex1D.Width,
+                            Name = handle.Info.Name,
                         });
                         break;
                 }
