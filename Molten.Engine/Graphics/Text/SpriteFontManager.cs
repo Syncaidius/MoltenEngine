@@ -74,7 +74,6 @@ namespace Molten.Graphics
                     arraySize: newArraySize,
                     flags: TextureFlags.AllowMipMapGeneration);
                 _camera.Surface.Clear(Color.Transparent, GraphicsPriority.Immediate);
-
                 _camera.Surface = _camera.Surface;
 
                 RectangleF rtBounds = new RectangleF(0, 0, PageSize, PageSize);

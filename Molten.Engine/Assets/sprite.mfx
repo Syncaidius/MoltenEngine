@@ -12,6 +12,7 @@
             <condition value="Multisampling"/>
         </fragment>-->
         <blend preset="PreMultipliedAlpha" />
+        <depth preset="ZDisabled" />
         <rasterizer preset="ScissorTest" />
         <rasterizer preset="DefaultMultisample">
             <condition value="Multisampling"/>
@@ -34,6 +35,7 @@
         <geometry value="GS"/>
         <fragment value="PS_NoTexture"/>
         <blend preset="PreMultipliedAlpha" />
+        <depth preset="ZDisabled" />
         <rasterizer preset="ScissorTest" />
         <rasterizer preset="DefaultMultisample">
             <condition value="Multisampling"/>
@@ -56,6 +58,7 @@
         <geometry value="GS"/>
         <fragment value="PS_Circle"/>
         <blend preset="PreMultipliedAlpha" />
+        <depth preset="ZDisabled" />
         <rasterizer preset="ScissorTest" />
         <rasterizer preset="DefaultMultisample">
             <condition value="Multisampling"/>
@@ -78,6 +81,7 @@
         <geometry value="GS"/>
         <fragment value="PS_Circle_NoTex"/>
         <blend preset="PreMultipliedAlpha" />
+        <depth preset="ZDisabled" />
         <rasterizer preset="ScissorTest" />
         <rasterizer preset="DefaultMultisample">
             <condition value="Multisampling"/>
@@ -100,6 +104,7 @@
         <geometry value="GS"/>
         <fragment value="PS_Line"/>
         <blend preset="PreMultipliedAlpha" />
+        <depth preset="ZDisabled" />
         <rasterizer preset="ScissorTest" />
         <rasterizer preset="DefaultMultisample">
             <condition value="Multisampling"/>
@@ -122,6 +127,7 @@
         <geometry value="GS"/>
         <fragment value="PS_Grid"/>
         <blend preset="PreMultipliedAlpha" />
+        <depth preset="ZDisabled" />
         <rasterizer preset="ScissorTest" />
         <rasterizer preset="DefaultMultisample">
             <condition value="Multisampling"/>
