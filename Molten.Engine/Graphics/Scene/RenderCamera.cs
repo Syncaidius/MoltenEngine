@@ -250,7 +250,7 @@
 
         /// <summary>
         /// Gets or sets the ordering depth of the current <see cref="RenderCamera"/>. The default value is 0.
-        /// Cameras which share the same output surface and order-depth will be rendered in the other they were added to the scene.
+        /// Cameras which share the same output surface and order-depth will be rendered in the order they were added to the scene.
         /// If you intend to output multiple cameras to the same <see cref="IRenderSurface2D"/>, it is recommended you change the order depth accordingly.
         /// </summary>
         public int OrderDepth { get; set; }

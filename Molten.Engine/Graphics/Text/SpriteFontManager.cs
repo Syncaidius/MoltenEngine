@@ -52,8 +52,9 @@ namespace Molten.Graphics
             _renderData.OnPostRender += _renderData_OnPostRender;
             _camera = new RenderCamera(RenderCameraMode.Orthographic)
             {
-                Surface = _renderer.Resources.CreateSurface((uint)PageSize, (uint)PageSize, arraySize: 1, flags: TextureFlags.AllowMipMapGeneration),
-                Flags = RenderCameraFlags.DoNotClear
+                Surface = _renderer.Resources.CreateSurface((uint)PageSize, (uint)PageSize, arraySize: 1, flags: TextureFlags.AllowMipMapGeneration, name: "Sprite Font Sheet"),
+                Flags = RenderCameraFlags.DoNotClear,
+                Name = "Sprite Font Camera"
             };
 
             _camera.Surface.Clear(Color.Transparent, GraphicsPriority.Immediate);
@@ -74,7 +75,6 @@ namespace Molten.Graphics
                     arraySize: newArraySize,
                     flags: TextureFlags.AllowMipMapGeneration);
                 _camera.Surface.Clear(Color.Transparent, GraphicsPriority.Immediate);
-                _camera.Surface = _camera.Surface;
 
                 RectangleF rtBounds = new RectangleF(0, 0, PageSize, PageSize);
                 for(uint i = 0; i < _rtTransfer.ArraySize; i++)
