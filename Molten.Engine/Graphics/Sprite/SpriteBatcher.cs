@@ -215,6 +215,13 @@ namespace Molten.Graphics
             return ref range;
         }
 
+        internal void Reset(Rectangle bounds)
+        {
+            _curClipID = 0;
+            ClipStack[_curClipID] = bounds;
+            Reset();
+        }
+
         private void Reset()
         {
             _curRange = 0;
@@ -484,8 +491,6 @@ namespace Molten.Graphics
             if (_dataCount > 0)
             {
                 cmd.VertexBuffers[0].Value = null;
-
-                ClipStack[0] = (Rectangle)camera.Surface.Viewport.Bounds;
 
                 SpriteRange t = new SpriteRange();
                 ref SpriteRange range = ref t;

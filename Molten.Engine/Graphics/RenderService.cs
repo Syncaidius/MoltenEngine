@@ -422,7 +422,7 @@ namespace Molten.Graphics
 
         public abstract ShaderCompiler Compiler { get; }
 
-        public SpriteBatcher SpriteBatch { get; private set; }
+        internal SpriteBatcher SpriteBatch { get; private set; }
 
         /// <summary>
         /// Gets the internal <see cref="SpriteFontManager"/> bound to the current <see cref="RenderService"/>.

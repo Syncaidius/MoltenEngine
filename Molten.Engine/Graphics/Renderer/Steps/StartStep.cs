@@ -18,6 +18,8 @@
             sNormals.Clear(Color.White * 0.5f, GraphicsPriority.Immediate);
             sEmissive.Clear(Color.Black, GraphicsPriority.Immediate);
             sDepth.Clear(DepthClearFlags.Depth | DepthClearFlags.Stencil, GraphicsPriority.Immediate, 1, 0);
+
+            renderer.SpriteBatch.Reset((Rectangle)camera.Surface.Viewport.Bounds);
         }
     }
 }
