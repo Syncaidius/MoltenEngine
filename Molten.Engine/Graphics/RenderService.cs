@@ -15,7 +15,6 @@ namespace Molten.Graphics
         bool _disposeRequested;
         bool _shouldPresent;
         bool _surfaceResizeRequired;
-        HashSet<ITexture2D> _clearedSurfaces;
         RenderChain _chain;
         AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
 
@@ -32,8 +31,6 @@ namespace Molten.Graphics
         /// </summary>
         public RenderService()
         {
-            _clearedSurfaces = new HashSet<ITexture2D>();
-
             Surfaces = new SurfaceManager(this);
             Overlay = new OverlayProvider();
             Log.WriteLine("Acquiring render chain");
@@ -181,6 +178,9 @@ namespace Molten.Graphics
                 });
 
                 foreach (RenderCamera camera in sceneData.Cameras)
+                    camera.Surface?.Clear(sceneData.BackgroundColor, GraphicsPriority.Immediate);
+
+                foreach (RenderCamera camera in sceneData.Cameras)
                 {
                     if (camera.Skip)
                         continue;
@@ -193,9 +193,6 @@ namespace Molten.Graphics
                     sceneData.Profiler.Accumulate(camera.Profiler.Previous);
                     Device.Cmd.Profiler = null;
                 }
-                
-                // Clear the list of used surfaces, ready for the next frame.
-                _clearedSurfaces.Clear();
 
                 sceneData.Profiler.End(time);
                 sceneData.PostRenderInvoke(this);
@@ -290,18 +287,6 @@ namespace Molten.Graphics
         }
 
         protected abstract void OnInitializeRenderer(EngineSettings settings);
-
-        public bool ClearIfFirstUse(IRenderSurface2D surface, Color color)
-        {
-            if (!_clearedSurfaces.Contains(surface))
-            {
-                surface.Clear(color, GraphicsPriority.Immediate);
-                _clearedSurfaces.Add(surface);
-                return true;
-            }
-
-            return false;
-        }
 
         private void MSAA_OnChanged(AntiAliasLevel oldValue, AntiAliasLevel newValue)
         {

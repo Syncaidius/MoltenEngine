@@ -14,14 +14,10 @@
             GraphicsCommandQueue cmd = renderer.Device.Cmd;
 
             cmd.SetRenderSurfaces(null);
-            bool newSurface = renderer.ClearIfFirstUse(sScene, context.Scene.BackgroundColor);
-            renderer.ClearIfFirstUse(sNormals, Color.White * 0.5f);
-            renderer.ClearIfFirstUse(sEmissive, Color.Black);
-
-            // Always clear the depth surface at the start of each scene unless otherwise instructed.
-            // Will also be cleared if we've just switched to a previously un-rendered surface during this frame.
-            if(!camera.Flags.HasFlag(RenderCameraFlags.DoNotClearDepth) || newSurface)
-                sDepth.Clear(DepthClearFlags.Depth | DepthClearFlags.Stencil, GraphicsPriority.Immediate, 1, 0);
+            sScene.Clear(context.Scene.BackgroundColor, GraphicsPriority.Immediate);
+            sNormals.Clear(Color.White * 0.5f, GraphicsPriority.Immediate);
+            sEmissive.Clear(Color.Black, GraphicsPriority.Immediate);
+            sDepth.Clear(DepthClearFlags.Depth | DepthClearFlags.Stencil, GraphicsPriority.Immediate, 1, 0);
         }
     }
 }

@@ -10,13 +10,11 @@
 
         internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
-            IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
-            sScene.Clear(Color.Transparent, GraphicsPriority.Immediate);
-
             if (context.Layer.Renderables.Count == 0)
                 return;
 
             GraphicsCommandQueue cmd = renderer.Device.Cmd;
+            IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             cmd.SetRenderSurface(sScene, 0);
             cmd.DepthSurface.Value = renderer.Surfaces.GetDepth();
             cmd.SetViewports(camera.Surface.Viewport);

@@ -24,9 +24,6 @@
             GraphicsCommandQueue cmd = renderer.Device.Cmd;
             IRenderSurface2D finalSurface = camera.Surface;
 
-            if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
-                renderer.ClearIfFirstUse(finalSurface, context.Scene.BackgroundColor);
-
             cmd.SetRenderSurfaces(finalSurface);
             cmd.DepthSurface.Value = null;
             cmd.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
