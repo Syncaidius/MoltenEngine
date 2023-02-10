@@ -206,7 +206,7 @@ namespace Molten.Graphics
             get => _ctrlName;
             set
             {
-                base.Name = $"Winforms surface - {value}";
+                base.Name = _ctrlName;
                 _ctrlName = value;
                 _propertiesDirty = true;
             }
