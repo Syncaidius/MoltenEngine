@@ -201,7 +201,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets or sets the form name.</summary>
-        public new string Name
+        public override string Name
         {
             get => _ctrlName;
             set
