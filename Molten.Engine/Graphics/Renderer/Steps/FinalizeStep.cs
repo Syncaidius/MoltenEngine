@@ -31,7 +31,7 @@
             cmd.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
 
             // We only need scissor testing here
-            ITexture2D sourceSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
+            IRenderSurface2D sourceSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
             RectStyle style = RectStyle.Default;
 
             cmd.BeginDraw(StateConditions.ScissorTest);
