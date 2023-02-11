@@ -66,7 +66,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Benchmarks", "Molten
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Graphics.Vulkan", "Molten.Graphics.Vulkan\Molten.Graphics.Vulkan.csproj", "{640AAF55-92F0-478C-8A81-EA13F9AF6B35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Graphics.DX12", "Molten.Graphics.DX12\Molten.Graphics.DX12.csproj", "{037B4625-B4FF-40E3-8EF2-DA240FB3953F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Graphics.DX12", "Molten.Graphics.DX12\Molten.Graphics.DX12.csproj", "{037B4625-B4FF-40E3-8EF2-DA240FB3953F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -261,10 +261,12 @@ Global
 		{D58134DD-2CA1-4417-8880-00A3F27DFDB5}.Release|x86.Build.0 = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|x64.ActiveCfg = Debug|Any CPU
+		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|x64.Build.0 = Debug|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|x86.ActiveCfg = Debug|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|x86.Build.0 = Debug|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Release|Any CPU.ActiveCfg = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Release|x64.ActiveCfg = Release|Any CPU
+		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Release|x64.Build.0 = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Release|x86.ActiveCfg = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Release|x86.Build.0 = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Benchmarks|Any CPU.ActiveCfg = Release|Any CPU
