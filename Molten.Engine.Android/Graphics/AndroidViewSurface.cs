@@ -190,6 +190,16 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public void Apply(GraphicsCommandQueue cmd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GraphicsRelease()
+        {
+            throw new NotImplementedException();
+        }
+
         public string Title
         {
             get => TargetActivity.UnderlyingActivity.Title;
@@ -250,5 +260,16 @@ namespace Molten.Graphics
         public IntPtr Handle => throw new NotImplementedException();
 
         public ViewportF Viewport => _vp;
+
+        public GraphicsDevice Device => throw new NotImplementedException();
+
+        public uint Version { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public List<GraphicsSlot> BoundTo => throw new NotImplementedException();
+
+        public uint BindID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public GraphicsBindTypeFlags BindFlags { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public uint LastUsedFrameID => throw new NotImplementedException();
     }
 }
