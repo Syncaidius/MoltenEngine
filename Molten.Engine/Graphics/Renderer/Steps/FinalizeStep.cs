@@ -16,6 +16,7 @@
 
         }
 
+        float angleTest = 0;
         internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
         {
             _orthoCamera.Surface = camera.Surface;
@@ -35,7 +36,7 @@
             RectStyle style = RectStyle.Default;
 
             cmd.BeginDraw(StateConditions.ScissorTest);
-            renderer.SpriteBatch.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Bounds.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
+            renderer.SpriteBatch.Draw(sourceSurface, bounds, Vector2F.Zero, finalSurface.Viewport.Bounds.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
 
             if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
                 renderer.Overlay.Render(time, renderer.SpriteBatch, renderer.Profiler, context.Scene.Profiler, camera);

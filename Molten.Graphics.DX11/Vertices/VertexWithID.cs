@@ -1,6 +1,9 @@
-﻿namespace Molten.Graphics
+﻿using System.Runtime.InteropServices;
+
+namespace Molten.Graphics
 {
     /// <summary>A placeholder vertex type for times when no vertex input is required.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct VertexWithID : IVertexType
     {
         [VertexElement(VertexElementType.UInt, VertexElementUsage.VertexID, 0)]

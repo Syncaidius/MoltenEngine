@@ -5,7 +5,7 @@
         public override void Bind(GraphicsSlot<VertexInputLayout> slot, VertexInputLayout value)
         {
             CommandQueueDX11 cmd = (slot.Cmd as CommandQueueDX11);
-            if (value != null && value.IsNullBuffer)
+            if (value == null || value.IsNullBuffer)
                 cmd.Native->IASetInputLayout(null);
             else
                 cmd.Native->IASetInputLayout(value);
