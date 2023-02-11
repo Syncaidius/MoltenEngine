@@ -48,7 +48,6 @@
 
         public void Render(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
-            cmd.DepthWriteOverride = data.DepthWriteOverride;
             OnRender(cmd, renderer, camera, data);
         }
 

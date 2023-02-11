@@ -43,7 +43,6 @@
             cmd.ResetRenderSurfaces();
             cmd.SetRenderSurface(context.CompositionSurface, 0);
             cmd.DepthSurface.Value = null;
-            cmd.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
             cmd.SetViewports(camera.Surface.Viewport);
             cmd.SetScissorRectangle((Rectangle)vpBounds);
 

@@ -423,8 +423,7 @@ namespace Molten.Graphics
                 _viewportsDirty = false;
             }
 
-            GraphicsDepthWritePermission depthWriteMode = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ?
-                DepthWriteOverride : pass.DepthState[conditions].WritePermission;
+            GraphicsDepthWritePermission depthWriteMode = pass.DepthState[conditions].WritePermission;
 
             bool surfaceChanged = Surfaces.BindAll();
             bool depthChanged = DepthSurface.Bind() || (_boundDepthMode != depthWriteMode);

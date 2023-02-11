@@ -14,7 +14,6 @@
         IRenderSurface2D[] _surfaces;
 
         IDepthStencilSurface _depthSurface;
-        GraphicsDepthWritePermission _depthWriteOverride;
 
         ViewportF[] _viewports;
 
@@ -48,7 +47,6 @@
             _cmd.GetRenderSurfaces(_surfaces);
 
             _depthSurface = _cmd.DepthSurface.Value;
-            _depthWriteOverride = _cmd.DepthWriteOverride;
         }
 
         public void Restore()
@@ -72,7 +70,6 @@
 
 
             _cmd.DepthSurface.Value = _depthSurface;
-            _cmd.DepthWriteOverride = _depthWriteOverride;
         }
 
         /// <summary>Resets the pipe state, but does not apply it.</summary>

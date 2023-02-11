@@ -42,7 +42,6 @@ namespace Molten.Graphics
             cmd.ResetRenderSurfaces();
             cmd.SetRenderSurface(_surfaceLighting, 0);
             cmd.DepthSurface.Value = sDepth;
-            cmd.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
             RenderPointLights(renderer, cmd, camera, context.Scene, sDepth);
         }
 

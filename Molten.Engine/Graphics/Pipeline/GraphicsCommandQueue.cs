@@ -252,11 +252,6 @@ where B : GraphicsSlotBinder<T>, new()
         }
 
         /// <summary>
-        /// Gets or sets the override permission for depth writing.
-        /// </summary>
-        public GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;
-
-        /// <summary>
         /// Gets or sets the output depth surface.
         /// </summary>
         public GraphicsSlot<IDepthStencilSurface> DepthSurface { get; protected set; }
