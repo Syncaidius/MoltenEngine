@@ -21,12 +21,6 @@
             state.IsDepthEnabled = false;
             state.WriteFlags = DepthWriteFlags.Zero;
             AddPreset(DepthStencilPreset.ZDisabled, state);
-
-            state = device.CreateDepthState();
-            state.IsDepthEnabled = true;
-            state.IsStencilEnabled = true;
-            state.DepthComparison = ComparisonFunction.LessEqual;
-            AddPreset(DepthStencilPreset.Sprite2D, state);
         }
 
         public override GraphicsDepthState GetPreset(DepthStencilPreset value)
@@ -45,8 +39,5 @@
 
         /// <summary>The same as default, but with the z-buffer disabled.</summary>
         ZDisabled = 2,
-
-        /// <summary>A state used for drawing 2D sprites. Stenicl testing is enabled.</summary>
-        Sprite2D = 3,
     }
 }

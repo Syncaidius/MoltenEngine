@@ -87,7 +87,7 @@ namespace Molten.Graphics
             }
         }
 
-        public void Clear(Color color, GraphicsPriority priority = GraphicsPriority.PreRender)
+        public void Clear(Color color, GraphicsPriority priority)
         {
             if (priority == GraphicsPriority.Immediate)
             {
