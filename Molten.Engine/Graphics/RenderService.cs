@@ -178,7 +178,10 @@ namespace Molten.Graphics
                 });
 
                 foreach (RenderCamera camera in sceneData.Cameras)
-                    camera.Surface?.Clear(sceneData.BackgroundColor, GraphicsPriority.Immediate);
+                {
+                    if(!camera.HasFlags(RenderCameraFlags.DoNotClear))
+                        camera.Surface?.Clear(sceneData.BackgroundColor, GraphicsPriority.Immediate);
+                }
 
                 foreach (RenderCamera camera in sceneData.Cameras)
                 {
