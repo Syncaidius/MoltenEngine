@@ -25,7 +25,6 @@
     public class Mesh<T> : Mesh
         where T : unmanaged, IVertexType
     {
-        // private protected is new in C# 7.2. See: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/private-protected
         private protected RenderService _renderer;
         private protected IGraphicsBufferSegment _vb;
         private protected uint _vertexCount;
