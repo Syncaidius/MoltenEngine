@@ -29,7 +29,8 @@ namespace Molten.Examples
                 G = (byte)Rng.Next(0, 256),
                 B = (byte)Rng.Next(0, 256),
                 A = 255,
-            };//new Color(0x333333);
+            };
+
             SpriteLayer = MainScene.AddLayer("sprite", true);
             UILayer = MainScene.AddLayer("ui", true);
             UILayer.BringToFront();
@@ -37,7 +38,6 @@ namespace Molten.Examples
 
             SampleSpriteRenderComponent spriteCom = UILayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             spriteCom.RenderCallback = DrawSprites;
-            spriteCom.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
 
             // Use the same camera for both the sprite and UI scenes.
             Camera2D = MainScene.AddObjectWithComponent<CameraComponent>(UILayer);

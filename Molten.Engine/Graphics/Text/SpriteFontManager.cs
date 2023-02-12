@@ -42,11 +42,7 @@ namespace Molten.Graphics
             _renderData.AddLayer(layer);
 
             SpriteRenderer _spriteRenderer = new SpriteRenderer(_renderer.Device, OnDraw);
-
-            ObjectRenderData ord = new ObjectRenderData()
-            {
-                DepthWriteOverride = GraphicsDepthWritePermission.Disabled,
-            };
+            ObjectRenderData ord = new ObjectRenderData();
 
             _renderData.AddObject(_spriteRenderer, ord, layer);
             _renderData.OnPostRender += _renderData_OnPostRender;

@@ -14,10 +14,5 @@
 
         /// <summary>The distance from the camera, calculated by the renderer using <see cref="RenderTransform"/>.</summary>
         public double DistanceFromCamera = 0;
-
-        /// <summary>
-        /// The depth write permissions to use for the object. This overrides any that were set via it's material if set to anything but <see cref="GraphicsDepthWritePermission.Enabled"/>.
-        /// </summary>
-        public GraphicsDepthWritePermission DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
     }
 }

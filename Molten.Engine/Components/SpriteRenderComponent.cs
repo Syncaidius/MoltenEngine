@@ -13,7 +13,6 @@ namespace Molten
         protected override void OnInitialize(SceneObject obj)
         {
             Data = new ObjectRenderData();
-            Data.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
 
             AddToScene(obj);
             obj.OnRemovedFromScene += Obj_OnRemovedFromScene;
@@ -98,18 +97,6 @@ namespace Molten
                         RemoveFromScene(Object);
                 }
             }
-        }
-
-        /// <summary>
-        /// Gets or sets the depth-write permission override for the current <see cref="SpriteRenderComponent"/>. <para/>
-        /// If set to <see cref="GraphicsDepthWritePermission.Enabled"/>, the value provided by the current material will be used instead.
-        /// To override the depth-write permission set by the current material, set this value to anything other than <see cref="GraphicsDepthWritePermission.Enabled"/>.<para/>
-        /// The default value is <see cref="GraphicsDepthWritePermission.Disabled"/>
-        /// </summary>
-        public GraphicsDepthWritePermission DepthWriteOverride
-        {
-            get => Data.DepthWriteOverride;
-            set => Data.DepthWriteOverride = value;
         }
     }
 }

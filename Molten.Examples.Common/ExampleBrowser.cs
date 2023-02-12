@@ -136,7 +136,6 @@ namespace Molten.Examples
         {
             SampleSpriteRenderComponent com = UILayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             com.RenderCallback = OnDrawSprites;
-            com.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
             BuildUI(UI);
             DetectExamples();
             _baseContentLoaded = true; 
