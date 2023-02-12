@@ -269,7 +269,7 @@ namespace Molten.Examples
             }
             else
             {
-                IRenderSurface2D surface = Engine.Renderer.Resources.CreateSurface(800, 600);
+                IRenderSurface2D surface = Engine.Renderer.Resources.CreateSurface(800, 600, name: $"{selected.Text} Example");
 
                 binding.Window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
                 {

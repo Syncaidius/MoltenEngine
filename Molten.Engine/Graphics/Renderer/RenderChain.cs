@@ -46,9 +46,9 @@ namespace Molten.Graphics
             RenderChainLink first = LinkPool.GetInstance();
 
             if (camera.Flags.HasFlag(RenderCameraFlags.Deferred))
-                first.Set<StartStep>().Next<GBufferStep>();
+                first.Set<GBufferStep>();
             else
-                first.Set<StartStep>().Next<ForwardStep>();
+                first.Set<ForwardStep>();
 
             return first;
         }
