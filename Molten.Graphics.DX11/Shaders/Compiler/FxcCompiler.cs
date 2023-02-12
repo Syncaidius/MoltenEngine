@@ -98,9 +98,16 @@ namespace Molten.Graphics
                             ShaderTypeDesc typeDesc = new ShaderTypeDesc();
                             rType->GetDesc(&typeDesc);
 
+                            void* ptrDefault = null;
+                            if (desc.DefaultValue != null)
+                            {
+                                ptrDefault = EngineUtil.Alloc(desc.Size);
+                                System.Buffer.MemoryCopy(desc.DefaultValue, ptrDefault, desc.Size, desc.Size);
+                            }
+
                             ConstantBufferVariableInfo cVarInfo = new ConstantBufferVariableInfo()
                             {
-                                DefaultValue = desc.DefaultValue, // TODO copy the value to EngineUtil memory so it isn't lost
+                                DefaultValue = ptrDefault,
                                 Name = SilkMarshal.PtrToString((nint)desc.Name),
                                 Size = desc.Size,
                                 StartOffset = desc.StartOffset,
