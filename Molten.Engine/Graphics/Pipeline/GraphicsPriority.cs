@@ -11,13 +11,13 @@
         Immediate = 0,
 
         /// <summary>
-        /// The task or command must be executed at the start of the next render cycle.
+        /// The task or command must be executed next time the object is applied on the GPU.
         /// </summary>
-        PreRender = 1,
+        PreApply = 1,
 
         /// <summary>
-        /// The task or command must be executed at the end of the current render cycle.
+        /// The task or command must be executed after the object has been used in a draw or dispatch call.
         /// </summary>
-        PostRender = 1,
+        PostDrawDispatch = 1,
     }
 }

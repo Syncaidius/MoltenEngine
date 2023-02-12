@@ -6,11 +6,9 @@ namespace Molten.Examples
 {
     public abstract class MoltenExample
     {
-
         public event ObjectHandler<MoltenExample> Closed;
 
         ContentLoadBatch _loader;
-
         SceneObject _parent;
         SceneObject _child;
         Foundation _foundation;
