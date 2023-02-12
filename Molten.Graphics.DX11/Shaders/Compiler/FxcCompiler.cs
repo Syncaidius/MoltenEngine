@@ -98,10 +98,10 @@ namespace Molten.Graphics
                             ShaderTypeDesc typeDesc = new ShaderTypeDesc();
                             rType->GetDesc(&typeDesc);
 
-                            void* ptrDefault = null;
+                            ShaderReflection.ReflectionPtr ptrDefault = null;
                             if (desc.DefaultValue != null)
                             {
-                                ptrDefault = EngineUtil.Alloc(desc.Size);
+                                ptrDefault = r.NewPtr(desc.Size);
                                 System.Buffer.MemoryCopy(desc.DefaultValue, ptrDefault, desc.Size, desc.Size);
                             }
 

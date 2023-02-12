@@ -2,6 +2,9 @@
 {
     public unsafe class ConstantBufferVariableInfo
     {
+        /// <summary>
+        /// A pointer to the default value for initializing the variable.
+        /// </summary>
         public void* DefaultValue;
 
         /// <summary>
@@ -15,7 +18,7 @@
         public uint Size;
 
         /// <summary>
-        /// THe index of the first sampler within the parent buffer.
+        /// The offset from the start of the variable to the beginning of the sampler.
         /// </summary>
         public uint StartSampler;
 
@@ -24,6 +27,9 @@
         /// </summary>
         public uint SamplerSize;
 
+        /// <summary>
+        /// The offset from the start of the variable to the beginning of the texture
+        /// </summary>
         public uint StartTexture;
 
         /// <summary>
@@ -36,8 +42,14 @@
         /// </summary>
         public string Name;
 
+        /// <summary>
+        /// A combination of <see cref="ShaderVariableFlags"/> values that are combined by using a bitwise OR operation. The resulting value identifies shader-variable properties.
+        /// </summary>
         public ShaderVariableFlags Flags;
 
+        /// <summary>
+        /// Gets info representing the underlying data-type of the variable.
+        /// </summary>
         public ShaderTypeInfo Type { get; } = new ShaderTypeInfo();
     }
 }

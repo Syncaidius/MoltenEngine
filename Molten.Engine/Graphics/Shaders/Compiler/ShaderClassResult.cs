@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public unsafe class ShaderClassResult
+    public unsafe class ShaderClassResult : IDisposable
     {
         void* _byteCode;
 
@@ -26,6 +26,12 @@ namespace Molten.Graphics
             where T : unmanaged
         {
             return (T*)_debugData;
+        }
+
+        public void Dispose()
+        {
+            Reflection?.Dispose();
+            // TODO add disposal callback for correctly handling the release of ByteCode and DebugData.
         }
 
         public ShaderReflection Reflection { get; }
