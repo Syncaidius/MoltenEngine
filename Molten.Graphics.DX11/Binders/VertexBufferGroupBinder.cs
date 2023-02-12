@@ -66,7 +66,7 @@ namespace Molten.Graphics
                 pOffsets[0] = 0;
             }
 
-            (slot.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(slot.SlotIndex, 0, pBuffers, pStrides, pOffsets);
+            (slot.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(slot.SlotIndex, 1, pBuffers, pStrides, pOffsets);
         }
 
         public override void Unbind(GraphicsSlotGroup<IGraphicsBufferSegment> grp, uint startIndex, uint endIndex, uint numChanged)
@@ -100,7 +100,7 @@ namespace Molten.Graphics
             pStrides[0] = 0;
             pOffsets[0] = 0;
 
-            (slot.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(slot.SlotIndex, 0, pBuffers, pStrides, pOffsets);
+            (slot.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(slot.SlotIndex, 1, pBuffers, pStrides, pOffsets);
         }
     }
 }
