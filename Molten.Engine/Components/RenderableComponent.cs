@@ -2,12 +2,12 @@
 
 namespace Molten
 {
-    public abstract class RenderableComponent : SceneComponent
+    public class RenderableComponent : SceneComponent
     {
-        protected Renderable _renderable;
-        protected bool _visible = true;
-        protected bool _inScene = false;
-        protected ObjectRenderData _data;
+        Renderable _renderable;
+        bool _visible = true;
+        bool _inScene = false;
+        ObjectRenderData _data;
 
         protected override void OnInitialize(SceneObject obj)
         {
@@ -35,14 +35,11 @@ namespace Molten
 
         private void RemoveFromScene(SceneObject obj)
         {
-            if (!_inScene || _renderable == null)
+            if (!_inScene)
                 return;
 
-            if (obj.Scene != null || _visible)
-            {
-                obj.Scene.RenderData.RemoveObject(_renderable, _data, obj.Layer.Data);
-                _inScene = false;
-            }
+            obj.Scene.RenderData.RemoveObject(_renderable, _data, obj.Layer.Data);
+            _inScene = false;
         }
 
         protected internal override bool OnRemove(SceneObject obj)
@@ -51,7 +48,6 @@ namespace Molten
             obj.OnAddedToScene -= Obj_OnAddedToScene;
             RemoveFromScene(obj);
 
-            // Reset State
             _renderable = null;
             _visible = true;
 
@@ -71,6 +67,11 @@ namespace Molten
         public override void OnUpdate(Timing time)
         {
             _data.TargetTransform = Object.Transform.Global;
+        }
+
+        protected override void OnDispose()
+        {
+            RemoveFromScene(Object);
         }
 
         /// <summary>The renderable object (e.g. a mesh or sprite) that should be drawn at the location of the component's parent object.</summary>

@@ -114,7 +114,7 @@ namespace Molten.Examples
             floorObj.Transform.LocalPosition = origin;
             floorObj.Transform.LocalScale = new Vector3F(size);
 
-            MeshComponent floorCom = floorObj.Components.Add<MeshComponent>();
+            RenderableComponent floorCom = floorObj.Components.Add<RenderableComponent>();
             floorCom.RenderedObject = _floorMesh;
         }
 

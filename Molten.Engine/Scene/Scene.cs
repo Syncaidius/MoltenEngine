@@ -257,9 +257,7 @@ namespace Molten
             set
             {
                 if(RenderData != null)
-                {
                     RenderData.SkyboxTexture = value;
-                }
             }
         }
     }

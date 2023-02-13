@@ -47,7 +47,7 @@ namespace Molten.Examples
                 Y = -spawnRadius + (float)(Rng.NextDouble() * maxRange),
                 Z = spawnRadius + (float)(Rng.NextDouble() * maxRange)
             });
-            MeshComponent meshCom = obj.Components.Add<MeshComponent>();
+            RenderableComponent meshCom = obj.Components.Add<RenderableComponent>();
             meshCom.RenderedObject = mesh;
 
             _objects.Add(obj);

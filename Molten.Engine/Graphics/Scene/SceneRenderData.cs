@@ -78,7 +78,7 @@ namespace Molten.Graphics
             RenderableAdd change = RenderableAdd.Get();
             change.Renderable = obj;
             change.Data = renderData;
-            change.LayerData = layer as LayerRenderData;
+            change.LayerData = layer;
             _pendingChanges.Enqueue(change);
         }
 

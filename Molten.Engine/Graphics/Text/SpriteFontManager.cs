@@ -40,10 +40,10 @@ namespace Molten.Graphics
             LayerRenderData layer = new LayerRenderData("font chars");
             _renderData.AddLayer(layer);
 
-            SpriteRenderer _spriteRenderer = new SpriteRenderer(_renderer.Device, OnDraw);
-            ObjectRenderData ord = new ObjectRenderData();
+            SpriteRenderer _spriteRenderer = new SpriteRenderer(_renderer, OnDraw);
+            ObjectRenderData data = new ObjectRenderData();
 
-            _renderData.AddObject(_spriteRenderer, ord, layer);
+            _renderData.AddObject(_spriteRenderer, data, layer);
             _renderData.OnPostRender += _renderData_OnPostRender;
             _camera = new RenderCamera(RenderCameraMode.Orthographic)
             {

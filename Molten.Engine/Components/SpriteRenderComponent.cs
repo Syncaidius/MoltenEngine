@@ -19,7 +19,7 @@ namespace Molten
             obj.OnAddedToScene += Obj_OnAddedToScene;
 
             if (obj.Engine.Renderer != null)
-                _spriteRenderer = new SpriteRenderer(obj.Engine.Renderer.Device, OnRender);
+                _spriteRenderer = new SpriteRenderer(obj.Engine.Renderer, OnRender);
 
             base.OnInitialize(obj);
         }

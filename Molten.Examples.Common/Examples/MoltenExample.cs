@@ -109,7 +109,7 @@ namespace Molten.Examples
         private SceneObject SpawnTestCube(Mesh mesh, Vector3F pos)
         {
             SceneObject obj = MainScene.CreateObject(pos);
-            MeshComponent meshCom = obj.Components.Add<MeshComponent>();
+            RenderableComponent meshCom = obj.Components.Add<RenderableComponent>();
             meshCom.RenderedObject = mesh;
             return obj;
         }

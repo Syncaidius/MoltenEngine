@@ -2,7 +2,7 @@
 {
     public class SpriteRenderer : Renderable
     {
-        internal SpriteRenderer(GraphicsDevice device, Action<SpriteBatcher> callback) : base(device)
+        internal SpriteRenderer(RenderService renderer, Action<SpriteBatcher> callback) : base(renderer)
         {
             Callback = callback;
         }

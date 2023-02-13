@@ -3,7 +3,7 @@
     /// <summary>A base interface for mesh implementations.</summary>
     public abstract class Mesh : Renderable
     {
-        protected Mesh(GraphicsDevice device) : base(device) { }
+        protected Mesh(RenderService renderer) : base(renderer) { }
 
         /// <summary>Gets whether or not the mesh was created as a dynamic mesh. 
         /// Dynamic meshes are preferable when the mesh's data will be changing at least once or more per frame.</summary>
@@ -20,6 +20,8 @@
 
         /// <summary>Gets or sets the material applied to the current mesh.</summary>
         public abstract Material Material { get; set; }
+
+        public float EmissivePower { get; set; } = 1.0f;
     }
 
     public class Mesh<T> : Mesh
@@ -31,7 +33,7 @@
         private protected bool _isDynamic;
 
         internal Mesh(RenderService renderer, uint maxVertices, VertexTopology topology, bool dynamic) :
-            base(renderer.Device)
+            base(renderer)
         {
             _renderer = renderer;
             MaxVertices = maxVertices;
@@ -59,17 +61,13 @@
             _vb.SetData(data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        internal virtual void ApplyBuffers(GraphicsCommandQueue cmd)
-        {
-            cmd.VertexBuffers[0].Value = _vb;
-        }
-
         protected override void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (Material == null)
                 return;
 
-            ApplyBuffers(cmd);
+            cmd.VertexBuffers[0].Value = _vb;
+
             ApplyResources(Material);
             Material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
             Material.Object.World.Value = data.RenderTransform;
@@ -88,16 +86,31 @@
             _vb.Release();
         }
 
+        /// <summary>
+        /// Gets the maximum number of vertices that the mesh can contain.
+        /// </summary>
         public override uint MaxVertices { get; }
 
+        /// <summary>
+        /// Gets the vertex topology of the current <see cref="Mesh"/>.
+        /// </summary>
         public override VertexTopology Topology { get; }
 
+        /// <summary>
+        /// Gets or sets the material that should be used when rendering the current <see cref="Mesh"/>.
+        /// </summary>
         public override Material Material { get; set; }
 
+        /// <summary>
+        /// Gets the number of vertices currently in the mesh.
+        /// </summary>
         public override uint VertexCount => _vertexCount;
 
+        /// <summary>
+        /// Gets whether the mesh is dynamic. 
+        /// <para>Dynamic meshes are more performant at handling frequent data changes/updates.</para> 
+        /// <para>Static meshes are preferred when their data will not change too often.</para>
+        /// </summary>
         public override bool IsDynamic => _isDynamic;
-
-        public float EmissivePower { get; set; } = 1.0f;
     }
 }

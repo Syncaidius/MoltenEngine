@@ -10,7 +10,9 @@
 
         protected override void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
-            ApplyBuffers(cmd);
+            cmd.VertexBuffers[0].Value = _vb;
+            cmd.IndexBuffer.Value = _ib;
+
             IShaderResource normal = GetResource(1);
 
             if (Material == null)

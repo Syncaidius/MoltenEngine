@@ -4,9 +4,9 @@
     {
         IShaderResource[] _resources;
 
-        protected Renderable(GraphicsDevice device)
+        protected Renderable(RenderService renderer)
         {
-            Device = device;
+            Renderer = renderer;
             IsVisible = false;
             _resources = new IShaderResource[0];
         }
@@ -16,7 +16,7 @@
         /// <param name="slot">The slot ID.</param>
         public void SetResource(IShaderResource resource, uint slot)
         {
-            if (slot >= Device.Adapter.Capabilities.PixelShader.MaxInResources)
+            if (slot >= Renderer.Device.Adapter.Capabilities.PixelShader.MaxInResources)
                 throw new IndexOutOfRangeException("The maximum slot number must be less than the maximum supported by the graphics device.");
 
             if (slot >= _resources.Length)
@@ -46,7 +46,7 @@
                 material.Resources[i].Value = material.DefaultResources[i];
         }
 
-        public void Render(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+        internal void Render(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             OnRender(cmd, renderer, camera, data);
         }
@@ -56,6 +56,6 @@
         /// <summary>Gets or sets whether or not the renderable should be drawn.</summary>
         public bool IsVisible { get; set; }
 
-        internal GraphicsDevice Device { get; private set; }
+        internal RenderService Renderer { get; private set; }
     }
 }
