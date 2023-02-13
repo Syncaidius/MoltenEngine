@@ -19,6 +19,13 @@ namespace Molten.Examples
                 SpawnRandomTestCube(TestMesh, 70);
         }
 
+        protected override Mesh GetTestCubeMesh()
+        {
+            Mesh<VertexColor> cube = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
+            cube.SetVertices(SampleVertexData.ColoredCube);
+            return cube;
+        }
+
         protected override void OnLoadContent(ContentLoadBatch loader)
         {
             base.OnLoadContent(loader);

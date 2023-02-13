@@ -24,20 +24,17 @@ namespace Molten.Examples
             }
 
             ShaderCompileResult shaders = Engine.Renderer.Resources.CompileShaders(ref source, fn);
-            Material material = shaders[ShaderClassType.Material, 0] as Material;
-
-            IndexedMesh<VertexColor> mesh = Engine.Renderer.Resources.CreateIndexedMesh<VertexColor>(24, 36);
-            if (material == null)
-            {
-                Close();
-                return;
-            }
-
-            mesh.Material = material;
-            mesh.SetVertices(SampleVertexData.IndexedTexturedCubeVertices);
-            mesh.SetIndices(SampleVertexData.TexturedCubeIndices);
+            TestMesh.Material = shaders[ShaderClassType.Material, 0] as Material;
             for (int i = 0; i < CUBE_COUNT; i++)
-                SpawnRandomTestCube(mesh, 70);
+                SpawnRandomTestCube(TestMesh, 70);
+        }
+
+        protected override Mesh GetTestCubeMesh()
+        {
+            IndexedMesh<VertexColor> cube = Engine.Renderer.Resources.CreateIndexedMesh<VertexColor>(24,36);
+            cube.SetVertices(SampleVertexData.IndexedTexturedCubeVertices);
+            cube.SetIndices(SampleVertexData.TexturedCubeIndices);
+            return cube;
         }
 
         private void SpawnRandomTestCube(Mesh mesh, int spawnRadius)
