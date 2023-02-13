@@ -190,7 +190,7 @@ namespace Molten.Graphics
             _debugAnnotation->EndEvent();
         }
 
-        public override void SetMarket(string label)
+        public override void SetMarker(string label)
         {
             fixed (char* ptr = label)
                 _debugAnnotation->SetMarker(ptr);

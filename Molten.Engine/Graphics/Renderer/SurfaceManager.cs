@@ -8,6 +8,7 @@ namespace Molten.Graphics
         ConcurrentDictionary<string, SurfaceTracker> _surfacesByKey;
         ThreadedList<SurfaceTracker> _surfaces;
         SurfaceTracker[] _mainSurfaces;
+        HashSet<IRenderSurface2D> _firstCleared;
 
         DepthSurfaceTracker _depthSurface;
         RenderService _renderer;
@@ -18,6 +19,7 @@ namespace Molten.Graphics
             _aaLevels = ReflectionHelper.GetEnumValues<AntiAliasLevel>();
             MainSurfaceType[] surfaceTypes = ReflectionHelper.GetEnumValues<MainSurfaceType>();
 
+            _firstCleared = new HashSet<IRenderSurface2D>();
             _surfacesByKey = new ConcurrentDictionary<string, SurfaceTracker>();
             _mainSurfaces = new SurfaceTracker[surfaceTypes.Length];
             _surfaces = new ThreadedList<SurfaceTracker>();
@@ -41,6 +43,23 @@ namespace Molten.Graphics
             RegisterMainSurface(MainSurfaceType.Composition2, width, height, GraphicsFormat.R16G16B16A16_Float);
             RegisterMainSurface(MainSurfaceType.Lighting, width, height, GraphicsFormat.R16G16B16A16_Float);
             _depthSurface = new DepthSurfaceTracker(_renderer, _aaLevels, width, height, DepthFormat.R24G8_Typeless);
+        }
+
+        internal void ClearIfFirstUse(IRenderSurface2D surface, Color color)
+        {
+            if (surface == null)
+                return;
+
+            if(!_firstCleared.Contains(surface))
+            {
+                surface.Clear(color, GraphicsPriority.Immediate);
+                _firstCleared.Add(surface);
+            }
+        }
+
+        internal void ResetFirstCleared()
+        {
+            _firstCleared.Clear();
         }
 
         internal void RegisterMainSurface(

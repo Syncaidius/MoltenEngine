@@ -39,7 +39,7 @@
             RectangleF vpBounds = camera.Surface.Viewport.Bounds;
             GraphicsCommandQueue cmd = renderer.Device.Cmd;
 
-            context.CompositionSurface.Clear(context.Scene.BackgroundColor, GraphicsPriority.Immediate);
+            context.CompositionSurface.Clear(camera.BackgroundColor, GraphicsPriority.Immediate);
             cmd.ResetRenderSurfaces();
             cmd.SetRenderSurface(context.CompositionSurface, 0);
             cmd.DepthSurface.Value = null;

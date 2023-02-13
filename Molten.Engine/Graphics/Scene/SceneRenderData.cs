@@ -25,11 +25,6 @@ namespace Molten.Graphics
         public bool IsVisible = true;
 
         /// <summary>
-        /// The background color of the scene.
-        /// </summary>
-        public Color BackgroundColor = new Color(20, 20, 20, 255);
-
-        /// <summary>
         /// The ambient light color.
         /// </summary>
         public Color AmbientLightColor = Color.Black;

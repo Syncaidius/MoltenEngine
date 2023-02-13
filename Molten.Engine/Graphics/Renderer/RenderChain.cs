@@ -85,9 +85,12 @@ namespace Molten.Graphics
             {
                 SceneLayerMask layerBitVal = (SceneLayerMask)(1UL << i);
                 if ((camera.LayerMask & layerBitVal) == layerBitVal)
+                {
+                    cmd.SetMarker($"Skipped masked layer {i + 1}/{sceneData.Layers.Count} - {sceneData.Layers[i].Name}");
                     continue;
+                }
 
-                cmd.BeginEvent($"Render Layer {i}/{sceneData.Layers.Count}");
+                cmd.BeginEvent($"Render Layer {i+1}/{sceneData.Layers.Count} - {sceneData.Layers[i].Name}");
                 context.Layer = sceneData.Layers[i];
                 RenderChainLink stepRender = BuildRender(sceneData, context.Layer, camera);
                 stepRender.Run(Renderer, camera, context, time);

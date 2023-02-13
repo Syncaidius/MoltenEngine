@@ -123,7 +123,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override void SetMarket(string label)
+        public override void SetMarker(string label)
         {
             throw new NotImplementedException();
         }

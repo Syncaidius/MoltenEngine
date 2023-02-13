@@ -434,6 +434,16 @@ namespace Molten
             set => _camera.MultiSampleLevel = value;
         }
 
+
+        /// <summary>
+        /// Gets the background color of the scene rendered from the current <see cref="CameraComponent"/>.
+        /// </summary>
+        public Color BackgroundColor
+        {
+            get => _camera.BackgroundColor;
+            set => _camera.BackgroundColor = value;
+        }
+
         /// <summary>
         /// Gets whether the current <see cref="CameraComponent"/> is focused.
         /// </summary>

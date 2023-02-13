@@ -225,17 +225,6 @@ namespace Molten
         /// <summary>Gets the <see cref="Engine"/> instance that the <see cref="Scene"/> is bound to.</summary>
         public Engine Engine { get; private set; }
 
-        /// <summary>Gets or sets the background color of the scene.</summary>
-        public Color BackgroundColor
-        {
-            get => RenderData?.BackgroundColor ?? Color.Transparent;
-            set
-            {
-                if(RenderData != null)
-                    RenderData.BackgroundColor = value;
-            }
-        }
-
         /// <summary>
         /// Gets or sets the ambient light color of the scene.
         /// </summary>

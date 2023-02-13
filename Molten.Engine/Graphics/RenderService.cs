@@ -159,10 +159,10 @@ namespace Molten.Graphics
             
             foreach (SceneRenderData sceneData in Scenes)
             {
-                Device.Cmd.BeginEvent("Draw Scene");
                 if (!sceneData.IsVisible)
                     continue;
 
+                Device.Cmd.BeginEvent("Draw Scene");
                 sceneData.PreRenderInvoke(this);
                 sceneData.Profiler.Begin();
 
@@ -176,12 +176,6 @@ namespace Molten.Graphics
                     else
                         return 0;
                 });
-
-                foreach (RenderCamera camera in sceneData.Cameras)
-                {
-                    if(!camera.HasFlags(RenderCameraFlags.DoNotClear))
-                        camera.Surface?.Clear(sceneData.BackgroundColor, GraphicsPriority.Immediate);
-                }
 
                 foreach (RenderCamera camera in sceneData.Cameras)
                 {
@@ -201,6 +195,8 @@ namespace Molten.Graphics
                 sceneData.PostRenderInvoke(this);
                 Device.Cmd.EndEvent();
             }
+
+            Surfaces.ResetFirstCleared();
 
             // Present all output surfaces
             OutputSurfaces.For(0, 1, (index, surface) =>

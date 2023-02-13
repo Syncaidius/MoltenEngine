@@ -235,7 +235,7 @@ where B : GraphicsSlotBinder<T>, new()
         /// <summary>
         /// Sets an API marker (if supported), to aid the use of the API's debugging toolset.
         /// </summary>
-        public abstract void SetMarket(string label);
+        public abstract void SetMarker(string label);
 
         protected BatchDrawInfo DrawInfo { get; }
 

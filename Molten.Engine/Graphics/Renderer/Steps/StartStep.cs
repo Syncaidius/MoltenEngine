@@ -14,7 +14,7 @@
             GraphicsCommandQueue cmd = renderer.Device.Cmd;
 
             cmd.SetRenderSurfaces(null);
-            sScene.Clear(context.Scene.BackgroundColor, GraphicsPriority.Immediate);
+            sScene.Clear(camera.BackgroundColor, GraphicsPriority.Immediate);
             sNormals.Clear(Color.White * 0.5f, GraphicsPriority.Immediate);
             sEmissive.Clear(Color.Black, GraphicsPriority.Immediate);
             sDepth.Clear(DepthClearFlags.Depth | DepthClearFlags.Stencil, GraphicsPriority.Immediate, 1, 0);

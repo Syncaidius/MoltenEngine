@@ -23,13 +23,6 @@ namespace Molten.Examples
             Log = log;
 
             MainScene = new Scene($"Example_{GetType().Name}", Engine);
-            MainScene.BackgroundColor = new Color()
-            {
-                R = (byte)Rng.Next(0,256),
-                G = (byte)Rng.Next(0, 256),
-                B = (byte)Rng.Next(0, 256),
-                A = 255,
-            };
 
             SpriteLayer = MainScene.AddLayer("sprite", true);
             UILayer = MainScene.AddLayer("ui", true);
@@ -49,6 +42,8 @@ namespace Molten.Examples
             Camera2D.OnSurfaceChanged += UpdateUIRootBounds;
             Camera2D.OnSurfaceResized += UpdateUIRootBounds;
             Camera2D.InputConstraintBounds = window.RenderBounds;
+            Camera2D.Flags = RenderCameraFlags.DoNotClear;
+            Camera2D.BackgroundColor = Color.Transparent;
             Camera2D.Focus();
 
             UI.Root.IsScrollingEnabled = false;
@@ -89,6 +84,13 @@ namespace Molten.Examples
             Player = MainScene.CreateObject();
             Player.Transform.LocalPosition = new Vector3F(0, 0, -10);
             SceneCamera = Player.Components.Add<CameraComponent>();
+            SceneCamera.BackgroundColor = new Color()
+            {
+                R = (byte)Rng.Next(0, 256),
+                G = (byte)Rng.Next(0, 256),
+                B = (byte)Rng.Next(0, 256),
+                A = 255,
+            };
             CameraController = Player.Components.Add<SampleCameraController>();
             SceneCamera.LayerMask = SceneLayerMask.Layer1 | SceneLayerMask.Layer2;
             SceneCamera.Surface = Surface;

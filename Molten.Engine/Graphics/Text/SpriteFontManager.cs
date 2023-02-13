@@ -36,7 +36,6 @@ namespace Molten.Graphics
         internal void Initialize()
         {
             _renderData = _renderer.CreateRenderData();
-            _renderData.BackgroundColor = Color.Transparent;
             _renderData.IsVisible = false;
             LayerRenderData layer = new LayerRenderData("font chars");
             _renderData.AddLayer(layer);
@@ -50,7 +49,8 @@ namespace Molten.Graphics
             {
                 Surface = _renderer.Resources.CreateSurface((uint)PageSize, (uint)PageSize, arraySize: 1, flags: TextureFlags.AllowMipMapGeneration, name: "Sprite Font Sheet"),
                 Flags = RenderCameraFlags.DoNotClear,
-                Name = "Sprite Font Camera"
+                Name = "Sprite Font Camera",
+                BackgroundColor = Color.Transparent,
             };
 
             _camera.Surface.Clear(Color.Transparent, GraphicsPriority.Immediate);

@@ -256,6 +256,11 @@
         public int OrderDepth { get; set; }
 
         /// <summary>
+        /// Gets the background color of the scene rendered from the current <see cref="RenderCamera"/>.
+        /// </summary>
+        public Color BackgroundColor { get; set; } = new Color(20, 20, 20, 255);
+
+        /// <summary>
         /// Gets or sets the camera's mode.
         /// </summary>
         public RenderCameraMode Mode

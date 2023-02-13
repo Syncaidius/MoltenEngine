@@ -61,7 +61,6 @@ namespace Molten.Examples
                 Window.OnResize += Window_OnResize;
 
             _scene = new Scene("ExampleBrowser", Engine);
-            _scene.BackgroundColor = new Color(0x333333);
             SpriteLayer = _scene.AddLayer("sprite", true);
             UILayer = _scene.AddLayer("ui", true);
             UILayer.BringToFront();
@@ -74,6 +73,7 @@ namespace Molten.Examples
             _cam2D.MaxDrawDistance = 1.0f;
             _cam2D.Surface = Window;
             _cam2D.LayerMask = SceneLayerMask.Layer0;
+            _cam2D.BackgroundColor = new Color(0x333333);
             _cam2D.Focus();
 
             UI.Root.IsScrollingEnabled = false;
