@@ -51,17 +51,14 @@
             _ib.SetData(data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        protected override void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+        protected override void OnApply(GraphicsCommandQueue cmd)
         {
-            if (Material == null)
-                return;
-
-            cmd.VertexBuffers[0].Value = _vb;
+            base.OnApply(cmd);
             cmd.IndexBuffer.Value = _ib;
+        }
 
-            ApplyResources(Material);
-            Material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
-
+        protected override void OnDraw(GraphicsCommandQueue cmd)
+        {
             cmd.DrawIndexed(Material, _indexCount, Topology);
         }
 

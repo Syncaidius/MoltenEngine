@@ -8,29 +8,21 @@
             base(renderer, maxVertices, maxIndices, topology, indexFormat, dynamic)
         { }
 
-        protected override void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+        protected override void OnApply(GraphicsCommandQueue cmd)
         {
-            cmd.VertexBuffers[0].Value = _vb;
-            cmd.IndexBuffer.Value = _ib;
+            base.OnApply(cmd);
 
             IShaderResource normal = GetResource(1);
-
             if (Material == null)
             {
                 // Use whichever default one fits the current configuration.
                 if (normal == null)
-                    Material = renderer.StandardMeshMaterial_NoNormalMap;
+                    Material = Renderer.StandardMeshMaterial_NoNormalMap;
                 else
-                    Material = renderer.StandardMeshMaterial;
+                    Material = Renderer.StandardMeshMaterial;
 
                 Material.Object.EmissivePower.Value = EmissivePower;
             }
-
-            Material.Object.World.Value = data.RenderTransform;
-            Material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
-
-            ApplyResources(Material);
-            cmd.DrawIndexed(Material, _indexCount, Topology);
         }
     }
 }

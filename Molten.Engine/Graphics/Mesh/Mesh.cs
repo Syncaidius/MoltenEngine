@@ -29,7 +29,7 @@
     {
         private protected RenderService _renderer;
         private protected IGraphicsBufferSegment _vb;
-        private protected uint _vertexCount;
+        uint _vertexCount;
         private protected bool _isDynamic;
 
         internal Mesh(RenderService renderer, uint maxVertices, VertexTopology topology, bool dynamic) :
@@ -61,23 +61,26 @@
             _vb.SetData(data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        protected override void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+        protected override sealed void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (Material == null)
                 return;
 
-            cmd.VertexBuffers[0].Value = _vb;
-
+            OnApply(cmd);
             ApplyResources(Material);
             Material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
             Material.Object.World.Value = data.RenderTransform;
+            OnDraw(cmd);
+        }
 
+        protected virtual void OnApply(GraphicsCommandQueue cmd)
+        {
+            cmd.VertexBuffers[0].Value = _vb;
+        }
+
+        protected virtual void OnDraw(GraphicsCommandQueue cmd)
+        {
             cmd.Draw(Material, _vertexCount, Topology);
-
-            /* TODO: According to: https://www.gamedev.net/forums/topic/667328-vertices-and-indices-in-the-same-buffer/
-            *  - A buffer can be bound as both a vertex and index buffer
-            *  - If offsets and formats for each segment are correct, a single buffer can be bound at multiple pipeline stages.
-            */
         }
 
         public virtual void Dispose()
