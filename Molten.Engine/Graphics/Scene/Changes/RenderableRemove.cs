@@ -18,9 +18,9 @@
 
         public override void Process()
         {
-            List<ObjectRenderData> dataList;
-            if (LayerData.Renderables.TryGetValue(Renderable, out dataList))
-                dataList.Remove(Data);
+            RenderDataBatch batch;
+            if (LayerData.Renderables.TryGetValue(Renderable, out batch))
+                batch.Remove(Data);
 
             Recycle(this);
         }

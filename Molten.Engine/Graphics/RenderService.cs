@@ -214,14 +214,26 @@ namespace Molten.Graphics
             // TODO To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later
 
-            foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in layerData.Renderables)
+            foreach (KeyValuePair<Renderable, RenderDataBatch> p in layerData.Renderables)
             {
                 // TODO sort by material and textures
-                foreach (ObjectRenderData data in p.Value)
+
+                // Check if batch data needs updating.
+                if(p.Value.DirtyFlags != RenderBatchDirtyFlags.None)
                 {
-                    // TODO replace below with render prediction to interpolate between the current and target transform.
-                    data.RenderTransform = data.TargetTransform;
-                    p.Key.Render(cmd, this, camera, data);
+                    p.Key.UpdateBatchData(p.Value);
+                    p.Value.DirtyFlags = RenderBatchDirtyFlags.None;
+                }
+
+                // If batch rendering isn't supported, render individually.
+                if (!p.Key.BatchRender(cmd, this, camera))
+                {
+                    foreach (ObjectRenderData data in p.Value.Data)
+                    {
+                        // TODO replace below with render prediction to interpolate between the current and target transform.
+                        data.RenderTransform = data.TargetTransform;
+                        p.Key.Render(cmd, this, camera, data);
+                    }
                 }
             }
         }

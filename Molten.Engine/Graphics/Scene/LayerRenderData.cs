@@ -2,7 +2,7 @@
 {
     public class LayerRenderData
     {
-        public readonly Dictionary<Renderable, List<ObjectRenderData>> Renderables = new Dictionary<Renderable, List<ObjectRenderData>>();
+        public readonly Dictionary<Renderable, RenderDataBatch> Renderables = new Dictionary<Renderable, RenderDataBatch>();
 
         internal LayerRenderData(string name)
         {

@@ -18,14 +18,14 @@
 
         public override void Process()
         {
-            List<ObjectRenderData> dataList;
-            if (!LayerData.Renderables.TryGetValue(Renderable, out dataList))
+            RenderDataBatch batch;
+            if (!LayerData.Renderables.TryGetValue(Renderable, out batch))
             {
-                dataList = new List<ObjectRenderData>();
-                LayerData.Renderables.Add(Renderable, dataList);
+                batch = new RenderDataBatch();
+                LayerData.Renderables.Add(Renderable, batch);
             }
 
-            dataList.Add(Data);
+            batch.Add(Data);
             Recycle(this);
         }
     }

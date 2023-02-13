@@ -46,9 +46,26 @@
                 material.Resources[i].Value = material.DefaultResources[i];
         }
 
+        internal void UpdateBatchData(RenderDataBatch batch)
+        {
+            OnUpdateBatchData(batch);
+        }
+
+        internal bool BatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera)
+        {
+            return OnBatchRender(cmd, renderer, camera);
+        }
+
         internal void Render(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             OnRender(cmd, renderer, camera, data);
+        }
+
+        protected virtual void OnUpdateBatchData(RenderDataBatch batch) { }
+
+        protected virtual bool OnBatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera)
+        {
+            return false;
         }
 
         protected abstract void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data);

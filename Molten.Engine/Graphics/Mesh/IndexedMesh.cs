@@ -8,13 +8,12 @@
     {
         private protected IGraphicsBufferSegment _ib;
         private protected IndexBufferFormat _iFormat;
-        private protected uint _maxIndices;
         private protected uint _indexCount;
 
         internal IndexedMesh(RenderService renderer, uint maxVertices, uint maxIndices, VertexTopology topology, IndexBufferFormat indexFormat, bool dynamic) : 
             base(renderer, maxVertices, topology, dynamic)
         {
-            _maxIndices = maxIndices;
+            MaxIndices = maxIndices;
             _iFormat = indexFormat;
 
             IGraphicsBuffer iBuffer = dynamic ? renderer.DynamicVertexBuffer : renderer.StaticVertexBuffer;
@@ -62,8 +61,14 @@
             cmd.DrawIndexed(Material, _indexCount, Topology);
         }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+            _ib.Release();
+        }
+
         public uint MaxIndices { get; }
 
-        public uint IndexCount { get; }
+        public uint IndexCount => _indexCount;
     }
 }
