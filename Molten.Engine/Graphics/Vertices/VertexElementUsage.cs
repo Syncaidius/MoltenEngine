@@ -18,5 +18,6 @@
         TessellateFactor,
         VertexID,
         InstanceID,
+        Custom,
     }
 }

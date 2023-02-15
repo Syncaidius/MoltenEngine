@@ -1,40 +1,53 @@
 ﻿using Molten.Graphics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Molten.Examples
 {
-    [Example("Stress Test - Indexed", "A stress test which spawns a large number of rotating cubes, which use an indexed mesh")]
-    public class StressTestIndexed : MoltenExample
+    [Example("Stress Test - Instanced", "A stress test which spawns a large number of rotating cubes, which use an non-indexed mesh with hardware instancing")]
+    public class StressTestInstanced : MoltenExample
     {
         const int CUBE_COUNT = 5000;
 
+        ContentLoadHandle _hMaterial;
         List<SceneObject> _objects;
 
-        protected override void OnLoadContent(ContentLoadBatch loader)
+        protected override void OnInitialize(Engine engine)
         {
-            base.OnLoadContent(loader);
+            base.OnInitialize(engine);
 
             _objects = new List<SceneObject>();
-
-            string fn = "assets/BasicColor.mfx";
-            string source = "";
-            using (FileStream stream = new FileStream(fn, FileMode.Open, FileAccess.Read))
-            {
-                using (StreamReader reader = new StreamReader(stream))
-                    source = reader.ReadToEnd();
-            }
-
-            ShaderCompileResult shaders = Engine.Renderer.Resources.CompileShaders(ref source, fn);
-            TestMesh.Material = shaders[ShaderClassType.Material, 0] as Material;
             for (int i = 0; i < CUBE_COUNT; i++)
                 SpawnRandomTestCube(TestMesh, 70);
         }
 
         protected override Mesh GetTestCubeMesh()
         {
-            IndexedMesh<VertexColor> cube = Engine.Renderer.Resources.CreateIndexedMesh<VertexColor>(24,36);
-            cube.SetVertices(SampleVertexData.IndexedTexturedCubeVertices);
-            cube.SetIndices(SampleVertexData.TexturedCubeIndices);
+            InstancedMesh<VertexColor, BasicInstanceData> cube = Engine.Renderer.Resources.CreateInstancedMesh<VertexColor, BasicInstanceData>(36, CUBE_COUNT, 
+                batchInstanceCallback: (stream, objData, index) =>
+                {
+                    stream.Write(Matrix4F.Multiply(objData.RenderTransform, SceneCamera.ViewProjection));
+                });
+            cube.SetVertices(SampleVertexData.ColoredCube);
             return cube;
+        }
+
+        protected override void OnLoadContent(ContentLoadBatch loader)
+        {
+            base.OnLoadContent(loader);
+            _hMaterial = loader.Load<Material>("assets/BasicColorInstanced.mfx");
+
+
+            loader.OnCompleted += Loader_OnCompleted;
+        }
+        private void Loader_OnCompleted(ContentLoadBatch loader)
+        {
+            if (!_hMaterial.HasAsset())
+            {
+                Close();
+                return;
+            }
+
+            TestMesh.Material = _hMaterial.Get<Material>();
         }
 
         private void SpawnRandomTestCube(Mesh mesh, int spawnRadius)

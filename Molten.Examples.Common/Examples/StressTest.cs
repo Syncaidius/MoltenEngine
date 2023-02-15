@@ -5,7 +5,7 @@ namespace Molten.Examples
     [Example("Stress Test - Non-Indexed", "A stress test which spawns a large number of rotating cubes, which use an non-indexed mesh")]
     public class StressTest : MoltenExample
     {
-        const int CUBE_COUNT = 10000;
+        const int CUBE_COUNT = 5000;
 
         ContentLoadHandle _hMaterial;
         List<SceneObject> _objects;
@@ -15,7 +15,7 @@ namespace Molten.Examples
             base.OnInitialize(engine);
 
             _objects = new List<SceneObject>();
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < CUBE_COUNT; i++)
                 SpawnRandomTestCube(TestMesh, 70);
         }
 

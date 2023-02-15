@@ -39,6 +39,9 @@
     <None Update="Assets\Ananda Namaste Regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\BasicColorInstanced.mfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\BasicColor.mfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

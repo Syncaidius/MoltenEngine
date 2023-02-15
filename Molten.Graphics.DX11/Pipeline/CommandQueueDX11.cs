@@ -270,8 +270,8 @@ namespace Molten.Graphics
             },
             (pass, iteration, passNum, vResult) =>
             {
-                DXDevice.Log.Warning($"DrawInstanced() call failed with result: {vResult} -- " + 
-                        $"Iteration: M{iteration}/{material.Iterations}P{passNum}/{material.PassCount} -- Material: {material.Name} -- " +
+                Device.Log.Warning($"DrawInstanced() call failed with result: {vResult} -- " + 
+                        $"Iteration: M{iteration}/{material.Iterations}-P{passNum}/{material.PassCount} -- Material: {material.Name} -- " +
                         $"Topology: {topology} -- VertexCount: { vertexCountPerInstance} -- Instances: {instanceCount}");
             });
         }

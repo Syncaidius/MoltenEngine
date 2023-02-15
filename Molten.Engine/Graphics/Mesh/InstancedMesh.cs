@@ -8,15 +8,16 @@ using Molten.IO;
 
 namespace Molten.Graphics
 {
+    public delegate void WriteInstanceDataCallback(RawStream stream, ObjectRenderData objData, int index);
+
     public class InstancedMesh<V, I> : Mesh<V>
         where V : unmanaged, IVertexType
         where I : unmanaged, IVertexType
     {
-        public delegate void WriteInstanceDataCallback(RawStream stream, ObjectRenderData objData, int index);
 
         IGraphicsBufferSegment _instanceBuffer;
         uint _instanceCount;
-        WriteInstanceDataCallback _instanceWriteCallback;
+        WriteInstanceDataCallback _batchCallback;
 
         /// <summary>
         /// Creates a new instance of <see cref="InstancedMesh{V, I}"/>.
@@ -26,7 +27,6 @@ namespace Molten.Graphics
         /// <param name="topology"></param>
         /// <param name="numInstances"></param>
         /// <param name="dynamicVertex"></param>
-        /// <param name="dynamicInstance"></param>
         /// <param name="batchInstanceCallback">A callback for automatically writing batched draw-instance data.
         /// <para>Setting this to null will prevent automatic batching of the current <see cref="InstancedMesh{V, I}"/></para></param>
         internal InstancedMesh(
@@ -35,14 +35,13 @@ namespace Molten.Graphics
             VertexTopology topology, 
             uint numInstances, 
             bool dynamicVertex,
-            bool dynamicInstance,
-            Action<RawStream> batchInstanceCallback = null) : 
+            WriteInstanceDataCallback batchInstanceCallback = null) : 
             base(renderer, maxVertices, topology, dynamicVertex)
         {
-            IsDynamicInstance = dynamicInstance;
             MaxInstances = numInstances;
+            _batchCallback = batchInstanceCallback;
 
-            IGraphicsBuffer buffer = dynamicInstance ? _renderer.DynamicVertexBuffer : _renderer.StaticVertexBuffer;
+            IGraphicsBuffer buffer = _renderer.DynamicVertexBuffer;
             _instanceBuffer = buffer.Allocate<I>(numInstances);
             _instanceBuffer.SetVertexFormat<I>();
         }
@@ -69,11 +68,17 @@ namespace Molten.Graphics
             cmd.VertexBuffers[1].Value = _instanceBuffer;
         }
 
-        protected override void OnUpdateBatchData(RenderDataBatch batch)
+        protected unsafe override void OnUpdateBatchData(RenderDataBatch batch)
         {
             base.OnUpdateBatchData(batch);
-            if (_instanceWriteCallback != null)
+
+            if (_batchCallback != null)
             {
+                // TODO Properly handle batches that are larger than the instance buffer.
+
+                uint start = 0;
+                uint byteOffset = 0;
+
                 // If instances were only removed from the end of the batch, we don't need to perform a buffer update.
                 // Simply decrement the instance count.
                 if (batch.HasFlags(RenderBatchDirtyFlags.Removed))
@@ -85,21 +90,22 @@ namespace Molten.Graphics
                     }
                 }
 
+                // If instances have only been added, only the end of the buffer is dirty.
+                // Skip all unaltered instance data to speed-up updates.
+                if (batch.HasFlags(RenderBatchDirtyFlags.End))
+                {
+                    start = _instanceCount;
+                    byteOffset = start * (uint)sizeof(I);
+                }
+
                 _instanceBuffer.GetStream(GraphicsPriority.Immediate,
                     (buffer, stream) =>
                     {
-                        uint start = 0;
-
-                        // If instances have only been added, only the end of the buffer is dirty.
-                        // Skip all unaltered instance data to speed-up updates.
-                        if (batch.HasFlags(RenderBatchDirtyFlags.End))
-                            start = _instanceCount;
-
-                        for (int i = 0; i < batch.Data.Count; i++)
-                            _instanceWriteCallback(stream, batch.Data[i], i);
+                        stream.Position += byteOffset;
+                        for (int i = (int)start; i < batch.Data.Count; i++)
+                            _batchCallback(stream, batch.Data[i], i);
                     },
-                    _renderer.StagingBuffer
-                );
+                    _renderer.StagingBuffer);
 
                 _instanceCount = (uint)batch.Data.Count;
             }
@@ -107,8 +113,13 @@ namespace Molten.Graphics
 
         protected override bool OnBatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera)
         {
-            if (_instanceCount > 0)
-                cmd.DrawInstanced(Material, VertexCount, _instanceCount, Topology, 0, 0);
+            if (_instanceCount == 0 || Material == null)
+                return true;
+
+            OnApply(cmd);
+            ApplyResources(Material);
+
+            cmd.DrawInstanced(Material, VertexCount, _instanceCount, Topology, 0, 0);
             
             return true;
         }
@@ -122,7 +133,5 @@ namespace Molten.Graphics
         public uint MaxInstances { get; }
 
         public uint InstanceCount => _instanceCount;
-
-        public bool IsDynamicInstance { get; }
     }
 }

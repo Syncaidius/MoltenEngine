@@ -52,6 +52,12 @@ namespace Molten
                 switch (Status)
                 {
                     case ContentHandleStatus.Completed:
+                        if (Asset == null)
+                        {
+                            LogError($"[{Thread.CurrentThread.Name}] Completed load, but no asset was provided");
+                            return true;
+                        }
+
                         LogMessage($"Loaded {Asset.GetType().FullName}");
                         return true;
 

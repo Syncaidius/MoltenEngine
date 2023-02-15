@@ -126,7 +126,7 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    structure.Metadata[eCount].Name = GetSemanticName(att.Usage);
+                    structure.Metadata[eCount].Name = GetSemanticName(att);
                     structure.Metadata[eCount].SemanticIndex = att.SemanticIndex;
                     _newElementCallback(att, structure, eCount, sizeOf);
 
@@ -139,9 +139,9 @@ namespace Molten.Graphics
             return new VertexFormat(structure, sizeOf);
         }
 
-        private string GetSemanticName(VertexElementUsage usage)
+        private string GetSemanticName(VertexElementAttribute att)
         {
-            switch (usage)
+            switch (att.Usage)
             {
                 case VertexElementUsage.PixelPosition:
                     return "SV_POSITION";
@@ -179,8 +179,11 @@ namespace Molten.Graphics
                 case VertexElementUsage.InstanceID:
                     return "SV_INSTANCEID";
 
+                case VertexElementUsage.Custom:
+                    return att.CustomSemantic;
+
                 default:
-                    throw new NotSupportedException($"Unsupported vertex element usage: {usage}");
+                    throw new NotSupportedException($"Unsupported vertex element usage: {att.Usage}");
             }
         }
     }
