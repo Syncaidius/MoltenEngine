@@ -13,28 +13,7 @@ namespace Molten.Threading
             Group = grp;
             _queue = taskQueue;
 
-            _thread = new Thread(() =>
-            {
-                WorkerTask task = null;
-
-                while (!_shouldExit)
-                {
-                    if (!Group.IsPaused && _queue.TryDequeue(out task))
-                    {
-                        // If the task did not complete, put it back on the queue.
-                        if (!task.Run())
-                            Group.QueueTask(task);
-
-                        task = null;
-                    }
-                    else
-                    {
-                        if(!_shouldExit && Group.Reset.Reset())
-                            Group.Reset.WaitOne();
-                    }
-                }
-            });
-
+            _thread = new Thread(ProcessQueue);
             _thread.Name = name;
 
             try
@@ -42,6 +21,28 @@ namespace Molten.Threading
                 _thread.TrySetApartmentState(grp.ThreadApartment);
             }
             finally { }
+        }
+
+        private void ProcessQueue()
+        {
+            WorkerTask task = null;
+
+            while (!_shouldExit)
+            {
+                if (!Group.IsPaused && _queue.TryDequeue(out task))
+                {
+                    // If the task did not complete, put it back on the queue.
+                    if (!task.Run())
+                        Group.QueueTask(task);
+
+                    task = null;
+                }
+                else
+                {
+                    if (!_shouldExit && Group.Reset.Reset())
+                        Group.Reset.WaitOne();
+                }
+            }
         }
 
         internal void Start()

@@ -68,9 +68,18 @@ namespace Molten.Graphics
             cmd.VertexBuffers[1].Value = _instanceBuffer;
         }
 
-        protected unsafe override void OnUpdateBatchData(RenderDataBatch batch)
+        protected override void OnPostDraw(GraphicsCommandQueue cmd)
         {
-            base.OnUpdateBatchData(batch);
+            base.OnPostDraw(cmd);
+            cmd.VertexBuffers[1].Value = null;
+        }
+
+        protected override bool OnBatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
+        {
+            _instanceCount = (uint)batch.Data.Count;
+
+            if (_instanceCount == 0 || Material == null)
+                return true;
 
             if (_batchCallback != null)
             {
@@ -78,25 +87,6 @@ namespace Molten.Graphics
 
                 uint start = 0;
                 uint byteOffset = 0;
-
-                // If instances were only removed from the end of the batch, we don't need to perform a buffer update.
-                // Simply decrement the instance count.
-                if (batch.HasFlags(RenderBatchDirtyFlags.Removed))
-                {
-                    if (batch.HasFlags(RenderBatchDirtyFlags.End))
-                    {
-                        _instanceCount = (uint)batch.Data.Count;
-                        return;
-                    }
-                }
-
-                // If instances have only been added, only the end of the buffer is dirty.
-                // Skip all unaltered instance data to speed-up updates.
-                if (batch.HasFlags(RenderBatchDirtyFlags.End))
-                {
-                    start = _instanceCount;
-                    byteOffset = start * (uint)sizeof(I);
-                }
 
                 _instanceBuffer.GetStream(GraphicsPriority.Immediate,
                     (buffer, stream) =>
@@ -106,20 +96,12 @@ namespace Molten.Graphics
                             _batchCallback(stream, batch.Data[i], i);
                     },
                     _renderer.StagingBuffer);
-
-                _instanceCount = (uint)batch.Data.Count;
             }
-        }
-
-        protected override bool OnBatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera)
-        {
-            if (_instanceCount == 0 || Material == null)
-                return true;
 
             OnApply(cmd);
             ApplyResources(Material);
-
             cmd.DrawInstanced(Material, VertexCount, _instanceCount, Topology, 0, 0);
+            OnPostDraw(cmd);
             
             return true;
         }

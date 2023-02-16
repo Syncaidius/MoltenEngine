@@ -54,11 +54,11 @@ namespace Molten.IO
 
         public void Write<T>(T value) where T : unmanaged
         {
-            Write(in value);
+            Write(ref value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Write<T>(in T value) where T : unmanaged
+        public void Write<T>(ref T value) where T : unmanaged
         {
             if (!CanWrite)
                 throw new RawStreamException(this, $"Map mode does not allow writing.");

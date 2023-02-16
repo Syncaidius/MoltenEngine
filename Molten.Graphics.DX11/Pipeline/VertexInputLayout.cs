@@ -30,7 +30,7 @@ namespace Molten.Graphics
                 /* Check if the current vertex segment's format matches 
                    the part of the shader's input structure that it's meant to represent. */
                 int startID = elements.Count;
-                if (!io.IsCompatible(format.Structure, (uint)startID))
+                if (!io.IsCompatible(format.Structure, startID))
                 {
                     IsValid = false;
                     break;
@@ -68,6 +68,12 @@ namespace Molten.Graphics
                 nuint numBytes = vertexBytecode->GetBufferSize();
                 device.Ptr->CreateInputLayout(ref finalElements[0], (uint)finalElements.Length,
                     ptrByteCode, numBytes, ref _native);
+
+                if(_native == null)
+                {
+                    device.Log.Error("Failed to create new vertex input layout");
+                    device.ProcessDebugLayerMessages();
+                }
             }
             else
             {

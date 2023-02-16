@@ -71,6 +71,7 @@
             Material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
             Material.Object.World.Value = data.RenderTransform;
             OnDraw(cmd);
+            OnPostDraw(cmd);
         }
 
         protected virtual void OnApply(GraphicsCommandQueue cmd)
@@ -81,6 +82,11 @@
         protected virtual void OnDraw(GraphicsCommandQueue cmd)
         {
             cmd.Draw(Material, _vertexCount, Topology);
+        }
+
+        protected virtual void OnPostDraw(GraphicsCommandQueue cmd)
+        {
+            cmd.VertexBuffers[0].Value = null;
         }
 
         public virtual void Dispose()

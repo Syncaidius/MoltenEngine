@@ -131,6 +131,7 @@ namespace Molten.Graphics
                 structure.Metadata[i] = new ShaderIOStructure.InputElementMetadata()
                 {
                     Name = pDesc.SemanticName,
+                    SemanticIndex = pDesc.SemanticIndex,
                     SystemValueType = pDesc.SystemValueType
                 };
             }

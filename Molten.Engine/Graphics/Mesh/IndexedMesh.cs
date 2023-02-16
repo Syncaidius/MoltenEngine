@@ -56,6 +56,12 @@
             cmd.IndexBuffer.Value = _ib;
         }
 
+        protected override void OnPostDraw(GraphicsCommandQueue cmd)
+        {
+            base.OnPostDraw(cmd);
+            cmd.IndexBuffer.Value = null;
+        }
+
         protected override void OnDraw(GraphicsCommandQueue cmd)
         {
             cmd.DrawIndexed(Material, _indexCount, Topology);

@@ -94,8 +94,9 @@ namespace Molten
         internal ContentWatcher StartWatching(ContentLoadHandle handle)
         {
             string dir = handle.Info.DirectoryName;
+            handle.LastWriteTime = File.GetLastWriteTimeUtc(handle.Info.FullName);
 
-            if(!_watchers.TryGetValue(dir, out ContentWatcher watcher))
+            if (!_watchers.TryGetValue(dir, out ContentWatcher watcher))
             {
                 watcher = new ContentWatcher(this, new DirectoryInfo(dir));
                 _watchers.TryAdd(dir, watcher);

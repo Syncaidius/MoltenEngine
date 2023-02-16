@@ -26,6 +26,7 @@ namespace Molten.Graphics
         /// </summary>
         public InputElementMetadata[] Metadata { get; }
 
+
         // Reference: http://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-reflection-automatic-input-layout-creation/
 
         /// <summary>
@@ -138,35 +139,16 @@ namespace Molten.Graphics
             return IsCompatible(other, 0);
         }
 
-        public bool IsCompatible(ShaderIOStructure other, uint startIndex)
+        public bool IsCompatible(ShaderIOStructure other, int startIndex)
         {
-            if (startIndex >= Metadata.Length)
+            int count = Math.Min(Metadata.Length - startIndex, other.Metadata.Length);
+            for(int i = 0; i < count; i++)
             {
-                return false;
-            }
-            else
-            {
-                uint endIndex = startIndex + (uint)other.Metadata.Length;
-                if (endIndex > Metadata.Length)
+                int selfIndex = i + startIndex;
+                if (other.Metadata[i].Name != Metadata[selfIndex].Name ||
+                            other.Metadata[i].SemanticIndex != Metadata[selfIndex].SemanticIndex)
                 {
-                    // If the remaining elements are system values (SV_ prefix), allow them.
-                    for (int i = Metadata.Length; i < endIndex; i++)
-                    {
-                        if (other.Metadata[i].SystemValueType == ShaderSVType.Undefined)
-                            return false;
-                    }
-                }
-                else
-                {
-                    uint oi = 0;
-                    for (uint i = startIndex; i < endIndex; i++)
-                    {
-                        if (other.Metadata[oi].Name != Metadata[i].Name ||
-                            other.Metadata[oi].SemanticIndex != Metadata[i].SemanticIndex)
-                            return false;
-
-                        oi++;
-                    }
+                        return false;
                 }
             }
 

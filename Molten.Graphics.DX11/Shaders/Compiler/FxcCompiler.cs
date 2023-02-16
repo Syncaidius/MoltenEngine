@@ -182,7 +182,7 @@ namespace Molten.Graphics
                     MinPrecision = (ShaderMinPrecision)pDesc.MinPrecision,
                     Register = pDesc.Register,
                     SemanticIndex = pDesc.SemanticIndex,
-                    SemanticName = SilkMarshal.PtrToString((nint)pDesc.SemanticName),
+                    SemanticName = SilkMarshal.PtrToString((nint)pDesc.SemanticName).ToUpper(),
                     SemanticNamePtr = pDesc.SemanticName,
                     Stream = pDesc.Stream,
                     SystemValueType = (ShaderSVType)pDesc.SystemValueType

@@ -15,27 +15,22 @@ namespace Molten.Graphics
 
         public VertexColor(Vector3F position, Color color)
         {
-            this.Position4 = new Vector4F(position, 1);
-            this.Color = color;
+            Position4 = new Vector4F(position, 1);
+            Color = color;
         }
 
         public VertexColor(Vector4F position, Color color)
         {
-            this.Position4 = position;
-            this.Color = color;
+            Position4 = position;
+            Color = color;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null)
-            {
+            if (obj == null || obj.GetType() != GetType())
                 return false;
-            }
-            if (obj.GetType() != base.GetType())
-            {
-                return false;
-            }
-            return (this == ((VertexColor)obj));
+
+            return (this == (VertexColor)obj);
         }
 
         public static bool operator ==(VertexColor left, VertexColor right)

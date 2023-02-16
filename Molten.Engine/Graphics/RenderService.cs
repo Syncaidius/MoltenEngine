@@ -216,24 +216,16 @@ namespace Molten.Graphics
 
             foreach (KeyValuePair<Renderable, RenderDataBatch> p in layerData.Renderables)
             {
-                // TODO sort by material and textures
-
-                // Check if batch data needs updating.
-                if(p.Value.DirtyFlags != RenderBatchDirtyFlags.None)
-                {
-                    p.Key.UpdateBatchData(p.Value);
-                    p.Value.DirtyFlags = RenderBatchDirtyFlags.None;
-                }
+                // Update transforms.
+                // TODO replace below with render prediction to interpolate between the current and target transform.
+                foreach (ObjectRenderData data in p.Value.Data)
+                    data.RenderTransform = data.TargetTransform;
 
                 // If batch rendering isn't supported, render individually.
-                if (!p.Key.BatchRender(cmd, this, camera))
+                if (!p.Key.BatchRender(cmd, this, camera, p.Value))
                 {
                     foreach (ObjectRenderData data in p.Value.Data)
-                    {
-                        // TODO replace below with render prediction to interpolate between the current and target transform.
-                        data.RenderTransform = data.TargetTransform;
                         p.Key.Render(cmd, this, camera, data);
-                    }
                 }
             }
         }

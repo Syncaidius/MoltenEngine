@@ -1,5 +1,4 @@
 ﻿using Molten.Graphics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Molten.Examples
 {
@@ -22,10 +21,12 @@ namespace Molten.Examples
 
         protected override Mesh GetTestCubeMesh()
         {
-            InstancedMesh<VertexColor, BasicInstanceData> cube = Engine.Renderer.Resources.CreateInstancedMesh<VertexColor, BasicInstanceData>(36, CUBE_COUNT, 
+            uint maxInstances = CUBE_COUNT + 50;
+            InstancedMesh<VertexColor, BasicInstanceData> cube = Engine.Renderer.Resources.CreateInstancedMesh<VertexColor, BasicInstanceData>(36, maxInstances, 
                 batchInstanceCallback: (stream, objData, index) =>
                 {
                     stream.Write(Matrix4F.Multiply(objData.RenderTransform, SceneCamera.ViewProjection));
+                    stream.Position += sizeof(uint);
                 });
             cube.SetVertices(SampleVertexData.ColoredCube);
             return cube;
