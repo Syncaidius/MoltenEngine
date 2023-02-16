@@ -13,11 +13,7 @@ struct VS_IN
 {
 	float4 pos : POSITION;
 	float4 col : COLOR;
-    float4 wvpX : WORLD0;
-    float4 wvpY : WORLD1;
-    float4 wvpZ : WORLD2;
-    float4 wvpW : WORLD3;
-    uint iid : SV_InstanceID;
+    row_major matrix wvp : WORLD;
 };
 
 struct PS_IN
@@ -26,19 +22,10 @@ struct PS_IN
 	float4 col : COLOR;
 };
 
-cbuffer Common : register(b0)
-{
-  float4x4 view   : packoffset(c0);
-  float4x4 projection : packoffset(c4);
-  float4x4 viewProjection : packoffset(c8);
-  float4x4 invViewProjection: packoffset(c12);
-}
-
 PS_IN VS( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;	
-    float4x4 wvp = float4x4(input.wvpX, input.wvpY, input.wvpZ, input.wvpW);
-	output.pos = mul(input.pos, wvp);
+	output.pos = mul(input.pos, input.wvp);
 	output.col = input.col;	
 	return output;
 }

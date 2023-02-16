@@ -22,9 +22,6 @@ namespace Molten.Graphics
         [VertexElement(VertexElementType.Vector4, VertexElementUsage.Custom, 3, VertexInputType.PerInstanceData, 1, "WORLD")]
         public Vector4F WvpW;
 
-        [VertexElement(VertexElementType.UInt, VertexElementUsage.InstanceID, 0, VertexInputType.PerInstanceData)]
-        public Color InstanceID;
-
         public BasicInstanceData(Matrix4F world)
         {
             WvpX = world.Row1;

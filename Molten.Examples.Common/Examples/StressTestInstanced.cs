@@ -26,7 +26,6 @@ namespace Molten.Examples
                 batchInstanceCallback: (stream, objData, index) =>
                 {
                     stream.Write(Matrix4F.Multiply(objData.RenderTransform, SceneCamera.ViewProjection));
-                    stream.Position += sizeof(uint);
                 });
             cube.SetVertices(SampleVertexData.ColoredCube);
             return cube;
@@ -36,7 +35,6 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
             _hMaterial = loader.Load<Material>("assets/BasicColorInstanced.mfx");
-
 
             loader.OnCompleted += Loader_OnCompleted;
         }
