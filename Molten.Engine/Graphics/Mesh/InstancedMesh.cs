@@ -8,7 +8,7 @@ using Molten.IO;
 
 namespace Molten.Graphics
 {
-    public delegate void WriteInstanceDataCallback(RawStream stream, ObjectRenderData objData, int index);
+    public delegate void WriteInstanceDataCallback(RawStream stream, RenderCamera camera, ObjectRenderData objData, int index);
 
     public class InstancedMesh<V, I> : Mesh<V>
         where V : unmanaged, IVertexType
@@ -93,7 +93,7 @@ namespace Molten.Graphics
                     {
                         stream.Position += byteOffset;
                         for (int i = (int)start; i < batch.Data.Count; i++)
-                            _batchCallback(stream, batch.Data[i], i);
+                            _batchCallback(stream, camera, batch.Data[i], i);
                     },
                     _renderer.StagingBuffer);
             }

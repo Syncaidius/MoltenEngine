@@ -5,7 +5,7 @@ namespace Molten.Examples
     [Example("Stress Test - Instanced", "A stress test which spawns a large number of rotating cubes, which use an non-indexed mesh with hardware instancing")]
     public class StressTestInstanced : MoltenExample
     {
-        const int CUBE_COUNT = 5000;
+        const int CUBE_COUNT = 40000;
 
         ContentLoadHandle _hMaterial;
         List<SceneObject> _objects;
@@ -14,18 +14,21 @@ namespace Molten.Examples
         {
             base.OnInitialize(engine);
 
+            // We need to see further for this test!
+            SceneCamera.MaxDrawDistance = 3000f;
+
             _objects = new List<SceneObject>();
             for (int i = 0; i < CUBE_COUNT; i++)
-                SpawnRandomTestCube(TestMesh, 70);
+                SpawnRandomTestCube(TestMesh, 200);
         }
 
         protected override Mesh GetTestCubeMesh()
         {
             uint maxInstances = CUBE_COUNT + 50;
             InstancedMesh<VertexColor, BasicInstanceData> cube = Engine.Renderer.Resources.CreateInstancedMesh<VertexColor, BasicInstanceData>(36, maxInstances, 
-                batchInstanceCallback: (stream, objData, index) =>
+                batchInstanceCallback: (stream, camera, objData, index) =>
                 {
-                    stream.Write(Matrix4F.Multiply(objData.RenderTransform, SceneCamera.ViewProjection));
+                    stream.Write(objData.RenderTransform * camera.ViewProjection);
                 });
             cube.SetVertices(SampleVertexData.ColoredCube);
             return cube;
@@ -67,10 +70,11 @@ namespace Molten.Examples
         protected override void OnUpdate(Timing time)
         {
             var rotateAngle = 1.2f * time.Delta;
-            foreach (SceneObject obj in _objects)
+            for(int i = _objects.Count-1; i >= 0; i--)
             {
-                obj.Transform.LocalRotationX += rotateAngle;
-                obj.Transform.LocalRotationY += rotateAngle;
+                SceneObject obj = _objects[i];
+                obj.Transform.LocalRotationX += rotateAngle + (0.0001f * i);
+                obj.Transform.LocalRotationY += rotateAngle + (0.0001f * i);
                 obj.Transform.LocalRotationZ += rotateAngle * 0.7f * time.Delta;
             }
 

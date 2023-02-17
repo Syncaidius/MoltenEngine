@@ -44,6 +44,7 @@ namespace Molten.Graphics
                         SemanticName = (byte*)SilkMarshal.StringToPtr(dxStruct.Metadata[index].Name),
                         SemanticIndex = att.SemanticIndex,
                         AlignedByteOffset = byteOffset,
+                        InstanceDataStepRate = att.InstanceStepRate,
                         InputSlotClass = att.Classification.ToApi(),
                         Format = att.Type.ToGraphicsFormat().ToApi()
                     };
