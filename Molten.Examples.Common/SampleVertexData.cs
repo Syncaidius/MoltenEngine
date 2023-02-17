@@ -51,7 +51,7 @@ namespace Molten.Examples
                 new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
             };
 
-        public static readonly VertexColor[] IndexedTexturedCubeVertices = new VertexColor[]{
+        public static readonly VertexColor[] IndexedColorCubeVertices = new VertexColor[]{
                 new VertexColor(new Vector3F(-1,-1,-1), Color.Red), //front
                 new VertexColor(new Vector3F(-1,1,-1), Color.Red),
                 new VertexColor(new Vector3F(1,1,-1), Color.Red),
@@ -83,7 +83,7 @@ namespace Molten.Examples
                 new VertexColor(new Vector3F(1,1,-1), Color.White),
             };
 
-        public static readonly int[] TexturedCubeIndices = new int[]{
+        public static readonly int[] CubeIndices = new int[]{
                 0, 1, 2, 0, 2, 3,
                 4, 5, 6, 4, 7, 5,
                 8, 9, 10, 8, 10, 11,

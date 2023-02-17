@@ -163,6 +163,27 @@ namespace Molten.Graphics
         /// <summary>
         /// Creates an indexed mesh. Indexed meshes allow primitives to share vertices within the same draw call to reduce data overhead.
         /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <typeparam name="I"></typeparam>
+        /// <param name="maxVertices"></param>
+        /// <param name="maxIndices"></param>
+        /// <param name="topology"></param>
+        /// <param name="indexFormat"></param>
+        /// <param name="dynamic"></param>
+        /// <returns></returns>
+        public IndexedInstancedMesh<V, I> CreateInstancedIndexedMesh<V, I>(uint maxVertices, uint maxIndices,
+            uint maxInstances, VertexTopology topology = VertexTopology.TriangleList,
+            IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit,
+            bool dynamic = false)
+            where V : unmanaged, IVertexType
+            where I : unmanaged, IVertexInstanceType
+        {
+            return new IndexedInstancedMesh<V, I>(_renderer, maxVertices, maxIndices, topology, indexFormat, maxInstances, dynamic);
+        }
+
+        /// <summary>
+        /// Creates an indexed mesh. Indexed meshes allow primitives to share vertices within the same draw call to reduce data overhead.
+        /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="maxVertices"></param>
         /// <param name="maxIndices"></param>

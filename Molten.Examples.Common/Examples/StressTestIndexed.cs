@@ -32,8 +32,8 @@ namespace Molten.Examples
         protected override Mesh GetTestCubeMesh()
         {
             IndexedMesh<VertexColor> cube = Engine.Renderer.Resources.CreateIndexedMesh<VertexColor>(24,36);
-            cube.SetVertices(SampleVertexData.IndexedTexturedCubeVertices);
-            cube.SetIndices(SampleVertexData.TexturedCubeIndices);
+            cube.SetVertices(SampleVertexData.IndexedColorCubeVertices);
+            cube.SetIndices(SampleVertexData.CubeIndices);
             return cube;
         }
 

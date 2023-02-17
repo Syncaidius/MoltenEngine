@@ -8,8 +8,6 @@ using Molten.IO;
 
 namespace Molten.Graphics
 {
-    public delegate void WriteInstanceDataCallback(RawStream stream, RenderCamera camera, ObjectRenderData objData, int index);
-
     public class InstancedMesh<V, I> : Mesh<V>
         where V : unmanaged, IVertexType
         where I : unmanaged, IVertexInstanceType
@@ -24,15 +22,15 @@ namespace Molten.Graphics
         /// <param name="maxVertices"></param>
         /// <param name="topology"></param>
         /// <param name="numInstances"></param>
-        /// <param name="dynamicVertex"></param>
+        /// <param name="isDynamic"></param>
         /// <para>Setting this to null will prevent automatic batching of the current <see cref="InstancedMesh{V, I}"/></para></param>
         internal InstancedMesh(
             RenderService renderer, 
             uint maxVertices, 
             VertexTopology topology, 
             uint numInstances, 
-            bool dynamicVertex) : 
-            base(renderer, maxVertices, topology, dynamicVertex)
+            bool isDynamic) : 
+            base(renderer, maxVertices, topology, isDynamic)
         {
             MaxInstances = numInstances;
 
@@ -69,6 +67,11 @@ namespace Molten.Graphics
             cmd.VertexBuffers[1].Value = null;
         }
 
+        protected override void OnDraw(GraphicsCommandQueue cmd)
+        {
+            cmd.DrawInstanced(Material, VertexCount, _instanceCount, Topology, 0, 0);
+        }
+
         protected override bool OnBatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
         {
             _instanceCount = (uint)batch.Data.Count;
@@ -97,7 +100,7 @@ namespace Molten.Graphics
 
             OnApply(cmd);
             ApplyResources(Material);
-            cmd.DrawInstanced(Material, VertexCount, _instanceCount, Topology, 0, 0);
+            OnDraw(cmd);
             OnPostDraw(cmd);
             
             return true;
