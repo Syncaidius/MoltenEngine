@@ -22,10 +22,15 @@ struct PS_IN
 	float4 col : COLOR;
 };
 
+cbuffer Common : register(b0)
+{
+  float4x4 viewProjection : packoffset(c0);
+}
+
 PS_IN VS( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;	
-	output.pos = mul(input.pos, input.wvp);
+	output.pos = mul(input.pos, mul(input.wvp, viewProjection));
 	output.col = input.col;	
 	return output;
 }

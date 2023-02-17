@@ -269,7 +269,7 @@ namespace Molten.Graphics
             OnInitializeRenderer(settings);
             Compute = new ComputeManager(Device);
 
-            uint maxBufferSize = (uint)ByteMath.FromMegabytes(3.5);
+            uint maxBufferSize = (uint)ByteMath.FromMegabytes(5.5);
             StaticVertexBuffer = Device.CreateBuffer(GraphicsBufferFlags.Vertex | GraphicsBufferFlags.Index, BufferMode.Default, maxBufferSize);
             DynamicVertexBuffer = Device.CreateBuffer(GraphicsBufferFlags.Vertex | GraphicsBufferFlags.Index, BufferMode.DynamicRing, maxBufferSize);
             StagingBuffer = Device.CreateStagingBuffer(StagingBufferFlags.Write, maxBufferSize);

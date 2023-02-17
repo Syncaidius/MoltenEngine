@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.IO;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Molten.Graphics
 {
@@ -97,6 +98,9 @@ namespace Molten.Graphics
                     },
                     _renderer.StagingBuffer);
             }
+
+            Material.Scene.ViewProjection.Value = camera.ViewProjection;
+
 
             OnApply(cmd);
             ApplyResources(Material);

@@ -5,7 +5,7 @@ namespace Molten.Examples
     [Example("Stress Test - Instanced", "A stress test which spawns a large number of rotating cubes, which use an non-indexed mesh with hardware instancing")]
     public class StressTestInstanced : MoltenExample
     {
-        const int CUBE_COUNT = 40000;
+        const int CUBE_COUNT = 55000;
 
         ContentLoadHandle _hMaterial;
         List<SceneObject> _objects;
@@ -28,7 +28,7 @@ namespace Molten.Examples
             InstancedMesh<VertexColor, BasicInstanceData> cube = Engine.Renderer.Resources.CreateInstancedMesh<VertexColor, BasicInstanceData>(36, maxInstances, 
                 batchInstanceCallback: (stream, camera, objData, index) =>
                 {
-                    stream.Write(objData.RenderTransform * camera.ViewProjection);
+                    stream.Write(objData.RenderTransform);
                 });
             cube.SetVertices(SampleVertexData.ColoredCube);
             return cube;
