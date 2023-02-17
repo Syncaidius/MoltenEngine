@@ -171,12 +171,125 @@ namespace Molten.Graphics
             if (topology == VertexTopology.Undefined)
                 return GraphicsBindResult.UndefinedTopology;
 
-            Bind(pass, DrawInfo.Conditions, topology);
+            bool matChanged = Material.Bind();
 
-            // Validate all pipeline components.
-            GraphicsBindResult result = Validate(mode);
+            // Check topology
+            if (_boundTopology != topology)
+            {
+                _boundTopology = topology;
+                Native->IASetPrimitiveTopology(_boundTopology.ToApi());
+            }
 
-            return result;
+            VS.Shader.Value = pass.VS as ShaderCompositionDX11<ID3D11VertexShader>;
+            GS.Shader.Value = pass.GS as ShaderCompositionDX11<ID3D11GeometryShader>;
+            HS.Shader.Value = pass.HS as ShaderCompositionDX11<ID3D11HullShader>;
+            DS.Shader.Value = pass.DS as ShaderCompositionDX11<ID3D11DomainShader>;
+            PS.Shader.Value = pass.PS as ShaderCompositionDX11<ID3D11PixelShader>;
+
+            bool vsChanged = VS.Bind();
+            bool gsChanged = GS.Bind();
+            bool hsChanged = HS.Bind();
+            bool dsChanged = DS.Bind();
+            bool psChanged = PS.Bind();
+
+            bool ibChanged = IndexBuffer.Bind();
+            bool vbChanged = VertexBuffers.BindAll();
+
+            // Check index buffer
+            if (ibChanged)
+            {
+                BufferSegment ib = IndexBuffer.BoundValue as BufferSegment;
+
+                if (ib != null)
+                    Native->IASetIndexBuffer(ib, ib.DataFormat, ib.ByteOffset);
+                else
+                    Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
+            }
+
+            // Does the vertex input layout need updating?
+            if (vbChanged || vsChanged)
+            {
+                _vertexLayout.Value = GetInputLayout();
+                _vertexLayout.Bind();
+            }
+
+            StateConditions conditions = DrawInfo.Conditions;
+            Blend.Value = pass.BlendState[conditions] as BlendStateDX11;
+            Rasterizer.Value = pass.RasterizerState[conditions] as RasterizerStateDX11;
+            Depth.Value = pass.DepthState[conditions] as DepthStateDX11;
+
+            bool bStateChanged = Blend.Bind();
+            bool rStateChanged = Rasterizer.Bind();
+            bool dStateChanged = Depth.Bind();
+
+            // Check if scissor rects need updating
+            if (_scissorRectsDirty)
+            {
+                fixed (Rectangle* ptrRect = _scissorRects)
+                    Native->RSSetScissorRects((uint)_scissorRects.Length, (Rectangle<int>*)ptrRect);
+
+                _scissorRectsDirty = false;
+            }
+
+            // Check if viewports need updating.
+            if (_viewportsDirty)
+            {
+                for (int i = 0; i < _viewports.Length; i++)
+                    _apiViewports[i] = _viewports[i].ToApi();
+
+                Native->RSSetViewports((uint)_viewports.Length, ref _apiViewports[0]);
+                _viewportsDirty = false;
+            }
+
+            GraphicsDepthWritePermission depthWriteMode = pass.DepthState[conditions].WritePermission;
+
+            bool surfaceChanged = Surfaces.BindAll();
+            bool depthChanged = DepthSurface.Bind() || (_boundDepthMode != depthWriteMode);
+
+            if (surfaceChanged || depthChanged)
+            {
+                if (surfaceChanged)
+                {
+                    _numRTVs = 0;
+
+                    for (uint i = 0; i < Surfaces.SlotCount; i++)
+                    {
+                        if (Surfaces[i].BoundValue != null)
+                        {
+                            _numRTVs = (i + 1);
+                            RTVs[i] = (Surfaces[i].BoundValue as RenderSurface2D).RTV.Ptr;
+                        }
+                        else
+                        {
+                            RTVs[i] = null;
+                        }
+                    }
+                }
+
+                if (depthChanged)
+                {
+                    if (DepthSurface.BoundValue != null && depthWriteMode != GraphicsDepthWritePermission.Disabled)
+                    {
+                        DepthStencilSurface dss = DepthSurface.BoundValue as DepthStencilSurface;
+                        if (depthWriteMode == GraphicsDepthWritePermission.ReadOnly)
+                            DSV = dss.ReadOnlyView;
+                        else
+                            DSV = dss.DepthView;
+                    }
+                    else
+                    {
+                        DSV = null;
+                    }
+
+                    _boundDepthMode = depthWriteMode;
+                }
+
+                Native->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)RTVs, DSV);
+                Profiler.Current.SurfaceBindings++;
+            }
+
+            // Validate pipeline state.
+            return Validate(mode);
         }
 
         public override void BeginEvent(string label)
@@ -350,129 +463,6 @@ namespace Molten.Graphics
                 // 
                 Native->Dispatch(groupsX, groupsY, groupsZ);
             }
-        }
-
-        internal bool Bind(MaterialPass pass, StateConditions conditions, VertexTopology topology)
-        {
-            bool matChanged = Material.Bind();
-
-            // Check topology
-            if (_boundTopology != topology)
-            {
-                _boundTopology = topology;
-                Native->IASetPrimitiveTopology(_boundTopology.ToApi());
-            }
-
-            VS.Shader.Value = pass.VS as ShaderCompositionDX11<ID3D11VertexShader>;
-            GS.Shader.Value = pass.GS as ShaderCompositionDX11<ID3D11GeometryShader>;
-            HS.Shader.Value = pass.HS as ShaderCompositionDX11<ID3D11HullShader>;
-            DS.Shader.Value = pass.DS as ShaderCompositionDX11<ID3D11DomainShader>;
-            PS.Shader.Value = pass.PS as ShaderCompositionDX11<ID3D11PixelShader>;
-
-            bool vsChanged = VS.Bind();
-            bool gsChanged = GS.Bind();
-            bool hsChanged = HS.Bind();
-            bool dsChanged = DS.Bind();
-            bool psChanged = PS.Bind();
-
-            bool ibChanged = IndexBuffer.Bind();
-            bool vbChanged = VertexBuffers.BindAll();
-
-            // Check index buffer
-            if (ibChanged)
-            {
-                BufferSegment ib = IndexBuffer.BoundValue as BufferSegment;
-
-                if (ib != null)
-                    Native->IASetIndexBuffer(ib, ib.DataFormat, ib.ByteOffset);
-                else
-                    Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
-            }
-
-            // Does the vertex input layout need updating?
-            if (vbChanged || vsChanged)
-            {
-                _vertexLayout.Value = GetInputLayout();
-                _vertexLayout.Bind();
-            }
-
-            Blend.Value = pass.BlendState[conditions] as BlendStateDX11;
-            Rasterizer.Value = pass.RasterizerState[conditions] as RasterizerStateDX11;
-            Depth.Value = pass.DepthState[conditions] as DepthStateDX11;
-
-            bool bStateChanged = Blend.Bind();
-            bool rStateChanged = Rasterizer.Bind();
-            bool dStateChanged = Depth.Bind();
-
-            // Check if scissor rects need updating
-            if (_scissorRectsDirty)
-            {
-                fixed (Rectangle* ptrRect = _scissorRects)
-                    Native->RSSetScissorRects((uint)_scissorRects.Length, (Rectangle<int>*)ptrRect);
-
-                _scissorRectsDirty = false;
-            }
-
-            // Check if viewports need updating.
-            if (_viewportsDirty)
-            {
-                for (int i = 0; i < _viewports.Length; i++)
-                    _apiViewports[i] = _viewports[i].ToApi();
-
-                Native->RSSetViewports((uint)_viewports.Length, ref _apiViewports[0]);
-                _viewportsDirty = false;
-            }
-
-            GraphicsDepthWritePermission depthWriteMode = pass.DepthState[conditions].WritePermission;
-
-            bool surfaceChanged = Surfaces.BindAll();
-            bool depthChanged = DepthSurface.Bind() || (_boundDepthMode != depthWriteMode);
-
-            if (surfaceChanged || depthChanged)
-            {
-                if (surfaceChanged)
-                {
-                    _numRTVs = 0;
-
-                    for (uint i = 0; i < Surfaces.SlotCount; i++)
-                    {
-                        if (Surfaces[i].BoundValue != null)
-                        {
-                            _numRTVs = (i + 1);
-                            RTVs[i] = (Surfaces[i].BoundValue as RenderSurface2D).RTV.Ptr;
-                        }
-                        else
-                        {
-                            RTVs[i] = null;
-                        }
-                    }
-                }
-
-                if (depthChanged)
-                {
-                    if (DepthSurface.BoundValue != null && depthWriteMode != GraphicsDepthWritePermission.Disabled)
-                    {
-                        DepthStencilSurface dss = DepthSurface.BoundValue as DepthStencilSurface;
-                        if (depthWriteMode == GraphicsDepthWritePermission.ReadOnly)
-                            DSV = dss.ReadOnlyView;
-                        else
-                            DSV = dss.DepthView;
-                    }
-                    else
-                    {
-                        DSV = null;
-                    }
-
-                    _boundDepthMode = depthWriteMode;
-                }
-
-                Native->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)RTVs, DSV);
-                Profiler.Current.SurfaceBindings++;
-            }
-
-            return bStateChanged || rStateChanged || dStateChanged ||
-                matChanged || vsChanged || gsChanged || hsChanged ||
-                dsChanged || psChanged || ibChanged || vbChanged;
         }
 
         public bool Bind(ComputeTask task)
