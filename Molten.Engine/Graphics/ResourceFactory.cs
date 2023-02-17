@@ -150,16 +150,14 @@ namespace Molten.Graphics
         /// <param name="maxInstances"></param>
         /// <param name="topology"></param>
         /// <param name="dynamic"></param>
-        /// <param name="batchInstanceCallback"></param>
         /// <returns></returns>
         public InstancedMesh<V, I> CreateInstancedMesh<V, I>(uint maxVertices,
             uint maxInstances, VertexTopology topology = VertexTopology.TriangleList,
-            bool dynamic = false,
-            WriteInstanceDataCallback batchInstanceCallback = null)
+            bool dynamic = false)
             where V : unmanaged, IVertexType
-            where I : unmanaged, IVertexType
+            where I : unmanaged, IVertexInstanceType
         {
-            return new InstancedMesh<V, I>(_renderer, maxVertices, topology, maxInstances, dynamic, batchInstanceCallback);
+            return new InstancedMesh<V, I>(_renderer, maxVertices, topology, maxInstances, dynamic);
         }
 
         /// <summary>

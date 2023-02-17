@@ -25,11 +25,7 @@ namespace Molten.Examples
         protected override Mesh GetTestCubeMesh()
         {
             uint maxInstances = CUBE_COUNT + 50;
-            InstancedMesh<VertexColor, BasicInstanceData> cube = Engine.Renderer.Resources.CreateInstancedMesh<VertexColor, BasicInstanceData>(36, maxInstances, 
-                batchInstanceCallback: (stream, camera, objData, index) =>
-                {
-                    stream.Write(objData.RenderTransform);
-                });
+            InstancedMesh<VertexColor, InstanceData> cube = Engine.Renderer.Resources.CreateInstancedMesh<VertexColor, InstanceData>(36, maxInstances);
             cube.SetVertices(SampleVertexData.ColoredCube);
             return cube;
         }

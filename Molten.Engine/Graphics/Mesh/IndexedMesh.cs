@@ -47,7 +47,7 @@
         public void SetIndices<I>(I[] data, uint startIndex, uint count) where I : unmanaged
         {
             _indexCount = count;
-            _ib.SetData(data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _ib.SetData(data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)

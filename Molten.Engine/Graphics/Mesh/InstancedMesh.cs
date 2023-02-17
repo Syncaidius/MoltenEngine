@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.IO;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Molten.Graphics
 {
@@ -13,12 +12,10 @@ namespace Molten.Graphics
 
     public class InstancedMesh<V, I> : Mesh<V>
         where V : unmanaged, IVertexType
-        where I : unmanaged, IVertexType
+        where I : unmanaged, IVertexInstanceType
     {
-
         IGraphicsBufferSegment _instanceBuffer;
         uint _instanceCount;
-        WriteInstanceDataCallback _batchCallback;
 
         /// <summary>
         /// Creates a new instance of <see cref="InstancedMesh{V, I}"/>.
@@ -28,21 +25,18 @@ namespace Molten.Graphics
         /// <param name="topology"></param>
         /// <param name="numInstances"></param>
         /// <param name="dynamicVertex"></param>
-        /// <param name="batchInstanceCallback">A callback for automatically writing batched draw-instance data.
         /// <para>Setting this to null will prevent automatic batching of the current <see cref="InstancedMesh{V, I}"/></para></param>
         internal InstancedMesh(
             RenderService renderer, 
             uint maxVertices, 
             VertexTopology topology, 
             uint numInstances, 
-            bool dynamicVertex,
-            WriteInstanceDataCallback batchInstanceCallback = null) : 
+            bool dynamicVertex) : 
             base(renderer, maxVertices, topology, dynamicVertex)
         {
             MaxInstances = numInstances;
-            _batchCallback = batchInstanceCallback;
 
-            IGraphicsBuffer buffer = _renderer.DynamicVertexBuffer;
+            IGraphicsBuffer buffer = Renderer.DynamicVertexBuffer;
             _instanceBuffer = buffer.Allocate<I>(numInstances);
             _instanceBuffer.SetVertexFormat<I>();
         }
@@ -60,7 +54,7 @@ namespace Molten.Graphics
         public void SetInstanceData(I[] data, uint startIndex, uint count)
         {
             _instanceCount = count;
-            _instanceBuffer.SetData(data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _instanceBuffer.SetData(data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)
@@ -82,7 +76,7 @@ namespace Molten.Graphics
             if (_instanceCount == 0 || Material == null)
                 return true;
 
-            if (_batchCallback != null)
+            if (I.IsBatched)
             {
                 // TODO Properly handle batches that are larger than the instance buffer.
 
@@ -94,13 +88,12 @@ namespace Molten.Graphics
                     {
                         stream.Position += byteOffset;
                         for (int i = (int)start; i < batch.Data.Count; i++)
-                            _batchCallback(stream, camera, batch.Data[i], i);
+                            I.WriteBatchData(stream, batch.Data[i]);
                     },
-                    _renderer.StagingBuffer);
+                    Renderer.StagingBuffer);
             }
 
             Material.Scene.ViewProjection.Value = camera.ViewProjection;
-
 
             OnApply(cmd);
             ApplyResources(Material);
