@@ -68,7 +68,7 @@ Blank - Not Started\
 | 2D Spite batching      | ✔️         |         |        |             |       |
 | 2D Primitive batching  | ✔️         |         |        |             |       |
 | Compressed textures    | ✔️         |         |        |             |       |
-| [Hardware instancing](https://en.wikipedia.org/wiki/Geometry_instancing)    |            |         |        |             |       |
+| [Hardware instancing](https://en.wikipedia.org/wiki/Geometry_instancing)    | ✔️         |         |        |             |       |
 | [Occlusion culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Occlusion_culling)      |            |         |        |             |       |
 | [Frustrum culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Viewing-frustum_culling)       |            |         |        |             |       |
 | [Portal culling](https://docs.panda3d.org/1.10/python/programming/render-attributes/occlusion-culling/portal-culling)         |            |         |        |             |       |
