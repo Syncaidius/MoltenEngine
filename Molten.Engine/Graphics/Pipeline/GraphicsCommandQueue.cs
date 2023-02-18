@@ -17,7 +17,6 @@
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
         List<GraphicsSlot> _slots;
-        CommandStateStack _stateStack;
 
         protected GraphicsCommandQueue(GraphicsDevice device)
         {
@@ -25,18 +24,6 @@
             Device = device;
             _slots = new List<GraphicsSlot>();
             _defaultProfiler = _profiler = new RenderProfiler();
-
-            _stateStack = new CommandStateStack(this);
-        }
-
-        public int PushState()
-        {
-            return _stateStack.Push();
-        }
-
-        public void PopState()
-        {
-            _stateStack.Pop();
         }
 
         public void BeginDraw(StateConditions conditions)
