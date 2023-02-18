@@ -19,7 +19,7 @@
             // Z-disabled preset
             state = device.CreateDepthState();
             state.IsDepthEnabled = false;
-            state.DepthWriteEnable = false;
+            state.DepthWriteEnabled = false;
             AddPreset(DepthStencilPreset.ZDisabled, state);
         }
 

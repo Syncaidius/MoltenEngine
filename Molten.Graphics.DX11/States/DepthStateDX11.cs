@@ -138,7 +138,7 @@ namespace Molten.Graphics
             }
         }
 
-        public override bool DepthWriteEnable
+        public override bool DepthWriteEnabled
         {
             get => _desc.DepthWriteMask == DepthWriteMask.All;
             set

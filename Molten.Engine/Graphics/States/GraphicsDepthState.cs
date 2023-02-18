@@ -52,7 +52,7 @@ namespace Molten.Graphics
                 FrontFace.Set(source.FrontFace);
                 IsDepthEnabled = source.IsDepthEnabled;
                 IsStencilEnabled = source.IsStencilEnabled;
-                DepthWriteEnable = source.DepthWriteEnable;
+                DepthWriteEnabled = source.DepthWriteEnabled;
                 DepthComparison = source.DepthComparison;
                 StencilReadMask = source.StencilReadMask;
                 StencilWriteMask = source.StencilWriteMask;
@@ -62,7 +62,7 @@ namespace Molten.Graphics
             {
                 // Based on the default DX11 values: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ns-d3d11-d3d11_depth_stencil_desc
                 IsDepthEnabled = true;
-                DepthWriteEnable = true;
+                DepthWriteEnabled = true;
                 DepthComparison = ComparisonFunction.Less;
                 IsStencilEnabled = false;
                 StencilReadMask = 255;
@@ -123,7 +123,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets or sets the depth write flags.
         /// </summary>
-        public abstract bool DepthWriteEnable { get; set; }
+        public abstract bool DepthWriteEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the depth comparison function.

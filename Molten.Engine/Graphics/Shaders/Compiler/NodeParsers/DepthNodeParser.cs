@@ -44,9 +44,9 @@
                             InvalidValueMessage(context, c, "stencil-testing enabled", "boolean");
                         break;
 
-                    case "writeenable":
+                    case "writeenabled":
                         if (bool.TryParse(c.Value, out bool depthWriteEnable))
-                            state.DepthWriteEnable = depthWriteEnable;
+                            state.DepthWriteEnabled = depthWriteEnable;
                         else
                             InvalidValueMessage(context, c, "depth write enable", "boolean");
                         break;

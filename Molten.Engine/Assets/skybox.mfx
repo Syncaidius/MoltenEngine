@@ -10,7 +10,7 @@
 		<rasterizer preset="NoCulling" />
         <depth>
             <enabled value="true"/>
-            <writeenable value="All"/>
+            <writeenabled value="All"/>
             <writepermission value="ReadOnly"/>
             <comparison value="LessEqual"/>
         </depth>
