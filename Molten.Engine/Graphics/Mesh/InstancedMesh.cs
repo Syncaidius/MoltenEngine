@@ -8,6 +8,19 @@ using Molten.IO;
 
 namespace Molten.Graphics
 {
+    /// <summary>
+    /// A helper version of <see cref="InstancedMesh{V, I}"/> that is defaulted to <see cref="InstanceData"/> for per-instance data.
+    /// </summary>
+    /// <typeparam name="V"></typeparam>
+    public class InstancedMesh<V> : InstancedMesh<V, InstanceData>
+        where V : unmanaged, IVertexType
+    {
+        internal InstancedMesh(RenderService renderer, uint maxVertices, VertexTopology topology, uint numInstances, bool isDynamic) : 
+            base(renderer, maxVertices, topology, numInstances, isDynamic)
+        {
+        }
+    }
+
     public class InstancedMesh<V, I> : Mesh<V>
         where V : unmanaged, IVertexType
         where I : unmanaged, IVertexInstanceType
@@ -69,7 +82,10 @@ namespace Molten.Graphics
 
         protected override void OnDraw(GraphicsCommandQueue cmd)
         {
-            cmd.DrawInstanced(Material, VertexCount, _instanceCount, Topology, 0, 0);
+            if (MaxIndices > 0)
+                cmd.DrawIndexedInstanced(Material, IndexCount, _instanceCount, Topology);
+            else
+                cmd.DrawInstanced(Material, VertexCount, _instanceCount, Topology, 0, 0);
         }
 
         protected override bool OnBatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)

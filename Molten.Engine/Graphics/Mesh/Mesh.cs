@@ -3,8 +3,11 @@
     /// <summary>A base interface for mesh implementations.</summary>
     public abstract class Mesh : Renderable
     {
+        IGraphicsBufferSegment _iBuffer;
+        IndexBufferFormat _indexFormat;
+
         /// <summary>
-        /// 
+        /// Creates a new instance of <see cref="Mesh"/>, but can only be called by derived mesh classes.
         /// </summary>
         /// <param name="renderer"></param>
         /// <param name="maxVertices"></param>
@@ -12,16 +15,100 @@
         /// <param name="isDynamic"></param>
         protected Mesh(RenderService renderer, uint maxVertices, VertexTopology topology, bool isDynamic) : base(renderer)
         {
+            _indexFormat = IndexBufferFormat.None;
             MaxVertices = maxVertices;
             Topology = topology;
             IsDynamic = isDynamic;
         }
 
-        protected abstract void OnApply(GraphicsCommandQueue cmd);
+        /// <summary>
+        /// After calling this method, any data that was set via <see cref="SetIndices{I}(I[], uint, uint)"/> or its overloads, will be invalidated and require updating.
+        /// <para>An index buffer will be allocated to match the capacity of <paramref name="maxIndices"/> multiplied by either 2 (UINT16) or 4 (UINT32) bytes.</para>
+        /// <para>If <see cref="IndexBufferFormat.None"/> is used, any existing index buffer will be released back into the buffer rersource bool for reuse elsewhere.</para>
+        /// </summary>
+        /// <param name="maxIndices">The maximum number of indices to allow in the current <see cref="Mesh"/>.</param>
+        /// <param name="format">The index format.</param>
+        public void SetIndexParameters(uint maxIndices, IndexBufferFormat format = IndexBufferFormat.Unsigned32Bit)
+        {
+            // Don't do anything if there are no parameter changes.
+            if (maxIndices == MaxIndices && format == _indexFormat)
+                return;
 
-        protected abstract void OnPostDraw(GraphicsCommandQueue cmd);
+            if (format != IndexBufferFormat.None)
+            {
+                if (maxIndices < 1)
+                    throw new InvalidOperationException("Cannot set maxIndices to less than 1 when a valid index format is provided.");
 
-        protected abstract void OnDraw(GraphicsCommandQueue cmd);
+                bool createBuffer = _iBuffer == null || format != IndexFormat || MaxIndices != maxIndices;
+
+                _iBuffer?.Release();
+
+                if (createBuffer)
+                {
+                    IGraphicsBuffer iBuffer = IsDynamic ? Renderer.DynamicVertexBuffer : Renderer.StaticVertexBuffer;
+
+                    // MSDN: Accepted formats for index buffer data are UINT16 (DXGI_FORMAT_R16_UINT) and UINT32 (DXGI_FORMAT_R32_UINT).
+                    switch (format)
+                    {
+                        case IndexBufferFormat.Unsigned16Bit:
+                            _iBuffer = iBuffer.Allocate<ushort>(maxIndices);
+                            break;
+
+                        case IndexBufferFormat.Unsigned32Bit:
+                            _iBuffer = iBuffer.Allocate<uint>(maxIndices);
+                            break;
+                    }
+
+                    _iBuffer.SetIndexFormat(format);
+                }
+
+                MaxIndices = maxIndices;
+                _indexFormat = format;
+            }
+            else
+            {
+                _iBuffer?.Release();
+                _iBuffer = null;
+                MaxIndices = 0;
+            }
+        }
+
+        public void SetIndices<I>(I[] data) where I : unmanaged
+        {
+            SetIndices<I>(data, 0, (uint)data.Length);
+        }
+
+        public void SetIndices<I>(I[] data, uint count) where I : unmanaged
+        {
+            SetIndices<I>(data, 0, count);
+        }
+
+        public void SetIndices<I>(I[] data, uint startIndex, uint count) where I : unmanaged
+        {
+            if (_iBuffer == null)
+                throw new InvalidOperationException($"Cannot set indices without valid index format and capacity. Try calling {nameof(SetIndexParameters)}() first.");
+
+            IndexCount = count;
+            _iBuffer.SetData(data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+        }
+
+        protected virtual void OnApply(GraphicsCommandQueue cmd)
+        {
+            cmd.IndexBuffer.Value = _iBuffer;
+        }
+
+        protected virtual void OnPostDraw(GraphicsCommandQueue cmd)
+        {
+            cmd.IndexBuffer.Value = null;
+        }
+
+        protected virtual void OnDraw(GraphicsCommandQueue cmd)
+        {
+            if(_iBuffer != null)
+                cmd.DrawIndexed(Material, IndexCount, Topology);
+            else
+                cmd.Draw(Material, VertexCount, Topology);
+        }
 
         protected override sealed void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
@@ -34,6 +121,12 @@
             Material.Object.World.Value = data.RenderTransform;
             OnDraw(cmd);
             OnPostDraw(cmd);
+        }
+
+        public virtual void Dispose()
+        {
+            IsVisible = false;
+            _iBuffer.Release();
         }
 
         /// <summary>
@@ -49,6 +142,10 @@
         /// <summary>Gets the number of vertices stored in the mesh.</summary>
         public uint VertexCount { get; protected set; }
 
+        public uint MaxIndices { get; private set; }
+
+        public uint IndexCount { get; private set; }
+
         /// <summary>Gets the topology/structure of the mesh's data (e.g. line, triangles list/strip, etc).</summary>
         public VertexTopology Topology { get; }
 
@@ -56,6 +153,8 @@
         /// Gets or sets the material that should be used when rendering the current <see cref="Mesh"/>.
         /// </summary>
         public Material Material { get; set; }
+
+        public IndexBufferFormat IndexFormat => _indexFormat;
 
         public float EmissivePower { get; set; } = 1.0f;
     }
@@ -92,22 +191,19 @@
 
         protected override void OnApply(GraphicsCommandQueue cmd)
         {
+            base.OnApply(cmd);
             cmd.VertexBuffers[0].Value = _vb;
-        }
-
-        protected override void OnDraw(GraphicsCommandQueue cmd)
-        {
-            cmd.Draw(Material, VertexCount, Topology);
         }
 
         protected override void OnPostDraw(GraphicsCommandQueue cmd)
         {
+            base.OnPostDraw(cmd);
             cmd.VertexBuffers[0].Value = null;
         }
 
-        public virtual void Dispose()
+        public override void Dispose()
         {
-            IsVisible = false;
+            base.Dispose();
             _vb.Release();
         }
     }

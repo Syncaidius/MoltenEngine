@@ -195,7 +195,6 @@
             set
             {
                 _value = value;
-
                 PendingID = value != null ? _value.BindID++ : 0;
             }
         }

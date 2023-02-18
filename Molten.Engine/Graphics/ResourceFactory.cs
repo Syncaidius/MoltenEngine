@@ -106,25 +106,9 @@ namespace Molten.Graphics
         /// <param name="topology"></param>
         /// <param name="dynamic"></param>
         /// <returns></returns>
-        public Mesh<GBufferVertex> CreateMesh(uint maxVertices, VertexTopology topology, bool dynamic)
+        public Mesh<GBufferVertex> CreateMesh(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false)
         {
             return new StandardMesh(_renderer, maxVertices, topology, dynamic);
-        }
-
-        /// <summary>
-        /// Creates an indexed mesh.
-        /// </summary>
-        /// <param name="maxVertices"></param>
-        /// <param name="maxIndices"></param>
-        /// <param name="topology"></param>
-        /// <param name="dynamic"></param>
-        /// <returns></returns>
-        public IndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices,
-            uint maxIndices,
-            VertexTopology topology = VertexTopology.TriangleList,
-            bool dynamic = false)
-        {
-            return new StandardIndexedMesh(_renderer, maxVertices, maxIndices, topology, IndexBufferFormat.Unsigned32Bit, dynamic);
         }
 
         /// <summary>
@@ -158,48 +142,6 @@ namespace Molten.Graphics
             where I : unmanaged, IVertexInstanceType
         {
             return new InstancedMesh<V, I>(_renderer, maxVertices, topology, maxInstances, dynamic);
-        }
-
-        /// <summary>
-        /// Creates an indexed mesh. Indexed meshes allow primitives to share vertices within the same draw call to reduce data overhead.
-        /// </summary>
-        /// <typeparam name="V"></typeparam>
-        /// <typeparam name="I"></typeparam>
-        /// <param name="maxVertices"></param>
-        /// <param name="maxIndices"></param>
-        /// <param name="topology"></param>
-        /// <param name="indexFormat"></param>
-        /// <param name="dynamic"></param>
-        /// <returns></returns>
-        public IndexedInstancedMesh<V, I> CreateInstancedIndexedMesh<V, I>(uint maxVertices, uint maxIndices,
-            uint maxInstances, VertexTopology topology = VertexTopology.TriangleList,
-            IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit,
-            bool dynamic = false)
-            where V : unmanaged, IVertexType
-            where I : unmanaged, IVertexInstanceType
-        {
-            return new IndexedInstancedMesh<V, I>(_renderer, maxVertices, maxIndices, topology, indexFormat, maxInstances, dynamic);
-        }
-
-        /// <summary>
-        /// Creates an indexed mesh. Indexed meshes allow primitives to share vertices within the same draw call to reduce data overhead.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="maxVertices"></param>
-        /// <param name="maxIndices"></param>
-        /// <param name="topology"></param>
-        /// <param name="indexFormat"></param>
-        /// <param name="dynamic"></param>
-        /// <returns></returns>
-        public IndexedMesh<T> CreateIndexedMesh<T>(
-            uint maxVertices,
-            uint maxIndices,
-            VertexTopology topology = VertexTopology.TriangleList,
-            IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit,
-            bool dynamic = false)
-            where T : unmanaged, IVertexType
-        {
-            return new IndexedMesh<T>(_renderer, maxVertices, maxIndices, topology, indexFormat, dynamic);
         }
 
         /// <summary>

@@ -6,7 +6,7 @@
     internal class SkyboxStep : RenderStep
     {
         Material _matSky;
-        IndexedMesh<Vertex> _sphereMesh;
+        Mesh<Vertex> _sphereMesh;
         ObjectRenderData _skyboxData;
 
         internal override void Initialize(RenderService renderer)
@@ -17,11 +17,11 @@
             _matSky = result[ShaderClassType.Material, "skybox-default"] as Material;
 
             Vertex[] vertices;
-            int[] indices;
+            uint[] indices;
             MakeSphere(4, 4, out vertices, out indices);
-            _sphereMesh = renderer.Resources.CreateIndexedMesh<Vertex>((uint)vertices.Length, (uint)indices.Length, 
-                VertexTopology.TriangleList, IndexBufferFormat.Unsigned32Bit, false);
+            _sphereMesh = renderer.Resources.CreateMesh<Vertex>((uint)vertices.Length);
             _sphereMesh.SetVertices(vertices);
+            _sphereMesh.SetIndexParameters((uint)indices.Length);
             _sphereMesh.SetIndices(indices);
             _sphereMesh.Material = _matSky;
         }
@@ -58,13 +58,13 @@
             cmd.EndDraw();
         }
 
-        private void MakeSphere(int LatLines, int LongLines, out Vertex[] vertices, out int[] indices)
+        private void MakeSphere(uint latLines, uint longLines, out Vertex[] vertices, out uint[] indices)
         {
-            int NumSphereVertices = ((LatLines - 2) * LongLines) + 2;
-            int NumSphereFaces = ((LatLines - 3) * (LongLines) * 2) + (LongLines * 2);
+            uint NumSphereVertices = ((latLines - 2U) * longLines) + 2U;
+            uint NumSphereFaces = ((latLines - 3U) * (longLines) * 2U) + (longLines * 2U);
 
             vertices = new Vertex[NumSphereVertices];
-            indices = new int[NumSphereFaces * 3];
+            indices = new uint[NumSphereFaces * 3];
             float sphereYaw = 0.0f;
             float spherePitch = 0.0f;
             Matrix4F Rotationy = Matrix4F.Identity;
@@ -73,63 +73,63 @@
 
             vertices[0] = new Vertex(0, 0, 1.0f);
 
-            for (int i = 0; i < LatLines - 2; i++)
+            for (int i = 0; i < latLines - 2; i++)
             {
-                spherePitch = (i + 1) * (3.14f / (LatLines - 1));
+                spherePitch = (i + 1) * (3.14f / (latLines - 1));
                 Rotationx = Matrix4F.RotationX(spherePitch);
-                for (int j = 0; j < LongLines; j++)
+                for (int j = 0; j < longLines; j++)
                 {
-                    sphereYaw = j * (6.28f / (LongLines));
+                    sphereYaw = j * (6.28f / (longLines));
                     Rotationy = Matrix4F.RotationZ(sphereYaw);
                     currVertPos = Vector3F.TransformNormal(new Vector3F(0.0f, 0.0f, 1.0f), (Rotationx * Rotationy));
                     currVertPos.Normalize();
-                    vertices[i * LongLines + j + 1] = new Vertex(currVertPos);
+                    vertices[i * longLines + j + 1] = new Vertex(currVertPos);
                 }
             }
 
             vertices[NumSphereVertices - 1] = new Vertex(0, 0, -1f);
 
             int k = 0;
-            for (int l = 0; l < LongLines - 1; l++)
+            for (uint l = 0; l < longLines - 1; l++)
             {
                 indices[k] = 0;
-                indices[k + 1] = l + 1;
-                indices[k + 2] = l + 2;
+                indices[k + 1] = l + 1U;
+                indices[k + 2] = l + 2U;
                 k += 3;
             }
 
             indices[k] = 0;
-            indices[k + 1] = LongLines;
+            indices[k + 1] = longLines;
             indices[k + 2] = 1;
             k += 3;
 
-            for (int i = 0; i < LatLines - 3; i++)
+            for (uint i = 0; i < latLines - 3; i++)
             {
-                for (int j = 0; j < LongLines - 1; j++)
+                for (uint j = 0; j < longLines - 1; j++)
                 {
-                    indices[k] = i * LongLines + j + 1;
-                    indices[k + 1] = i * LongLines + j + 2;
-                    indices[k + 2] = (i + 1) * LongLines + j + 1;
+                    indices[k] = i * longLines + j + 1;
+                    indices[k + 1] = i * longLines + j + 2;
+                    indices[k + 2] = (i + 1) * longLines + j + 1;
 
-                    indices[k + 3] = (i + 1) * LongLines + j + 1;
-                    indices[k + 4] = i * LongLines + j + 2;
-                    indices[k + 5] = (i + 1) * LongLines + j + 2;
+                    indices[k + 3] = (i + 1) * longLines + j + 1;
+                    indices[k + 4] = i * longLines + j + 2;
+                    indices[k + 5] = (i + 1) * longLines + j + 2;
 
                     k += 6; // next quad
                 }
 
-                indices[k] = (i * LongLines) + LongLines;
-                indices[k + 1] = (i * LongLines) + 1;
-                indices[k + 2] = ((i + 1) * LongLines) + LongLines;
+                indices[k] = (i * longLines) + longLines;
+                indices[k + 1] = (i * longLines) + 1;
+                indices[k + 2] = ((i + 1) * longLines) + longLines;
 
-                indices[k + 3] = ((i + 1) * LongLines) + LongLines;
-                indices[k + 4] = (i * LongLines) + 1;
-                indices[k + 5] = ((i + 1) * LongLines) + 1;
+                indices[k + 3] = ((i + 1) * longLines) + longLines;
+                indices[k + 4] = (i * longLines) + 1;
+                indices[k + 5] = ((i + 1) * longLines) + 1;
 
                 k += 6;
             }
 
-            for (int l = 0; l < LongLines - 1; l++)
+            for (uint l = 0; l < longLines - 1; l++)
             {
                 indices[k] = NumSphereVertices - 1;
                 indices[k + 1] = (NumSphereVertices - 1) - (l + 1);
@@ -139,7 +139,7 @@
 
             //store indices for triangle.
             indices[k] = NumSphereVertices - 1;
-            indices[k + 1] = (NumSphereVertices - 1) - LongLines;
+            indices[k + 1] = (NumSphereVertices - 1) - longLines;
             indices[k + 2] = NumSphereVertices - 2;
         }
     }
