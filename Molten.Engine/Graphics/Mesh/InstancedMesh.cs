@@ -15,10 +15,9 @@ namespace Molten.Graphics
     public class InstancedMesh<V> : InstancedMesh<V, InstanceData>
         where V : unmanaged, IVertexType
     {
-        internal InstancedMesh(RenderService renderer, uint maxVertices, VertexTopology topology, uint numInstances, bool isDynamic) : 
+        internal InstancedMesh(RenderService renderer, uint maxVertices, VertexTopology topology, uint numInstances, bool isDynamic) :
             base(renderer, maxVertices, topology, numInstances, isDynamic)
-        {
-        }
+        { }
     }
 
     public class InstancedMesh<V, I> : Mesh<V>

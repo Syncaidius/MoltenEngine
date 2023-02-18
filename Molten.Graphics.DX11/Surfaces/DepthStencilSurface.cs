@@ -149,7 +149,7 @@ namespace Molten.Graphics
             // Create read-only depth view for passing to shaders.
             _depthDesc.Flags = (uint)GetReadOnlyFlags();
             device.Ptr->CreateDepthStencilView(res, ref _depthDesc, ref _readOnlyView);
-            _depthDesc.Flags = 0U; // DsvFlag.None;
+            _depthDesc.Flags = (uint)DsvFlag.None;
 
             return res;
         }

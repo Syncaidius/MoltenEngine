@@ -21,7 +21,7 @@
     <depth preset="default">
       <reference>0</reference>
       <comparison>GreaterEqual</comparison>
-      <writemask>Zero</writemask>
+      <writeenable>Zero</writeenable>
       <writepermission>ReadOnly</writepermission>
       <enabled>true</enabled>
       <stencilenabled>true</stencilenabled>

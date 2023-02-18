@@ -138,14 +138,15 @@ namespace Molten.Graphics
             }
         }
 
-        public override DepthWriteFlags WriteFlags
+        public override bool DepthWriteEnable
         {
-            get => (DepthWriteFlags)_desc.DepthWriteMask;
+            get => _desc.DepthWriteMask == DepthWriteMask.All;
             set
             {
-                if (_desc.DepthWriteMask != (DepthWriteMask)value)
+                DepthWriteMask mask = value ? DepthWriteMask.All : DepthWriteMask.None;
+                if (_desc.DepthWriteMask != mask)
                 {
-                    _desc.DepthWriteMask = (DepthWriteMask)value;
+                    _desc.DepthWriteMask = mask;
                     _dirty = true;
                 }
             }

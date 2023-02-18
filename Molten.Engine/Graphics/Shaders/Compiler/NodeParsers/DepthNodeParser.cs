@@ -44,11 +44,11 @@
                             InvalidValueMessage(context, c, "stencil-testing enabled", "boolean");
                         break;
 
-                    case "writemask":
-                        if (EngineUtil.TryParseEnum(c.Value, out DepthWriteFlags writeFlags))
-                            state.WriteFlags = writeFlags;
+                    case "writeenable":
+                        if (bool.TryParse(c.Value, out bool depthWriteEnable))
+                            state.DepthWriteEnable = depthWriteEnable;
                         else
-                            InvalidEnumMessage<DepthWriteFlags>(context, c, "depth write mask");
+                            InvalidValueMessage(context, c, "depth write enable", "boolean");
                         break;
 
                     case "comparison":
