@@ -190,6 +190,11 @@ namespace Molten.Graphics
         public bool OcclusionQueries { get; set; }
 
         /// <summary>
+        /// Gets or sets whether or not depth bounds testing is supported.
+        /// </summary>
+        public bool DepthBoundsTesting { get; set; }
+
+        /// <summary>
         /// Gets or sets whether non-power-of-two textures are supported.
         /// </summary>
         public bool NonPowerOfTwoTextures { get; set; }

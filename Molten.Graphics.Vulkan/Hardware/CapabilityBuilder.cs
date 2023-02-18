@@ -28,6 +28,7 @@ namespace Molten.Graphics
             cap.MaxTexture2DSize = limits.MaxImageDimension2D;
             cap.MaxTexture3DSize = limits.MaxImageDimension3D;
             cap.MaxTextureCubeSize = limits.MaxImageDimensionCube;
+            cap.DepthBoundsTesting = true;
             cap.MaxAnisotropy = features.SamplerAnisotropy ? limits.MaxSamplerAnisotropy : 0;
             cap.MaxTextureArraySlices = limits.MaxImageArrayLayers;
             cap.TextureCubeArrays = features.ImageCubeArray;

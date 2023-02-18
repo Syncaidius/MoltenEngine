@@ -191,6 +191,16 @@ namespace Molten.Graphics
             }
         }
 
+        public override bool DepthBoundsTestEnabled
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override float MaxDepthBounds { get; set; }
+
+        public override float MinDepthBounds { get; set; }
+
         public static implicit operator ID3D11DepthStencilState*(DepthStateDX11 bindable)
         {
             return bindable.NativePtr;

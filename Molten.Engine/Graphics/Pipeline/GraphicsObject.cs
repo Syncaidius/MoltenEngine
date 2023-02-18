@@ -23,7 +23,7 @@ namespace Molten.Graphics
             OnApply(cmd);
         }
 
-        protected abstract void OnApply(GraphicsCommandQueue context);
+        protected abstract void OnApply(GraphicsCommandQueue cmd);
 
         protected override void OnDispose()
         {

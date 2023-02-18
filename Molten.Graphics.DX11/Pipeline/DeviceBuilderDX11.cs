@@ -145,6 +145,7 @@ namespace Molten.Graphics
             cap.MaxAnisotropy = 16;
             cap.BlendLogicOp = features11_0.OutputMergerLogicOp > 0;
             cap.MaxShaderSamplers = 16;
+            cap.DepthBoundsTesting = false;
             cap.OcclusionQueries = true;
             cap.HardwareInstancing = true;
             cap.MaxTextureArraySlices = 2048;               // D3D11_REQ_TEXTURE2D_ARRAY_AXIS_DIMENSION (2048 array slices)

@@ -140,6 +140,25 @@ namespace Molten.Graphics
         /// </summary>
         public abstract byte StencilWriteMask { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether or not depth bounds testing is enabled. 
+        /// <para>This property should throw a <see cref="NotSupportedException"/>, 
+        /// if <see cref="GraphicsCapabilities.DepthBoundsTesting"/> is false in <see cref="GraphicsDevice.Adapter"/>.</para>
+        /// </summary>
+        public abstract bool DepthBoundsTestEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum bounds during depth bounds testing.
+        /// <para>This value may be ignored if <see cref="DepthBoundsTestEnabled"/> is false, or bounds testing is unsupported.</para>
+        /// </summary>
+        public abstract float MaxDepthBounds { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum bounds during depth bounds testing.
+        /// <para>This value may be ignored if <see cref="DepthBoundsTestEnabled"/> is false, or bounds testing is unsupported.</para>
+        /// </summary>
+        public abstract float MinDepthBounds { get; set; }
+
         /// <summary>Gets the description for the front-face depth operation description.</summary>
         public Face FrontFace { get; }
 

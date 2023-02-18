@@ -139,6 +139,9 @@ namespace Molten
 
         public static void Free<T>(ref T* ptr) where T : unmanaged
         {
+            if (ptr == null)
+                return;
+
             if (!_allocated.TryGetValue((nuint)ptr, out MemoryBase mem))
             {
                 throw new Exception($"The pointer {(nuint)ptr} was not allocated by Molten's memory manager.");
@@ -152,6 +155,9 @@ namespace Molten
 
         public static void Free(ref void* ptr)
         {
+            if (ptr == null)
+                return;
+
             if (!_allocated.TryGetValue((nuint)ptr, out MemoryBase mem))
             {
                 throw new Exception($"The pointer {(nuint)ptr} was not allocated by Molten's memory manager.");
@@ -165,6 +171,9 @@ namespace Molten
 
         public static void FreePtrArray<T>(ref T** ptr) where T : unmanaged
         {
+            if (ptr == null)
+                return;
+
             if (!_allocated.TryGetValue((nuint)ptr, out MemoryBase mem))
             {
                 throw new Exception($"The pointer {(nuint)ptr} was not allocated by Molten's memory manager.");

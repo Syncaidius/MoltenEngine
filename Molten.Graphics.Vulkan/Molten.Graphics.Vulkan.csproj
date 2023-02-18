@@ -24,6 +24,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Renderer\**" />
+    <Compile Remove="Shaders\**" />
+    <EmbeddedResource Remove="Renderer\**" />
+    <EmbeddedResource Remove="Shaders\**" />
+    <None Remove="Renderer\**" />
+    <None Remove="Shaders\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Silk.NET.GLFW" Version="2.16.0" />
     <PackageReference Include="Silk.NET.Vulkan" Version="2.16.0" />
     <PackageReference Include="Silk.NET.Vulkan.Extensions.EXT" Version="2.16.0" />
@@ -47,11 +56,6 @@
     <ProjectReference Include="..\Molten.Graphics.DXC\Molten.Graphics.DXC.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Renderer\" />
-    <Folder Include="Shaders\" />
   </ItemGroup>
 
 </Project>
