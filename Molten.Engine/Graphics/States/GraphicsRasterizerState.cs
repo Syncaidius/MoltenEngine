@@ -13,8 +13,8 @@
         {
             if(source != null)
             {
-                FillingMode = source.FillingMode;
-                CullingMode = source.CullingMode;
+                Fill = source.Fill;
+                Cull = source.Cull;
                 IsFrontCounterClockwise = source.IsFrontCounterClockwise;
                 DepthBias = source.DepthBias;
                 SlopeScaledDepthBias = source.SlopeScaledDepthBias;
@@ -22,14 +22,14 @@
                 IsDepthClipEnabled = source.IsDepthClipEnabled;
                 IsScissorEnabled = source.IsScissorEnabled;
                 IsMultisampleEnabled = source.IsMultisampleEnabled;
-                IsAntialiasedLineEnabled = source.IsAntialiasedLineEnabled;
+                IsAALineEnabled = source.IsAALineEnabled;
                 ConservativeRaster = source.ConservativeRaster;
                 ForcedSampleCount = source.ForcedSampleCount;
             }
             else
             {
-                FillingMode = RasterizerFillingMode.Solid;
-                CullingMode = RasterizerCullingMode.Back;
+                Fill = RasterizerFillingMode.Solid;
+                Cull = RasterizerCullingMode.Back;
                 IsFrontCounterClockwise = false;
                 DepthBias = 0;
                 SlopeScaledDepthBias = 0.0f;
@@ -37,7 +37,7 @@
                 IsDepthClipEnabled = true;
                 IsScissorEnabled = false;
                 IsMultisampleEnabled = false;
-                IsAntialiasedLineEnabled = false;
+                IsAALineEnabled = false;
                 ConservativeRaster = ConservativeRasterizerMode.Off;
                 ForcedSampleCount = 0;
             }
@@ -53,11 +53,11 @@
 
         public bool Equals(GraphicsRasterizerState other)
         {
-            return CullingMode == other.CullingMode &&
+            return Cull == other.Cull &&
                 DepthBias == other.DepthBias &&
                 DepthBiasClamp == other.DepthBiasClamp &&
-                FillingMode == other.FillingMode &&
-                IsAntialiasedLineEnabled == other.IsAntialiasedLineEnabled &&
+                Fill == other.Fill &&
+                IsAALineEnabled == other.IsAALineEnabled &&
                 IsDepthClipEnabled == other.IsDepthClipEnabled &&
                 IsFrontCounterClockwise == other.IsFrontCounterClockwise &&
                 IsMultisampleEnabled == other.IsMultisampleEnabled &&
@@ -67,28 +67,43 @@
                 ForcedSampleCount == other.ForcedSampleCount;
         }
 
-        public abstract RasterizerCullingMode CullingMode { get; set; }
+        [ShaderNode(ShaderNodeParseType.Enum)]
+        public abstract RasterizerCullingMode Cull { get; set; }
 
+        [ShaderNode(ShaderNodeParseType.Int32)]
         public abstract int DepthBias { get; set; }
 
+        [ShaderNode(ShaderNodeParseType.Float)]
         public abstract float DepthBiasClamp { get; set; }
 
-        public abstract RasterizerFillingMode FillingMode { get; set; }
+        [ShaderNode(ShaderNodeParseType.Enum)]
+        public abstract RasterizerFillingMode Fill { get; set; }
 
-        public abstract bool IsAntialiasedLineEnabled { get; set; }
+        /// <summary>
+        /// Gets or sets whether or not anti-aliased line rasterization is enabled.
+        /// </summary>
+        [ShaderNode(ShaderNodeParseType.Bool)]
+        public abstract bool IsAALineEnabled { get; set; }
 
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool IsDepthClipEnabled { get; set; }
 
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool IsFrontCounterClockwise { get; set; }
 
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool IsMultisampleEnabled { get; set; }
 
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool IsScissorEnabled { get; set; }
 
+        [ShaderNode(ShaderNodeParseType.Float)]
         public abstract float SlopeScaledDepthBias { get; set; }
 
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract ConservativeRasterizerMode ConservativeRaster { get; set; }
 
+        [ShaderNode(ShaderNodeParseType.UInt32)]
         public abstract uint ForcedSampleCount { get; set; }
     }
 }

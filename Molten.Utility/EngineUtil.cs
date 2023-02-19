@@ -294,16 +294,30 @@ namespace Molten
             where T : struct, IComparable
         {
             Type t = typeof(T);
+            bool success = TryParseEnum(t, strValue, out object oValue);
+            value = (T)oValue;
+            return success;
+        }
+
+        /// <summary>
+        /// Try parsing an enum value using Silk.NET's possible naming conventions. e.g. DepthWriteMask.DepthWriteMaskAll or ComparisonFunc.ComparisonLessEqual.
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="strValue"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool TryParseEnum(Type t, string strValue, out object value)
+        {
             strValue = strValue.ToLower();
 
             // First try to parse the value as-is.
             // If we fail, prefix it with the enum name to match Silk.NET's enum naming scheme. e.g. DepthWriteMask.DepthWriteMaskAll.
-            if (!Enum.TryParse(strValue, true, out value))
+            if (!Enum.TryParse(t, strValue, true, out value))
             {
                 // Now try adding the enum name into the value string.
                 string strFullValue = $"{t.Name.ToLower()}{strValue}";
 
-                if (!Enum.TryParse(strFullValue, true, out value))
+                if (!Enum.TryParse(t, strFullValue, true, out value))
                 {
                     string[] split = Regex.Split(t.Name, "(?<!^)(?=[A-Z][\\d+]?)");
                     foreach (string s in split)
@@ -318,7 +332,7 @@ namespace Molten
 
                         strNextValue += strValue;
 
-                        if (Enum.TryParse(strNextValue, true, out value))
+                        if (Enum.TryParse(t, strNextValue, true, out value))
                             return true;
                     }
 

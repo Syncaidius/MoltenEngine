@@ -49,7 +49,7 @@ namespace Molten.Graphics
             return (ID3D11RasterizerState*)state._native;
         }
 
-        public override RasterizerCullingMode CullingMode
+        public override RasterizerCullingMode Cull
         {
             get { return (RasterizerCullingMode)_desc.CullMode; }
             set
@@ -89,7 +89,7 @@ namespace Molten.Graphics
             }
         }
 
-        public override RasterizerFillingMode FillingMode
+        public override RasterizerFillingMode Fill
         {
             get => (RasterizerFillingMode)_desc.FillMode;
             set
@@ -102,7 +102,7 @@ namespace Molten.Graphics
             }
         }
 
-        public override bool IsAntialiasedLineEnabled
+        public override bool IsAALineEnabled
         {
             get => _desc.AntialiasedLineEnable > 0;
             set

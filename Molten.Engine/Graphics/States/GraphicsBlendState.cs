@@ -5,24 +5,34 @@
     {
         public abstract class RenderSurfaceBlend
         {
+            [ShaderNode(ShaderNodeParseType.Bool)]
             public abstract bool BlendEnable { get; set; }
 
+            [ShaderNode(ShaderNodeParseType.Bool)]
             public abstract bool LogicOpEnable { get; set; }
 
+            [ShaderNode(ShaderNodeParseType.Enum)]
             public abstract BlendType SrcBlend { get; set; }
 
+            [ShaderNode(ShaderNodeParseType.Enum)]
             public abstract BlendType DestBlend { get; set; }
 
+            [ShaderNode(ShaderNodeParseType.Enum)]
             public abstract BlendOperation BlendOp { get; set; }
 
+            [ShaderNode(ShaderNodeParseType.Enum)]
             public abstract BlendType SrcBlendAlpha { get; set; }
 
+            [ShaderNode(ShaderNodeParseType.Enum)]
             public abstract BlendType DestBlendAlpha { get; set; }
 
+            [ShaderNode(ShaderNodeParseType.Enum)]
             public abstract BlendOperation BlendOpAlpha { get; set; }
 
+            [ShaderNode(ShaderNodeParseType.Enum)]
             public abstract LogicOperation LogicOp { get; set; }
 
+            [ShaderNode(ShaderNodeParseType.Enum)]
             public abstract ColorWriteFlags RenderTargetWriteMask { get; set; }
 
             public void Set(RenderSurfaceBlend other)
@@ -122,8 +132,10 @@
             return true;
         }
 
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool AlphaToCoverageEnable { get; set; }
 
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool IndependentBlendEnable { get; set; }
 
         /// <summary>
@@ -136,11 +148,13 @@
         /// <summary>
         /// Gets or sets the blend sample mask.
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.UInt32)]
         public uint BlendSampleMask { get; set; }
 
         /// <summary>
         /// Gets or sets the blend factor.
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.Color)]
         public Color4 BlendFactor { get; set; }
     }
 }

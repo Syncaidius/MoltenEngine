@@ -34,7 +34,7 @@ namespace Molten.Graphics
                 }
             }
 
-            public override DepthStencilOperation PassOperation
+            public override DepthStencilOperation StencilPass
             {
                 get => Desc.PassOp.FromApi();
                 set
@@ -48,7 +48,7 @@ namespace Molten.Graphics
                 }
             }
 
-            public override DepthStencilOperation FailOperation
+            public override DepthStencilOperation StencilFail
             {
                 get => Desc.FailOp.FromApi();
                 set
@@ -62,7 +62,7 @@ namespace Molten.Graphics
                 }
             }
 
-            public override DepthStencilOperation DepthFailOperation
+            public override DepthStencilOperation DepthFail
             {
                 get => Desc.DepthFailOp.FromApi();
                 set

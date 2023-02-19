@@ -95,7 +95,7 @@ namespace Molten.Graphics
 
         /// <summary>A function that compares sampled data against existing sampled data. 
         /// The function options are listed in SharpDX.Direct3D11.Comparison.</summary>
-        public override ComparisonMode ComparisonFunc
+        public override ComparisonMode Comparison
         {
             get => _desc.ComparisonFunc.FromApi();
             set
@@ -107,7 +107,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets or sets the filtering method to use when sampling a texture (see SharpDX.Direct3D11.Filter).</summary>
-        public override SamplerFilter FilterMode
+        public override SamplerFilter Filter
         {
             get => _desc.Filter.FromApi();
             set

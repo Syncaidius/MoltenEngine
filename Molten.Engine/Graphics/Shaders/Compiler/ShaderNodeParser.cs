@@ -94,13 +94,10 @@ namespace Molten.Graphics
 
                 foreach (XmlNode c in node.ChildNodes)
                 {
+                    if (c.Name == "#text")
+                        continue;
+
                     string cName = c.Name.ToLower();
-
-                    if (cName == "depth" && c.ChildNodes.Count > 0)
-                    {
-
-                    }
-
                     ShaderHeaderNode cNode = ParseNode(context, c);
 
                     switch (cName)
@@ -133,10 +130,10 @@ namespace Molten.Graphics
             context.AddWarning($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.Value}'. Must be a {friendlyValueName} value");
         }
 
-        protected void UnsupportedTagMessage(ShaderCompilerContext context, string parentName, (string Name, string Value) node)
+        protected void UnsupportedTagMessage(ShaderCompilerContext context, string parentName, string nodeName)
         {
             parentName = parentName ?? "root";
-            context.AddWarning($"Ignoring unsupported {parentName} tag '{node.Name}'.");
+            context.AddWarning($"Ignoring unsupported '{parentName}' tag '{nodeName}'.");
         }
 
         protected void InvalidEnumMessage<T>(ShaderCompilerContext context, (string Name, string Value) node, string friendlyTagName)
@@ -165,10 +162,11 @@ namespace Molten.Graphics
             context.AddWarning($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.Value}'. Must be {mustBe}{strPossibleVals}");
         }
 
-        protected Color4 ParseColor4(ShaderCompilerContext context, string value, bool fromRgb)
+        protected bool ParseColor4(ShaderCompilerContext context, string value, bool fromRgb, out Color4 result)
         {
             string[] vals = value.Split(_colorDelimiters, StringSplitOptions.RemoveEmptyEntries);
             int maxVals = Math.Min(4, vals.Length);
+            result = Color4.Black;
 
             if (fromRgb)
             {
@@ -176,12 +174,17 @@ namespace Molten.Graphics
                 for (int i = 0; i < maxVals; i++)
                 {
                     if (byte.TryParse(vals[i], out byte cVal))
+                    {
                         col[i] = cVal;
+                    }
                     else
+                    {
                         context.AddWarning($"Invalid sampler border color component '{vals[i]}'. A maximum of 4 space-separated values is allowed, each between 0 and 255.");
+                        return false;
+                    }
                 }
 
-                return col.ToColor4();
+                result = col.ToColor4();
             }
             else
             {
@@ -189,13 +192,20 @@ namespace Molten.Graphics
                 for (int i = 0; i < maxVals; i++)
                 {
                     if (float.TryParse(vals[i], out float cVal))
+                    {
                         col[i] = cVal;
+                    }
                     else
+                    {
                         context.AddWarning($"Invalid sampler border color component '{vals[i]}'. A maximum of 4 space-separated values is allowed, each between 0 and 255.");
+                        return false;
+                    }
                 }
 
-                return col;
+                result = col;
             }
+
+            return true;
         }
     }
 }

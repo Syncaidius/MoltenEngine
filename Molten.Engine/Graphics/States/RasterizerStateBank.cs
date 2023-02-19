@@ -9,7 +9,7 @@
 
             // Wireframe preset.
             state = device.CreateRasterizerState();
-            state.FillingMode = RasterizerFillingMode.Wireframe;
+            state.Fill = RasterizerFillingMode.Wireframe;
             AddPreset(RasterizerPreset.Wireframe, state);
 
             // Scissor test preset
@@ -19,7 +19,7 @@
 
             // No culling preset.
             state = device.CreateRasterizerState();
-            state.CullingMode = RasterizerCullingMode.None;
+            state.Cull = RasterizerCullingMode.None;
             AddPreset(RasterizerPreset.NoCulling, state);
 
             // Multi-sampling preset - Default

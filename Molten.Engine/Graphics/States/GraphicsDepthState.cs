@@ -6,26 +6,30 @@ namespace Molten.Graphics
     public abstract class GraphicsDepthState : GraphicsObject, IEquatable<GraphicsDepthState>
     {
         public abstract class Face
-        {  
+        {
             /// <summary>
             /// Gets or sets the comparison function for the current depth-stencil facing.
             /// </summary>
+            [ShaderNode(ShaderNodeParseType.Enum)]
             public abstract ComparisonFunction Comparison { get; set; }
 
             /// <summary>
             /// Gets or sets the stencil pass operation for the current depth-stencil facing.
             /// </summary>
-            public abstract DepthStencilOperation PassOperation { get; set; }
+            [ShaderNode(ShaderNodeParseType.Enum)]
+            public abstract DepthStencilOperation StencilPass { get; set; }
 
             /// <summary>
             /// Gets or sets the stencil fail operation for the current depth-stencil facing.
             /// </summary>
-            public abstract DepthStencilOperation FailOperation { get; set; }
+            [ShaderNode(ShaderNodeParseType.Enum)]
+            public abstract DepthStencilOperation StencilFail { get; set; }
 
             /// <summary>
             /// Gets or sets the depth fail operation for the current depth-stencil facing.
             /// </summary>
-            public abstract DepthStencilOperation DepthFailOperation { get; set; }
+            [ShaderNode(ShaderNodeParseType.Enum)]
+            public abstract DepthStencilOperation DepthFail { get; set; }
 
             /// <summary>
             /// Sets the values of the current <see cref="Face"/> to match that of another.
@@ -34,9 +38,9 @@ namespace Molten.Graphics
             public void Set(Face other)
             {
                 Comparison = other.Comparison;
-                PassOperation = other.PassOperation;
-                FailOperation = other.FailOperation;
-                DepthFailOperation = other.DepthFailOperation;
+                StencilPass = other.StencilPass;
+                StencilFail = other.StencilFail;
+                DepthFail = other.DepthFail;
             }
         }
 
@@ -68,9 +72,9 @@ namespace Molten.Graphics
                 StencilReadMask = 255;
                 StencilWriteMask = 255;
                 FrontFace.Comparison = ComparisonFunction.Always;
-                FrontFace.DepthFailOperation = DepthStencilOperation.Keep;
-                FrontFace.PassOperation = DepthStencilOperation.Keep;
-                FrontFace.FailOperation = DepthStencilOperation.Keep;
+                FrontFace.DepthFail = DepthStencilOperation.Keep;
+                FrontFace.StencilPass = DepthStencilOperation.Keep;
+                FrontFace.StencilFail = DepthStencilOperation.Keep;
                 BackFace.Set(FrontFace);
             }
         }
@@ -105,39 +109,45 @@ namespace Molten.Graphics
         private static bool CompareOperation(Face op, Face other)
         {
             return op.Comparison == other.Comparison &&
-                op.DepthFailOperation == other.DepthFailOperation &&
-                op.FailOperation == other.FailOperation &&
-                op.PassOperation == other.PassOperation;
+                op.DepthFail == other.DepthFail &&
+                op.StencilFail == other.StencilFail &&
+                op.StencilPass == other.StencilPass;
         }
 
         /// <summary>
         /// Gets or sets whether or not depth-mapping is enabled.
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool IsDepthEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets whether or not stencil-mapping is enabled.
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool IsStencilEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the depth write flags.
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool DepthWriteEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the depth comparison function.
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.Enum)]
         public abstract ComparisonFunction DepthComparison { get; set; }
 
         /// <summary>
         /// Gets or sets the stencil read mask.
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract byte StencilReadMask { get; set; }
 
         /// <summary>
         /// Gets or sets the stencil write mask.
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.Byte)]
         public abstract byte StencilWriteMask { get; set; }
 
         /// <summary>
@@ -145,32 +155,39 @@ namespace Molten.Graphics
         /// <para>This property should throw a <see cref="NotSupportedException"/>, 
         /// if <see cref="GraphicsCapabilities.DepthBoundsTesting"/> is false in <see cref="GraphicsDevice.Adapter"/>.</para>
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool DepthBoundsTestEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum bounds during depth bounds testing.
         /// <para>This value may be ignored if <see cref="DepthBoundsTestEnabled"/> is false, or bounds testing is unsupported.</para>
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.Float)]
         public abstract float MaxDepthBounds { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum bounds during depth bounds testing.
         /// <para>This value may be ignored if <see cref="DepthBoundsTestEnabled"/> is false, or bounds testing is unsupported.</para>
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.Float)]
         public abstract float MinDepthBounds { get; set; }
 
         /// <summary>Gets the description for the front-face depth operation description.</summary>
+        [ShaderNode(ShaderNodeParseType.Object)]
         public Face FrontFace { get; }
 
         /// <summary>Gets the description for the back-face depth operation description.</summary>
+        [ShaderNode(ShaderNodeParseType.Object)]
         public Face BackFace { get; }
 
         /// <summary>Gets or sets the stencil reference value. The default value is 0.</summary>
+        [ShaderNode(ShaderNodeParseType.UInt32)]
         public uint StencilReference { get; set; }
 
         /// <summary>
         /// Gets or sets the depth write permission. the default value is <see cref="GraphicsDepthWritePermission.Enabled"/>.
         /// </summary>
+        [ShaderNode(ShaderNodeParseType.Enum)]
         public GraphicsDepthWritePermission WritePermission { get; set; } = GraphicsDepthWritePermission.Enabled;
     }
 }

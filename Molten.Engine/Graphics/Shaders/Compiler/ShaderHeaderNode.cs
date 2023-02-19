@@ -7,6 +7,12 @@ namespace Molten.Graphics
         internal ShaderHeaderNode(XmlNode original)
         {
             OriginalNode = original;
+            Name = original.Name;
+        }
+
+        public override string ToString()
+        {
+            return $"Node: {OriginalNode.Name} -- Name: {Name}";
         }
 
         /// <summary>

@@ -9,10 +9,10 @@
 		<blend preset="Default" />
 		<rasterizer preset="NoCulling" />
         <depth>
-            <enabled value="true"/>
-            <writeenabled value="All"/>
-            <writepermission value="ReadOnly"/>
-            <comparison value="LessEqual"/>
+            <IsDepthEnabled value="true"/>
+            <DepthWriteEnabled value="All"/>
+            <WritePermission value="ReadOnly"/>
+            <DepthComparison value="LessEqual"/>
         </depth>
 	</pass>
 </material>

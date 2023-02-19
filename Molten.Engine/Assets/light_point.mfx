@@ -12,31 +12,31 @@
     <rasterizer preset="default">
       <fill>solid</fill>
       <cull>front</cull>
-      <frontIsCCW>false</frontIsCCW>
-      <depthclip>false</depthclip>
-      <aaline>false</aaline>
-      <multisample>false</multisample>
-      <scissortest>false</scissortest>
+      <IsFrontCounterClockwise>false</IsFrontCounterClockwise>
+      <IsDepthClipEnabled>false</IsDepthClipEnabled>
+      <IsAALineEnabled>false</IsAALineEnabled>
+      <IsMultisampleEnabled>false</IsMultisampleEnabled>
+      <IsScissorEnabled>false</IsScissorEnabled>
     </rasterizer>
     <depth preset="default">
-      <reference>0</reference>
-      <comparison>GreaterEqual</comparison>
-      <writeenabled>Zero</writeenabled>
+      <StencilReference>0</StencilReference>
+      <DepthComparison>GreaterEqual</DepthComparison>
+      <depthwriteenabled>Zero</depthwriteenabled>
       <writepermission>ReadOnly</writepermission>
-      <enabled>true</enabled>
-      <stencilenabled>true</stencilenabled>
-      <front>
+      <IsDepthEnabled>true</IsDepthEnabled>
+      <isstencilenabled>true</isstencilenabled>
+      <FrontFace>
         <comparison>Equal</comparison>
-        <fail>Keep</fail>
+        <depthfail>Keep</depthfail>
         <stencilfail>Keep</stencilfail>
         <stencilpass>Keep</stencilpass>
-      </front>
-      <back>
+      </FrontFace>
+      <BackFace>
         <comparison>Equal</comparison>
-        <fail>Keep</fail>
+        <depthfail>Keep</depthfail>
         <stencilfail>Keep</stencilfail>
         <stencilpass>Keep</stencilpass>
-      </back>
+      </BackFace>
     </depth>
     <sampler slot="1" preset="default">
       <comparison>Always</comparison>
@@ -61,11 +61,11 @@
     <rasterizer preset="default" condition="debug">
       <fill>wireframe</fill>
       <cull>back</cull>
-      <frontIsCCW>false</frontIsCCW>
-      <depthclip>true</depthclip>
-      <aaline>false</aaline>
-      <multisample>false</multisample>
-      <scissortest>false</scissortest>
+      <IsFrontCounterClockwise>false</IsFrontCounterClockwise>
+      <IsDepthClipEnabled>true</IsDepthClipEnabled>
+      <IsAALineEnabled>false</IsAALineEnabled>
+      <IsMultisampleEnabled>false</IsMultisampleEnabled>
+      <IsScissorEnabled>false</IsScissorEnabled>
     </rasterizer>
   </pass>
 </material>
