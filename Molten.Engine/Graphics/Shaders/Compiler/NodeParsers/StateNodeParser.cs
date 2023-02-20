@@ -1,156 +1,90 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
-    internal abstract class StateNodeParser : ShaderNodeParser
+    internal class StateNodeParser : ShaderNodeParser
     {
-        class PropertyBinding
-        {
-            public PropertyInfo Info;
-
-            public ShaderNodeAttribute Attribute;
-        }
-
-        class PropertyCache
-        {
-            public Dictionary<string, PropertyBinding> Properties = new Dictionary<string, PropertyBinding>();
-        }
-
         public override Type[] TypeFilter { get; } = { typeof(Material), typeof(MaterialPass) };
 
-        Dictionary<Type, PropertyCache> _typeCache = new Dictionary<Type, PropertyCache>();
+        public override ShaderNodeType NodeType => ShaderNodeType.State;
 
-        protected void ParseProperties(ShaderHeaderNode node, ShaderCompilerContext context, object stateObject)
+        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            // Check if we need to cache the new stateObject type.
-            if (!_typeCache.TryGetValue(stateObject.GetType(), out PropertyCache cache))
+            GraphicsPipelineState state = foundation.Device.CreateState(PipelineStatePreset.Default);
+            GraphicsPipelineState.RenderSurfaceBlend rtBlend = state[0]; // Use the default preset's first (0) RT blend description.
+            PipelineStatePreset preset = PipelineStatePreset.Default;
+
+            switch (node.ValueType)
             {
-                cache = new PropertyCache();
-                PropertyInfo[] pInfo = stateObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
-                foreach (PropertyInfo p in pInfo)
-                {
-                    ShaderNodeAttribute att = p.GetCustomAttribute<ShaderNodeAttribute>();
-
-                    // Ignore non-node properties.
-                    if (att == null)
-                        continue;
-
-                    cache.Properties.Add(p.Name.ToLower(), new PropertyBinding()
+                case ShaderHeaderValueType.Preset:
                     {
-                        Info = p,
-                        Attribute = att
-                    });
-                }
-
-                _typeCache.Add(stateObject.GetType(), cache);
-            }
-
-            foreach ((string Name, string Value) c in node.ChildValues)
-            {
-                string lowName = c.Name.ToLower();
-                if (!cache.Properties.TryGetValue(lowName, out PropertyBinding pBind))
-                {
-                    UnsupportedTagMessage(context, node.Name, c.Name);
-                    continue;
-                }
-
-                switch (pBind.Attribute.ParseType)
-                {
-                    case ShaderNodeParseType.Bool:
+                        if (Enum.TryParse(node.Value, true, out preset))
                         {
-                            if (bool.TryParse(c.Value, out bool value))
-                                pBind.Info.SetValue(stateObject, value);
-                            else
-                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                            if (preset != PipelineStatePreset.Default)
+                                foundation.Device.StatePresets.ApplyPreset(state, preset);
+
+                            rtBlend = state[0];
                         }
-                        break;
-
-
-                    case ShaderNodeParseType.Enum:
-                        if (EngineUtil.TryParseEnum(pBind.Info.PropertyType, c.Value, out object enumValue))
-                            pBind.Info.SetValue(stateObject, enumValue);
                         else
-                            InvalidEnumMessage<GraphicsDepthWritePermission>(context, c, pBind.Info.Name);
-                        break;
-
-                    case ShaderNodeParseType.UInt32:
                         {
-                            if (uint.TryParse(c.Value, out uint value))
-                                pBind.Info.SetValue(stateObject, value);
-                            else
-                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                            InvalidEnumMessage<PipelineStatePreset>(context, (node.Name, node.Value), "pipeline preset");
                         }
-                        break;
+                    }
+                    break;
 
-                    case ShaderNodeParseType.Int32:
+                case ShaderHeaderValueType.BlendPreset:
+                    {
+                        if (Enum.TryParse(node.Value, true, out BlendPreset subPreset))
                         {
-                            if (int.TryParse(c.Value, out int value))
-                                pBind.Info.SetValue(stateObject, value);
-                            else
-                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                            if (subPreset != BlendPreset.Default)
+                                foundation.Device.StatePresets.ApplyBlendPreset(state, subPreset);
                         }
-                        break;
-
-                    case ShaderNodeParseType.Byte:
+                        else
                         {
-                            if (byte.TryParse(c.Value, out byte value))
-                                pBind.Info.SetValue(stateObject, value);
-                            else
-                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                            InvalidEnumMessage<BlendPreset>(context, (node.Name, node.Value), "blend preset");
                         }
-                        break;
+                    }
+                    break;
 
-                    case ShaderNodeParseType.Float:
+                case ShaderHeaderValueType.RasterizerPreset:
+                    {
+                        if (Enum.TryParse(node.Value, true, out RasterizerPreset subPreset))
                         {
-                            if (float.TryParse(c.Value, out float value))
-                                pBind.Info.SetValue(stateObject, value);
-                            else
-                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                            if (subPreset != RasterizerPreset.Default)
+                                foundation.Device.StatePresets.ApplyRasterizerPreset(state, subPreset);
                         }
-                        break;
-
-
-                    case ShaderNodeParseType.Color:
+                        else
                         {
-                            if(ParseColor4(context, c.Value, true, out Color4 value))
-                                pBind.Info.SetValue(stateObject, value);
-                            else
-                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                            InvalidEnumMessage<RasterizerPreset>(context, (node.Name, node.Value), "rasterizer preset");
                         }
-                        break;
+                    }
+                    break;
 
-                    default:
-                        UnsupportedTagMessage(context, node.Name, c.Name);
-                        break;
-                }
+                case ShaderHeaderValueType.DepthPreset:
+                    {
+                        if (Enum.TryParse(node.Value, true, out DepthStencilPreset subPreset))
+                        {
+                            if (subPreset != DepthStencilPreset.Default)
+                                foundation.Device.StatePresets.ApplyDepthPreset(state, subPreset);
+                        }
+                        else
+                        {
+                            InvalidEnumMessage<DepthStencilPreset>(context, (node.Name, node.Value), "depth-stencil preset");
+                        }
+                    }
+                    break;
             }
 
-            // Iterate over object properties
-            foreach (ShaderHeaderNode c in node.ChildNodes)
-            {
-                string lowName = c.Name.ToLower();
-                if (!cache.Properties.TryGetValue(lowName, out PropertyBinding pBind))
-                {
-                    UnsupportedTagMessage(context, node.Name, c.Name);
-                    continue;
-                }
+            state = foundation.State[node.Conditions] ?? state;
+            ParseProperties(node, context, state);
 
-                object pValue = pBind.Info.GetValue(stateObject);
-                ParseProperties(c, context, pValue);
+            state.IndependentBlendEnable = (state.IndependentBlendEnable || (node.SlotID > 0));
 
-                if (pBind.Info.PropertyType.IsValueType)
-                {
-                    if (pBind.Info.SetMethod != null)
-                        pBind.Info.SetValue(stateObject, pValue);
-                    else
-                        context.AddError($"Unable to apply definition '{node.Name}-{c.Name}' to '{pBind.Info.Name}' value-type property: No setter method available");
-                }
-            }
+            // Update RT blend description on main description.
+            state[node.SlotID].Set(rtBlend);
+
+            if (node.Conditions == StateConditions.None)
+                foundation.State.FillMissingWith(state);
+            else
+                foundation.State[node.Conditions] = state;
         }
     }
 }

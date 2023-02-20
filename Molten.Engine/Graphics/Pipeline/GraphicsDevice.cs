@@ -29,9 +29,7 @@ namespace Molten.Graphics
         {
             OnInitialize();
 
-            DepthBank = new DepthStateBank(this);
-            BlendBank = new BlendStateBank(this);
-            RasterizerBank = new RasterizerStateBank(this);
+            StatePresets = new PipelineStateBank(this);
             SamplerBank = new SamplerBank(this);
         }
 
@@ -56,9 +54,7 @@ namespace Molten.Graphics
             DisposeMarkedObjects();
 
             Cmd?.Dispose();
-            DepthBank?.Dispose();
-            BlendBank?.Dispose();
-            RasterizerBank?.Dispose();
+            StatePresets?.Dispose();
             SamplerBank?.Dispose();
         }
 
@@ -96,14 +92,14 @@ namespace Molten.Graphics
         /// Requests a new <see cref="GraphicsPipelineState"/> from the current <see cref="GraphicsDevice"/>.
         /// </summary>
         /// <returns></returns>
-        public abstract GraphicsPipelineState CreateState();
+        public abstract GraphicsPipelineState CreateState(PipelineStatePreset preset = PipelineStatePreset.Default);
 
         /// <summary>
         /// Requests a new <see cref="ShaderSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
         /// </summary>
         /// <param name="source">A source shader sampler to use as a template for the new one.</param>
         /// <returns></returns>
-        public abstract ShaderSampler CreateSampler(ShaderSampler source = null);
+        public abstract ShaderSampler CreateSampler(SamplerPreset preset = SamplerPreset.Default);
 
         public abstract ShaderComposition CreateShaderComposition(ShaderType type, HlslShader parent);
 
@@ -159,17 +155,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the device's depth-stencil state bank.
         /// </summary>
-        public DepthStateBank DepthBank { get; private set; }
-
-        /// <summary>
-        /// Gets the device's blend state bank.
-        /// </summary>
-        public BlendStateBank BlendBank { get; private set; }
-
-        /// <summary>
-        /// Gets the device's rasterizer state bank.
-        /// </summary>
-        public RasterizerStateBank RasterizerBank { get; private set; }
+        public PipelineStateBank StatePresets { get; private set; }
 
         /// <summary>
         /// Gets the device's texture sampler bank.

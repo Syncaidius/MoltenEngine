@@ -15,7 +15,7 @@
             }
 
             // Retrieve existing state if available and create a new one from it to avoid editing the existing one.
-            ShaderSampler sampler = foundation.Device.CreateSampler(foundation.Device.SamplerBank.GetPreset(preset));
+            ShaderSampler sampler = foundation.Device.CreateSampler(preset);
             ParseProperties(node, context, sampler);
 
             // Initialize shader state bank for the sampler if needed.

@@ -149,14 +149,14 @@ namespace Molten.Graphics
             // TODO add the context's profiler stats to the device's main profiler.
         }
 
-        public override GraphicsPipelineState CreateState()
+        public override GraphicsPipelineState CreateState(PipelineStatePreset preset)
         {
-            return new PipelineStateDX11(this);
+            return new PipelineStateDX11(this, preset);
         }
 
-        public override ShaderSampler CreateSampler(ShaderSampler source = null)
+        public override ShaderSampler CreateSampler(SamplerPreset preset)
         {
-            return new ShaderSamplerDX11(this, source as ShaderSamplerDX11);
+            return new ShaderSamplerDX11(this, preset);
         }
 
         public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0)
@@ -211,7 +211,6 @@ namespace Molten.Graphics
 
             // TODO dispose of all bound IGraphicsResource
             VertexFormatCache.Dispose();
-            BlendBank.Dispose();
             _bufferSegmentPool.Dispose();
 
             if (_debug != null)
