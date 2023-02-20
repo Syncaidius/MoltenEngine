@@ -7,13 +7,85 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal unsafe class PipelineStateVK : GraphicsObject
+    internal unsafe class PipelineStateVK : GraphicsPipelineState
     {
-        GraphicsPipelineCreateInfo* _info;
-        Pipeline _pipeline;
-        GraphicsDepthState _state;
+        public class FaceVK : Face
+        {
+            internal StencilOpState Desc;
+            PipelineStateVK _parent;
 
-        internal PipelineStateVK(GraphicsDevice device) : base(device, GraphicsBindTypeFlags.Input)
+            internal FaceVK(PipelineStateVK parent, ref StencilOpState defaultDesc)
+            {
+                _parent = parent;
+                Desc = defaultDesc;
+            }
+
+            public override ComparisonFunction Comparison
+            {
+                get => Desc.CompareOp.FromApi();
+                set
+                {
+                    CompareOp func = value.ToApi();
+                    if (Desc.CompareOp != func)
+                    {
+                        Desc.CompareOp = func;
+                        _parent._dirty = true;
+                    }
+                }
+            }
+
+            public override DepthStencilOperation StencilPass
+            {
+                get => Desc.PassOp.FromApi();
+                set
+                {
+                    StencilOp op = value.ToApi();
+                    if (Desc.PassOp != op)
+                    {
+                        Desc.PassOp = op;
+                        _parent._dirty = true;
+                    }
+                }
+            }
+
+            public override DepthStencilOperation StencilFail
+            {
+                get => Desc.FailOp.FromApi();
+                set
+                {
+                    StencilOp op = value.ToApi();
+                    if (Desc.FailOp != op)
+                    {
+                        Desc.FailOp = op;
+                        _parent._dirty = true;
+                    }
+                }
+            }
+
+            public override DepthStencilOperation DepthFail
+            {
+                get => Desc.DepthFailOp.FromApi();
+                set
+                {
+                    StencilOp op = value.ToApi();
+                    if (Desc.DepthFailOp != op)
+                    {
+                        Desc.DepthFailOp = op;
+                        _parent._dirty = true;
+                    }
+                }
+            }
+        }
+
+        StructKey<GraphicsPipelineCreateInfo> _info;
+        Pipeline _pipeline;
+
+        StructKey<PipelineDepthStencilStateCreateInfo> _descDepth { get; }
+        DepthStateVK _depthState;
+        bool _dirtyDepth = true;
+
+        internal PipelineStateVK(GraphicsDevice device) : 
+            base(device)
         {
             _info = EngineUtil.Alloc<GraphicsPipelineCreateInfo>();
         }
@@ -23,8 +95,37 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        protected override Face CreateFace(bool isFrontFace)
+        {
+            if (isFrontFace)
+                return new FaceVK(this, ref _descDepth.Value.Front);
+            else
+                return new FaceVK(this, ref _descDepth.Value.Back);
+        }
+
         protected override void OnApply(GraphicsCommandQueue cmd)
         {
+            if (_dirtyDepth)
+            {
+                _depthState = Device.CacheObject(_descDepth, _depthState);
+
+                // If no matching state was found, create one.
+                if (_depthState == null)
+                    _depthState = Device.CacheObject(_descDepth, new DepthStateVK(Device, _descDepth));
+
+                _info.Value.PDepthStencilState = _depthState.Desc;
+                _dirtyDepth = false;
+                Version++;
+            }
+
+            if (_dirtyDepth)
+            {
+                _descDepth.Value.Front = (FrontFace as FaceVK).Desc;
+                _descDepth.Value.Back = (BackFace as FaceVK).Desc;
+                _dirtyDepth = false;
+                Version++;
+            }
+
             // TODO if dirty, recreate _pipeline.
 
             /* TODO refactor GraphicsCommandQueue to only have a single State slot.
@@ -48,6 +149,120 @@ namespace Molten.Graphics
              *  
              *  NOTE: This may 
             */
+        }
+
+        public override bool IsDepthEnabled
+        {
+            get => _descDepth.Value.DepthTestEnable;
+            set
+            {
+                if (_descDepth.Value.DepthTestEnable != value)
+                {
+                    _descDepth.Value.DepthTestEnable = value;
+                    _dirtyDepth = true;
+                }
+            }
+        }
+
+        public override bool IsStencilEnabled
+        {
+            get => _descDepth.Value.StencilTestEnable;
+            set
+            {
+                if (_descDepth.Value.StencilTestEnable != value)
+                {
+                    _descDepth.Value.StencilTestEnable = value;
+                    _dirtyDepth = true;
+                }
+            }
+        }
+
+        public override bool DepthWriteEnabled
+        {
+            get => _descDepth.Value.DepthWriteEnable;
+            set
+            {
+                if (_descDepth.Value.DepthWriteEnable != value)
+                {
+                    _descDepth.Value.DepthWriteEnable = value;
+                    _dirtyDepth = true;
+                }
+            }
+        }
+
+        public override bool DepthBoundsTestEnabled
+        {
+            get => _descDepth.Value.DepthBoundsTestEnable;
+            set
+            {
+                if (_descDepth.Value.DepthBoundsTestEnable != value)
+                {
+                    _descDepth.Value.DepthBoundsTestEnable = value;
+                    _dirtyDepth = true;
+                }
+            }
+        }
+
+        public override float MaxDepthBounds
+        {
+            get => _descDepth.Value.MaxDepthBounds;
+            set
+            {
+                if (_descDepth.Value.MaxDepthBounds != value)
+                {
+                    _descDepth.Value.MaxDepthBounds = value;
+                    _dirtyDepth = true;
+                }
+            }
+        }
+
+        public override float MinDepthBounds
+        {
+            get => _descDepth.Value.MinDepthBounds;
+            set
+            {
+                if (_descDepth.Value.MinDepthBounds != value)
+                {
+                    _descDepth.Value.MinDepthBounds = value;
+                    _dirtyDepth = true;
+                }
+            }
+        }
+
+        public override ComparisonFunction DepthComparison
+        {
+            get => (ComparisonFunction)_descDepth.Value.DepthCompareOp;
+            set
+            {
+                CompareOp op = value.ToApi();
+                if (_descDepth.Value.DepthCompareOp != op)
+                {
+                    _descDepth.Value.DepthCompareOp = op;
+                    _dirtyDepth = true;
+                }
+            }
+        }
+
+        public override byte StencilReadMask
+        {
+            get => (byte)(FrontFace as FaceVK).Desc.CompareMask;
+            set
+            {
+                (FrontFace as FaceVK).Desc.CompareMask = value;
+                (BackFace as FaceVK).Desc.CompareMask = value;
+                _dirtyDepth = true;
+            }
+        }
+
+        public override byte StencilWriteMask
+        {
+            get => (byte)(FrontFace as FaceVK).Desc.WriteMask;
+            set
+            {
+                (FrontFace as FaceVK).Desc.WriteMask = value;
+                (BackFace as FaceVK).Desc.WriteMask = value;
+                _dirtyDepth = true;
+            }
         }
     }
 }

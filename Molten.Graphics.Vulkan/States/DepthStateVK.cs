@@ -7,7 +7,7 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    public unsafe class DepthStateVK : GraphicsDepthState
+    public unsafe class DepthStateVK : GraphicsObject
     {
         public class FaceVK : Face
         {
@@ -29,7 +29,7 @@ namespace Molten.Graphics
                     if (Desc.CompareOp != func)
                     {
                         Desc.CompareOp = func;
-                        _parent._dirty = true;
+                        _parent._dirtyDepth = true;
                     }
                 }
             }
@@ -43,7 +43,7 @@ namespace Molten.Graphics
                     if (Desc.PassOp != op)
                     {
                         Desc.PassOp = op;
-                        _parent._dirty = true;
+                        _parent._dirtyDepth = true;
                     }
                 }
             }
@@ -57,7 +57,7 @@ namespace Molten.Graphics
                     if (Desc.FailOp != op)
                     {
                         Desc.FailOp = op;
-                        _parent._dirty = true;
+                        _parent._dirtyDepth = true;
                     }
                 }
             }
@@ -71,160 +71,23 @@ namespace Molten.Graphics
                     if (Desc.DepthFailOp != op)
                     {
                         Desc.DepthFailOp = op;
-                        _parent._dirty = true;
+                        _parent._dirtyDepth = true;
                     }
                 }
             }
         }
 
-        PipelineDepthStencilStateCreateInfo* _ptrDesc;
-        bool _dirty = true;
-
-        public DepthStateVK(GraphicsDevice device, GraphicsDepthState source) : base(device, source)
+        internal StructKey<PipelineDepthStencilStateCreateInfo> Desc { get; }
+        public DepthStateVK(GraphicsDevice device, StructKey<PipelineDepthStencilStateCreateInfo> desc) : 
+            base(device, GraphicsBindTypeFlags.Input)
         {
-            _dirty = true;
-            _ptrDesc = EngineUtil.Alloc<PipelineDepthStencilStateCreateInfo>();
-            _ptrDesc->SType = StructureType.PipelineDepthStencilStateCreateInfo;
-        }
-
-        protected override Face CreateFace(bool isFrontFace)
-        {
-            if (isFrontFace)
-                return new FaceVK(this, ref _ptrDesc->Front);
-            else
-                return new FaceVK(this, ref _ptrDesc->Back);
-        }
-
-        protected override void OnApply(GraphicsCommandQueue context)
-        {
-            if (_dirty)
-            {
-                _ptrDesc->Front = (FrontFace as FaceVK).Desc;
-                _ptrDesc->Back = (BackFace as FaceVK).Desc;
-                _dirty = false;
-                Version++;
-            }
+            Desc = new StructKey<PipelineDepthStencilStateCreateInfo>(desc);
+            Desc.Value.SType = StructureType.PipelineDepthStencilStateCreateInfo;
         }
 
         public override void GraphicsRelease()
         {
-            EngineUtil.Free(ref _ptrDesc);
-        }
-
-        internal ref PipelineDepthStencilStateCreateInfo* Desc => ref _ptrDesc;
-
-        public override bool IsDepthEnabled
-        {
-            get => _ptrDesc->DepthTestEnable;
-            set
-            {
-                if (_ptrDesc->DepthTestEnable != value)
-                {
-                    _ptrDesc->DepthTestEnable = value;
-                    _dirty = true;
-                }
-            }
-        }
-
-        public override bool IsStencilEnabled
-        {
-            get => _ptrDesc->StencilTestEnable;
-            set
-            {
-                if (_ptrDesc->StencilTestEnable != value)
-                {
-                    _ptrDesc->StencilTestEnable = value;
-                    _dirty = true;
-                }
-            }
-        }
-
-        public override bool DepthWriteEnabled
-        {
-            get => _ptrDesc->DepthWriteEnable;
-            set
-            {
-                if (_ptrDesc->DepthWriteEnable != value)
-                {
-                    _ptrDesc->DepthWriteEnable = value;
-                    _dirty = true;
-                }
-            }
-        }
-
-        public override bool DepthBoundsTestEnabled
-        {
-            get => _ptrDesc->DepthBoundsTestEnable;
-            set
-            {
-                if (_ptrDesc->DepthBoundsTestEnable != value)
-                {
-                    _ptrDesc->DepthBoundsTestEnable = value;
-                    _dirty = true;
-                }
-            }
-        }
-
-        public override float MaxDepthBounds
-        {
-            get => _ptrDesc->MaxDepthBounds;
-            set
-            {
-                if (_ptrDesc->MaxDepthBounds != value)
-                {
-                    _ptrDesc->MaxDepthBounds = value;
-                    _dirty = true;
-                }
-            }
-        }
-
-        public override float MinDepthBounds
-        {
-            get => _ptrDesc->MinDepthBounds;
-            set
-            {
-                if (_ptrDesc->MinDepthBounds != value)
-                {
-                    _ptrDesc->MinDepthBounds = value;
-                    _dirty = true;
-                }
-            }
-        }
-
-        public override ComparisonFunction DepthComparison
-        {
-            get => (ComparisonFunction)_ptrDesc->DepthCompareOp;
-            set
-            {
-                CompareOp op = value.ToApi();
-                if (_ptrDesc->DepthCompareOp != op)
-                {
-                    _ptrDesc->DepthCompareOp = op;
-                    _dirty = true;
-                }
-            }
-        }
-
-        public override byte StencilReadMask
-        {
-            get => (byte)(FrontFace as FaceVK).Desc.CompareMask;
-            set
-            {
-                (FrontFace as FaceVK).Desc.CompareMask = value;
-                (BackFace as FaceVK).Desc.CompareMask = value;
-                _dirty = true;
-            }
-        }
-
-        public override byte StencilWriteMask
-        {
-            get => (byte)(FrontFace as FaceVK).Desc.WriteMask;
-            set
-            {
-                (FrontFace as FaceVK).Desc.WriteMask = value;
-                (BackFace as FaceVK).Desc.WriteMask = value;
-                _dirty = true;
-            }
+            Desc.Dispose();
         }
     }
 }

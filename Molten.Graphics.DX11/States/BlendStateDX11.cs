@@ -5,21 +5,21 @@ namespace Molten.Graphics
     /// <summary>Stores a blend state for use with a <see cref="CommandQueueDX11"/>.</summary>
     public unsafe class BlendStateDX11 : GraphicsObject<ID3D11BlendState1>
     {
-        internal StructKey<BlendDesc1> Key { get; }
+        internal StructKey<BlendDesc1> Desc { get; }
 
         ID3D11BlendState1* _native;
 
-        public BlendStateDX11(DeviceDX11 device, StructKey<BlendDesc1> key) : 
+        public BlendStateDX11(DeviceDX11 device, StructKey<BlendDesc1> desc) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
-            Key = new StructKey<BlendDesc1>(key);
+            Desc = new StructKey<BlendDesc1>(desc);
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)
         {
             if (_native == null)
             {
-                (cmd as CommandQueueDX11).DXDevice.Ptr->CreateBlendState1(Key, ref _native);
+                (cmd as CommandQueueDX11).DXDevice.Ptr->CreateBlendState1(Desc, ref _native);
                 Version++;
             }
         }
@@ -27,7 +27,7 @@ namespace Molten.Graphics
         public override void GraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
-            Key.Dispose();
+            Desc.Dispose();
         }
 
         public static implicit operator ID3D11BlendState1*(BlendStateDX11 state)
