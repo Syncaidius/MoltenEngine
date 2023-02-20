@@ -51,6 +51,6 @@
             return state;
         }
 
-        public abstract T GetPreset(E value);
+        public abstract void ApplyPreset(T target, E preset);
     }
 }

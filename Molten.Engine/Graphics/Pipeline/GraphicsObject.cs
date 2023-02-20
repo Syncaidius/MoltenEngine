@@ -83,12 +83,14 @@ namespace Molten.Graphics
         /// </summary>
         public void* RawNative => NativePtr;
 
-
-        public static implicit operator T*(GraphicsObject<T> bindable)
+        /// <summary>
+        /// Implict cast to from a <see cref="GraphicsObject{T}"/> to a pointer of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="obj">The object to be cast</param>
+        public static implicit operator T*(GraphicsObject<T> obj)
         {
-            return bindable.NativePtr;
+            return obj.NativePtr;
         }
-
 
         /// <summary>Queries the underlying texture's interface.</summary>
         /// <typeparam name="Q">The type of object to request in the query.</typeparam>

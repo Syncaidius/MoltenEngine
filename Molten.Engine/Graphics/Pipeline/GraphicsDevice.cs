@@ -10,6 +10,7 @@ namespace Molten.Graphics
     {
         long _allocatedVRAM;
         ThreadedQueue<GraphicsObject> _objectsToDispose;
+        Dictionary<Type, Dictionary<StructKey, GraphicsObject>> _objectCache;
 
         /// <summary>
         /// Creates a new instance of <see cref="GraphicsDevice"/>.
@@ -21,6 +22,7 @@ namespace Molten.Graphics
             Settings = settings;
             Log = log;
             _objectsToDispose = new ThreadedQueue<GraphicsObject>();
+            _objectCache = new Dictionary<Type, Dictionary<StructKey, GraphicsObject>>();
         }
 
         internal void Initialize()
@@ -61,25 +63,40 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Requests a new <see cref="GraphicsDepthState"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default depth-stencil settings.
+        /// 
         /// </summary>
-        /// <param name="source">A source depth-stencil state to use as a template configuration.</param>
-        /// <returns></returns>
-        public abstract GraphicsDepthState CreateDepthState(GraphicsDepthState source = null);
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objKey"></param>
+        /// <param name="obj"></param>
+        public T CacheObject<T>(StructKey objKey, T obj)
+            where T : GraphicsObject
+        {
+            if (!_objectCache.TryGetValue(typeof(T), out Dictionary<StructKey, GraphicsObject> objects))
+            {
+                objects = new Dictionary<StructKey, GraphicsObject>();
+                _objectCache.Add(typeof(T), objects);
+            }
+
+            if (obj != null)
+            {
+                foreach (StructKey key in objects.Keys)
+                {
+                    if (key.Equals(objKey))
+                        return objects[key] as T;
+                }
+
+                // If we reach here, object has no match in the cache. Add it
+                objects.Add(objKey, obj);
+            }
+
+            return obj;
+        }
 
         /// <summary>
-        /// Requests a new <see cref="GraphicsBlendState"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default blend settings.
+        /// Requests a new <see cref="GraphicsPipelineState"/> from the current <see cref="GraphicsDevice"/>.
         /// </summary>
-        /// <param name="source">A source blend state to use as a template configuration.</param>
         /// <returns></returns>
-        public abstract GraphicsBlendState CreateBlendState(GraphicsBlendState source = null);
-
-        /// <summary>
-        /// Requests a new <see cref="GraphicsRasterizerState"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default rasterizer settings.
-        /// </summary>
-        /// <param name="source">A source rasterizer state to use as a template configuration.</param>
-        /// <returns></returns>
-        public abstract GraphicsRasterizerState CreateRasterizerState(GraphicsRasterizerState source = null);
+        public abstract GraphicsPipelineState CreateState();
 
         /// <summary>
         /// Requests a new <see cref="ShaderSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.

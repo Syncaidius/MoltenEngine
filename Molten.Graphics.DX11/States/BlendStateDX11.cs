@@ -1,183 +1,33 @@
-﻿using Silk.NET.Direct3D.Compilers;
-using Silk.NET.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
     /// <summary>Stores a blend state for use with a <see cref="CommandQueueDX11"/>.</summary>
-    public unsafe class BlendStateDX11 : GraphicsBlendState
+    public unsafe class BlendStateDX11 : GraphicsObject<ID3D11BlendState1>
     {
-        public class SurfaceBlendDX11 : RenderSurfaceBlend
-        {
-            BlendStateDX11 _parent = null;
-            int _index;
-
-            internal SurfaceBlendDX11(BlendStateDX11 parent, int index) 
-            {
-                _parent = parent;
-                _index = index;
-            }
-
-            public override bool BlendEnable
-            {
-                get => _parent._desc.RenderTarget[_index].BlendEnable == 1;
-                set
-                {
-                    int val = value ? 1 : 0;
-                    if(_parent._desc.RenderTarget[_index].BlendEnable != val)
-                    {
-                        _parent._desc.RenderTarget[_index].BlendEnable = val;
-                        _parent._dirty = true;
-                    }
-                }
-            }
-
-            public override bool LogicOpEnable
-            {
-                get => _parent._desc.RenderTarget[_index].LogicOpEnable > 0;
-                set
-                {
-                    int val = value ? 1 : 0;
-                    if (_parent._desc.RenderTarget[_index].LogicOpEnable != val)
-                    {
-                        _parent._desc.RenderTarget[_index].LogicOpEnable = val;
-                        _parent._dirty = true;
-                    }
-                }
-            }
-
-            public override BlendType SrcBlend
-            {
-                get => (BlendType)_parent._desc.RenderTarget[_index].SrcBlend;
-                set
-                {
-                    if (_parent._desc.RenderTarget[_index].SrcBlend != (Blend)value)
-                    {
-                        _parent._desc.RenderTarget[_index].SrcBlend = (Blend)value;
-                        _parent._dirty = true;
-                    }
-                }
-            }
-
-            public override BlendType DestBlend
-            {
-                get => (BlendType)_parent._desc.RenderTarget[_index].DestBlend;
-                set
-                {
-                    if (_parent._desc.RenderTarget[_index].DestBlend != (Blend)value)
-                    {
-                        _parent._desc.RenderTarget[_index].DestBlend = (Blend)value;
-                        _parent._dirty = true;
-                    }
-                }
-            }
-
-            public override BlendOperation BlendOp
-            {
-                get => (BlendOperation)_parent._desc.RenderTarget[_index].BlendOp;
-                set
-                {
-                    if (_parent._desc.RenderTarget[_index].BlendOp != (BlendOp)value)
-                    {
-                        _parent._desc.RenderTarget[_index].BlendOp = (BlendOp)value;
-                        _parent._dirty = true;
-                    }
-                }
-            }
-
-            public override BlendType SrcBlendAlpha
-            {
-                get => (BlendType)_parent._desc.RenderTarget[_index].SrcBlendAlpha;
-                set
-                {
-                    if (_parent._desc.RenderTarget[_index].SrcBlendAlpha != (Blend)value)
-                    {
-                        _parent._desc.RenderTarget[_index].SrcBlendAlpha = (Blend)value;
-                        _parent._dirty = true;
-                    }
-                }
-            }
-
-            public override BlendType DestBlendAlpha
-            {
-                get => (BlendType)_parent._desc.RenderTarget[_index].DestBlendAlpha;
-                set
-                {
-                    if (_parent._desc.RenderTarget[_index].DestBlendAlpha != (Blend)value)
-                    {
-                        _parent._desc.RenderTarget[_index].DestBlendAlpha = (Blend)value;
-                        _parent._dirty = true;
-                    }
-                }
-            }
-
-            public override BlendOperation BlendOpAlpha
-            {
-                get => (BlendOperation)_parent._desc.RenderTarget[_index].BlendOpAlpha;
-                set
-                {
-                    if (_parent._desc.RenderTarget[_index].BlendOpAlpha != (BlendOp)value)
-                    {
-                        _parent._desc.RenderTarget[_index].BlendOpAlpha = (BlendOp)value;
-                        _parent._dirty = true;
-                    }
-                }
-            }
-
-            public override LogicOperation LogicOp
-            {
-                get => (LogicOperation)_parent._desc.RenderTarget[_index].LogicOp;
-                set
-                {
-                    if (_parent._desc.RenderTarget[_index].LogicOp != (LogicOp)value)
-                    {
-                        _parent._desc.RenderTarget[_index].LogicOp = (LogicOp)value;
-                        _parent._dirty = true;
-                    }
-                }
-            }
-
-            public override ColorWriteFlags RenderTargetWriteMask
-            {
-                get => (ColorWriteFlags)_parent._desc.RenderTarget[_index].RenderTargetWriteMask;
-                set
-                {
-                    if (_parent._desc.RenderTarget[_index].RenderTargetWriteMask != (byte)value)
-                    {
-                        _parent._desc.RenderTarget[_index].RenderTargetWriteMask = (byte)value;
-                        _parent._dirty = true;
-                    }
-                }
-            }
-        }
-
-        public unsafe ID3D11BlendState1* NativePtr => _native;
+        internal StructKey<BlendDesc1> Key { get; }
 
         ID3D11BlendState1* _native;
-        BlendDesc1 _desc;
 
-        bool _dirty;
-
-        protected override RenderSurfaceBlend CreateSurfaceBlend(int index)
+        public BlendStateDX11(DeviceDX11 device, StructKey<BlendDesc1> key) : 
+            base(device, GraphicsBindTypeFlags.Input)
         {
-            return new SurfaceBlendDX11(this, index);
-        }
-
-        public BlendStateDX11(DeviceDX11 device, BlendStateDX11 source = null) : base(device, source)
-        {
-            _dirty = true;
+            Key = new StructKey<BlendDesc1>(key);
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)
         {
-            if (_native == null || _dirty)
+            if (_native == null)
             {
-                _dirty = false;
-                GraphicsRelease();
-
-                // Create new state
-                (cmd as CommandQueueDX11).DXDevice.Ptr->CreateBlendState1(ref _desc, ref _native);
+                (cmd as CommandQueueDX11).DXDevice.Ptr->CreateBlendState1(Key, ref _native);
                 Version++;
             }
+        }
+
+        public override void GraphicsRelease()
+        {
+            SilkUtil.ReleasePtr(ref _native);
+            Key.Dispose();
         }
 
         public static implicit operator ID3D11BlendState1*(BlendStateDX11 state)
@@ -190,29 +40,6 @@ namespace Molten.Graphics
             return (ID3D11BlendState*)state._native;
         }
 
-        public override void GraphicsRelease()
-        {
-            SilkUtil.ReleasePtr(ref _native);
-        }
-
-        public override bool AlphaToCoverageEnable
-        {
-            get => _desc.AlphaToCoverageEnable > 0;
-            set
-            {
-                _desc.AlphaToCoverageEnable = value ? 1 : 0;
-                _dirty = true;
-            }
-        }
-
-        public override bool IndependentBlendEnable
-        {
-            get => _desc.IndependentBlendEnable > 0;
-            set
-            {
-                _desc.IndependentBlendEnable = value ? 1 : 0;
-                _dirty = true;
-            }
-        }
+        public override unsafe ID3D11BlendState1* NativePtr => _native;
     }
 }

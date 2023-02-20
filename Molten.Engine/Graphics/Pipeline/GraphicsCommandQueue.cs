@@ -249,11 +249,7 @@ where B : GraphicsSlotBinder<T>, new()
 
         public GraphicsSlot<Material> Material { get; protected set; }
 
-        public GraphicsSlot<GraphicsBlendState> Blend { get; protected set; }
-
-        public GraphicsSlot<GraphicsRasterizerState> Rasterizer { get; protected set; }
-
-        public GraphicsSlot<GraphicsDepthState> Depth { get; protected set; }
+        public GraphicsSlot<GraphicsPipelineState> State { get; protected set; }
 
         public GraphicsSlotGroup<IRenderSurface2D> Surfaces { get; protected set; }
     }
