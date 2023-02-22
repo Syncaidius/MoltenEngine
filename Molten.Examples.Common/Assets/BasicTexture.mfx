@@ -7,7 +7,7 @@
 		<vertex>VS</vertex>
     <fragment>PS</fragment>
 	</pass>
-  <blend preset="PreMultipliedAlpha" />
+    <state preset="default" blend="PreMultipliedAlpha" />
 </material>
 
 struct VS_IN

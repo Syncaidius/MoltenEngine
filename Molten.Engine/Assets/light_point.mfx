@@ -8,36 +8,33 @@
 	  <hull>HS</hull>
 	  <domain>DS</domain>
     <fragment>PS</fragment>
-    <blend preset="additive" />
-    <rasterizer preset="default">
-      <fill>solid</fill>
-      <cull>front</cull>
-      <IsFrontCounterClockwise>false</IsFrontCounterClockwise>
-      <IsDepthClipEnabled>false</IsDepthClipEnabled>
-      <IsAALineEnabled>false</IsAALineEnabled>
-      <IsMultisampleEnabled>false</IsMultisampleEnabled>
-      <IsScissorEnabled>false</IsScissorEnabled>
-    </rasterizer>
-    <depth preset="default">
-      <StencilReference>0</StencilReference>
-      <DepthComparison>GreaterEqual</DepthComparison>
-      <depthwriteenabled>Zero</depthwriteenabled>
-      <writepermission>ReadOnly</writepermission>
-      <IsDepthEnabled>true</IsDepthEnabled>
-      <isstencilenabled>true</isstencilenabled>
-      <FrontFace>
-        <comparison>Equal</comparison>
-        <depthfail>Keep</depthfail>
-        <stencilfail>Keep</stencilfail>
-        <stencilpass>Keep</stencilpass>
-      </FrontFace>
-      <BackFace>
-        <comparison>Equal</comparison>
-        <depthfail>Keep</depthfail>
-        <stencilfail>Keep</stencilfail>
-        <stencilpass>Keep</stencilpass>
-      </BackFace>
-    </depth>
+    <state preset="default" blend="additive">
+        <fill>solid</fill>
+        <cull>front</cull>
+        <IsFrontCounterClockwise>false</IsFrontCounterClockwise>
+        <IsDepthClipEnabled>false</IsDepthClipEnabled>
+        <IsAALineEnabled>false</IsAALineEnabled>
+        <IsMultisampleEnabled>false</IsMultisampleEnabled>
+        <IsScissorEnabled>false</IsScissorEnabled>
+        <StencilReference>0</StencilReference>
+        <DepthComparison>GreaterEqual</DepthComparison>
+        <depthwriteenabled>Zero</depthwriteenabled>
+        <writepermission>ReadOnly</writepermission>
+        <IsDepthEnabled>true</IsDepthEnabled>
+        <isstencilenabled>true</isstencilenabled>
+        <DepthFrontFace>
+            <comparison>Equal</comparison>
+            <depthfail>Keep</depthfail>
+            <stencilfail>Keep</stencilfail>
+            <stencilpass>Keep</stencilpass>
+        </DepthFrontFace>
+        <DepthBackFace>
+            <comparison>Equal</comparison>
+            <depthfail>Keep</depthfail>
+            <stencilfail>Keep</stencilfail>
+            <stencilpass>Keep</stencilpass>
+        </DepthBackFace>
+    </state>
     <sampler slot="1" preset="default">
       <comparison>Always</comparison>
       <filter>MinMagMipPoint</filter>

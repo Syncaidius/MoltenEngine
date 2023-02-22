@@ -1,17 +1,21 @@
 <material>
-	<name>gbuffer-compose</name>
-	<description>The default material for rendering sprites in a SpriteBatch with a texture</description>
-	<pass>
-		<name>main</name>
-		<iterations>1</iterations>
-		<vertex>VS</vertex>
-		<geometry>GS</geometry>
-    <fragment>PS_Compose</fragment>
-    <blend preset="PreMultipliedAlpha" />
-    <rasterizer preset="ScissorTest" />
-    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
-    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
-	</pass>
+    <name>gbuffer-compose</name>
+    <description>The default material for rendering sprites in a SpriteBatch with a texture</description>
+    <pass>
+        <name>main</name>
+        <iterations>1</iterations>
+        <vertex>VS</vertex>
+        <geometry>GS</geometry>
+        <fragment>PS_Compose</fragment>
+        <state preset="Default" blend="PreMultipliedAlpha" rasterizer="ScissorTest"/>
+        <state preset="Default" blend="PreMultipliedAlpha" rasterizer="DefaultMultisample">
+            <condition value="Multisampling"/>
+        </state>
+        <state blend="PreMultipliedAlpha" rasterizer="ScissorTestMultiSample">
+            <condition value="Multisampling"/>
+            <condition value="ScissorTest"/>
+        </state>
+    </pass>
 </material>
 
 #include "sprite_common.mfx";
