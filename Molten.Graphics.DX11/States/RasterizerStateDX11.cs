@@ -15,7 +15,7 @@ namespace Molten.Graphics
         /// Creates a new instance of <see cref="RasterizerStateDX11"/>.
         /// </summary>
         /// <param name="source">An existing <see cref="RasterizerStateDX11"/> instance from which to copy settings."/></param>
-        internal RasterizerStateDX11(DeviceDX11 device, StructKey<RasterizerDesc2> desc) : 
+        internal RasterizerStateDX11(GraphicsDevice device, StructKey<RasterizerDesc2> desc) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = new StructKey<RasterizerDesc2>(desc);

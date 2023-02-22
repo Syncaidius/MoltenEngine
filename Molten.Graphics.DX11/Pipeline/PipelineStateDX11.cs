@@ -230,7 +230,6 @@ namespace Molten.Graphics
         internal PipelineStateDX11(DeviceDX11 device, PipelineStatePreset preset) :
             base(device)
         {
-            OnApply(device.Cmd);
             device.StatePresets.ApplyPreset(this, preset);
         }
 
@@ -238,12 +237,15 @@ namespace Molten.Graphics
         {
             _descDepth = new StructKey<DepthStencilDesc>(); // TODO get default
             _dirtyDepth = true;
+            DepthState = new DepthStateDX11(Device, _descDepth);
 
             _descRaster = new StructKey<RasterizerDesc2>();
             _dirtyRaster = true;
+            RasterizerState = new RasterizerStateDX11(Device, _descRaster);
 
             _descBlend = new StructKey<BlendDesc1>();
             _dirtyBlend = true;
+            BlendState = new BlendStateDX11(Device, _descBlend, Color4.White, 0);
         }
 
         public override void GraphicsRelease()
@@ -273,11 +275,10 @@ namespace Molten.Graphics
                 _descDepth.Value.FrontFace = (FrontFace as FaceDX11)._desc;
                 _descDepth.Value.BackFace = (BackFace as FaceDX11)._desc;
 
-                DepthState = device.CacheObject(_descDepth, DepthState);
+                DepthState = device.CacheObject(_descDepth, new DepthStateDX11(Device, _descDepth));
 
-                // If no matching state was found, create one.
-                if (DepthState == null)
-                    DepthState = device.CacheObject(_descDepth, new DepthStateDX11(device, _descDepth));
+                DepthStencilopDesc ff = DepthState.Desc.Value.FrontFace;
+                DepthStencilopDesc bf = DepthState.Desc.Value.BackFace;
 
                 _dirtyDepth = false;
                 Version++;
@@ -285,22 +286,14 @@ namespace Molten.Graphics
 
             if (_dirtyRaster)
             {
-                RasterizerState = device.CacheObject(_descRaster, RasterizerState);
-
-                if (RasterizerState == null)
-                    RasterizerState = device.CacheObject(_descRaster, new RasterizerStateDX11(device, _descRaster));
-
+                RasterizerState = device.CacheObject(_descRaster, new RasterizerStateDX11(Device, _descRaster));
                 _dirtyRaster = false;
                 Version++;
             }
 
             if (_dirtyBlend)
             {
-                BlendState = device.CacheObject(_descBlend, BlendState);
-
-                if (BlendState == null)
-                    BlendState = device.CacheObject(_descBlend, new BlendStateDX11(device, _descBlend));
-
+                BlendState = device.CacheObject(_descBlend, new BlendStateDX11(Device, _descBlend, BlendFactor, BlendSampleMask));
                 _dirtyBlend = false;
                 Version++;
             }

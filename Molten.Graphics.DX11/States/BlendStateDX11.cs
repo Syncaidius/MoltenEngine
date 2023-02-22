@@ -11,10 +11,12 @@ namespace Molten.Graphics
         Color4 _blendFactor;
         uint _sampleMask;
 
-        public BlendStateDX11(DeviceDX11 device, StructKey<BlendDesc1> desc) : 
+        public BlendStateDX11(GraphicsDevice device, StructKey<BlendDesc1> desc, Color4 blendFactor, uint blendMask) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = new StructKey<BlendDesc1>(desc);
+            _blendFactor = blendFactor;
+            _sampleMask = blendMask;
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)
