@@ -11,16 +11,14 @@
         <!--<fragment value="PS_MS">
             <condition value="Multisampling"/>
         </fragment>-->
-        <blend preset="PreMultipliedAlpha" />
-        <depth preset="ZDisabled" />
-        <rasterizer preset="ScissorTest" />
-        <rasterizer preset="DefaultMultisample">
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
             <condition value="Multisampling"/>
-        </rasterizer>
-        <rasterizer preset="ScissorTestMultiSample">
+        </state>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
             <condition value="Multisampling"/>
             <condition value="ScissorTest"/>
-        </rasterizer>
+        </state>
     </pass>
 </material>
 
@@ -34,16 +32,14 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS_NoTexture"/>
-        <blend preset="PreMultipliedAlpha" />
-        <depth preset="ZDisabled" />
-        <rasterizer preset="ScissorTest" />
-        <rasterizer preset="DefaultMultisample">
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
             <condition value="Multisampling"/>
-        </rasterizer>
-        <rasterizer preset="ScissorTestMultiSample">
+        </state>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
             <condition value="Multisampling"/>
             <condition value="ScissorTest"/>
-        </rasterizer>
+        </state>
     </pass>
 </material>
 
@@ -57,16 +53,14 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS_Circle"/>
-        <blend preset="PreMultipliedAlpha" />
-        <depth preset="ZDisabled" />
-        <rasterizer preset="ScissorTest" />
-        <rasterizer preset="DefaultMultisample">
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
             <condition value="Multisampling"/>
-        </rasterizer>
-        <rasterizer preset="ScissorTestMultiSample">
+        </state>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
             <condition value="Multisampling"/>
             <condition value="ScissorTest"/>
-        </rasterizer>
+        </state>
     </pass>
 </material>
 
@@ -80,16 +74,14 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS_Circle_NoTex"/>
-        <blend preset="PreMultipliedAlpha" />
-        <depth preset="ZDisabled" />
-        <rasterizer preset="ScissorTest" />
-        <rasterizer preset="DefaultMultisample">
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
             <condition value="Multisampling"/>
-        </rasterizer>
-        <rasterizer preset="ScissorTestMultiSample">
+        </state>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
             <condition value="Multisampling"/>
             <condition value="ScissorTest"/>
-        </rasterizer>
+        </state>
     </pass>
 </material>
 
@@ -103,16 +95,14 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS_Line"/>
-        <blend preset="PreMultipliedAlpha" />
-        <depth preset="ZDisabled" />
-        <rasterizer preset="ScissorTest" />
-        <rasterizer preset="DefaultMultisample">
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
             <condition value="Multisampling"/>
-        </rasterizer>
-        <rasterizer preset="ScissorTestMultiSample">
+        </state>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
             <condition value="Multisampling"/>
             <condition value="ScissorTest"/>
-        </rasterizer>
+        </state>
     </pass>
 </material>
 
@@ -126,16 +116,14 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS_Grid"/>
-        <blend preset="PreMultipliedAlpha" />
-        <depth preset="ZDisabled" />
-        <rasterizer preset="ScissorTest" />
-        <rasterizer preset="DefaultMultisample">
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
             <condition value="Multisampling"/>
-        </rasterizer>
-        <rasterizer preset="ScissorTestMultiSample">
+        </state>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
             <condition value="Multisampling"/>
             <condition value="ScissorTest"/>
-        </rasterizer>
+        </state>
     </pass>
 </material>
 

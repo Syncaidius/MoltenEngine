@@ -1,27 +1,25 @@
 <material>
-	<name>gbuffer</name>
-	<description>Standard deferred rendering g-buffer material.</description>
-	<pass>
-		<name>main</name>
-		<iterations>1</iterations>
-		<vertex>VS</vertex>
-		<fragment>PS</fragment>
-    <rasterizer preset="default" />
-    <depth preset="default" />
-	</pass>
+    <name>gbuffer</name>
+    <description>Standard deferred rendering g-buffer material.</description>
+    <pass>
+        <name>main</name>
+        <iterations>1</iterations>
+        <vertex>VS</vertex>
+        <fragment>PS</fragment>
+        <state preset="default"/>
+    </pass>
 </material>
 
 <material>
-  <name>gbuffer-sans-nmap</name>
-  <description>Deferred rendering g-buffer material, without normal mapping.</description>
-  <pass>
-    <name>main</name>
-    <iterations>1</iterations>
-    <vertex>VS</vertex>
-    <fragment>PS</fragment>
-    <rasterizer preset="default" />
-    <depth preset="default" />
-  </pass>
+    <name>gbuffer-sans-nmap</name>
+    <description>Deferred rendering g-buffer material, without normal mapping.</description>
+    <pass>
+        <name>main</name>
+        <iterations>1</iterations>
+        <vertex>VS</vertex>
+        <fragment>PS</fragment>
+        <state preset="default"/>
+    </pass>
 </material>
 
 #include "gbuffer_common.mfx"

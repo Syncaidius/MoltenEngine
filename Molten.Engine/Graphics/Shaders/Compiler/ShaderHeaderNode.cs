@@ -23,17 +23,7 @@ namespace Molten.Graphics
         /// <summary>
         /// The value that was held in the node.
         /// </summary>
-        public string Value { get; set; }
-
-        /// <summary>
-        /// The index or slot that the node refers to for a shader element.
-        /// </summary>
-        public int SlotID { get; set; }
-
-        /// <summary>
-        /// Gets the type of value held in <see cref="Value"/>.
-        /// </summary>
-        public ShaderHeaderValueType ValueType { get; set; }
+        public Dictionary<ShaderHeaderValueType, string> Values { get; } = new Dictionary<ShaderHeaderValueType, string>();
 
         public StateConditions Conditions { get; set; }
 
@@ -64,8 +54,25 @@ namespace Molten.Graphics
         Value = 1,
 
         /// <summary>
-        /// The value is the name of a preset
+        /// The value is the name of a pipeline state preset
         /// </summary>
-        Preset = 1
+        Preset = 2,
+
+        /// <summary>
+        /// The value is the name of a blend preset
+        /// </summary>
+        BlendPreset = 3,
+
+        /// <summary>
+        /// The value is the name of a depth-stencil preset
+        /// </summary>
+        DepthPreset = 4,
+
+        /// <summary>
+        /// The value is the name of a rasterizer preset
+        /// </summary>
+        RasterizerPreset = 5,
+
+        SlotID = 6,
     }
 }

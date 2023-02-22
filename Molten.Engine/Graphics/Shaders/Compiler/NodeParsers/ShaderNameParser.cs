@@ -8,7 +8,8 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            foundation.Name = string.IsNullOrWhiteSpace(node.Value) ? "Unnamed Material" : node.Value;
+            if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string name))
+                foundation.Name = name;
         }
     }
 }

@@ -1,9 +1,22 @@
-﻿using System.Xml;
+﻿using System.Reflection;
+using System.Xml;
 
 namespace Molten.Graphics
 {
     public abstract class ShaderNodeParser
     {
+        class PropertyBinding
+        {
+            public PropertyInfo Info;
+
+            public ShaderNodeAttribute Attribute;
+        }
+
+        class PropertyCache
+        {
+            public Dictionary<string, PropertyBinding> Properties = new Dictionary<string, PropertyBinding>();
+        }
+
         static string[] _colorDelimiters = new string[] { ",", " " };
 
         /// <summary>
@@ -49,7 +62,7 @@ namespace Molten.Graphics
 
         private ShaderHeaderNode ParseNode(ShaderCompilerContext context, XmlNode node)
         {
-            ShaderHeaderNode shn = new ShaderHeaderNode(node);
+            ShaderHeaderNode hNode = new ShaderHeaderNode(node);
 
             // Parse attributes
             if (node.Attributes != null)
@@ -60,23 +73,27 @@ namespace Molten.Graphics
                     switch (nName)
                     {
                         case "value":
-                            shn.Value = att.InnerText;
-                            shn.ValueType = ShaderHeaderValueType.Value;
+                            hNode.Values[ShaderHeaderValueType.Value] = att.InnerText;
                             break;
 
                         case "preset":
-                            if (shn.ValueType != ShaderHeaderValueType.Value)
-                            {
-                                shn.Value = att.InnerText;
-                                shn.ValueType = ShaderHeaderValueType.Preset;
-                            }
+                            hNode.Values[ShaderHeaderValueType.Preset] = att.InnerText;
+                            break;
+
+                        case "blend":
+                            hNode.Values[ShaderHeaderValueType.BlendPreset] = att.InnerText;
+                            break;
+
+                        case "rasterizer":
+                            hNode.Values[ShaderHeaderValueType.RasterizerPreset] = att.InnerText;
+                            break;
+
+                        case "depth":
+                            hNode.Values[ShaderHeaderValueType.DepthPreset] = att.InnerText;
                             break;
 
                         case "index":
-                            if (!int.TryParse(att.InnerText, out int index))
-                                index = 0;
-
-                            shn.SlotID = index;
+                            hNode.Values[ShaderHeaderValueType.SlotID] = att.InnerText;
                             break;
                     }
                 }
@@ -89,38 +106,40 @@ namespace Molten.Graphics
                 {
                     XmlNode cNode = node.ChildNodes[0];
                     if (cNode.Name == "#text")
-                        shn.Value = node.InnerText;
+                        hNode.Values[ShaderHeaderValueType.Value] = node.InnerText;
                 }
 
                 foreach (XmlNode c in node.ChildNodes)
                 {
-                    if (c.Name == "#text")
+                    if (c.Name == "#text" || c.Name == "#comment")
                         continue;
 
                     string cName = c.Name.ToLower();
                     ShaderHeaderNode cNode = ParseNode(context, c);
+                    string cValue = null;
+                    cNode.Values.TryGetValue(ShaderHeaderValueType.Value, out cValue);
 
                     switch (cName)
                     {
                         case "condition":
-                            if (Enum.TryParse(cNode.Value, true, out StateConditions sc))
-                                shn.Conditions |= sc;
+                            if (Enum.TryParse(cValue, true, out StateConditions sc))
+                                hNode.Conditions |= sc;
                             else
                                 InvalidEnumMessage<StateConditions>(context, (c.Name, c.InnerText), "state condition");
                             break;
 
                         default:
                             if (c.ChildNodes.Count > 0)
-                                shn.ChildNodes.Add(cNode);
+                                hNode.ChildNodes.Add(cNode);
                             else
-                                shn.ChildValues.Add((cName, cNode.Value));
+                                hNode.ChildValues.Add((cName, cValue));
 
                             break;
                     }
                 }
             }
 
-            return shn;
+            return hNode;
         }
 
         protected abstract void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node);
@@ -206,6 +225,137 @@ namespace Molten.Graphics
             }
 
             return true;
+        }
+
+
+        Dictionary<Type, PropertyCache> _typeCache = new Dictionary<Type, PropertyCache>();
+
+        protected void ParseProperties(ShaderHeaderNode node, ShaderCompilerContext context, object stateObject)
+        {
+            // Check if we need to cache the new stateObject type.
+            if (!_typeCache.TryGetValue(stateObject.GetType(), out PropertyCache cache))
+            {
+                cache = new PropertyCache();
+                PropertyInfo[] pInfo = stateObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                foreach (PropertyInfo p in pInfo)
+                {
+                    ShaderNodeAttribute att = p.GetCustomAttribute<ShaderNodeAttribute>();
+
+                    // Ignore non-node properties.
+                    if (att == null)
+                        continue;
+
+                    cache.Properties.Add(p.Name.ToLower(), new PropertyBinding()
+                    {
+                        Info = p,
+                        Attribute = att
+                    });
+                }
+
+                _typeCache.Add(stateObject.GetType(), cache);
+            }
+
+            foreach ((string Name, string Value) c in node.ChildValues)
+            {
+                string lowName = c.Name.ToLower();
+                if (!cache.Properties.TryGetValue(lowName, out PropertyBinding pBind))
+                {
+                    UnsupportedTagMessage(context, node.Name, c.Name);
+                    continue;
+                }
+
+                switch (pBind.Attribute.ParseType)
+                {
+                    case ShaderNodeParseType.Bool:
+                        {
+                            if (bool.TryParse(c.Value, out bool value))
+                                pBind.Info.SetValue(stateObject, value);
+                            else
+                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                        }
+                        break;
+
+
+                    case ShaderNodeParseType.Enum:
+                        if (EngineUtil.TryParseEnum(pBind.Info.PropertyType, c.Value, out object enumValue))
+                            pBind.Info.SetValue(stateObject, enumValue);
+                        else
+                            InvalidEnumMessage<GraphicsDepthWritePermission>(context, c, pBind.Info.Name);
+                        break;
+
+                    case ShaderNodeParseType.UInt32:
+                        {
+                            if (uint.TryParse(c.Value, out uint value))
+                                pBind.Info.SetValue(stateObject, value);
+                            else
+                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                        }
+                        break;
+
+                    case ShaderNodeParseType.Int32:
+                        {
+                            if (int.TryParse(c.Value, out int value))
+                                pBind.Info.SetValue(stateObject, value);
+                            else
+                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                        }
+                        break;
+
+                    case ShaderNodeParseType.Byte:
+                        {
+                            if (byte.TryParse(c.Value, out byte value))
+                                pBind.Info.SetValue(stateObject, value);
+                            else
+                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                        }
+                        break;
+
+                    case ShaderNodeParseType.Float:
+                        {
+                            if (float.TryParse(c.Value, out float value))
+                                pBind.Info.SetValue(stateObject, value);
+                            else
+                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                        }
+                        break;
+
+
+                    case ShaderNodeParseType.Color:
+                        {
+                            if (ParseColor4(context, c.Value, true, out Color4 value))
+                                pBind.Info.SetValue(stateObject, value);
+                            else
+                                InvalidValueMessage(context, c, pBind.Info.Name, pBind.Attribute.ParseType.ToString());
+                        }
+                        break;
+
+                    default:
+                        UnsupportedTagMessage(context, node.Name, c.Name);
+                        break;
+                }
+            }
+
+            // Iterate over object properties
+            foreach (ShaderHeaderNode c in node.ChildNodes)
+            {
+                string lowName = c.Name.ToLower();
+                if (!cache.Properties.TryGetValue(lowName, out PropertyBinding pBind))
+                {
+                    UnsupportedTagMessage(context, node.Name, c.Name);
+                    continue;
+                }
+
+                object pValue = pBind.Info.GetValue(stateObject);
+                ParseProperties(c, context, pValue);
+
+                if (pBind.Info.PropertyType.IsValueType)
+                {
+                    if (pBind.Info.SetMethod != null)
+                        pBind.Info.SetValue(stateObject, pValue);
+                    else
+                        context.AddError($"Unable to apply definition '{node.Name}-{c.Name}' to '{pBind.Info.Name}' value-type property: No setter method available");
+                }
+            }
         }
     }
 }

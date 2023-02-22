@@ -9,15 +9,22 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            switch (foundation)
+            if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
             {
-                case Material material:
-                    material.DefaultVSEntryPoint = node.Value;
-                    break;
+                switch (foundation)
+                {
+                    case Material material:
+                        material.DefaultVSEntryPoint = entryPoint;
+                        break;
 
-                case MaterialPass pass:
-                    pass.VS.EntryPoint = node.Value;
-                    break;
+                    case MaterialPass pass:
+                        pass.VS.EntryPoint = entryPoint;
+                        break;
+                }
+            }
+            else
+            {
+                context.AddError("Vertex shader <entry> tag is missing or empty.");
             }
         }
     }

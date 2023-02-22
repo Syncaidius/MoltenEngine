@@ -1,20 +1,20 @@
 <material>
     <name value="skybox-default"/>
     <description value="The default material for rendering skyboxes."/>
-	<pass>
+    <pass>
         <name value="main"/>
         <iterations value="1"/>
         <vertex value="VS"/>
         <fragment value="PS" />
-		<blend preset="Default" />
-		<rasterizer preset="NoCulling" />
-        <depth>
+        <blend preset="Default" />
+        <rasterizer preset="NoCulling" />
+        <state preset="default" rasterizer="NoCulling">
             <IsDepthEnabled value="true"/>
             <DepthWriteEnabled value="All"/>
             <WritePermission value="ReadOnly"/>
             <DepthComparison value="LessEqual"/>
-        </depth>
-	</pass>
+        </state>
+    </pass>
 </material>
 
 float4x4 wvp;

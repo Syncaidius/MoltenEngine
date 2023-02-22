@@ -9,15 +9,22 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            switch (foundation)
+            if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
             {
-                case Material material:
-                    material.DefaultHSEntryPoint = node.Value;
-                    break;
+                switch (foundation)
+                {
+                    case Material material:
+                        material.DefaultHSEntryPoint = entryPoint;
+                        break;
 
-                case MaterialPass pass:
-                    pass.HS.EntryPoint = node.Value;
-                    break;
+                    case MaterialPass pass:
+                        pass.HS.EntryPoint = entryPoint;
+                        break;
+                }
+            }
+            else
+            {
+                context.AddError("Hull shader <entry> tag is missing or empty.");
             }
         }
     }

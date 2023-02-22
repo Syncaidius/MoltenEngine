@@ -1,12 +1,12 @@
 ﻿<material>
-	<name>position-texture</name>
-	<description>A simple material which renders meshes with position and 1D texture array coordinate data</description>
-	<pass>
-		<name>main</name>
-		<iterations>1</iterations>
-		<vertex>VS</vertex>
-    <fragment>PS</fragment>
-	</pass>
+    <name>position-texture</name>
+    <description>A simple material which renders meshes with position and 1D texture array coordinate data</description>
+    <pass>
+        <name>main</name>
+        <iterations>1</iterations>
+        <vertex>VS</vertex>
+        <fragment>PS</fragment>
+    </pass>
 </material>
 
 struct VS_IN

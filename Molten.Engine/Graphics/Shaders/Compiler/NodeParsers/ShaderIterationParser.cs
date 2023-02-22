@@ -8,14 +8,21 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            if (int.TryParse(node.Value, out int val))
+            if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string iterationValue))
             {
-                foundation.Iterations = val;
+                if (int.TryParse(iterationValue, out int val))
+                {
+                    foundation.Iterations = val;
+                }
+                else
+                {
+                    context.AddWarning($"Invalid iteration number format for {foundation.GetType().Name}. Should be an integer value.");
+                    foundation.Iterations = 1;
+                }
             }
             else
             {
-                context.AddWarning($"Invalid iteration number format for {foundation.GetType().Name}. Should be an integer value.");
-                foundation.Iterations = 1;
+                context.AddWarning($"Iteration value was not defined for <iterations> tag {foundation.GetType().Name}.");
             }
         }
     }

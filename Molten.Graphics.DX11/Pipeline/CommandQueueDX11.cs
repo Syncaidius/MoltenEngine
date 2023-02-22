@@ -17,7 +17,6 @@ namespace Molten.Graphics
         Rectangle[] _scissorRects;
         bool _scissorRectsDirty;
 
-        Silk.NET.Direct3D11.Viewport[] _apiViewports;
         ViewportF[] _viewports;
         bool _viewportsDirty;
         ViewportF[] _nullViewport;
@@ -34,6 +33,10 @@ namespace Molten.Graphics
         internal ID3D11RenderTargetView1** RTVs;
         uint _numRTVs;
         internal ID3D11DepthStencilView* DSV;
+
+        GraphicsSlot<BlendStateDX11> _stateBlend;
+        GraphicsSlot<RasterizerStateDX11> _stateRaster;
+        GraphicsSlot<DepthStateDX11> _stateDepth;
 
         internal CommandQueueDX11(DeviceDX11 device, ID3D11DeviceContext4* context) :
             base(device)
@@ -56,7 +59,6 @@ namespace Molten.Graphics
             uint maxRTs = DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
             _scissorRects = new Rectangle[maxRTs];
             _viewports = new ViewportF[maxRTs];
-            _apiViewports = new Silk.NET.Direct3D11.Viewport[maxRTs];
 
             uint maxVBuffers = DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots;
             VertexBuffers = RegisterSlotGroup<IGraphicsBufferSegment, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
@@ -72,9 +74,10 @@ namespace Molten.Graphics
             PS = new ShaderPSStage(this);
             CS = new ShaderCSStage(this);
 
-            Blend = RegisterSlot<GraphicsBlendState, BlendBinder>(GraphicsBindTypeFlags.Output, "Blend State", 0);
-            Depth = RegisterSlot<GraphicsDepthState, DepthStencilBinder>(GraphicsBindTypeFlags.Output, "Depth-Stencil State", 0);
-            Rasterizer = RegisterSlot<GraphicsRasterizerState, RasterizerBinder>(GraphicsBindTypeFlags.Output, "Rasterizer State", 0);
+            State = RegisterSlot<GraphicsPipelineState, StateBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
+            _stateBlend = RegisterSlot<BlendStateDX11, BlendBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
+            _stateDepth = RegisterSlot<DepthStateDX11, DepthStencilBinder>(GraphicsBindTypeFlags.Input, "Depth-Stencil State", 0);
+            _stateRaster = RegisterSlot<RasterizerStateDX11, RasterizerBinder>(GraphicsBindTypeFlags.Input, "Rasterizer State", 0);
 
             RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
 
@@ -214,13 +217,20 @@ namespace Molten.Graphics
             }
 
             StateConditions conditions = DrawInfo.Conditions;
-            Blend.Value = pass.BlendState[conditions] as BlendStateDX11;
-            Rasterizer.Value = pass.RasterizerState[conditions] as RasterizerStateDX11;
-            Depth.Value = pass.DepthState[conditions] as DepthStateDX11;
+            State.Value = pass.State[conditions] as PipelineStateDX11;
 
-            bool bStateChanged = Blend.Bind();
-            bool rStateChanged = Rasterizer.Bind();
-            bool dStateChanged = Depth.Bind();
+            if (State.Bind())
+            {
+                PipelineStateDX11 pState = State.BoundValue as PipelineStateDX11;
+
+                _stateBlend.Value = pState.BlendState;
+                _stateDepth.Value = pState.DepthState;
+                _stateRaster.Value = pState.RasterizerState;
+            }
+
+            bool bStateChanged = _stateBlend.Bind();
+            bool rStateChanged = _stateDepth.Bind();
+            bool dStateChanged = _stateRaster.Bind();
 
             // Check if scissor rects need updating
             if (_scissorRectsDirty)
@@ -232,16 +242,16 @@ namespace Molten.Graphics
             }
 
             // Check if viewports need updating.
+            // TODO Consolidate - Molten viewports are identical in memory layout to DX11 viewports.
             if (_viewportsDirty)
             {
-                for (int i = 0; i < _viewports.Length; i++)
-                    _apiViewports[i] = _viewports[i].ToApi();
+                fixed (ViewportF* ptrViewports = _viewports)
+                    Native->RSSetViewports((uint)_viewports.Length, (Silk.NET.Direct3D11.Viewport*)ptrViewports);
 
-                Native->RSSetViewports((uint)_viewports.Length, ref _apiViewports[0]);
                 _viewportsDirty = false;
             }
 
-            GraphicsDepthWritePermission depthWriteMode = pass.DepthState[conditions].WritePermission;
+            GraphicsDepthWritePermission depthWriteMode = pass.State[conditions].WritePermission;
 
             bool surfaceChanged = Surfaces.BindAll();
             bool depthChanged = DepthSurface.Bind() || (_boundDepthMode != depthWriteMode);

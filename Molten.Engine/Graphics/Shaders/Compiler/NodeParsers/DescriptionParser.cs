@@ -8,7 +8,10 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            (foundation as IShader).Description = node.ValueType != ShaderHeaderValueType.None ? "Unknown" : node.Value;
+            if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string desc))
+                (foundation as IShader).Description = desc;
+            else
+                (foundation as IShader).Description = "Unknown";
         }
     }
 }

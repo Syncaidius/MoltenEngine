@@ -34,17 +34,7 @@ namespace Molten.Graphics
             _qDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         }
 
-        public override GraphicsDepthState CreateDepthState(GraphicsDepthState source = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override GraphicsBlendState CreateBlendState(GraphicsBlendState source = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override GraphicsRasterizerState CreateRasterizerState(GraphicsRasterizerState source = null)
+        public override GraphicsPipelineState CreateState(PipelineStatePreset preset = PipelineStatePreset.Default)
         {
             throw new NotImplementedException();
         }
@@ -54,7 +44,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override ShaderSampler CreateSampler(ShaderSampler source = null)
+        public override ShaderSampler CreateSampler(SamplerPreset preset = SamplerPreset.Default)
         {
             throw new NotImplementedException();
         }
