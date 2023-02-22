@@ -87,10 +87,13 @@ namespace Molten
 
         private void Initialize(T* value)
         {
+            uint partSize = (uint)sizeof(ulong);
             uint size = (uint)sizeof(T);
-            _partCount = (size % sizeof(ulong)) + 1U;
+            _partCount = size / partSize + (size % partSize > 0 ? 1U : 0U);
             _parts = EngineUtil.AllocArray<ulong>(_partCount);
-            Buffer.MemoryCopy(value, _parts, size, size);
+
+            long destSize = _partCount * partSize; 
+            Buffer.MemoryCopy(value, _parts, destSize, size);
         }
 
         public void Set(ref T value)

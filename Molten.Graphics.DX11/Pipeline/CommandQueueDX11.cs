@@ -74,9 +74,10 @@ namespace Molten.Graphics
             PS = new ShaderPSStage(this);
             CS = new ShaderCSStage(this);
 
-            _stateBlend = RegisterSlot<BlendStateDX11, BlendBinder>(GraphicsBindTypeFlags.Output, "Blend State", 0);
-            _stateDepth = RegisterSlot<DepthStateDX11, DepthStencilBinder>(GraphicsBindTypeFlags.Output, "Depth-Stencil State", 0);
-            _stateRaster = RegisterSlot<RasterizerStateDX11, RasterizerBinder>(GraphicsBindTypeFlags.Output, "Rasterizer State", 0);
+            State = RegisterSlot<GraphicsPipelineState, StateBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
+            _stateBlend = RegisterSlot<BlendStateDX11, BlendBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
+            _stateDepth = RegisterSlot<DepthStateDX11, DepthStencilBinder>(GraphicsBindTypeFlags.Input, "Depth-Stencil State", 0);
+            _stateRaster = RegisterSlot<RasterizerStateDX11, RasterizerBinder>(GraphicsBindTypeFlags.Input, "Rasterizer State", 0);
 
             RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
 

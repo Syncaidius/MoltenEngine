@@ -6,10 +6,6 @@ namespace Molten.Graphics
     {
         internal SamplerBank(GraphicsDevice device)
         {
-            ShaderSampler sampler = device.CreateSampler();
-
-
-            AddPreset(SamplerPreset.Default, sampler);
         }
 
         public override void ApplyPreset(ShaderSampler sampler, SamplerPreset preset)
