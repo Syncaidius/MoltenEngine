@@ -272,8 +272,8 @@ namespace Molten.Graphics
 
             if (_dirtyDepth)
             {
-                _descDepth.Value.FrontFace = (FrontFace as FaceDX11)._desc;
-                _descDepth.Value.BackFace = (BackFace as FaceDX11)._desc;
+                _descDepth.Value.FrontFace = (DepthFrontFace as FaceDX11)._desc;
+                _descDepth.Value.BackFace = (DepthBackFace as FaceDX11)._desc;
 
                 DepthState = device.CacheObject(_descDepth, new DepthStateDX11(Device, _descDepth));
 

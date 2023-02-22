@@ -125,8 +125,8 @@ namespace Molten.Graphics
 
             if (_dirtyDepth)
             {
-                _descDepth.Value.Front = (FrontFace as FaceVK).Desc;
-                _descDepth.Value.Back = (BackFace as FaceVK).Desc;
+                _descDepth.Value.Front = (DepthFrontFace as FaceVK).Desc;
+                _descDepth.Value.Back = (DepthBackFace as FaceVK).Desc;
                 _dirtyDepth = false;
                 Version++;
             }
@@ -255,22 +255,22 @@ namespace Molten.Graphics
 
         public override byte StencilReadMask
         {
-            get => (byte)(FrontFace as FaceVK).Desc.CompareMask;
+            get => (byte)(DepthFrontFace as FaceVK).Desc.CompareMask;
             set
             {
-                (FrontFace as FaceVK).Desc.CompareMask = value;
-                (BackFace as FaceVK).Desc.CompareMask = value;
+                (DepthFrontFace as FaceVK).Desc.CompareMask = value;
+                (DepthBackFace as FaceVK).Desc.CompareMask = value;
                 _dirtyDepth = true;
             }
         }
 
         public override byte StencilWriteMask
         {
-            get => (byte)(FrontFace as FaceVK).Desc.WriteMask;
+            get => (byte)(DepthFrontFace as FaceVK).Desc.WriteMask;
             set
             {
-                (FrontFace as FaceVK).Desc.WriteMask = value;
-                (BackFace as FaceVK).Desc.WriteMask = value;
+                (DepthFrontFace as FaceVK).Desc.WriteMask = value;
+                (DepthBackFace as FaceVK).Desc.WriteMask = value;
                 _dirtyDepth = true;
             }
         }

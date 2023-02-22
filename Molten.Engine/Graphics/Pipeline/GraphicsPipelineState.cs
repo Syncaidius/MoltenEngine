@@ -104,8 +104,29 @@ namespace Molten.Graphics
                 _surfaceBlends[i] = CreateSurfaceBlend(i);
 
             Initialize();
-            FrontFace = CreateFace(true);
-            BackFace = CreateFace(false);
+            DepthFrontFace = CreateFace(true);
+            DepthBackFace = CreateFace(false);
+        }
+
+        private static bool CompareOperation(Face op, Face other)
+        {
+            return op.Comparison == other.Comparison &&
+                op.DepthFail == other.DepthFail &&
+                op.StencilFail == other.StencilFail &&
+                op.StencilPass == other.StencilPass;
+        }
+
+        /// <summary>
+        /// Invoked when a new <see cref="Face"/> instance is required for the current <see cref="GraphicsPipelineState"/>.
+        /// </summary>
+        /// <param name="isFrontFace"></param>
+        /// <returns></returns>
+        protected abstract Face CreateFace(bool isFrontFace);
+
+        protected abstract RenderSurfaceBlend CreateSurfaceBlend(int index);
+        internal RenderSurfaceBlend GetSurfaceBlendState(int index)
+        {
+            return _surfaceBlends[index];
         }
 
         protected abstract void Initialize();
@@ -137,6 +158,10 @@ namespace Molten.Graphics
         [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool IsMultisampleEnabled { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether scissor-test rasterization is enabled. 
+        /// <para>This involves skipping the rasterization of pixels outside defined scissor bounds.</para>
+        /// </summary>
         [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool IsScissorEnabled { get; set; }
 
@@ -148,13 +173,6 @@ namespace Molten.Graphics
 
         [ShaderNode(ShaderNodeParseType.UInt32)]
         public abstract uint ForcedSampleCount { get; set; }
-
-        protected abstract RenderSurfaceBlend CreateSurfaceBlend(int index);
-
-        internal RenderSurfaceBlend GetSurfaceBlendState(int index)
-        {
-            return _surfaceBlends[index];
-        }
 
         [ShaderNode(ShaderNodeParseType.Bool)]
         public abstract bool AlphaToCoverageEnable { get; set; }
@@ -180,21 +198,6 @@ namespace Molten.Graphics
         /// </summary>
         [ShaderNode(ShaderNodeParseType.Color)]
         public abstract Color4 BlendFactor { get; set; }
-
-        /// <summary>
-        /// Invoked when a new <see cref="Face"/> instance is required for the current <see cref="GraphicsPipelineState"/>.
-        /// </summary>
-        /// <param name="isFrontFace"></param>
-        /// <returns></returns>
-        protected abstract Face CreateFace(bool isFrontFace);
-
-        private static bool CompareOperation(Face op, Face other)
-        {
-            return op.Comparison == other.Comparison &&
-                op.DepthFail == other.DepthFail &&
-                op.StencilFail == other.StencilFail &&
-                op.StencilPass == other.StencilPass;
-        }
 
         /// <summary>
         /// Gets or sets whether or not depth-mapping is enabled.
@@ -256,11 +259,11 @@ namespace Molten.Graphics
 
         /// <summary>Gets the description for the front-face depth operation description.</summary>
         [ShaderNode(ShaderNodeParseType.Object)]
-        public Face FrontFace { get; }
+        public Face DepthFrontFace { get; }
 
         /// <summary>Gets the description for the back-face depth operation description.</summary>
         [ShaderNode(ShaderNodeParseType.Object)]
-        public Face BackFace { get; }
+        public Face DepthBackFace { get; }
 
         /// <summary>Gets or sets the stencil reference value. The default value is 0.</summary>
         [ShaderNode(ShaderNodeParseType.UInt32)]

@@ -97,11 +97,11 @@
             state.IsStencilEnabled = true;
             state.StencilReadMask = 255;
             state.StencilWriteMask = 255;
-            state.FrontFace.Comparison = ComparisonFunction.Always;
-            state.FrontFace.DepthFail = DepthStencilOperation.Keep;
-            state.FrontFace.StencilPass = DepthStencilOperation.Keep;
-            state.FrontFace.StencilFail = DepthStencilOperation.Keep;
-            state.BackFace.Set(state.FrontFace);
+            state.DepthFrontFace.Comparison = ComparisonFunction.Always;
+            state.DepthFrontFace.DepthFail = DepthStencilOperation.Keep;
+            state.DepthFrontFace.StencilPass = DepthStencilOperation.Keep;
+            state.DepthFrontFace.StencilFail = DepthStencilOperation.Keep;
+            state.DepthBackFace.Set(state.DepthFrontFace);
 
             // Now apply customizations
             switch (preset)
