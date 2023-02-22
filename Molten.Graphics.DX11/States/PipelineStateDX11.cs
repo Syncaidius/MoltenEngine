@@ -272,9 +272,6 @@ namespace Molten.Graphics
 
             if (_dirtyDepth)
             {
-                _descDepth.Value.FrontFace = (FrontFace as FaceDX11)._desc;
-                _descDepth.Value.BackFace = (BackFace as FaceDX11)._desc;
-
                 DepthState = device.CacheObject(_descDepth, DepthState);
 
                 // If no matching state was found, create one.
@@ -282,7 +279,6 @@ namespace Molten.Graphics
                     DepthState = device.CacheObject(_descDepth, new DepthStateDX11(device, _descDepth));
 
                 _dirtyDepth = false;
-                Version++;
             }
 
             if (_dirtyRaster)
@@ -293,18 +289,6 @@ namespace Molten.Graphics
                     RasterizerState = device.CacheObject(_descRaster, new RasterizerStateDX11(device, _descRaster));
 
                 _dirtyRaster = false;
-                Version++;
-            }
-
-            if (_dirtyBlend)
-            {
-                BlendState = device.CacheObject(_descBlend, BlendState);
-
-                if (BlendState == null)
-                    BlendState = device.CacheObject(_descBlend, new BlendStateDX11(device, _descBlend));
-
-                _dirtyBlend = false;
-                Version++;
             }
         }
 

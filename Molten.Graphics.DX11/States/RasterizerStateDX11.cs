@@ -7,7 +7,7 @@ namespace Molten.Graphics
     {
         public unsafe ID3D11RasterizerState2* NativePtr => _native;
 
-        internal StructKey<RasterizerDesc2> Desc { get; }
+        internal StructKey<RasterizerDesc2> Key { get; }
 
         ID3D11RasterizerState2* _native;
 
@@ -15,17 +15,17 @@ namespace Molten.Graphics
         /// Creates a new instance of <see cref="RasterizerStateDX11"/>.
         /// </summary>
         /// <param name="source">An existing <see cref="RasterizerStateDX11"/> instance from which to copy settings."/></param>
-        internal RasterizerStateDX11(DeviceDX11 device, StructKey<RasterizerDesc2> desc) : 
+        internal RasterizerStateDX11(DeviceDX11 device, StructKey<RasterizerDesc2> key) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
-            Desc = new StructKey<RasterizerDesc2>(desc);
+            Key = new StructKey<RasterizerDesc2>(key);
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)
         {
             if (_native == null)
             {
-                (cmd as CommandQueueDX11).DXDevice.Ptr->CreateRasterizerState2(Desc, ref _native);
+                (cmd as CommandQueueDX11).DXDevice.Ptr->CreateRasterizerState2(Key, ref _native);
                 Version++;
             }
         }

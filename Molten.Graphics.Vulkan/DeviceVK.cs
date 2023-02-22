@@ -37,6 +37,26 @@ namespace Molten.Graphics
             
         }
 
+        public override GraphicsDepthState CreateDepthState(GraphicsDepthState source = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsBlendState CreateBlendState(GraphicsBlendState source = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsRasterizerState CreateRasterizerState(GraphicsRasterizerState source = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ShaderSampler CreateSampler(ShaderSampler source = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public override ShaderComposition CreateShaderComposition(ShaderType type, HlslShader parent)
         {
             throw new NotImplementedException();
@@ -62,16 +82,6 @@ namespace Molten.Graphics
             where E : NativeExtension<Vk>
         {
             return _loader.GetExtension<E>();
-        }
-
-        public override GraphicsPipelineState CreateState(PipelineStatePreset preset = PipelineStatePreset.Default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override ShaderSampler CreateSampler(SamplerPreset preset = SamplerPreset.Default)
-        {
-            throw new NotImplementedException();
         }
 
         internal bool Initialize()
