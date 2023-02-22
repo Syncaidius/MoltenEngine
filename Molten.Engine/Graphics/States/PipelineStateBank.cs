@@ -165,4 +165,54 @@
     {
         Default = 0,
     }
+
+    public enum BlendPreset
+    {
+        /// <summary>The default blend mode.</summary>
+        Default = 0,
+
+        /// <summary>Additive blending mode.</summary>
+        Additive = 1,
+
+        /// <summary>Pre-multiplied alpha blending mode.</summary>
+        PreMultipliedAlpha = 2,
+    }
+
+    /// <summary>Represents several rasterizer state presets.</summary>
+    public enum RasterizerPreset
+    {
+        /// <summary>The default rasterizer state.</summary>
+        Default = 0,
+
+        /// <summary>The same as the default rasterizer state, but with wireframe enabled.</summary>
+        Wireframe = 1,
+
+        /// <summary>The same as the default rasterizer state, but with scissor testing enabled.</summary>
+        ScissorTest = 2,
+
+        /// <summary>Culling is disabled. Back and front faces will be drawn.</summary>
+        NoCulling = 3,
+
+        /// <summary>
+        /// The same as <see cref="Default"/> but with multisampling enabled.
+        /// </summary>
+        DefaultMultisample = 4,
+
+        /// <summary>
+        /// The same as <see cref="ScissorTest"/> but with multisampling enabled.
+        /// </summary>
+        ScissorTestMultisample = 5,
+    }
+
+    public enum DepthStencilPreset
+    {
+        /// <summary>Default depth stencil state with stencil testing enabled.</summary>
+        Default = 0,
+
+        /// <summary>The default depth stencil state, but with stencil testing disabled.</summary>
+        DefaultNoStencil = 1,
+
+        /// <summary>The same as default, but with the z-buffer disabled.</summary>
+        ZDisabled = 2,
+    }
 }

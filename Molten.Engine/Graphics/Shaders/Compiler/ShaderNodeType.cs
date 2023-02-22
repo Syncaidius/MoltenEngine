@@ -48,9 +48,20 @@
         Fragment = Pixel,
 
         /// <summary>
+        /// Depth-stencil state definition
+        /// </summary>
+        Depth = 12,
+
+        /// <summary>
         /// Blend state definition
         /// </summary>
-        State = 12,
+        Blend = 13,
+
+        /// <summary>
+        /// Rasterizer state definition
+        /// </summary>
+        Rasterizer = 14,
+
 
         /// <summary>
         /// Texture sampler definition

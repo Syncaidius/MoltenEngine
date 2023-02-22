@@ -11,8 +11,8 @@ namespace Molten.Graphics
         Color4 _borderColor;
         bool _isDirty;
 
-        internal ShaderSamplerDX11(DeviceDX11 device, SamplerPreset preset) : 
-            base(device, preset)
+        internal ShaderSamplerDX11(DeviceDX11 device, ShaderSamplerDX11 source = null) : 
+            base(device, source)
         {
             _isDirty = true;
         }

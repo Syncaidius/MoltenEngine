@@ -64,23 +64,8 @@ namespace Molten.Graphics
         Value = 1,
 
         /// <summary>
-        /// The value is the name of a pipeline state preset
+        /// The value is the name of a preset
         /// </summary>
-        Preset = 2,
-
-        /// <summary>
-        /// The value is the name of a blend preset
-        /// </summary>
-        BlendPreset = 3,
-
-        /// <summary>
-        /// The value is the name of a depth-stencil preset
-        /// </summary>
-        DepthPreset = 4,
-
-        /// <summary>
-        /// The value is the name of a rasterizer preset
-        /// </summary>
-        RasterizerPreset = 5,
+        Preset = 1
     }
 }

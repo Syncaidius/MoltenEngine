@@ -69,7 +69,9 @@ namespace Molten.Graphics
     {
         protected GraphicsObject(GraphicsDevice device, GraphicsBindTypeFlags bindFlags) :
             base(device, bindFlags)
-        { }
+        {
+
+        }
 
         /// <summary>
         /// Gets the native pointer of the current <see cref="GraphicsObject{T}"/>, as a <typeparamref name="T"/> pointer.

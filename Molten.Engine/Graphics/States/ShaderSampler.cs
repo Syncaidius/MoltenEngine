@@ -2,10 +2,36 @@
 {
     public abstract class ShaderSampler : GraphicsObject
     {
-        protected ShaderSampler(GraphicsDevice device, SamplerPreset preset) : 
+        protected ShaderSampler(GraphicsDevice device, ShaderSampler source) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
-            device.SamplerBank.ApplyPreset(this, preset);
+            if (source != null)
+            {
+                AddressU = source.AddressU;
+                AddressV = source.AddressV;
+                AddressW = source.AddressW;
+                BorderColor = source.BorderColor;
+                Comparison = source.Comparison;
+                Filter = source.Filter;
+                MaxAnisotropy = source.MaxAnisotropy;
+                MaxMipMapLod= source.MaxMipMapLod;
+                MinMipMapLod = source.MinMipMapLod;
+                LodBias = source.LodBias;
+            }
+            else
+            {
+                Filter = SamplerFilter.MinMagMipLinear;
+                AddressU = SamplerAddressMode.Clamp;
+                AddressV = SamplerAddressMode.Clamp;
+                AddressW = SamplerAddressMode.Clamp;
+                MinMipMapLod = float.MinValue;
+                MaxMipMapLod = float.MaxValue;
+                LodBias = 0f;
+                MaxAnisotropy = 1;
+                BorderColor = Color.White;
+                Comparison = ComparisonMode.Never;
+            }
+
             CheckIfComparisonSampler();
         }
 

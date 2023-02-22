@@ -227,7 +227,7 @@ namespace Molten.Graphics
         StructKey<BlendDesc1> _descBlend;
         bool _dirtyBlend;
 
-        internal PipelineStateDX11(DeviceDX11 device, PipelineStatePreset preset) :
+        internal PipelineStateDX11(DeviceDX11 device) :
             base(device)
         {
             _descDepth = new StructKey<DepthStencilDesc>(); // TODO get default
@@ -238,8 +238,6 @@ namespace Molten.Graphics
 
             _descBlend = new StructKey<BlendDesc1>();
             _dirtyBlend = true;
-
-            device.StatePresets.ApplyPreset(this, preset);
         }
 
         internal DepthStateDX11 DepthState { get; private set; }
