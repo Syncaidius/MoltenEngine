@@ -29,7 +29,7 @@ namespace Molten.Graphics
                     if (Desc.CompareOp != func)
                     {
                         Desc.CompareOp = func;
-                        _parent._dirty = true;
+                        _parent._dirtyDepth = true;
                     }
                 }
             }
@@ -43,7 +43,7 @@ namespace Molten.Graphics
                     if (Desc.PassOp != op)
                     {
                         Desc.PassOp = op;
-                        _parent._dirty = true;
+                        _parent._dirtyDepth = true;
                     }
                 }
             }
@@ -57,7 +57,7 @@ namespace Molten.Graphics
                     if (Desc.FailOp != op)
                     {
                         Desc.FailOp = op;
-                        _parent._dirty = true;
+                        _parent._dirtyDepth = true;
                     }
                 }
             }
@@ -71,7 +71,7 @@ namespace Molten.Graphics
                     if (Desc.DepthFailOp != op)
                     {
                         Desc.DepthFailOp = op;
-                        _parent._dirty = true;
+                        _parent._dirtyDepth = true;
                     }
                 }
             }
@@ -87,7 +87,12 @@ namespace Molten.Graphics
         internal PipelineStateVK(GraphicsDevice device) : 
             base(device)
         {
-            _info = EngineUtil.Alloc<GraphicsPipelineCreateInfo>();
+            _info = new StructKey<GraphicsPipelineCreateInfo>();
+        }
+
+        protected override void Initialize()
+        {
+            throw new NotImplementedException();
         }
 
         public override void GraphicsRelease()
@@ -149,6 +154,11 @@ namespace Molten.Graphics
              *  
              *  NOTE: This may 
             */
+        }
+
+        protected override RenderSurfaceBlend CreateSurfaceBlend(int index)
+        {
+            throw new NotImplementedException();
         }
 
         public override bool IsDepthEnabled
@@ -264,5 +274,22 @@ namespace Molten.Graphics
                 _dirtyDepth = true;
             }
         }
+
+        public override RasterizerCullingMode Cull { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override int DepthBias { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override float DepthBiasClamp { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override RasterizerFillingMode Fill { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override bool IsAALineEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override bool IsDepthClipEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override bool IsFrontCounterClockwise { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override bool IsMultisampleEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override bool IsScissorEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override float SlopeScaledDepthBias { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override ConservativeRasterizerMode ConservativeRaster { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override uint ForcedSampleCount { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override bool AlphaToCoverageEnable { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override bool IndependentBlendEnable { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override uint BlendSampleMask { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override Color4 BlendFactor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

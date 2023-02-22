@@ -61,11 +61,9 @@ namespace Molten.Graphics
             if (!context.HasErrors)
             {
                 // Populate missing material states with default.
-                material.DepthState.FillMissingWith(renderer.Device.DepthBank.GetPreset(DepthStencilPreset.Default));
-                material.RasterizerState.FillMissingWith(renderer.Device.RasterizerBank.GetPreset(RasterizerPreset.Default));
-                material.BlendState.FillMissingWith(renderer.Device.BlendBank.GetPreset(BlendPreset.Default));
+                material.State.FillMissingWith(renderer.Device.StatePresets.Default);
 
-                ShaderSampler defaultSampler = renderer.Device.SamplerBank.GetPreset(SamplerPreset.Default);
+                ShaderSampler defaultSampler = renderer.Device.CreateSampler(SamplerPreset.Default);
                 for (int i = 0; i < material.Samplers.Length; i++)
                     material.Samplers[i].FillMissingWith(defaultSampler);
 
@@ -73,14 +71,8 @@ namespace Molten.Graphics
                 // If that fails, fill remaining gaps with ones from material.
                 foreach (MaterialPass pass in material.Passes)
                 {
-                    pass.DepthState.FillMissingWith(pass.DepthState[StateConditions.None]);
-                    pass.DepthState.FillMissingWith(material.DepthState);
-
-                    pass.RasterizerState.FillMissingWith(pass.RasterizerState[StateConditions.None]);
-                    pass.RasterizerState.FillMissingWith(material.RasterizerState);
-
-                    pass.BlendState.FillMissingWith(pass.BlendState[StateConditions.None]);
-                    pass.BlendState.FillMissingWith(material.BlendState);
+                    pass.State.FillMissingWith(pass.State[StateConditions.None]);
+                    pass.State.FillMissingWith(material.State);
 
                     // Ensure the pass can at least fit all of the base material samplers (if any).
                     if(pass.Samplers.Length < material.Samplers.Length)

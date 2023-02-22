@@ -30,6 +30,8 @@ namespace Molten.Graphics
             OnInitialize();
 
             StatePresets = new PipelineStateBank(this);
+            StatePresets.Default = CreateState();
+
             SamplerBank = new SamplerBank(this);
         }
 

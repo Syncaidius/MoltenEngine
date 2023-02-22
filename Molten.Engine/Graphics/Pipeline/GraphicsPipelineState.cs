@@ -103,11 +103,12 @@ namespace Molten.Graphics
             for (int i = 0; i < _surfaceBlends.Length; i++)
                 _surfaceBlends[i] = CreateSurfaceBlend(i);
 
+            Initialize();
             FrontFace = CreateFace(true);
             BackFace = CreateFace(false);
-
-            device.StatePresets.ApplyPreset(this, PipelineStatePreset.Default);
         }
+
+        protected abstract void Initialize();
 
         [ShaderNode(ShaderNodeParseType.Enum)]
         public abstract RasterizerCullingMode Cull { get; set; }
@@ -172,13 +173,13 @@ namespace Molten.Graphics
         /// Gets or sets the blend sample mask.
         /// </summary>
         [ShaderNode(ShaderNodeParseType.UInt32)]
-        public uint BlendSampleMask { get; set; }
+        public abstract uint BlendSampleMask { get; set; }
 
         /// <summary>
         /// Gets or sets the blend factor.
         /// </summary>
         [ShaderNode(ShaderNodeParseType.Color)]
-        public Color4 BlendFactor { get; set; }
+        public abstract Color4 BlendFactor { get; set; }
 
         /// <summary>
         /// Invoked when a new <see cref="Face"/> instance is required for the current <see cref="GraphicsPipelineState"/>.

@@ -8,6 +8,8 @@ namespace Molten.Graphics
         internal StructKey<BlendDesc1> Desc { get; }
 
         ID3D11BlendState1* _native;
+        Color4 _blendFactor;
+        uint _sampleMask;
 
         public BlendStateDX11(DeviceDX11 device, StructKey<BlendDesc1> desc) : 
             base(device, GraphicsBindTypeFlags.Input)
@@ -41,5 +43,31 @@ namespace Molten.Graphics
         }
 
         public override unsafe ID3D11BlendState1* NativePtr => _native;
+
+        internal Color4 BlendFactor
+        {
+            get => _blendFactor;
+            set
+            {
+                if(_blendFactor != value)
+                {
+                    _blendFactor = value;
+                    Version++;
+                }
+            }
+        }
+
+        internal uint BlendSampleMask
+        {
+            get => _sampleMask;
+            set
+            {
+                if(_sampleMask != value)
+                {
+                    _sampleMask = value;
+                    Version++;
+                }
+            }
+        }
     }
 }

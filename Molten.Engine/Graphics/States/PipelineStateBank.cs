@@ -159,6 +159,8 @@
                     break;
             }
         }
+
+        public GraphicsPipelineState Default { get; internal set; }
     }
 
     public enum PipelineStatePreset

@@ -230,6 +230,12 @@ namespace Molten.Graphics
         internal PipelineStateDX11(DeviceDX11 device, PipelineStatePreset preset) :
             base(device)
         {
+            OnApply(device.Cmd);
+            device.StatePresets.ApplyPreset(this, preset);
+        }
+
+        protected override void Initialize()
+        {
             _descDepth = new StructKey<DepthStencilDesc>(); // TODO get default
             _dirtyDepth = true;
 
@@ -238,15 +244,7 @@ namespace Molten.Graphics
 
             _descBlend = new StructKey<BlendDesc1>();
             _dirtyBlend = true;
-
-            device.StatePresets.ApplyPreset(this, preset);
         }
-
-        internal DepthStateDX11 DepthState { get; private set; }
-
-        internal RasterizerStateDX11 RasterizerState { get; private set; }
-
-        internal BlendStateDX11 BlendState { get; private set; }
 
         public override void GraphicsRelease()
         {
@@ -307,6 +305,12 @@ namespace Molten.Graphics
                 Version++;
             }
         }
+
+        internal DepthStateDX11 DepthState { get; private set; }
+
+        internal RasterizerStateDX11 RasterizerState { get; private set; }
+
+        internal BlendStateDX11 BlendState { get; private set; }
 
         #region Depth-Stencil Properties
         public override bool IsDepthEnabled
@@ -584,6 +588,18 @@ namespace Molten.Graphics
                 _descBlend.Value.IndependentBlendEnable = value ? 1 : 0;
                 _dirtyBlend = true;
             }
+        }
+
+        public override Color4 BlendFactor
+        {
+            get => BlendState.BlendFactor;
+            set => BlendState.BlendFactor = value;
+        }
+
+        public override uint BlendSampleMask
+        {
+            get => BlendState.BlendSampleMask;
+            set => BlendState.BlendSampleMask = value;
         }
         #endregion
     }

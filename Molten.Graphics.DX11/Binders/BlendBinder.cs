@@ -6,9 +6,14 @@
         {
             CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
 
-            value = value ?? cmd.DXDevice.BlendBank.GetPreset(BlendPreset.Default) as BlendStateDX11;
+            if (value == null)
+            {
+                PipelineStateDX11 state = cmd.Device.StatePresets.Default as PipelineStateDX11;
+                value = state.BlendState;
+            }
+
             Color4 tmp = value.BlendFactor;
-            cmd.Native->OMSetBlendState(value as BlendStateDX11, (float*)&tmp, value.BlendSampleMask);
+            cmd.Native->OMSetBlendState(value, (float*)&tmp, value.BlendSampleMask);
         }
 
         public override void Unbind(GraphicsSlot<BlendStateDX11> slot, BlendStateDX11 value)

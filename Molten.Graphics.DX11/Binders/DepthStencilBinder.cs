@@ -5,7 +5,12 @@
         public override void Bind(GraphicsSlot<DepthStateDX11> slot, DepthStateDX11 value)
         {
             CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
-            value = value ?? cmd.Device.DepthBank.GetPreset(DepthStencilPreset.Default);
+
+            if (value == null)
+            {
+                PipelineStateDX11 state = cmd.Device.StatePresets.Default as PipelineStateDX11;
+                value = state.DepthState;
+            }
 
             cmd.Native->OMSetDepthStencilState((value).NativePtr, cmd.State.Value.StencilReference);
         }
