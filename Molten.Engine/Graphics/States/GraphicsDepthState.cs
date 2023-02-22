@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using static Molten.Graphics.GraphicsBlendState;
 
 namespace Molten.Graphics
 {
-    public abstract class GraphicsPipelineState : GraphicsObject
+    /// <summary>Stores a depth-stencil state for use with a <see cref="GraphicsCommandQueue"/>.</summary>
+    public abstract class GraphicsDepthState : GraphicsObject, IEquatable<GraphicsDepthState>
     {
         public abstract class Face
         {
@@ -47,145 +44,67 @@ namespace Molten.Graphics
             }
         }
 
-        public abstract class RenderSurfaceBlend
-        {
-            [ShaderNode(ShaderNodeParseType.Bool)]
-            public abstract bool BlendEnable { get; set; }
-
-            [ShaderNode(ShaderNodeParseType.Bool)]
-            public abstract bool LogicOpEnable { get; set; }
-
-            [ShaderNode(ShaderNodeParseType.Enum)]
-            public abstract BlendType SrcBlend { get; set; }
-
-            [ShaderNode(ShaderNodeParseType.Enum)]
-            public abstract BlendType DestBlend { get; set; }
-
-            [ShaderNode(ShaderNodeParseType.Enum)]
-            public abstract BlendOperation BlendOp { get; set; }
-
-            [ShaderNode(ShaderNodeParseType.Enum)]
-            public abstract BlendType SrcBlendAlpha { get; set; }
-
-            [ShaderNode(ShaderNodeParseType.Enum)]
-            public abstract BlendType DestBlendAlpha { get; set; }
-
-            [ShaderNode(ShaderNodeParseType.Enum)]
-            public abstract BlendOperation BlendOpAlpha { get; set; }
-
-            [ShaderNode(ShaderNodeParseType.Enum)]
-            public abstract LogicOperation LogicOp { get; set; }
-
-            [ShaderNode(ShaderNodeParseType.Enum)]
-            public abstract ColorWriteFlags RenderTargetWriteMask { get; set; }
-
-            public void Set(RenderSurfaceBlend other)
-            {
-                BlendEnable = other.BlendEnable;
-                LogicOpEnable = other.LogicOpEnable;
-                SrcBlend = other.SrcBlend;
-                DestBlend = other.DestBlend;
-                BlendOp = other.BlendOp;
-                SrcBlendAlpha = other.SrcBlendAlpha;
-                DestBlendAlpha = other.DestBlendAlpha;
-                BlendOpAlpha = other.BlendOpAlpha;
-                LogicOp = other.LogicOp;
-                RenderTargetWriteMask = other.RenderTargetWriteMask;
-            }
-        }
-
-        RenderSurfaceBlend[] _surfaceBlends;
-
-        protected GraphicsPipelineState(GraphicsDevice device) :
+        protected GraphicsDepthState(GraphicsDevice device, GraphicsDepthState source) :
             base(device, GraphicsBindTypeFlags.Input)
         {
-            _surfaceBlends = new RenderSurfaceBlend[device.Adapter.Capabilities.PixelShader.MaxOutResources];
-            for (int i = 0; i < _surfaceBlends.Length; i++)
-                _surfaceBlends[i] = CreateSurfaceBlend(i);
-
             FrontFace = CreateFace(true);
             BackFace = CreateFace(false);
 
-            device.StatePresets.ApplyPreset(this, PipelineStatePreset.Default);
+            if(source != null)
+            {
+                BackFace.Set(source.BackFace);
+                FrontFace.Set(source.FrontFace);
+                IsDepthEnabled = source.IsDepthEnabled;
+                IsStencilEnabled = source.IsStencilEnabled;
+                DepthWriteEnabled = source.DepthWriteEnabled;
+                DepthComparison = source.DepthComparison;
+                StencilReadMask = source.StencilReadMask;
+                StencilWriteMask = source.StencilWriteMask;
+                StencilReference = source.StencilReference;
+            }
+            else
+            {
+                // Based on the default DX11 values: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ns-d3d11-d3d11_depth_stencil_desc
+                IsDepthEnabled = true;
+                DepthWriteEnabled = true;
+                DepthComparison = ComparisonFunction.Less;
+                IsStencilEnabled = false;
+                StencilReadMask = 255;
+                StencilWriteMask = 255;
+                FrontFace.Comparison = ComparisonFunction.Always;
+                FrontFace.DepthFail = DepthStencilOperation.Keep;
+                FrontFace.StencilPass = DepthStencilOperation.Keep;
+                FrontFace.StencilFail = DepthStencilOperation.Keep;
+                BackFace.Set(FrontFace);
+            }
         }
 
-        [ShaderNode(ShaderNodeParseType.Enum)]
-        public abstract RasterizerCullingMode Cull { get; set; }
-
-        [ShaderNode(ShaderNodeParseType.Int32)]
-        public abstract int DepthBias { get; set; }
-
-        [ShaderNode(ShaderNodeParseType.Float)]
-        public abstract float DepthBiasClamp { get; set; }
-
-        [ShaderNode(ShaderNodeParseType.Enum)]
-        public abstract RasterizerFillingMode Fill { get; set; }
-
         /// <summary>
-        /// Gets or sets whether or not anti-aliased line rasterization is enabled.
-        /// </summary>
-        [ShaderNode(ShaderNodeParseType.Bool)]
-        public abstract bool IsAALineEnabled { get; set; }
-
-        [ShaderNode(ShaderNodeParseType.Bool)]
-        public abstract bool IsDepthClipEnabled { get; set; }
-
-        [ShaderNode(ShaderNodeParseType.Bool)]
-        public abstract bool IsFrontCounterClockwise { get; set; }
-
-        [ShaderNode(ShaderNodeParseType.Bool)]
-        public abstract bool IsMultisampleEnabled { get; set; }
-
-        [ShaderNode(ShaderNodeParseType.Bool)]
-        public abstract bool IsScissorEnabled { get; set; }
-
-        [ShaderNode(ShaderNodeParseType.Float)]
-        public abstract float SlopeScaledDepthBias { get; set; }
-
-        [ShaderNode(ShaderNodeParseType.Bool)]
-        public abstract ConservativeRasterizerMode ConservativeRaster { get; set; }
-
-        [ShaderNode(ShaderNodeParseType.UInt32)]
-        public abstract uint ForcedSampleCount { get; set; }
-
-        protected abstract RenderSurfaceBlend CreateSurfaceBlend(int index);
-
-        internal RenderSurfaceBlend GetSurfaceBlendState(int index)
-        {
-            return _surfaceBlends[index];
-        }
-
-        [ShaderNode(ShaderNodeParseType.Bool)]
-        public abstract bool AlphaToCoverageEnable { get; set; }
-
-        [ShaderNode(ShaderNodeParseType.Bool)]
-        public abstract bool IndependentBlendEnable { get; set; }
-
-        /// <summary>
-        /// Gets or sets a render target blend description at the specified index.
-        /// </summary>
-        /// <param name="rtIndex">The render target/surface blend index.</param>
-        /// <returns></returns>
-        public RenderSurfaceBlend this[int rtIndex] => _surfaceBlends[rtIndex];
-
-        /// <summary>
-        /// Gets or sets the blend sample mask.
-        /// </summary>
-        [ShaderNode(ShaderNodeParseType.UInt32)]
-        public uint BlendSampleMask { get; set; }
-
-        /// <summary>
-        /// Gets or sets the blend factor.
-        /// </summary>
-        [ShaderNode(ShaderNodeParseType.Color)]
-        public Color4 BlendFactor { get; set; }
-
-        /// <summary>
-        /// Invoked when a new <see cref="Face"/> instance is required for the current <see cref="GraphicsPipelineState"/>.
+        /// Invoked when a new <see cref="Face"/> instance is required for the current <see cref="GraphicsDepthState"/>.
         /// </summary>
         /// <param name="isFrontFace"></param>
         /// <returns></returns>
         protected abstract Face CreateFace(bool isFrontFace);
+
+        public override bool Equals(object obj)
+        {
+            if (obj is GraphicsDepthState other)
+                return Equals(other);
+            else
+                return false;
+        }
+
+        public bool Equals(GraphicsDepthState other)
+        {
+            if (!CompareOperation(BackFace, other.BackFace) || !CompareOperation(FrontFace, other.FrontFace))
+                return false;
+
+            return DepthComparison == other.DepthComparison &&
+                IsDepthEnabled == other.IsDepthEnabled &&
+                IsStencilEnabled == other.IsStencilEnabled &&
+                StencilReadMask == other.StencilReadMask &&
+                StencilWriteMask == other.StencilWriteMask;
+        }
 
         private static bool CompareOperation(Face op, Face other)
         {
@@ -270,7 +189,5 @@ namespace Molten.Graphics
         /// </summary>
         [ShaderNode(ShaderNodeParseType.Enum)]
         public GraphicsDepthWritePermission WritePermission { get; set; } = GraphicsDepthWritePermission.Enabled;
-
-        public int SurfaceBlendCount => _surfaceBlends.Length;
     }
 }

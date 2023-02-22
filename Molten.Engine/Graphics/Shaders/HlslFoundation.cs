@@ -12,9 +12,19 @@
         public ShaderStateBank<ShaderSampler>[] Samplers;
 
         /// <summary>
-        /// The available render state.
+        /// The available rasterizer state.
         /// </summary>
-        public ShaderStateBank<GraphicsPipelineState> State = new ShaderStateBank<GraphicsPipelineState>();
+        public ShaderStateBank<GraphicsRasterizerState> RasterizerState = new ShaderStateBank<GraphicsRasterizerState>();
+
+        /// <summary>
+        /// The available blend state.
+        /// </summary>
+        public ShaderStateBank<GraphicsBlendState> BlendState = new ShaderStateBank<GraphicsBlendState>();
+
+        /// <summary>
+        ///The available depth state.
+        /// </summary>
+        public ShaderStateBank<GraphicsDepthState> DepthState = new ShaderStateBank<GraphicsDepthState>();
 
         protected HlslFoundation(GraphicsDevice device) : base(device, GraphicsBindTypeFlags.Input)
         {
