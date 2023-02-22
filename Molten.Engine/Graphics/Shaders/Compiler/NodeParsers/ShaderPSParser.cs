@@ -9,15 +9,22 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            switch (foundation)
+            if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
             {
-                case Material material:
-                    material.DefaultPSEntryPoint = node.Value;
-                    break;
+                switch (foundation)
+                {
+                    case Material material:
+                        material.DefaultPSEntryPoint = entryPoint;
+                        break;
 
-                case MaterialPass pass:
-                    pass.PS.EntryPoint = node.Value;
-                    break;
+                    case MaterialPass pass:
+                        pass.PS.EntryPoint = entryPoint;
+                        break;
+                }
+            }
+            else
+            {
+                context.AddError("Pixel/Fragment shader <entry> tag is missing or empty.");
             }
         }
     }

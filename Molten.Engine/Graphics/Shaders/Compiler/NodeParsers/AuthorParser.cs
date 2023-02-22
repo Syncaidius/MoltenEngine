@@ -8,7 +8,10 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            (foundation as IShader).Author = node.ValueType != ShaderHeaderValueType.None ? "Unknown" : node.Value;
+            if(node.Values.TryGetValue(ShaderHeaderValueType.Value, out string author))
+                (foundation as IShader).Author = author;
+            else
+                (foundation as IShader).Author = "Unknown";
         }
     }
 }

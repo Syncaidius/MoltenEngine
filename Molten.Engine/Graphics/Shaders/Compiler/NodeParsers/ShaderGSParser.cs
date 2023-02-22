@@ -9,15 +9,22 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            switch (foundation)
+            if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
             {
-                case Material material:
-                    material.DefaultGSEntryPoint = node.Value;
-                    break;
+                switch (foundation)
+                {
+                    case Material material:
+                        material.DefaultGSEntryPoint = entryPoint;
+                        break;
 
-                case MaterialPass pass:
-                    pass.GS.EntryPoint = node.Value;
-                    break;
+                    case MaterialPass pass:
+                        pass.GS.EntryPoint = entryPoint;
+                        break;
+                }
+            }
+            else
+            {
+                context.AddError("Geometry shader <entry> tag is missing or empty.");
             }
         }
     }

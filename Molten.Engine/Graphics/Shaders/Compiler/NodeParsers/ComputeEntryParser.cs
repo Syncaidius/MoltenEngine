@@ -9,10 +9,10 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            if (node.ValueType == ShaderHeaderValueType.None)
-                context.AddError("Compute task <entry> tag is missing or empty.");
+            if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
+                (foundation as ComputeTask).Composition.EntryPoint = entryPoint;
             else
-                (foundation as ComputeTask).Composition.EntryPoint = node.Value;
+                context.AddError("Compute task <entry> tag is missing or empty.");
         }
     }
 }

@@ -9,15 +9,22 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            switch (foundation)
+            if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
             {
-                case Material material:
-                    material.DefaultDSEntryPoint = node.Value;
-                    break;
+                switch (foundation)
+                {
+                    case Material material:
+                        material.DefaultDSEntryPoint = entryPoint;
+                        break;
 
-                case MaterialPass pass:
-                    pass.DS.EntryPoint = node.Value;
-                    break;
+                    case MaterialPass pass:
+                        pass.DS.EntryPoint = entryPoint;
+                        break;
+                }
+            }
+            else
+            {
+                context.AddError("Domain shader <entry> tag is missing or empty.");
             }
         }
     }

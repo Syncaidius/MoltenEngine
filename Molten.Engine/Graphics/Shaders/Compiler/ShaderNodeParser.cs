@@ -62,7 +62,7 @@ namespace Molten.Graphics
 
         private ShaderHeaderNode ParseNode(ShaderCompilerContext context, XmlNode node)
         {
-            ShaderHeaderNode shn = new ShaderHeaderNode(node);
+            ShaderHeaderNode hNode = new ShaderHeaderNode(node);
 
             // Parse attributes
             if (node.Attributes != null)
@@ -73,23 +73,27 @@ namespace Molten.Graphics
                     switch (nName)
                     {
                         case "value":
-                            shn.Value = att.InnerText;
-                            shn.ValueType = ShaderHeaderValueType.Value;
+                            hNode.Values[ShaderHeaderValueType.Value] = att.InnerText;
                             break;
 
                         case "preset":
-                            if (shn.ValueType != ShaderHeaderValueType.Value)
-                            {
-                                shn.Value = att.InnerText;
-                                shn.ValueType = ShaderHeaderValueType.Preset;
-                            }
+                            hNode.Values[ShaderHeaderValueType.Preset] = att.InnerText;
+                            break;
+
+                        case "blend":
+                            hNode.Values[ShaderHeaderValueType.BlendPreset] = att.InnerText;
+                            break;
+
+                        case "rasterizer":
+                            hNode.Values[ShaderHeaderValueType.RasterizerPreset] = att.InnerText;
+                            break;
+
+                        case "depth":
+                            hNode.Values[ShaderHeaderValueType.DepthPreset] = att.InnerText;
                             break;
 
                         case "index":
-                            if (!int.TryParse(att.InnerText, out int index))
-                                index = 0;
-
-                            shn.SlotID = index;
+                            hNode.Values[ShaderHeaderValueType.SlotID] = att.InnerText;
                             break;
                     }
                 }
@@ -102,38 +106,40 @@ namespace Molten.Graphics
                 {
                     XmlNode cNode = node.ChildNodes[0];
                     if (cNode.Name == "#text")
-                        shn.Value = node.InnerText;
+                        hNode.Values[ShaderHeaderValueType.Value] = node.InnerText;
                 }
 
                 foreach (XmlNode c in node.ChildNodes)
                 {
-                    if (c.Name == "#text")
+                    if (c.Name == "#text" || c.Name == "#comment")
                         continue;
 
                     string cName = c.Name.ToLower();
                     ShaderHeaderNode cNode = ParseNode(context, c);
+                    string cValue = null;
+                    cNode.Values.TryGetValue(ShaderHeaderValueType.Value, out cValue);
 
                     switch (cName)
                     {
                         case "condition":
-                            if (Enum.TryParse(cNode.Value, true, out StateConditions sc))
-                                shn.Conditions |= sc;
+                            if (Enum.TryParse(cValue, true, out StateConditions sc))
+                                hNode.Conditions |= sc;
                             else
                                 InvalidEnumMessage<StateConditions>(context, (c.Name, c.InnerText), "state condition");
                             break;
 
                         default:
                             if (c.ChildNodes.Count > 0)
-                                shn.ChildNodes.Add(cNode);
+                                hNode.ChildNodes.Add(cNode);
                             else
-                                shn.ChildValues.Add((cName, cNode.Value));
+                                hNode.ChildValues.Add((cName, cValue));
 
                             break;
                     }
                 }
             }
 
-            return shn;
+            return hNode;
         }
 
         protected abstract void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node);
