@@ -77,12 +77,16 @@ namespace Molten.Graphics
             }
         }
 
-        StructKey<GraphicsPipelineCreateInfo> _info;
+        GraphicsPipelineCreateInfo _info;
         Pipeline _pipeline;
 
-        StructKey<PipelineDepthStencilStateCreateInfo> _descDepth { get; }
+        StructKey<PipelineDepthStencilStateCreateInfo> _descDepth;
         DepthStateVK _depthState;
         bool _dirtyDepth = true;
+
+        StructKey<PipelineRasterizationStateCreateInfo> _descRasterizer;
+        RasterizerStateVK _rasterizerState;
+        bool _dirtyRasterizer = true;
 
         internal PipelineStateVK(GraphicsDevice device) : 
             base(device)
@@ -92,12 +96,14 @@ namespace Molten.Graphics
 
         protected override void Initialize()
         {
-            throw new NotImplementedException();
+            _descDepth = new StructKey<PipelineDepthStencilStateCreateInfo>();
+            _descRasterizer = new StructKey<PipelineRasterizationStateCreateInfo>();
         }
 
         public override void GraphicsRelease()
         {
-            throw new NotImplementedException();
+            _descDepth.Dispose();
+            _descRasterizer.Dispose();
         }
 
         protected override Face CreateFace(bool isFrontFace)
@@ -118,7 +124,7 @@ namespace Molten.Graphics
                 if (_depthState == null)
                     _depthState = Device.CacheObject(_descDepth, new DepthStateVK(Device, _descDepth));
 
-                _info.Value.PDepthStencilState = _depthState.Desc;
+                _info.PDepthStencilState = _depthState.Desc;
                 _dirtyDepth = false;
                 Version++;
             }

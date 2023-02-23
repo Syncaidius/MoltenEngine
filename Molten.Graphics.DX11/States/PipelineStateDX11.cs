@@ -218,14 +218,13 @@ namespace Molten.Graphics
         }
 
         StructKey<DepthStencilDesc> _descDepth;
-        bool _dirtyDepth;
+        bool _dirtyDepth = true;
 
         StructKey<RasterizerDesc2> _descRaster;
-        bool _dirtyRaster;
-
+        bool _dirtyRaster = true;
 
         StructKey<BlendDesc1> _descBlend;
-        bool _dirtyBlend;
+        bool _dirtyBlend = true;
 
         internal PipelineStateDX11(DeviceDX11 device, PipelineStatePreset preset) :
             base(device)
@@ -236,21 +235,20 @@ namespace Molten.Graphics
         protected override void Initialize()
         {
             _descDepth = new StructKey<DepthStencilDesc>(); // TODO get default
-            _dirtyDepth = true;
             DepthState = new DepthStateDX11(Device, _descDepth);
 
             _descRaster = new StructKey<RasterizerDesc2>();
-            _dirtyRaster = true;
             RasterizerState = new RasterizerStateDX11(Device, _descRaster);
 
             _descBlend = new StructKey<BlendDesc1>();
-            _dirtyBlend = true;
             BlendState = new BlendStateDX11(Device, _descBlend, Color4.White, 0);
         }
 
         public override void GraphicsRelease()
         {
-            throw new NotImplementedException();
+            _descDepth.Dispose();
+            _descRaster.Dispose();
+            _descBlend.Dispose();
         }
 
         protected override Face CreateFace(bool isFrontFace)
@@ -276,9 +274,6 @@ namespace Molten.Graphics
                 _descDepth.Value.BackFace = (DepthBackFace as FaceDX11)._desc;
 
                 DepthState = device.CacheObject(_descDepth, new DepthStateDX11(Device, _descDepth));
-
-                DepthStencilopDesc ff = DepthState.Desc.Value.FrontFace;
-                DepthStencilopDesc bf = DepthState.Desc.Value.BackFace;
 
                 _dirtyDepth = false;
                 Version++;
