@@ -8,7 +8,7 @@
 
             if (value == null)
             {
-                PipelineStateDX11 state = cmd.Device.StatePresets.Default as PipelineStateDX11;
+                PipelineStateDX11 state = cmd.Device.DefaultState as PipelineStateDX11;
                 value = state.BlendState;
             }
 

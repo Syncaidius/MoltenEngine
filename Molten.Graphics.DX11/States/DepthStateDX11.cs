@@ -5,31 +5,25 @@ namespace Molten.Graphics
     /// <summary>Stores a depth-stencil state for use with a <see cref="CommandQueueDX11"/>.</summary>
     internal unsafe class DepthStateDX11 : GraphicsObject<ID3D11DepthStencilState>
     {        
-        internal StructKey<DepthStencilDesc> Desc { get; }
-
         ID3D11DepthStencilState* _native;
+        uint _stencilReference;
 
-        internal DepthStateDX11(GraphicsDevice device, StructKey<DepthStencilDesc> desc) : 
+        internal DepthStateDX11(DeviceDX11 device, ref DepthStencilDesc desc, uint stencilRef) :
             base(device, GraphicsBindTypeFlags.Input)
         {
-            Desc = new StructKey<DepthStencilDesc>(desc);
+            _stencilReference = stencilRef;
+            device.Ptr->CreateDepthStencilState(ref desc, ref _native);
         }
 
-        protected override void OnApply(GraphicsCommandQueue cmd)
-        {
-            if (_native == null)
-            {
-                (cmd as CommandQueueDX11).DXDevice.Ptr->CreateDepthStencilState(Desc, ref _native);
-                Version++;
-            }
-        }
+        protected override void OnApply(GraphicsCommandQueue cmd) { }
 
         public override void GraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
-            Desc.Dispose();
         }
 
         public override unsafe ID3D11DepthStencilState* NativePtr => _native;
+
+        public uint StencilReference { get; set; }
     }
 }

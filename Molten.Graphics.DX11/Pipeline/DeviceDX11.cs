@@ -53,8 +53,6 @@ namespace Molten.Graphics
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
         }
 
-
-
         internal unsafe void ProcessDebugLayerMessages()
         {
             if(_debug != null)
@@ -149,14 +147,14 @@ namespace Molten.Graphics
             // TODO add the context's profiler stats to the device's main profiler.
         }
 
-        public override GraphicsPipelineState CreateState(PipelineStatePreset preset)
+        protected override GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters)
         {
-            return new PipelineStateDX11(this, preset);
+            return new ShaderSamplerDX11(this, ref parameters);
         }
 
-        public override ShaderSampler CreateSampler(SamplerPreset preset)
+        protected override GraphicsState OnCreateState(ref GraphicsStateParameters parameters)
         {
-            return new ShaderSamplerDX11(this, preset);
+            return new PipelineStateDX11(this, ref parameters);
         }
 
         public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0)

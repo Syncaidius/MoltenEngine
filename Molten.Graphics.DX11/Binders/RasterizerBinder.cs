@@ -8,11 +8,11 @@
 
             if (value == null)
             {
-                PipelineStateDX11 state = cmd.Device.StatePresets.Default as PipelineStateDX11;
+                PipelineStateDX11 state = cmd.Device.DefaultState as PipelineStateDX11;
                 value = state.RasterizerState;
             }
 
-            cmd.Native->RSSetState(value as RasterizerStateDX11);
+            cmd.Native->RSSetState(value);
         }
 
         public override void Unbind(GraphicsSlot<RasterizerStateDX11> slot, RasterizerStateDX11 value)

@@ -8,11 +8,11 @@
 
             if (value == null)
             {
-                PipelineStateDX11 state = cmd.Device.StatePresets.Default as PipelineStateDX11;
+                PipelineStateDX11 state = cmd.Device.DefaultState as PipelineStateDX11;
                 value = state.DepthState;
             }
 
-            cmd.Native->OMSetDepthStencilState((value).NativePtr, cmd.State.Value.StencilReference);
+            cmd.Native->OMSetDepthStencilState(value.NativePtr, value.StencilReference);
         }
 
         public override void Unbind(GraphicsSlot<DepthStateDX11> slot, DepthStateDX11 value)

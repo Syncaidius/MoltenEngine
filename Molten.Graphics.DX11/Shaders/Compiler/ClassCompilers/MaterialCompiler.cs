@@ -60,38 +60,17 @@ namespace Molten.Graphics
             // No issues arose, lets add it to the material manager
             if (!context.HasErrors)
             {
-                // Populate missing material states with default.
-                material.State.FillMissingWith(renderer.Device.StatePresets.Default);
+                material.State = material.State ?? material.Device.DefaultState;
 
-                ShaderSampler defaultSampler = renderer.Device.CreateSampler(SamplerPreset.Default);
                 for (int i = 0; i < material.Samplers.Length; i++)
-                    material.Samplers[i].FillMissingWith(defaultSampler);
+                    material.Samplers[i] = material.Samplers[i] ?? material.Device.DefaultSampler;
 
-                // First, attempt to populate pass states with their first conditional state. 
-                // If that fails, fill remaining gaps with ones from material.
                 foreach (MaterialPass pass in material.Passes)
                 {
-                    pass.State.FillMissingWith(pass.State[StateConditions.None]);
-                    pass.State.FillMissingWith(material.State);
-
-                    // Ensure the pass can at least fit all of the base material samplers (if any).
-                    if(pass.Samplers.Length < material.Samplers.Length)
-                    {
-                        int oldLength = pass.Samplers.Length;
-                        Array.Resize(ref pass.Samplers, material.Samplers.Length);
-                        for (int i = oldLength; i < pass.Samplers.Length; i++)
-                            pass.Samplers[i] = new ShaderStateBank<ShaderSampler>();
-                    }
+                    pass.State = pass.State ?? pass.Device.DefaultState;
 
                     for (int i = 0; i < pass.Samplers.Length; i++)
-                    {
-                        pass.Samplers[i].FillMissingWith(pass.Samplers[i][StateConditions.None]);
-
-                        if (i >= material.Samplers.Length)
-                            pass.Samplers[i].FillMissingWith(defaultSampler);
-                        else
-                            pass.Samplers[i].FillMissingWith(material.Samplers[i]);
-                    }
+                        pass.Samplers[i] = pass.Samplers[i] ?? pass.Device.DefaultSampler;
                 }
 
                 material.InputStructure = material.Passes[0].VS.InputStructure;

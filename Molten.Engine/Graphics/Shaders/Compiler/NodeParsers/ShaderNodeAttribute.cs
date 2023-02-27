@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class ShaderNodeAttribute : Attribute
     {
         public ShaderNodeAttribute(ShaderNodeParseType parseType)

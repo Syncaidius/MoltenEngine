@@ -1,9 +1,9 @@
 ﻿namespace Molten.Graphics
 {
-    internal unsafe class StateBinder : GraphicsSlotBinder<GraphicsPipelineState>
+    internal unsafe class StateBinder : GraphicsSlotBinder<GraphicsState>
     {
-        public override void Bind(GraphicsSlot<GraphicsPipelineState> slot, GraphicsPipelineState value) { }
+        public override void Bind(GraphicsSlot<GraphicsState> slot, GraphicsState value) { }
 
-        public override void Unbind(GraphicsSlot<GraphicsPipelineState> slot, GraphicsPipelineState value) { }
+        public override void Unbind(GraphicsSlot<GraphicsState> slot, GraphicsState value) { }
     }
 }

@@ -12,13 +12,6 @@
             <condition value="Multisampling"/>
         </fragment>-->
         <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
-            <condition value="Multisampling"/>
-        </state>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
-            <condition value="Multisampling"/>
-            <condition value="ScissorTest"/>
-        </state>
     </pass>
 </material>
 
@@ -33,13 +26,6 @@
         <geometry value="GS"/>
         <fragment value="PS_NoTexture"/>
         <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
-            <condition value="Multisampling"/>
-        </state>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
-            <condition value="Multisampling"/>
-            <condition value="ScissorTest"/>
-        </state>
     </pass>
 </material>
 
@@ -54,13 +40,6 @@
         <geometry value="GS"/>
         <fragment value="PS_Circle"/>
         <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
-            <condition value="Multisampling"/>
-        </state>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
-            <condition value="Multisampling"/>
-            <condition value="ScissorTest"/>
-        </state>
     </pass>
 </material>
 
@@ -75,13 +54,6 @@
         <geometry value="GS"/>
         <fragment value="PS_Circle_NoTex"/>
         <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
-            <condition value="Multisampling"/>
-        </state>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
-            <condition value="Multisampling"/>
-            <condition value="ScissorTest"/>
-        </state>
     </pass>
 </material>
 
@@ -96,13 +68,6 @@
         <geometry value="GS"/>
         <fragment value="PS_Line"/>
         <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
-            <condition value="Multisampling"/>
-        </state>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
-            <condition value="Multisampling"/>
-            <condition value="ScissorTest"/>
-        </state>
     </pass>
 </material>
 
@@ -117,13 +82,6 @@
         <geometry value="GS"/>
         <fragment value="PS_Grid"/>
         <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
-            <condition value="Multisampling"/>
-        </state>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
-            <condition value="Multisampling"/>
-            <condition value="ScissorTest"/>
-        </state>
     </pass>
 </material>
 

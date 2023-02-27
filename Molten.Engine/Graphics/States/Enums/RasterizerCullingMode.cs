@@ -7,6 +7,8 @@
 
         Front = 0x2,
 
-        Back = 0x3
+        Back = 0x3,
+
+        All = 0x4,
     }
 }

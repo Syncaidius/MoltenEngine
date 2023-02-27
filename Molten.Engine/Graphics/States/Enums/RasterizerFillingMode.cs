@@ -6,6 +6,8 @@
 
         Wireframe = 0x2,
 
-        Solid = 0x3
+        Solid = 0x3,
+
+        Point = 0x16,
     }
 }

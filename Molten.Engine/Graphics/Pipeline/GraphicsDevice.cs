@@ -12,6 +12,10 @@ namespace Molten.Graphics
         ThreadedQueue<GraphicsObject> _objectsToDispose;
         Dictionary<Type, Dictionary<StructKey, GraphicsObject>> _objectCache;
 
+
+        GraphicsState _defaultState;
+        GraphicsSampler _defaultSampler;
+
         /// <summary>
         /// Creates a new instance of <see cref="GraphicsDevice"/>.
         /// </summary>
@@ -29,9 +33,11 @@ namespace Molten.Graphics
         {
             OnInitialize();
 
-            StatePresets = new PipelineStateBank(this);
-            SamplerBank = new SamplerBank(this);
-            StatePresets.Default = CreateState();
+            GraphicsStateParameters defaultParams = new GraphicsStateParameters(GraphicsStatePreset.Default);
+            _defaultState = CreateState(ref defaultParams);
+
+            GraphicsSamplerParameters samplerParams = new GraphicsSamplerParameters(SamplerPreset.Default);
+            _defaultSampler = CreateSampler(ref samplerParams);
         }
 
         protected abstract void OnInitialize();
@@ -55,8 +61,6 @@ namespace Molten.Graphics
             DisposeMarkedObjects();
 
             Cmd?.Dispose();
-            StatePresets?.Dispose();
-            SamplerBank?.Dispose();
         }
 
         /// <summary>
@@ -90,17 +94,47 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Requests a new <see cref="GraphicsPipelineState"/> from the current <see cref="GraphicsDevice"/>.
+        /// Requests a new <see cref="GraphicsState"/> from the current <see cref="GraphicsDevice"/>.
         /// </summary>
         /// <returns></returns>
-        public abstract GraphicsPipelineState CreateState(PipelineStatePreset preset = PipelineStatePreset.Default);
+        public GraphicsState CreateState(ref GraphicsStateParameters parameters)
+        {
+            StructKey<GraphicsStateParameters> key = new StructKey<GraphicsStateParameters>(ref parameters);
+            GraphicsState newState = OnCreateState(ref parameters);
+            GraphicsState result = CacheObject(key, newState);
+
+            if (result != newState)
+            {
+                newState.Dispose();
+                key.Dispose();
+            }
+
+            return result;
+        }
 
         /// <summary>
-        /// Requests a new <see cref="ShaderSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
+        /// Requests a new <see cref="GraphicsSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
         /// </summary>
-        /// <param name="source">A source shader sampler to use as a template for the new one.</param>
+        /// <param name="parameters">The parameters to use when creating the new <see cref="GraphicsSampler"/>.</param>
         /// <returns></returns>
-        public abstract ShaderSampler CreateSampler(SamplerPreset preset = SamplerPreset.Default);
+        public GraphicsSampler CreateSampler(ref GraphicsSamplerParameters parameters)
+        {
+            StructKey<GraphicsSamplerParameters> key = new StructKey<GraphicsSamplerParameters>(ref parameters);
+            GraphicsSampler newSampler = OnCreateSampler(ref parameters);
+            GraphicsSampler result = CacheObject(key, newSampler);
+
+            if (result != newSampler)
+            {
+                newSampler.Dispose();
+                key.Dispose();
+            }
+
+            return result;
+        }
+
+        protected abstract GraphicsState OnCreateState(ref GraphicsStateParameters parameters);
+
+        protected abstract GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters);
 
         public abstract ShaderComposition CreateShaderComposition(ShaderType type, HlslShader parent);
 
@@ -153,15 +187,9 @@ namespace Molten.Graphics
         /// </summary>
         public abstract GraphicsCommandQueue Cmd { get; }
 
-        /// <summary>
-        /// Gets the device's depth-stencil state bank.
-        /// </summary>
-        public PipelineStateBank StatePresets { get; private set; }
+        public GraphicsState DefaultState { get; private set; }
 
-        /// <summary>
-        /// Gets the device's texture sampler bank.
-        /// </summary>
-        public SamplerBank SamplerBank { get; private set; }
+        public GraphicsSampler DefaultSampler { get; private set; }
     }
 
     /// <summary>

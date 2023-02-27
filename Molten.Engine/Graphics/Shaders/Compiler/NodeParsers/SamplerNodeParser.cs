@@ -6,17 +6,18 @@
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
+            GraphicsSamplerParameters parameters = new GraphicsSamplerParameters();
             SamplerPreset preset = SamplerPreset.Default;
 
             if (node.Values.TryGetValue(ShaderHeaderValueType.Preset, out string presetValue))
             {
-                if (!Enum.TryParse(presetValue, true, out preset))
+                if (Enum.TryParse(presetValue, true, out preset))
+                    parameters.ApplyPreset(preset);
+                else
                     InvalidEnumMessage<SamplerPreset>(context, (node.Name, presetValue), "sampler preset");
             }
 
-            // Retrieve existing state if available and create a new one from it to avoid editing the existing one.
-            ShaderSampler sampler = foundation.Device.CreateSampler(preset);
-            ParseProperties(node, context, sampler);
+            ParseFields(node, context, ref parameters);
 
             int slotID = 0;
             if (node.Values.TryGetValue(ShaderHeaderValueType.SlotID, out string slotValue))
@@ -26,16 +27,17 @@
             }
 
             // Initialize shader state bank for the sampler if needed.
+            // TODO This should be automatic based on the highest sampler slot read in shader reflection.
+            //      All samplers should be initialized to defaults beforehand.
             if (slotID >= foundation.Samplers.Length)
             {
                 int oldLength = foundation.Samplers.Length;
                 Array.Resize(ref foundation.Samplers, slotID + 1);
                 for (int i = oldLength; i < foundation.Samplers.Length; i++)
-                    foundation.Samplers[i] = new ShaderStateBank<ShaderSampler>();
+                    foundation.Samplers[i] = foundation.Samplers[0];
             }
 
-            sampler = foundation.Device.SamplerBank.AddOrRetrieveExisting(sampler);
-            foundation.Samplers[slotID][node.Conditions] = sampler;
+            foundation.Samplers[slotID] = foundation.Device.CreateSampler(ref parameters);
         }
     }
 }

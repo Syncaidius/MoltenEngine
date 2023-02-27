@@ -9,13 +9,6 @@
         <geometry value="GS"/>
         <fragment value="PS_MSDF" />
         <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="DefaultMultisample">
-            <condition value="Multisampling"/>
-        </state>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTestMultiSample">
-            <condition value="Multisampling"/>
-            <condition value="ScissorTest"/>
-        </state>
 	</pass>
 </material>
 

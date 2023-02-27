@@ -9,16 +9,16 @@
         /// <summary>
         /// The texture samplers to be used with the shader/component.
         /// </summary>
-        public ShaderStateBank<ShaderSampler>[] Samplers;
+        public GraphicsSampler[] Samplers;
 
         /// <summary>
         /// The available render state.
         /// </summary>
-        public ShaderStateBank<GraphicsPipelineState> State = new ShaderStateBank<GraphicsPipelineState>();
+        public GraphicsState State { get; set; }
 
         protected HlslFoundation(GraphicsDevice device) : base(device, GraphicsBindTypeFlags.Input)
         {
-            Samplers = new ShaderStateBank<ShaderSampler>[0];
+            Samplers = new GraphicsSampler[0];
         }
 
         protected override sealed void OnApply(GraphicsCommandQueue cmd) { }

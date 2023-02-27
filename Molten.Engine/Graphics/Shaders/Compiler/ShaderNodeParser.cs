@@ -5,16 +5,16 @@ namespace Molten.Graphics
 {
     public abstract class ShaderNodeParser
     {
-        class PropertyBinding
+        class FieldBinding
         {
-            public PropertyInfo Info;
+            public FieldInfo Info;
 
             public ShaderNodeAttribute Attribute;
         }
 
-        class PropertyCache
+        class FieldCache
         {
-            public Dictionary<string, PropertyBinding> Properties = new Dictionary<string, PropertyBinding>();
+            public Dictionary<string, FieldBinding> Fields { get; } = new Dictionary<string, FieldBinding>();
         }
 
         static string[] _colorDelimiters = new string[] { ",", " " };
@@ -228,26 +228,26 @@ namespace Molten.Graphics
         }
 
 
-        Dictionary<Type, PropertyCache> _typeCache = new Dictionary<Type, PropertyCache>();
+        Dictionary<Type, FieldCache> _typeCache = new Dictionary<Type, FieldCache>();
 
-        protected void ParseProperties(ShaderHeaderNode node, ShaderCompilerContext context, object stateObject)
+        protected void ParseFields<T>(ShaderHeaderNode node, ShaderCompilerContext context, ref T stateObject)
         {
             // Check if we need to cache the new stateObject type.
-            if (!_typeCache.TryGetValue(stateObject.GetType(), out PropertyCache cache))
+            if (!_typeCache.TryGetValue(stateObject.GetType(), out FieldCache cache))
             {
-                cache = new PropertyCache();
-                PropertyInfo[] pInfo = stateObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
-                foreach (PropertyInfo p in pInfo)
+                cache = new FieldCache();
+                FieldInfo[] fInfo = stateObject.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
+                foreach (FieldInfo f in fInfo)
                 {
-                    ShaderNodeAttribute att = p.GetCustomAttribute<ShaderNodeAttribute>();
+                    ShaderNodeAttribute att = f.GetCustomAttribute<ShaderNodeAttribute>();
 
                     // Ignore non-node properties.
                     if (att == null)
                         continue;
 
-                    cache.Properties.Add(p.Name.ToLower(), new PropertyBinding()
+                    cache.Fields.Add(f.Name.ToLower(), new FieldBinding()
                     {
-                        Info = p,
+                        Info = f,
                         Attribute = att
                     });
                 }
@@ -258,7 +258,7 @@ namespace Molten.Graphics
             foreach ((string Name, string Value) c in node.ChildValues)
             {
                 string lowName = c.Name.ToLower();
-                if (!cache.Properties.TryGetValue(lowName, out PropertyBinding pBind))
+                if (!cache.Fields.TryGetValue(lowName, out FieldBinding pBind))
                 {
                     UnsupportedTagMessage(context, node.Name, c.Name);
                     continue;
@@ -277,7 +277,7 @@ namespace Molten.Graphics
 
 
                     case ShaderNodeParseType.Enum:
-                        if (EngineUtil.TryParseEnum(pBind.Info.PropertyType, c.Value, out object enumValue))
+                        if (EngineUtil.TryParseEnum(pBind.Info.FieldType, c.Value, out object enumValue))
                             pBind.Info.SetValue(stateObject, enumValue);
                         else
                             InvalidEnumMessage<GraphicsDepthWritePermission>(context, c, pBind.Info.Name);
@@ -339,22 +339,17 @@ namespace Molten.Graphics
             foreach (ShaderHeaderNode c in node.ChildNodes)
             {
                 string lowName = c.Name.ToLower();
-                if (!cache.Properties.TryGetValue(lowName, out PropertyBinding pBind))
+                if (!cache.Fields.TryGetValue(lowName, out FieldBinding pBind))
                 {
                     UnsupportedTagMessage(context, node.Name, c.Name);
                     continue;
                 }
 
                 object pValue = pBind.Info.GetValue(stateObject);
-                ParseProperties(c, context, pValue);
+                ParseFields(c, context, ref pValue);
 
-                if (pBind.Info.PropertyType.IsValueType)
-                {
-                    if (pBind.Info.SetMethod != null)
-                        pBind.Info.SetValue(stateObject, pValue);
-                    else
-                        context.AddError($"Unable to apply definition '{node.Name}-{c.Name}' to '{pBind.Info.Name}' value-type property: No setter method available");
-                }
+                if (pBind.Info.FieldType.IsValueType)
+                    pBind.Info.SetValue(stateObject, pValue);
             }
         }
     }

@@ -56,11 +56,11 @@ namespace Molten.Graphics
             _context->QueryInterface(ref debugGuid, &ptrDebug);
             _debugAnnotation = (ID3DUserDefinedAnnotation*)ptrDebug;
    
-            uint maxRTs = DXDevice.Adapter.Capabilities.PixelShader.MaxOutResources;
+            uint maxRTs = Device.Adapter.Capabilities.PixelShader.MaxOutResources;
             _scissorRects = new Rectangle[maxRTs];
             _viewports = new ViewportF[maxRTs];
 
-            uint maxVBuffers = DXDevice.Adapter.Capabilities.VertexBuffers.MaxSlots;
+            uint maxVBuffers = Device.Adapter.Capabilities.VertexBuffers.MaxSlots;
             VertexBuffers = RegisterSlotGroup<IGraphicsBufferSegment, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
             IndexBuffer = RegisterSlot<IGraphicsBufferSegment, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
             _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(GraphicsBindTypeFlags.Input, "Vertex Input Layout", 0);
@@ -74,7 +74,7 @@ namespace Molten.Graphics
             PS = new ShaderPSStage(this);
             CS = new ShaderCSStage(this);
 
-            State = RegisterSlot<GraphicsPipelineState, StateBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
+            State = RegisterSlot<GraphicsState, StateBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
             _stateBlend = RegisterSlot<BlendStateDX11, BlendBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
             _stateDepth = RegisterSlot<DepthStateDX11, DepthStencilBinder>(GraphicsBindTypeFlags.Input, "Depth-Stencil State", 0);
             _stateRaster = RegisterSlot<RasterizerStateDX11, RasterizerBinder>(GraphicsBindTypeFlags.Input, "Rasterizer State", 0);
@@ -216,8 +216,8 @@ namespace Molten.Graphics
                 _vertexLayout.Bind();
             }
 
-            StateConditions conditions = DrawInfo.Conditions;
-            State.Value = pass.State[conditions] as PipelineStateDX11;
+            GraphicsDepthWritePermission depthWriteMode = pass.State.WritePermission;
+            State.Value = pass.State as PipelineStateDX11;
 
             if (State.Bind())
             {
@@ -250,8 +250,6 @@ namespace Molten.Graphics
 
                 _viewportsDirty = false;
             }
-
-            GraphicsDepthWritePermission depthWriteMode = pass.State[conditions].WritePermission;
 
             bool surfaceChanged = Surfaces.BindAll();
             bool depthChanged = DepthSurface.Bind() || (_boundDepthMode != depthWriteMode);
@@ -373,7 +371,7 @@ namespace Molten.Graphics
             },
             (pass, iteration, passNumber, vResult) =>
             {
-                DXDevice.Log.Warning($"Draw() call failed with result: {vResult} -- " + 
+                Device.Log.Warning($"Draw() call failed with result: {vResult} -- " + 
                     $"Iteration: M{iteration}/{material.Iterations}P{passNumber}/{material.PassCount} -- " +
                     $"Material: {material.Name} -- Topology: {topology} -- VertexCount: { vertexCount}");
             });
@@ -412,7 +410,7 @@ namespace Molten.Graphics
             },
             (pass, it, passNum, vResult) =>
             {
-                DXDevice.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
+                Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
                     $" -- Material: {material.Name} -- Topology: {topology} -- indexCount: { indexCount}");
             });
@@ -434,7 +432,7 @@ namespace Molten.Graphics
             },
             (pass, it, passNum, vResult) =>
             {
-                DXDevice.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
+                Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
                     $" -- Material: {material.Name} -- Topology: {topology} -- Indices-per-instance: { indexCountPerInstance}");
             });
@@ -613,7 +611,7 @@ namespace Molten.Graphics
             // Retrieve layout list or create new one if needed.
             foreach (VertexInputLayout l in _cachedLayouts)
             {
-                if (l.IsMatch(DXDevice.Log, VertexBuffers))
+                if (l.IsMatch(Device.Log, VertexBuffers))
                     return l;
             }
 

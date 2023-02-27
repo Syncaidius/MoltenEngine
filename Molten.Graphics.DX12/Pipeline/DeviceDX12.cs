@@ -34,17 +34,17 @@ namespace Molten.Graphics
             _qDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         }
 
-        public override GraphicsPipelineState CreateState(PipelineStatePreset preset = PipelineStatePreset.Default)
+        protected override GraphicsState OnCreateState(ref GraphicsStateParameters parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters)
         {
             throw new NotImplementedException();
         }
 
         public override ShaderComposition CreateShaderComposition(ShaderType type, HlslShader parent)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override ShaderSampler CreateSampler(SamplerPreset preset = SamplerPreset.Default)
         {
             throw new NotImplementedException();
         }
