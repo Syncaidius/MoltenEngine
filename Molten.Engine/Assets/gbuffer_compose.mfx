@@ -8,13 +8,6 @@
         <geometry>GS</geometry>
         <fragment>PS_Compose</fragment>
         <state preset="Default" blend="PreMultipliedAlpha" rasterizer="ScissorTest"/>
-        <state preset="Default" blend="PreMultipliedAlpha" rasterizer="DefaultMultisample">
-            <condition value="Multisampling"/>
-        </state>
-        <state blend="PreMultipliedAlpha" rasterizer="ScissorTestMultiSample">
-            <condition value="Multisampling"/>
-            <condition value="ScissorTest"/>
-        </state>
     </pass>
 </material>
 

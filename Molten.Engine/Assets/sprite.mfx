@@ -8,9 +8,6 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS" />
-        <!--<fragment value="PS_MS">
-            <condition value="Multisampling"/>
-        </fragment>-->
         <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
     </pass>
 </material>

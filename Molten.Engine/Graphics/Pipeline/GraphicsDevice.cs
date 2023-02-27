@@ -12,10 +12,6 @@ namespace Molten.Graphics
         ThreadedQueue<GraphicsObject> _objectsToDispose;
         Dictionary<Type, Dictionary<StructKey, GraphicsObject>> _objectCache;
 
-
-        GraphicsState _defaultState;
-        GraphicsSampler _defaultSampler;
-
         /// <summary>
         /// Creates a new instance of <see cref="GraphicsDevice"/>.
         /// </summary>
@@ -34,10 +30,10 @@ namespace Molten.Graphics
             OnInitialize();
 
             GraphicsStateParameters defaultParams = new GraphicsStateParameters(GraphicsStatePreset.Default);
-            _defaultState = CreateState(ref defaultParams);
+            DefaultState = CreateState(ref defaultParams);
 
             GraphicsSamplerParameters samplerParams = new GraphicsSamplerParameters(SamplerPreset.Default);
-            _defaultSampler = CreateSampler(ref samplerParams);
+            DefaultSampler = CreateSampler(ref samplerParams);
         }
 
         protected abstract void OnInitialize();
