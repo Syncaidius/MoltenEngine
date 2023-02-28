@@ -9,20 +9,16 @@ namespace Molten.Graphics
 {
     public class PipelineStateDX11 : GraphicsState
     {
-        StructKey<DepthStencilDesc> _descDepth;
-        StructKey<RasterizerDesc2> _descRaster;
-        StructKey<BlendDesc1> _descBlend;
-
         internal PipelineStateDX11(DeviceDX11 device, ref GraphicsStateParameters parameters, string name = null) :
             base(device)
         {
             Name = name;
-            _descDepth = new StructKey<DepthStencilDesc>(); // TODO get default
-            _descRaster = new StructKey<RasterizerDesc2>();
-            _descBlend = new StructKey<BlendDesc1>();
+            StructKey<DepthStencilDesc>  descDepth = new StructKey<DepthStencilDesc>(); // TODO get default
+            StructKey<RasterizerDesc2> descRaster = new StructKey<RasterizerDesc2>();
+            StructKey<BlendDesc1> descBlend = new StructKey<BlendDesc1>();
 
             // Populate blend description
-            ref BlendDesc1 bDesc = ref _descBlend.Value;
+            ref BlendDesc1 bDesc = ref descBlend.Value;
             bDesc.IndependentBlendEnable = parameters.IndependentBlendEnable ? 1 : 0;
             bDesc.AlphaToCoverageEnable = parameters.AlphaToCoverageEnable ? 1 : 0;
 
@@ -46,7 +42,7 @@ namespace Molten.Graphics
             }
 
             // Populate rasterizer description
-            ref RasterizerDesc2 raDesc = ref _descRaster.Value;
+            ref RasterizerDesc2 raDesc = ref descRaster.Value;
             raDesc.MultisampleEnable = parameters.IsMultisampleEnabled ? 1 : 0;
             raDesc.DepthClipEnable = parameters.IsDepthClipEnabled ? 1 : 0;
             raDesc.AntialiasedLineEnable = parameters.IsAALineEnabled ? 1 : 0;
@@ -65,7 +61,7 @@ namespace Molten.Graphics
                 throw new NotSupportedException($"DirectX 11 mode does not support enabling of '{nameof(GraphicsStateParameters.RasterizerDiscardEnabled)}'");
 
             // Populate depth-stencil description
-            ref DepthStencilDesc dDesc = ref _descDepth.Value;
+            ref DepthStencilDesc dDesc = ref descDepth.Value;
             dDesc.DepthEnable = parameters.IsDepthEnabled ? 1 : 0;
             dDesc.DepthFunc = (ComparisonFunc)parameters.DepthComparison;
             dDesc.DepthWriteMask = parameters.DepthWriteEnabled ? DepthWriteMask.All : DepthWriteMask.Zero;
@@ -88,24 +84,22 @@ namespace Molten.Graphics
                 StencilPassOp = (StencilOp)parameters.DepthBackFace.StencilPass,
             };
 
-            BlendState = new BlendStateDX11(device, ref _descBlend.Value, parameters.BlendFactor, parameters.BlendSampleMask);
-            BlendState = device.CacheObject(_descBlend, BlendState);
+            BlendState = new BlendStateDX11(device, ref descBlend.Value, parameters.BlendFactor, parameters.BlendSampleMask);
+            BlendState = device.CacheObject(descBlend, BlendState);
 
-            RasterizerState = new RasterizerStateDX11(device, ref _descRaster.Value);
-            RasterizerState = device.CacheObject(_descRaster, RasterizerState);
+            RasterizerState = new RasterizerStateDX11(device, ref descRaster.Value);
+            RasterizerState = device.CacheObject(descRaster, RasterizerState);
 
-            DepthState = new DepthStateDX11(device, ref _descDepth.Value, stencilRef);
-            DepthState = device.CacheObject(_descDepth, DepthState);
+            DepthState = new DepthStateDX11(device, ref descDepth.Value, stencilRef);
+            DepthState = device.CacheObject(descDepth, DepthState);
+
+            // Dispose of struct keys now we're done with them.
+            descDepth.Dispose();
+            descRaster.Dispose();
+            descBlend.Dispose();
         }
 
-        public override void GraphicsRelease()
-        {
-            /*_descDepth.Dispose();
-            _descRaster.Dispose();
-            _descBlend.Dispose();*/
-
-            // TODO de-reference the states in the device cache.
-        }
+        public override void GraphicsRelease() { }
 
         protected override void OnApply(GraphicsCommandQueue cmd) { }
 
