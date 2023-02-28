@@ -14,8 +14,7 @@ namespace Molten.Graphics
         public DepthStateVK(GraphicsDevice device, StructKey<PipelineDepthStencilStateCreateInfo> desc) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
-            Desc = new StructKey<PipelineDepthStencilStateCreateInfo>(desc);
-            Desc.Value.SType = StructureType.PipelineDepthStencilStateCreateInfo;
+            Desc = desc;
         }
 
         public override void GraphicsRelease()

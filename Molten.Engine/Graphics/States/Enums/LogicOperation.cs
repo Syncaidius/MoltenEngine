@@ -24,7 +24,7 @@
 
         Xor = 10,
 
-        Equiv = 11,
+        Equivalent = 11,
 
         AndReverse = 12,
 

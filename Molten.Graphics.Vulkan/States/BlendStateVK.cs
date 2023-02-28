@@ -7,11 +7,11 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    public unsafe class RasterizerStateVK : GraphicsObject
+    public unsafe class BlendStateVK : GraphicsObject
     {
-        internal StructKey<PipelineRasterizationStateCreateInfo> Desc { get; }
+        internal StructKey<PipelineColorBlendStateCreateInfo> Desc { get; }
 
-        public RasterizerStateVK(GraphicsDevice device, StructKey<PipelineRasterizationStateCreateInfo> desc) : 
+        public BlendStateVK(GraphicsDevice device, StructKey<PipelineColorBlendStateCreateInfo> desc) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = desc;
