@@ -39,6 +39,8 @@ namespace Molten.Graphics
                 sBlend.RenderTargetWriteMask = (byte)pBlend.RenderTargetWriteMask;
                 sBlend.LogicOp = (LogicOp)pBlend.LogicOp;
                 sBlend.LogicOpEnable = pBlend.LogicOpEnable ? 1 : 0;
+                sBlend.BlendOp = (BlendOp)pBlend.BlendOp;
+                sBlend.BlendOpAlpha = (BlendOp)pBlend.BlendOpAlpha;
 
                 parameters[i] = pBlend;
             }

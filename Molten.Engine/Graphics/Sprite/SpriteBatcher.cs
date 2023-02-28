@@ -570,7 +570,6 @@ namespace Molten.Graphics
 
                 mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
                 cmd.Draw(mat, range.VertexCount, VertexTopology.PointList);
-
                 bufferOffset += range.VertexCount;
             }
         }

@@ -116,10 +116,9 @@ namespace Molten
             return new Span<ulong>(_parts, (int)_partCount);
         }
 
-        public ref T Value
-        {
-            get => ref Unsafe.AsRef<T>(_parts);
-        }
+        public ref T Value => ref Unsafe.AsRef<T>(_parts);
+
+        public T NonRefValue => Unsafe.AsRef<T>(_parts);
 
         public static implicit operator T(StructKey<T> key)
         {

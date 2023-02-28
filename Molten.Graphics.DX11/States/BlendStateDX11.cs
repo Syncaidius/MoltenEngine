@@ -15,14 +15,7 @@ namespace Molten.Graphics
             device.Ptr->CreateBlendState1(ref desc, ref _native);
         }
 
-        protected override void OnApply(GraphicsCommandQueue cmd)
-        {
-            if (_native == null)
-            {
-                
-                Version++;
-            }
-        }
+        protected override void OnApply(GraphicsCommandQueue cmd) { }
 
         public override void GraphicsRelease()
         {

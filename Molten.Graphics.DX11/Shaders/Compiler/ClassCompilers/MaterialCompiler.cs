@@ -60,14 +60,21 @@ namespace Molten.Graphics
             // No issues arose, lets add it to the material manager
             if (!context.HasErrors)
             {
-                material.State = material.State ?? material.Device.DefaultState;
+                // Set the material's default state. This will be used by passes that are missing a state.
+                if (material.State == null)
+                {
+                    if (material.PassCount > 0)
+                        material.State = material.Passes[0].State ?? material.Device.DefaultState;
+                    else
+                        material.State = material.Device.DefaultState;
+                } 
 
                 for (int i = 0; i < material.Samplers.Length; i++)
                     material.Samplers[i] = material.Samplers[i] ?? material.Device.DefaultSampler;
 
                 foreach (MaterialPass pass in material.Passes)
                 {
-                    pass.State = pass.State ?? pass.Device.DefaultState;
+                    pass.State = pass.State ?? material.State;
 
                     for (int i = 0; i < pass.Samplers.Length; i++)
                         pass.Samplers[i] = pass.Samplers[i] ?? pass.Device.DefaultSampler;

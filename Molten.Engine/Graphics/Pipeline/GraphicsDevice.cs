@@ -108,6 +108,12 @@ namespace Molten.Graphics
             return result;
         }
 
+        public GraphicsState CreateState(GraphicsStatePreset preset)
+        {
+            GraphicsStateParameters parameters = new GraphicsStateParameters(preset);
+            return CreateState(ref parameters);
+        }
+
         /// <summary>
         /// Requests a new <see cref="GraphicsSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
         /// </summary>

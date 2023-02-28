@@ -16,7 +16,8 @@
         /// </summary>
         public GraphicsState State { get; set; }
 
-        protected HlslFoundation(GraphicsDevice device) : base(device, GraphicsBindTypeFlags.Input)
+        protected HlslFoundation(GraphicsDevice device) : 
+            base(device, GraphicsBindTypeFlags.Input)
         {
             Samplers = new GraphicsSampler[0];
         }
