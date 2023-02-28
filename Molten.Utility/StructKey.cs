@@ -10,7 +10,7 @@ namespace Molten
     /// <summary>
     /// Provides storage for a struct which can also be used in byte-perfect comparisons or equality checks.
     /// </summary>
-    public unsafe abstract class StructKey : IEquatable<StructKey>, IDisposable
+    public unsafe abstract class StructKey : IEquatable<StructKey>, IDisposable, ICloneable
     {
         protected ulong* _parts;
         protected uint _partCount;
@@ -22,6 +22,13 @@ namespace Molten
                 s += $"{(i > 0 ? "-" : "")}{_parts[i]:X}";
 
             return s;
+        }
+
+        public abstract StructKey Clone();
+
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
 
         public void Dispose()
@@ -54,7 +61,6 @@ namespace Molten
     public unsafe class StructKey<T> : StructKey
         where T : unmanaged
     {
-
         /// <summary>
         /// Creates a new instance of <see cref="StructKey{T}"/> by duplicating a <paramref name="source"/> key.
         /// </summary>
@@ -68,18 +74,29 @@ namespace Molten
             Buffer.MemoryCopy(source._parts, _parts, size, size);
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="StructKey{T}"/> with the default value of <typeparamref name="T"/>.
+        /// </summary>
         public StructKey()
         {
             T value = new T(); 
             Initialize(&value);
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="StructKey{T}"/> using the provided <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value to use for populating the struct key memory.</param>
         public StructKey(ref T value)
         {
             fixed (T* ptr = &value)
                 Initialize(ptr);
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="StructKey{T}"/> using the provided poitner <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">A pointer to the value to use for populating the struct key memory.</param>
         public StructKey(T* value)
         {
             Initialize(value);
@@ -109,6 +126,11 @@ namespace Molten
         {
             int size = sizeof(T);
             Buffer.MemoryCopy(value, _parts, size, size);
+        }
+
+        public override StructKey Clone()
+        {
+            return new StructKey<T>(this);
         }
 
         public Span<ulong> GetParts()

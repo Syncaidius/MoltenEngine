@@ -73,12 +73,15 @@ namespace Molten.Graphics
                 PassOp = parameters.DepthBackFace.StencilPass.ToApi(),
                 Reference = parameters.DepthFrontFace.StencilReference
             };
+
+            _depthState = new DepthStateVK(device, _descDepth);
+            _depthState = device.CacheObject(_descDepth, _depthState);
         }
 
         public override void GraphicsRelease()
         {
-            _descDepth.Dispose();
-            _descRasterizer.Dispose();
+            /*_descDepth.Dispose();
+            _descRasterizer.Dispose();*/
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd) { }

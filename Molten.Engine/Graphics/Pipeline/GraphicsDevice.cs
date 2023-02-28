@@ -83,7 +83,7 @@ namespace Molten.Graphics
                 }
 
                 // If we reach here, object has no match in the cache. Add it
-                objects.Add(objKey, obj);
+                objects.Add(objKey.Clone(), obj);
             }
 
             return obj;
