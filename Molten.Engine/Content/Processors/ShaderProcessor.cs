@@ -9,7 +9,7 @@ namespace Molten.Content
 
         public override Type[] RequiredServices { get; } = { typeof(RenderService) };
 
-        public override Type PartType { get; } = typeof(IShader);
+        public override Type PartType { get; } = typeof(HlslShader);
 
         protected override bool OnReadPart(ContentLoadHandle handle, Stream stream, ShaderParameters parameters, object existingPart, out object partAsset)
         {

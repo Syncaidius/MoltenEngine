@@ -16,7 +16,7 @@
 
         public string Name { get; set; }
 
-        public IShader Parent { get; private set; }
+        public HlslShader Parent { get; private set; }
 
         public object Value
         {

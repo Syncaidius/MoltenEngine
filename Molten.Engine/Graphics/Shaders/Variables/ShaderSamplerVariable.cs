@@ -12,7 +12,7 @@
             Sampler = shader.Device.CreateSampler(ref defaultParams);
         }
 
-        public IShader Parent { get; private set; }
+        public HlslShader Parent { get; private set; }
 
         public string Name { get; set; }
 

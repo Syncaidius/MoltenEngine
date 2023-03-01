@@ -4,14 +4,14 @@
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Description;
 
-        public override Type[] TypeFilter { get; } = { typeof(IShader) };
+        public override Type[] TypeFilter { get; } = { typeof(HlslShader) };
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string desc))
-                (foundation as IShader).Description = desc;
+                (foundation as HlslShader).Description = desc;
             else
-                (foundation as IShader).Description = "Unknown";
+                (foundation as HlslShader).Description = "Unknown";
         }
     }
 }

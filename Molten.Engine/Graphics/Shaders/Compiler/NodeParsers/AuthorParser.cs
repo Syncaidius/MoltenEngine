@@ -4,14 +4,14 @@
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Author;
 
-        public override Type[] TypeFilter { get; } = { typeof(IShader) };
+        public override Type[] TypeFilter { get; } = { typeof(HlslShader) };
 
         protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             if(node.Values.TryGetValue(ShaderHeaderValueType.Value, out string author))
-                (foundation as IShader).Author = author;
+                (foundation as HlslShader).Author = author;
             else
-                (foundation as IShader).Author = "Unknown";
+                (foundation as HlslShader).Author = "Unknown";
         }
     }
 }
