@@ -77,7 +77,7 @@ namespace Molten.Graphics
             }
 
             // Apply the blend to the other slots, unless specified.
-            if (blendSlot >= 0)
+            if (blendSlot < 0)
             {
                 for (int i = 0; i < MAX_SURFACES; i++)
                 {

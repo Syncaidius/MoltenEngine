@@ -38,7 +38,6 @@
 
         InvSrc1Alpha = 19,
 
-
         BlendFactorAlpha = 256,
 
         InvBlendFactorAlpha = 257,

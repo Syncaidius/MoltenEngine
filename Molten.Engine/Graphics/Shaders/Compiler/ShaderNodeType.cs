@@ -13,8 +13,6 @@
 
         Pass = 4,
 
-        Version = 5,
-
         Iterations = 6,
 
         /// <summary>

@@ -71,7 +71,7 @@ namespace Molten.Graphics
 
         protected override GraphicsState OnCreateState(ref GraphicsStateParameters parameters)
         {
-            throw new NotImplementedException();
+            return new PipelineStateVK(this, ref parameters);
         }
 
         internal bool Initialize()

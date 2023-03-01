@@ -31,14 +31,13 @@ namespace Molten.Graphics
         /// <param name="includeAssembly"></param>
         protected ShaderCompiler(RenderService renderer, string includePath, Assembly includeAssembly)
         {
-            Log = renderer.Log;
+            Renderer = renderer;
             _defaultIncludePath = includePath;
             _defaultIncludeAssembly = includeAssembly;
 
             _nodeParsers = new Dictionary<ShaderNodeType, ShaderNodeParser>();
             _classCompilers = new List<ShaderClassCompiler>();
             _sources = new ConcurrentDictionary<string, ShaderSource>();
-            Renderer = renderer;
 
             InitializeNodeParsers();
         }
@@ -347,7 +346,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the <see cref="Logger"/> bound to the current <see cref="ShaderCompiler"/> instance.
         /// </summary>
-        public Logger Log { get; }
+        public Logger Log => Renderer.Log;
     }
 
     /*

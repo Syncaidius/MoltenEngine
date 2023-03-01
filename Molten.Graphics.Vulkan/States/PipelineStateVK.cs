@@ -53,7 +53,6 @@ namespace Molten.Graphics
                 at.ColorWriteMask = sBlend.RenderTargetWriteMask.ToApi();
             }
 
-
             // TODO populate rasterizer description
             ref PipelineRasterizationStateCreateInfo raDesc = ref descRaster.Value;
             raDesc.SType = StructureType.PipelineRasterizationStateCreateInfo;
@@ -130,9 +129,6 @@ namespace Molten.Graphics
             pInfo.PColorBlendState = _blendState.Desc;
             pInfo.PRasterizationState = _rasterizerState.Desc;
             pInfo.PDepthStencilState = _depthState.Desc;
-
-            // TODO populate the other parts of a vulkan pipeline state
-
         }
 
         public override void GraphicsRelease()
