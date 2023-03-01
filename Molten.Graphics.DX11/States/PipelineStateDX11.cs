@@ -28,10 +28,10 @@ namespace Molten.Graphics
                 GraphicsStateParameters.SurfaceBlend pBlend = parameters[i];
 
                 sBlend.BlendEnable = pBlend.BlendEnable ? 1 : 0;
-                sBlend.SrcBlend = (Blend)pBlend.SrcBlend;
-                sBlend.SrcBlendAlpha = (Blend)pBlend.SrcBlendAlpha;
-                sBlend.DestBlend = (Blend)pBlend.DestBlend;
-                sBlend.DestBlendAlpha = (Blend)pBlend.DestBlendAlpha;
+                sBlend.SrcBlend = pBlend.SrcBlend.ToApi();
+                sBlend.SrcBlendAlpha = pBlend.SrcBlendAlpha.ToApi();
+                sBlend.DestBlend = pBlend.DestBlend.ToApi();
+                sBlend.DestBlendAlpha = pBlend.DestBlendAlpha.ToApi();
                 sBlend.RenderTargetWriteMask = (byte)pBlend.RenderTargetWriteMask;
                 sBlend.LogicOp = (LogicOp)pBlend.LogicOp;
                 sBlend.LogicOpEnable = pBlend.LogicOpEnable ? 1 : 0;

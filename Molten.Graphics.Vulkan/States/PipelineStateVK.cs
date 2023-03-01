@@ -16,12 +16,9 @@ namespace Molten.Graphics
         DepthStateVK _depthState;
         RasterizerStateVK _rasterizerState;
 
-        internal PipelineStateVK(GraphicsDevice device, ref GraphicsStateParameters parameters) : 
+        internal PipelineStateVK(DeviceVK device, ref GraphicsStateParameters parameters) : 
             base(device)
         {
-            _info = new StructKey<GraphicsPipelineCreateInfo>();
-            _info.Value.SType = StructureType.GraphicsPipelineCreateInfo;
-
             StructKey<PipelineDepthStencilStateCreateInfo> descDepth = new StructKey<PipelineDepthStencilStateCreateInfo>();
             StructKey<PipelineRasterizationStateCreateInfo> descRaster = new StructKey<PipelineRasterizationStateCreateInfo>();
             StructKey<PipelineColorBlendStateCreateInfo> descBlend = new StructKey<PipelineColorBlendStateCreateInfo>();
@@ -40,10 +37,20 @@ namespace Molten.Graphics
             bDesc.LogicOpEnable = parameters.Surface0.LogicOpEnable;
             bDesc.AttachmentCount = GraphicsStateParameters.MAX_SURFACES;
             bDesc.PAttachments = EngineUtil.AllocArray<PipelineColorBlendAttachmentState>(bDesc.AttachmentCount);
+
             for(uint i = 0; i < bDesc.AttachmentCount; i++)
             {
                 ref PipelineColorBlendAttachmentState at = ref bDesc.PAttachments[i];
-                // TODO set per-surface blend state
+                GraphicsStateParameters.SurfaceBlend sBlend = parameters[i];
+
+                at.BlendEnable = sBlend.BlendEnable;
+                at.SrcColorBlendFactor = sBlend.SrcBlend.ToApi();
+                at.DstColorBlendFactor = sBlend.DestBlend.ToApi();
+                at.ColorBlendOp = sBlend.BlendOp.ToApi();
+                at.SrcAlphaBlendFactor = sBlend.SrcBlendAlpha.ToApi();
+                at.DstAlphaBlendFactor = sBlend.DestBlendAlpha.ToApi();
+                at.AlphaBlendOp = sBlend.BlendOpAlpha.ToApi();
+                at.ColorWriteMask = sBlend.RenderTargetWriteMask.ToApi();
             }
 
 
@@ -100,6 +107,32 @@ namespace Molten.Graphics
 
             _rasterizerState = new RasterizerStateVK(device, descRaster);
             _rasterizerState = device.CacheObject(descRaster, _rasterizerState);
+
+            _info = new StructKey<GraphicsPipelineCreateInfo>();
+            ref GraphicsPipelineCreateInfo pInfo = ref _info.Value;
+            pInfo.SType = StructureType.GraphicsPipelineCreateInfo;
+            pInfo.Flags = PipelineCreateFlags.None;
+
+            pInfo.PMultisampleState = null;                         // TODO initialize
+            pInfo.PInputAssemblyState = null;                       // TODO initialize
+            pInfo.Layout = new PipelineLayout();                    // TODO initialize
+            pInfo.BasePipelineIndex = 0;                            // TODO initialize
+            pInfo.BasePipelineHandle = new Pipeline();              // TODO initialize
+            pInfo.PDynamicState = null;                             // TODO initialize
+            pInfo.PTessellationState = null;                        // TODO initialize
+            pInfo.PVertexInputState = null;                         // TODO initialize
+            pInfo.PViewportState = null;                            // Ignored since need to be able to change the viewport
+            pInfo.RenderPass = new RenderPass();                    // TODO initialize
+            pInfo.PStages = null;                                   // TODO initialize
+            pInfo.StageCount = 0;                                   // TODO initialize
+            pInfo.Subpass = 0;                                      // TODO initialize
+
+            pInfo.PColorBlendState = _blendState.Desc;
+            pInfo.PRasterizationState = _rasterizerState.Desc;
+            pInfo.PDepthStencilState = _depthState.Desc;
+
+            // TODO populate the other parts of a vulkan pipeline state
+
         }
 
         public override void GraphicsRelease()
