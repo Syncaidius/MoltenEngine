@@ -4,11 +4,11 @@
     {
         public override ShaderClassType ClassType => ShaderClassType.Compute;
 
-        public override List<IShaderElement> Parse(
+        public override List<HlslFoundation> Parse(
             ShaderCompilerContext context, 
             RenderService renderer, in string header)
         {
-            List<IShaderElement> shaders = new List<IShaderElement>();
+            List<HlslFoundation> shaders = new List<HlslFoundation>();
             FxcCompiler fxc = context.Compiler as FxcCompiler;
 
             ComputeTask compute = new ComputeTask(renderer.Device, context.Source.Filename);

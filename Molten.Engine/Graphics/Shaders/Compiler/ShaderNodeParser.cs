@@ -34,7 +34,7 @@ namespace Molten.Graphics
                 int validFilterCount = 0;
                 foreach(Type t in TypeFilter)
                 {
-                    if (typeof(IShaderElement).IsAssignableFrom(t))
+                    if (typeof(HlslFoundation).IsAssignableFrom(t))
                     {
                         if (t.IsAssignableFrom(foundation.GetType()))
                         {

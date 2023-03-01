@@ -9,10 +9,10 @@ namespace Molten.Graphics
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
         ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
 
-        public override List<IShaderElement> Parse(ShaderCompilerContext context,
+        public override List<HlslFoundation> Parse(ShaderCompilerContext context,
             RenderService renderer, in string header)
         {
-            List<IShaderElement> result = new List<IShaderElement>();
+            List<HlslFoundation> result = new List<HlslFoundation>();
             Material material = new Material(renderer.Device, context.Source.Filename);
             try
             {

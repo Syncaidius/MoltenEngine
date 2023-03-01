@@ -2,18 +2,18 @@
 {
     public sealed class ShaderCompileResult : EngineObject
     {
-        public Dictionary<ShaderClassType, List<IShaderElement>> ShaderGroups = new Dictionary<ShaderClassType, List<IShaderElement>>();
+        public Dictionary<ShaderClassType, List<HlslFoundation>> ShaderGroups = new Dictionary<ShaderClassType, List<HlslFoundation>>();
 
         protected override void OnDispose() { }
 
-        public void AddResult(ShaderClassType classType, List<IShaderElement> result)
+        public void AddResult(ShaderClassType classType, List<HlslFoundation> result)
         {
             if (result.Count > 0)
             {
-                List<IShaderElement> group = null;
+                List<HlslFoundation> group = null;
                 if (!ShaderGroups.TryGetValue(classType, out group))
                 {
-                    group = new List<IShaderElement>();
+                    group = new List<HlslFoundation>();
                     ShaderGroups.Add(classType, group);
                 }
 
@@ -21,29 +21,29 @@
             }
         }
 
-        public List<IShaderElement> this[ShaderClassType cType]
+        public List<HlslFoundation> this[ShaderClassType cType]
         {
             get => ShaderGroups[cType];
         }
 
-        public IShaderElement this[ShaderClassType cType, int index]
+        public HlslFoundation this[ShaderClassType cType, int index]
         {
             get
             {
-                if (ShaderGroups.TryGetValue(cType, out List<IShaderElement> group))
+                if (ShaderGroups.TryGetValue(cType, out List<HlslFoundation> group))
                     return group[index];
                 else
                     return null;
             }
         }
 
-        public IShaderElement this[ShaderClassType cType, string shaderName]
+        public HlslFoundation this[ShaderClassType cType, string shaderName]
         {
             get
             {
-                if (ShaderGroups.TryGetValue(cType, out List<IShaderElement> group))
+                if (ShaderGroups.TryGetValue(cType, out List<HlslFoundation> group))
                 {
-                    foreach (IShaderElement shader in group)
+                    foreach (HlslFoundation shader in group)
                     {
                         if (shader.Name == shaderName)
                             return shader;

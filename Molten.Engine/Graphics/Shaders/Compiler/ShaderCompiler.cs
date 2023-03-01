@@ -143,7 +143,7 @@ namespace Molten.Graphics
                 List<string> nodeHeaders = headers[classCompiler];
                 foreach (string header in nodeHeaders)
                 {
-                    List<IShaderElement> parseResult = classCompiler.Parse(context, Renderer, in header);
+                    List<HlslFoundation> parseResult = classCompiler.Parse(context, Renderer, in header);
                     if (parseResult != null)
                         context.Result.AddResult(classCompiler.ClassType, parseResult);
                     else

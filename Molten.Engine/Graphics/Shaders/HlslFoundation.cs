@@ -3,7 +3,7 @@
     /// <summary>
     /// An a base class implementation of key shader components (e.g. name, render states, samplers, etc).
     /// </summary>
-    public abstract class HlslFoundation : GraphicsObject, IShaderElement
+    public abstract class HlslFoundation : GraphicsObject
     {
 
         /// <summary>
