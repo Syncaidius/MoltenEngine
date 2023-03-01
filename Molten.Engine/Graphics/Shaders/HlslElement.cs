@@ -3,7 +3,7 @@
     /// <summary>
     /// An a base class implementation of key shader components (e.g. name, render states, samplers, etc).
     /// </summary>
-    public abstract class HlslFoundation : GraphicsObject
+    public abstract class HlslElement : GraphicsObject
     {
 
         /// <summary>
@@ -16,7 +16,7 @@
         /// </summary>
         public GraphicsState State { get; set; }
 
-        protected HlslFoundation(GraphicsDevice device) : 
+        protected HlslElement(GraphicsDevice device) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Samplers = new GraphicsSampler[0];

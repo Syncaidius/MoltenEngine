@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public unsafe class MaterialPass : HlslFoundation
+    public unsafe class MaterialPass : HlslElement
     {
         internal const int ID_VERTEX = 0;
         internal const int ID_HULL = 1;

@@ -6,7 +6,7 @@
 
         public override ShaderNodeType NodeType => ShaderNodeType.State;
 
-        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(HlslElement foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             // Use the default preset's Surface0 blend description.
             GraphicsStatePreset preset = GraphicsStatePreset.Default;

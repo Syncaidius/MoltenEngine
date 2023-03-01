@@ -2,18 +2,18 @@
 {
     public sealed class ShaderCompileResult : EngineObject
     {
-        public Dictionary<ShaderClassType, List<HlslFoundation>> ShaderGroups = new Dictionary<ShaderClassType, List<HlslFoundation>>();
+        public Dictionary<ShaderClassType, List<HlslElement>> ShaderGroups = new Dictionary<ShaderClassType, List<HlslElement>>();
 
         protected override void OnDispose() { }
 
-        public void AddResult(ShaderClassType classType, List<HlslFoundation> result)
+        public void AddResult(ShaderClassType classType, List<HlslElement> result)
         {
             if (result.Count > 0)
             {
-                List<HlslFoundation> group = null;
+                List<HlslElement> group = null;
                 if (!ShaderGroups.TryGetValue(classType, out group))
                 {
-                    group = new List<HlslFoundation>();
+                    group = new List<HlslElement>();
                     ShaderGroups.Add(classType, group);
                 }
 
@@ -21,29 +21,29 @@
             }
         }
 
-        public List<HlslFoundation> this[ShaderClassType cType]
+        public List<HlslElement> this[ShaderClassType cType]
         {
             get => ShaderGroups[cType];
         }
 
-        public HlslFoundation this[ShaderClassType cType, int index]
+        public HlslElement this[ShaderClassType cType, int index]
         {
             get
             {
-                if (ShaderGroups.TryGetValue(cType, out List<HlslFoundation> group))
+                if (ShaderGroups.TryGetValue(cType, out List<HlslElement> group))
                     return group[index];
                 else
                     return null;
             }
         }
 
-        public HlslFoundation this[ShaderClassType cType, string shaderName]
+        public HlslElement this[ShaderClassType cType, string shaderName]
         {
             get
             {
-                if (ShaderGroups.TryGetValue(cType, out List<HlslFoundation> group))
+                if (ShaderGroups.TryGetValue(cType, out List<HlslElement> group))
                 {
-                    foreach (HlslFoundation shader in group)
+                    foreach (HlslElement shader in group)
                     {
                         if (shader.Name == shaderName)
                             return shader;

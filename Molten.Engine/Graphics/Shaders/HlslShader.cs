@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract class HlslShader : HlslFoundation
+    public abstract class HlslShader : HlslElement
     {
         public IConstantBuffer[] ConstBuffers = new IConstantBuffer[0];
         public ShaderResourceVariable[] Resources = new ShaderResourceVariable[0];

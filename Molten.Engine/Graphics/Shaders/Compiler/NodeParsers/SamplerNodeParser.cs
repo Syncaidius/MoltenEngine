@@ -4,7 +4,7 @@
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Sampler;
 
-        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(HlslElement foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             GraphicsSamplerParameters parameters = new GraphicsSamplerParameters();
             SamplerPreset preset = SamplerPreset.Default;

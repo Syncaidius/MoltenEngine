@@ -26,7 +26,7 @@ namespace Molten.Graphics
             return headers;
         }
 
-        public abstract List<HlslFoundation> Parse(ShaderCompilerContext context, RenderService renderer, in string header);
+        public abstract List<HlslElement> Parse(ShaderCompilerContext context, RenderService renderer, in string header);
 
         public abstract ShaderClassType ClassType { get; }
     }

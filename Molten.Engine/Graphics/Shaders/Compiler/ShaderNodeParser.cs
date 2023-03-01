@@ -26,7 +26,7 @@ namespace Molten.Graphics
 
         public abstract ShaderNodeType NodeType { get; }
 
-        public void Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
+        public void Parse(HlslElement foundation, ShaderCompilerContext context, XmlNode node)
         {
             if(TypeFilter != null)
             {
@@ -34,7 +34,7 @@ namespace Molten.Graphics
                 int validFilterCount = 0;
                 foreach(Type t in TypeFilter)
                 {
-                    if (typeof(HlslFoundation).IsAssignableFrom(t))
+                    if (typeof(HlslElement).IsAssignableFrom(t))
                     {
                         if (t.IsAssignableFrom(foundation.GetType()))
                         {
@@ -142,7 +142,7 @@ namespace Molten.Graphics
             return hNode;
         }
 
-        protected abstract void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node);
+        protected abstract void OnParse(HlslElement foundation, ShaderCompilerContext context, ShaderHeaderNode node);
 
         protected void InvalidValueMessage(ShaderCompilerContext context, (string Name, string Value) node, string friendlyTagName, string friendlyValueName)
         {

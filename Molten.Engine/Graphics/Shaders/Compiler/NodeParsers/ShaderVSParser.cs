@@ -7,7 +7,7 @@
 
         public override Type[] TypeFilter { get; } = { typeof(Material), typeof(MaterialPass) };
 
-        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(HlslElement foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
             {

@@ -210,7 +210,7 @@ namespace Molten.Graphics
         }
 
         protected abstract void OnBuildVariableStructure(ShaderCompilerContext context, 
-            HlslFoundation shader, ShaderClassResult result, ShaderResourceInfo info);
+            HlslElement shader, ShaderClassResult result, ShaderResourceInfo info);
 
         private void OnBuildTextureVariable(ShaderCompilerContext context, 
             HlslShader shader, ShaderResourceInfo info)

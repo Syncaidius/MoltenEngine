@@ -6,7 +6,7 @@
 
         public override Type[] TypeFilter { get; } = { typeof(Material) };
 
-        protected override void OnParse(HlslFoundation foundation, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(HlslElement foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             Material mat = foundation as Material;
             MaterialPass pass = new MaterialPass(mat, "<Unnamed Material Pass>");

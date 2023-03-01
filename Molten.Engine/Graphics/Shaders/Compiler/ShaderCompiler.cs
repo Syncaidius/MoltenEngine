@@ -143,7 +143,7 @@ namespace Molten.Graphics
                 List<string> nodeHeaders = headers[classCompiler];
                 foreach (string header in nodeHeaders)
                 {
-                    List<HlslFoundation> parseResult = classCompiler.Parse(context, Renderer, in header);
+                    List<HlslElement> parseResult = classCompiler.Parse(context, Renderer, in header);
                     if (parseResult != null)
                         context.Result.AddResult(classCompiler.ClassType, parseResult);
                     else
@@ -185,7 +185,7 @@ namespace Molten.Graphics
             return null;
         }
 
-        public void ParserHeader(HlslFoundation shader, in string header, ShaderCompilerContext context)
+        public void ParserHeader(HlslElement shader, in string header, ShaderCompilerContext context)
         {
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(header);
@@ -194,7 +194,7 @@ namespace Molten.Graphics
             ParseNode(shader, rootNode, context);
         }
 
-        public void ParseNode(HlslFoundation shader, XmlNode parentNode, ShaderCompilerContext context)
+        public void ParseNode(HlslElement shader, XmlNode parentNode, ShaderCompilerContext context)
         {
             foreach (XmlNode node in parentNode.ChildNodes)
             {

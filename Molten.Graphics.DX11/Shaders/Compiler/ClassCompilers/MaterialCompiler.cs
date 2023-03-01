@@ -9,10 +9,10 @@ namespace Molten.Graphics
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
         ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
 
-        public override List<HlslFoundation> Parse(ShaderCompilerContext context,
+        public override List<HlslElement> Parse(ShaderCompilerContext context,
             RenderService renderer, in string header)
         {
-            List<HlslFoundation> result = new List<HlslFoundation>();
+            List<HlslElement> result = new List<HlslElement>();
             Material material = new Material(renderer.Device, context.Source.Filename);
             try
             {
@@ -193,6 +193,6 @@ namespace Molten.Graphics
         }
 
         protected override void OnBuildVariableStructure(ShaderCompilerContext context, 
-            HlslFoundation shader, ShaderClassResult result, ShaderResourceInfo info) { }
+            HlslElement shader, ShaderClassResult result, ShaderResourceInfo info) { }
     }
 }

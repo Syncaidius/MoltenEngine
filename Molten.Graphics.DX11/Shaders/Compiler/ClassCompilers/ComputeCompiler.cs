@@ -4,11 +4,11 @@
     {
         public override ShaderClassType ClassType => ShaderClassType.Compute;
 
-        public override List<HlslFoundation> Parse(
+        public override List<HlslElement> Parse(
             ShaderCompilerContext context, 
             RenderService renderer, in string header)
         {
-            List<HlslFoundation> shaders = new List<HlslFoundation>();
+            List<HlslElement> shaders = new List<HlslElement>();
             FxcCompiler fxc = context.Compiler as FxcCompiler;
 
             ComputeTask compute = new ComputeTask(renderer.Device, context.Source.Filename);
@@ -42,7 +42,7 @@
 
         protected override void OnBuildVariableStructure(
             ShaderCompilerContext context,
-            HlslFoundation shader, ShaderClassResult result, ShaderResourceInfo info)
+            HlslElement shader, ShaderClassResult result, ShaderResourceInfo info)
         {
             ComputeTask ct = shader as ComputeTask;
             if (ct == null)
