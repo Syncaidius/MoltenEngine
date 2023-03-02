@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     public unsafe class FxcCompiler : ShaderCompiler
     {
-        internal D3DCompiler Compiler { get; }
+        D3DCompiler _d3dCompiler;
 
         /// <summary>
         /// Creates a new instance of <see cref="FxcCompiler"/>.
@@ -20,12 +20,12 @@ namespace Molten.Graphics
         internal FxcCompiler(RendererDX11 renderer, Logger log, string includePath, Assembly includeAssembly) :
             base(renderer, includePath, includeAssembly)
         {
-            Compiler = D3DCompiler.GetApi();
+            _d3dCompiler = D3DCompiler.GetApi();
         }
 
         protected override void OnDispose()
         {
-            Compiler.Dispose();
+            _d3dCompiler.Dispose();
         }
 
         protected override unsafe ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData)
@@ -37,7 +37,7 @@ namespace Molten.Graphics
             void* ppByteCode = bCode->GetBufferPointer();
             nuint numBytes = bCode->GetBufferSize();
 
-            Compiler.Reflect(ppByteCode, numBytes, &guidReflect, &ppReflection);
+            _d3dCompiler.Reflect(ppByteCode, numBytes, &guidReflect, &ppReflection);
             FxcReflection fxcReflection = new FxcReflection((ID3D11ShaderReflection*)ppReflection);
             ShaderReflection r = new ShaderReflection()
             {
@@ -216,7 +216,7 @@ namespace Molten.Graphics
                 uint numBytes = (uint)SilkMarshal.GetMaxSizeOf(context.Source.SourceCode, NativeStringEncoding.LPStr);
 
                 // Preprocess and check for errors
-                HResult hr = Compiler.Preprocess(pSrc, numBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
+                HResult hr = _d3dCompiler.Preprocess(pSrc, numBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
                 ParseErrors(context, hr, pErrors);
 
                 // Compile source and check for errors
@@ -225,7 +225,7 @@ namespace Molten.Graphics
                     void* postProcessedSrc = pProcessedSrc->GetBufferPointer();
                     nuint postProcessedSize = pProcessedSrc->GetBufferSize();
 
-                    hr = Compiler.Compile(postProcessedSrc, postProcessedSize, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
+                    hr = _d3dCompiler.Compile(postProcessedSrc, postProcessedSize, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
                     ParseErrors(context, hr, pErrors);
                 }
 
@@ -626,6 +626,55 @@ namespace Molten.Graphics
             }
 
             return bVar;
+        }
+
+        public override unsafe void* BuildShader(HlslElement parent, ShaderType type, void* byteCode)
+        {
+            ID3D10Blob* dx11ByteCode = (ID3D10Blob*)byteCode;
+            void* ptrBytecode = dx11ByteCode->GetBufferPointer();
+            nuint numBytes = dx11ByteCode->GetBufferSize();
+            DeviceDX11 device = Renderer.Device as DeviceDX11;
+
+            switch (type)
+            {
+                case ShaderType.Compute:
+                    if (parent is ComputeTask cTask)
+                        cTask.InputByteCode = byteCode;
+
+                    ID3D11ComputeShader* csShader = null;
+                    device.Ptr->CreateComputeShader(ptrBytecode, numBytes, null, &csShader);
+                    return csShader;
+
+                case ShaderType.Vertex:
+                    if (parent is MaterialPass pass)
+                        pass.InputByteCode = byteCode;
+
+                    ID3D11VertexShader* vsShader = null;
+                    device.Ptr->CreateVertexShader(ptrBytecode, numBytes, null, &vsShader);
+                    return vsShader;
+
+                case ShaderType.Hull:
+                    ID3D11HullShader* hsShader = null;
+                    device.Ptr->CreateHullShader(ptrBytecode, numBytes, null, &hsShader);
+                    return hsShader;
+
+                case ShaderType.Domain:
+                    ID3D11DomainShader* dsShader = null;
+                    device.Ptr->CreateDomainShader(ptrBytecode, numBytes, null, &dsShader);
+                    return dsShader;
+
+                case ShaderType.Geometry:
+                    ID3D11GeometryShader* gsShader = null;
+                    device.Ptr->CreateGeometryShader(ptrBytecode, numBytes, null, &gsShader);
+                    return gsShader;
+
+                case ShaderType.Pixel:
+                    ID3D11PixelShader* psShader = null;
+                    device.Ptr->CreatePixelShader(ptrBytecode, numBytes, null, &psShader);
+                    return psShader;
+            }
+
+            return null;
         }
 
         private void ParseErrors(ShaderCompilerContext context, HResult hr, ID3D10Blob* errors)

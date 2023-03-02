@@ -17,8 +17,8 @@
                 ShaderCodeResult result = null;
                 if (context.Compiler.CompileSource(compute.Composition.EntryPoint, ShaderType.Compute, context, out result))
                 {
-                    if(context.Compiler.BuildStructure(context, compute, result, compute.Composition))
-                        compute.Composition.BuildShader(result.ByteCode);
+                    if (context.Compiler.BuildStructure(context, compute, result, compute.Composition))
+                        compute.Composition.PtrShader = context.Compiler.BuildShader(compute, ShaderType.Compute, result.ByteCode);
                 }
             }
             catch (Exception e)

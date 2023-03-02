@@ -344,6 +344,8 @@ namespace Molten.Graphics
             }
         }
 
+        public unsafe abstract void* BuildShader(HlslElement parent, ShaderType type, void* byteCode);
+
         public RenderService Renderer { get; }
 
         /// <summary>

@@ -50,7 +50,7 @@ namespace Molten.Graphics
                     return result;
             }
 
-            // No issues arose, lets add it to the material manager
+            // No issues arose, lets add it to the result
             if (!context.HasErrors)
             {
                 // Set the material's default state. This will be used by passes that are missing a state.
@@ -72,7 +72,6 @@ namespace Molten.Graphics
                     for (int i = 0; i < pass.Samplers.Length; i++)
                         pass.Samplers[i] = pass.Samplers[i] ?? pass.Device.DefaultSampler;
                 }
-
 
                 result.Add(material);
 
@@ -111,7 +110,7 @@ namespace Molten.Graphics
                     sc.Type, context, out ShaderCodeResult cResult))
                 {
                     result[sc.Type] = cResult;
-                    sc.BuildShader(cResult.ByteCode);
+                    sc.PtrShader = context.Compiler.BuildShader(pass, sc.Type, cResult.ByteCode);
                     sc.InputStructure = context.Compiler.BuildIO(cResult, ShaderIOStructureType.Input);
                     sc.OutputStructure = context.Compiler.BuildIO(cResult, ShaderIOStructureType.Output);
                 }

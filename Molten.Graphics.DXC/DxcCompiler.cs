@@ -253,6 +253,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public override unsafe void* BuildShader(HlslElement element, ShaderType type, void* byteCode)
+        {
+            throw new NotImplementedException();
+        }
+
         internal DXC Dxc { get; }
 
         internal IDxcCompiler3* Native => _compiler;

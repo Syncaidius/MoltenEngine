@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public unsafe abstract class ShaderComposition : GraphicsObject
+    public unsafe class ShaderComposition : GraphicsObject
     {
         /// <summary>A list of const buffers the shader stage requires to be bound.</summary>
         public List<uint> ConstBufferIds = new List<uint>();
@@ -22,22 +22,8 @@
         public ShaderType Type { get; internal set; }
 
         void* _ptrShader;
-        void* _byteCode;
 
-        public void BuildShader(void* byteCode)
-        {
-            _byteCode = byteCode;
-            _ptrShader = OnBuildShader(byteCode);
-        }
-
-        /// <summary>
-        /// Invoked when shader bytecode is expected to be built into a shader object.
-        /// </summary>
-        /// <param name="byteCode">The shader bytecode to be built.</param>
-        /// <returns>A pointer to the built shader object.</returns>
-        protected abstract void* OnBuildShader(void* byteCode);
-
-        protected ShaderComposition(HlslShader parentShader, ShaderType type) : 
+        internal ShaderComposition(HlslShader parentShader, ShaderType type) : 
             base(parentShader.Device, GraphicsBindTypeFlags.Input)
         {
             Parent = parentShader;
@@ -46,16 +32,13 @@
 
         protected override void OnApply(GraphicsCommandQueue context) { }
 
-        public override sealed void GraphicsRelease()
+        public override void GraphicsRelease() { }
+
+        public void* PtrShader
         {
-            ReleaseShaderPtr(ref _ptrShader);
+            get => _ptrShader;
+            internal set => _ptrShader = value;
         }
-
-        protected abstract void ReleaseShaderPtr(ref void* ptr);
-
-        public void* PtrShader => _ptrShader;
-
-        public void* ByteCode => _byteCode;
 
         public HlslShader Parent { get; }
     }

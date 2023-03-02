@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
@@ -7,6 +6,8 @@ namespace Molten.Graphics
     {
         Material _parent;
         Dictionary<ShaderType, ShaderComposition> _compositions;
+
+        public void* InputByteCode { get; set; }
 
         public MaterialPass(Material material, string name) :
             base(material.Device)
@@ -21,7 +22,7 @@ namespace Molten.Graphics
         {
             if (!_compositions.TryGetValue(type, out ShaderComposition comp))
             {
-                comp = Device.CreateShaderComposition(type, _parent);
+                comp = new ShaderComposition(_parent, type);
                 _compositions.Add(type, comp);
             }
 

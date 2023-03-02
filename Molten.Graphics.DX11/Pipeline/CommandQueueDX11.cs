@@ -481,7 +481,7 @@ namespace Molten.Graphics
         {
             _compute.Value = task;
             _compute.Bind();
-            _cs.Shader.Value = _compute.BoundValue.Composition as ShaderCompositionDX11<ID3D11ComputeShader>;
+            _cs.Shader.Value = _compute.BoundValue.Composition;
 
             bool csChanged = _cs.Bind();
 
@@ -620,7 +620,7 @@ namespace Molten.Graphics
             }
 
             ShaderComposition vs = pass[ShaderType.Vertex];
-            VertexInputLayout input = new VertexInputLayout(DXDevice, VertexBuffers, (ID3D10Blob*)vs.ByteCode, vs.InputStructure);
+            VertexInputLayout input = new VertexInputLayout(DXDevice, VertexBuffers, (ID3D10Blob*)pass.InputByteCode, vs.InputStructure);
             _cachedLayouts.Add(input);
 
             return input;

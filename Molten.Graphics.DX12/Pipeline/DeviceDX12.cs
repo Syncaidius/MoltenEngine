@@ -44,11 +44,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override ShaderComposition CreateShaderComposition(ShaderType type, HlslShader parent)
-        {
-            throw new NotImplementedException();
-        }
-
         public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0)
         {
             throw new NotImplementedException();

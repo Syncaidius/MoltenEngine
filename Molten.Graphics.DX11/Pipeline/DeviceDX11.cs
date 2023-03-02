@@ -187,20 +187,6 @@ namespace Molten.Graphics
             return new StagingBuffer(this, staging, byteCapacity);
         }
 
-        public override ShaderComposition CreateShaderComposition(ShaderType type, HlslShader parent)
-        {
-            switch (type)
-            {
-                case ShaderType.Vertex: return new VSComposition(parent);
-                case ShaderType.Hull: return new HSComposition(parent);
-                case ShaderType.Domain: return new DSComposition(parent);
-                case ShaderType.Geometry: return new GSComposition(parent);
-                case ShaderType.Pixel: return new PSComposition(parent);
-                case ShaderType.Compute: return null;
-                default: return null;
-            }
-        }
-
         /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
