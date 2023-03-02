@@ -68,7 +68,17 @@
 
             // Update RT blend description on main description.
             gsp[slotID] = rtBlend;
-            foundation.State = foundation.Device.CreateState(ref gsp);
+
+            switch (foundation)
+            {
+                case Material mat:
+                    mat.DefaultState = foundation.Device.CreateState(ref gsp);
+                    break;
+
+                case MaterialPass pass:
+                    pass.State = foundation.Device.CreateState(ref gsp);
+                    break;
+            }
         }
     }
 }

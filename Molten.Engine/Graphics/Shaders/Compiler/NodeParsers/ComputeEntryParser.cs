@@ -1,16 +1,14 @@
 ﻿namespace Molten.Graphics
 {
     /// <summary>An entry-point tag parser used by <see cref="ComputeTask"/> headers.</summary>
-    internal class ComputeEntryParser : ShaderNodeParser
+    internal class ComputeEntryParser : ShaderNodeParser<ComputeTask>
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Entry;
 
-        public override Type[] TypeFilter { get; } = { typeof(ComputeTask) };
-
-        protected override void OnParse(HlslElement foundation, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(ComputeTask task, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
-                (foundation as ComputeTask).Composition.EntryPoint = entryPoint;
+                task.Composition.EntryPoint = entryPoint;
             else
                 context.AddError("Compute task <entry> tag is missing or empty.");
         }

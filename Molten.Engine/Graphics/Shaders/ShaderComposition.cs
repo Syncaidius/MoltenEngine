@@ -17,9 +17,9 @@
 
         public ShaderIOStructure OutputStructure;
 
-        public string EntryPoint;
+        public string EntryPoint { get; internal set; }
 
-        public ShaderType Type;
+        public ShaderType Type { get; internal set; }
 
         void* _ptrShader;
 

@@ -4,7 +4,7 @@
     {
         public override ShaderClassType ClassType => ShaderClassType.Compute;
 
-        public override List<HlslElement> Parse(
+        public override List<HlslElement> Build(
             ShaderCompilerContext context, 
             RenderService renderer, in string header)
         {

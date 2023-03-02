@@ -2,11 +2,11 @@
 {
     public sealed class ShaderCompileResult : EngineObject
     {
-        public Dictionary<ShaderClassType, List<HlslElement>> ShaderGroups = new Dictionary<ShaderClassType, List<HlslElement>>();
+        internal Dictionary<ShaderClassType, List<HlslElement>> ShaderGroups { get; } = new Dictionary<ShaderClassType, List<HlslElement>>();
 
         protected override void OnDispose() { }
 
-        public void AddResult(ShaderClassType classType, List<HlslElement> result)
+        internal void AddResult(ShaderClassType classType, List<HlslElement> result)
         {
             if (result.Count > 0)
             {
@@ -21,11 +21,22 @@
             }
         }
 
+        /// <summary>
+        /// Gets a list of <see cref="HlslElement"/> of the specified <see cref="ShaderClassType"/> which were built successfully.
+        /// </summary>
+        /// <param name="cType">The shader class type.</param>
+        /// <returns></returns>
         public List<HlslElement> this[ShaderClassType cType]
         {
             get => ShaderGroups[cType];
         }
 
+        /// <summary>
+        /// Gets a <see cref="HlslElement"/> of the specified <see cref="ShaderClassType"/> and index which was built successfully.
+        /// </summary>
+        /// <param name="cType">The shader class type.</param>
+        /// <param name="index">The index of the element.</param>
+        /// <returns></returns>
         public HlslElement this[ShaderClassType cType, int index]
         {
             get
@@ -37,6 +48,12 @@
             }
         }
 
+        /// <summary>
+        /// Gets a <see cref="HlslElement"/> of the specified <see cref="ShaderClassType"/> and name which was built successfully.
+        /// </summary>
+        /// <param name="cType">The shader class type.</param>
+        /// <param name="shaderName">The name of the shader given to it it via its XML definition.</param>
+        /// <returns></returns>
         public HlslElement this[ShaderClassType cType, string shaderName]
         {
             get

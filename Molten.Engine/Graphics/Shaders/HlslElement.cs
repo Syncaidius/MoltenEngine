@@ -1,21 +1,19 @@
 ﻿namespace Molten.Graphics
 {
     /// <summary>
-    /// An a base class implementation of key shader components (e.g. name, render states, samplers, etc).
+    /// An a base class implementation for key shader components, such as materials, material passes or compute tasks.
     /// </summary>
     public abstract class HlslElement : GraphicsObject
     {
-
         /// <summary>
         /// The texture samplers to be used with the shader/component.
         /// </summary>
         public GraphicsSampler[] Samplers;
 
         /// <summary>
-        /// The available render state.
+        /// Creates a new instance of <see cref="HlslElement"/>. Can only be called by a derived class.
         /// </summary>
-        public GraphicsState State { get; set; }
-
+        /// <param name="device">The device to bind the element to.</param>
         protected HlslElement(GraphicsDevice device) : 
             base(device, GraphicsBindTypeFlags.Input)
         {

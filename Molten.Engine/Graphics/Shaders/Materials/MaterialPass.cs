@@ -63,6 +63,11 @@ namespace Molten.Graphics
 
         public ShaderComposition PS { get; }
 
+        /// <summary>
+        /// The available render state.
+        /// </summary>
+        public GraphicsState State { get; set; }
+
         public PrimitiveTopology GeometryPrimitive { get; set; }
 
         /// <summary>Gets or sets whether or not the pass will be run.</summary>
@@ -72,7 +77,7 @@ namespace Molten.Graphics
         public bool IsEnabled { get; set; }
 
         /// <summary>
-        /// Gets the parent <see cref="IMaterial"/> that the current <see cref="MaterialPass"/> is bound to.
+        /// Gets the parent <see cref="Material"/> that the current <see cref="MaterialPass"/> is bound to.
         /// </summary>
         public Material Material => _parent;
 

@@ -9,7 +9,7 @@ namespace Molten.Graphics
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
         ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
 
-        public override List<HlslElement> Parse(ShaderCompilerContext context,
+        public override List<HlslElement> Build(ShaderCompilerContext context,
             RenderService renderer, in string header)
         {
             List<HlslElement> result = new List<HlslElement>();
@@ -19,10 +19,13 @@ namespace Molten.Graphics
                 context.Compiler.ParserHeader(material, in header, context);
                 if (material.Passes == null || material.Passes.Length == 0)
                 {
-                    material.AddDefaultPass();
+                    context.AddError($"Material '{material.Name}' is invalid: No passes defined");
+                }
+                else
+                {
                     if (string.IsNullOrWhiteSpace(material.Passes[0].VS.EntryPoint))
                     {
-                        context.AddError($"Material '{material.Name}' does not have a defined vertex shader entry point. Must be defined in the material or it's first pass.");
+                        context.AddError($"Material '{material.Name} is invalid: First pass must define a vertex shader (VS) entry point");
                         return result;
                     }
                 }
@@ -61,12 +64,12 @@ namespace Molten.Graphics
             if (!context.HasErrors)
             {
                 // Set the material's default state. This will be used by passes that are missing a state.
-                if (material.State == null)
+                if (material.DefaultState == null)
                 {
                     if (material.PassCount > 0)
-                        material.State = material.Passes[0].State ?? material.Device.DefaultState;
+                        material.DefaultState = material.Passes[0].State ?? material.Device.DefaultState;
                     else
-                        material.State = material.Device.DefaultState;
+                        material.DefaultState = material.Device.DefaultState;
                 } 
 
                 for (int i = 0; i < material.Samplers.Length; i++)
@@ -74,7 +77,7 @@ namespace Molten.Graphics
 
                 foreach (MaterialPass pass in material.Passes)
                 {
-                    pass.State = pass.State ?? material.State;
+                    pass.State = pass.State ?? material.DefaultState;
 
                     for (int i = 0; i < pass.Samplers.Length; i++)
                         pass.Samplers[i] = pass.Samplers[i] ?? pass.Device.DefaultSampler;
@@ -116,9 +119,8 @@ namespace Molten.Graphics
                     continue;
                 }
 
-                ShaderClassResult cResult = null;
                 if (fxc.CompileSource(sc.EntryPoint,
-                    sc.Type, context, out cResult))
+                    sc.Type, context, out ShaderClassResult cResult))
                 {
                     result[sc.Type] = cResult;
                     sc.BuildShader(cResult.ByteCode);

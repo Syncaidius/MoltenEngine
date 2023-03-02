@@ -353,4 +353,17 @@ namespace Molten.Graphics
             }
         }
     }
+
+    public abstract class ShaderNodeParser<T> : ShaderNodeParser
+        where T : HlslElement
+    {
+        public sealed override Type[] TypeFilter { get; } = new Type[] { typeof(T) };
+
+        protected sealed override void OnParse(HlslElement foundation, ShaderCompilerContext context, ShaderHeaderNode node)
+        {
+            OnParse(foundation as T, context, node);
+        }
+
+        protected abstract void OnParse(T element, ShaderCompilerContext context, ShaderHeaderNode node);
+    }
 }
