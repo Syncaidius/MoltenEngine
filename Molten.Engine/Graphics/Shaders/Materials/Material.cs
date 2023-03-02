@@ -5,11 +5,6 @@ namespace Molten.Graphics
     {
         MaterialPass[] _passes = new MaterialPass[0];
 
-        /// <summary>
-        /// The bytecode of the first pass' vertex shader.
-        /// </summary>
-        public unsafe void* InputStructureByteCode;
-
         Dictionary<string, MaterialPass> _passesByName;
 
         public Material(GraphicsDevice device, string filename) : base(device, filename)

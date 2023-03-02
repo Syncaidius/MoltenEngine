@@ -86,7 +86,7 @@ namespace Molten.Graphics
         /// <returns></returns>
         /// 
         public bool CompileSource(string entryPoint, ShaderType type, 
-            ShaderCompilerContext context, out ShaderClassResult result)
+            ShaderCompilerContext context, out ShaderCodeResult result)
         {
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
@@ -140,7 +140,7 @@ namespace Molten.Graphics
                     return false;
 
                 ShaderReflection reflection = BuildReflection(context, dxcResult);
-                result = new ShaderClassResult(reflection, byteCode, byteCode->GetBufferSize());
+                result = new ShaderCodeResult(reflection, byteCode, byteCode->GetBufferSize());
                 context.Shaders.Add(entryPoint, result);
             }
 

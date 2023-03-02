@@ -9,8 +9,6 @@
         
         public IShaderResource[] DefaultResources;
 
-        public ShaderIOStructure InputStructure;
-
         public string Description { get; set; }
 
         public string Author { get; set; }

@@ -1,8 +1,8 @@
 ﻿namespace Molten.Graphics
 {
-    internal unsafe class ComputeCompiler : FxcClassCompiler
+    internal unsafe class ComputeCompiler : FxcCodeCompiler
     {
-        public override ShaderClassType ClassType => ShaderClassType.Compute;
+        public override ShaderCodeType ClassType => ShaderCodeType.Compute;
 
         public override List<HlslElement> Build(
             ShaderCompilerContext context, 
@@ -15,7 +15,7 @@
             try
             {
                 context.Compiler.ParserHeader(compute, in header, context);
-                ShaderClassResult result = null;
+                ShaderCodeResult result = null;
                 if (fxc.CompileSource(compute.Composition.EntryPoint, ShaderType.Compute, context, out result))
                 {
                     if(BuildStructure(context, compute, result, compute.Composition))
@@ -42,7 +42,7 @@
 
         protected override void OnBuildVariableStructure(
             ShaderCompilerContext context,
-            HlslElement shader, ShaderClassResult result, ShaderResourceInfo info)
+            HlslElement shader, ShaderCodeResult result, ShaderResourceInfo info)
         {
             ComputeTask ct = shader as ComputeTask;
             if (ct == null)

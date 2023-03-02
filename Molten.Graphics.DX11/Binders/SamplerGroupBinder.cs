@@ -2,12 +2,11 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class SamplerGroupBinder<T> : GraphicsGroupBinder<ShaderSamplerDX11>
-        where T: unmanaged
+    internal unsafe class SamplerGroupBinder : GraphicsGroupBinder<ShaderSamplerDX11>
     {
-        ContextShaderStage<T> _stage;
+        ContextShaderStage _stage;
 
-        internal SamplerGroupBinder(ContextShaderStage<T> stage)
+        internal SamplerGroupBinder(ContextShaderStage stage)
         {
             _stage = stage;
         }

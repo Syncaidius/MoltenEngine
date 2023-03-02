@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal class ShaderGSStage : ContextShaderStage<ID3D11GeometryShader>
+    internal class ShaderGSStage : ContextShaderStage
     {
         public ShaderGSStage(CommandQueueDX11 queue) : base(queue, ShaderType.Geometry)
         {

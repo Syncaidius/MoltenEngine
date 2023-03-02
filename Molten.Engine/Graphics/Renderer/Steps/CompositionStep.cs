@@ -18,7 +18,7 @@
             _surfaceEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "gbuffer_compose.mfx");
-            _matCompose = result[ShaderClassType.Material, "gbuffer-compose"] as Material;
+            _matCompose = result[ShaderCodeType.Material, "gbuffer-compose"] as Material;
 
             _valLighting = _matCompose["mapLighting"];
             _valEmissive = _matCompose["mapEmissive"];

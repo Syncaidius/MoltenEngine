@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Molten.Graphics
 {
@@ -350,6 +351,19 @@ namespace Molten.Graphics
 
                 if (pBind.Info.FieldType.IsValueType)
                     pBind.Info.SetValue(stateObject, pValue);
+            }
+        }
+
+        protected void InitializeEntryPoint(MaterialPass pass, ShaderCompilerContext context, ShaderHeaderNode node, ShaderType type)
+        {
+            if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
+            {
+                ShaderComposition comp = pass.AddComposition(type);
+                comp.EntryPoint = entryPoint;
+            }
+            else
+            {
+                context.AddError($"<{type.ToString().ToLower()}> entry-point tag is missing a value");
             }
         }
     }

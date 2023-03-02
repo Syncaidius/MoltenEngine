@@ -88,7 +88,7 @@ namespace Molten.Graphics
 
                         r.ConstantBuffers.Add(bindInfo.Name, cBufferInfo);
 
-                        for(uint v = 0; v < bufferDesc.Variables; v++)
+                        for (uint v = 0; v < bufferDesc.Variables; v++)
                         {
                             ID3D11ShaderReflectionVariable* variable = buffer->GetVariableByIndex(v);
                             ShaderVariableDesc desc = new ShaderVariableDesc();
@@ -197,7 +197,7 @@ namespace Molten.Graphics
         /// <param name="result"></param>
         /// <returns></returns>
         internal bool CompileSource(string entryPoint, ShaderType type, 
-            ShaderCompilerContext context, out ShaderClassResult result)
+            ShaderCompilerContext context, out ShaderCodeResult result)
         {
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
@@ -235,7 +235,7 @@ namespace Molten.Graphics
                 if (!context.HasErrors)
                 {
                     ShaderReflection reflection = BuildReflection(context, pByteCode);
-                    result = new ShaderClassResult(reflection, pByteCode, pByteCode->GetBufferSize());
+                    result = new ShaderCodeResult(reflection, pByteCode, pByteCode->GetBufferSize());
                     context.Shaders.Add(entryPoint, result);
                 }
 

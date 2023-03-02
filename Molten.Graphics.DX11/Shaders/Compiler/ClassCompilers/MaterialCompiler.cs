@@ -2,9 +2,9 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class MaterialCompiler : FxcClassCompiler
+    internal unsafe class MaterialCompiler : FxcCodeCompiler
     {
-        public override ShaderClassType ClassType => ShaderClassType.Material;
+        public override ShaderCodeType ClassType => ShaderCodeType.Material;
 
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
         ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
@@ -17,13 +17,14 @@ namespace Molten.Graphics
             try
             {
                 context.Compiler.ParserHeader(material, in header, context);
+
                 if (material.Passes == null || material.Passes.Length == 0)
                 {
                     context.AddError($"Material '{material.Name}' is invalid: No passes defined");
                 }
                 else
                 {
-                    if (string.IsNullOrWhiteSpace(material.Passes[0].VS.EntryPoint))
+                    if (string.IsNullOrWhiteSpace(material.Passes[0][ShaderType.Vertex].EntryPoint))
                     {
                         context.AddError($"Material '{material.Name} is invalid: First pass must define a vertex shader (VS) entry point");
                         return result;
@@ -52,10 +53,10 @@ namespace Molten.Graphics
             // Only run this if there is more than 1 pass.
             if (material.PassCount > 1)
             {
-                ShaderIOStructure iStructure = material.Passes[0].VS.InputStructure;
+                ShaderIOStructure iStructure = material.Passes[0][ShaderType.Vertex].InputStructure;
                 for (int i = 1; i < material.PassCount; i++)
                 {
-                    if (!material.Passes[i].VS.InputStructure.IsCompatible(iStructure))
+                    if (!material.Passes[i][ShaderType.Vertex].InputStructure.IsCompatible(iStructure))
                         context.AddError($"Vertex input structure in Pass #{i + 1} in material '{material.Name}' does not match structure of pass #1");
                 }
             }
@@ -83,8 +84,7 @@ namespace Molten.Graphics
                         pass.Samplers[i] = pass.Samplers[i] ?? pass.Device.DefaultSampler;
                 }
 
-                material.InputStructure = material.Passes[0].VS.InputStructure;
-                material.InputStructureByteCode = (ID3D10Blob*)firstPassResult[ShaderType.Vertex].ByteCode;
+
                 result.Add(material);
 
                 material.Scene = new SceneMaterialProperties(material);
@@ -109,7 +109,7 @@ namespace Molten.Graphics
             FxcCompiler fxc = context.Compiler as FxcCompiler;
 
             // Compile each stage of the material pass.
-            foreach(ShaderComposition sc in pass.Compositions)
+            foreach(ShaderComposition sc in pass)
             {
                 if (string.IsNullOrWhiteSpace(sc.EntryPoint))
                 {
@@ -120,7 +120,7 @@ namespace Molten.Graphics
                 }
 
                 if (fxc.CompileSource(sc.EntryPoint,
-                    sc.Type, context, out ShaderClassResult cResult))
+                    sc.Type, context, out ShaderCodeResult cResult))
                 {
                     result[sc.Type] = cResult;
                     sc.BuildShader(cResult.ByteCode);
@@ -139,7 +139,7 @@ namespace Molten.Graphics
                 // Fill in any extra metadata
                 if (result[ShaderType.Geometry] != null)
                 {
-                    ShaderClassResult fcr = result[ShaderType.Geometry];
+                    ShaderCodeResult fcr = result[ShaderType.Geometry];
                     pass.GeometryPrimitive = fcr.Reflection.GSInputPrimitive;
                 }
 
@@ -158,43 +158,23 @@ namespace Molten.Graphics
             MaterialPass pass = pResult.Pass;
             Material material = pass.Material;
 
-            // Vertex Shader
-            if (pResult[ShaderType.Vertex] != null)
+            foreach (ShaderType type in pResult.Results.Keys)
             {
-                if (!BuildStructure(context, material, pResult[ShaderType.Vertex], pass.VS))
-                    context.AddError($"Invalid vertex shader structure for '{pResult.Pass.VS.EntryPoint}' in pass '{pResult.Pass.Name}'.");
-            }
+                if (pResult[type] == null)
+                    continue;
 
-            // Hull Shader
-            if (pResult[ShaderType.Hull] != null)
-            {
-                if (!BuildStructure(context, material, pResult[ShaderType.Hull], pass.HS))
-                    context.AddError($"Invalid hull shader structure for '{pResult.Pass.HS.EntryPoint}' in pass '{pResult.Pass.Name}'.");
-            }
+                string typeName = type.ToString().ToLower();
+                ShaderComposition comp = pass[type];
 
-            // Domain Shader
-            if (pResult[ShaderType.Domain] != null)
-            {
-                if (!BuildStructure(context, material, pResult[ShaderType.Domain], pass.DS))
-                    context.AddError($"Invalid domain shader structure for '{pResult.Pass.DS.EntryPoint}' in pass '{pResult.Pass.Name}'.");
-            }
-
-            // Geometry Shader
-            if (pResult[ShaderType.Geometry] != null)
-            {
-                if (!BuildStructure(context, material, pResult[ShaderType.Geometry], pass.GS))
-                    context.AddError($"Invalid geometry shader structure for '{pResult.Pass.GS.EntryPoint}' in pass '{pResult.Pass.Name}'.");
-            }
-
-            // Pixel Shader
-            if (pResult[ShaderType.Pixel] != null)
-            {
-                if (!BuildStructure(context, material, pResult[ShaderType.Pixel], pass.PS))
-                    context.AddError($"Invalid pixel shader structure for '{pResult.Pass.PS.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                if (comp != null)
+                {
+                    if (!BuildStructure(context, material, pResult[type], comp))
+                        context.AddError($"Invalid {typeName} shader structure for '{comp.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                }
             }
         }
 
         protected override void OnBuildVariableStructure(ShaderCompilerContext context, 
-            HlslElement shader, ShaderClassResult result, ShaderResourceInfo info) { }
+            HlslElement shader, ShaderCodeResult result, ShaderResourceInfo info) { }
     }
 }

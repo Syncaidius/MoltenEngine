@@ -2,8 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class ContextShaderStage<T>
-        where T : unmanaged
+    internal unsafe abstract class ContextShaderStage
     {
         internal ContextShaderStage(CommandQueueDX11 queue, ShaderType type)
         {
@@ -13,19 +12,19 @@ namespace Molten.Graphics
             GraphicsCapabilities cap = Cmd.Device.Adapter.Capabilities;
             ShaderStageCapabilities shaderCap = cap[type];
             
-            Samplers = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Sampler", cap.MaxShaderSamplers, new SamplerGroupBinder<T>(this));
-            Resources = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Resource", shaderCap.MaxInResources, new ResourceGroupBinder<T>(this));
-            ConstantBuffers = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_C-Buffer", cap.ConstantBuffers.MaxSlots, new CBufferGroupBinder<T>(this));
-            Shader = queue.RegisterSlot(GraphicsBindTypeFlags.Input, $"{type}_Shader", 0, new ShaderSlotBinder<T>(this));
+            Samplers = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Sampler", cap.MaxShaderSamplers, new SamplerGroupBinder(this));
+            Resources = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Resource", shaderCap.MaxInResources, new ResourceGroupBinder(this));
+            ConstantBuffers = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_C-Buffer", cap.ConstantBuffers.MaxSlots, new CBufferGroupBinder(this));
+            Shader = queue.RegisterSlot(GraphicsBindTypeFlags.Input, $"{type}_Shader", 0, new ShaderSlotBinder(this));
         }
 
         internal virtual bool Bind()
         {
             bool shaderChanged = Shader.Bind();
 
-            ShaderCompositionDX11<T> composition = Shader.BoundValue;
+            ShaderComposition composition = Shader.BoundValue;
 
-            if (composition.PtrShader != null)
+            if (composition != null)
             {
                 // Apply pass constant buffers to slots
                 for (int i = 0; i < composition.ConstBufferIds.Count; i++)
@@ -72,7 +71,6 @@ namespace Molten.Graphics
 
         internal ShaderType Type { get; }
 
-
         /// Gets the slots for binding <see cref="ShaderSamplerDX11"/> to the current <see cref="ContextShaderStage{T}"/>.
         /// </summary>
         internal GraphicsSlotGroup<ShaderSamplerDX11> Samplers { get; }
@@ -90,6 +88,6 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the shader bind slot for the current <see cref="ContextShaderStage{T}"/>
         /// </summary>
-        internal GraphicsSlot<ShaderCompositionDX11<T>> Shader { get; }
+        internal GraphicsSlot<ShaderComposition> Shader { get; }
     }
 }

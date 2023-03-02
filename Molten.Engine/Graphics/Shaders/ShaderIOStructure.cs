@@ -40,9 +40,9 @@ namespace Molten.Graphics
         }
 
         /// <summary>Creates a new instance of <see cref="ShaderIOStructure"/> from reflection info.</summary>
-        /// <param name="result">The <see cref="ShaderClassResult"/> reflection object.</param>
+        /// <param name="result">The <see cref="ShaderCodeResult"/> reflection object.</param>
         /// <param name="type">The type of IO structure to build from reflection.param>
-        protected ShaderIOStructure(ShaderClassResult result, ShaderIOStructureType type)
+        protected ShaderIOStructure(ShaderCodeResult result, ShaderIOStructureType type)
         {
             List<ShaderParameterInfo> parameters;
 
@@ -128,7 +128,7 @@ namespace Molten.Graphics
 
         protected abstract void Initialize(uint elementCount);
 
-        protected abstract void BuildElement(ShaderClassResult result,
+        protected abstract void BuildElement(ShaderCodeResult result,
             ShaderIOStructureType type,
             ShaderParameterInfo pInfo,
             GraphicsFormat format,

@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal abstract class DxcClassCompiler : ShaderClassCompiler
+    internal abstract class DxcClassCompiler : ShaderCodeCompiler
     {
 
     }

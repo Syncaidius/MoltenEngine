@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public enum ShaderClassType
+    public enum ShaderCodeType
     {
         /// <summary>
         /// A shader that is part of a material.

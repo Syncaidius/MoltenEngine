@@ -2,13 +2,13 @@
 
 namespace Molten.Graphics
 {
-    public unsafe class ShaderClassResult : IDisposable
+    public unsafe class ShaderCodeResult : IDisposable
     {
         void* _byteCode;
 
         void* _debugData;
 
-        public unsafe ShaderClassResult(ShaderReflection reflection, void* byteCode, nuint numBytes)
+        public unsafe ShaderCodeResult(ShaderReflection reflection, void* byteCode, nuint numBytes)
         {
             Reflection = reflection;
             _byteCode = byteCode;

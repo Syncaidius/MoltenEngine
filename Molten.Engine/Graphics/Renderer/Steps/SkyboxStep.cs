@@ -14,7 +14,7 @@
             _skyboxData = new ObjectRenderData();
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "skybox.mfx");
-            _matSky = result[ShaderClassType.Material, "skybox-default"] as Material;
+            _matSky = result[ShaderCodeType.Material, "skybox-default"] as Material;
 
             Vertex[] vertices;
             uint[] indices;

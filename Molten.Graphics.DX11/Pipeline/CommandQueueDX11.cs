@@ -22,7 +22,9 @@ namespace Molten.Graphics
         ViewportF[] _nullViewport;
         ID3DUserDefinedAnnotation* _debugAnnotation;
 
-        GraphicsSlot<ComputeTask> _compute;
+        ContextShaderStage[] _shaderStages;
+        ShaderCSStage _cs;
+         GraphicsSlot<ComputeTask> _compute;
 
         VertexTopology _boundTopology;
         GraphicsSlot<VertexInputLayout> _vertexLayout;
@@ -55,7 +57,7 @@ namespace Molten.Graphics
             void* ptrDebug = null;
             _context->QueryInterface(ref debugGuid, &ptrDebug);
             _debugAnnotation = (ID3DUserDefinedAnnotation*)ptrDebug;
-   
+
             uint maxRTs = Device.Adapter.Capabilities.PixelShader.MaxOutResources;
             _scissorRects = new Rectangle[maxRTs];
             _viewports = new ViewportF[maxRTs];
@@ -67,12 +69,16 @@ namespace Molten.Graphics
             Material = RegisterSlot<Material, MaterialBinder>(GraphicsBindTypeFlags.Input, "Material", 0);
             _compute = RegisterSlot<ComputeTask, ComputeTaskBinder>(GraphicsBindTypeFlags.Input, "Compute Task", 0);
 
-            VS = new ShaderVSStage(this);
-            GS = new ShaderGSStage(this);
-            HS = new ShaderHSStage(this);
-            DS = new ShaderDSStage(this);
-            PS = new ShaderPSStage(this);
-            CS = new ShaderCSStage(this);
+            _shaderStages = new ContextShaderStage[]
+            {
+                new ShaderVSStage(this),
+                new ShaderHSStage(this),
+                new ShaderDSStage(this),
+                new ShaderGSStage(this),
+                new ShaderPSStage(this)
+            };
+
+            _cs = new ShaderCSStage(this);
 
             State = RegisterSlot<GraphicsState, StateBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
             _stateBlend = RegisterSlot<BlendStateDX11, BlendBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
@@ -183,18 +189,16 @@ namespace Molten.Graphics
                 Native->IASetPrimitiveTopology(_boundTopology.ToApi());
             }
 
-            VS.Shader.Value = pass.VS as ShaderCompositionDX11<ID3D11VertexShader>;
-            GS.Shader.Value = pass.GS as ShaderCompositionDX11<ID3D11GeometryShader>;
-            HS.Shader.Value = pass.HS as ShaderCompositionDX11<ID3D11HullShader>;
-            DS.Shader.Value = pass.DS as ShaderCompositionDX11<ID3D11DomainShader>;
-            PS.Shader.Value = pass.PS as ShaderCompositionDX11<ID3D11PixelShader>;
+            Span<bool> stageChanged = stackalloc bool[_shaderStages.Length];
 
-            bool vsChanged = VS.Bind();
-            bool gsChanged = GS.Bind();
-            bool hsChanged = HS.Bind();
-            bool dsChanged = DS.Bind();
-            bool psChanged = PS.Bind();
+            for(int i = 0; i < _shaderStages.Length; i++)
+            {
+                ShaderComposition comp = pass[_shaderStages[i].Type];
+                _shaderStages[i].Shader.Value = comp;
+                stageChanged[i] = _shaderStages[i].Bind();
+            }
 
+            bool vsChanged = stageChanged[0]; // Stage 0 is vertex buffer.
             bool ibChanged = IndexBuffer.Bind();
             bool vbChanged = VertexBuffers.BindAll();
 
@@ -212,7 +216,7 @@ namespace Molten.Graphics
             // Does the vertex input layout need updating?
             if (vbChanged || vsChanged)
             {
-                _vertexLayout.Value = GetInputLayout();
+                _vertexLayout.Value = GetInputLayout(pass);
                 _vertexLayout.Bind();
             }
 
@@ -443,7 +447,7 @@ namespace Molten.Graphics
         {
             bool csChanged = Bind(task);
 
-            if (CS.Shader.BoundValue == null)
+            if (_cs.Shader.BoundValue == null)
             {
                 return;
             }
@@ -477,17 +481,17 @@ namespace Molten.Graphics
         {
             _compute.Value = task;
             _compute.Bind();
-            CS.Shader.Value = _compute.BoundValue.Composition as ShaderCompositionDX11<ID3D11ComputeShader>;
+            _cs.Shader.Value = _compute.BoundValue.Composition as ShaderCompositionDX11<ID3D11ComputeShader>;
 
-            bool csChanged = CS.Bind();
+            bool csChanged = _cs.Bind();
 
-            if (CS.Shader.BoundValue != null)
+            if (_cs.Shader.BoundValue != null)
             {
                 // Apply unordered acces views to slots
-                for (int i = 0; i < CS.Shader.BoundValue.UnorderedAccessIds.Count; i++)
+                for (int i = 0; i < _cs.Shader.BoundValue.UnorderedAccessIds.Count; i++)
                 {
-                    uint slotID = CS.Shader.BoundValue.UnorderedAccessIds[i];
-                    CS.UAVs[slotID].Value = _compute.BoundValue.UAVs[slotID]?.UnorderedResource as GraphicsResourceDX11;
+                    uint slotID = _cs.Shader.BoundValue.UnorderedAccessIds[i];
+                    _cs.UAVs[slotID].Value = _compute.BoundValue.UAVs[slotID]?.UnorderedResource as GraphicsResourceDX11;
                 }
             }
 
@@ -606,7 +610,7 @@ namespace Molten.Graphics
 
         /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>
         /// <returns>An instance of InputLayout.</returns>
-        private VertexInputLayout GetInputLayout()
+        private VertexInputLayout GetInputLayout(MaterialPass pass)
         {
             // Retrieve layout list or create new one if needed.
             foreach (VertexInputLayout l in _cachedLayouts)
@@ -615,8 +619,8 @@ namespace Molten.Graphics
                     return l;
             }
 
-            Material mat = Material.BoundValue;
-            VertexInputLayout input = new VertexInputLayout(DXDevice, VertexBuffers, (ID3D10Blob*)mat.InputStructureByteCode, mat.InputStructure);
+            ShaderComposition vs = pass[ShaderType.Vertex];
+            VertexInputLayout input = new VertexInputLayout(DXDevice, VertexBuffers, (ID3D10Blob*)vs.ByteCode, vs.InputStructure);
             _cachedLayouts.Add(input);
 
             return input;
@@ -716,12 +720,5 @@ namespace Molten.Graphics
         internal DeviceDX11 DXDevice { get; private set; }
 
         internal ID3D11DeviceContext4* Native => _context;
-
-        internal ShaderVSStage VS { get; }
-        internal ShaderGSStage GS { get; }
-        internal ShaderHSStage HS { get; }
-        internal ShaderDSStage DS { get; }
-        internal ShaderPSStage PS { get; }
-        internal ShaderCSStage CS { get; }
     }
 }

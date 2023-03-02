@@ -2,36 +2,44 @@
 {
     public class MaterialLayoutValidator
     {
+        static ShaderType[] _validationIndex = new ShaderType[] {
+                ShaderType.Vertex,
+                ShaderType.Hull,
+                ShaderType.Domain,
+                ShaderType.Geometry,
+                ShaderType.Pixel};
+
         public bool Validate(ShaderCompilerContext context,
             MaterialPassCompileResult pResult)
         {
             // Stage order reference: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476882(v=vs.85).aspx
             bool valid = true;
             MaterialPass pass = pResult.Pass;
-            ShaderComposition[] stages = pass.Compositions;
-            ShaderComposition previous = null;
+            ShaderComposition prevStage = null;
+            ShaderComposition curStage = null;
 
-            for (int i = 0; i < stages.Length; i++)
+            for (int i = 0; i < _validationIndex.Length; i++)
             {
                 // Nothing to compare yet, continue.
-                if (previous == null)
+                if (prevStage == null)
                 {
-                    previous = stages[i];
+                    prevStage = pResult.Pass[_validationIndex[i]];
                     continue;
                 }
 
                 // No shader to compare. Go to next shader stage.
-                if (string.IsNullOrWhiteSpace(stages[i].EntryPoint))
+                curStage = pResult.Pass[_validationIndex[i]];
+                if (curStage == null)
                     continue;
 
-                ShaderIOStructure output = previous.OutputStructure;
-                ShaderIOStructure input = stages[i].InputStructure;
+                ShaderIOStructure output = prevStage.OutputStructure;
+                ShaderIOStructure input = curStage.InputStructure;
 
                 // If the input expects anything, check compatibility. Skip compat check if input does not expect anything (length 0).
                 if (input.Metadata.Length > 0 && !output.IsCompatible(input))
                 {
-                    ShaderType currentCompositionType =  stages[i].Type;
-                    ShaderType previousCompositionType = previous.Type;
+                    ShaderType currentCompositionType =  curStage.Type;
+                    ShaderType previousCompositionType = prevStage.Type;
 
                     context.AddError("Incompatible material I/O structure.");
                     context.AddError("====================================");
@@ -55,7 +63,7 @@
                     valid = false;
                 }
 
-                previous = stages[i];
+                prevStage = curStage;
             }
 
             return valid &&
@@ -68,8 +76,8 @@
             MaterialPassCompileResult pResult)
         {
             bool valid = true;
-            ShaderClassResult hs = pResult[ShaderType.Hull];
-            ShaderClassResult ds = pResult[ShaderType.Domain];
+            ShaderCodeResult hs = pResult[ShaderType.Hull];
+            ShaderCodeResult ds = pResult[ShaderType.Domain];
 
             if (hs != null && ds == null)
             {
@@ -88,9 +96,9 @@
         private bool CheckGeometryTessellationAdjacency(MaterialPassCompileResult pResult)
         {
             bool valid = true;
-            ShaderClassResult geometryRef = pResult[ShaderType.Geometry];
-            ShaderClassResult hullRef = pResult[ShaderType.Hull];
-            ShaderClassResult domainRef = pResult[ShaderType.Domain];
+            ShaderCodeResult geometryRef = pResult[ShaderType.Geometry];
+            ShaderCodeResult hullRef = pResult[ShaderType.Hull];
+            ShaderCodeResult domainRef = pResult[ShaderType.Domain];
 
             if (geometryRef == null || hullRef == null || domainRef == null)
                 return valid;

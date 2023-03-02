@@ -1,44 +1,40 @@
-﻿using Silk.NET.Core.Native;
+﻿using System.Collections;
+using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    public unsafe class MaterialPass : HlslElement
+    public unsafe class MaterialPass : HlslElement, IEnumerable<ShaderComposition>, IEnumerable<ShaderType>
     {
-        internal const int ID_VERTEX = 0;
-        internal const int ID_HULL = 1;
-        internal const int ID_DOMAIN = 2;
-        internal const int ID_GEOMETRY = 3;
-        internal const int ID_PIXEL = 4;
-
         Material _parent;
+        Dictionary<ShaderType, ShaderComposition> _compositions;
 
-        public MaterialPass(Material material, string name) : 
+        public MaterialPass(Material material, string name) :
             base(material.Device)
         {
             _parent = material;
             Name = name;
 
-            VS = Device.CreateShaderComposition(ShaderType.Vertex, material);
-            HS = Device.CreateShaderComposition(ShaderType.Hull, material);
-            DS = Device.CreateShaderComposition(ShaderType.Domain, material);
-            GS = Device.CreateShaderComposition(ShaderType.Geometry, material);
-            PS = Device.CreateShaderComposition(ShaderType.Pixel, material);
-
-            Compositions = new ShaderComposition[5];
-            Compositions[ID_VERTEX] = VS;
-            Compositions[ID_HULL] = HS;
-            Compositions[ID_DOMAIN] = DS;
-            Compositions[ID_GEOMETRY] = GS;
-            Compositions[ID_PIXEL] = PS;
+            _compositions = new Dictionary<ShaderType, ShaderComposition>();
         }
 
-        internal GraphicsBindResult ValidateInput(D3DPrimitiveTopology topology)
+        internal ShaderComposition AddComposition(ShaderType type)
+        {
+            if (!_compositions.TryGetValue(type, out ShaderComposition comp))
+            {
+                comp = Device.CreateShaderComposition(type, _parent);
+                _compositions.Add(type, comp);
+            }
+
+            return comp;
+        }
+
+        internal GraphicsBindResult ValidateInput(VertexTopology topology)
         {
             GraphicsBindResult result = GraphicsBindResult.Successful;
 
-            if(HS.PtrShader != null)
+            if (_compositions.TryGetValue(ShaderType.Hull, out ShaderComposition hs))
             {
-                if (topology < D3DPrimitiveTopology.D3D11PrimitiveTopology1ControlPointPatchlist)
+                if (topology < VertexTopology.PatchListWith1ControlPoint)
                     result |= GraphicsBindResult.HullPatchTopologyExpected;
             }
 
@@ -47,27 +43,48 @@ namespace Molten.Graphics
 
         public override void GraphicsRelease()
         {
-            for (int i = 0; i < Compositions.Length; i++)
-                Compositions[i].Dispose();
+            foreach (ShaderComposition c in _compositions.Values)
+                c.Dispose();
         }
 
-        public ShaderComposition[] Compositions { get; }
+        public IEnumerator<ShaderComposition> GetEnumerator()
+        {
+            return _compositions.Values.GetEnumerator();
+        }
 
-        public ShaderComposition VS { get; }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _compositions.Keys.GetEnumerator();
+        }
 
-        public ShaderComposition GS { get; }
-
-        public ShaderComposition HS { get; }
-
-        public ShaderComposition DS { get; }
-
-        public ShaderComposition PS { get; }
+        IEnumerator<ShaderType> IEnumerable<ShaderType>.GetEnumerator()
+        {
+            return _compositions.Keys.GetEnumerator();
+        }
 
         /// <summary>
-        /// The available render state.
+        /// Gets a <see cref="ShaderComposition"/> from the current <see cref="MaterialPass"/>. 
+        /// <para>Returns null if no composition exists for the specified <see cref="ShaderType"/>.</para>
+        /// </summary>
+        /// <param name="type">The type of shader composition to retrieve.</param>
+        /// <returns></returns>
+        public ShaderComposition this[ShaderType type]
+        {
+            get
+            {
+                _compositions.TryGetValue(type, out ShaderComposition comp);
+                return comp;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets available render state.
         /// </summary>
         public GraphicsState State { get; set; }
 
+        /// <summary>
+        /// Gets or sets the type of geometry shader primitives to output.
+        /// </summary>
         public PrimitiveTopology GeometryPrimitive { get; set; }
 
         /// <summary>Gets or sets whether or not the pass will be run.</summary>

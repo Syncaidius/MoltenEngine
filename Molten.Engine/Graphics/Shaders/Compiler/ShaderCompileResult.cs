@@ -2,11 +2,11 @@
 {
     public sealed class ShaderCompileResult : EngineObject
     {
-        internal Dictionary<ShaderClassType, List<HlslElement>> ShaderGroups { get; } = new Dictionary<ShaderClassType, List<HlslElement>>();
+        internal Dictionary<ShaderCodeType, List<HlslElement>> ShaderGroups { get; } = new Dictionary<ShaderCodeType, List<HlslElement>>();
 
         protected override void OnDispose() { }
 
-        internal void AddResult(ShaderClassType classType, List<HlslElement> result)
+        internal void AddResult(ShaderCodeType classType, List<HlslElement> result)
         {
             if (result.Count > 0)
             {
@@ -22,22 +22,22 @@
         }
 
         /// <summary>
-        /// Gets a list of <see cref="HlslElement"/> of the specified <see cref="ShaderClassType"/> which were built successfully.
+        /// Gets a list of <see cref="HlslElement"/> of the specified <see cref="ShaderCodeType"/> which were built successfully.
         /// </summary>
         /// <param name="cType">The shader class type.</param>
         /// <returns></returns>
-        public List<HlslElement> this[ShaderClassType cType]
+        public List<HlslElement> this[ShaderCodeType cType]
         {
             get => ShaderGroups[cType];
         }
 
         /// <summary>
-        /// Gets a <see cref="HlslElement"/> of the specified <see cref="ShaderClassType"/> and index which was built successfully.
+        /// Gets a <see cref="HlslElement"/> of the specified <see cref="ShaderCodeType"/> and index which was built successfully.
         /// </summary>
         /// <param name="cType">The shader class type.</param>
         /// <param name="index">The index of the element.</param>
         /// <returns></returns>
-        public HlslElement this[ShaderClassType cType, int index]
+        public HlslElement this[ShaderCodeType cType, int index]
         {
             get
             {
@@ -49,12 +49,12 @@
         }
 
         /// <summary>
-        /// Gets a <see cref="HlslElement"/> of the specified <see cref="ShaderClassType"/> and name which was built successfully.
+        /// Gets a <see cref="HlslElement"/> of the specified <see cref="ShaderCodeType"/> and name which was built successfully.
         /// </summary>
         /// <param name="cType">The shader class type.</param>
         /// <param name="shaderName">The name of the shader given to it it via its XML definition.</param>
         /// <returns></returns>
-        public HlslElement this[ShaderClassType cType, string shaderName]
+        public HlslElement this[ShaderCodeType cType, string shaderName]
         {
             get
             {

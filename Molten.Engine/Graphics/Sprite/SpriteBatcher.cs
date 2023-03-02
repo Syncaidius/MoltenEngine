@@ -106,16 +106,16 @@ namespace Molten.Graphics
             _bufferData = _buffer.Allocate<GpuData>(dataCapacity);
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "sprite.mfx");
-            _matDefaultNoTexture = result[ShaderClassType.Material, "sprite-no-texture"] as Material;
-            _matDefault = result[ShaderClassType.Material, "sprite-texture"] as Material;
-            _matCircle = result[ShaderClassType.Material, "circle"] as Material;
-            _matCircleNoTexture = result[ShaderClassType.Material, "circle-no-texture"] as Material;
-            _matLine = result[ShaderClassType.Material, "line"] as Material;
-            _matGrid = result[ShaderClassType.Material, "grid"] as Material;
+            _matDefaultNoTexture = result[ShaderCodeType.Material, "sprite-no-texture"] as Material;
+            _matDefault = result[ShaderCodeType.Material, "sprite-texture"] as Material;
+            _matCircle = result[ShaderCodeType.Material, "circle"] as Material;
+            _matCircleNoTexture = result[ShaderCodeType.Material, "circle-no-texture"] as Material;
+            _matLine = result[ShaderCodeType.Material, "line"] as Material;
+            _matGrid = result[ShaderCodeType.Material, "grid"] as Material;
             //_matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
 
             ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "sprite_sdf.mfx");
-            _matMsdf = resultSdf[ShaderClassType.Material, "sprite-msdf"] as Material;
+            _matMsdf = resultSdf[ShaderCodeType.Material, "sprite-msdf"] as Material;
 
             _checkers = new Func<GraphicsCommandQueue, SpriteRange, ObjectRenderData, Material>[7];
             _checkers[(int)RangeType.None] = NoCheckRange;

@@ -2,12 +2,11 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class CBufferGroupBinder<T> : GraphicsGroupBinder<ShaderConstantBuffer>
-        where T : unmanaged
+    internal unsafe class CBufferGroupBinder : GraphicsGroupBinder<ShaderConstantBuffer>
     {
-        ContextShaderStage<T> _stage;
+        ContextShaderStage _stage;
 
-        internal CBufferGroupBinder(ContextShaderStage<T> stage)
+        internal CBufferGroupBinder(ContextShaderStage stage)
         {
             _stage = stage;
         }

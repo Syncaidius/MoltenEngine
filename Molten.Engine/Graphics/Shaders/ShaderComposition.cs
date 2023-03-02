@@ -22,9 +22,11 @@
         public ShaderType Type { get; internal set; }
 
         void* _ptrShader;
+        void* _byteCode;
 
         public void BuildShader(void* byteCode)
         {
+            _byteCode = byteCode;
             _ptrShader = OnBuildShader(byteCode);
         }
 
@@ -52,6 +54,8 @@
         protected abstract void ReleaseShaderPtr(ref void* ptr);
 
         public void* PtrShader => _ptrShader;
+
+        public void* ByteCode => _byteCode;
 
         public HlslShader Parent { get; }
     }

@@ -18,7 +18,7 @@ namespace Molten.Graphics
 
         ConcurrentDictionary<string, ShaderSource> _sources;
         Dictionary<ShaderNodeType, ShaderNodeParser> _nodeParsers;
-        List<ShaderClassCompiler> _classCompilers;
+        List<ShaderCodeCompiler> _classCompilers;
 
         Assembly _defaultIncludeAssembly;
         string _defaultIncludePath;
@@ -36,7 +36,7 @@ namespace Molten.Graphics
             _defaultIncludeAssembly = includeAssembly;
 
             _nodeParsers = new Dictionary<ShaderNodeType, ShaderNodeParser>();
-            _classCompilers = new List<ShaderClassCompiler>();
+            _classCompilers = new List<ShaderCodeCompiler>();
             _sources = new ConcurrentDictionary<string, ShaderSource>();
 
             InitializeNodeParsers();
@@ -86,7 +86,7 @@ namespace Molten.Graphics
         }
 
         protected void AddClassCompiler<T>()
-            where T : ShaderClassCompiler, new()
+            where T : ShaderCodeCompiler, new()
         {
             Type t = typeof(T);
             BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
@@ -99,7 +99,7 @@ namespace Molten.Graphics
             ShaderCompilerContext context = new ShaderCompilerContext(this);
             context.Flags = flags;
 
-            Dictionary<ShaderClassCompiler, List<string>> headers = new Dictionary<ShaderClassCompiler, List<string>>();
+            Dictionary<ShaderCodeCompiler, List<string>> headers = new Dictionary<ShaderCodeCompiler, List<string>>();
             string finalSource = source;
 
 
@@ -109,7 +109,7 @@ namespace Molten.Graphics
             int originalLineCount = source.Split(_newLineSeparator, StringSplitOptions.None).Length;
 
             // Check the source for all supportead class types.
-            foreach (ShaderClassCompiler scc in _classCompilers)
+            foreach (ShaderCodeCompiler scc in _classCompilers)
             {
                 List<string> classHeaders = scc.GetHeaders(in source);
                 if (classHeaders.Count > 0)
@@ -138,7 +138,7 @@ namespace Molten.Graphics
             context.Source = ParseSource(context, filename, ref finalSource, isEmbedded, assembly, nameSpace, originalLineCount);
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
-            foreach (ShaderClassCompiler classCompiler in headers.Keys)
+            foreach (ShaderCodeCompiler classCompiler in headers.Keys)
             {
                 List<string> nodeHeaders = headers[classCompiler];
                 foreach (string header in nodeHeaders)

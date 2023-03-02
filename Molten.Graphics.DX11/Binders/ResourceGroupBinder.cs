@@ -2,12 +2,11 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class ResourceGroupBinder<T> : GraphicsGroupBinder<GraphicsResourceDX11>
-        where T : unmanaged
+    internal unsafe class ResourceGroupBinder : GraphicsGroupBinder<GraphicsResourceDX11>
     {
-        ContextShaderStage<T> _stage;
+        ContextShaderStage _stage;
 
-        internal ResourceGroupBinder(ContextShaderStage<T> stage)
+        internal ResourceGroupBinder(ContextShaderStage stage)
         {
             _stage = stage;
         }

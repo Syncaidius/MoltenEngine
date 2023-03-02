@@ -19,8 +19,8 @@ namespace Molten.Graphics
 
             // Load shaders
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "light_point.mfx");
-            _matPoint = result[ShaderClassType.Material, "light-point"] as Material;
-            _matDebugPoint = result[ShaderClassType.Material, "light-point-debug"] as Material;
+            _matPoint = result[ShaderCodeType.Material, "light-point"] as Material;
+            _matDebugPoint = result[ShaderCodeType.Material, "light-point-debug"] as Material;
         }
 
         public override void Dispose()

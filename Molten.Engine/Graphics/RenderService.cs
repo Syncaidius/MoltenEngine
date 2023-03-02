@@ -285,8 +285,8 @@ namespace Molten.Graphics
         private void LoadDefaultShaders()
         {
             ShaderCompileResult result = Resources.LoadEmbeddedShader("Molten.Assets", "gbuffer.mfx");
-            StandardMeshMaterial = result[ShaderClassType.Material, "gbuffer"] as Material;
-            StandardMeshMaterial_NoNormalMap = result[ShaderClassType.Material, "gbuffer-sans-nmap"] as Material;
+            StandardMeshMaterial = result[ShaderCodeType.Material, "gbuffer"] as Material;
+            StandardMeshMaterial_NoNormalMap = result[ShaderCodeType.Material, "gbuffer-sans-nmap"] as Material;
         }
 
         protected abstract void OnInitializeRenderer(EngineSettings settings);

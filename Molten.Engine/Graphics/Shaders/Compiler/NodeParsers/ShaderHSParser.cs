@@ -7,10 +7,7 @@
 
         protected override void OnParse(MaterialPass pass, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
-                pass.HS.EntryPoint = entryPoint;
-            else
-                context.AddError("Hull shader <entry> tag is missing or empty.");
+            InitializeEntryPoint(pass, context, node, ShaderType.Hull);
         }
     }
 }

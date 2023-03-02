@@ -9,14 +9,14 @@ namespace Molten.Graphics
 
         public ShaderIOStructureDX11(uint elementCount) : base(elementCount) { }
 
-        public ShaderIOStructureDX11(ShaderClassResult result, ShaderIOStructureType type) : base(result, type) { }
+        public ShaderIOStructureDX11(ShaderCodeResult result, ShaderIOStructureType type) : base(result, type) { }
 
         protected override void Initialize(uint elementCount)
         {
             Elements = new InputElementDesc[elementCount];
         }
 
-        protected override void BuildElement(ShaderClassResult result, ShaderIOStructureType type, ShaderParameterInfo pInfo, GraphicsFormat format, int index)
+        protected override void BuildElement(ShaderCodeResult result, ShaderIOStructureType type, ShaderParameterInfo pInfo, GraphicsFormat format, int index)
         {
             Elements[index] = new InputElementDesc()
             {

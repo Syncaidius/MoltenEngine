@@ -2,11 +2,11 @@
 
 namespace Molten.Graphics
 {
-    public abstract class ShaderClassCompiler
+    public abstract class ShaderCodeCompiler
     {
         Regex _regexHeader;
 
-        protected ShaderClassCompiler()
+        protected ShaderCodeCompiler()
         {
             string headerTagName = ClassType.ToString().ToLower();
             _regexHeader = new Regex($"<{headerTagName}>(.|\n)*?</{headerTagName}>");
@@ -27,7 +27,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Invoked when the current <see cref="ShaderClassCompiler"/> should build a one or more pieces of HLSL bytecode.
+        /// Invoked when the current <see cref="ShaderCodeCompiler"/> should build a one or more pieces of HLSL bytecode.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="renderer"></param>
@@ -36,8 +36,8 @@ namespace Molten.Graphics
         public abstract List<HlslElement> Build(ShaderCompilerContext context, RenderService renderer, in string header);
 
         /// <summary>
-        /// Gets the type of shader that the current <see cref="ShaderClassCompiler"/> is meant to build.
+        /// Gets the type of shader that the current <see cref="ShaderCodeCompiler"/> is meant to build.
         /// </summary>
-        public abstract ShaderClassType ClassType { get; }
+        public abstract ShaderCodeType ClassType { get; }
     }
 }

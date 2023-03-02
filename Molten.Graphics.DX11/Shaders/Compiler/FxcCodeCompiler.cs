@@ -4,8 +4,8 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class FxcClassCompiler : 
-        ShaderClassCompiler
+    internal unsafe abstract class FxcCodeCompiler : 
+        ShaderCodeCompiler
     {
         protected bool HasConstantBuffer(ShaderCompilerContext context, 
             HlslShader shader, string bufferName, string[] varNames)
@@ -44,7 +44,7 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected ShaderIOStructure BuildIO(ShaderClassResult result, ShaderIOStructureType type)
+        protected ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderIOStructureType type)
         {
             List<ShaderParameterInfo> parameters;
 
@@ -140,7 +140,7 @@ namespace Molten.Graphics
         }
 
         protected bool BuildStructure(ShaderCompilerContext context, 
-            HlslShader shader, ShaderClassResult result, ShaderComposition composition) 
+            HlslShader shader, ShaderCodeResult result, ShaderComposition composition) 
         {
             for (int r = 0; r < result.Reflection.BoundResources.Count; r++)
             {
@@ -210,7 +210,7 @@ namespace Molten.Graphics
         }
 
         protected abstract void OnBuildVariableStructure(ShaderCompilerContext context, 
-            HlslElement shader, ShaderClassResult result, ShaderResourceInfo info);
+            HlslElement shader, ShaderCodeResult result, ShaderResourceInfo info);
 
         private void OnBuildTextureVariable(ShaderCompilerContext context, 
             HlslShader shader, ShaderResourceInfo info)

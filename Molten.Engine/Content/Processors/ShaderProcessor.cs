@@ -19,7 +19,7 @@ namespace Molten.Content
             {
                 string source = reader.ReadToEnd();
                 ShaderCompileResult r = handle.Manager.Engine.Renderer.Resources.CompileShaders(ref source, handle.RelativePath);
-                foreach (ShaderClassType classType in r.ShaderGroups.Keys)
+                foreach (ShaderCodeType classType in r.ShaderGroups.Keys)
                 {
                     List<HlslElement> list = r.ShaderGroups[classType];
 
