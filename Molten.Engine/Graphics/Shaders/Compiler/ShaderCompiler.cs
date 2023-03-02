@@ -60,7 +60,6 @@ namespace Molten.Graphics
         /// <summary>
         /// Registers all <see cref="ShaderNodeParser"/> types in the assembly.
         /// </summary>
-        /// <typeparam name="T">The base type of the node parsers to be detected and added.</typeparam>
         private void InitializeNodeParsers()
         {
             // Find custom and additional node parsers

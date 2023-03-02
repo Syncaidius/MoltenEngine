@@ -50,18 +50,6 @@ namespace Molten.Graphics
                     return result;
             }
 
-            // Validate the vertex input structure of all passes. Should match structure of first pass.
-            // Only run this if there is more than 1 pass.
-            if (material.PassCount > 1)
-            {
-                ShaderIOStructure iStructure = material.Passes[0][ShaderType.Vertex].InputStructure;
-                for (int i = 1; i < material.PassCount; i++)
-                {
-                    if (!material.Passes[i][ShaderType.Vertex].InputStructure.IsCompatible(iStructure))
-                        context.AddError($"Vertex input structure in Pass #{i + 1} in material '{material.Name}' does not match structure of pass #1");
-                }
-            }
-
             // No issues arose, lets add it to the material manager
             if (!context.HasErrors)
             {
