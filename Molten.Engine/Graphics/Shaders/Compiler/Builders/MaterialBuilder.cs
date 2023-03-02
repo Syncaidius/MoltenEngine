@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class MaterialCompiler : FxcCodeCompiler
+    internal unsafe class MaterialBuilder : ShaderCodeCompiler
     {
         public override ShaderCodeType ClassType => ShaderCodeType.Material;
 
@@ -14,6 +14,7 @@ namespace Molten.Graphics
         {
             List<HlslElement> result = new List<HlslElement>();
             Material material = new Material(renderer.Device, context.Source.Filename);
+
             try
             {
                 context.Compiler.ParserHeader(material, in header, context);
@@ -106,7 +107,6 @@ namespace Molten.Graphics
             MaterialPass pass)
         {
             MaterialPassCompileResult result = new MaterialPassCompileResult(pass);
-            FxcCompiler fxc = context.Compiler as FxcCompiler;
 
             // Compile each stage of the material pass.
             foreach(ShaderComposition sc in pass)
@@ -119,13 +119,13 @@ namespace Molten.Graphics
                     continue;
                 }
 
-                if (fxc.CompileSource(sc.EntryPoint,
+                if (context.Compiler.CompileSource(sc.EntryPoint,
                     sc.Type, context, out ShaderCodeResult cResult))
                 {
                     result[sc.Type] = cResult;
                     sc.BuildShader(cResult.ByteCode);
-                    sc.InputStructure = BuildIO(cResult, ShaderIOStructureType.Input);
-                    sc.OutputStructure = BuildIO(cResult, ShaderIOStructureType.Output);
+                    sc.InputStructure = context.Compiler.BuildIO(cResult, ShaderIOStructureType.Input);
+                    sc.OutputStructure = context.Compiler.BuildIO(cResult, ShaderIOStructureType.Output);
                 }
                 else
                 {
@@ -168,13 +168,10 @@ namespace Molten.Graphics
 
                 if (comp != null)
                 {
-                    if (!BuildStructure(context, material, pResult[type], comp))
+                    if (!context.Compiler.BuildStructure(context, material, pResult[type], comp))
                         context.AddError($"Invalid {typeName} shader structure for '{comp.EntryPoint}' in pass '{pResult.Pass.Name}'.");
                 }
             }
         }
-
-        protected override void OnBuildVariableStructure(ShaderCompilerContext context, 
-            HlslElement shader, ShaderCodeResult result, ShaderResourceInfo info) { }
     }
 }

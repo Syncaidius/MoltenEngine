@@ -36,13 +36,26 @@ namespace Molten.Graphics
             _defaultIncludeAssembly = includeAssembly;
 
             _nodeParsers = new Dictionary<ShaderNodeType, ShaderNodeParser>();
-            _classCompilers = new List<ShaderCodeCompiler>();
+            _classCompilers = new List<ShaderCodeCompiler>()
+            {
+                new MaterialBuilder(),
+                new ComputeBuilder(),
+            };
+
             _sources = new ConcurrentDictionary<string, ShaderSource>();
 
             InitializeNodeParsers();
         }
 
         protected unsafe abstract ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData);
+
+        public abstract ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderIOStructureType type);
+
+        public abstract bool CompileSource(string entryPoint, ShaderType type,
+            ShaderCompilerContext context, out ShaderCodeResult result);
+
+        public abstract bool BuildStructure(ShaderCompilerContext context,
+            HlslShader shader, ShaderCodeResult result, ShaderComposition composition);
 
         /// <summary>
         /// Registers all <see cref="ShaderNodeParser"/> types in the assembly.
@@ -83,15 +96,6 @@ namespace Molten.Graphics
                 if (!_nodeParsers.ContainsKey(t))
                     Log.Error($"Shader compiler '{GetType()}' doesn't provide node parser for '{t}' nodes. May prevent shader compilation.");
             }
-        }
-
-        protected void AddClassCompiler<T>()
-            where T : ShaderCodeCompiler, new()
-        {
-            Type t = typeof(T);
-            BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-            T scc = Activator.CreateInstance(t, bindFlags, null, null, null) as T;
-            _classCompilers.Add(scc);
         }
 
         public ShaderCompileResult CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)

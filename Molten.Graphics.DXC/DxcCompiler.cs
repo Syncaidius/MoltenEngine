@@ -25,9 +25,6 @@ namespace Molten.Graphics
 
         internal static readonly Guid CLSID_DxcContainerReflection = new Guid(0xb9f54489, 0x55b8, 0x400c,
             0xba, 0x3a, 0x16, 0x75, 0xe4, 0x72, 0x8b, 0x91);
-
-
-        Dictionary<string, DxcClassCompiler> _shaderParsers;
        
         IDxcCompiler3* _compiler;
         IDxcUtils* _utils;
@@ -42,7 +39,6 @@ namespace Molten.Graphics
         public DxcCompiler(RenderService renderer, string includePath, Assembly includeAssembly) : 
             base(renderer, includePath, includeAssembly)
         {
-            _shaderParsers = new Dictionary<string, DxcClassCompiler>();
             _sourceBlobs = new Dictionary<ShaderSource, DxcSourceBlob>();
 
             Dxc = DXC.GetApi();
@@ -68,8 +64,7 @@ namespace Molten.Graphics
         protected override unsafe ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData)
         {
             IDxcResult* dxcResult = (IDxcResult*)ptrData;
-            IDxcContainerReflection* containerReflection;
-            containerReflection = LoadReflection(context, dxcResult);
+            IDxcContainerReflection* containerReflection = LoadReflection(context, dxcResult);
 
             ShaderReflection r = new ShaderReflection();
 
@@ -85,7 +80,7 @@ namespace Molten.Graphics
         /// <param name="result"></param>
         /// <returns></returns>
         /// 
-        public bool CompileSource(string entryPoint, ShaderType type, 
+        public override bool CompileSource(string entryPoint, ShaderType type, 
             ShaderCompilerContext context, out ShaderCodeResult result)
         {
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
@@ -246,6 +241,16 @@ namespace Molten.Graphics
             }
 
             return blob;
+        }
+
+        public override ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderIOStructureType type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
+        {
+            throw new NotImplementedException();
         }
 
         internal DXC Dxc { get; }
