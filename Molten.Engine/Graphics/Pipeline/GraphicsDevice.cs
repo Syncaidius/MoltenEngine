@@ -64,8 +64,8 @@ namespace Molten.Graphics
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="objKey"></param>
-        /// <param name="obj"></param>
-        public T CacheObject<T>(StructKey objKey, T obj)
+        /// <param name="newObj"></param>
+        public T CacheObject<T>(StructKey objKey, T newObj)
             where T : GraphicsObject
         {
             if (!_objectCache.TryGetValue(typeof(T), out Dictionary<StructKey, GraphicsObject> objects))
@@ -74,19 +74,23 @@ namespace Molten.Graphics
                 _objectCache.Add(typeof(T), objects);
             }
 
-            if (obj != null)
+            if (newObj != null)
             {
                 foreach (StructKey key in objects.Keys)
                 {
                     if (key.Equals(objKey))
+                    {
+                        // Dispose of the new object, we found an existing match.
+                        newObj.Dispose();
                         return objects[key] as T;
+                    }
                 }
 
                 // If we reach here, object has no match in the cache. Add it
-                objects.Add(objKey.Clone(), obj);
+                objects.Add(objKey.Clone(), newObj);
             }
 
-            return obj;
+            return newObj;
         }
 
         /// <summary>

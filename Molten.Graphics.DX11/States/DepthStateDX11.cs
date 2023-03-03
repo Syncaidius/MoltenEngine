@@ -4,15 +4,41 @@ namespace Molten.Graphics
 {
     /// <summary>Stores a depth-stencil state for use with a <see cref="CommandQueueDX11"/>.</summary>
     internal unsafe class DepthStateDX11 : GraphicsObject<ID3D11DepthStencilState>
-    {        
+    {
+        internal StructKey<DepthStencilDesc> Desc { get; }
+
         ID3D11DepthStencilState* _native;
         uint _stencilReference;
 
-        internal DepthStateDX11(DeviceDX11 device, ref DepthStencilDesc desc, uint stencilRef) :
+        internal DepthStateDX11(DeviceDX11 device, ref GraphicsStateParameters parameters) :
             base(device, GraphicsBindTypeFlags.Input)
         {
-            _stencilReference = stencilRef;
-            device.Ptr->CreateDepthStencilState(ref desc, ref _native);
+            Desc = new StructKey<DepthStencilDesc>();
+
+            ref DepthStencilDesc dDesc = ref Desc.Value;
+            dDesc.DepthEnable = parameters.IsDepthEnabled ? 1 : 0;
+            dDesc.DepthFunc = (ComparisonFunc)parameters.DepthComparison;
+            dDesc.DepthWriteMask = parameters.DepthWriteEnabled ? DepthWriteMask.All : DepthWriteMask.Zero;
+            dDesc.StencilWriteMask = parameters.StencilWriteMask;
+            dDesc.StencilReadMask = parameters.StencilReadMask;
+
+            _stencilReference = parameters.DepthFrontFace.StencilReference > 0 ? parameters.DepthFrontFace.StencilReference : parameters.DepthBackFace.StencilReference;
+            dDesc.FrontFace = new DepthStencilopDesc()
+            {
+                StencilDepthFailOp = (StencilOp)parameters.DepthFrontFace.DepthFail,
+                StencilFailOp = (StencilOp)parameters.DepthFrontFace.StencilFail,
+                StencilFunc = (ComparisonFunc)parameters.DepthFrontFace.Comparison,
+                StencilPassOp = (StencilOp)parameters.DepthFrontFace.StencilPass,
+            };
+            dDesc.BackFace = new DepthStencilopDesc()
+            {
+                StencilDepthFailOp = (StencilOp)parameters.DepthBackFace.DepthFail,
+                StencilFailOp = (StencilOp)parameters.DepthBackFace.StencilFail,
+                StencilFunc = (ComparisonFunc)parameters.DepthBackFace.Comparison,
+                StencilPassOp = (StencilOp)parameters.DepthBackFace.StencilPass,
+            };
+
+            device.Ptr->CreateDepthStencilState(ref Desc.Value, ref _native);
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd) { }
@@ -20,6 +46,7 @@ namespace Molten.Graphics
         public override void GraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
+            Desc.Dispose();
         }
 
         public override unsafe ID3D11DepthStencilState* NativePtr => _native;

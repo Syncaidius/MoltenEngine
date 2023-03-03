@@ -11,10 +11,38 @@ namespace Molten.Graphics
     {
         internal StructKey<PipelineColorBlendStateCreateInfo> Desc { get; }
 
-        public BlendStateVK(GraphicsDevice device, StructKey<PipelineColorBlendStateCreateInfo> desc) : 
+        public BlendStateVK(GraphicsDevice device, ref GraphicsStateParameters parameters) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
-            Desc = desc;
+            Desc = new StructKey<PipelineColorBlendStateCreateInfo>();
+            ref PipelineColorBlendStateCreateInfo bDesc = ref Desc.Value;
+            bDesc.Flags = PipelineColorBlendStateCreateFlags.None; // See: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPipelineColorBlendStateCreateFlagBits.html
+
+            Color4 blendConsts = parameters.BlendFactor;
+            bDesc.SType = StructureType.PipelineColorBlendStateCreateInfo;
+            bDesc.BlendConstants[0] = blendConsts.R;
+            bDesc.BlendConstants[1] = blendConsts.G;
+            bDesc.BlendConstants[2] = blendConsts.B;
+            bDesc.BlendConstants[3] = blendConsts.A;
+            bDesc.LogicOp = parameters.Surface0.LogicOp.ToApi();
+            bDesc.LogicOpEnable = parameters.Surface0.LogicOpEnable;
+            bDesc.AttachmentCount = GraphicsStateParameters.MAX_SURFACES;
+            bDesc.PAttachments = EngineUtil.AllocArray<PipelineColorBlendAttachmentState>(bDesc.AttachmentCount);
+
+            for (uint i = 0; i < bDesc.AttachmentCount; i++)
+            {
+                ref PipelineColorBlendAttachmentState at = ref bDesc.PAttachments[i];
+                GraphicsStateParameters.SurfaceBlend sBlend = parameters[i];
+
+                at.BlendEnable = sBlend.BlendEnable;
+                at.SrcColorBlendFactor = sBlend.SrcBlend.ToApi();
+                at.DstColorBlendFactor = sBlend.DestBlend.ToApi();
+                at.ColorBlendOp = sBlend.BlendOp.ToApi();
+                at.SrcAlphaBlendFactor = sBlend.SrcBlendAlpha.ToApi();
+                at.DstAlphaBlendFactor = sBlend.DestBlendAlpha.ToApi();
+                at.AlphaBlendOp = sBlend.BlendOpAlpha.ToApi();
+                at.ColorWriteMask = sBlend.RenderTargetWriteMask.ToApi();
+            }
         }
 
         public override void GraphicsRelease()
