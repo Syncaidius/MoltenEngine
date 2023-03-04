@@ -75,25 +75,50 @@ namespace Molten.Graphics
             public ColorWriteFlags RenderTargetWriteMask;
         }
 
+        /// <summary>
+        /// The blend state for the output surface at slot 0, if any.
+        /// </summary>
         public SurfaceBlend Surface0;
 
+        /// <summary>
+        /// The blend state for the output surface at slot 1, if any.
+        /// </summary>
         public SurfaceBlend Surface1;
 
+        /// <summary>
+        /// The blend state for the output surface at slot 2, if any.
+        /// </summary>
         public SurfaceBlend Surface2;
 
+        /// <summary>
+        /// The blend state for the output surface at slot 3, if any.
+        /// </summary>
         public SurfaceBlend Surface3;
 
+        /// <summary>
+        /// The blend state for the output surface at slot 4, if any.
+        /// </summary>
         public SurfaceBlend Surface4;
 
+        /// <summary>
+        /// The blend state for the output surface at slot 5, if any.
+        /// </summary>
         public SurfaceBlend Surface5;
 
+        /// <summary>
+        /// The blend state for the output surface at slot 6, if any.
+        /// </summary>
         public SurfaceBlend Surface6;
 
+        /// <summary>
+        /// The blend state for the output surface at slot 7, if any.
+        /// </summary>
         public SurfaceBlend Surface7;
 
-        public GraphicsStateParameters(GraphicsStatePreset preset)
+        public GraphicsStateParameters(GraphicsStatePreset preset, PrimitiveTopology topology)
         {
             ApplyPreset(preset);
+            Topology = topology;
         }
 
         #region Blend parameters

@@ -6,11 +6,9 @@
         <iterations value="1"/>
         <vertex value="VS"/>
         <fragment value="PS" />
-        <blend preset="Default" />
-        <rasterizer preset="NoCulling" />
         <state preset="default" rasterizer="NoCulling">
             <IsDepthEnabled value="true"/>
-            <DepthWriteEnabled value="All"/>
+            <DepthWriteEnabled value="true"/>
             <WritePermission value="ReadOnly"/>
             <DepthComparison value="LessEqual"/>
         </state>

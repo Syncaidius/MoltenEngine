@@ -10,8 +10,7 @@
         {
             // Use the default preset's Surface0 blend description.
             GraphicsStatePreset preset = GraphicsStatePreset.Default;
-            GraphicsStateParameters gsp = new GraphicsStateParameters(preset);
-            ref GraphicsStateParameters.SurfaceBlend rtBlend = ref gsp.Surface0;
+            GraphicsStateParameters gsp = new GraphicsStateParameters(preset, PrimitiveTopology.Triangle);
 
             if(node.Values.TryGetValue(ShaderHeaderValueType.Preset, out string presetValue))
             {
@@ -19,8 +18,6 @@
                 {
                     if (preset != GraphicsStatePreset.Default)
                         gsp.ApplyPreset(preset);
-
-                    rtBlend = ref gsp.Surface0;
                 }
                 else
                 {
@@ -55,19 +52,16 @@
                     InvalidEnumMessage<DepthStencilPreset>(context, (node.Name, depthValue), "depth-stencil preset");
             }
 
-            // Check for slot ID value
-            int slotID = 0;
-            if(node.Values.TryGetValue(ShaderHeaderValueType.SlotID, out string slotValue))
-            {
-                if (!int.TryParse(slotValue, out slotID))
-                    InvalidValueMessage(context, (node.Name, slotValue), "Slot ID", slotValue);
-            }
-
             ParseFields(node, context, ref gsp);
-            gsp.IndependentBlendEnable = (gsp.IndependentBlendEnable || (slotID > 0));
-
-            // Update RT blend description on main description.
-            gsp[slotID] = rtBlend;
+            gsp.IndependentBlendEnable = false;
+            for(int i = 0; i < GraphicsStateParameters.MAX_SURFACES; i++)
+            {
+                if (gsp[i].BlendEnable && i > 0)
+                {
+                    gsp.IndependentBlendEnable = true;
+                    break;
+                }
+            }
 
             switch (foundation)
             {

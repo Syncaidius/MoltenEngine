@@ -29,7 +29,7 @@ namespace Molten.Graphics
         {
             OnInitialize();
 
-            GraphicsStateParameters defaultParams = new GraphicsStateParameters(GraphicsStatePreset.Default);
+            GraphicsStateParameters defaultParams = new GraphicsStateParameters(GraphicsStatePreset.Default, PrimitiveTopology.Triangle);
             DefaultState = CreateState(ref defaultParams);
 
             GraphicsSamplerParameters samplerParams = new GraphicsSamplerParameters(SamplerPreset.Default);
@@ -112,9 +112,9 @@ namespace Molten.Graphics
             return result;
         }
 
-        public GraphicsState CreateState(GraphicsStatePreset preset)
+        public GraphicsState CreateState(GraphicsStatePreset preset, PrimitiveTopology topology = PrimitiveTopology.Triangle)
         {
-            GraphicsStateParameters parameters = new GraphicsStateParameters(preset);
+            GraphicsStateParameters parameters = new GraphicsStateParameters(preset, topology);
             return CreateState(ref parameters);
         }
 
