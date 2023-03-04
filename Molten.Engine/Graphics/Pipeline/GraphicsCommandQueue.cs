@@ -54,7 +54,7 @@
         /// <param name="vertexStartIndex">The vertex to start drawing from.</param>
         /// <param name="topology">The primitive topology to use when drawing with a NULL vertex buffer. 
         /// Vertex buffers always override this when applied.</param>
-        public abstract GraphicsBindResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0);
+        public abstract GraphicsBindResult Draw(Material material, uint vertexCount, uint vertexStartIndex = 0);
 
         /// <summary>Draw instanced, unindexed primitives. </summary>
         /// <param name="material">The <see cref="Material"/> to apply when drawing.</param>
@@ -66,7 +66,6 @@
         public abstract GraphicsBindResult DrawInstanced(Material material,
             uint vertexCountPerInstance,
             uint instanceCount,
-            VertexTopology topology,
             uint vertexStartIndex = 0,
             uint instanceStartIndex = 0);
 
@@ -78,7 +77,6 @@
         /// <param name="topology">The toplogy to apply when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
         public abstract GraphicsBindResult DrawIndexed(Material material,
             uint indexCount,
-            VertexTopology topology,
             int vertexIndexOffset = 0,
             uint startIndex = 0);
 
@@ -93,7 +91,6 @@
         public abstract GraphicsBindResult DrawIndexedInstanced(Material material,
             uint indexCountPerInstance,
             uint instanceCount,
-            VertexTopology topology,
             uint startIndex = 0,
             int vertexIndexOffset = 0,
             uint instanceStartIndex = 0);

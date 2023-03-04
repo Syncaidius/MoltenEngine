@@ -89,12 +89,12 @@ namespace Molten.Graphics
             uint pointCount = scene.PointLights.ElementCount * 2;
 
             cmd.BeginDraw(StateConditions.None); // TODO expand use of conditions here
-            cmd.Draw(_matPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
+            cmd.Draw(_matPoint, pointCount, 0);
             cmd.EndDraw();
 
             // Draw debug light volumes
             cmd.BeginDraw(StateConditions.Debug);
-            cmd.Draw(_matDebugPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
+            cmd.Draw(_matDebugPoint, pointCount, 0);
             cmd.EndDraw();
         }
     }

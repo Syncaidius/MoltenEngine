@@ -1,85 +1,131 @@
 ﻿namespace Molten.Graphics
 {
-    /// <summary>
-    /// Represents the layout of a primitive. Shares value parity with D3D_PRIMITIVE from the DirectX SDK.
-    /// <param>See: https://learn.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive</param>
-    /// </summary>
     public enum PrimitiveTopology
     {
+        ///<Summary>No Documentation</Summary>    
         Undefined = 0,
 
+        ///<Summary>A point list.</Summary>     
         Point = 1,
 
+        ///<Summary>A line list.</Summary>   
         Line = 2,
 
-        Triangle = 3,
+        ///<Summary>A line strip.</Summary>       
+        LineStrip = 3,
 
-        LineAdj = 6,
+        ///<Summary>A triangle list.</Summary>       
+        Triangle = 4,
 
-        TriangleAdj = 7,
+        ///<Summary>No Documentation</Summary>
+        TriangleStrip = 5,
 
-        Control1PointPatch = 8,
+        ///<Summary>No Documentation</Summary> 
+        LineListWithAdjacency = 10,
 
-        Control2PointPatch = 9,
+        ///<Summary>No Documentation</Summary>
+        LineStripWithAdjacency = 11,
 
-        Control3PointPatch = 10,
+        ///<Summary>No Documentation</Summary>
+        TriangleListWithAdjacency = 12,
 
-        Control4PointPatch = 11,
+        ///<Summary>No Documentation</Summary>
+        TriangleStripWithAdjacency = 13,
 
-        Control5PointPatch = 12,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith1ControlPoint = 33,
 
-        Control6PointPatch = 13,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith2ControlPoints = 34,
 
-        Control7PointPatch = 14,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith3ControlPoints = 35,
 
-        Control8PointPatch = 0xF,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith4ControlPoints = 36,
 
-        Control9PointPatch = 0x10,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith5ControlPoints = 37,
 
-        Control10PointPatch = 17,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith6ControlPoints = 38,
 
-        Control11PointPatch = 18,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith7ControlPoints = 39,
 
-        Control12PointPatch = 19,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith8ControlPoints = 40,
 
-        Control13PointPatch = 20,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith9ControlPoints = 41,
 
-        Control14PointPatch = 21,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith10ControlPoints = 42,
 
-        Control15PointPatch = 22,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith11ControlPoints = 43,
 
-        Control16PointPatch = 23,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith12ControlPoints = 44,
 
-        Control17PointPatch = 24,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith13ControlPoints = 45,
 
-        Control18PointPatch = 25,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith14ControlPoints = 46,
 
-        Control19PointPatch = 26,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith15ControlPoints = 47,
 
-        Control20PointPatch = 27,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith16ControlPoints = 48,
 
-        Control21PointPatch = 28,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith17ControlPoints = 49,
 
-        Control22PointPatch = 29,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith18ControlPoints = 50,
 
-        Control23PointPatch = 30,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith19ControlPoints = 51,
 
-        Control24PointPatch = 0x1F,
+        ///<Summary>No Documentation</Summary>
+        PatchListWith20ControlPoints = 52,
 
-        Control25PointPatch = 0x20,
+        ///<Summary>No Documentation</Summary>   
+        PatchListWith21ControlPoints = 53,
 
-        Control26PointPatch = 33,
+        ///<Summary>No Documentation</Summary>     
+        PatchListWith22ControlPoints = 54,
 
-        Control27PointPatch = 34,
+        ///<Summary>No Documentation</Summary>     
+        PatchListWith23ControlPoints = 55,
 
-        Control28PointPatch = 35,
+        ///<Summary>No Documentation</Summary>       
+        PatchListWith24ControlPoints = 56,
 
-        Control29PointPatch = 36,
+        ///<Summary>No Documentation</Summary>       
+        PatchListWith25ControlPoints = 57,
 
-        Control30PointPatch = 37,
+        ///<Summary>No Documentation</Summary>  
+        PatchListWith26ControlPoints = 58,
 
-        Control31PointPatch = 38,
+        ///<Summary>No Documentation</Summary>  
+        PatchListWith27ControlPoints = 59,
 
-        Control32PointPatch = 39,
+        ///<Summary>No Documentation</Summary>     
+        PatchListWith28ControlPoints = 60,
+
+        ///<Summary>No Documentation</Summary>    
+        PatchListWith29ControlPoints = 61,
+
+        ///<Summary>No Documentation</Summary>    
+        PatchListWith30ControlPoints = 62,
+
+        ///<Summary>No Documentation</Summary>    
+        PatchListWith31ControlPoints = 63,
+
+        ///<Summary>No Documentation</Summary>      
+        PatchListWith32ControlPoints = 64
     }
 }

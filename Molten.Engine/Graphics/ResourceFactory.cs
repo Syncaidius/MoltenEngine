@@ -106,7 +106,7 @@ namespace Molten.Graphics
         /// <param name="topology"></param>
         /// <param name="dynamic"></param>
         /// <returns></returns>
-        public Mesh<GBufferVertex> CreateMesh(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false)
+        public Mesh<GBufferVertex> CreateMesh(uint maxVertices, PrimitiveTopology topology = PrimitiveTopology.Triangle, bool dynamic = false)
         {
             return new StandardMesh(_renderer, maxVertices, topology, dynamic);
         }
@@ -119,7 +119,7 @@ namespace Molten.Graphics
         /// <param name="topology"></param>
         /// <param name="dynamic"></param>
         /// <returns></returns>
-        public Mesh<T> CreateMesh<T>(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false)
+        public Mesh<T> CreateMesh<T>(uint maxVertices, PrimitiveTopology topology = PrimitiveTopology.Triangle, bool dynamic = false)
             where T : unmanaged, IVertexType
         {
             return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
@@ -136,7 +136,7 @@ namespace Molten.Graphics
         /// <param name="dynamic"></param>
         /// <returns></returns>
         public InstancedMesh<V, I> CreateInstancedMesh<V, I>(uint maxVertices,
-            uint maxInstances, VertexTopology topology = VertexTopology.TriangleList,
+            uint maxInstances, PrimitiveTopology topology = PrimitiveTopology.Triangle,
             bool dynamic = false)
             where V : unmanaged, IVertexType
             where I : unmanaged, IVertexInstanceType

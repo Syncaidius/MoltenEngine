@@ -8,7 +8,9 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS" />
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest">
+            <Topology>Point</Topology>
+        </state>
     </pass>
 </material>
 
@@ -22,7 +24,9 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS_NoTexture"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest">
+            <Topology>Point</Topology>
+        </state>
     </pass>
 </material>
 
@@ -36,7 +40,9 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS_Circle"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest">
+            <Topology>Point</Topology>
+        </state>
     </pass>
 </material>
 
@@ -50,7 +56,9 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS_Circle_NoTex"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest">
+            <Topology>Point</Topology>
+        </state>
     </pass>
 </material>
 
@@ -64,7 +72,9 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS_Line"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest">
+            <Topology>Point</Topology>
+        </state>
     </pass>
 </material>
 
@@ -78,7 +88,9 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS_Grid"/>
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest">
+            <Topology>Point</Topology>
+        </state>
     </pass>
 </material>
 

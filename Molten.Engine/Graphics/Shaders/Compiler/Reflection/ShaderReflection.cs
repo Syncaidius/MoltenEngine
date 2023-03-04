@@ -19,7 +19,7 @@
         /// <summary>
         /// Gets the primitive topology that is expected as input for the geometry shader stage.
         /// </summary>
-        public PrimitiveTopology GSInputPrimitive;
+        public GeometryHullTopology GSInputPrimitive;
 
         public List<ShaderResourceInfo> BoundResources { get; } = new List<ShaderResourceInfo>();
 

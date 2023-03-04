@@ -569,7 +569,7 @@ namespace Molten.Graphics
                 cmd.SetScissorRectangles(range.Clip);
 
                 mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-                cmd.Draw(mat, range.VertexCount, VertexTopology.PointList);
+                cmd.Draw(mat, range.VertexCount);
                 bufferOffset += range.VertexCount;
             }
         }

@@ -6,8 +6,8 @@ using Silk.NET.Maths;
 
 namespace Molten.Graphics
 {
-    internal delegate void ContextDrawCallback(MaterialPass pass);
-    internal delegate void ContextDrawFailCallback(MaterialPass pass, uint iteration, uint passNumber, GraphicsBindResult result);
+    internal delegate void CmdQueueDrawCallback();
+    internal delegate void CmdQueueDrawFailCallback(MaterialPass pass, PipelineStateDX11 passState, uint iteration, uint passNumber, GraphicsBindResult result);
 
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="CommandQueueDX11"/>.</summary>
     public unsafe partial class CommandQueueDX11 : GraphicsCommandQueue
@@ -26,7 +26,7 @@ namespace Molten.Graphics
         ShaderCSStage _cs;
          GraphicsSlot<ComputeTask> _compute;
 
-        VertexTopology _boundTopology;
+        D3DPrimitiveTopology _boundTopology;
         GraphicsSlot<VertexInputLayout> _vertexLayout;
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 
@@ -174,19 +174,20 @@ namespace Molten.Graphics
         }
 
         private GraphicsBindResult ApplyState(MaterialPass pass,
-            QueueValidationMode mode,
-            VertexTopology topology)
+            QueueValidationMode mode)
         {
-            if (topology == VertexTopology.Undefined)
+            PipelineStateDX11 dxState = pass.State as PipelineStateDX11;
+
+            if (dxState.Topology == D3DPrimitiveTopology.D3D11PrimitiveTopologyUndefined)
                 return GraphicsBindResult.UndefinedTopology;
 
             bool matChanged = Material.Bind();
 
             // Check topology
-            if (_boundTopology != topology)
+            if (_boundTopology != dxState.Topology)
             {
-                _boundTopology = topology;
-                Native->IASetPrimitiveTopology(_boundTopology.ToApi());
+                _boundTopology = dxState.Topology;
+                Native->IASetPrimitiveTopology(_boundTopology);
             }
 
             Span<bool> stageChanged = stackalloc bool[_shaderStages.Length];
@@ -321,8 +322,8 @@ namespace Molten.Graphics
                 _debugAnnotation->SetMarker(ptr);
         }
 
-        private GraphicsBindResult DrawCommon(Material mat, QueueValidationMode mode, VertexTopology topology, 
-            ContextDrawCallback drawCallback, ContextDrawFailCallback failCallback)
+        private GraphicsBindResult DrawCommon(Material mat, QueueValidationMode mode, 
+            CmdQueueDrawCallback drawCallback, CmdQueueDrawFailCallback failCallback)
         {
             GraphicsBindResult vResult = GraphicsBindResult.Successful;
 
@@ -339,14 +340,14 @@ namespace Molten.Graphics
                 {
                     BeginEvent($"Iteration {i} - Pass {j} call");
                     MaterialPass pass = mat.Passes[j];
-                    vResult = ApplyState(pass, mode, topology);
+                    vResult = ApplyState(pass, mode);
 
                     if (vResult == GraphicsBindResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
                         for (int k = 0; k < pass.Iterations; k++)
                         {                                
-                            drawCallback(pass);
+                            drawCallback();
                             (Device as DeviceDX11).ProcessDebugLayerMessages();
                             Profiler.Current.DrawCalls++;
                         }
@@ -356,7 +357,7 @@ namespace Molten.Graphics
                     else
                     {
                         EndEvent();
-                        failCallback(pass, i, j, vResult);
+                        failCallback(pass, pass.State as PipelineStateDX11, i, j, vResult);
                         (Device as DeviceDX11).ProcessDebugLayerMessages();
                         break;
                     }
@@ -367,17 +368,14 @@ namespace Molten.Graphics
             return vResult;
         }
 
-        public override GraphicsBindResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
+        public override GraphicsBindResult Draw(Material material, uint vertexCount, uint vertexStartIndex = 0)
         {
-            return DrawCommon(material, QueueValidationMode.Unindexed, topology, (pass) =>
-            {
-                _context->Draw(vertexCount, vertexStartIndex);
-            },
-            (pass, iteration, passNumber, vResult) =>
+            return DrawCommon(material, QueueValidationMode.Unindexed, () => _context->Draw(vertexCount, vertexStartIndex),
+            (pass, passState, iteration, passNumber, vResult) =>
             {
                 Device.Log.Warning($"Draw() call failed with result: {vResult} -- " + 
                     $"Iteration: M{iteration}/{material.Iterations}P{passNumber}/{material.PassCount} -- " +
-                    $"Material: {material.Name} -- Topology: {topology} -- VertexCount: { vertexCount}");
+                    $"Material: {material.Name} -- Topology: {passState.Topology} -- VertexCount: { vertexCount}");
             });
         }
 
@@ -385,38 +383,31 @@ namespace Molten.Graphics
         public override GraphicsBindResult DrawInstanced(Material material,
             uint vertexCountPerInstance,
             uint instanceCount,
-            VertexTopology topology,
             uint vertexStartIndex = 0,
             uint instanceStartIndex = 0)
         {
-            return DrawCommon(material, QueueValidationMode.Instanced, topology, (pass) =>
-            {
-                _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
-            },
-            (pass, iteration, passNum, vResult) =>
+            return DrawCommon(material, QueueValidationMode.Instanced, () => 
+            _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex),
+            (pass, passState, iteration, passNum, vResult) =>
             {
                 Device.Log.Warning($"DrawInstanced() call failed with result: {vResult} -- " + 
                         $"Iteration: M{iteration}/{material.Iterations}-P{passNum}/{material.PassCount} -- Material: {material.Name} -- " +
-                        $"Topology: {topology} -- VertexCount: { vertexCountPerInstance} -- Instances: {instanceCount}");
+                        $"Topology: {passState.Topology} -- VertexCount: { vertexCountPerInstance} -- Instances: {instanceCount}");
             });
         }
 
         /// <inheritdoc/>
         public override GraphicsBindResult DrawIndexed(Material material,
             uint indexCount,
-            VertexTopology topology,
             int vertexIndexOffset = 0,
             uint startIndex = 0)
         {
-            return DrawCommon(material, QueueValidationMode.Indexed, topology, (pass) =>
-            {
-                _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset);
-            },
-            (pass, it, passNum, vResult) =>
+            return DrawCommon(material, QueueValidationMode.Indexed, () => _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset),
+            (pass, passState, it, passNum, vResult) =>
             {
                 Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
-                    $" -- Material: {material.Name} -- Topology: {topology} -- indexCount: { indexCount}");
+                    $" -- Material: {material.Name} -- Topology: {passState.Topology} -- indexCount: { indexCount}");
             });
         }
 
@@ -424,21 +415,20 @@ namespace Molten.Graphics
         public override GraphicsBindResult DrawIndexedInstanced(Material material,
             uint indexCountPerInstance,
             uint instanceCount,
-            VertexTopology topology,
             uint startIndex = 0,
             int vertexIndexOffset = 0,
             uint instanceStartIndex = 0)
         {
-            return DrawCommon(material, QueueValidationMode.InstancedIndexed, topology, (pass) =>
+            return DrawCommon(material, QueueValidationMode.InstancedIndexed, () =>
             {
                 _context->DrawIndexedInstanced(indexCountPerInstance, instanceCount,
                     startIndex, vertexIndexOffset, instanceStartIndex);
             },
-            (pass, it, passNum, vResult) =>
+            (pass, passState, it, passNum, vResult) =>
             {
                 Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
-                    $" -- Material: {material.Name} -- Topology: {topology} -- Indices-per-instance: { indexCountPerInstance}");
+                    $" -- Material: {material.Name} -- Topology: {passState.Topology} -- Indices-per-instance: { indexCountPerInstance}");
             });
         }
 

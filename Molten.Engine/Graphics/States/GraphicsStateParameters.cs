@@ -293,6 +293,9 @@ namespace Molten.Graphics
 
         [ShaderNode(ShaderNodeParseType.UInt32)]
         public uint ForcedSampleCount;
+
+        [ShaderNode(ShaderNodeParseType.Enum)]
+        public PrimitiveTopology Topology;
         #endregion
     }
 }

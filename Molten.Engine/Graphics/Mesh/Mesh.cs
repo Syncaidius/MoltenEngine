@@ -13,11 +13,10 @@
         /// <param name="maxVertices"></param>
         /// <param name="topology"></param>
         /// <param name="isDynamic"></param>
-        protected Mesh(RenderService renderer, uint maxVertices, VertexTopology topology, bool isDynamic) : base(renderer)
+        protected Mesh(RenderService renderer, uint maxVertices, PrimitiveTopology topology, bool isDynamic) : base(renderer)
         {
             _indexFormat = IndexBufferFormat.None;
             MaxVertices = maxVertices;
-            Topology = topology;
             IsDynamic = isDynamic;
         }
 
@@ -105,9 +104,9 @@
         protected virtual void OnDraw(GraphicsCommandQueue cmd)
         {
             if(_iBuffer != null)
-                cmd.DrawIndexed(Material, IndexCount, Topology);
+                cmd.DrawIndexed(Material, IndexCount);
             else
-                cmd.Draw(Material, VertexCount, Topology);
+                cmd.Draw(Material, VertexCount);
         }
 
         protected override sealed void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
@@ -146,9 +145,6 @@
 
         public uint IndexCount { get; private set; }
 
-        /// <summary>Gets the topology/structure of the mesh's data (e.g. line, triangles list/strip, etc).</summary>
-        public VertexTopology Topology { get; }
-
         /// <summary>
         /// Gets or sets the material that should be used when rendering the current <see cref="Mesh"/>.
         /// </summary>
@@ -164,7 +160,7 @@
     {
         private protected IGraphicsBufferSegment _vb;
 
-        internal Mesh(RenderService renderer, uint maxVertices, VertexTopology topology, bool isDynamic) :
+        internal Mesh(RenderService renderer, uint maxVertices, PrimitiveTopology topology, bool isDynamic) :
             base(renderer, maxVertices, topology, isDynamic)
         {
             IGraphicsBuffer vBuffer = isDynamic ? Renderer.DynamicVertexBuffer : Renderer.StaticVertexBuffer;

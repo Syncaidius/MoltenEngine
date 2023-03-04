@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
@@ -26,6 +27,8 @@ namespace Molten.Graphics
 
             DepthState = new DepthStateDX11(device, ref parameters);
             DepthState = device.CacheObject(DepthState.Desc, DepthState);
+
+            Topology = parameters.Topology.ToApi();
         }
 
         public override void GraphicsRelease() { }
@@ -37,5 +40,7 @@ namespace Molten.Graphics
         internal RasterizerStateDX11 RasterizerState { get; }
 
         internal BlendStateDX11 BlendState { get; }
+
+        internal D3DPrimitiveTopology Topology { get; }
     }
 }

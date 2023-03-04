@@ -30,12 +30,12 @@ namespace Molten.Graphics
             return (InputClassification)type;
         }
 
-        public static D3DPrimitiveTopology ToApi(this VertexTopology type)
+        public static D3DPrimitiveTopology ToApi(this PrimitiveTopology type)
         {
             return (D3DPrimitiveTopology)type;
         }
 
-        public static D3DPrimitive ToApi(this PrimitiveTopology type)
+        public static D3DPrimitive ToApi(this GeometryHullTopology type)
         {
             return (D3DPrimitive)type;
         }
@@ -93,14 +93,14 @@ namespace Molten.Graphics
             return (VertexInputType)type;
         }
 
-        public static VertexTopology FromApi(this D3DPrimitiveTopology topology)
-        {
-            return (VertexTopology)topology;
-        }
-
-        public static PrimitiveTopology FromApi(this D3DPrimitive topology)
+        public static PrimitiveTopology FromApi(this D3DPrimitiveTopology topology)
         {
             return (PrimitiveTopology)topology;
+        }
+
+        public static GeometryHullTopology FromApi(this D3DPrimitive topology)
+        {
+            return (GeometryHullTopology)topology;
         }
 
         public static ShaderResourceDimension FromApi(this D3DSrvDimension dimension)

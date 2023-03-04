@@ -2,7 +2,7 @@
 {
     public class StandardMesh : Mesh<GBufferVertex>
     {
-        internal StandardMesh(RenderService renderer, uint maxVertices, VertexTopology topology, bool dynamic) :
+        internal StandardMesh(RenderService renderer, uint maxVertices, PrimitiveTopology topology, bool dynamic) :
             base(renderer, maxVertices, topology, dynamic)
         { }
 

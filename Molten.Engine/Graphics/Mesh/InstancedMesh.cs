@@ -15,7 +15,7 @@ namespace Molten.Graphics
     public class InstancedMesh<V> : InstancedMesh<V, InstanceData>
         where V : unmanaged, IVertexType
     {
-        internal InstancedMesh(RenderService renderer, uint maxVertices, VertexTopology topology, uint numInstances, bool isDynamic) :
+        internal InstancedMesh(RenderService renderer, uint maxVertices, PrimitiveTopology topology, uint numInstances, bool isDynamic) :
             base(renderer, maxVertices, topology, numInstances, isDynamic)
         { }
     }
@@ -39,7 +39,7 @@ namespace Molten.Graphics
         internal InstancedMesh(
             RenderService renderer, 
             uint maxVertices, 
-            VertexTopology topology, 
+            PrimitiveTopology topology, 
             uint numInstances, 
             bool isDynamic) : 
             base(renderer, maxVertices, topology, isDynamic)
@@ -82,9 +82,9 @@ namespace Molten.Graphics
         protected override void OnDraw(GraphicsCommandQueue cmd)
         {
             if (MaxIndices > 0)
-                cmd.DrawIndexedInstanced(Material, IndexCount, _instanceCount, Topology);
+                cmd.DrawIndexedInstanced(Material, IndexCount, _instanceCount);
             else
-                cmd.DrawInstanced(Material, VertexCount, _instanceCount, Topology, 0, 0);
+                cmd.DrawInstanced(Material, VertexCount, _instanceCount, 0, 0);
         }
 
         protected override bool OnBatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)

@@ -29,13 +29,13 @@ namespace Molten.Graphics
             return comp;
         }
 
-        internal GraphicsBindResult ValidateInput(VertexTopology topology)
+        internal GraphicsBindResult ValidateInput(PrimitiveTopology topology)
         {
             GraphicsBindResult result = GraphicsBindResult.Successful;
 
             if (_compositions.TryGetValue(ShaderType.Hull, out ShaderComposition hs))
             {
-                if (topology < VertexTopology.PatchListWith1ControlPoint)
+                if (topology < PrimitiveTopology.PatchListWith1ControlPoint)
                     result |= GraphicsBindResult.HullPatchTopologyExpected;
             }
 
@@ -86,7 +86,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets or sets the type of geometry shader primitives to output.
         /// </summary>
-        public PrimitiveTopology GeometryPrimitive { get; set; }
+        public GeometryHullTopology GeometryPrimitive { get; set; }
 
         /// <summary>Gets or sets whether or not the pass will be run.</summary>
         /// <value>
