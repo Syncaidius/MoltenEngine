@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -130,7 +131,7 @@ namespace Molten.Graphics
                             break;
 
                         default:
-                            if (c.ChildNodes.Count > 0)
+                            if (cNode.ChildNodes.Count > 0)
                                 hNode.ChildNodes.Add(cNode);
                             else
                                 hNode.ChildValues.Add((cName, cValue));
@@ -279,7 +280,18 @@ namespace Molten.Graphics
 
                     case ShaderNodeParseType.Enum:
                         if (EngineUtil.TryParseEnum(pBind.Info.FieldType, c.Value, out object enumValue))
-                            pBind.Info.SetValue(stateObject, enumValue);
+                        {
+                            if (stateObject.GetType().IsValueType)
+                            {
+                                object tmp = (object)stateObject;
+                                pBind.Info.SetValue(tmp, enumValue);
+                                stateObject = (T)tmp;
+                            }
+                            else
+                            {
+                                pBind.Info.SetValue(stateObject, enumValue);
+                            }
+                        }
                         else
                             InvalidEnumMessage<GraphicsDepthWritePermission>(context, c, pBind.Info.Name);
                         break;

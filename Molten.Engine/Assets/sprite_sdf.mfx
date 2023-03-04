@@ -8,7 +8,9 @@
         <vertex value="VS"/>
         <geometry value="GS"/>
         <fragment value="PS_MSDF" />
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest"/>
+        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest">
+            <topology>point</topology>
+        </state>
 	</pass>
 </material>
 
