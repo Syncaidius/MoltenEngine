@@ -16,6 +16,7 @@ namespace Molten.Graphics
         DepthStateVK _depthState;
         RasterizerStateVK _rasterizerState;
         DynamicStateVK _dynamicState;
+        InputAssemblyStateVK _inputState;
 
         internal PipelineStateVK(DeviceVK device, ref GraphicsStateParameters parameters) : 
             base(device)
@@ -30,6 +31,9 @@ namespace Molten.Graphics
 
             _rasterizerState = new RasterizerStateVK(device, ref parameters);
             _rasterizerState = device.CacheObject(_rasterizerState.Desc, _rasterizerState);
+
+            _inputState = new InputAssemblyStateVK(device, ref parameters);
+            _inputState = device.CacheObject(_inputState.Desc, _inputState);
 
             DynamicState[] dynamics = new DynamicState[]
             {
@@ -46,7 +50,6 @@ namespace Molten.Graphics
             pInfo.Flags = PipelineCreateFlags.None;
 
             pInfo.PMultisampleState = null;                         // TODO initialize
-            pInfo.PInputAssemblyState = null;                       // TODO initialize
             pInfo.Layout = new PipelineLayout();                    // TODO initialize
             pInfo.BasePipelineIndex = 0;                            // TODO initialize
             pInfo.BasePipelineHandle = new Pipeline();              // TODO initialize
@@ -62,6 +65,7 @@ namespace Molten.Graphics
             pInfo.PRasterizationState = _rasterizerState.Desc;
             pInfo.PDepthStencilState = _depthState.Desc;
             pInfo.PDynamicState = _dynamicState.Desc;
+            pInfo.PInputAssemblyState = _inputState.Desc;
         }
 
         public override void GraphicsRelease()
