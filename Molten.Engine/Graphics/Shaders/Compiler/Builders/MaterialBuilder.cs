@@ -40,10 +40,10 @@ namespace Molten.Graphics
             }
 
             // Proceed to compiling each material pass.
-            MaterialPassCompileResult firstPassResult = null;
+            PassCompileResult firstPassResult = null;
             foreach (MaterialPass pass in material.Passes)
             {
-                MaterialPassCompileResult passResult = CompilePass(context, pass);
+                PassCompileResult passResult = CompilePass(context, pass);
                 firstPassResult = firstPassResult ?? passResult;
 
                 if (context.HasErrors)
@@ -78,11 +78,11 @@ namespace Molten.Graphics
             return result;
         }
 
-        private MaterialPassCompileResult CompilePass(
+        private PassCompileResult CompilePass(
             ShaderCompilerContext context,
             MaterialPass pass)
         {
-            MaterialPassCompileResult result = new MaterialPassCompileResult(pass);
+            PassCompileResult result = new PassCompileResult(pass);
 
             // Compile each stage of the material pass.
             foreach(ShaderComposition sc in pass)
@@ -129,9 +129,9 @@ namespace Molten.Graphics
 
         private void BuildPassStructure(
             ShaderCompilerContext context, 
-            MaterialPassCompileResult pResult)
+            PassCompileResult pResult)
         {
-            MaterialPass pass = pResult.Pass;
+            MaterialPass pass = pResult.Pass as MaterialPass;
             Material material = pass.Material;
 
             foreach (ShaderType type in pResult.Results.Keys)

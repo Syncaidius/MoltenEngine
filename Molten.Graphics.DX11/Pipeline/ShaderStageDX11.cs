@@ -30,21 +30,21 @@ namespace Molten.Graphics
                 for (int i = 0; i < composition.ConstBufferIds.Count; i++)
                 {
                     uint slotID = composition.ConstBufferIds[i];
-                    ConstantBuffers[slotID].Value = composition.Parent.ConstBuffers[slotID] as ShaderConstantBuffer;
+                    ConstantBuffers[slotID].Value = composition.Pass.Parent.ConstBuffers[slotID] as ShaderConstantBuffer;
                 }
 
                 // Apply pass resources to slots
                 for (int i = 0; i < composition.ResourceIds.Count; i++)
                 {
                     uint slotID = composition.ResourceIds[i];
-                    Resources[slotID].Value = composition.Parent.Resources[slotID]?.Resource as GraphicsResourceDX11;
+                    Resources[slotID].Value = composition.Pass.Parent.Resources[slotID]?.Resource as GraphicsResourceDX11;
                 }
 
                 // Apply pass samplers to slots
                 for (int i = 0; i < composition.SamplerIds.Count; i++)
                 {
                     uint slotID = composition.SamplerIds[i];
-                    Samplers[slotID].Value = composition.Parent.SamplerVariables[slotID]?.Sampler as ShaderSamplerDX11;
+                    Samplers[slotID].Value = composition.Pass.Parent.SamplerVariables[slotID]?.Sampler as ShaderSamplerDX11;
                 }
 
                 Samplers.BindAll();

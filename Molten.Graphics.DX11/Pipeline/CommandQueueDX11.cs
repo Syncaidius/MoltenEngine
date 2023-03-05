@@ -1,4 +1,5 @@
-﻿using Molten.IO;
+﻿using System;
+using Molten.IO;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
@@ -178,8 +179,6 @@ namespace Molten.Graphics
             if (pass.Topology == D3DPrimitiveTopology.D3D11PrimitiveTopologyUndefined)
                 return GraphicsBindResult.UndefinedTopology;
 
-            bool matChanged = Material.Bind();
-
             // Check topology
             if (_boundTopology != pass.Topology)
             {
@@ -321,13 +320,20 @@ namespace Molten.Graphics
                 throw new GraphicsCommandQueueException(this, $"{nameof(CommandQueueDX11)}: BeginDraw() must be called before calling {nameof(Draw)}()");
 
             Material.Value = mat;
+            bool matChanged = Material.Bind();
 
             // Re-render the same material for mat.Iterations.
             BeginEvent($"Draw '{mode}' Call");
             for (uint j = 0; j < mat.Passes.Length; j++)
             {
-                BeginEvent($"Pass {j}");
                 MaterialPassDX11 pass = mat.Passes[j] as MaterialPassDX11;
+                if (!pass.IsEnabled)
+                {
+                    SetMarker("Skip disabled pass");
+                    continue;
+                }
+
+                BeginEvent($"Pass {j}");
                 vResult = ApplyState(pass, mode);
 
                 if (vResult == GraphicsBindResult.Successful)
@@ -422,57 +428,55 @@ namespace Molten.Graphics
         /// <inheritdoc/>
         public override void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
         {
-            bool csChanged = Bind(task);
-
-            if (_cs.Shader.BoundValue == null)
-            {
-                return;
-            }
-            else
-            {
-                ComputeCapabilities comCap = Device.Adapter.Capabilities.Compute;
-
-                if (groupsZ > comCap.MaxGroupCountZ)
-                {
-                    Device.Log.Error($"Unable to dispatch compute shader. Z dimension ({groupsZ}) is greater than supported ({comCap.MaxGroupCountZ}).");
-                    return;
-                }
-                else if (groupsX > comCap.MaxGroupCountX)
-                {
-                    Device.Log.Error($"Unable to dispatch compute shader. X dimension ({groupsX}) is greater than supported ({comCap.MaxGroupCountX}).");
-                    return;
-                }
-                else if (groupsY > comCap.MaxGroupCountY)
-                {
-                    Device.Log.Error($"Unable to dispatch compute shader. Y dimension ({groupsY}) is greater than supported ({comCap.MaxGroupCountY}).");
-                    return;
-                }
-
-                // TODO have this processed during the presentation call of each graphics context.
-                // 
-                Native->Dispatch(groupsX, groupsY, groupsZ);
-            }
-        }
-
-        public bool Bind(ComputeTask task)
-        {
             _compute.Value = task;
-            _compute.Bind();
-            _cs.Shader.Value = _compute.BoundValue.Composition;
+            bool taskChanged = _compute.Bind();
 
-            bool csChanged = _cs.Bind();
-
-            if (_cs.Shader.BoundValue != null)
+            BeginEvent($"Compute Dispatch '{task.Name}'");
+            for (uint i = 0; i < task.Passes.Length; i++)
             {
-                // Apply unordered acces views to slots
-                for (int i = 0; i < _cs.Shader.BoundValue.UnorderedAccessIds.Count; i++)
+                ComputePass pass = task.Passes[i];
+                _cs.Shader.Value = pass.Composition;
+                bool csChanged = _cs.Bind();
+
+                if (_cs.Shader.BoundValue != null)
                 {
-                    uint slotID = _cs.Shader.BoundValue.UnorderedAccessIds[i];
-                    _cs.UAVs[slotID].Value = _compute.BoundValue.UAVs[slotID]?.UnorderedResource as GraphicsResourceDX11;
+                    // Apply unordered acces views to slots
+                    for (int j = 0; j < _cs.Shader.BoundValue.UnorderedAccessIds.Count; j++)
+                    {
+                        uint slotID = _cs.Shader.BoundValue.UnorderedAccessIds[j];
+                        _cs.UAVs[slotID].Value = _compute.BoundValue.UAVs[slotID]?.UnorderedResource as GraphicsResourceDX11;
+                    }
+                }
+
+                if (_cs.Shader.BoundValue == null)
+                {
+                    return;
+                }
+                else
+                {
+                    ComputeCapabilities comCap = Device.Adapter.Capabilities.Compute;
+
+                    if (groupsZ > comCap.MaxGroupCountZ)
+                    {
+                        Device.Log.Error($"Unable to dispatch compute shader. Z dimension ({groupsZ}) is greater than supported ({comCap.MaxGroupCountZ}).");
+                        return;
+                    }
+                    else if (groupsX > comCap.MaxGroupCountX)
+                    {
+                        Device.Log.Error($"Unable to dispatch compute shader. X dimension ({groupsX}) is greater than supported ({comCap.MaxGroupCountX}).");
+                        return;
+                    }
+                    else if (groupsY > comCap.MaxGroupCountY)
+                    {
+                        Device.Log.Error($"Unable to dispatch compute shader. Y dimension ({groupsY}) is greater than supported ({comCap.MaxGroupCountY}).");
+                        return;
+                    }
+
+                    // TODO have this processed during the presentation call of each graphics context.
+                    // 
+                    Native->Dispatch(groupsX, groupsY, groupsZ);
                 }
             }
-
-            return csChanged;
         }
 
         public override void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count)

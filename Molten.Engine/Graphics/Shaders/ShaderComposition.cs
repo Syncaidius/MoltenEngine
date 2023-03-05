@@ -23,10 +23,10 @@
 
         void* _ptrShader;
 
-        internal ShaderComposition(HlslShader parentShader, ShaderType type) : 
-            base(parentShader.Device, GraphicsBindTypeFlags.Input)
+        internal ShaderComposition(HlslPass parentPass, ShaderType type) : 
+            base(parentPass.Device, GraphicsBindTypeFlags.Input)
         {
-            Parent = parentShader;
+            Pass = parentPass;
             Type = type;
         }
 
@@ -40,6 +40,6 @@
             internal set => _ptrShader = value;
         }
 
-        public HlslShader Parent { get; }
+        public HlslPass Pass { get; }
     }
 }

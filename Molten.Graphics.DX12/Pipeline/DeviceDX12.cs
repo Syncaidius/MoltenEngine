@@ -34,12 +34,17 @@ namespace Molten.Graphics
             _qDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         }
 
+        protected override GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters)
+        {
+            throw new NotImplementedException();
+        }
+
         public override MaterialPass CreateMaterialPass(Material material, string name = null)
         {
             throw new NotImplementedException();
         }
 
-        protected override GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters)
+        public override ComputePass CreateComputePass(ComputeTask task, string name = null)
         {
             throw new NotImplementedException();
         }

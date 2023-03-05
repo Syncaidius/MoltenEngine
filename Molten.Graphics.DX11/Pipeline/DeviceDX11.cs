@@ -157,6 +157,11 @@ namespace Molten.Graphics
             return new MaterialPassDX11(material, name);
         }
 
+        public override ComputePass CreateComputePass(ComputeTask task, string name = null)
+        {
+            return new ComputePassDX11(task, name);
+        }
+
         public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0)
         {
             // Translate to bind flags

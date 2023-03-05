@@ -1,8 +1,8 @@
 ﻿namespace Molten.Graphics
 {
-    public unsafe class MaterialPassCompileResult
+    public unsafe class PassCompileResult
     {
-        public MaterialPassCompileResult(MaterialPass pass)
+        public PassCompileResult(HlslPass pass)
         {
             Pass = pass;
             Results = new Dictionary<ShaderType, ShaderCodeResult>();
@@ -23,6 +23,6 @@
 
         public Dictionary<ShaderType, ShaderCodeResult> Results { get; }
 
-        public MaterialPass Pass { get; }
+        public HlslPass Pass { get; }
     }
 }

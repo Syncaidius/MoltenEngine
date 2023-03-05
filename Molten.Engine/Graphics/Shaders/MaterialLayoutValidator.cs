@@ -10,11 +10,11 @@
                 ShaderType.Pixel};
 
         public bool Validate(ShaderCompilerContext context,
-            MaterialPassCompileResult pResult)
+            PassCompileResult pResult)
         {
             // Stage order reference: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476882(v=vs.85).aspx
             bool valid = true;
-            MaterialPass pass = pResult.Pass;
+            MaterialPass pass = pResult.Pass as MaterialPass;
             ShaderComposition prevStage = null;
             ShaderComposition curStage = null;
 
@@ -23,12 +23,12 @@
                 // Nothing to compare yet, continue.
                 if (prevStage == null)
                 {
-                    prevStage = pResult.Pass[_validationIndex[i]];
+                    prevStage = pass[_validationIndex[i]];
                     continue;
                 }
 
                 // No shader to compare. Go to next shader stage.
-                curStage = pResult.Pass[_validationIndex[i]];
+                curStage = pass[_validationIndex[i]];
                 if (curStage == null)
                     continue;
 
@@ -73,7 +73,7 @@
 
         private bool CheckTessellationShaders(
             ShaderCompilerContext context,
-            MaterialPassCompileResult pResult)
+            PassCompileResult pResult)
         {
             bool valid = true;
             ShaderCodeResult hs = pResult[ShaderType.Hull];
@@ -93,7 +93,7 @@
             return valid;
         }
 
-        private bool CheckGeometryTessellationAdjacency(MaterialPassCompileResult pResult)
+        private bool CheckGeometryTessellationAdjacency(PassCompileResult pResult)
         {
             bool valid = true;
             ShaderCodeResult geometryRef = pResult[ShaderType.Geometry];
@@ -107,8 +107,9 @@
                 * see: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476340%28v=vs.85%29.aspx
                 * quote: "A geometry shader that expects primitives with adjacency (for example, 6 vertices per triangle) is 
                 * not valid when tessellation is active (this results in undefined behavior, which the debug layer will complain about)."*/
-            valid = pResult.Pass.GeometryPrimitive == GeometryHullTopology.LineAdj ||
-                pResult.Pass.GeometryPrimitive == GeometryHullTopology.TriangleAdj;
+            MaterialPass pass = pResult.Pass as MaterialPass;
+            valid = pass.GeometryPrimitive == GeometryHullTopology.LineAdj ||
+                pass.GeometryPrimitive == GeometryHullTopology.TriangleAdj;
 
             return valid;
         }

@@ -10,7 +10,7 @@ namespace Molten.Graphics
         public unsafe void* InputByteCode;
 
         public MaterialPass(Material material, string name) :
-            base(material.Device)
+            base(material)
         {
             _parent = material;
             Name = name;
@@ -38,7 +38,7 @@ namespace Molten.Graphics
         {
             if (!_compositions.TryGetValue(type, out ShaderComposition comp))
             {
-                comp = new ShaderComposition(_parent, type);
+                comp = new ShaderComposition(this, type);
                 _compositions.Add(type, comp);
             }
 
@@ -110,7 +110,5 @@ namespace Molten.Graphics
         /// </summary>
         [ShaderNode(ShaderNodeParseType.Enum)]
         public GraphicsDepthWritePermission WritePermission { get; set; } = GraphicsDepthWritePermission.Enabled;
-
-        public bool IsInitialized { get; private set; }
     }
 }

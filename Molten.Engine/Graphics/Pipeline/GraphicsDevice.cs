@@ -97,6 +97,12 @@ namespace Molten.Graphics
         public abstract MaterialPass CreateMaterialPass(Material material, string name = null);
 
         /// <summary>
+        /// Requests a new <see cref="ComputePass"/> from the current <see cref="GraphicsDevice"/>.
+        /// </summary>
+        /// <returns></returns>
+        public abstract ComputePass CreateComputePass(ComputeTask task, string name = null);
+
+        /// <summary>
         /// Requests a new <see cref="GraphicsSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
         /// </summary>
         /// <param name="parameters">The parameters to use when creating the new <see cref="GraphicsSampler"/>.</param>

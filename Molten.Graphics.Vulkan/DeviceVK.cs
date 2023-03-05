@@ -64,6 +64,11 @@ namespace Molten.Graphics
             return new MaterialPassVK(material, name);
         }
 
+        public override ComputePass CreateComputePass(ComputeTask task, string name = null)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters)
         {
             throw new NotImplementedException();

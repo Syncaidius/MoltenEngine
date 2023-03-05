@@ -638,16 +638,16 @@ namespace Molten.Graphics
             switch (type)
             {
                 case ShaderType.Compute:
-                    if (parent is ComputeTask cTask)
-                        cTask.InputByteCode = byteCode;
+                    if (parent is ComputePass cPass)
+                        cPass.InputByteCode = byteCode;
 
                     ID3D11ComputeShader* csShader = null;
                     device.Ptr->CreateComputeShader(ptrBytecode, numBytes, null, &csShader);
                     return csShader;
 
                 case ShaderType.Vertex:
-                    if (parent is MaterialPass pass)
-                        pass.InputByteCode = byteCode;
+                    if (parent is MaterialPass mPass)
+                        mPass.InputByteCode = byteCode;
 
                     ID3D11VertexShader* vsShader = null;
                     device.Ptr->CreateVertexShader(ptrBytecode, numBytes, null, &vsShader);

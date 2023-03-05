@@ -75,4 +75,40 @@
             }
         }
     }
+
+    public abstract class HlslShader<T> : HlslShader
+        where T : HlslPass
+    {
+        T[] _passes = new T[0];
+
+        protected HlslShader(GraphicsDevice device, string filename = null) :
+            base(device, filename)
+        { }
+
+        public void AddPass(T pass)
+        {
+            int id = 0;
+            if (_passes == null)
+            {
+                _passes = new T[1];
+            }
+            else
+            {
+                id = _passes.Length;
+                Array.Resize(ref _passes, _passes.Length + 1);
+            }
+
+            _passes[id] = pass;
+        }
+
+        public override void GraphicsRelease()
+        {
+            for (int i = 0; i < _passes.Length; i++)
+                _passes[i].Dispose();
+
+            base.OnDispose();
+        }
+
+        public T[] Passes => _passes;
+    }
 }
