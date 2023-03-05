@@ -21,7 +21,7 @@ namespace Molten.Content
                 ShaderCompileResult r = handle.Manager.Engine.Renderer.Resources.CompileShaders(ref source, handle.RelativePath);
                 foreach (ShaderCodeType classType in r.ShaderGroups.Keys)
                 {
-                    List<HlslElement> list = r.ShaderGroups[classType];
+                    List<HlslGraphicsObject> list = r.ShaderGroups[classType];
 
                     // Temp solution to limitation of new content manager.
                     partAsset = list[0];

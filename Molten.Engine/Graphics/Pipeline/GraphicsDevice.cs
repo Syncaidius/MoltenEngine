@@ -29,9 +29,6 @@ namespace Molten.Graphics
         {
             OnInitialize();
 
-            GraphicsStateParameters defaultParams = new GraphicsStateParameters(GraphicsStatePreset.Default, PrimitiveTopology.Triangle);
-            DefaultState = CreateState(ref defaultParams);
-
             GraphicsSamplerParameters samplerParams = new GraphicsSamplerParameters(SamplerPreset.Default);
             DefaultSampler = CreateSampler(ref samplerParams);
         }
@@ -94,29 +91,10 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Requests a new <see cref="GraphicsState"/> from the current <see cref="GraphicsDevice"/>.
+        /// Requests a new <see cref="MaterialPass"/> from the current <see cref="GraphicsDevice"/>.
         /// </summary>
         /// <returns></returns>
-        public GraphicsState CreateState(ref GraphicsStateParameters parameters)
-        {
-            StructKey<GraphicsStateParameters> key = new StructKey<GraphicsStateParameters>(ref parameters);
-            GraphicsState newState = OnCreateState(ref parameters);
-            GraphicsState result = CacheObject(key, newState);
-
-            if (result != newState)
-            {
-                newState.Dispose();
-                key.Dispose();
-            }
-
-            return result;
-        }
-
-        public GraphicsState CreateState(GraphicsStatePreset preset, PrimitiveTopology topology = PrimitiveTopology.Triangle)
-        {
-            GraphicsStateParameters parameters = new GraphicsStateParameters(preset, topology);
-            return CreateState(ref parameters);
-        }
+        public abstract MaterialPass CreateMaterialPass(Material material, string name = null);
 
         /// <summary>
         /// Requests a new <see cref="GraphicsSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
@@ -137,8 +115,6 @@ namespace Molten.Graphics
 
             return result;
         }
-
-        protected abstract GraphicsState OnCreateState(ref GraphicsStateParameters parameters);
 
         protected abstract GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters);
 
@@ -190,8 +166,6 @@ namespace Molten.Graphics
         /// The main <see cref="GraphicsCommandQueue"/> of the current <see cref="GraphicsDevice"/>. This is used for issuing immediate commands to the GPU.
         /// </summary>
         public abstract GraphicsCommandQueue Cmd { get; }
-
-        public GraphicsState DefaultState { get; private set; }
 
         public GraphicsSampler DefaultSampler { get; private set; }
     }

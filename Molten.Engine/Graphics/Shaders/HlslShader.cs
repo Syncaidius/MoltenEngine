@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract class HlslShader : HlslElement
+    public abstract class HlslShader : HlslGraphicsObject
     {
         public IConstantBuffer[] ConstBuffers = new IConstantBuffer[0];
         public ShaderResourceVariable[] Resources = new ShaderResourceVariable[0];
@@ -16,7 +16,7 @@
         public string Filename { get; }
 
         protected HlslShader(GraphicsDevice device, string filename = null) : 
-            base(device)
+            base(device, GraphicsBindTypeFlags.Input)
         {
             Filename = filename ?? "";
         }

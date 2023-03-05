@@ -18,7 +18,7 @@ namespace Molten.Graphics
 
         ConcurrentDictionary<string, ShaderSource> _sources;
         Dictionary<ShaderNodeType, ShaderNodeParser> _nodeParsers;
-        List<ShaderCodeCompiler> _classCompilers;
+        List<ShaderCodeCompiler> _codeCompilers;
 
         Assembly _defaultIncludeAssembly;
         string _defaultIncludePath;
@@ -36,7 +36,7 @@ namespace Molten.Graphics
             _defaultIncludeAssembly = includeAssembly;
 
             _nodeParsers = new Dictionary<ShaderNodeType, ShaderNodeParser>();
-            _classCompilers = new List<ShaderCodeCompiler>()
+            _codeCompilers = new List<ShaderCodeCompiler>()
             {
                 new MaterialBuilder(),
                 new ComputeBuilder(),
@@ -112,7 +112,7 @@ namespace Molten.Graphics
             int originalLineCount = source.Split(_newLineSeparator, StringSplitOptions.None).Length;
 
             // Check the source for all supportead class types.
-            foreach (ShaderCodeCompiler scc in _classCompilers)
+            foreach (ShaderCodeCompiler scc in _codeCompilers)
             {
                 List<string> classHeaders = scc.GetHeaders(in source);
                 if (classHeaders.Count > 0)
@@ -146,7 +146,7 @@ namespace Molten.Graphics
                 List<string> nodeHeaders = headers[classCompiler];
                 foreach (string header in nodeHeaders)
                 {
-                    List<HlslElement> parseResult = classCompiler.Build(context, Renderer, in header);
+                    List<HlslGraphicsObject> parseResult = classCompiler.Build(context, Renderer, in header);
                     if (parseResult != null)
                         context.Result.AddResult(classCompiler.ClassType, parseResult);
                     else
@@ -188,7 +188,7 @@ namespace Molten.Graphics
             return null;
         }
 
-        public void ParserHeader(HlslElement shader, in string header, ShaderCompilerContext context)
+        public void ParserHeader(HlslGraphicsObject shader, in string header, ShaderCompilerContext context)
         {
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(header);
@@ -197,7 +197,7 @@ namespace Molten.Graphics
             ParseNode(shader, rootNode, context);
         }
 
-        public void ParseNode(HlslElement shader, XmlNode parentNode, ShaderCompilerContext context)
+        public void ParseNode(HlslGraphicsObject shader, XmlNode parentNode, ShaderCompilerContext context)
         {
             foreach (XmlNode node in parentNode.ChildNodes)
             {
@@ -344,7 +344,7 @@ namespace Molten.Graphics
             }
         }
 
-        public unsafe abstract void* BuildShader(HlslElement parent, ShaderType type, void* byteCode);
+        public unsafe abstract void* BuildShader(HlslGraphicsObject parent, ShaderType type, void* byteCode);
 
         public RenderService Renderer { get; }
 

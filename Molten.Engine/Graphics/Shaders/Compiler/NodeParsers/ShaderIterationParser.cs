@@ -1,12 +1,10 @@
 ﻿namespace Molten.Graphics
 {
-    internal class ShaderIterationParser : ShaderNodeParser
+    internal class ShaderIterationParser : ShaderNodeParser<HlslPass>
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Iterations;
 
-        public override Type[] TypeFilter => null;
-
-        protected override void OnParse(HlslElement foundation, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(HlslPass foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string iterationValue))
             {

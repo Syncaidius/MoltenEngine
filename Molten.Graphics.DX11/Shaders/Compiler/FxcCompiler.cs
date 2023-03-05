@@ -452,7 +452,7 @@ namespace Molten.Graphics
 
         private void OnBuildVariableStructure(
             ShaderCompilerContext context,
-            HlslElement shader, ShaderCodeResult result, ShaderResourceInfo info)
+            HlslGraphicsObject shader, ShaderCodeResult result, ShaderResourceInfo info)
         {
             ComputeTask ct = shader as ComputeTask;
             if (ct == null)
@@ -628,7 +628,7 @@ namespace Molten.Graphics
             return bVar;
         }
 
-        public override unsafe void* BuildShader(HlslElement parent, ShaderType type, void* byteCode)
+        public override unsafe void* BuildShader(HlslGraphicsObject parent, ShaderType type, void* byteCode)
         {
             ID3D10Blob* dx11ByteCode = (ID3D10Blob*)byteCode;
             void* ptrBytecode = dx11ByteCode->GetBufferPointer();

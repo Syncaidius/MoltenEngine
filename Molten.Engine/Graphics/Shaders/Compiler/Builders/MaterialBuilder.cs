@@ -9,10 +9,10 @@ namespace Molten.Graphics
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
         ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
 
-        public override List<HlslElement> Build(ShaderCompilerContext context,
+        public override List<HlslGraphicsObject> Build(ShaderCompilerContext context,
             RenderService renderer, in string header)
         {
-            List<HlslElement> result = new List<HlslElement>();
+            List<HlslGraphicsObject> result = new List<HlslGraphicsObject>();
             Material material = new Material(renderer.Device, context.Source.Filename);
 
             try
@@ -53,21 +53,10 @@ namespace Molten.Graphics
             // No issues arose, lets add it to the result
             if (!context.HasErrors)
             {
-                // Set the material's default state. This will be used by passes that are missing a state.
-                if (material.DefaultState == null)
-                {
-                    if (material.PassCount > 0)
-                        material.DefaultState = material.Passes[0].State ?? material.Device.DefaultState;
-                    else
-                        material.DefaultState = material.Device.DefaultState;
-                } 
-
-                for (int i = 0; i < material.Samplers.Length; i++)
-                    material.Samplers[i] = material.Samplers[i] ?? material.Device.DefaultSampler;
-
                 foreach (MaterialPass pass in material.Passes)
                 {
-                    pass.State = pass.State ?? material.DefaultState;
+                    if (!pass.IsInitialized)
+                        pass.InitializeState(GraphicsStatePreset.Default, PrimitiveTopology.Triangle);
 
                     for (int i = 0; i < pass.Samplers.Length; i++)
                         pass.Samplers[i] = pass.Samplers[i] ?? pass.Device.DefaultSampler;

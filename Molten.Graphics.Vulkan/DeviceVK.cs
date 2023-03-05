@@ -59,14 +59,14 @@ namespace Molten.Graphics
             return _loader.GetExtension<E>();
         }
 
+        public override MaterialPass CreateMaterialPass(Material material, string name = null)
+        {
+            return new MaterialPassVK(material, name);
+        }
+
         protected override GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters)
         {
             throw new NotImplementedException();
-        }
-
-        protected override GraphicsState OnCreateState(ref GraphicsStateParameters parameters)
-        {
-            return new PipelineStateVK(this, ref parameters);
         }
 
         internal bool Initialize()

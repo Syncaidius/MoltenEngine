@@ -33,7 +33,7 @@ namespace Molten.Graphics
         /// <param name="renderer"></param>
         /// <param name="header"></param>
         /// <returns></returns>
-        public abstract List<HlslElement> Build(ShaderCompilerContext context, RenderService renderer, in string header);
+        public abstract List<HlslGraphicsObject> Build(ShaderCompilerContext context, RenderService renderer, in string header);
 
         /// <summary>
         /// Gets the type of shader that the current <see cref="ShaderCodeCompiler"/> is meant to build.

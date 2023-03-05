@@ -4,11 +4,11 @@
     {
         public override ShaderCodeType ClassType => ShaderCodeType.Compute;
 
-        public override List<HlslElement> Build(
+        public override List<HlslGraphicsObject> Build(
             ShaderCompilerContext context, 
             RenderService renderer, in string header)
         {
-            List<HlslElement> shaders = new List<HlslElement>();
+            List<HlslGraphicsObject> shaders = new List<HlslGraphicsObject>();
 
             ComputeTask compute = new ComputeTask(renderer.Device, context.Source.Filename);
             try

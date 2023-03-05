@@ -6,10 +6,7 @@
 
         protected override void OnParse(Material mat, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            MaterialPass pass = new MaterialPass(mat, "<Unnamed Material Pass>");
-
-            for (int i = 0; i < mat.Samplers.Length; i++)
-                pass.Samplers[i] = mat.Samplers[i];
+            MaterialPass pass = mat.Device.CreateMaterialPass(mat, "<Unnamed Material Pass>");
 
             context.Compiler.ParseNode(pass, node.OriginalNode, context);
             mat.AddPass(pass);

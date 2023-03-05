@@ -152,9 +152,9 @@ namespace Molten.Graphics
             return new ShaderSamplerDX11(this, ref parameters);
         }
 
-        protected override GraphicsState OnCreateState(ref GraphicsStateParameters parameters)
+        public override MaterialPass CreateMaterialPass(Material material, string name = null)
         {
-            return new PipelineStateDX11(this, ref parameters);
+            return new MaterialPassDX11(material, name);
         }
 
         public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0)

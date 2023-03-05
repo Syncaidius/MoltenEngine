@@ -1,10 +1,10 @@
 ﻿namespace Molten.Graphics
 {
-    internal class SamplerNodeParser : StateNodeParser
+    internal class SamplerNodeParser : ShaderNodeParser<HlslPass>
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Sampler;
 
-        protected override void OnParse(HlslElement foundation, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(HlslPass pass, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             GraphicsSamplerParameters parameters = new GraphicsSamplerParameters();
             SamplerPreset preset = SamplerPreset.Default;
@@ -29,15 +29,15 @@
             // Initialize shader state bank for the sampler if needed.
             // TODO This should be automatic based on the highest sampler slot read in shader reflection.
             //      All samplers should be initialized to defaults beforehand.
-            if (slotID >= foundation.Samplers.Length)
+            if (slotID >= pass.Samplers.Length)
             {
-                int oldLength = foundation.Samplers.Length;
-                Array.Resize(ref foundation.Samplers, slotID + 1);
-                for (int i = oldLength; i < foundation.Samplers.Length; i++)
-                    foundation.Samplers[i] = foundation.Samplers[0];
+                int oldLength = pass.Samplers.Length;
+                Array.Resize(ref pass.Samplers, slotID + 1);
+                for (int i = oldLength; i < pass.Samplers.Length; i++)
+                    pass.Samplers[i] = pass.Samplers[0];
             }
 
-            foundation.Samplers[slotID] = foundation.Device.CreateSampler(ref parameters);
+            pass.Samplers[slotID] = pass.Device.CreateSampler(ref parameters);
         }
     }
 }

@@ -246,8 +246,6 @@ where B : GraphicsSlotBinder<T>, new()
 
         public GraphicsSlot<Material> Material { get; protected set; }
 
-        public GraphicsSlot<GraphicsState> State { get; protected set; }
-
         public GraphicsSlotGroup<IRenderSurface2D> Surfaces { get; protected set; }
     }
 }

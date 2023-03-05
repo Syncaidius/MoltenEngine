@@ -7,7 +7,7 @@ using Silk.NET.Maths;
 namespace Molten.Graphics
 {
     internal delegate void CmdQueueDrawCallback();
-    internal delegate void CmdQueueDrawFailCallback(MaterialPass pass, PipelineStateDX11 passState, uint iteration, uint passNumber, GraphicsBindResult result);
+    internal delegate void CmdQueueDrawFailCallback(MaterialPassDX11 pass, uint passNumber, GraphicsBindResult result);
 
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="CommandQueueDX11"/>.</summary>
     public unsafe partial class CommandQueueDX11 : GraphicsCommandQueue
@@ -80,7 +80,6 @@ namespace Molten.Graphics
 
             _cs = new ShaderCSStage(this);
 
-            State = RegisterSlot<GraphicsState, StateBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
             _stateBlend = RegisterSlot<BlendStateDX11, BlendBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
             _stateDepth = RegisterSlot<DepthStateDX11, DepthStencilBinder>(GraphicsBindTypeFlags.Input, "Depth-Stencil State", 0);
             _stateRaster = RegisterSlot<RasterizerStateDX11, RasterizerBinder>(GraphicsBindTypeFlags.Input, "Rasterizer State", 0);
@@ -173,20 +172,18 @@ namespace Molten.Graphics
             Profiler.Current.UpdateSubresourceCount++;
         }
 
-        private GraphicsBindResult ApplyState(MaterialPass pass,
+        private GraphicsBindResult ApplyState(MaterialPassDX11 pass,
             QueueValidationMode mode)
         {
-            PipelineStateDX11 dxState = pass.State as PipelineStateDX11;
-
-            if (dxState.Topology == D3DPrimitiveTopology.D3D11PrimitiveTopologyUndefined)
+            if (pass.Topology == D3DPrimitiveTopology.D3D11PrimitiveTopologyUndefined)
                 return GraphicsBindResult.UndefinedTopology;
 
             bool matChanged = Material.Bind();
 
             // Check topology
-            if (_boundTopology != dxState.Topology)
+            if (_boundTopology != pass.Topology)
             {
-                _boundTopology = dxState.Topology;
+                _boundTopology = pass.Topology;
                 Native->IASetPrimitiveTopology(_boundTopology);
             }
 
@@ -221,17 +218,10 @@ namespace Molten.Graphics
                 _vertexLayout.Bind();
             }
 
-            GraphicsDepthWritePermission depthWriteMode = pass.State.WritePermission;
-            State.Value = pass.State as PipelineStateDX11;
-
-            if (State.Bind())
-            {
-                PipelineStateDX11 pState = State.BoundValue as PipelineStateDX11;
-
-                _stateBlend.Value = pState.BlendState;
-                _stateDepth.Value = pState.DepthState;
-                _stateRaster.Value = pState.RasterizerState;
-            }
+            GraphicsDepthWritePermission depthWriteMode = pass.WritePermission;
+            _stateBlend.Value = pass.BlendState;
+            _stateDepth.Value = pass.DepthState;
+            _stateRaster.Value = pass.RasterizerState;
 
             bool bStateChanged = _stateBlend.Bind();
             bool rStateChanged = _stateDepth.Bind();
@@ -334,33 +324,32 @@ namespace Molten.Graphics
 
             // Re-render the same material for mat.Iterations.
             BeginEvent($"Draw '{mode}' Call");
-            for (uint i = 0; i < mat.Iterations; i++)
+            for (uint j = 0; j < mat.Passes.Length; j++)
             {
-                for (uint j = 0; j < mat.PassCount; j++)
+                BeginEvent($"Pass {j}");
+                MaterialPassDX11 pass = mat.Passes[j] as MaterialPassDX11;
+                vResult = ApplyState(pass, mode);
+
+                if (vResult == GraphicsBindResult.Successful)
                 {
-                    BeginEvent($"Iteration {i} - Pass {j} call");
-                    MaterialPass pass = mat.Passes[j];
-                    vResult = ApplyState(pass, mode);
-
-                    if (vResult == GraphicsBindResult.Successful)
+                    // Re-render the same pass for K iterations.
+                    for (int k = 0; k < pass.Iterations; k++)
                     {
-                        // Re-render the same pass for K iterations.
-                        for (int k = 0; k < pass.Iterations; k++)
-                        {                                
-                            drawCallback();
-                            (Device as DeviceDX11).ProcessDebugLayerMessages();
-                            Profiler.Current.DrawCalls++;
-                        }
-
-                        EndEvent();
-                    }
-                    else
-                    {
-                        EndEvent();
-                        failCallback(pass, pass.State as PipelineStateDX11, i, j, vResult);
+                        BeginEvent($"Iteration {k}");
+                        drawCallback();
                         (Device as DeviceDX11).ProcessDebugLayerMessages();
-                        break;
+                        Profiler.Current.DrawCalls++;
+                        EndEvent();
                     }
+
+                    EndEvent();
+                }
+                else
+                {
+                    EndEvent();
+                    failCallback(pass, j, vResult);
+                    (Device as DeviceDX11).ProcessDebugLayerMessages();
+                    break;
                 }
             }
             EndEvent();
@@ -371,11 +360,11 @@ namespace Molten.Graphics
         public override GraphicsBindResult Draw(Material material, uint vertexCount, uint vertexStartIndex = 0)
         {
             return DrawCommon(material, QueueValidationMode.Unindexed, () => _context->Draw(vertexCount, vertexStartIndex),
-            (pass, passState, iteration, passNumber, vResult) =>
+            (pass, passNumber, vResult) =>
             {
                 Device.Log.Warning($"Draw() call failed with result: {vResult} -- " + 
-                    $"Iteration: M{iteration}/{material.Iterations}P{passNumber}/{material.PassCount} -- " +
-                    $"Material: {material.Name} -- Topology: {passState.Topology} -- VertexCount: { vertexCount}");
+                    $"Iteration: P{passNumber}/{material.Passes.Length} -- " +
+                    $"Material: {material.Name} -- Topology: {pass.Topology} -- VertexCount: { vertexCount}");
             });
         }
 
@@ -388,11 +377,11 @@ namespace Molten.Graphics
         {
             return DrawCommon(material, QueueValidationMode.Instanced, () => 
             _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex),
-            (pass, passState, iteration, passNum, vResult) =>
+            (pass, passNum, vResult) =>
             {
                 Device.Log.Warning($"DrawInstanced() call failed with result: {vResult} -- " + 
-                        $"Iteration: M{iteration}/{material.Iterations}-P{passNum}/{material.PassCount} -- Material: {material.Name} -- " +
-                        $"Topology: {passState.Topology} -- VertexCount: { vertexCountPerInstance} -- Instances: {instanceCount}");
+                        $"Pass {passNum}/{material.Passes.Length} -- Material: {material.Name} -- " +
+                        $"Topology: {pass.Topology} -- VertexCount: { vertexCountPerInstance} -- Instances: {instanceCount}");
             });
         }
 
@@ -403,11 +392,10 @@ namespace Molten.Graphics
             uint startIndex = 0)
         {
             return DrawCommon(material, QueueValidationMode.Indexed, () => _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset),
-            (pass, passState, it, passNum, vResult) =>
+            (pass, passNum, vResult) =>
             {
                 Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
-                    $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
-                    $" -- Material: {material.Name} -- Topology: {passState.Topology} -- indexCount: { indexCount}");
+                    $"Pass {passNum}/{material.Passes.Length} -- Material: {material.Name} -- Topology: {pass.Topology} -- indexCount: { indexCount}");
             });
         }
 
@@ -424,11 +412,10 @@ namespace Molten.Graphics
                 _context->DrawIndexedInstanced(indexCountPerInstance, instanceCount,
                     startIndex, vertexIndexOffset, instanceStartIndex);
             },
-            (pass, passState, it, passNum, vResult) =>
+            (pass, passNum, vResult) =>
             {
                 Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
-                    $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
-                    $" -- Material: {material.Name} -- Topology: {passState.Topology} -- Indices-per-instance: { indexCountPerInstance}");
+                    $"Pass {passNum}/{material.Passes.Length} -- Material: {material.Name} -- Topology: {pass.Topology} -- Indices-per-instance: { indexCountPerInstance}");
             });
         }
 

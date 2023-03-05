@@ -34,7 +34,7 @@ namespace Molten.Graphics
             _qDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         }
 
-        protected override GraphicsState OnCreateState(ref GraphicsStateParameters parameters)
+        public override MaterialPass CreateMaterialPass(Material material, string name = null)
         {
             throw new NotImplementedException();
         }

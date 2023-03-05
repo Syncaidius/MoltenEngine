@@ -25,11 +25,8 @@
 
   <ItemGroup>
     <Compile Remove="Renderer\**" />
-    <Compile Remove="Shaders\**" />
     <EmbeddedResource Remove="Renderer\**" />
-    <EmbeddedResource Remove="Shaders\**" />
     <None Remove="Renderer\**" />
-    <None Remove="Shaders\**" />
   </ItemGroup>
 
   <ItemGroup>

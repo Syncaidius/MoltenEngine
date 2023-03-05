@@ -4,7 +4,6 @@ namespace Molten.Graphics
     public class Material : HlslShader
     {
         MaterialPass[] _passes = new MaterialPass[0];
-
         Dictionary<string, MaterialPass> _passesByName;
 
         public Material(GraphicsDevice device, string filename) : base(device, filename)
@@ -46,6 +45,8 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
+        protected override void OnApply(GraphicsCommandQueue cmd) { }
+
         public ObjectMaterialProperties Object { get; set; }
 
         public LightMaterialProperties Light { get; set; }
@@ -56,13 +57,6 @@ namespace Molten.Graphics
 
         public SpriteBatchMaterialProperties SpriteBatch { get; set; }
 
-        public int PassCount => _passes.Length;
-
         public MaterialPass[] Passes => _passes;
-
-        /// <summary>
-        /// The default state to use for passes that were not provided a state.
-        /// </summary>
-        public GraphicsState DefaultState { get; set; }
     }
 }

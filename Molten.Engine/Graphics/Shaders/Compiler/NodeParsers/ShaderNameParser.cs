@@ -6,7 +6,7 @@
 
         public override Type[] TypeFilter => null;
 
-        protected override void OnParse(HlslElement foundation, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(HlslGraphicsObject foundation, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string name))
                 foundation.Name = name;
