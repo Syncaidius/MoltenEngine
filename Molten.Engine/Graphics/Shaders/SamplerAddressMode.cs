@@ -16,8 +16,7 @@
         ///     at 0.0 or 1.0, respectively.</summary>
         Clamp = 3,
 
-        /// <summary>Texture coordinates outside the range [0.0, 1.0] are set to the border color 
-        /// specified in SharpDX.Direct3D11.SamplerStateDescription or HLSL code.</summary>
+        /// <summary>Texture coordinates outside the range [0.0, 1.0] are set to the border color in HLSL code.</summary>
         Border = 4,
 
         /// <summary>Similar to SamplerWrapMode.Mirror and SamplerWrapMode.Clamp. 

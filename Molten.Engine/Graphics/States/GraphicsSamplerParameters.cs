@@ -20,22 +20,21 @@ namespace Molten.Graphics
         [ShaderNode(ShaderNodeParseType.Enum)]
         public SamplerAddressMode AddressW;
 
-        /// <summary>Border color to use if SharpDX.Direct3D11.TextureAddressMode.Border is specified 
+        /// <summary>Border color to use if <see cref="SamplerAddressMode.Border"/> is specified 
         /// for AddressU, AddressV, or AddressW. Range must be between 0.0 and 1.0 inclusive.</summary>
         [ShaderNode(ShaderNodeParseType.Color)]
         public Color4 BorderColor;
 
-        /// <summary>A function that compares sampled data against existing sampled data. 
-        /// The function options are listed in SharpDX.Direct3D11.Comparison.</summary>
+        /// <summary>A function that compares sampled data against existing sampled data.</summary>
         [ShaderNode(ShaderNodeParseType.Enum)]
         public ComparisonMode Comparison;
 
-        /// <summary>Gets or sets the filtering method to use when sampling a texture (see SharpDX.Direct3D11.Filter).</summary>
+        /// <summary>Gets or sets the filtering method to use when sampling a texture.</summary>
         [ShaderNode(ShaderNodeParseType.Enum)]
         public SamplerFilter Filter;
 
-        /// <summary>Clamping value used if SharpDX.Direct3D11.Filter.Anisotropic or SharpDX.Direct3D11.Filter.ComparisonAnisotropic 
-        /// is specified in SamplerFilter. Valid values are between 1 and 16.</summary>
+        /// <summary>Clamping value used if <see cref="SamplerFilter.Anisotropic"/> or 
+        /// <see cref="SamplerFilter.ComparisonAnisotropic"/> is specified in SamplerFilter. Valid values are between 1 and 16.</summary>
         [ShaderNode(ShaderNodeParseType.UInt32)]
         public uint MaxAnisotropy;
 
