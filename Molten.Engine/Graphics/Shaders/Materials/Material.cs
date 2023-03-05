@@ -4,11 +4,10 @@ namespace Molten.Graphics
     public class Material : HlslShader
     {
         MaterialPass[] _passes = new MaterialPass[0];
-        Dictionary<string, MaterialPass> _passesByName;
 
         public Material(GraphicsDevice device, string filename) : base(device, filename)
         {
-            _passesByName = new Dictionary<string, MaterialPass>();
+            
         }
 
         public void AddPass(MaterialPass pass)
@@ -25,16 +24,6 @@ namespace Molten.Graphics
             }
 
             _passes[id] = pass;
-        }
-
-        public MaterialPass GetPass(uint index)
-        {
-            return _passes[index];
-        }
-
-        public MaterialPass GetPass(string name)
-        {
-            return _passesByName[name];
         }
 
         public override void GraphicsRelease()
