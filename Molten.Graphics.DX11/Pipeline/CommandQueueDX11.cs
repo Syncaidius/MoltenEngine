@@ -430,6 +430,11 @@ namespace Molten.Graphics
         {
             _compute.Value = task;
             bool taskChanged = _compute.Bind();
+            if (_compute.BoundValue == null)
+            {
+                Device.Log.Warning($"Cannot dispatch compute task. No task is bound");
+                return;
+            }
 
             BeginEvent($"Compute Dispatch '{task.Name}'");
             for (uint i = 0; i < task.Passes.Length; i++)
@@ -448,34 +453,27 @@ namespace Molten.Graphics
                     }
                 }
 
-                if (_cs.Shader.BoundValue == null)
+                ComputeCapabilities comCap = Device.Adapter.Capabilities.Compute;
+
+                if (groupsZ > comCap.MaxGroupCountZ)
                 {
+                    Device.Log.Error($"Unable to dispatch compute shader. Z dimension ({groupsZ}) is greater than supported ({comCap.MaxGroupCountZ}).");
                     return;
                 }
-                else
+                else if (groupsX > comCap.MaxGroupCountX)
                 {
-                    ComputeCapabilities comCap = Device.Adapter.Capabilities.Compute;
-
-                    if (groupsZ > comCap.MaxGroupCountZ)
-                    {
-                        Device.Log.Error($"Unable to dispatch compute shader. Z dimension ({groupsZ}) is greater than supported ({comCap.MaxGroupCountZ}).");
-                        return;
-                    }
-                    else if (groupsX > comCap.MaxGroupCountX)
-                    {
-                        Device.Log.Error($"Unable to dispatch compute shader. X dimension ({groupsX}) is greater than supported ({comCap.MaxGroupCountX}).");
-                        return;
-                    }
-                    else if (groupsY > comCap.MaxGroupCountY)
-                    {
-                        Device.Log.Error($"Unable to dispatch compute shader. Y dimension ({groupsY}) is greater than supported ({comCap.MaxGroupCountY}).");
-                        return;
-                    }
-
-                    // TODO have this processed during the presentation call of each graphics context.
-                    // 
-                    Native->Dispatch(groupsX, groupsY, groupsZ);
+                    Device.Log.Error($"Unable to dispatch compute shader. X dimension ({groupsX}) is greater than supported ({comCap.MaxGroupCountX}).");
+                    return;
                 }
+                else if (groupsY > comCap.MaxGroupCountY)
+                {
+                    Device.Log.Error($"Unable to dispatch compute shader. Y dimension ({groupsY}) is greater than supported ({comCap.MaxGroupCountY}).");
+                    return;
+                }
+
+                // TODO have this processed during the presentation call of each graphics context.
+                // 
+                Native->Dispatch(groupsX, groupsY, groupsZ);
             }
         }
 

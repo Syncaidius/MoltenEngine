@@ -142,13 +142,13 @@ namespace Molten.Graphics
         public bool IsCompatible(ShaderIOStructure other, int startIndex)
         {
             int count = Math.Min(Metadata.Length - startIndex, other.Metadata.Length);
-            for(int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 int selfIndex = i + startIndex;
                 if (other.Metadata[i].Name != Metadata[selfIndex].Name ||
                             other.Metadata[i].SemanticIndex != Metadata[selfIndex].SemanticIndex)
                 {
-                        return false;
+                    return false;
                 }
             }
 
