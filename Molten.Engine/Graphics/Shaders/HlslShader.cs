@@ -9,10 +9,19 @@
         
         public IShaderResource[] DefaultResources;
 
-        public string Description { get; set; }
+        /// <summary>
+        /// Gets a description of the shader.
+        /// </summary>
+        public string Description { get; internal set; }
 
-        public string Author { get; set; }
+        /// <summary>
+        /// Gets the author of the shader.
+        /// </summary>
+        public string Author { get; internal set; }
 
+        /// <summary>
+        /// Gets the original source filename of the shader, if any.
+        /// </summary>
         public string Filename { get; }
 
         protected HlslShader(GraphicsDevice device, string filename = null) : 
