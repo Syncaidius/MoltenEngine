@@ -22,7 +22,7 @@ namespace Molten.Graphics
         ViewportF[] _nullViewport;
         ID3DUserDefinedAnnotation* _debugAnnotation;
 
-        ContextShaderStage[] _shaderStages;
+        ShaderStageDX11[] _shaderStages;
         ShaderCSStage _cs;
          GraphicsSlot<ComputeTask> _compute;
 
@@ -69,7 +69,7 @@ namespace Molten.Graphics
             Material = RegisterSlot<Material, MaterialBinder>(GraphicsBindTypeFlags.Input, "Material", 0);
             _compute = RegisterSlot<ComputeTask, ComputeTaskBinder>(GraphicsBindTypeFlags.Input, "Compute Task", 0);
 
-            _shaderStages = new ContextShaderStage[]
+            _shaderStages = new ShaderStageDX11[]
             {
                 new ShaderVSStage(this),
                 new ShaderHSStage(this),

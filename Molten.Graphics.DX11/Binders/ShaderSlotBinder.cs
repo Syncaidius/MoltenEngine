@@ -2,9 +2,9 @@
 {
     internal unsafe class ShaderSlotBinder : GraphicsSlotBinder<ShaderComposition>
     {
-        ContextShaderStage _stage;
+        ShaderStageDX11 _stage;
 
-        internal ShaderSlotBinder(ContextShaderStage stage)
+        internal ShaderSlotBinder(ShaderStageDX11 stage)
         {
             _stage = stage;
         }

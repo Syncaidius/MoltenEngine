@@ -3,7 +3,7 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    internal class ShaderVSStage : ContextShaderStage
+    internal class ShaderVSStage : ShaderStageDX11
     {
         public ShaderVSStage(CommandQueueDX11 queue) : base(queue, ShaderType.Vertex)
         {

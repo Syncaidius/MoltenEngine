@@ -4,9 +4,9 @@ namespace Molten.Graphics
 {
     internal unsafe class ResourceGroupBinder : GraphicsGroupBinder<GraphicsResourceDX11>
     {
-        ContextShaderStage _stage;
+        ShaderStageDX11 _stage;
 
-        internal ResourceGroupBinder(ContextShaderStage stage)
+        internal ResourceGroupBinder(ShaderStageDX11 stage)
         {
             _stage = stage;
         }

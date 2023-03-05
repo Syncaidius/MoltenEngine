@@ -4,9 +4,9 @@ namespace Molten.Graphics
 {
     internal unsafe class CBufferGroupBinder : GraphicsGroupBinder<ShaderConstantBuffer>
     {
-        ContextShaderStage _stage;
+        ShaderStageDX11 _stage;
 
-        internal CBufferGroupBinder(ContextShaderStage stage)
+        internal CBufferGroupBinder(ShaderStageDX11 stage)
         {
             _stage = stage;
         }

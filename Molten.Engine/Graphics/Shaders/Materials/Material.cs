@@ -5,10 +5,7 @@ namespace Molten.Graphics
     {
         MaterialPass[] _passes = new MaterialPass[0];
 
-        public Material(GraphicsDevice device, string filename) : base(device, filename)
-        {
-            
-        }
+        public Material(GraphicsDevice device, string filename) : base(device, filename) { }
 
         public void AddPass(MaterialPass pass)
         {
