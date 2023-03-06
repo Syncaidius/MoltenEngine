@@ -100,8 +100,8 @@ namespace Molten.Graphics
                 {
                     result[sc.Type] = cResult;
                     sc.PtrShader = context.Compiler.BuildShader(pass, sc.Type, cResult.ByteCode);
-                    sc.InputStructure = context.Compiler.BuildIO(cResult, ShaderIOStructureType.Input);
-                    sc.OutputStructure = context.Compiler.BuildIO(cResult, ShaderIOStructureType.Output);
+                    sc.InputStructure = context.Compiler.BuildIO(cResult, sc.Type, ShaderIOStructureType.Input);
+                    sc.OutputStructure = context.Compiler.BuildIO(cResult, sc.Type, ShaderIOStructureType.Output);
                 }
                 else
                 {

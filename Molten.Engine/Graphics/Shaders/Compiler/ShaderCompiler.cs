@@ -49,7 +49,7 @@ namespace Molten.Graphics
 
         protected unsafe abstract ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData);
 
-        public abstract ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderIOStructureType type);
+        public abstract ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type);
 
         public abstract bool CompileSource(string entryPoint, ShaderType type,
             ShaderCompilerContext context, out ShaderCodeResult result);

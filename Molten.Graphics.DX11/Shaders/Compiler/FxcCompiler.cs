@@ -248,7 +248,7 @@ namespace Molten.Graphics
             return !context.HasErrors;
         }
 
-        public override ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderIOStructureType type)
+        public override ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type)
         {
             List<ShaderParameterInfo> parameters;
 
@@ -267,7 +267,7 @@ namespace Molten.Graphics
             }
 
             int count = parameters.Count;
-            ShaderIOStructureDX11 structure = new ShaderIOStructureDX11(result, type);
+            ShaderIOStructureDX11 structure = new ShaderIOStructureDX11(result, sType, type);
             return structure;
         }
 

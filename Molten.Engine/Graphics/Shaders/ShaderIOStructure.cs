@@ -42,7 +42,7 @@ namespace Molten.Graphics
         /// <summary>Creates a new instance of <see cref="ShaderIOStructure"/> from reflection info.</summary>
         /// <param name="result">The <see cref="ShaderCodeResult"/> reflection object.</param>
         /// <param name="type">The type of IO structure to build from reflection.param>
-        protected ShaderIOStructure(ShaderCodeResult result, ShaderIOStructureType type)
+        protected ShaderIOStructure(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type)
         {
             List<ShaderParameterInfo> parameters;
 
@@ -61,8 +61,9 @@ namespace Molten.Graphics
             }
 
             uint count = (uint)parameters.Count;
+            bool isVertex = sType == ShaderType.Vertex;
             Metadata = new InputElementMetadata[count];
-            Initialize(count);
+            Initialize(isVertex ? count : 0);
 
             for (int i = 0; i < count; i++)
             {
@@ -116,7 +117,9 @@ namespace Molten.Graphics
                 }
 
                 // Store the element
-                BuildElement(result, type, pInfo, eFormat, i);
+                if(isVertex)
+                    BuildVertexElement(result, type, pInfo, eFormat, i);
+
                 Metadata[i] = new InputElementMetadata()
                 {
                     Name = pInfo.SemanticName,
@@ -126,9 +129,9 @@ namespace Molten.Graphics
             }
         }
 
-        protected abstract void Initialize(uint elementCount);
+        protected abstract void Initialize(uint vertexElementCount);
 
-        protected abstract void BuildElement(ShaderCodeResult result,
+        protected abstract void BuildVertexElement(ShaderCodeResult result,
             ShaderIOStructureType type,
             ShaderParameterInfo pInfo,
             GraphicsFormat format,

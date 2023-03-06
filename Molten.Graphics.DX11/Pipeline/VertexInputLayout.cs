@@ -37,7 +37,7 @@ namespace Molten.Graphics
                 }
 
                 // Collate vertex format elements into layout and set the correct input slot for each element.
-                elements.AddRange((format.Structure as ShaderIOStructureDX11).Elements);
+                elements.AddRange((format.Structure as ShaderIOStructureDX11).VertexElements);
 
                 for (int eID = startID; eID < elements.Count; eID++)
                 {
@@ -55,7 +55,7 @@ namespace Molten.Graphics
             if (elements.Count == 0)
             {
                 VertexFormat nullFormat = device.VertexFormatCache.Get<VertexWithID>();
-                elements.Add((nullFormat.Structure as ShaderIOStructureDX11).Elements[0]);
+                elements.Add((nullFormat.Structure as ShaderIOStructureDX11).VertexElements[0]);
                 IsNullBuffer = true;
             }
 

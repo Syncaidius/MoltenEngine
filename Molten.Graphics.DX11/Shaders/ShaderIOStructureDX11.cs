@@ -5,21 +5,26 @@ namespace Molten.Graphics
 {
     public unsafe class ShaderIOStructureDX11 : ShaderIOStructure
     {
-        internal InputElementDesc[] Elements { get; private set; }
+        internal InputElementDesc[] VertexElements { get; private set; }
 
         public ShaderIOStructureDX11(uint elementCount) : base(elementCount) { }
 
-        public ShaderIOStructureDX11(ShaderCodeResult result, ShaderIOStructureType type) : 
-            base(result, type) { }
+        public ShaderIOStructureDX11(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type) : 
+            base(result, sType, type) { }
 
-        protected override void Initialize(uint elementCount)
+        protected override void Initialize(uint numVertexElements)
         {
-            Elements = new InputElementDesc[elementCount];
+            if(numVertexElements > 0)
+                VertexElements = new InputElementDesc[numVertexElements];
         }
 
-        protected override void BuildElement(ShaderCodeResult result, ShaderIOStructureType type, ShaderParameterInfo pInfo, GraphicsFormat format, int index)
+        protected override void BuildVertexElement(ShaderCodeResult result, ShaderIOStructureType type, ShaderParameterInfo pInfo, GraphicsFormat format, int index)
         {
-            Elements[index] = new InputElementDesc()
+            // Elements is null if the IO is not for a vertex shader input.
+            if (VertexElements == null)
+                return;
+
+            VertexElements[index] = new InputElementDesc()
             {
                 SemanticName = (byte*)pInfo.SemanticNamePtr,
                 SemanticIndex = pInfo.SemanticIndex,
@@ -34,8 +39,8 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             // Dispose of element string pointers, since they were statically-allocated by Silk.NET
-            for (uint i = 0; i < Elements.Length; i++)
-                SilkMarshal.Free((nint)Elements[i].SemanticName);
+            for (uint i = 0; i < VertexElements.Length; i++)
+                SilkMarshal.Free((nint)VertexElements[i].SemanticName);
         }
     }
 }

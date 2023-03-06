@@ -243,7 +243,7 @@ namespace Molten.Graphics
             return blob;
         }
 
-        public override ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderIOStructureType type)
+        public override ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type)
         {
             throw new NotImplementedException();
         }

@@ -39,7 +39,7 @@ namespace Molten.Graphics
                 {
                     ShaderIOStructureDX11 dxStruct = structure as ShaderIOStructureDX11;
 
-                    dxStruct.Elements[index] = new InputElementDesc()
+                    dxStruct.VertexElements[index] = new InputElementDesc()
                     {
                         SemanticName = (byte*)SilkMarshal.StringToPtr(dxStruct.Metadata[index].Name),
                         SemanticIndex = att.SemanticIndex,
