@@ -12,8 +12,26 @@ namespace Molten.Graphics
 
         internal override bool Bind()
         {
-            bool uavChanged = UAVs.BindAll();
-            bool baseChanged =  base.Bind();
+            bool baseChanged = base.Bind();
+            bool uavChanged = false;
+
+            ShaderComposition composition = Shader.BoundValue;
+
+            // Apply unordered acces views to slots
+            if (composition != null)
+            {
+                for (int j = 0; j < composition.UnorderedAccessIds.Count; j++)
+                {
+                    uint slotID = composition.UnorderedAccessIds[j];
+                    UAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.UnorderedResource as GraphicsResourceDX11;
+                }
+
+                uavChanged = UAVs.BindAll();
+            }
+            else
+            {
+                // NOTE Unbind UAVs?
+            }
 
             return uavChanged || baseChanged;
         }

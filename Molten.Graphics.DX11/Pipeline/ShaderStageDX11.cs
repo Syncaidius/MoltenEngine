@@ -53,7 +53,7 @@ namespace Molten.Graphics
             }
             else
             {
-                // Do we unbind stage resources?
+                // NOTE Do we unbind stage resources?
             }
 
             return shaderChanged;

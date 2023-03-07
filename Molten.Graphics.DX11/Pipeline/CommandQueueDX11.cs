@@ -193,14 +193,25 @@ namespace Molten.Graphics
 
             for(int i = 0; i < _shaderStages.Length; i++)
             {
-                ShaderComposition comp = pass[_shaderStages[i].Type];
-                _shaderStages[i].Shader.Value = comp;
+                ShaderComposition composition = pass[_shaderStages[i].Type];
+                _shaderStages[i].Shader.Value = composition;
                 stageChanged[i] = _shaderStages[i].Bind();
+
+                // Set the UAVs needed by each render stage
+                if (composition != null)
+                {
+                    for (int j = 0; j < composition.UnorderedAccessIds.Count; j++)
+                    {
+                        uint slotID = composition.UnorderedAccessIds[j];
+                        _renderUAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.UnorderedResource as GraphicsResourceDX11;
+                    }
+                }
             }
 
             bool vsChanged = stageChanged[0]; // Stage 0 is vertex buffer.
             bool ibChanged = IndexBuffer.Bind();
             bool vbChanged = VertexBuffers.BindAll();
+            bool uavChanged = _renderUAVs.BindAll();
 
             // Check index buffer
             if (ibChanged)
@@ -301,16 +312,6 @@ namespace Molten.Graphics
         {
             _cs.Shader.Value = pass[ShaderType.Compute];
             _cs.Bind();
-
-            if (Shader.BoundValue != null)
-            {
-                // Apply unordered acces views to slots
-                for (int j = 0; j < _cs.Shader.BoundValue.UnorderedAccessIds.Count; j++)
-                {
-                    uint slotID = _cs.Shader.BoundValue.UnorderedAccessIds[j];
-                    _cs.UAVs[slotID].Value = Shader.BoundValue.UAVs[slotID]?.UnorderedResource as GraphicsResourceDX11;
-                }
-            }
 
             Vector3UI groups = DrawInfo.Custom.ComputeGroups;
             if (groups.X == 0)
