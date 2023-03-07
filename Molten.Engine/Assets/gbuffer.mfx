@@ -1,4 +1,4 @@
-<material>
+<shader>
     <name>gbuffer</name>
     <description>Standard deferred rendering g-buffer material.</description>
     <pass>
@@ -8,9 +8,9 @@
         <fragment>PS</fragment>
         <state preset="default"/>
     </pass>
-</material>
+</shader>
 
-<material>
+<shader>
     <name>gbuffer-sans-nmap</name>
     <description>Deferred rendering g-buffer material, without normal mapping.</description>
     <pass>
@@ -20,7 +20,7 @@
         <fragment>PS</fragment>
         <state preset="default"/>
     </pass>
-</material>
+</shader>
 
 #include "gbuffer_common.mfx"
 

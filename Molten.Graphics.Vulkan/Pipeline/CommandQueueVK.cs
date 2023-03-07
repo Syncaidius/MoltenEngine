@@ -28,27 +28,22 @@ namespace Molten.Graphics
             
         }
 
-        public override GraphicsBindResult Draw(Material material, uint vertexCount, uint vertexStartIndex = 0)
+        public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
         {
             throw new NotImplementedException();
         }
 
-        public override GraphicsBindResult DrawInstanced(Material material, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
+        public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
         {
             throw new NotImplementedException();
         }
 
-        public override GraphicsBindResult DrawIndexed(Material material, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
+        public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
         {
             throw new NotImplementedException();
         }
 
-        public override GraphicsBindResult DrawIndexedInstanced(Material material, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
+        public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
         {
             throw new NotImplementedException();
         }

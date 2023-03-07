@@ -7,7 +7,7 @@ namespace Molten.Examples
     [Example("UI Demo", "Demonstrates the usage of various UI elements")]
     public class UIDemo : MoltenExample
     {
-        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hShader;
         ContentLoadHandle _hTexture;
         UIWindow _window1;
         UIWindow _window2;
@@ -32,7 +32,7 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
 
-            _hMaterial = loader.Load<Material>("assets/BasicTexture.mfx");
+            _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
             _hTexture = loader.Load<ITexture2D>("assets/logo_512_bc7.dds", parameters: new TextureParameters()
             {
                 GenerateMipmaps = true,
@@ -48,18 +48,18 @@ namespace Molten.Examples
 
         private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (!_hMaterial.HasAsset())
+            if (!_hShader.HasAsset())
             {
                 Close();
                 return;
             }
 
 
-            Material mat = _hMaterial.Get<Material>();
+            HlslShader shader = _hShader.Get<HlslShader>();
             ITexture2D texture = _hTexture.Get<ITexture2D>();
 
-            mat.SetDefaultResource(texture, 0);
-            TestMesh.Material = mat;
+            shader.SetDefaultResource(texture, 0);
+            TestMesh.Shader = shader;
 
             _window1 = new UIWindow()
             {

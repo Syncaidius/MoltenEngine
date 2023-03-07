@@ -39,12 +39,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override MaterialPass CreateMaterialPass(Material material, string name = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override ComputePass CreateComputePass(ComputeTask task, string name = null)
+        public override HlslPass CreateShaderPass(HlslShader shader, string name = null)
         {
             throw new NotImplementedException();
         }

@@ -19,8 +19,8 @@ namespace Molten.Graphics
         AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
 
         internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
-        internal Material StandardMeshMaterial;
-        internal Material StandardMeshMaterial_NoNormalMap;
+        internal HlslShader FxStandardMesh;
+        internal HlslShader FxStandardMesh_NoNormalMap;
 
         internal IGraphicsBuffer StaticVertexBuffer;
         internal IGraphicsBuffer DynamicVertexBuffer;
@@ -267,7 +267,6 @@ namespace Molten.Graphics
             }
 
             OnInitializeRenderer(settings);
-            Compute = new ComputeManager(Device);
 
             uint maxBufferSize = (uint)ByteMath.FromMegabytes(5.5);
             StaticVertexBuffer = Device.CreateBuffer(GraphicsBufferFlags.Vertex | GraphicsBufferFlags.Index, BufferMode.Default, maxBufferSize);
@@ -285,8 +284,8 @@ namespace Molten.Graphics
         private void LoadDefaultShaders()
         {
             ShaderCompileResult result = Resources.LoadEmbeddedShader("Molten.Assets", "gbuffer.mfx");
-            StandardMeshMaterial = result[ShaderCodeType.Material, "gbuffer"] as Material;
-            StandardMeshMaterial_NoNormalMap = result[ShaderCodeType.Material, "gbuffer-sans-nmap"] as Material;
+            FxStandardMesh = result["gbuffer"];
+            FxStandardMesh_NoNormalMap = result["gbuffer-sans-nmap"];
         }
 
         protected abstract void OnInitializeRenderer(EngineSettings settings);
@@ -388,11 +387,6 @@ namespace Molten.Graphics
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
         /// </summary>
         public abstract ResourceFactory Resources { get; }
-
-        /// <summary>
-        /// Gets the compute manager attached to the current renderer.
-        /// </summary>
-        public ComputeManager Compute { get; private set; }
 
         /// <summary>
         /// Gets a list of all the output <see cref="ISwapChainSurface"/> instances attached to the renderer. These are automatically presented to the graphics device by the renderer, if active.

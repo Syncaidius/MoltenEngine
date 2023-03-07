@@ -9,5 +9,7 @@
         Instanced = 2,
 
         InstancedIndexed = 3,
+
+        Compute = 4,
     }
 }

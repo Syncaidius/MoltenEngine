@@ -1,13 +1,15 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract class HlslShader : HlslGraphicsObject
+    public class HlslShader : HlslGraphicsObject
     {
         public IConstantBuffer[] ConstBuffers = new IConstantBuffer[0];
+        public RWVariable[] UAVs = new RWVariable[0];
         public ShaderResourceVariable[] Resources = new ShaderResourceVariable[0];
         public ShaderSamplerVariable[] SamplerVariables = new ShaderSamplerVariable[0];
         public Dictionary<string, IShaderValue> Variables = new Dictionary<string, IShaderValue>();
         
         public IShaderResource[] DefaultResources;
+        HlslPass[] _passes = new HlslPass[0];
 
         /// <summary>
         /// Gets a description of the shader.
@@ -24,15 +26,25 @@
         /// </summary>
         public string Filename { get; }
 
-        protected HlslShader(GraphicsDevice device, string filename = null) : 
+        internal HlslShader(GraphicsDevice device, string filename = null) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Filename = filename ?? "";
         }
 
-        public override string ToString()
+        public void AddPass(HlslPass pass)
         {
-            return $"{GetType().Name} shader -- {Name}";
+            int id = _passes?.Length ?? 0;
+            Array.Resize(ref _passes, id + 1);
+            _passes[id] = pass;
+        }
+
+        public override void GraphicsRelease()
+        {
+            for (int i = 0; i < _passes.Length; i++)
+                _passes[i].Dispose();
+
+            base.OnDispose();
         }
 
         public void SetDefaultResource(IShaderResource resource, uint slot)
@@ -74,41 +86,17 @@
                     varInstance.Value = value;
             }
         }
-    }
 
-    public abstract class HlslShader<T> : HlslShader
-        where T : HlslPass
-    {
-        T[] _passes = new T[0];
+        public HlslPass[] Passes => _passes;
 
-        protected HlslShader(GraphicsDevice device, string filename = null) :
-            base(device, filename)
-        { }
+        public ObjectMaterialProperties Object { get; set; }
 
-        public void AddPass(T pass)
-        {
-            int id = 0;
-            if (_passes == null)
-            {
-                _passes = new T[1];
-            }
-            else
-            {
-                id = _passes.Length;
-                Array.Resize(ref _passes, _passes.Length + 1);
-            }
+        public LightMaterialProperties Light { get; set; }
 
-            _passes[id] = pass;
-        }
+        public SceneMaterialProperties Scene { get; set; }
 
-        public override void GraphicsRelease()
-        {
-            for (int i = 0; i < _passes.Length; i++)
-                _passes[i].Dispose();
+        public GBufferTextureProperties Textures { get; set; }
 
-            base.OnDispose();
-        }
-
-        public T[] Passes => _passes;
+        public SpriteBatchMaterialProperties SpriteBatch { get; set; }
     }
 }

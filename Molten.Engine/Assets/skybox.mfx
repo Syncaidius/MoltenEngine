@@ -1,4 +1,4 @@
-<material>
+<shader>
     <name value="skybox-default"/>
     <description value="The default material for rendering skyboxes."/>
     <pass>
@@ -13,7 +13,7 @@
             <DepthComparison value="LessEqual"/>
         </state>
     </pass>
-</material>
+</shader>
 
 float4x4 wvp;
 

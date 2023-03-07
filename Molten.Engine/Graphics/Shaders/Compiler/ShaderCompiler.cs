@@ -18,7 +18,7 @@ namespace Molten.Graphics
 
         ConcurrentDictionary<string, ShaderSource> _sources;
         Dictionary<ShaderNodeType, ShaderNodeParser> _nodeParsers;
-        List<ShaderCodeCompiler> _codeCompilers;
+        ShaderBuilder _builder;
 
         Assembly _defaultIncludeAssembly;
         string _defaultIncludePath;
@@ -36,12 +36,7 @@ namespace Molten.Graphics
             _defaultIncludeAssembly = includeAssembly;
 
             _nodeParsers = new Dictionary<ShaderNodeType, ShaderNodeParser>();
-            _codeCompilers = new List<ShaderCodeCompiler>()
-            {
-                new MaterialBuilder(),
-                new ComputeBuilder(),
-            };
-
+            _builder = new ShaderBuilder();
             _sources = new ConcurrentDictionary<string, ShaderSource>();
 
             InitializeNodeParsers();
@@ -97,14 +92,11 @@ namespace Molten.Graphics
             }
         }
 
-        public ShaderCompileResult CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
+        public ShaderCompileResult CompileShader(string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
         {
             ShaderCompilerContext context = new ShaderCompilerContext(this);
             context.Flags = flags;
-
-            Dictionary<ShaderCodeCompiler, List<string>> headers = new Dictionary<ShaderCodeCompiler, List<string>>();
             string finalSource = source;
-
 
             if (assembly != null && string.IsNullOrWhiteSpace(nameSpace))
                 throw new InvalidOperationException("nameSpace parameter cannot be null or empty when assembly parameter is set");
@@ -112,28 +104,23 @@ namespace Molten.Graphics
             int originalLineCount = source.Split(_newLineSeparator, StringSplitOptions.None).Length;
 
             // Check the source for all supportead class types.
-            foreach (ShaderCodeCompiler scc in _codeCompilers)
+            List<string> nodeHeaders = _builder.GetHeaders(in source);
+            if (nodeHeaders.Count > 0)
             {
-                List<string> classHeaders = scc.GetHeaders(in source);
-                if (classHeaders.Count > 0)
+                // Remove the XML Molten headers from the source.
+                // This reduces the source we need to check through to find other header types.
+                foreach (string h in nodeHeaders)
                 {
-                    headers.Add(scc, classHeaders);
+                    // Find the header in the original source string, so we can get an accurate line number.
+                    int index = source.IndexOf(h);
+                    string[] lines = source.Substring(0, index).Split(_newLineSeparator, StringSplitOptions.None);
+                    string[] hLines = h.Split(_newLineSeparator, StringSplitOptions.None);
+                    int endLine = lines.Length + (hLines.Length - 1);
 
-                    // Remove the XML Molten headers from the source.
-                    // This reduces the source we need to check through to find other header types.
-                    foreach (string h in classHeaders)
-                    {
-                        // Find the header in the original source string, so we can get an accurate line number.
-                        int index = source.IndexOf(h);
-                        string[] lines = source.Substring(0, index).Split(_newLineSeparator, StringSplitOptions.None);
-                        string[] hLines = h.Split(_newLineSeparator, StringSplitOptions.None);
-                        int endLine = lines.Length + (hLines.Length - 1);
-
-                        if (string.IsNullOrWhiteSpace(filename))
-                            finalSource = finalSource.Replace(h, $"#line {endLine}");
-                        else
-                            finalSource = finalSource.Replace(h, $"#line {endLine} \"{filename}\"");
-                    }
+                    if (string.IsNullOrWhiteSpace(filename))
+                        finalSource = finalSource.Replace(h, $"#line {endLine}");
+                    else
+                        finalSource = finalSource.Replace(h, $"#line {endLine} \"{filename}\"");
                 }
             }
 
@@ -141,17 +128,13 @@ namespace Molten.Graphics
             context.Source = ParseSource(context, filename, ref finalSource, isEmbedded, assembly, nameSpace, originalLineCount);
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
-            foreach (ShaderCodeCompiler classCompiler in headers.Keys)
+            foreach (string header in nodeHeaders)
             {
-                List<string> nodeHeaders = headers[classCompiler];
-                foreach (string header in nodeHeaders)
-                {
-                    List<HlslGraphicsObject> parseResult = classCompiler.Build(context, Renderer, in header);
-                    if (parseResult != null)
-                        context.Result.AddResult(classCompiler.ClassType, parseResult);
-                    else
-                        context.AddError($"{filename}: {classCompiler.GetType().Name}.Parse() did not return a result (null)");
-                }
+                List<HlslShader> parseResult = _builder.Build(context, Renderer, header);
+                if (parseResult != null)
+                    context.Result.AddResult(parseResult);
+                else
+                    context.AddError($"{filename}: {_builder.GetType().Name}.Parse() did not return a result (null)");
             }
 
             string msgPrefix = string.IsNullOrWhiteSpace(filename) ? "" : $"{filename}: ";
@@ -177,7 +160,7 @@ namespace Molten.Graphics
             return source;
         }
 
-        private ShaderSource TryGetDependency(in string path, ShaderSource parent)
+        private ShaderSource TryGetDependency(string path, ShaderSource parent)
         {
             if (_sources.TryGetValue(path, out ShaderSource dependency))
             {
@@ -188,7 +171,7 @@ namespace Molten.Graphics
             return null;
         }
 
-        public void ParserHeader(HlslGraphicsObject shader, in string header, ShaderCompilerContext context)
+        public void ParserHeader(HlslGraphicsObject shader, string header, ShaderCompilerContext context)
         {
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(header);
@@ -224,15 +207,15 @@ namespace Molten.Graphics
             }
         }
 
-        private ShaderSource GetDependencySource(ShaderSource source, in string key, out Stream stream,
+        private ShaderSource GetDependencySource(ShaderSource source, string key, out Stream stream,
             string embeddedName = null, Assembly parentAssembly = null)
         {
             stream = null;
-            ShaderSource dependency = null;
+            ShaderSource dependency;
 
             if (source.IsEmbedded)
             {
-                dependency = TryGetDependency(in key, source);
+                dependency = TryGetDependency(key, source);
                 if (dependency == null)
                 {
                     stream = EmbeddedResource.TryGetStream(embeddedName, parentAssembly);
@@ -241,7 +224,7 @@ namespace Molten.Graphics
             }
             else
             {
-                dependency = TryGetDependency(in key, source);
+                dependency = TryGetDependency(key, source);
                 if (dependency != null)
                 {
                     if (File.Exists(key))
@@ -287,14 +270,14 @@ namespace Molten.Graphics
                         {
                             string embeddedName = $"{source.ParentNamespace}.{depFilename}";
                             depKey = $"{embeddedName}, {parentAssembly.FullName}";
-                            dependency = GetDependencySource(source, in depKey, out fStream, embeddedName, parentAssembly);
+                            dependency = GetDependencySource(source, depKey, out fStream, embeddedName, parentAssembly);
                         }
                     }
                     else
                     {
                         // If the source came from a standard file, check it's local directory for the include.
                         depKey = $"{source.Filename}/{depFilename}";
-                        dependency = GetDependencySource(source, in depKey, out fStream);
+                        dependency = GetDependencySource(source, depKey, out fStream);
                     }
                 }
 
@@ -303,14 +286,14 @@ namespace Molten.Graphics
                 {
                     string embeddedName = $"{source.ParentNamespace}.{depFilename}";
                     depKey = $"{source.ParentNamespace}.{depFilename},{assembly.FullName}";
-                    dependency = GetDependencySource(source, in depKey, out fStream, embeddedName, assembly);
+                    dependency = GetDependencySource(source, depKey, out fStream, embeddedName, assembly);
                 }
 
                 // Check in default include directory.
                 if (dependency == null && fStream == null)
                 {
                     depKey = $"{_defaultIncludePath}/{depFilename}";
-                    dependency = GetDependencySource(source, in depKey, out fStream);
+                    dependency = GetDependencySource(source, depKey, out fStream);
                 }
 
                 // Now try to load the dependency, if not found
@@ -344,7 +327,7 @@ namespace Molten.Graphics
             }
         }
 
-        public unsafe abstract void* BuildShader(HlslGraphicsObject parent, ShaderType type, void* byteCode);
+        public unsafe abstract void* BuildShader(HlslPass parent, ShaderType type, void* byteCode);
 
         public RenderService Renderer { get; }
 
@@ -357,7 +340,7 @@ namespace Molten.Graphics
     /*
          *  EXAMPLE material header:
          *  
-         *  <material>
+         *  <shader>
          *      <rasterizer>
          *          <cull>clockwise</cull>
          *          <depthBias>0</depthBias>
@@ -401,7 +384,7 @@ namespace Molten.Graphics
          *              // [Optional] Pass-specific depth state.
          *          </depth
          *      <pass>
-         *  </material>
+         *  </shader>
          *  
          *  <compute>
          *      <name>G-Buffer Material</name>

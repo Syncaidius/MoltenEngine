@@ -1,4 +1,4 @@
-<material>
+<shader>
     <name>gbuffer-compose</name>
     <description>The default material for rendering sprites in a SpriteBatch with a texture</description>
     <pass>
@@ -9,7 +9,7 @@
         <fragment>PS_Compose</fragment>
         <state preset="Default" blend="PreMultipliedAlpha" rasterizer="ScissorTest"/>
     </pass>
-</material>
+</shader>
 
 #include "sprite_common.mfx";
 

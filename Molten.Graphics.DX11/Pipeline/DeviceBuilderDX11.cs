@@ -233,6 +233,12 @@ namespace Molten.Graphics
                 cap.SetShaderCap(nameof(ShaderStageCapabilities.Float16), all16Bit);
                 cap.PixelShader.Float10 = (pixel & ShaderMinPrecisionSupport.Precision10Bit) == ShaderMinPrecisionSupport.Precision10Bit;
                 cap.PixelShader.Float16 = (pixel & ShaderMinPrecisionSupport.Precision16Bit) == ShaderMinPrecisionSupport.Precision16Bit;
+
+                cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxUnorderedAccessSlots), cap.UnorderedAccessBuffers.MaxSlots);
+            }
+            else
+            {
+                cap.Compute.MaxUnorderedAccessSlots = cap.UnorderedAccessBuffers.MaxSlots;
             }
 
             cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInRegisters), 32); // D3D11_VS/GS/PS_INPUT_REGISTER_COUNT (32)
@@ -241,7 +247,7 @@ namespace Molten.Graphics
             cap.SetShaderCap<uint>(nameof(ShaderStageCapabilities.MaxInResources), 128); // D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT (128)
 
             // Stage specific settings
-            cap.PixelShader.MaxOutResources = 8;
+            cap.PixelShader.MaxOutputTargets = 8;
         }
 
         internal void GetFeatureSupport<T>(ID3D11Device5* device, Feature feature, T* pData) where T : unmanaged

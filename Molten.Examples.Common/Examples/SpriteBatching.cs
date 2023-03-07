@@ -8,7 +8,7 @@ namespace Molten.Examples
     {
         const int SPRITE_RECT_INCREMENT = 100;
 
-        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hShader;
         ContentLoadHandle _hTexMesh;
         ContentLoadHandle _hTexPrimitive;
 
@@ -21,7 +21,7 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
 
-            _hMaterial = loader.Load<Material>("assets/BasicTexture.mfx");
+            _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
             _hTexMesh = loader.Load<ITexture2D>("assets/logo_512_bc7.dds", parameters: new TextureParameters()
             {
                 GenerateMipmaps = true,
@@ -87,16 +87,16 @@ namespace Molten.Examples
 
         private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (!_hMaterial.HasAsset())
+            if (!_hShader.HasAsset())
             {
                 Close();
                 return;
             }
 
-            Material mat = _hMaterial.Get<Material>();
+            HlslShader shader = _hShader.Get<HlslShader>();
             ITexture2D texMesh = _hTexMesh.Get<ITexture2D>();
-            mat.SetDefaultResource(texMesh, 0);
-            TestMesh.Material = mat;
+            shader.SetDefaultResource(texMesh, 0);
+            TestMesh.Shader = shader;
 
             // Create points for zig-zagging lines.
             List<Vector2F> linePoints = new List<Vector2F>();

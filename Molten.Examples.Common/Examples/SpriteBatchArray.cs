@@ -6,7 +6,7 @@ namespace Molten.Examples
     public class SpriteBatchArray : MoltenExample
     {
         List<Sprite> _sprites;
-        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hShader;
         ContentLoadHandle _hTexture;
         ContentLoadHandle _hSpriteTexture;
 
@@ -14,7 +14,7 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
 
-            _hMaterial = loader.Load<Material>("assets/BasicTexture.mfx");
+            _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
             _hTexture = loader.Load<ITexture2D>("assets/png_test.png");
             _hSpriteTexture = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
             {
@@ -25,16 +25,16 @@ namespace Molten.Examples
 
         private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (!_hMaterial.HasAsset())
+            if (!_hShader.HasAsset())
             {
                 Close();
                 return;
             }
 
-            Material mat = _hMaterial.Get<Material>();
+            HlslShader shader = _hShader.Get<HlslShader>();
             ITexture2D tex = _hTexture.Get<ITexture2D>();
-            mat.SetDefaultResource(tex, 0);
-            TestMesh.Material = mat;
+            shader.SetDefaultResource(tex, 0);
+            TestMesh.Shader = shader;
 
             ITexture2D texSprites = _hSpriteTexture.Get<ITexture2D>();
             SetupSprites(texSprites);

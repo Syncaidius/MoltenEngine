@@ -76,6 +76,21 @@ namespace Molten.Graphics
         }
 
         /// <summary>
+        /// The number of X compute groups to use when dispatching a compute <see cref="HlslPass"/>. Ignored for render <see cref="HlslPass"/>es.
+        /// </summary>
+        public uint GroupsX;
+
+        /// <summary>
+        /// The number of Y compute groups to use when dispatching a compute <see cref="HlslPass"/>. Ignored for render <see cref="HlslPass"/>es.
+        /// </summary>
+        public uint GroupsY;
+
+        /// <summary>
+        /// The number of Z compute groups to use when dispatching a compute <see cref="HlslPass"/>. Ignored for render <see cref="HlslPass"/>es.
+        /// </summary>
+        public uint GroupsZ;
+
+        /// <summary>
         /// The blend state for the output surface at slot 0, if any.
         /// </summary>
         public SurfaceBlend Surface0;

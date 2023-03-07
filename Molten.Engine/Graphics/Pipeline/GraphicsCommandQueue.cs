@@ -5,12 +5,39 @@
         protected class BatchDrawInfo
         {
             public bool Began;
-            public StateConditions Conditions;
+
+            public Vector3UI ComputeGroups;
+
+            public CustomDrawInfo Custom { get; } = new CustomDrawInfo();
 
             public void Reset()
             {
                 Began = false;
-                Conditions = StateConditions.None;
+                Custom.Reset();
+            }
+        }
+
+        /// <summary>
+        /// A container for storing application data to share between completion callbacks of <see cref="HlslShader"/> passes.
+        /// </summary>
+        public class CustomDrawInfo
+        {
+            /// <summary>
+            /// Custom compute dispatch group sizes. 
+            /// <para>
+            /// Any dimension that is 0 will default to the one provided by the shader's definition, if any.</para>
+            /// </summary>
+            public Vector3UI ComputeGroups;
+
+            /// <summary>
+            /// Gets a dictionary of custom values.
+            /// </summary>
+            public Dictionary<string, object> Values { get; } = new Dictionary<string, object>();
+
+            public void Reset()
+            {
+                ComputeGroups = Vector3UI.Zero;
+                Values.Clear();
             }
         }
 
@@ -34,7 +61,6 @@
 #endif
 
             DrawInfo.Began = true;
-            DrawInfo.Conditions = conditions;
         }
 
         public void EndDraw()
@@ -49,60 +75,46 @@
 
         /// <summary>Draw non-indexed, non-instanced primitives. 
         /// All queued compute shader dispatch requests are also processed</summary>
-        /// <param name="material">The <see cref="Material"/> to apply when drawing.</param>
+        /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>
         /// <param name="vertexCount">The number of vertices to draw from the provided vertex buffer(s).</param>
         /// <param name="vertexStartIndex">The vertex to start drawing from.</param>
-        /// <param name="topology">The primitive topology to use when drawing with a NULL vertex buffer. 
-        /// Vertex buffers always override this when applied.</param>
-        public abstract GraphicsBindResult Draw(Material material, uint vertexCount, uint vertexStartIndex = 0);
+        public abstract GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0);
 
         /// <summary>Draw instanced, unindexed primitives. </summary>
-        /// <param name="material">The <see cref="Material"/> to apply when drawing.</param>
+        /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>
         /// <param name="vertexCountPerInstance">The expected number of vertices per instance.</param>
         /// <param name="instanceCount">The expected number of instances.</param>
-        /// <param name="topology">The expected topology of the indexed vertex data.</param>
         /// <param name="vertexStartIndex">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public abstract GraphicsBindResult DrawInstanced(Material material,
+        public abstract GraphicsBindResult DrawInstanced(HlslShader shader,
             uint vertexCountPerInstance,
             uint instanceCount,
             uint vertexStartIndex = 0,
             uint instanceStartIndex = 0);
 
         /// <summary>Draw indexed, non-instanced primitives.</summary>
-        /// <param name="material">The <see cref="Material"/> to apply when drawing.</param>
+        /// <param name="shader">The <see cref="Shader"/> to apply when drawing.</param>
         /// <param name="vertexIndexOffset">A value added to each index before reading from the vertex buffer.</param>
         /// <param name="indexCount">The number of indices to be drawn.</param>
         /// <param name="startIndex">The index to start drawing from.</param>
-        /// <param name="topology">The toplogy to apply when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
-        public abstract GraphicsBindResult DrawIndexed(Material material,
+        public abstract GraphicsBindResult DrawIndexed(HlslShader shader,
             uint indexCount,
             int vertexIndexOffset = 0,
             uint startIndex = 0);
 
         /// <summary>Draw indexed, instanced primitives.</summary>
-        /// <param name="material">The <see cref="Material"/> to apply when drawing.</param>
+        /// <param name="shader">The <see cref="Shader"/> to apply when drawing.</param>
         /// <param name="indexCountPerInstance">The expected number of indices per instance.</param>
         /// <param name="instanceCount">The expected number of instances.</param>
-        /// <param name="topology">The expected topology of the indexed vertex data.</param>
         /// <param name="startIndex">The start index.</param>
         /// <param name="vertexIndexOffset">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public abstract GraphicsBindResult DrawIndexedInstanced(Material material,
+        public abstract GraphicsBindResult DrawIndexedInstanced(HlslShader shader,
             uint indexCountPerInstance,
             uint instanceCount,
             uint startIndex = 0,
             int vertexIndexOffset = 0,
             uint instanceStartIndex = 0);
-
-        /// <summary>
-        /// Queues a <see cref="ComputeTask"/> for execution, at the descretion of the device it is executed on.
-        /// </summary>
-        /// <param name="task">The task to be dispatched.</param>
-        /// <param name="groupsX">The X thread-group dimension.</param>
-        /// <param name="groupsY">The Y thread-group dimension.</param>
-        /// <param name="groupsZ">The Z thread-group dimension.</param>
-        public abstract void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ);
 
         public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
 where T : class, IGraphicsObject
@@ -244,7 +256,7 @@ where B : GraphicsSlotBinder<T>, new()
 
         public GraphicsSlot<IGraphicsBufferSegment> IndexBuffer { get; protected set; }
 
-        public GraphicsSlot<Material> Material { get; protected set; }
+        public GraphicsSlot<HlslShader> Shader { get; protected set; }
 
         public GraphicsSlotGroup<IRenderSurface2D> Surfaces { get; protected set; }
     }

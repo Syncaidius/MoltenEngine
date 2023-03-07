@@ -11,7 +11,7 @@ namespace Molten.Examples
         const int READ_SAMPLES_PER_FRAME = 1000;
         const int FREQUENCY = 6635;
 
-        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hShader;
         ContentLoadHandle _hTexture;
 
         UILabel _lblCapDevice;
@@ -36,7 +36,7 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
 
-            _hMaterial = loader.Load<Material>("assets/BasicTexture.mfx");
+            _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
             _hTexture = loader.Load<ITexture2D>("assets/logo_512_bc7.dds", parameters: new TextureParameters()
             {
                 GenerateMipmaps = true,
@@ -52,17 +52,17 @@ namespace Molten.Examples
 
         private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (!_hMaterial.HasAsset())
+            if (!_hShader.HasAsset())
             {
                 Close();
                 return;
             }
 
-            Material mat = _hMaterial.Get<Material>();
+            HlslShader shader = _hShader.Get<HlslShader>();
             ITexture2D texture = _hTexture.Get<ITexture2D>();
 
-            mat.SetDefaultResource(texture, 0);
-            TestMesh.Material = mat;
+            shader.SetDefaultResource(texture, 0);
+            TestMesh.Shader = shader;
 
             _buffer = Engine.Audio.CreateBuffer(FREQUENCY, AudioFormat.Mono8, FREQUENCY);
             _source = Engine.Audio.Output.CreateSoundSource(null);

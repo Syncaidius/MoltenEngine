@@ -72,6 +72,12 @@ namespace Molten.Graphics
                 foreach (XmlAttribute att in node.Attributes)
                 {
                     string nName = att.Name.ToLower();
+                    if (string.IsNullOrWhiteSpace(att.InnerText))
+                    {
+                        context.AddWarning($"Skipping empty attribute '{nName}' in '{hNode.Name}' node");
+                        continue;
+                    }
+
                     switch (nName)
                     {
                         case "value":
@@ -366,7 +372,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected void InitializeEntryPoint(MaterialPass pass, ShaderCompilerContext context, ShaderHeaderNode node, ShaderType type)
+        protected string InitializeEntryPoint(HlslPass pass, ShaderCompilerContext context, ShaderHeaderNode node, ShaderType type)
         {
             if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
             {
@@ -377,6 +383,8 @@ namespace Molten.Graphics
             {
                 context.AddError($"<{type.ToString().ToLower()}> entry-point tag is missing a value");
             }
+
+            return entryPoint;
         }
     }
 

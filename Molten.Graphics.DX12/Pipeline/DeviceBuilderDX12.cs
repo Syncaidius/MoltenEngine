@@ -173,7 +173,7 @@ namespace Molten.Graphics
             cap.SetShaderCap<uint>(nameof(ShaderStageCapabilities.MaxInResources), 128);
 
             // Stage specific settings
-            cap.PixelShader.MaxOutResources = 8;
+            cap.PixelShader.MaxOutputTargets = 8;
         }
 
         /// <summary>

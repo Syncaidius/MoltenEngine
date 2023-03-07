@@ -5,14 +5,14 @@ namespace Molten.Examples
     [Example("Texture Arrays - 2D", "Demonstrates how 2D texture arrays are used")]
     public class Texture2DArray : MoltenExample
     {
-        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hShader;
         ContentLoadHandle _hTexture;
 
         protected override void OnLoadContent(ContentLoadBatch loader)
         {
             base.OnLoadContent(loader);
 
-            _hMaterial = loader.Load<Material>("assets/BasicTextureArray2D.mfx");
+            _hShader = loader.Load<HlslShader>("assets/BasicTextureArray2D.mfx");
             _hTexture = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
             {
                 PartCount = 3,
@@ -22,17 +22,17 @@ namespace Molten.Examples
 
         private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (!_hMaterial.HasAsset())
+            if (!_hShader.HasAsset())
             {
                 Close();
                 return;
             }
 
-            Material mat = _hMaterial.Get<Material>();
+            HlslShader shader = _hShader.Get<HlslShader>();
             ITexture2D texture = _hTexture.Get<ITexture2D>();
 
-            mat.SetDefaultResource(texture, 0);
-            TestMesh.Material = mat;
+            shader.SetDefaultResource(texture, 0);
+            TestMesh.Shader = shader;
         }
 
         protected override Mesh GetTestCubeMesh()

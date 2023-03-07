@@ -7,7 +7,7 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal unsafe class MaterialPassVK : MaterialPass
+    internal unsafe class MaterialPassVK : HlslPass
     {
         GraphicsPipelineCreateInfo _info;
         Pipeline _pipeline;
@@ -18,7 +18,7 @@ namespace Molten.Graphics
         DynamicStateVK _dynamicState;
         InputAssemblyStateVK _inputState;
 
-        internal MaterialPassVK(Material material, string name = null) : 
+        internal MaterialPassVK(HlslShader material, string name = null) : 
             base(material, name)
         {
             _info = new GraphicsPipelineCreateInfo();
@@ -26,10 +26,10 @@ namespace Molten.Graphics
             _info.Flags = PipelineCreateFlags.None;
         }
 
-        protected override void OnInitializeState(ref GraphicsStateParameters parameters)
+        protected override void OnInitialize(ref GraphicsStateParameters parameters)
         {
             // Populate dynamic state
-            DeviceVK device = Material.Device as DeviceVK;
+            DeviceVK device = Device as DeviceVK;
             _blendState = new BlendStateVK(device, ref parameters);
             _blendState = device.CacheObject(_blendState.Desc, _blendState);
 

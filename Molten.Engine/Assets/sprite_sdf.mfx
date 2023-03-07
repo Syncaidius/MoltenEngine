@@ -1,4 +1,4 @@
-<material>
+<shader>
     <name value="sprite-msdf" />
     <author value="James Yarwood"/>
 	<description>The default material for signed-distance field textures/sprites in a SpriteBatch</description>
@@ -12,7 +12,7 @@
             <topology>point</topology>
         </state>
 	</pass>
-</material>
+</shader>
 
 #include "sprite_common.mfx";
 

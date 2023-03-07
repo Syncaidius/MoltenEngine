@@ -36,14 +36,14 @@
                 return _resources[slot];
         }
 
-        protected void ApplyResources(Material material)
+        protected void ApplyResources(HlslShader shader)
         {
             // Set as many custom resources from the renderable as possible, or use the material's default when needed.
             for (uint i = 0; i < _resources.Length; i++)
-                material.Resources[i].Value = _resources[i] ?? material.DefaultResources[i];
+                shader.Resources[i].Value = _resources[i] ?? shader.DefaultResources[i];
 
-            for (uint i = (uint)_resources.Length; i < material.Resources.Length; i++)
-                material.Resources[i].Value = material.DefaultResources[i];
+            for (uint i = (uint)_resources.Length; i < shader.Resources.Length; i++)
+                shader.Resources[i].Value = shader.DefaultResources[i];
         }
 
         internal bool BatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)

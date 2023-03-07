@@ -58,7 +58,7 @@ namespace Molten.UI
                     _sprite.Rotation,
                     _spriteOrigin,
                     ref _sprite.Data.Style,
-                    _sprite.Material,
+                    _sprite.Shader,
                     _sprite.Data.ArraySlice,
                     _sprite.TargetSurfaceSlice);
             }

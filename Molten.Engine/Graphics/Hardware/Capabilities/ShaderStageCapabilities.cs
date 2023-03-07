@@ -50,7 +50,13 @@
         /// <summary>
         /// Gets the maximum number of output buffers or surfaces supported by the shader stage.
         /// </summary>
-        public uint MaxOutResources { get; set; }
+        public uint MaxOutputTargets { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of supported unordered access resources. 
+        /// <para>In DirectX 11 this would be Unordered-Access-View (UAV) based resources.</para>
+        /// </summary>
+        public uint MaxUnorderedAccessSlots { get; set; }
 
         public virtual bool Compatible(ShaderStageCapabilities other)
         {

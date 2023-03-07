@@ -12,6 +12,12 @@ namespace Molten.Graphics
             public uint DrawCalls { get; set; }
 
             /// <summary>
+            /// The number of compute dispatch calls made during a frame.
+            /// </summary>
+            public uint DispatchCalls { get; set; }
+
+
+            /// <summary>
             /// The total number of pipeline slot bindings called during the frame. These are not GPU/API bindings.
             /// </summary>
             public uint SlotBindings { get; set; }
@@ -65,6 +71,7 @@ namespace Molten.Graphics
             public void Clear()
             {
                 DrawCalls = 0;
+                DispatchCalls = 0;
                 GpuBindings = 0;
                 BufferBindings = 0;
                 ShaderBindings = 0;
@@ -87,6 +94,7 @@ namespace Molten.Graphics
             {
                 DrawCalls += other.DrawCalls;
                 SlotBindings += other.SlotBindings;
+                DispatchCalls += other.DispatchCalls;
                 GpuBindings += other.GpuBindings;
                 SurfaceBindings += other.SurfaceBindings;
                 PrimitiveCount += other.PrimitiveCount;

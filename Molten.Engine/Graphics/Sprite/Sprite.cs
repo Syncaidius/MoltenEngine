@@ -66,9 +66,9 @@
         public Vector2F Origin { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="Material"/> to use when drawing the current <see cref="Sprite"/>.
+        /// Gets or sets the <see cref="Shader"/> to use when drawing the current <see cref="Sprite"/>.
         /// </summary>
-        public Material Material { get; set; }
+        public HlslShader Shader { get; set; }
 
         /// <summary>
         /// Gets or sets the surface array slice to which the current <see cref="Sprite"/> should be drawn.

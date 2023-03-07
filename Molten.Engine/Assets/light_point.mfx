@@ -1,4 +1,4 @@
-<material>
+<shader>
   <name>light-point</name>
   <description>Default shader for deferred point lighting.</description>
   <pass>
@@ -42,9 +42,9 @@
       <maxanisotropy>1</maxanisotropy>
     </sampler>
   </pass>
-</material>
+</shader>
 
-<material>
+<shader>
   <name>light-point-debug</name>
   <description>Debug shader for deferred point lighting.</description>
   <pass>
@@ -65,7 +65,7 @@
         <Topology>PatchListWith1ControlPoint</Topology>      
     </state>
   </pass>
-</material>
+</shader>
 
 #include "gbuffer_common.mfx"
 #include "light_common.mfx"

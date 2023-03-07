@@ -1,33 +1,51 @@
-﻿using Silk.NET.Core.Native;
+﻿using System.Text.RegularExpressions;
 
 namespace Molten.Graphics
 {
-    internal unsafe class MaterialBuilder : ShaderCodeCompiler
+    internal unsafe class ShaderBuilder 
     {
-        public override ShaderCodeType ClassType => ShaderCodeType.Material;
+        ShaderLayoutValidator _layoutValidator = new ShaderLayoutValidator();
+        ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel }; 
+        Regex _regexHeader;
 
-        MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
-        ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
-
-        public override List<HlslGraphicsObject> Build(ShaderCompilerContext context,
-            RenderService renderer, in string header)
+        internal ShaderBuilder()
         {
-            List<HlslGraphicsObject> result = new List<HlslGraphicsObject>();
-            Material material = new Material(renderer.Device, context.Source.Filename);
+            _regexHeader = new Regex($"<shader>(.|\n)*?</shader>");
+        }
+
+        internal List<string> GetHeaders(in string source)
+        {
+            List<string> headers = new List<string>();
+            Match m = _regexHeader.Match(source);
+
+            while (m.Success)
+            {
+                headers.Add(m.Value);
+                m = m.NextMatch();
+            }
+
+            return headers;
+        }
+
+        public List<HlslShader> Build(ShaderCompilerContext context,
+            RenderService renderer, string header)
+        {
+            List<HlslShader> result = new List<HlslShader>();
+            HlslShader shader = new HlslShader(renderer.Device, context.Source.Filename);
 
             try
             {
-                context.Compiler.ParserHeader(material, in header, context);
+                context.Compiler.ParserHeader(shader, header, context);
 
-                if (material.Passes == null || material.Passes.Length == 0)
+                if (shader.Passes == null || shader.Passes.Length == 0)
                 {
-                    context.AddError($"Material '{material.Name}' is invalid: No passes defined");
+                    context.AddError($"Material '{shader.Name}' is invalid: No passes defined");
                 }
                 else
                 {
-                    if (string.IsNullOrWhiteSpace(material.Passes[0][ShaderType.Vertex].EntryPoint))
+                    if (string.IsNullOrWhiteSpace(shader.Passes[0][ShaderType.Vertex].EntryPoint))
                     {
-                        context.AddError($"Material '{material.Name} is invalid: First pass must define a vertex shader (VS) entry point");
+                        context.AddError($"Material '{shader.Name} is invalid: First pass must define a vertex shader (VS) entry point");
                         return result;
                     }
                 }
@@ -41,7 +59,7 @@ namespace Molten.Graphics
 
             // Proceed to compiling each material pass.
             PassCompileResult firstPassResult = null;
-            foreach (MaterialPass pass in material.Passes)
+            foreach (HlslPass pass in shader.Passes)
             {
                 PassCompileResult passResult = CompilePass(context, pass);
                 firstPassResult = firstPassResult ?? passResult;
@@ -53,34 +71,35 @@ namespace Molten.Graphics
             // No issues arose, lets add it to the result
             if (!context.HasErrors)
             {
-                foreach (MaterialPass pass in material.Passes)
+                foreach (HlslPass pass in shader.Passes)
                 {
                     if (!pass.IsInitialized)
-                        pass.InitializeState(GraphicsStatePreset.Default, PrimitiveTopology.Triangle);
+                        pass.Initialize(GraphicsStatePreset.Default, PrimitiveTopology.Triangle);
+
 
                     for (int i = 0; i < pass.Samplers.Length; i++)
                         pass.Samplers[i] = pass.Samplers[i] ?? pass.Device.DefaultSampler;
                 }
 
-                result.Add(material);
+                result.Add(shader);
 
-                material.Scene = new SceneMaterialProperties(material);
-                material.Object = new ObjectMaterialProperties(material);
-                material.Textures = new GBufferTextureProperties(material);
-                material.SpriteBatch = new SpriteBatchMaterialProperties(material);
-                material.Light = new LightMaterialProperties(material);
+                shader.Scene = new SceneMaterialProperties(shader);
+                shader.Object = new ObjectMaterialProperties(shader);
+                shader.Textures = new GBufferTextureProperties(shader);
+                shader.SpriteBatch = new SpriteBatchMaterialProperties(shader);
+                shader.Light = new LightMaterialProperties(shader);
             }
 
             // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
-            foreach (HlslShader shader in result)
-                shader.DefaultResources = new IShaderResource[shader.Resources.Length];
+            foreach (HlslShader r in result)
+                r.DefaultResources = new IShaderResource[r.Resources.Length];
 
             return result;
         }
 
         private PassCompileResult CompilePass(
             ShaderCompilerContext context,
-            MaterialPass pass)
+            HlslPass pass)
         {
             PassCompileResult result = new PassCompileResult(pass);
 
@@ -131,8 +150,8 @@ namespace Molten.Graphics
             ShaderCompilerContext context, 
             PassCompileResult pResult)
         {
-            MaterialPass pass = pResult.Pass as MaterialPass;
-            Material material = pass.Material;
+            HlslPass pass = pResult.Pass;
+            HlslShader material = pass.Parent;
 
             foreach (ShaderType type in pResult.Results.Keys)
             {

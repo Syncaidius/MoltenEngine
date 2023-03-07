@@ -8,11 +8,11 @@ using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    public class MaterialPassDX11 : MaterialPass
+    public class ShaderPassDX11 : HlslPass
     {
-        public MaterialPassDX11(Material material, string name) : base(material, name) { }
+        public ShaderPassDX11(HlslShader shader, string name) : base(shader, name) { }
 
-        protected override void OnInitializeState(ref GraphicsStateParameters parameters)
+        protected override void OnInitialize(ref GraphicsStateParameters parameters)
         {
             // Check for unsupported features
             if (parameters.RasterizerDiscardEnabled)

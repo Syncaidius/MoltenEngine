@@ -5,7 +5,7 @@ namespace Molten.Content
 {
     public class ShaderProcessor : ContentProcessor<ShaderParameters>
     {
-        public override Type[] AcceptedTypes { get; } = new Type[] { typeof(ComputeTask), typeof(Material) };
+        public override Type[] AcceptedTypes { get; } = new Type[] { typeof(HlslShader) };
 
         public override Type[] RequiredServices { get; } = { typeof(RenderService) };
 
@@ -19,23 +19,20 @@ namespace Molten.Content
             {
                 string source = reader.ReadToEnd();
                 ShaderCompileResult r = handle.Manager.Engine.Renderer.Resources.CompileShaders(ref source, handle.RelativePath);
-                foreach (ShaderCodeType classType in r.ShaderGroups.Keys)
+                List<HlslShader> list = r.Shaders;
+
+                // Temp solution to limitation of new content manager.
+                partAsset = list[0];
+
+                /*foreach (IShader shader in list)
                 {
-                    List<HlslGraphicsObject> list = r.ShaderGroups[classType];
+                    if (shader is IMaterial mat)
+                        context.AddOutput(mat);
+                    else if (shader is IComputeTask ct)
+                        context.AddOutput(ct);
 
-                    // Temp solution to limitation of new content manager.
-                    partAsset = list[0];
-                    break;
-                    /*foreach (IShader shader in list)
-                    {
-                        if (shader is IMaterial mat)
-                            context.AddOutput(mat);
-                        else if (shader is IComputeTask ct)
-                            context.AddOutput(ct);
-
-                        context.AddOutput(shader);
-                    }*/
-                }
+                    context.AddOutput(shader);
+                }*/
             }
 
             return true;

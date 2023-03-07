@@ -32,7 +32,7 @@ namespace Molten.Graphics
             cap.MaxAnisotropy = features.SamplerAnisotropy ? limits.MaxSamplerAnisotropy : 0;
             cap.MaxTextureArraySlices = limits.MaxImageArrayLayers;
             cap.TextureCubeArrays = features.ImageCubeArray;
-            cap.PixelShader.MaxOutResources = limits.MaxFragmentOutputAttachments;
+            cap.PixelShader.MaxOutputTargets = limits.MaxFragmentOutputAttachments;
             cap.BlendLogicOp = features.LogicOp;
             cap.MaxAllocatedSamplers = limits.MaxSamplerAllocationCount;
 

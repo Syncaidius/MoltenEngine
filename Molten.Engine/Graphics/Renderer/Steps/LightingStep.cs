@@ -4,8 +4,8 @@ namespace Molten.Graphics
 {
     internal class LightingStep : RenderStep
     {
-        Material _matPoint;
-        Material _matDebugPoint;
+        HlslShader _matPoint;
+        HlslShader _matDebugPoint;
         IGraphicsBuffer _lightDataBuffer;
         IGraphicsBufferSegment _lightSegment;
 
@@ -19,8 +19,8 @@ namespace Molten.Graphics
 
             // Load shaders
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "light_point.mfx");
-            _matPoint = result[ShaderCodeType.Material, "light-point"] as Material;
-            _matDebugPoint = result[ShaderCodeType.Material, "light-point-debug"] as Material;
+            _matPoint = result["light-point"];
+            _matDebugPoint = result["light-point-debug"];
         }
 
         public override void Dispose()

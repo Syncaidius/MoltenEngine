@@ -16,22 +16,22 @@ namespace Molten.Graphics
         /// <param name="text">The text to draw.</param>
         /// <param name="position">The position of the text.</param>
         /// <param name="color">The color of the text.</param>
-        /// <param name="material">The material to use when rendering the string of text.</param>
+        /// <param name="shader">The shader to use when rendering the string of text.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Material material = null, uint surfaceSlice = 0)
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, HlslShader shader = null, uint surfaceSlice = 0)
         {
-            DrawString(font, text, position, color, Vector2F.One, material, surfaceSlice);
+            DrawString(font, text, position, color, Vector2F.One, shader, surfaceSlice);
         }
 
         /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data.</summary>
         /// <param name="font">The spritefont from which to retrieve font data.</param>
         /// <param name="text">The text to draw.</param>
         /// <param name="position">The position of the text.</param>
-        /// <param name="material">The material to use when rendering the string of text.</param>
+        /// <param name="shader">The material to use when rendering the string of text.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DrawString(SpriteFont font, string text, Vector2F position, ref TextStyle style, Material material = null, uint surfaceSlice = 0)
+        public void DrawString(SpriteFont font, string text, Vector2F position, ref TextStyle style, HlslShader shader = null, uint surfaceSlice = 0)
         {
-            DrawString(font, text, position, Vector2F.One, ref style, material, surfaceSlice);
+            DrawString(font, text, position, Vector2F.One, ref style, shader, surfaceSlice);
         }
 
         /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data..</summary>
@@ -40,8 +40,8 @@ namespace Molten.Graphics
         /// <param name="position">The position of the text.</param>
         /// <param name="color">The color of the text.</param>
         /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
-        /// <param name="material">The material to use when rendering the string of text.</param>
-        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, Material material = null, uint surfaceSlice = 0)
+        /// <param name="shader">The shader to use when rendering the string of text.</param>
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, HlslShader shader = null, uint surfaceSlice = 0)
         {
             if (string.IsNullOrEmpty(text))
                 return;
@@ -50,17 +50,16 @@ namespace Molten.Graphics
             _textStyle.DropShadowSize = 0;
             _textStyle.OutlineSize = 0;
 
-            DrawString(font, text, position, scale, ref _textStyle, material, surfaceSlice);
+            DrawString(font, text, position, scale, ref _textStyle, shader, surfaceSlice);
         }
 
         /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data..</summary>
         /// <param name="font">The spritefont from which to retrieve font data.</param>
         /// <param name="text">The text to draw.</param>
         /// <param name="position">The position of the text.</param>
-        /// <param name="color">The color of the text.</param>
         /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
-        /// <param name="material">The material to use when rendering the string of text.</param>
-        public void DrawString(SpriteFont font, string text, Vector2F position, Vector2F scale, ref TextStyle style, Material material = null, uint surfaceSlice = 0)
+        /// <param name="shader">The material to use when rendering the string of text.</param>
+        public void DrawString(SpriteFont font, string text, Vector2F position, Vector2F scale, ref TextStyle style, HlslShader shader = null, uint surfaceSlice = 0)
         {
             if (string.IsNullOrEmpty(text))
                 return;
@@ -83,7 +82,7 @@ namespace Molten.Graphics
                 SpriteFontGlyphBinding glyph = font.GetCharacter(text[c]);
                 totalWidth += (glyph.AdvanceWidth * font.Scale);
 
-                ref GpuData data = ref GetData(RangeType.MSDF, font.Manager.UnderlyingTexture, material);
+                ref GpuData data = ref GetData(RangeType.MSDF, font.Manager.UnderlyingTexture, shader);
                 data.Rotation = 0;
                 data.Position = new Vector2F()
                 {

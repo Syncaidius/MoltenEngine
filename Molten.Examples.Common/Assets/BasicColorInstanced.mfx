@@ -1,4 +1,4 @@
-﻿<material>
+﻿<shader>
 	<name>position-color-instanced</name>
 	<description>A simple shader which renders meshes with position and color data</description>
 	<pass>
@@ -7,7 +7,7 @@
 		<vertex>VS</vertex>
     <fragment>PS</fragment>
 	</pass>
-</material>
+</shader>
 
 struct VS_IN
 {

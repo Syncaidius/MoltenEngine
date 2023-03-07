@@ -58,6 +58,6 @@
         /// <summary>
         /// Entry-point definition.
         /// </summary>
-        Entry = 16,
+        Compute = 16,
     }
 }

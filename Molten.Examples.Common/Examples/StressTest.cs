@@ -7,7 +7,7 @@ namespace Molten.Examples
     {
         const int CUBE_COUNT = 5000;
 
-        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hShader;
         List<SceneObject> _objects;
 
         protected override void OnInitialize(Engine engine)
@@ -29,20 +29,20 @@ namespace Molten.Examples
         protected override void OnLoadContent(ContentLoadBatch loader)
         {
             base.OnLoadContent(loader);
-            _hMaterial = loader.Load<Material>("assets/BasicColor.mfx");
+            _hShader = loader.Load<HlslShader>("assets/BasicColor.mfx");
 
 
             loader.OnCompleted += Loader_OnCompleted;
         }
         private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (!_hMaterial.HasAsset())
+            if (!_hShader.HasAsset())
             {
                 Close();
                 return;
             }
 
-            TestMesh.Material = _hMaterial.Get<Material>();
+            TestMesh.Shader = _hShader.Get<HlslShader>();
         }
 
         private void SpawnRandomTestCube(Mesh mesh, int spawnRadius)

@@ -5,7 +5,7 @@
     /// </summary>
     internal class SkyboxStep : RenderStep
     {
-        Material _matSky;
+        HlslShader _fxSky;
         Mesh<Vertex> _sphereMesh;
         ObjectRenderData _skyboxData;
 
@@ -14,7 +14,7 @@
             _skyboxData = new ObjectRenderData();
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "skybox.mfx");
-            _matSky = result[ShaderCodeType.Material, "skybox-default"] as Material;
+            _fxSky = result["skybox-default"];
 
             Vertex[] vertices;
             uint[] indices;
@@ -23,12 +23,12 @@
             _sphereMesh.SetVertices(vertices);
             _sphereMesh.SetIndexParameters((uint)indices.Length);
             _sphereMesh.SetIndices(indices);
-            _sphereMesh.Material = _matSky;
+            _sphereMesh.Shader = _fxSky;
         }
 
         public override void Dispose()
         {
-            _matSky.Dispose();
+            _fxSky.Dispose();
             _sphereMesh.Dispose();
         }
 

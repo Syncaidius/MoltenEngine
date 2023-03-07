@@ -24,7 +24,7 @@ namespace Molten.Examples
             }
 
             ShaderCompileResult shaders = Engine.Renderer.Resources.CompileShaders(ref source, fn);
-            TestMesh.Material = shaders[ShaderCodeType.Material, 0] as Material;
+            TestMesh.Shader = shaders[0];
             for (int i = 0; i < CUBE_COUNT; i++)
                 SpawnRandomTestCube(TestMesh, 70);
         }

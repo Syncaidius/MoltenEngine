@@ -11,15 +11,15 @@
             base.OnApply(cmd);
             IShaderResource normal = GetResource(1);
 
-            if (Material == null)
+            if (Shader == null)
             {
                 // Use whichever default one fits the current configuration.
                 if (normal == null)
-                    Material = Renderer.StandardMeshMaterial_NoNormalMap;
+                    Shader = Renderer.FxStandardMesh_NoNormalMap;
                 else
-                    Material = Renderer.StandardMeshMaterial;
+                    Shader = Renderer.FxStandardMesh;
 
-                Material.Object.EmissivePower.Value = EmissivePower;
+                Shader.Object.EmissivePower.Value = EmissivePower;
             }
         }
     }

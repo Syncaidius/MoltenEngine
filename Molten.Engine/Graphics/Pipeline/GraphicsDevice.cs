@@ -91,16 +91,10 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Requests a new <see cref="MaterialPass"/> from the current <see cref="GraphicsDevice"/>.
+        /// Requests a new <see cref="HlslPass"/> from the current <see cref="GraphicsDevice"/>.
         /// </summary>
         /// <returns></returns>
-        public abstract MaterialPass CreateMaterialPass(Material material, string name = null);
-
-        /// <summary>
-        /// Requests a new <see cref="ComputePass"/> from the current <see cref="GraphicsDevice"/>.
-        /// </summary>
-        /// <returns></returns>
-        public abstract ComputePass CreateComputePass(ComputeTask task, string name = null);
+        public abstract HlslPass CreateShaderPass(HlslShader shader, string name = null);
 
         /// <summary>
         /// Requests a new <see cref="GraphicsSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.

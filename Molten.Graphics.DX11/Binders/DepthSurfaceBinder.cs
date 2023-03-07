@@ -13,7 +13,7 @@ namespace Molten.Graphics
         {
             CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
 
-            uint maxRTs = cmd.Device.Adapter.Capabilities.PixelShader.MaxOutResources;
+            uint maxRTs = cmd.Device.Adapter.Capabilities.PixelShader.MaxOutputTargets;
             cmd.DSV = null;
             cmd.Native->OMSetRenderTargets(maxRTs, (ID3D11RenderTargetView**)cmd.RTVs, cmd.DSV);
         }

@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public class MaterialLayoutValidator
+    public class ShaderLayoutValidator
     {
         static ShaderType[] _validationIndex = new ShaderType[] {
                 ShaderType.Vertex,
@@ -14,7 +14,6 @@
         {
             // Stage order reference: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476882(v=vs.85).aspx
             bool valid = true;
-            MaterialPass pass = pResult.Pass as MaterialPass;
             ShaderComposition prevStage = null;
             ShaderComposition curStage = null;
 
@@ -23,12 +22,12 @@
                 // Nothing to compare yet, continue.
                 if (prevStage == null)
                 {
-                    prevStage = pass[_validationIndex[i]];
+                    prevStage = pResult.Pass[_validationIndex[i]];
                     continue;
                 }
 
                 // No shader to compare. Go to next shader stage.
-                curStage = pass[_validationIndex[i]];
+                curStage = pResult.Pass[_validationIndex[i]];
                 if (curStage == null)
                     continue;
 
@@ -41,9 +40,9 @@
                     ShaderType currentCompositionType =  curStage.Type;
                     ShaderType previousCompositionType = prevStage.Type;
 
-                    context.AddError("Incompatible material I/O structure.");
+                    context.AddError("Incompatible shader I/O structure.");
                     context.AddError("====================================");
-                    context.AddError($"\tFilename: {pass.Material.Filename ?? "N/A"}");
+                    context.AddError($"\tFilename: {pResult.Pass.Parent.Filename ?? "N/A"}");
                     context.AddError($"\tOutput -- {previousCompositionType}:");
 
                     if (output.Metadata.Length > 0)
@@ -81,12 +80,12 @@
 
             if (hs != null && ds == null)
             {
-                context.AddError($"Material pass '{pResult.Pass.Name}' Has a hull shader but no domain shader. Both or neither must be present.");
+                context.AddError($"Shader pass '{pResult.Pass.Name}' Has a hull shader but no domain shader. Both or neither must be present.");
                 valid = false;
             }
             else if (hs == null && ds != null)
             {
-                context.AddError($"Material pass '{pResult.Pass.Name}' Has a domain shader but no hull shader. Both or neither must be present.");
+                context.AddError($"Shader pass '{pResult.Pass.Name}' Has a domain shader but no hull shader. Both or neither must be present.");
                 valid = false;
             }
 
@@ -107,7 +106,7 @@
                 * see: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476340%28v=vs.85%29.aspx
                 * quote: "A geometry shader that expects primitives with adjacency (for example, 6 vertices per triangle) is 
                 * not valid when tessellation is active (this results in undefined behavior, which the debug layer will complain about)."*/
-            MaterialPass pass = pResult.Pass as MaterialPass;
+            HlslPass pass = pResult.Pass;
             valid = pass.GeometryPrimitive == GeometryHullTopology.LineAdj ||
                 pass.GeometryPrimitive == GeometryHullTopology.TriangleAdj;
 

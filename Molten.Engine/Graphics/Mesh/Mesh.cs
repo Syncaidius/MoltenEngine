@@ -104,20 +104,20 @@
         protected virtual void OnDraw(GraphicsCommandQueue cmd)
         {
             if(_iBuffer != null)
-                cmd.DrawIndexed(Material, IndexCount);
+                cmd.DrawIndexed(Shader, IndexCount);
             else
-                cmd.Draw(Material, VertexCount);
+                cmd.Draw(Shader, VertexCount);
         }
 
         protected override sealed void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
-            if (Material == null)
+            if (Shader == null)
                 return;
 
             OnApply(cmd);
-            ApplyResources(Material);
-            Material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
-            Material.Object.World.Value = data.RenderTransform;
+            ApplyResources(Shader);
+            Shader.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
+            Shader.Object.World.Value = data.RenderTransform;
             OnDraw(cmd);
             OnPostDraw(cmd);
         }
@@ -148,7 +148,7 @@
         /// <summary>
         /// Gets or sets the material that should be used when rendering the current <see cref="Mesh"/>.
         /// </summary>
-        public Material Material { get; set; }
+        public HlslShader Shader { get; set; }
 
         public IndexBufferFormat IndexFormat => _indexFormat;
 

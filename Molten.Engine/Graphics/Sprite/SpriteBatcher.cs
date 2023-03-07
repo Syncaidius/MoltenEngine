@@ -14,7 +14,7 @@ namespace Molten.Graphics
         {
             public uint VertexCount;        // 4-bytes
             public ITexture2D Texture;      // 8-bytes (64-bit reference)
-            public Material Material;      // 8-bytes (64-bit reference)
+            public HlslShader Shader;      // 8-bytes (64-bit reference)
             public Rectangle Clip;          // Clipping rectangle.
             public RangeType Type;           // 1-byte
 
@@ -70,15 +70,15 @@ namespace Molten.Graphics
         IGraphicsBuffer _buffer;
         IGraphicsBufferSegment _bufferData;
 
-        Func<GraphicsCommandQueue, SpriteRange, ObjectRenderData, Material>[] _checkers;
-        Material _matDefault;
-        Material _matDefaultMS;
-        Material _matDefaultNoTexture;
-        Material _matLine;
-        Material _matGrid;
-        Material _matCircle;
-        Material _matCircleNoTexture;
-        Material _matMsdf;
+        Func<GraphicsCommandQueue, SpriteRange, ObjectRenderData, HlslShader>[] _checkers;
+        HlslShader _matDefault;
+        HlslShader _matDefaultMS;
+        HlslShader _matDefaultNoTexture;
+        HlslShader _matLine;
+        HlslShader _matGrid;
+        HlslShader _matCircle;
+        HlslShader _matCircleNoTexture;
+        HlslShader _matMsdf;
 
         /// <summary>
         /// Placeholder for internal rectangle/sprite styling.
@@ -106,18 +106,18 @@ namespace Molten.Graphics
             _bufferData = _buffer.Allocate<GpuData>(dataCapacity);
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "sprite.mfx");
-            _matDefaultNoTexture = result[ShaderCodeType.Material, "sprite-no-texture"] as Material;
-            _matDefault = result[ShaderCodeType.Material, "sprite-texture"] as Material;
-            _matCircle = result[ShaderCodeType.Material, "circle"] as Material;
-            _matCircleNoTexture = result[ShaderCodeType.Material, "circle-no-texture"] as Material;
-            _matLine = result[ShaderCodeType.Material, "line"] as Material;
-            _matGrid = result[ShaderCodeType.Material, "grid"] as Material;
+            _matDefaultNoTexture = result["sprite-no-texture"];
+            _matDefault = result["sprite-texture"];
+            _matCircle = result["circle"];
+            _matCircleNoTexture = result["circle-no-texture"];
+            _matLine = result["line"];
+            _matGrid = result["grid"];
             //_matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
 
             ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "sprite_sdf.mfx");
-            _matMsdf = resultSdf[ShaderCodeType.Material, "sprite-msdf"] as Material;
+            _matMsdf = resultSdf["sprite-msdf"];
 
-            _checkers = new Func<GraphicsCommandQueue, SpriteRange, ObjectRenderData, Material>[7];
+            _checkers = new Func<GraphicsCommandQueue, SpriteRange, ObjectRenderData, HlslShader>[7];
             _checkers[(int)RangeType.None] = NoCheckRange;
             _checkers[(int)RangeType.Sprite] = CheckSpriteRange;
             _checkers[(int)RangeType.MSDF] = CheckMsdfRange;
@@ -174,18 +174,18 @@ namespace Molten.Graphics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected ref GpuData GetData(RangeType type, ITexture2D texture, Material material)
+        protected ref GpuData GetData(RangeType type, ITexture2D texture, HlslShader shader)
         {
             ref SpriteRange range = ref Ranges[_curRange];
             if (range.Type != type ||
                 range.Texture != texture ||
-                range.Material != material ||
+                range.Shader != shader ||
                 range.VertexCount == FlushCapacity)
             {
                 ref Rectangle curClip = ref range.Clip;
                 range = ref GetRange(type);
                 range.Texture = texture;
-                range.Material = material;
+                range.Shader = shader;
                 range.Clip = curClip;
             }
 
@@ -232,7 +232,7 @@ namespace Molten.Graphics
         }
 
         public void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, Color cellColor, Color lineColor, float lineThickness, 
-            ITexture2D cellTexture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+            ITexture2D cellTexture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             GridStyle style = new GridStyle()
             {
@@ -241,11 +241,11 @@ namespace Molten.Graphics
                 LineThickness = new Vector2F(lineThickness),
             };
 
-            DrawGrid(bounds, cellSize, rotation, origin, ref style, cellTexture, material, arraySlice, surfaceSlice);
+            DrawGrid(bounds, cellSize, rotation, origin, ref style, cellTexture, shader, arraySlice, surfaceSlice);
         }
 
         public void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, Color cellColor, 
-            Color lineColor, Vector2F lineThickness, ITexture2D cellTexture = null, Material material = null, 
+            Color lineColor, Vector2F lineThickness, ITexture2D cellTexture = null, HlslShader shader = null, 
             uint arraySlice = 0, uint surfaceSlice = 0)
         {
             GridStyle style = new GridStyle()
@@ -255,7 +255,7 @@ namespace Molten.Graphics
                 LineThickness = lineThickness,
             };
 
-            DrawGrid(bounds, cellSize, rotation, origin, ref style, cellTexture, material, arraySlice, surfaceSlice);
+            DrawGrid(bounds, cellSize, rotation, origin, ref style, cellTexture, shader, arraySlice, surfaceSlice);
         }
 
         public unsafe void DrawGrid(RectangleF bounds, 
@@ -264,7 +264,7 @@ namespace Molten.Graphics
             Vector2F origin, 
             ref GridStyle style, 
             ITexture2D cellTexture = null, 
-            Material material = null, 
+            HlslShader shader = null, 
             uint arraySlice = 0, 
             uint surfaceSlice = 0)
         {
@@ -272,7 +272,7 @@ namespace Molten.Graphics
             float cellIncX = bounds.Size.X / cellSize.X;
             float cellIncY = bounds.Size.Y / cellSize.Y;
 
-            ref GpuData data = ref GetData(RangeType.Grid, cellTexture, material);
+            ref GpuData data = ref GetData(RangeType.Grid, cellTexture, shader);
             data.Position = bounds.TopLeft;
             data.Rotation = rotation;
             data.Size = bounds.Size;
@@ -295,7 +295,7 @@ namespace Molten.Graphics
         /// <param name="color">Sets the color of the sprite. This overrides <see cref="SpriteStyle.PrimaryColor"/> of the active <see cref="SpriteStyle"/>.</param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
-        public void Draw(RectangleF destination, Color color, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(RectangleF destination, Color color, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             _rectStyle.FillColor = color;
             _rectStyle.BorderThickness.Zero();
@@ -307,7 +307,7 @@ namespace Molten.Graphics
                 0,
                 Vector2F.Zero,
                 ref _rectStyle,
-                material,
+                shader,
                 arraySlice,
                 surfaceSlice);
         }
@@ -319,7 +319,7 @@ namespace Molten.Graphics
         /// <param name="color">Sets the color of the sprite. This overrides <see cref="SpriteStyle.PrimaryColor"/> of the active <see cref="SpriteStyle"/>.</param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
-        public void Draw(RectangleF source, RectangleF destination, Color color, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(RectangleF source, RectangleF destination, Color color, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             _rectStyle.FillColor = color;
             _rectStyle.BorderThickness.Zero();
@@ -331,7 +331,7 @@ namespace Molten.Graphics
                 0,
                 Vector2F.Zero,
                 ref _rectStyle,
-                material,
+                shader,
                 arraySlice,
                 surfaceSlice);
         }
@@ -346,7 +346,7 @@ namespace Molten.Graphics
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
         /// <param name="surfaceSlice"></param>
-        public void Draw(RectangleF source, RectangleF destination, ref RectStyle style, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(RectangleF source, RectangleF destination, ref RectStyle style, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             Draw(texture,
                 source,
@@ -355,7 +355,7 @@ namespace Molten.Graphics
                 0,
                 Vector2F.Zero,
                 ref style,
-                material,
+                shader,
                 arraySlice,
                 surfaceSlice);
         }
@@ -366,10 +366,10 @@ namespace Molten.Graphics
         /// <param name="texture"></param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
-        public void Draw(RectangleF destination, ref RectStyle style, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(RectangleF destination, ref RectStyle style, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            Draw(texture, src, destination.TopLeft, destination.Size, 0, Vector2F.Zero, ref style, material, arraySlice, surfaceSlice);
+            Draw(texture, src, destination.TopLeft, destination.Size, 0, Vector2F.Zero, ref style, shader, arraySlice, surfaceSlice);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -383,12 +383,12 @@ namespace Molten.Graphics
         public void Draw(RectangleF destination, float rotation, Vector2F origin, 
             ref RectStyle style, 
             ITexture2D texture = null, 
-            Material material = null, 
+            HlslShader shader = null, 
             uint arraySlice = 0, 
             uint surfaceSlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            Draw(texture, src, destination.TopLeft, destination.Size, rotation, origin, ref style, material, arraySlice, surfaceSlice);
+            Draw(texture, src, destination.TopLeft, destination.Size, rotation, origin, ref style, shader, arraySlice, surfaceSlice);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -398,10 +398,10 @@ namespace Molten.Graphics
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
         /// <param name="surfaceSlice"></param>
-        public void Draw(Vector2F position, ref RectStyle style, ITexture2D texture = null, Material material = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(Vector2F position, ref RectStyle style, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            Draw(texture, src, position, new Vector2F(src.Width, src.Height), 0, Vector2F.Zero, ref style, material, arraySlice, surfaceSlice);
+            Draw(texture, src, position, new Vector2F(src.Width, src.Height), 0, Vector2F.Zero, ref style, shader, arraySlice, surfaceSlice);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -415,7 +415,7 @@ namespace Molten.Graphics
                 sprite.Rotation,
                 sprite.Origin,
                 ref sprite.Data.Style,
-                sprite.Material,
+                sprite.Shader,
                 sprite.Data.ArraySlice,
                 sprite.TargetSurfaceSlice);
         }
@@ -430,10 +430,10 @@ namespace Molten.Graphics
         /// <param name="material">The material to use when rendering the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
         /// <param name="surfaceSlice">The destination slice of a bound <see cref="IRenderSurface"/>. This is only used when rendering to a render surface array.</param>
-        public void Draw(Vector2F position, float rotation, Vector2F origin, ITexture2D texture, ref RectStyle style, Material material = null, float arraySlice = 0, uint surfaceSlice = 0)
+        public void Draw(Vector2F position, float rotation, Vector2F origin, ITexture2D texture, ref RectStyle style, HlslShader shader = null, float arraySlice = 0, uint surfaceSlice = 0)
         {
             RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
-            Draw(texture, src, position, new Vector2F(src.Width, src.Height), rotation, origin, ref style, material, arraySlice, surfaceSlice);
+            Draw(texture, src, position, new Vector2F(src.Width, src.Height), rotation, origin, ref style, shader, arraySlice, surfaceSlice);
         }
 
         /// <summary>
@@ -456,10 +456,10 @@ namespace Molten.Graphics
             float rotation,
             Vector2F origin,
             ref RectStyle style,
-            Material material,
+            HlslShader shader,
             float arraySlice, uint surfaceSlice)
         {
-            ref GpuData vertex = ref GetData(RangeType.Sprite, texture, material);
+            ref GpuData vertex = ref GetData(RangeType.Sprite, texture, shader);
             vertex.Position = position;
             vertex.Rotation = rotation;
             vertex.Array.SrcArraySlice = arraySlice;
@@ -544,37 +544,37 @@ namespace Molten.Graphics
                 if (range.Type == RangeType.None || range.VertexCount == 0)
                     continue;
 
-                Material mat = range.Material ?? _checkers[(int)range.Type](cmd, range, data);
+                HlslShader shader = range.Shader ?? _checkers[(int)range.Type](cmd, range, data);
 
-                mat["spriteData"].Value = _bufferData;
-                mat["vertexOffset"].Value = bufferOffset;
+                shader["spriteData"].Value = _bufferData;
+                shader["vertexOffset"].Value = bufferOffset;
 
                 // Set common material properties
                 if (range.Texture != null)
                 {
                     if (range.Texture.IsMultisampled)
                     {
-                        mat.Textures.DiffuseTextureMS.Value = range.Texture;
-                        mat.Textures.SampleCount.Value = (uint)range.Texture.MultiSampleLevel;
+                        shader.Textures.DiffuseTextureMS.Value = range.Texture;
+                        shader.Textures.SampleCount.Value = (uint)range.Texture.MultiSampleLevel;
                     }
                     else
                     {
-                        mat.Textures.DiffuseTexture.Value = range.Texture;
+                        shader.Textures.DiffuseTexture.Value = range.Texture;
                     }
 
                     Vector2F texSize = new Vector2F(range.Texture.Width, range.Texture.Height);
-                    mat.SpriteBatch.TextureSize.Value = texSize;
+                    shader.SpriteBatch.TextureSize.Value = texSize;
                 }
 
                 cmd.SetScissorRectangles(range.Clip);
 
-                mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
-                cmd.Draw(mat, range.VertexCount);
+                shader.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
+                cmd.Draw(shader, range.VertexCount);
                 bufferOffset += range.VertexCount;
             }
         }
 
-        private Material CheckSpriteRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader CheckSpriteRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
         {
             if (range.Texture != null)
                 return range.Texture.IsMultisampled ? _matDefaultMS : _matDefault;
@@ -582,7 +582,7 @@ namespace Molten.Graphics
                 return _matDefaultNoTexture;
         }
 
-        private Material CheckMsdfRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader CheckMsdfRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
         {
             if (range.Texture != null)
             {
@@ -597,22 +597,22 @@ namespace Molten.Graphics
             }
         }
 
-        private Material CheckLineRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader CheckLineRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
         {
             return _matLine;
         }
 
-        private Material CheckEllipseRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader CheckEllipseRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
         {
             return range.Texture != null ? _matCircle : _matCircleNoTexture;
         }
 
-        private Material CheckGridRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader CheckGridRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
         {
             return _matGrid; // range.Texture != null ? _matCircle : _matCircleNoTexture;
         }
 
-        private Material NoCheckRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader NoCheckRange(GraphicsCommandQueue cmd, SpriteRange range, ObjectRenderData data)
         {
             return null;
         }

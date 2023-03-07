@@ -152,14 +152,9 @@ namespace Molten.Graphics
             return new ShaderSamplerDX11(this, ref parameters);
         }
 
-        public override MaterialPass CreateMaterialPass(Material material, string name = null)
+        public override HlslPass CreateShaderPass(HlslShader shader, string name = null)
         {
-            return new MaterialPassDX11(material, name);
-        }
-
-        public override ComputePass CreateComputePass(ComputeTask task, string name = null)
-        {
-            return new ComputePassDX11(task, name);
+            return new ShaderPassDX11(shader, name);
         }
 
         public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0)

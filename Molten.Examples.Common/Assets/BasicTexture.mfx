@@ -1,4 +1,4 @@
-﻿<material>
+﻿<shader>
 	<name>position-texture</name>
 	<description>A simple shader which renders 3D meshes with position and 2D UV data</description>
 	<pass>
@@ -8,7 +8,7 @@
     <fragment>PS</fragment>
 	</pass>
     <state preset="default" blend="PreMultipliedAlpha" />
-</material>
+</shader>
 
 struct VS_IN
 {

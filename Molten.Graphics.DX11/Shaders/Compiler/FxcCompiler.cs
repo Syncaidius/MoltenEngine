@@ -380,27 +380,23 @@ namespace Molten.Graphics
 
         private void OnBuildVariableStructure(
             ShaderCompilerContext context,
-            HlslGraphicsObject shader, ShaderCodeResult result, ShaderResourceInfo info)
+            HlslShader shader, ShaderCodeResult result, ShaderResourceInfo info)
         {
-            ComputeTask ct = shader as ComputeTask;
-            if (ct == null)
-                return;
-
             switch (info.Type)
             {
                 case ShaderInputType.UavRWStructured:
-                    OnBuildRWStructuredVariable(context, ct, info);
+                    OnBuildRWStructuredVariable(context, shader, info);
                     break;
 
                 case ShaderInputType.UavRWTyped:
-                    OnBuildRWTypedVariable(context, ct, info);
+                    OnBuildRWTypedVariable(context, shader, info);
                     break;
             }
         }
 
         private void OnBuildRWStructuredVariable
             (ShaderCompilerContext context,
-            ComputeTask shader, ShaderResourceInfo info)
+            HlslShader shader, ShaderResourceInfo info)
         {
             RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(context, shader, info);
             uint bindPoint = info.BindPoint;
@@ -413,7 +409,7 @@ namespace Molten.Graphics
 
         private void OnBuildRWTypedVariable(
             ShaderCompilerContext context,
-            ComputeTask shader, ShaderResourceInfo info)
+            HlslShader shader, ShaderResourceInfo info)
         {
             RWVariable resource = null;
             uint bindPoint = info.BindPoint;
@@ -556,7 +552,7 @@ namespace Molten.Graphics
             return bVar;
         }
 
-        public override unsafe void* BuildShader(HlslGraphicsObject parent, ShaderType type, void* byteCode)
+        public override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode)
         {
             ID3D10Blob* dx11ByteCode = (ID3D10Blob*)byteCode;
             void* ptrBytecode = dx11ByteCode->GetBufferPointer();
@@ -566,16 +562,14 @@ namespace Molten.Graphics
             switch (type)
             {
                 case ShaderType.Compute:
-                    if (parent is ComputePass cPass)
-                        cPass.InputByteCode = byteCode;
+                    parent.InputByteCode = byteCode;
 
                     ID3D11ComputeShader* csShader = null;
                     device.Ptr->CreateComputeShader(ptrBytecode, numBytes, null, &csShader);
                     return csShader;
 
                 case ShaderType.Vertex:
-                    if (parent is MaterialPass mPass)
-                        mPass.InputByteCode = byteCode;
+                    parent.InputByteCode = byteCode;
 
                     ID3D11VertexShader* vsShader = null;
                     device.Ptr->CreateVertexShader(ptrBytecode, numBytes, null, &vsShader);

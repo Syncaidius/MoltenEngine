@@ -20,8 +20,8 @@
             if (context.Layer.Renderables.Count == 0)
                 return;
 
-            SetMaterialCommon(renderer.StandardMeshMaterial, camera, sScene);
-            SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, sScene);
+            SetShaderCommon(renderer.FxStandardMesh, camera, sScene);
+            SetShaderCommon(renderer.FxStandardMesh_NoNormalMap, camera, sScene);
 
             cmd.SetViewports(camera.Surface.Viewport);
 
@@ -30,13 +30,13 @@
             cmd.EndDraw();
         }
 
-        private void SetMaterialCommon(Material material, RenderCamera camera, IRenderSurface2D gBufferScene)
+        private void SetShaderCommon(HlslShader shader, RenderCamera camera, IRenderSurface2D gBufferScene)
         {
-            material.Scene.View.Value = camera.View;
-            material.Scene.Projection.Value = camera.Projection;
-            material.Scene.InvViewProjection.Value = Matrix4F.Invert(camera.ViewProjection);
-            material.Scene.ViewProjection.Value = camera.ViewProjection;
-            material.Scene.MaxSurfaceUV.Value = new Vector2F()
+            shader.Scene.View.Value = camera.View;
+            shader.Scene.Projection.Value = camera.Projection;
+            shader.Scene.InvViewProjection.Value = Matrix4F.Invert(camera.ViewProjection);
+            shader.Scene.ViewProjection.Value = camera.ViewProjection;
+            shader.Scene.MaxSurfaceUV.Value = new Vector2F()
             {
                 X = (float)camera.Surface.Width / gBufferScene.Width,
                 Y = (float)camera.Surface.Height / gBufferScene.Height,

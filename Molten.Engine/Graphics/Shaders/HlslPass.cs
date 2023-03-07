@@ -1,26 +1,147 @@
-﻿namespace Molten.Graphics
+﻿using System.Collections;
+
+namespace Molten.Graphics
 {
     /// <summary>
     /// An a base class implementation for key shader components, such as materials, material passes or compute tasks.
     /// </summary>
-    public abstract class HlslPass : HlslGraphicsObject
+    public abstract class HlslPass : HlslGraphicsObject, IEnumerable<ShaderComposition>, IEnumerable<ShaderType>
     {
+        /// <summary>
+        /// A callback that is used by <see cref="HlslPass"/> when it has finished its draw/dispatch call.
+        /// </summary>
+        /// <param name="pass">The pass that was completed.</param>
+        /// <param name="customInfo">Custom information that can be passed between shader passes.</param>
+        public delegate void OnCompletedCallback(HlslPass pass, GraphicsCommandQueue.CustomDrawInfo customInfo);
+
         /// <summary>
         /// The texture samplers to be used with the shader/component.
         /// </summary>
         public GraphicsSampler[] Samplers;
+        Dictionary<ShaderType, ShaderComposition> _compositions;
+        public unsafe void* InputByteCode;
+
+        /// <summary>
+        /// Invoked when the current <see cref="HlslPass"/> has finished its draw/dispatch call.
+        /// </summary>
+        public event OnCompletedCallback OnCompleted;
 
         /// <summary>
         /// Creates a new instance of <see cref="HlslPass"/>. Can only be called by a derived class.
         /// </summary>
         /// <param name="parent">The parnet shader that owns this new instance of <see cref="HlslPass"/>.</param>
-        protected HlslPass(HlslShader parent) : 
+        protected HlslPass(HlslShader parent, string name) : 
             base(parent.Device, GraphicsBindTypeFlags.Input)
         {
             Samplers = new GraphicsSampler[0];
             Parent = parent;
+            Name = name;
             IsEnabled = true;
+            _compositions = new Dictionary<ShaderType, ShaderComposition>();
         }
+
+        internal void Initialize(GraphicsStatePreset preset, PrimitiveTopology topology)
+        {
+            Initialize(preset, topology, Vector3UI.Zero);
+        }
+
+        internal void Initialize(GraphicsStatePreset preset, PrimitiveTopology topology, Vector3UI computeGroups)
+        {
+            GraphicsStateParameters p = new GraphicsStateParameters(preset, topology);
+            p.GroupsX = computeGroups.X;
+            p.GroupsY = computeGroups.Y;
+            p.GroupsZ = computeGroups.Z;
+
+            Initialize(ref p);
+        }
+
+        internal void Initialize(ref GraphicsStateParameters parameters)
+        {
+            if (IsInitialized)
+                return;
+
+            ComputeGroups = new Vector3UI(parameters.GroupsX, parameters.GroupsY, parameters.GroupsZ);
+            OnInitialize(ref parameters);
+            IsInitialized = true;
+        }
+
+        protected abstract void OnInitialize(ref GraphicsStateParameters parameters);
+
+        public void InvokeCompleted(GraphicsCommandQueue.CustomDrawInfo customInfo)
+        {
+            OnCompleted?.Invoke(this, customInfo);
+        }
+
+        internal ShaderComposition AddComposition(ShaderType type)
+        {
+            if (!_compositions.TryGetValue(type, out ShaderComposition comp))
+            {
+                comp = new ShaderComposition(this, type);
+                _compositions.Add(type, comp);
+            }
+
+            return comp;
+        }
+
+        internal GraphicsBindResult Validate(PrimitiveTopology topology)
+        {
+            GraphicsBindResult result = GraphicsBindResult.Successful;
+
+            if (_compositions.TryGetValue(ShaderType.Hull, out ShaderComposition hs))
+            {
+                if (topology < PrimitiveTopology.PatchListWith1ControlPoint)
+                    result |= GraphicsBindResult.HullPatchTopologyExpected;
+            }
+
+            return result;
+        }
+
+        public override void GraphicsRelease()
+        {
+            foreach (ShaderComposition c in _compositions.Values)
+                c.Dispose();
+        }
+
+        public IEnumerator<ShaderComposition> GetEnumerator()
+        {
+            return _compositions.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _compositions.Keys.GetEnumerator();
+        }
+
+        IEnumerator<ShaderType> IEnumerable<ShaderType>.GetEnumerator()
+        {
+            return _compositions.Keys.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets a <see cref="ShaderComposition"/> from the current <see cref="HlslPass"/>. 
+        /// <para>Returns null if no composition exists for the specified <see cref="ShaderType"/>.</para>
+        /// </summary>
+        /// <param name="type">The type of shader composition to retrieve.</param>
+        /// <returns></returns>
+        public ShaderComposition this[ShaderType type]
+        {
+            get
+            {
+                _compositions.TryGetValue(type, out ShaderComposition comp);
+                return comp;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the type of geometry shader primitives to output.
+        /// </summary>
+        public GeometryHullTopology GeometryPrimitive { get; set; }
+
+        /// <summary>
+        /// Gets or sets the depth write permission. the default value is <see cref="GraphicsDepthWritePermission.Enabled"/>.
+        /// </summary>
+        [ShaderNode(ShaderNodeParseType.Enum)]
+        public GraphicsDepthWritePermission WritePermission { get; set; } = GraphicsDepthWritePermission.Enabled;
 
         /// <summary>
         /// Gets or sets the number of iterations the shader/component should be run.
@@ -39,5 +160,19 @@
         public bool IsInitialized { get; protected set; }
 
         public HlslShader Parent { get; }
+
+        /// <summary>
+        /// Gets the type of the current <see cref="HlslPass"/>.
+        /// </summary>
+        public ShaderPassType Type { get; internal set; }
+
+        public Vector3UI ComputeGroups { get; private set; }
+    }
+
+    public enum ShaderPassType
+    {
+        Material = 0,
+
+        Compute = 1,
     }
 }

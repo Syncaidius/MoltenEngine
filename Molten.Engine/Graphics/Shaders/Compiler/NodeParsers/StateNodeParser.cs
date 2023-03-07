@@ -1,10 +1,10 @@
 ﻿namespace Molten.Graphics
 {
-    internal class StateNodeParser : ShaderNodeParser<MaterialPass>
+    internal class StateNodeParser : ShaderNodeParser<HlslPass>
     {
         public override ShaderNodeType NodeType => ShaderNodeType.State;
 
-        protected override void OnParse(MaterialPass pass, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(HlslPass pass, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             // Use the default preset's Surface0 blend description.
             GraphicsStatePreset preset = GraphicsStatePreset.Default;
@@ -61,7 +61,7 @@
                 }
             }
 
-            pass.InitializeState(ref passParams);
+            pass.Initialize(ref passParams);
         }
     }
 }

@@ -18,7 +18,8 @@
         public uint MaxBytes { get; set; }
 
         /// <summary>
-        /// Gets or sets the maximum number of available slots for this type of buffer.
+        /// Gets or sets the maximum number of available slots for this type of buffer. 
+        /// <para>This is not a shader stage-specific limit, but overall device limit. Some graphics APIs may not use per-stage limits.</para>
         /// </summary>
         public uint MaxSlots { get; set; }
     }

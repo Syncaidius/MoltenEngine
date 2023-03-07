@@ -6,7 +6,7 @@ namespace Molten.Examples
     [Example("Save Texture", "Demonstrates saving a texture to file ")]
     public class SaveTexture : MoltenExample
     {
-        ContentLoadHandle _hMaterial;
+        ContentLoadHandle _hShader;
         ContentLoadHandle _hTexture;
         ContentLoadHandle _hTexData;
 
@@ -14,7 +14,7 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
 
-            _hMaterial = loader.Load<Material>("assets/BasicTexture.mfx");
+            _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
             _hTexture = loader.Load<ITexture2D>("assets/dds_dxt5.dds");
             _hTexData = loader.Load<TextureData>("assets/dds_dxt5.dds");
             loader.OnCompleted += Loader_OnCompleted;
@@ -22,18 +22,18 @@ namespace Molten.Examples
 
         private void Loader_OnCompleted(ContentLoadBatch loader)
         {
-            if (!_hMaterial.HasAsset())
+            if (!_hShader.HasAsset())
             {
                 Close();
                 return;
             }
 
-            Material mat = _hMaterial.Get<Material>();
+            HlslShader mat = _hShader.Get<HlslShader>();
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
             ITexture2D texture = _hTexture.Get<ITexture2D>();
             mat.SetDefaultResource(texture, 0);
-            TestMesh.Material = mat;
+            TestMesh.Shader = mat;
 
             Texture2DProperties p = texture.Get2DProperties();
             p.Flags = TextureFlags.Staging;

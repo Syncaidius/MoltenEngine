@@ -82,16 +82,16 @@ namespace Molten.Graphics
         protected override void OnDraw(GraphicsCommandQueue cmd)
         {
             if (MaxIndices > 0)
-                cmd.DrawIndexedInstanced(Material, IndexCount, _instanceCount);
+                cmd.DrawIndexedInstanced(Shader, IndexCount, _instanceCount);
             else
-                cmd.DrawInstanced(Material, VertexCount, _instanceCount, 0, 0);
+                cmd.DrawInstanced(Shader, VertexCount, _instanceCount, 0, 0);
         }
 
         protected override bool OnBatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
         {
             _instanceCount = (uint)batch.Data.Count;
 
-            if (_instanceCount == 0 || Material == null)
+            if (_instanceCount == 0 || Shader == null)
                 return true;
 
             if (I.IsBatched)
@@ -111,10 +111,10 @@ namespace Molten.Graphics
                     Renderer.StagingBuffer);
             }
 
-            Material.Scene.ViewProjection.Value = camera.ViewProjection;
+            Shader.Scene.ViewProjection.Value = camera.ViewProjection;
 
             OnApply(cmd);
-            ApplyResources(Material);
+            ApplyResources(Shader);
             OnDraw(cmd);
             OnPostDraw(cmd);
             

@@ -1,4 +1,4 @@
-<material>
+<shader>
     <name value="sprite-texture" />
     <author value="James Yarwood"/>
     <description>The default material for rendering sprites in a SpriteBatch with a texture</description>
@@ -12,9 +12,9 @@
             <Topology>Point</Topology>
         </state>
     </pass>
-</material>
+</shader>
 
-<material>
+<shader>
     <name value="sprite-no-texture" />
     <author value="James Yarwood"/>
     <description>The default material for rendering sprites in a SpriteBatch with no texture.</description>
@@ -28,9 +28,9 @@
             <Topology>Point</Topology>
         </state>
     </pass>
-</material>
+</shader>
 
-<material>
+<shader>
     <name value="circle" />
     <author value="James Yarwood"/>
     <description value="The default material for rendering an un-textured circle from a single point" />
@@ -44,9 +44,9 @@
             <Topology>Point</Topology>
         </state>
     </pass>
-</material>
+</shader>
 
-<material>
+<shader>
     <name value="circle-no-texture" />
     <author value="James Yarwood"/>
     <description value="The default material for rendering an un-textured circle from a single point" />
@@ -60,9 +60,9 @@
             <Topology>Point</Topology>
         </state>
     </pass>
-</material>
+</shader>
 
-<material>
+<shader>
     <name value="line" />
     <author value="James Yarwood"/>
     <description value="The default material for rendering an un-textured circle from a single point" />
@@ -76,9 +76,9 @@
             <Topology>Point</Topology>
         </state>
     </pass>
-</material>
+</shader>
 
-<material>
+<shader>
     <name value="grid" />
     <author value="James Yarwood"/>
     <description value="The default material for rendering an un-textured circle from a single point" />
@@ -92,6 +92,6 @@
             <Topology>Point</Topology>
         </state>
     </pass>
-</material>
+</shader>
 
 #include "sprite_common.mfx";

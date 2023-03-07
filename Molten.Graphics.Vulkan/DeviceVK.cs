@@ -59,14 +59,9 @@ namespace Molten.Graphics
             return _loader.GetExtension<E>();
         }
 
-        public override MaterialPass CreateMaterialPass(Material material, string name = null)
+        public override HlslPass CreateShaderPass(HlslShader shader, string name = null)
         {
-            return new MaterialPassVK(material, name);
-        }
-
-        public override ComputePass CreateComputePass(ComputeTask task, string name = null)
-        {
-            throw new NotImplementedException();
+            return new MaterialPassVK(shader, name);
         }
 
         protected override GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters)

@@ -11,53 +11,58 @@
         InvalidVertexLayout = 1,
 
         /// <summary>This only happens if you are trying to draw using indexed primitives. Indexed drawing requires a vertex buffer to refer to.</summary>
-        MissingVertexSegment = 2,
+        MissingVertexSegment = 1 << 1,
 
         /// <summary>An attempt was made to draw indexed primitives without an index buffer applied.</summary>
-        MissingIndexSegment = 4,
+        MissingIndexSegment = 1 << 2,
 
         /// <summary>An attempt was made to use a geometry shader that expects primitives with adjacency, while tessellation is active (hull shader applied).</summary>
-        TessellationAdjacency = 8,
+        TessellationAdjacency = 1 << 3,
 
         /// <summary>A hull shader was applied without a domain shader. The reverse will not cause a failure because tessellation is only activated if a hull
         /// shader is applied (as per the DirectX SDK).</summary>
-        MissingDomainShader = 16,
+        MissingDomainShader = 1 << 4,
 
         /// <summary>A domain shader has been set, but the domain shader is missing.</summary>
-        MissingHullShader = 32,
+        MissingHullShader = 1 << 5,
 
         /// <summary>An attempt was made to draw without a vertex shader applied, or it was invalid.</summary>
-        MissingMaterial = 64,
+        MissingMaterial = 1 << 6,
 
         /// <summary>No pixel shader was applied or is invalid.</summary>
-        MissingPixelShader = 128,
+        MissingPixelShader = 1 << 7,
 
         /// <summary>The pixel effect/shader was present, but was invalid.</summary>
-        InvalidPixelShader = 256,
+        InvalidPixelShader = 1 << 8,
 
-        /// <summary>The vertex shader was present, but invalid.</summary>
-        InvalidMaterial = 512,
+        /// <summary>The shader was invalid or unsupported.</summary>
+        InvalidShader = 1 << 9,
 
         /// <summary>The geometry shader was present, but invalid.</summary>
-        InvalidGeometryShader = 1024,
+        InvalidGeometryShader = 1 << 10,
 
         /// <summary>The hull shader was present, but invalid.</summary>
-        InvalidHullShader = 2048,
+        InvalidHullShader = 1 << 11,
 
         /// <summary>The domain shader was present, but invalid.</summary>
-        InvalidDomainShader = 4096,
+        InvalidDomainShader = 1 << 12,
 
         /// <summary>A draw attempt was made while tessellation was active (hull shader applied), but the provided 
         /// vertex buffer was not of a patch topology.</summary>
-        HullPatchTopologyExpected = 8192,
+        HullPatchTopologyExpected = 1 << 13,
 
         /// <summary>The input-output link between two or more shaders is invalid. Input and output must have the same layout.</summary>
-        InvalidShaderIOChain = 16384,
+        InvalidShaderIOChain = 1 << 14,
 
         /// <summary>The current setup of vertex buffers and vertex shader does not form a layout capable of handling per-instance data.</summary>
-        NonInstancedVertexLayout = 32768,
+        NonInstancedVertexLayout = 1 << 15,
 
         /// <summary>The topology was undefined.</summary>
-        UndefinedTopology = 65536,
+        UndefinedTopology = 1 << 16,
+
+        /// <summary>
+        /// A compute group dimension was invalid.
+        /// </summary>
+        InvalidComputeGroupDimension = 1 << 17,
     }
 }

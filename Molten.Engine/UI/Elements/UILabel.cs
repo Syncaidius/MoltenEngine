@@ -14,7 +14,7 @@ namespace Molten.UI
 
         public string _text;
         private Vector2F _position;
-        public Material Material;
+        public HlslShader Shader;
 
         string _fontName;
         SpriteFont _font;
@@ -42,7 +42,7 @@ namespace Molten.UI
         protected override void OnRender(SpriteBatcher sb)
         {
             if (_font != null && Color.A > 0)
-                sb.DrawString(_font, _text, _position, Color, Material);
+                sb.DrawString(_font, _text, _position, Color, Shader);
 
             base.OnRender(sb);
         }
