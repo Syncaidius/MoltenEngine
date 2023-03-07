@@ -253,7 +253,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override unsafe void* BuildShader(HlslGraphicsObject element, ShaderType type, void* byteCode)
+        public override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode)
         {
             throw new NotImplementedException();
         }
