@@ -34,7 +34,7 @@ namespace Molten.Graphics
             _qDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         }
 
-        protected override GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters)
+        protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
         {
             throw new NotImplementedException();
         }

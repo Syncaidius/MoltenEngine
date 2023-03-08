@@ -29,7 +29,7 @@ namespace Molten.Graphics
         {
             OnInitialize();
 
-            GraphicsSamplerParameters samplerParams = new GraphicsSamplerParameters(SamplerPreset.Default);
+            ShaderSamplerParameters samplerParams = new ShaderSamplerParameters(SamplerPreset.Default);
             DefaultSampler = CreateSampler(ref samplerParams);
         }
 
@@ -97,15 +97,15 @@ namespace Molten.Graphics
         public abstract HlslPass CreateShaderPass(HlslShader shader, string name = null);
 
         /// <summary>
-        /// Requests a new <see cref="GraphicsSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
+        /// Requests a new <see cref="ShaderSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
         /// </summary>
-        /// <param name="parameters">The parameters to use when creating the new <see cref="GraphicsSampler"/>.</param>
+        /// <param name="parameters">The parameters to use when creating the new <see cref="ShaderSampler"/>.</param>
         /// <returns></returns>
-        public GraphicsSampler CreateSampler(ref GraphicsSamplerParameters parameters)
+        public ShaderSampler CreateSampler(ref ShaderSamplerParameters parameters)
         {
-            StructKey<GraphicsSamplerParameters> key = new StructKey<GraphicsSamplerParameters>(ref parameters);
-            GraphicsSampler newSampler = OnCreateSampler(ref parameters);
-            GraphicsSampler result = CacheObject(key, newSampler);
+            StructKey<ShaderSamplerParameters> key = new StructKey<ShaderSamplerParameters>(ref parameters);
+            ShaderSampler newSampler = OnCreateSampler(ref parameters);
+            ShaderSampler result = CacheObject(key, newSampler);
 
             if (result != newSampler)
             {
@@ -116,7 +116,7 @@ namespace Molten.Graphics
             return result;
         }
 
-        protected abstract GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters);
+        protected abstract ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters);
 
         public abstract IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0);
 
@@ -167,7 +167,7 @@ namespace Molten.Graphics
         /// </summary>
         public abstract GraphicsCommandQueue Cmd { get; }
 
-        public GraphicsSampler DefaultSampler { get; private set; }
+        public ShaderSampler DefaultSampler { get; private set; }
     }
 
     /// <summary>

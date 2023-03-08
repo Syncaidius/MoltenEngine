@@ -30,9 +30,9 @@ namespace Molten.Graphics
 
         public Dictionary<ShaderType, string> EntryPoints { get; } = new Dictionary<ShaderType, string>();
 
-        public GraphicsStateParameters Parameters;
+        public ShaderPassParameters Parameters = new ShaderPassParameters(GraphicsStatePreset.Default, PrimitiveTopology.Triangle);
 
-        public GraphicsSamplerParameters[] Samplers = new GraphicsSamplerParameters[0];
+        public ShaderSamplerParameters[] Samplers = new ShaderSamplerParameters[0];
 
         public int Iterations;
     }

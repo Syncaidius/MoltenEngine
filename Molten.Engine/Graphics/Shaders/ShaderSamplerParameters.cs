@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public struct GraphicsSamplerParameters
+    public struct ShaderSamplerParameters
     {
         /// <summary>Gets or sets the method to use for resolving a U texture coordinate that is outside the 0 to 1 range.</summary>
         [ShaderNode(ShaderNodeParseType.Enum)]
@@ -56,7 +56,7 @@ namespace Molten.Graphics
         [ShaderNode(ShaderNodeParseType.Float)]
         public float LodBias;
 
-        public GraphicsSamplerParameters(SamplerPreset preset)
+        public ShaderSamplerParameters(SamplerPreset preset)
         {
             ApplyPreset(preset);
         }

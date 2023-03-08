@@ -16,7 +16,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="device">The <see cref="DeviceDX11"/> to use when creating the underlying rasterizer state object.</param>
         /// <param name="desc"></param>
-        internal RasterizerStateDX11(DeviceDX11 device, ref GraphicsStateParameters parameters) : 
+        internal RasterizerStateDX11(DeviceDX11 device, ref ShaderPassParameters parameters) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = new StructKey<RasterizerDesc2>();

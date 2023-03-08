@@ -1,8 +1,8 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract class GraphicsSampler : GraphicsObject
+    public abstract class ShaderSampler : GraphicsObject
     {
-        protected GraphicsSampler(GraphicsDevice device, ref GraphicsSamplerParameters parameters) : 
+        protected ShaderSampler(GraphicsDevice device, ref ShaderSamplerParameters parameters) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             IsComparisonSampler = parameters.IsComparisonSampler;

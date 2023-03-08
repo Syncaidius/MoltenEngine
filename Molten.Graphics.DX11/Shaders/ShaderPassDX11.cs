@@ -12,11 +12,11 @@ namespace Molten.Graphics
     {
         public ShaderPassDX11(HlslShader shader, string name) : base(shader, name) { }
 
-        protected override void OnInitialize(ref GraphicsStateParameters parameters)
+        protected override void OnInitialize(ref ShaderPassParameters parameters)
         {
             // Check for unsupported features
             if (parameters.RasterizerDiscardEnabled)
-                throw new NotSupportedException($"DirectX 11 mode does not support enabling of '{nameof(GraphicsStateParameters.RasterizerDiscardEnabled)}'");
+                throw new NotSupportedException($"DirectX 11 mode does not support enabling of '{nameof(ShaderPassParameters.RasterizerDiscardEnabled)}'");
 
             DeviceDX11 device = Device as DeviceDX11;
 

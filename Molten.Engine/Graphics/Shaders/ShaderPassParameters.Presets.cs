@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public partial struct GraphicsStateParameters
+    public partial struct ShaderPassParameters
     {
         public void ApplyPreset(GraphicsStatePreset preset)
         {

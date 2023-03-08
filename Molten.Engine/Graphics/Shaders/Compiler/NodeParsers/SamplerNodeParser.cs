@@ -6,7 +6,7 @@
 
         protected override void OnParse(ShaderDefinition def, ShaderPassDefinition passDef, ShaderCompilerContext context, ShaderHeaderNode node)
         {
-            GraphicsSamplerParameters parameters = new GraphicsSamplerParameters();
+            ShaderSamplerParameters parameters = new ShaderSamplerParameters();
             SamplerPreset preset = SamplerPreset.Default;
 
             if (node.Values.TryGetValue(ShaderHeaderValueType.Preset, out string presetValue))

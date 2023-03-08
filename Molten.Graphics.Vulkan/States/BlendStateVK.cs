@@ -11,7 +11,7 @@ namespace Molten.Graphics
     {
         internal StructKey<PipelineColorBlendStateCreateInfo> Desc { get; }
 
-        public BlendStateVK(GraphicsDevice device, ref GraphicsStateParameters parameters) : 
+        public BlendStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = new StructKey<PipelineColorBlendStateCreateInfo>();
@@ -26,13 +26,13 @@ namespace Molten.Graphics
             bDesc.BlendConstants[3] = blendConsts.A;
             bDesc.LogicOp = parameters.Surface0.LogicOp.ToApi();
             bDesc.LogicOpEnable = parameters.Surface0.LogicOpEnable;
-            bDesc.AttachmentCount = GraphicsStateParameters.MAX_SURFACES;
+            bDesc.AttachmentCount = ShaderPassParameters.MAX_SURFACES;
             bDesc.PAttachments = EngineUtil.AllocArray<PipelineColorBlendAttachmentState>(bDesc.AttachmentCount);
 
             for (uint i = 0; i < bDesc.AttachmentCount; i++)
             {
                 ref PipelineColorBlendAttachmentState at = ref bDesc.PAttachments[i];
-                GraphicsStateParameters.SurfaceBlend sBlend = parameters[i];
+                ShaderPassParameters.SurfaceBlend sBlend = parameters[i];
 
                 at.BlendEnable = sBlend.BlendEnable;
                 at.SrcColorBlendFactor = sBlend.SrcBlend.ToApi();

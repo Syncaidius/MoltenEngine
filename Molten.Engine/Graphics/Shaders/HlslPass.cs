@@ -17,7 +17,7 @@ namespace Molten.Graphics
         /// <summary>
         /// The texture samplers to be used with the shader/component.
         /// </summary>
-        public GraphicsSampler[] Samplers;
+        public ShaderSampler[] Samplers;
         Dictionary<ShaderType, ShaderComposition> _compositions;
         public unsafe void* InputByteCode;
 
@@ -34,7 +34,7 @@ namespace Molten.Graphics
         protected HlslPass(HlslShader parent, string name) : 
             base(parent.Device, GraphicsBindTypeFlags.Input)
         {
-            Samplers = new GraphicsSampler[0];
+            Samplers = new ShaderSampler[0];
             Parent = parent;
             Name = name;
             IsEnabled = true;
@@ -48,7 +48,7 @@ namespace Molten.Graphics
 
         internal void Initialize(GraphicsStatePreset preset, PrimitiveTopology topology, Vector3UI computeGroups)
         {
-            GraphicsStateParameters p = new GraphicsStateParameters(preset, topology);
+            ShaderPassParameters p = new ShaderPassParameters(preset, topology);
             p.GroupsX = computeGroups.X;
             p.GroupsY = computeGroups.Y;
             p.GroupsZ = computeGroups.Z;
@@ -56,13 +56,13 @@ namespace Molten.Graphics
             Initialize(ref p);
         }
 
-        internal void Initialize(ref GraphicsStateParameters parameters)
+        internal void Initialize(ref ShaderPassParameters parameters)
         {
             ComputeGroups = new Vector3UI(parameters.GroupsX, parameters.GroupsY, parameters.GroupsZ);
             OnInitialize(ref parameters);
         }
 
-        protected abstract void OnInitialize(ref GraphicsStateParameters parameters);
+        protected abstract void OnInitialize(ref ShaderPassParameters parameters);
 
         public void InvokeCompleted(GraphicsCommandQueue.CustomDrawInfo customInfo)
         {

@@ -11,7 +11,7 @@
 
             // Use the default preset's Surface0 blend description.
             GraphicsStatePreset preset = GraphicsStatePreset.Default;
-            GraphicsStateParameters passParams = new GraphicsStateParameters(preset, PrimitiveTopology.Triangle);
+            ShaderPassParameters passParams = new ShaderPassParameters(preset, PrimitiveTopology.Triangle);
 
             if (node.Values.TryGetValue(ShaderHeaderValueType.Preset, out string presetValue))
             {
@@ -55,7 +55,7 @@
 
             ParseFields(node, context, ref passParams);
             passParams.IndependentBlendEnable = false;
-            for (int i = 0; i < GraphicsStateParameters.MAX_SURFACES; i++)
+            for (int i = 0; i < ShaderPassParameters.MAX_SURFACES; i++)
             {
                 if (passParams[i].BlendEnable && i > 0)
                 {

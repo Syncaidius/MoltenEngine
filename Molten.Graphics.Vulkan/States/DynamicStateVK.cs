@@ -17,7 +17,7 @@ namespace Molten.Graphics
         /// <param name="device"></param>
         /// <param name="parameters"></param>
         /// <param name="states">A list of state values to say which parts of a piepline state will be dynamic.</param>
-        public DynamicStateVK(GraphicsDevice device, ref GraphicsStateParameters parameters, DynamicState[] states) : 
+        public DynamicStateVK(GraphicsDevice device, ref ShaderPassParameters parameters, DynamicState[] states) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = new StructKey<PipelineDynamicStateCreateInfo>();

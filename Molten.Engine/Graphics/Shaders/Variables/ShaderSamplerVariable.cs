@@ -2,12 +2,12 @@
 {
     public class ShaderSamplerVariable : IShaderValue
     {
-        public GraphicsSampler Sampler { get; private set; }
+        public ShaderSampler Sampler { get; private set; }
 
         public ShaderSamplerVariable(HlslShader shader)
         {
             Parent = shader;
-            GraphicsSamplerParameters defaultParams = new GraphicsSamplerParameters();
+            ShaderSamplerParameters defaultParams = new ShaderSamplerParameters();
             defaultParams.ApplyPreset(SamplerPreset.Default);
             Sampler = shader.Device.CreateSampler(ref defaultParams);
         }
@@ -23,7 +23,7 @@
             {
                 if (value != Sampler)
                 {
-                    GraphicsSampler newSampler = value as GraphicsSampler;
+                    ShaderSampler newSampler = value as ShaderSampler;
                     if (value != null && newSampler == null)
                         throw new InvalidOperationException("Cannot set non-sampler object on a sampler variable.");
                     else

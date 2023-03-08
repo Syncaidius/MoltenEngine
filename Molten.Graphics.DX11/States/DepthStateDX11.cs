@@ -10,7 +10,7 @@ namespace Molten.Graphics
         ID3D11DepthStencilState* _native;
         uint _stencilReference;
 
-        internal DepthStateDX11(DeviceDX11 device, ref GraphicsStateParameters parameters) :
+        internal DepthStateDX11(DeviceDX11 device, ref ShaderPassParameters parameters) :
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = new StructKey<DepthStencilDesc>();

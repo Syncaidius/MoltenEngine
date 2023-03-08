@@ -11,7 +11,7 @@ namespace Molten.Graphics
     {
         internal StructKey<PipelineRasterizationStateCreateInfo> Desc { get; }
 
-        public RasterizerStateVK(GraphicsDevice device, ref GraphicsStateParameters parameters) : 
+        public RasterizerStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = new StructKey<PipelineRasterizationStateCreateInfo>();

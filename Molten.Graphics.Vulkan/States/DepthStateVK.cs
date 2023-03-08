@@ -11,7 +11,7 @@ namespace Molten.Graphics
     {
         internal StructKey<PipelineDepthStencilStateCreateInfo> Desc { get; }
 
-        public DepthStateVK(GraphicsDevice device, ref GraphicsStateParameters parameters) : 
+        public DepthStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = new StructKey<PipelineDepthStencilStateCreateInfo>();

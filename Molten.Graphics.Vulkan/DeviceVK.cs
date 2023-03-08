@@ -64,7 +64,7 @@ namespace Molten.Graphics
             return new MaterialPassVK(shader, name);
         }
 
-        protected override GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters)
+        protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
         {
             throw new NotImplementedException();
         }

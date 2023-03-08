@@ -147,7 +147,7 @@ namespace Molten.Graphics
             // TODO add the context's profiler stats to the device's main profiler.
         }
 
-        protected override GraphicsSampler OnCreateSampler(ref GraphicsSamplerParameters parameters)
+        protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
         {
             return new ShaderSamplerDX11(this, ref parameters);
         }

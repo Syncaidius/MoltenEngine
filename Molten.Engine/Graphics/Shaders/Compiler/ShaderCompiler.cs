@@ -196,7 +196,7 @@ namespace Molten.Graphics
                     // Initialize samplers.
                     for (int i = 0; i < passDef.Samplers.Length; i++)
                     {
-                        ref GraphicsSamplerParameters sp = ref passDef.Samplers[i];
+                        ref ShaderSamplerParameters sp = ref passDef.Samplers[i];
                         pass.Samplers[i] = pass.Device.CreateSampler(ref sp);
                     }
 
@@ -213,7 +213,7 @@ namespace Molten.Graphics
             
         }
 
-        private void ValidatePass(HlslPass pass, ref GraphicsStateParameters parameters, ShaderCompilerContext context)
+        private void ValidatePass(HlslPass pass, ref ShaderPassParameters parameters, ShaderCompilerContext context)
         {
             if (pass[ShaderType.Hull] != null)
             {

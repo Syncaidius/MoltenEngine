@@ -2,13 +2,13 @@
 
 namespace Molten.Graphics
 {
-    public unsafe class ShaderSamplerDX11 : GraphicsSampler
+    public unsafe class ShaderSamplerDX11 : ShaderSampler
     {
         public unsafe ID3D11SamplerState* NativePtr => _native;
 
         ID3D11SamplerState* _native;
 
-        internal ShaderSamplerDX11(DeviceDX11 device, ref GraphicsSamplerParameters parameters) : 
+        internal ShaderSamplerDX11(DeviceDX11 device, ref ShaderSamplerParameters parameters) : 
             base(device, ref parameters)
         {
             SamplerDesc desc = new SamplerDesc()

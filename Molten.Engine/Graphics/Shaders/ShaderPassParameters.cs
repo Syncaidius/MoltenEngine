@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public partial struct GraphicsStateParameters
+    public partial struct ShaderPassParameters
     {
         public const int MAX_SURFACES = 8;
 
@@ -130,7 +130,7 @@ namespace Molten.Graphics
         /// </summary>
         public SurfaceBlend Surface7;
 
-        public GraphicsStateParameters(GraphicsStatePreset preset, PrimitiveTopology topology)
+        public ShaderPassParameters(GraphicsStatePreset preset, PrimitiveTopology topology)
         {
             ApplyPreset(preset);
             Topology = topology;

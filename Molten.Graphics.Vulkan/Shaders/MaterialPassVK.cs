@@ -26,7 +26,7 @@ namespace Molten.Graphics
             _info.Flags = PipelineCreateFlags.None;
         }
 
-        protected override void OnInitialize(ref GraphicsStateParameters parameters)
+        protected override void OnInitialize(ref ShaderPassParameters parameters)
         {
             // Populate dynamic state
             DeviceVK device = Device as DeviceVK;

@@ -14,7 +14,7 @@ namespace Molten.Graphics
     {
         internal StructKey<PipelineInputAssemblyStateCreateInfo> Desc { get; }
 
-        public InputAssemblyStateVK(GraphicsDevice device, ref GraphicsStateParameters parameters) : 
+        public InputAssemblyStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = new StructKey<PipelineInputAssemblyStateCreateInfo>();

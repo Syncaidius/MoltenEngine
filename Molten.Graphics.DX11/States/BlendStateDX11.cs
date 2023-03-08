@@ -10,7 +10,7 @@ namespace Molten.Graphics
 
         ID3D11BlendState1* _native;
 
-        public BlendStateDX11(DeviceDX11 device, ref GraphicsStateParameters parameters) : 
+        public BlendStateDX11(DeviceDX11 device, ref ShaderPassParameters parameters) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = new StructKey<BlendDesc1>();
@@ -18,10 +18,10 @@ namespace Molten.Graphics
             bDesc.IndependentBlendEnable = parameters.IndependentBlendEnable ? 1 : 0;
             bDesc.AlphaToCoverageEnable = parameters.AlphaToCoverageEnable ? 1 : 0;
 
-            for (int i = 0; i < GraphicsStateParameters.MAX_SURFACES; i++)
+            for (int i = 0; i < ShaderPassParameters.MAX_SURFACES; i++)
             {
                 ref RenderTargetBlendDesc1 sBlend = ref bDesc.RenderTarget[i];
-                GraphicsStateParameters.SurfaceBlend pBlend = parameters[i];
+                ShaderPassParameters.SurfaceBlend pBlend = parameters[i];
 
                 sBlend.BlendEnable = pBlend.BlendEnable ? 1 : 0;
                 sBlend.SrcBlend = pBlend.SrcBlend.ToApi();
