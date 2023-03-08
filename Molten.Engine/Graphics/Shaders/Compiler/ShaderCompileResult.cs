@@ -6,12 +6,6 @@
 
         protected override void OnDispose() { }
 
-        internal void AddResult(List<HlslShader> result)
-        {
-            if (result.Count > 0)
-                Shaders.AddRange(result);
-        }
-
         /// <summary>
         /// Gets a <see cref="HlslGraphicsObject"/> of the specified name which was built successfully.
         /// </summary>
@@ -30,7 +24,5 @@
                 return null;
             }
         }
-
-        public HlslShader this[int index] => Shaders[index];
     }
 }

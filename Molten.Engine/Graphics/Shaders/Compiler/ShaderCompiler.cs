@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Molten.IO;
+using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
@@ -11,14 +12,16 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class ShaderCompiler : EngineObject
     {
+        ShaderLayoutValidator _layoutValidator = new ShaderLayoutValidator();
+        ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
         string[] _newLineSeparator = { "\n", Environment.NewLine };
         string[] _includeReplacements = { "#include", "<", ">", "\"" };
-        static Regex _includeCommas = new Regex("(#include) \"([^\"]*)\"");
-        static Regex _includeBrackets = new Regex("(#include) <([.+])>");
+        Regex _includeCommas = new Regex("(#include) \"([^\"]*)\"");
+        Regex _includeBrackets = new Regex("(#include) <([.+])>");
+        Regex _regexHeader = new Regex($"<shader>(.|\n)*?</shader>");
 
         ConcurrentDictionary<string, ShaderSource> _sources;
         Dictionary<ShaderNodeType, ShaderNodeParser> _nodeParsers;
-        ShaderBuilder _builder;
 
         Assembly _defaultIncludeAssembly;
         string _defaultIncludePath;
@@ -36,21 +39,199 @@ namespace Molten.Graphics
             _defaultIncludeAssembly = includeAssembly;
 
             _nodeParsers = new Dictionary<ShaderNodeType, ShaderNodeParser>();
-            _builder = new ShaderBuilder();
             _sources = new ConcurrentDictionary<string, ShaderSource>();
 
             InitializeNodeParsers();
         }
 
+        internal List<string> GetHeaders(in string source)
+        {
+            List<string> headers = new List<string>();
+            Match m = _regexHeader.Match(source);
+
+            while (m.Success)
+            {
+                headers.Add(m.Value);
+                m = m.NextMatch();
+            }
+
+            return headers;
+        }
+
+        private ShaderDefinition ParseDefinition(string xml, ShaderCompilerContext context)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xml);
+
+            XmlNode rootNode = doc.ChildNodes[0];
+            ShaderDefinition header = new ShaderDefinition();
+            ParseNode(header, null, rootNode, context);
+            return header;
+        }
+
+        private bool ValidateDefinition(ShaderDefinition def, ShaderCompilerContext context)
+        {
+            if (def.Passes.Count == 0)
+            {
+                context.AddError($"Shader '{def.Name}' is invalid: No passes defined");
+                return false;
+            }
+            else
+            {
+                if (def.Passes[0].EntryPoints.TryGetValue(ShaderType.Vertex, out string epVertex))
+                {
+                    if (string.IsNullOrWhiteSpace(epVertex))
+                    {
+                        context.AddError($"Shader '{def.Name} is invalid: First pass must define a vertex shader (VS) entry point");
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public HlslShader BuildShader(ShaderCompilerContext context, RenderService renderer, string xmlDef)
+        {
+            ShaderDefinition def;
+
+            try
+            {
+                def = ParseDefinition(xmlDef, context);
+            }
+            catch (Exception e)
+            {
+                context.AddError($"{context.Source.Filename ?? "Shader definition error"}: {e.Message}");
+                renderer.Device.Log.Error(e);
+                return null;
+            }
+
+            bool valid = ValidateDefinition(def, context);
+            if (!valid)
+                return null;
+
+
+            HlslShader shader = new HlslShader(renderer.Device, def, context.Source.Filename);
+
+            // Proceed to compiling each shader pass.
+            foreach (ShaderPassDefinition passDef in def.Passes)
+            {
+                BuildPass(context, shader, def, passDef);
+                if (context.HasErrors)
+                    return null;
+            }
+
+            shader.Scene = new SceneMaterialProperties(shader);
+            shader.Object = new ObjectMaterialProperties(shader);
+            shader.Textures = new GBufferTextureProperties(shader);
+            shader.SpriteBatch = new SpriteBatchMaterialProperties(shader);
+            shader.Light = new LightMaterialProperties(shader);
+
+            // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
+            shader.DefaultResources = new IShaderResource[shader.Resources.Length];
+            return shader;
+        }
+
+        private unsafe void BuildPass(ShaderCompilerContext context, HlslShader parent, ShaderDefinition def, ShaderPassDefinition passDef)
+        {
+            HlslPass pass = Renderer.Device.CreateShaderPass(parent, passDef.Name ?? "Unnamed pass");
+            PassCompileResult result = new PassCompileResult(pass);
+
+            // Compile each stage of the material pass.
+            foreach (ShaderType epType in passDef.EntryPoints.Keys)
+            {
+                string ep = passDef.EntryPoints[epType];
+
+                if (string.IsNullOrWhiteSpace(ep))
+                {
+                    if (_mandatoryShaders.Contains(epType))
+                        context.AddError($"Mandatory '{epType}' point for  shader is missing.");
+
+                    continue;
+                }
+
+                if (CompileSource(ep, epType, context, out ShaderCodeResult cResult))
+                {
+                    result[epType] = cResult;
+                    ShaderComposition sc = pass.AddComposition(epType);
+
+                    sc.PtrShader = BuildShader(pass, epType, cResult.ByteCode);
+                    sc.InputStructure = BuildIO(cResult, sc.Type, ShaderIOStructureType.Input);
+                    sc.OutputStructure = BuildIO(cResult, sc.Type, ShaderIOStructureType.Output);
+                }
+                else
+                {
+                    context.AddError($"{context.Source.Filename}: Failed to compile {epType} stage of material pass.");
+                    return;
+                }
+            }
+
+            if (!context.HasErrors)
+            {
+                // Fill in any extra metadata
+                if (result[ShaderType.Geometry] != null)
+                {
+                    ShaderCodeResult fcr = result[ShaderType.Geometry];
+                    pass.GeometryPrimitive = fcr.Reflection.GSInputPrimitive;
+                }
+
+                // Validate I/O structure of each shader stage.
+                if (_layoutValidator.Validate(context, result))
+                {
+                    foreach (ShaderType type in result.Results.Keys)
+                    {
+                        if (result[type] == null)
+                            continue;
+
+                        string typeName = type.ToString().ToLower();
+                        ShaderComposition comp = pass[type];
+
+                        if (comp != null)
+                        {
+                            if (!BuildStructure(context, pass.Parent, result[type], comp))
+                                context.AddError($"Invalid {typeName} shader structure for '{comp.EntryPoint}' in pass '{result.Pass.Name}'.");
+                        }
+                    }
+
+                    // Initialize samplers.
+                    for (int i = 0; i < passDef.Samplers.Length; i++)
+                    {
+                        ref GraphicsSamplerParameters sp = ref passDef.Samplers[i];
+                        pass.Samplers[i] = pass.Device.CreateSampler(ref sp);
+                    }
+
+                    pass.Initialize(ref passDef.Parameters);
+                }
+            }
+        }
+
+        private void BuildPassStructure(
+            ShaderCompilerContext context,
+            PassCompileResult pResult)
+        {
+            
+        }
+
+        private void ValidatePass(HlslPass pass, ref GraphicsStateParameters parameters, ShaderCompilerContext context)
+        {
+            if (pass[ShaderType.Hull] != null)
+            {
+                if (parameters.Topology < PrimitiveTopology.PatchListWith1ControlPoint)
+                    context.AddError($"Invalid pass topology '{parameters.Topology}': The pass has a hull shader, so topology must be a patch list");
+            }
+
+            if (pass[ShaderType.Compute] != null && pass.CompositionCount > 1)
+                context.AddError($"Invalid pass. Pass cannot mix compute entry points with render-stage entry points");
+        }
+
+
         protected unsafe abstract ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData);
 
         public abstract ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type);
 
-        public abstract bool CompileSource(string entryPoint, ShaderType type,
-            ShaderCompilerContext context, out ShaderCodeResult result);
+        public abstract bool CompileSource(string entryPoint, ShaderType type, ShaderCompilerContext context, out ShaderCodeResult result);
 
-        public abstract bool BuildStructure(ShaderCompilerContext context,
-            HlslShader shader, ShaderCodeResult result, ShaderComposition composition);
+        public abstract bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition);
 
         /// <summary>
         /// Registers all <see cref="ShaderNodeParser"/> types in the assembly.
@@ -92,7 +273,7 @@ namespace Molten.Graphics
             }
         }
 
-        public ShaderCompileResult CompileShader(string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
+        public ShaderCompileResult Compile(string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
         {
             ShaderCompilerContext context = new ShaderCompilerContext(this);
             context.Flags = flags;
@@ -104,24 +285,22 @@ namespace Molten.Graphics
             int originalLineCount = source.Split(_newLineSeparator, StringSplitOptions.None).Length;
 
             // Check the source for all supportead class types.
-            List<string> nodeHeaders = _builder.GetHeaders(in source);
-            if (nodeHeaders.Count > 0)
-            {
-                // Remove the XML Molten headers from the source.
-                // This reduces the source we need to check through to find other header types.
-                foreach (string h in nodeHeaders)
-                {
-                    // Find the header in the original source string, so we can get an accurate line number.
-                    int index = source.IndexOf(h);
-                    string[] lines = source.Substring(0, index).Split(_newLineSeparator, StringSplitOptions.None);
-                    string[] hLines = h.Split(_newLineSeparator, StringSplitOptions.None);
-                    int endLine = lines.Length + (hLines.Length - 1);
+            List<string> nodeHeaders = GetHeaders(in source);
 
-                    if (string.IsNullOrWhiteSpace(filename))
-                        finalSource = finalSource.Replace(h, $"#line {endLine}");
-                    else
-                        finalSource = finalSource.Replace(h, $"#line {endLine} \"{filename}\"");
-                }
+            // Remove the XML Molten headers from the source.
+            // This reduces the source we need to check through to find other header types.
+            foreach (string h in nodeHeaders)
+            {
+                // Find the header in the original source string, so we can get an accurate line number.
+                int index = source.IndexOf(h);
+                string[] lines = source.Substring(0, index).Split(_newLineSeparator, StringSplitOptions.None);
+                string[] hLines = h.Split(_newLineSeparator, StringSplitOptions.None);
+                int endLine = lines.Length + (hLines.Length - 1);
+
+                if (string.IsNullOrWhiteSpace(filename))
+                    finalSource = finalSource.Replace(h, $"#line {endLine}");
+                else
+                    finalSource = finalSource.Replace(h, $"#line {endLine} \"{filename}\"");
             }
 
             bool isEmbedded = (flags & ShaderCompileFlags.EmbeddedFile) == ShaderCompileFlags.EmbeddedFile;
@@ -130,11 +309,11 @@ namespace Molten.Graphics
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
             foreach (string header in nodeHeaders)
             {
-                List<HlslShader> parseResult = _builder.Build(context, Renderer, header);
-                if (parseResult != null)
-                    context.Result.AddResult(parseResult);
+                HlslShader shader = BuildShader(context, Renderer, header);
+                if (shader != null)
+                    context.Result.Shaders.Add(shader);
                 else
-                    context.AddError($"{filename}: {_builder.GetType().Name}.Parse() did not return a result (null)");
+                    context.AddError($"{filename}: {nameof(ShaderCompiler)}.Build() did not return a result (null)");
             }
 
             string msgPrefix = string.IsNullOrWhiteSpace(filename) ? "" : $"{filename}: ";
@@ -171,16 +350,7 @@ namespace Molten.Graphics
             return null;
         }
 
-        public void ParserHeader(HlslGraphicsObject shader, string header, ShaderCompilerContext context)
-        {
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(header);
-
-            XmlNode rootNode = doc.ChildNodes[0];
-            ParseNode(shader, rootNode, context);
-        }
-
-        public void ParseNode(HlslGraphicsObject shader, XmlNode parentNode, ShaderCompilerContext context)
+        internal void ParseNode(ShaderDefinition header, ShaderPassDefinition passHeader, XmlNode parentNode, ShaderCompilerContext context)
         {
             foreach (XmlNode node in parentNode.ChildNodes)
             {
@@ -203,7 +373,7 @@ namespace Molten.Graphics
                     continue;
                 }
 
-                parser.Parse(shader, context, node);
+                parser.Parse(header, passHeader, context, node);
             }
         }
 
@@ -336,62 +506,4 @@ namespace Molten.Graphics
         /// </summary>
         public Logger Log => Renderer.Log;
     }
-
-    /*
-         *  EXAMPLE material header:
-         *  
-         *  <shader>
-         *      <rasterizer>
-         *          <cull>clockwise</cull>
-         *          <depthBias>0</depthBias>
-         *          <depthClamp>1.0</depthClamp>
-         *          <fill>solid</fill>
-         *          <aaLine>false</aaLine>                                          // IsAntialiasedLineEnabled
-         *          <depthClip>false</depthClip>                                    // IsDepthClipEnabled
-         *          <front>clockwise</front>                                        // IsFrontCounterClockwise
-         *          <multisample>false</multisample>                                // IsMultisampleEnabled
-         *          <scissor>0,0,512,512</scissor>                                  // IsScissorEnabled + Scissor rectangle -- Do we allow control over this?
-         *          <slopeBias>0</slopeBias>                                        // SlopeScaledDepthBias
-         *      </rasterizer>
-         *      <blend>
-         *          <enabled>true</enabled>                                         // IsBlendEnabled
-         *              OR
-         *          <enabled rt="1">false</enabled>                                 // IsBlendEnabled for RT index 1. If the rt attribute is invalid or not present, treat it as rt index 0.
-         *          <SourceBlend rt="1">InverseDestinationAlpha</SourceBlend>       // InverseDestinationAlpha
-         *          // ... etc
-         *      </blend>
-         *      <depth>
-         *          <comparison>LessEqual</comparison>
-         *          // ... etc
-         *      </depth>
-         *      <name>G-Buffer Material</name>
-         *      <description>A description of the material</description>
-         *      <pass>
-         *          <name>blur</name>
-         *          <iterations>2</interations>
-         *          <vertex>VS_Main</vertex>
-         *          <geometry>GS_Main</geometry>
-         *          <hull>H_Main</hull>
-         *          <domain>Light_Domain</doman>
-         *          <pixel>PS_Main</pixel>
-         *          <rasterizer>
-         *              // [Optional] Pass-specific rasterizer state. Placing inside a pass overrides any states defined in the material root. See above for example.
-         *          </rasterizer
-         *          <blend>
-         *              // [Optional] Pass-specific blend state.
-         *          </blend
-         *          <depth>
-         *              // [Optional] Pass-specific depth state.
-         *          </depth
-         *      <pass>
-         *  </shader>
-         *  
-         *  <compute>
-         *      <name>G-Buffer Material</name>
-         *      <description>A description of the compute task</description>
-         *      <entry>CS_Main</entry>
-         *  </compute>
-         * 
-         *  HLSL/GLSL code from here and onwards.
-         */
 }

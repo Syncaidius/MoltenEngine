@@ -14,9 +14,9 @@ namespace Molten.Graphics
         {
             public uint VertexCount;        // 4-bytes
             public ITexture2D Texture;      // 8-bytes (64-bit reference)
-            public HlslShader Shader;      // 8-bytes (64-bit reference)
+            public HlslShader Shader;       // 8-bytes (64-bit reference)
             public Rectangle Clip;          // Clipping rectangle.
-            public RangeType Type;           // 1-byte
+            public RangeType Type;          // 1-byte
 
             public override string ToString()
             {

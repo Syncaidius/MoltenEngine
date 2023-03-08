@@ -30,6 +30,7 @@ namespace Molten.Graphics
         /// Creates a new instance of <see cref="HlslPass"/>. Can only be called by a derived class.
         /// </summary>
         /// <param name="parent">The parnet shader that owns this new instance of <see cref="HlslPass"/>.</param>
+        /// <param name="name">The readable name to give to the <see cref="HlslPass"/>.</param>
         protected HlslPass(HlslShader parent, string name) : 
             base(parent.Device, GraphicsBindTypeFlags.Input)
         {
@@ -57,12 +58,8 @@ namespace Molten.Graphics
 
         internal void Initialize(ref GraphicsStateParameters parameters)
         {
-            if (IsInitialized)
-                return;
-
             ComputeGroups = new Vector3UI(parameters.GroupsX, parameters.GroupsY, parameters.GroupsZ);
             OnInitialize(ref parameters);
-            IsInitialized = true;
         }
 
         protected abstract void OnInitialize(ref GraphicsStateParameters parameters);
@@ -81,19 +78,6 @@ namespace Molten.Graphics
             }
 
             return comp;
-        }
-
-        internal GraphicsBindResult Validate(PrimitiveTopology topology)
-        {
-            GraphicsBindResult result = GraphicsBindResult.Successful;
-
-            if (_compositions.TryGetValue(ShaderType.Hull, out ShaderComposition hs))
-            {
-                if (topology < PrimitiveTopology.PatchListWith1ControlPoint)
-                    result |= GraphicsBindResult.HullPatchTopologyExpected;
-            }
-
-            return result;
         }
 
         public override void GraphicsRelease()
@@ -132,6 +116,8 @@ namespace Molten.Graphics
             }
         }
 
+        public int CompositionCount => _compositions.Count;
+
         /// <summary>
         /// Gets or sets the type of geometry shader primitives to output.
         /// </summary>
@@ -153,11 +139,6 @@ namespace Molten.Graphics
         ///   <c>true</c> if this instance is enabled; otherwise, <c>false</c>.
         /// </value>
         public bool IsEnabled { get; set; }
-
-        /// <summary>
-        /// Gets whether the current pass is initialized.
-        /// </summary>
-        public bool IsInitialized { get; protected set; }
 
         public HlslShader Parent { get; }
 

@@ -7,9 +7,9 @@
         /// </summary>
         public Dictionary<string, ShaderCodeResult> Shaders { get; } 
 
-        public ShaderCompileResult Result { get; }
+        internal ShaderCompileResult Result { get; }
 
-        public IReadOnlyList<ShaderCompilerMessage> Messages { get; }
+        internal IReadOnlyList<ShaderCompilerMessage> Messages { get; }
 
         public bool HasErrors { get; private set; }
 

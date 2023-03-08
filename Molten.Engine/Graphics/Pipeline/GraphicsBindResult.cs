@@ -47,10 +47,6 @@
         /// <summary>The domain shader was present, but invalid.</summary>
         InvalidDomainShader = 1 << 12,
 
-        /// <summary>A draw attempt was made while tessellation was active (hull shader applied), but the provided 
-        /// vertex buffer was not of a patch topology.</summary>
-        HullPatchTopologyExpected = 1 << 13,
-
         /// <summary>The input-output link between two or more shaders is invalid. Input and output must have the same layout.</summary>
         InvalidShaderIOChain = 1 << 14,
 

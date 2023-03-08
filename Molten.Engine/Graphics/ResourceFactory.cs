@@ -169,7 +169,7 @@ namespace Molten.Graphics
                 return new ShaderCompileResult();
             }
 
-            return _compiler.CompileShader(src, filename, ShaderCompileFlags.EmbeddedFile, assembly, nameSpace);
+            return _compiler.Compile(src, filename, ShaderCompileFlags.EmbeddedFile, assembly, nameSpace);
         }
 
         /// <summary>Compiles a set of shaders from the provided source string.</summary>
@@ -187,7 +187,7 @@ namespace Molten.Graphics
                 flags = ShaderCompileFlags.None;
             }
 
-            return _compiler.CompileShader(source, filename, flags, null, null);
+            return _compiler.Compile(source, filename, flags, null, null);
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace Molten.Graphics
 {
-    public abstract class ShaderNodeParser
+    internal abstract class ShaderNodeParser
     {
         class FieldBinding
         {
@@ -21,45 +21,12 @@ namespace Molten.Graphics
 
         static string[] _colorDelimiters = new string[] { ",", " " };
 
-        /// <summary>
-        /// Gets a list of <see cref="IShaderElement"/> types that the current <see cref="ShaderNodeParser"/> accepts. If null, all <typeparamref name="S"/> will be accepted.
-        /// </summary>
-        public abstract Type[] TypeFilter { get; }
-
         public abstract ShaderNodeType NodeType { get; }
 
-        public void Parse(HlslGraphicsObject hlslObject, ShaderCompilerContext context, XmlNode node)
+        internal void Parse(ShaderDefinition def, ShaderPassDefinition passDef, ShaderCompilerContext context, XmlNode node)
         {
-            if(TypeFilter != null)
-            {
-                bool isValid = false;
-                int validFilterCount = 0;
-                foreach(Type t in TypeFilter)
-                {
-                    if (typeof(HlslGraphicsObject).IsAssignableFrom(t))
-                    {
-                        if (t.IsAssignableFrom(hlslObject.GetType()))
-                        {
-                            isValid = true;
-                            validFilterCount++;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        context.AddWarning($"Ignoring invalid filter type '{t.Name}' provided in '{this.GetType().Name}' shader node parser");
-                    }
-                }
-
-                if(!isValid && validFilterCount > 0)
-                {
-                    context.AddWarning($"Ignoring unsupported '{node.Name}' node in '{hlslObject.GetType().Name}' definition");
-                    return;
-                }    
-            }
-
             ShaderHeaderNode shn = ParseNode(context, node);
-            OnParse(hlslObject, context, shn);
+            OnParse(def, passDef, context, shn);
         }
 
         private ShaderHeaderNode ParseNode(ShaderCompilerContext context, XmlNode node)
@@ -150,7 +117,7 @@ namespace Molten.Graphics
             return hNode;
         }
 
-        protected abstract void OnParse(HlslGraphicsObject hlslObject, ShaderCompilerContext context, ShaderHeaderNode node);
+        protected abstract void OnParse(ShaderDefinition def, ShaderPassDefinition passDef, ShaderCompilerContext context, ShaderHeaderNode node);
 
         protected void InvalidValueMessage(ShaderCompilerContext context, (string Name, string Value) node, string friendlyTagName, string friendlyValueName)
         {
@@ -372,32 +339,14 @@ namespace Molten.Graphics
             }
         }
 
-        protected string InitializeEntryPoint(HlslPass pass, ShaderCompilerContext context, ShaderHeaderNode node, ShaderType type)
+        protected string InitializeEntryPoint(ShaderPassDefinition passDef, ShaderCompilerContext context, ShaderHeaderNode node, ShaderType type)
         {
             if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string entryPoint))
-            {
-                ShaderComposition comp = pass.AddComposition(type);
-                comp.EntryPoint = entryPoint;
-            }
+                passDef.EntryPoints[type] = entryPoint;
             else
-            {
                 context.AddError($"<{type.ToString().ToLower()}> entry-point tag is missing a value");
-            }
 
             return entryPoint;
         }
-    }
-
-    public abstract class ShaderNodeParser<T> : ShaderNodeParser
-        where T : HlslGraphicsObject
-    {
-        public sealed override Type[] TypeFilter { get; } = new Type[] { typeof(T) };
-
-        protected sealed override void OnParse(HlslGraphicsObject hlslObject, ShaderCompilerContext context, ShaderHeaderNode node)
-        {
-            OnParse(hlslObject as T, context, node);
-        }
-
-        protected abstract void OnParse(T element, ShaderCompilerContext context, ShaderHeaderNode node);
     }
 }

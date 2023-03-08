@@ -1,15 +1,15 @@
 ﻿namespace Molten.Graphics
 {
-    internal class DescriptionParser : ShaderNodeParser<HlslShader>
+    internal class DescriptionParser : ShaderNodeParser
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Description;
 
-        protected override void OnParse(HlslShader shader, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(ShaderDefinition def, ShaderPassDefinition passDef, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string desc))
-                shader.Description = desc;
+                def.Description = desc;
             else
-                shader.Description = "Unknown";
+                def.Description = "Unknown";
         }
     }
 }

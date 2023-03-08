@@ -14,21 +14,25 @@
         /// <summary>
         /// Gets a description of the shader.
         /// </summary>
-        public string Description { get; internal set; }
+        public string Description { get; }
 
         /// <summary>
         /// Gets the author of the shader.
         /// </summary>
-        public string Author { get; internal set; }
+        public string Author { get; }
 
         /// <summary>
         /// Gets the original source filename of the shader, if any.
         /// </summary>
         public string Filename { get; }
 
-        internal HlslShader(GraphicsDevice device, string filename = null) : 
+        internal HlslShader(GraphicsDevice device, ShaderDefinition def, string filename = null) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
+            Name = def.Name;
+            Description = def.Description;
+            Author = def.Author;
+
             Filename = filename ?? "";
         }
 

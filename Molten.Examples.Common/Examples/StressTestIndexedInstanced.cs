@@ -36,9 +36,9 @@ namespace Molten.Examples
         {
             base.OnLoadContent(loader);
             _hShader = loader.Load<HlslShader>("assets/BasicColorInstanced.mfx");
-
             loader.OnCompleted += Loader_OnCompleted;
         }
+
         private void Loader_OnCompleted(ContentLoadBatch loader)
         {
             if (!_hShader.HasAsset())

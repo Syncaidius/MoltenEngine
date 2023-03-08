@@ -7,6 +7,7 @@ namespace Molten.Examples
     {
         const int CUBE_COUNT = 5000;
 
+        ContentLoadHandle _hShader;
         List<SceneObject> _objects;
 
         protected override void OnLoadContent(ContentLoadBatch loader)
@@ -14,17 +15,19 @@ namespace Molten.Examples
             base.OnLoadContent(loader);
 
             _objects = new List<SceneObject>();
+            _hShader = loader.Load<HlslShader>("assets/BasicColor.mfx");
+            loader.OnCompleted += Loader_OnCompleted;
+        }
 
-            string fn = "assets/BasicColor.mfx";
-            string source = "";
-            using (FileStream stream = new FileStream(fn, FileMode.Open, FileAccess.Read))
+        private void Loader_OnCompleted(ContentLoadBatch loader)
+        {
+            if (!_hShader.HasAsset())
             {
-                using (StreamReader reader = new StreamReader(stream))
-                    source = reader.ReadToEnd();
+                Close();
+                return;
             }
 
-            ShaderCompileResult shaders = Engine.Renderer.Resources.CompileShaders(ref source, fn);
-            TestMesh.Shader = shaders[0];
+            TestMesh.Shader = _hShader.Get<HlslShader>();
             for (int i = 0; i < CUBE_COUNT; i++)
                 SpawnRandomTestCube(TestMesh, 70);
         }

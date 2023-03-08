@@ -4,14 +4,12 @@
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Author;
 
-        public override Type[] TypeFilter { get; } = { typeof(HlslShader) };
-
-        protected override void OnParse(HlslGraphicsObject foundation, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(ShaderDefinition header, ShaderPassDefinition passHeader, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             if(node.Values.TryGetValue(ShaderHeaderValueType.Value, out string author))
-                (foundation as HlslShader).Author = author;
+                header.Author = author;
             else
-                (foundation as HlslShader).Author = "Unknown";
+                header.Author = "Unknown";
         }
     }
 }

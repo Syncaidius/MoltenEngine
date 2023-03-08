@@ -4,12 +4,15 @@
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Name;
 
-        public override Type[] TypeFilter => null;
-
-        protected override void OnParse(HlslGraphicsObject foundation, ShaderCompilerContext context, ShaderHeaderNode node)
+        protected override void OnParse(ShaderDefinition def, ShaderPassDefinition passDef, ShaderCompilerContext context, ShaderHeaderNode node)
         {
             if (node.Values.TryGetValue(ShaderHeaderValueType.Value, out string name))
-                foundation.Name = name;
+            {
+                if (passDef != null)
+                    passDef.Name = name;
+                else
+                    def.Name = name;
+            }
         }
     }
 }
