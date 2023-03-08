@@ -201,6 +201,7 @@ namespace Molten.Graphics
                     }
 
                     pass.Initialize(ref passDef.Parameters);
+                    parent.AddPass(pass);
                 }
             }
         }
@@ -311,7 +312,7 @@ namespace Molten.Graphics
             {
                 HlslShader shader = BuildShader(context, Renderer, header);
                 if (shader != null)
-                    context.Result.Shaders.Add(shader);
+                    context.Result.AddShader(shader);
                 else
                     context.AddError($"{filename}: {nameof(ShaderCompiler)}.Build() did not return a result (null)");
             }

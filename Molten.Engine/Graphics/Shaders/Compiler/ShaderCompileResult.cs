@@ -2,7 +2,14 @@
 {
     public sealed class ShaderCompileResult : EngineObject
     {
-        internal List<HlslShader> Shaders { get; } = new List<HlslShader>();
+        List<HlslShader> _shaders = new List<HlslShader>();
+        Dictionary<string, HlslShader> _shadersByName = new Dictionary<string, HlslShader>();
+
+        internal void AddShader(HlslShader shader)
+        {
+            _shaders.Add(shader);
+            _shadersByName.Add(shader.Name.ToLower(), shader);
+        }
 
         protected override void OnDispose() { }
 
@@ -15,14 +22,11 @@
         {
             get
             {
-                foreach (HlslShader shader in Shaders)
-                {
-                    if (shader.Name == shaderName)
-                        return shader;
-                }
-
-                return null;
+                _shadersByName.TryGetValue(shaderName.ToLower(), out HlslShader shader);
+                return shader;
             }
         }
+
+        public HlslShader this[int index] => _shaders[index];
     }
 }
