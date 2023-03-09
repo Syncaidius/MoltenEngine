@@ -5,7 +5,7 @@
 		<name>main</name>
 		<iterations>1</iterations>
 		<vertex>VS</vertex>
-    <fragment>PS</fragment>
+        <fragment>PS</fragment>
 	</pass>
 </shader>
 

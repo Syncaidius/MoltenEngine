@@ -34,6 +34,6 @@ namespace Molten.Graphics
 
         public ShaderSamplerParameters[] Samplers = new ShaderSamplerParameters[0];
 
-        public int Iterations;
+        public int Iterations = 1;
     }
 }
