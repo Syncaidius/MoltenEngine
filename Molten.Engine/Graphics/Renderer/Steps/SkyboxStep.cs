@@ -52,7 +52,7 @@
             cmd.SetViewports(camera.Surface.Viewport);
             cmd.SetScissorRectangle(bounds);
 
-            cmd.BeginDraw(context.BaseStateConditions);
+            cmd.BeginDraw();
             _skyboxData.RenderTransform = Matrix4F.Scaling(camera.MaxDrawDistance) * Matrix4F.CreateTranslation(camera.Position);
             _sphereMesh.Render(cmd, renderer, camera, _skyboxData);
             cmd.EndDraw();

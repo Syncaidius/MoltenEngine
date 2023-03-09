@@ -51,21 +51,22 @@ namespace Molten.Graphics
             }
         }
 
-        /// <summary>Copies an array of elements into the buffer.</summary>
-        /// <param name="data">The elements to set </param>
-        public void SetData<T>(T[] data) where T : unmanaged
+        /// <summary>Copies element data into the buffer.</summary>
+        /// <param name="data">The source of elements to copy into the buffer.</param>
+        /// <param name="completionCallback">The callback to invoke when the set-data operation has been completed.</param>
+        public void SetData<T>(GraphicsPriority priority, T[] data, Action completionCallback = null) where T : unmanaged
         {
-            SetData<T>(data, 0, (uint)data.Length);
+            SetData(priority, data, 0, (uint)data.Length, 0, null, completionCallback);
         }
 
         /// <summary>Copies element data into the buffer.</summary>
         /// <param name="data">The source of elements to copy into the buffer.</param>
-        /// <param name="offset">The ID of the first element in the buffer at which to copy the source data into.</param>
-        /// <param name="count">The number of elements to copy from the source array.</param>
-        public void SetData<T>(T[] data, uint count)
+        /// <param name="count">The number of elements to copy from the source array, beginning at the start index.</param>
+        /// <param name="completionCallback">The callback to invoke when the set-data operation has been completed.</param>
+        public void SetData<T>(GraphicsPriority priority, T[] data, uint count, Action completionCallback = null)
             where T : unmanaged
         {
-            SetData<T>(data, 0, count);
+            SetData(priority, data, 0, count, 0, null, completionCallback);
         }
 
         /// <summary>Copies element data into the buffer.</summary>
@@ -75,10 +76,10 @@ namespace Molten.Graphics
         /// <param name="elementOffset">The number of elements from the beginning of the <see cref="BufferSegment"/> to offset the destination of the provided data.
         /// The number of bytes the data is offset is based on the <see cref="Stride"/> value of the buffer segment.</param>
         /// <param name="completionCallback">The callback to invoke when the set-data operation has been completed.</param>
-        public void SetData<T>(T[] data, uint startIndex, uint count, uint elementOffset = 0, IStagingBuffer staging = null, Action completionCallback = null) 
+        public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint count, uint elementOffset = 0, IStagingBuffer staging = null, Action completionCallback = null) 
             where T : unmanaged
         {
-            uint tStride = (uint)Marshal.SizeOf(typeof(T));
+            uint tStride = (uint)sizeof(T);
             uint dataSize = tStride * count;
             uint writeOffset = elementOffset * tStride;
             uint finalBufferPos = dataSize + writeOffset + ByteOffset;
@@ -90,7 +91,6 @@ namespace Molten.Graphics
 
             BufferSetOperation<T> op = new BufferSetOperation<T>()
             {
-                Data = new T[count],
                 DataStride = tStride,
                 ByteOffset = ByteOffset + writeOffset,
                 StartIndex = startIndex,
@@ -100,32 +100,18 @@ namespace Molten.Graphics
                 Staging = staging,
             };
 
-            // Copy data and queue operation.
-            Array.Copy(data, startIndex, op.Data, 0, count);
-            _buffer.QueueOperation(op);
-        }
-
-        /// <summary>Immediately sets the data on the buffer.</summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="context">The pipe.</param>
-        /// <param name="data">The data.</param>
-        /// <param name="startIndex">The element index within the provided data array to start copying from.</param>
-        /// <param name="count">The number of elements to transfer from the provided data array.</param>
-        /// <param name="byteOffset">The number of bytes to offset the copied data within the buffer segment.</param>
-        internal void SetDataImmediate<T>(CommandQueueDX11 context, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null) 
-            where T : unmanaged
-        {
-            uint tStride = (uint)sizeof(T);
-            uint dataSize = tStride * count;
-            uint writeOffset = elementOffset * tStride;
-            uint finalBytePos = dataSize + writeOffset + ByteOffset;
-            uint segmentBounds = ByteOffset + ByteCount;
-
-            // Ensure the buffer can fit the provided data.
-            if (finalBytePos > segmentBounds)
-                throw new OverflowException($"Provided data's final byte position {finalBytePos} would exceed the segment's bounds (byte {segmentBounds})");
-
-            _buffer.Set<T>(context, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
+            if(priority == GraphicsPriority.Immediate)
+            {
+                op.Data = data;
+                op.Process(Device.Cmd);
+            }
+            else
+            {
+                // Clone the data for deferred operation.
+                op.Data = new T[count];
+                Array.Copy(data, startIndex, op.Data, 0, count);
+                _buffer.QueueOperation(op);
+            }
         }
 
         public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, RawStream> callback, IStagingBuffer staging = null)
@@ -157,27 +143,30 @@ namespace Molten.Graphics
                 Version++;
         }
 
-        internal void GetData<T>(CommandQueueDX11 context, 
-            T[] destination, 
-            uint startIndex, 
-            uint count, 
-            uint elementOffset = 0, 
-            Action<T[]> completionCallback = null) 
+        public void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint elementOffset, Action<T[]> completionCallback)
             where T : unmanaged
         {
-            _buffer.QueueOperation(new BufferGetOperation<T>()
+            uint tStride = (uint)sizeof(T);
+            uint writeOffset = elementOffset * tStride;
+
+            BufferGetOperation<T> op = new BufferGetOperation<T>()
             {
-                ByteOffset = ByteOffset,
+                ByteOffset = ByteOffset + writeOffset,
                 DestinationArray = destination,
                 DestinationIndex = startIndex,
                 Count = count,
                 DataStride = (uint)sizeof(T),
                 CompletionCallback = completionCallback,
                 SourceSegment = this,
-            });
+            };
+
+            if (priority == GraphicsPriority.Immediate)
+                op.Process(Device.Cmd);
+            else
+                _buffer.QueueOperation(op);
         }
 
-        internal void CopyTo(CommandQueueDX11 context, uint sourceByteOffset, BufferSegment destination, uint destByteOffset, uint count, bool isImmediate = false, Action completionCallback = null)
+        internal void CopyTo(CommandQueueDX11 cmd, uint sourceByteOffset, BufferSegment destination, uint destByteOffset, uint count, bool isImmediate = false, Action completionCallback = null)
         {
             uint bytesToCopy = Stride * count;
             uint totalOffset = ByteOffset + sourceByteOffset;
@@ -197,7 +186,7 @@ namespace Molten.Graphics
 
             if (isImmediate)
             {
-                _buffer.CopyTo(context, destination._buffer, sourceRegion, destination.ByteOffset + destByteOffset);
+                _buffer.CopyTo(cmd, destination._buffer, sourceRegion, destination.ByteOffset + destByteOffset);
             }
             else
             {

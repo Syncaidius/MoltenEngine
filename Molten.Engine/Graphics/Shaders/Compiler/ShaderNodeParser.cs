@@ -96,13 +96,6 @@ namespace Molten.Graphics
 
                     switch (cName)
                     {
-                        case "condition":
-                            if (Enum.TryParse(cValue, true, out StateConditions sc))
-                                hNode.Conditions |= sc;
-                            else
-                                InvalidEnumMessage<StateConditions>(context, (c.Name, c.InnerText), "state condition");
-                            break;
-
                         default:
                             if (cNode.ChildNodes.Count > 0)
                                 hNode.ChildNodes.Add(cNode);

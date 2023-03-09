@@ -48,6 +48,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count)
         {
             throw new NotImplementedException();

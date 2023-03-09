@@ -4,13 +4,16 @@ namespace Molten.Graphics
 {
     public interface IGraphicsBufferSegment : IShaderResource
     {
-        void SetData<T>(T[] data)
+        void SetData<T>(GraphicsPriority priority, T[] data, Action completionCallback = null)
             where T : unmanaged;
 
-        void SetData<T>(T[] data, uint count)
+        void SetData<T>(GraphicsPriority priority, T[] data, uint count, Action completionCallback = null)
             where T : unmanaged;
 
-        void SetData<T>(T[] data, uint startIndex, uint count, uint elementOffset = 0, IStagingBuffer staging = null, Action completionCallback = null)
+        void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint count, uint elementOffset = 0, IStagingBuffer staging = null, Action completionCallback = null)
+            where T : unmanaged;
+
+        void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint elementOffset = 0, Action<T[]> completionCallback = null)
             where T : unmanaged;
 
         void Release();
@@ -42,6 +45,9 @@ namespace Molten.Graphics
         /// </summary>
         uint Stride { get; }
 
+        /// <summary>
+        /// Gets the vertex format of the current <see cref="IGraphicsBufferSegment"/>, if any.
+        /// </summary>
         VertexFormat VertexFormat { get; }
     }
 }

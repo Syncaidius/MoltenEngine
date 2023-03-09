@@ -143,17 +143,10 @@ namespace Molten.Graphics
         public HlslShader Parent { get; }
 
         /// <summary>
-        /// Gets the type of the current <see cref="HlslPass"/>.
+        /// Gets whether the current <see cref="HlslPass"/> is a compute pass.
         /// </summary>
-        public ShaderPassType Type { get; internal set; }
+        public bool IsCompute { get; internal set; }
 
         public Vector3UI ComputeGroups { get; private set; }
-    }
-
-    public enum ShaderPassType
-    {
-        Material = 0,
-
-        Compute = 1,
     }
 }

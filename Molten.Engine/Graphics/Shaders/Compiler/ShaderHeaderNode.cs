@@ -25,8 +25,6 @@ namespace Molten.Graphics
         /// </summary>
         public Dictionary<ShaderHeaderValueType, string> Values { get; } = new Dictionary<ShaderHeaderValueType, string>();
 
-        public StateConditions Conditions { get; set; }
-
         /// <summary>
         /// Gets a list of child values that were bound to the header node
         /// </summary>

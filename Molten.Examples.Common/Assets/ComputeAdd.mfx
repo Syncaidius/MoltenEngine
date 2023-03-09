@@ -1,9 +1,8 @@
 ﻿<shader>
-	<name>position-color</name>
-	<description>A simple shader which renders meshes with position and color data</description>
+	<name>compute-add</name>
+	<description>A simple compute shader that takes two buffers full of numbers and outputs one sum per index to an output buffer.</description>
 	<pass>
 		<name>main</name>
-		<iterations>1</iterations>
 		<compute>CS</compute>
 	</pass>
 </shader>

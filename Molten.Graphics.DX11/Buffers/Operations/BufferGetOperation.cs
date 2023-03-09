@@ -1,6 +1,7 @@
 ﻿namespace Molten.Graphics
 {
-    internal struct BufferGetOperation<T> : IBufferOperation where T : unmanaged
+    internal struct BufferGetOperation<T> : IBufferOperation 
+        where T : unmanaged
     {
         /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="SourceSegment"/>.</summary>
         internal uint ByteOffset;
@@ -25,8 +26,7 @@
         public void Process(GraphicsCommandQueue cmd)
         {
             DestinationArray = DestinationArray ?? new T[Count];
-            (SourceSegment.Buffer as GraphicsBuffer).Get<T>(cmd, DestinationArray, 0, ByteOffset, DataStride, Count);
-
+            (SourceSegment.Buffer as GraphicsBuffer).Get(cmd, DestinationArray, 0, ByteOffset, DataStride, Count);
             CompletionCallback.Invoke(DestinationArray);
         }
     }

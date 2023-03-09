@@ -67,7 +67,7 @@ namespace Molten.Graphics
                 scene.PointLights.Data[i] = ld;
             }
 
-            _lightSegment.SetData(scene.PointLights.Data);
+            _lightSegment.SetData(GraphicsPriority.Immediate, scene.PointLights.Data);
 
             // Set data buffer on domain and pixel shaders
             _matPoint.Light.Data.Value = _lightSegment; // TODO Need to implement a dynamic structured buffer we can reuse here.
@@ -88,12 +88,12 @@ namespace Molten.Graphics
             cmd.IndexBuffer.Value = null;
             uint pointCount = scene.PointLights.ElementCount * 2;
 
-            cmd.BeginDraw(StateConditions.None); // TODO expand use of conditions here
+            cmd.BeginDraw();
             cmd.Draw(_matPoint, pointCount, 0);
             cmd.EndDraw();
 
             // Draw debug light volumes
-            cmd.BeginDraw(StateConditions.Debug);
+            cmd.BeginDraw();
             cmd.Draw(_matDebugPoint, pointCount, 0);
             cmd.EndDraw();
         }

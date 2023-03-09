@@ -53,7 +53,7 @@
             _defaultProfiler = _profiler = new RenderProfiler();
         }
 
-        public void BeginDraw(StateConditions conditions)
+        public void BeginDraw()
         {
 #if DEBUG
             if (DrawInfo.Began)
@@ -115,6 +115,14 @@
             uint startIndex = 0,
             int vertexIndexOffset = 0,
             uint instanceStartIndex = 0);
+
+        /// <summary>
+        /// Dispatches a <see cref="HlslShader"/> as a compute shader. Any non-compute passes will be skipped.
+        /// </summary>
+        /// <param name="shader">The shader to be dispatched.</param>
+        /// <param name="groups">The number of thread groups.</param>
+        /// <returns></returns>
+        public abstract GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups);
 
         public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
 where T : class, IGraphicsObject

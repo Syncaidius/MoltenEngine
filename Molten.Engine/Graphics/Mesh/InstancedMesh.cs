@@ -64,7 +64,7 @@ namespace Molten.Graphics
         public void SetInstanceData(I[] data, uint startIndex, uint count)
         {
             _instanceCount = count;
-            _instanceBuffer.SetData(data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _instanceBuffer.SetData(GraphicsPriority.PreApply, data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)

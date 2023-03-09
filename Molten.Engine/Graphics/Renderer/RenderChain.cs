@@ -72,9 +72,6 @@ namespace Molten.Graphics
             Renderer.Surfaces.MultiSampleLevel = camera.MultiSampleLevel;
             context.Scene = sceneData;
 
-            if (camera.MultiSampleLevel >= AntiAliasLevel.X2)
-                context.BaseStateConditions = StateConditions.Multisampling;
-
             cmd.BeginEvent($"Pre-Render");
             RenderChainLink stepPreRender = BuildPreRender(sceneData, camera);
             stepPreRender.Run(Renderer, camera, context, time);

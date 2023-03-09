@@ -25,7 +25,7 @@
 
             cmd.SetViewports(camera.Surface.Viewport);
 
-            cmd.BeginDraw(context.BaseStateConditions);
+            cmd.BeginDraw();
             renderer.RenderSceneLayer(cmd, context.Layer, camera);
             cmd.EndDraw();
         }

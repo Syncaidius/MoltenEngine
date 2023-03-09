@@ -344,8 +344,7 @@ namespace Molten.Graphics
                 _debugAnnotation->SetMarker(ptr);
         }
 
-        private GraphicsBindResult DrawCommon(HlslShader shader, QueueValidationMode mode, 
-            CmdQueueDrawCallback drawCallback, CmdQueueDrawFailCallback failCallback)
+        private GraphicsBindResult ApplyState(HlslShader shader, QueueValidationMode mode, CmdQueueDrawCallback drawCallback)
         {
             GraphicsBindResult vResult = GraphicsBindResult.Successful;
 
@@ -356,83 +355,80 @@ namespace Molten.Graphics
             bool shaderChanged = Shader.Bind();
 
             // Re-render the same material for mat.Iterations.
-            BeginEvent($"Draw '{mode}' Call");
-            for (uint j = 0; j < shader.Passes.Length; j++)
+            BeginEvent($"{mode} Call");
+            for (uint i = 0; i < shader.Passes.Length; i++)
             {
-                ShaderPassDX11 pass = shader.Passes[j] as ShaderPassDX11;
+                ShaderPassDX11 pass = shader.Passes[i] as ShaderPassDX11;
                 if (!pass.IsEnabled)
                 {
-                    SetMarker($"Pass {j} - Skipped (Disabled)");
+                    SetMarker($"Pass {i} - Skipped (Disabled)");
                     continue;
                 }
 
-                BeginEvent($"Pass {j} - {pass.Type}");
-                switch (pass.Type)
+                if (pass.IsCompute)
                 {
-                    case ShaderPassType.Material:
-                        vResult = ApplyRenderState(pass, mode);
-                        if (vResult == GraphicsBindResult.Successful)
+                    BeginEvent($"Pass {i} - Compute");
+                    vResult = ApplyComputeState(pass);
+                    if (vResult == GraphicsBindResult.Successful)
+                    {
+                        Vector3UI groups = DrawInfo.ComputeGroups;
+
+                        // Re-render the same pass for K iterations.
+                        for (int j = 0; j < pass.Iterations; j++)
                         {
-                            // Re-render the same pass for K iterations.
-                            for (int k = 0; k < pass.Iterations; k++)
-                            {
-                                BeginEvent($"Iteration {k}");
-                                drawCallback();
-                                (Device as DeviceDX11).ProcessDebugLayerMessages();
-                                pass.InvokeCompleted(DrawInfo.Custom);
-                                Profiler.Current.DrawCalls++;
-                                EndEvent();
-                            }
+                            BeginEvent($"Iteration {j}"); 
+                            Native->Dispatch(groups.X, groups.Y, groups.Z);
+                            Profiler.Current.DispatchCalls++;
+                            EndEvent();
                         }
-                        break;
 
-                    case ShaderPassType.Compute:
-                        vResult = ApplyComputeState(pass);
-                        if (vResult == GraphicsBindResult.Successful)
+                        pass.InvokeCompleted(DrawInfo.Custom);
+                    }
+                    EndEvent();
+                }
+                else
+                {
+                    // Skip non-compute passes when we're in compute-only mode.
+                    if (mode == QueueValidationMode.Compute)
+                    {
+                        SetMarker($"Pass {i} - Skipped (Compute-Only-mode)");
+                        continue;
+                    };
+
+                    BeginEvent($"Pass {i} - Render");
+                    vResult = ApplyRenderState(pass, mode);
+                    if (vResult == GraphicsBindResult.Successful)
+                    {
+                        // Re-render the same pass for K iterations.
+                        for (int k = 0; k < pass.Iterations; k++)
                         {
-                            Vector3UI groups = DrawInfo.ComputeGroups;
-
-                            // Re-dispatch the same pass for K iterations.
-                            for (int k = 0; k < pass.Iterations; k++)
-                            {
-                                BeginEvent($"Iteration {k}");
-                                Native->Dispatch(groups.X, groups.Y, groups.Z);
-                                (Device as DeviceDX11).ProcessDebugLayerMessages();
-                                pass.InvokeCompleted(DrawInfo.Custom);
-                                Profiler.Current.DispatchCalls++;
-                                EndEvent();
-                            }
+                            BeginEvent($"Iteration {k}");
+                            drawCallback();
+                            Profiler.Current.DrawCalls++;
+                            EndEvent();
                         }
-                        break;
 
-                    default:
-                        Device.Log.Error($"Unable to apply state for unsupported shader type: {pass.Type}. Skipping command");
-                        return GraphicsBindResult.InvalidShader;
+                        pass.InvokeCompleted(DrawInfo.Custom);
+                    }
+                    EndEvent();
                 }
 
-
-                EndEvent();
-                if(vResult != GraphicsBindResult.Successful)
+                if (vResult != GraphicsBindResult.Successful)
                 {
-                    failCallback(pass, j, vResult);
-                    (Device as DeviceDX11).ProcessDebugLayerMessages();
+                    Device.Log.Warning($"{mode} call failed with result: {vResult} -- Iteration: Pass {i}/{shader.Passes.Length} -- " +
+                    $"Shader: {shader.Name} -- Topology: {pass.Topology} -- IsCompute: {pass.IsCompute}");
                     break;
                 }
             }
             EndEvent();
 
+            (Device as DeviceDX11).ProcessDebugLayerMessages();
             return vResult;
         }
 
         public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
         {
-            return DrawCommon(shader, QueueValidationMode.Unindexed, () => _context->Draw(vertexCount, vertexStartIndex),
-            (pass, passNumber, vResult) =>
-            {
-                Device.Log.Warning($"Draw() call failed with result: {vResult} -- " + 
-                    $"Iteration: P{passNumber}/{shader.Passes.Length} -- " +
-                    $"Shader: {shader.Name} -- Topology: {pass.Topology} -- VertexCount: { vertexCount}");
-            });
+            return ApplyState(shader, QueueValidationMode.Unindexed, () => _context->Draw(vertexCount, vertexStartIndex));
         }
 
         /// <inheritdoc/>
@@ -442,14 +438,8 @@ namespace Molten.Graphics
             uint vertexStartIndex = 0,
             uint instanceStartIndex = 0)
         {
-            return DrawCommon(shader, QueueValidationMode.Instanced, () => 
-            _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex),
-            (pass, passNum, vResult) =>
-            {
-                Device.Log.Warning($"DrawInstanced() call failed with result: {vResult} -- " + 
-                        $"Pass {passNum}/{shader.Passes.Length} -- Shader: {shader.Name} -- " +
-                        $"Topology: {pass.Topology} -- VertexCount: { vertexCountPerInstance} -- Instances: {instanceCount}");
-            });
+            return ApplyState(shader, QueueValidationMode.Instanced, () => 
+            _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
         }
 
         /// <inheritdoc/>
@@ -458,12 +448,7 @@ namespace Molten.Graphics
             int vertexIndexOffset = 0,
             uint startIndex = 0)
         {
-            return DrawCommon(shader, QueueValidationMode.Indexed, () => _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset),
-            (pass, passNum, vResult) =>
-            {
-                Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
-                    $"Pass {passNum}/{shader.Passes.Length} -- Shader: {shader.Name} -- Topology: {pass.Topology} -- indexCount: { indexCount}");
-            });
+            return ApplyState(shader, QueueValidationMode.Indexed, () => _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset));
         }
 
         /// <inheritdoc/>
@@ -474,16 +459,15 @@ namespace Molten.Graphics
             int vertexIndexOffset = 0,
             uint instanceStartIndex = 0)
         {
-            return DrawCommon(shader, QueueValidationMode.InstancedIndexed, () =>
-            {
-                _context->DrawIndexedInstanced(indexCountPerInstance, instanceCount,
-                    startIndex, vertexIndexOffset, instanceStartIndex);
-            },
-            (pass, passNum, vResult) =>
-            {
-                Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
-                    $"Pass {passNum}/{shader.Passes.Length} -- Material: {shader.Name} -- Topology: {pass.Topology} -- Indices-per-instance: { indexCountPerInstance}");
-            });
+            return ApplyState(shader, QueueValidationMode.InstancedIndexed, () =>
+                _context->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
+        }
+
+        /// <inheritdoc/>
+        public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
+        {
+            DrawInfo.Custom.ComputeGroups = groups;
+            return ApplyState(shader, QueueValidationMode.Compute, null);
         }
 
         public override void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count)

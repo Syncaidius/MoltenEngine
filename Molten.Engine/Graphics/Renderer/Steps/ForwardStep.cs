@@ -20,9 +20,7 @@
             cmd.SetViewports(camera.Surface.Viewport);
             cmd.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
 
-            StateConditions conditions = context.BaseStateConditions | StateConditions.ScissorTest;
-
-            cmd.BeginDraw(conditions);
+            cmd.BeginDraw();
             renderer.RenderSceneLayer(cmd, context.Layer, camera);
             cmd.EndDraw();
         }

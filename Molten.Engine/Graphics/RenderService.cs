@@ -316,6 +316,14 @@ namespace Molten.Graphics
             Tasks.Enqueue(task);
         }
 
+        public void PushComputeTask(HlslShader shader, Vector3UI groups)
+        {
+            ComputeTask task = ComputeTask.Get();
+            task.Shader = shader;
+            task.Groups = groups;
+            Tasks.Enqueue(task);
+        }
+
         /// <summary>
         /// Invoked during the first stage of service initialization to allow any api-related objects to be created/initialized prior to renderer initialization.
         /// </summary>

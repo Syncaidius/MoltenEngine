@@ -327,7 +327,6 @@ namespace Molten.Graphics
             where T : unmanaged
         {
             CommandQueueDX11 dx11Cmd = cmd as CommandQueueDX11;
-
             uint readOffset = startIndex * dataStride;
 
             if ((Description.CPUAccessFlags & (uint)CpuAccessFlag.Read) != (uint)CpuAccessFlag.Read)
@@ -337,11 +336,10 @@ namespace Molten.Graphics
                 throw new ArgumentException("The provided destination array is not large enough.");
 
             //now set the structured variable's data
-            RawStream stream = null;
-            MappedSubresource dataBox = dx11Cmd.MapResource(NativePtr, 0, Map.Read, 0, out stream);
+            MappedSubresource dataBox = dx11Cmd.MapResource(NativePtr, 0, Map.Read, 0, out RawStream stream);
             cmd.Profiler.Current.MapReadCount++;
             stream.Position = byteOffset;
-            stream.ReadRange<T>(destination, readOffset, count);
+            stream.ReadRange(destination, readOffset, count);
 
             // Unmap
             dx11Cmd.UnmapResource(NativePtr, 0);

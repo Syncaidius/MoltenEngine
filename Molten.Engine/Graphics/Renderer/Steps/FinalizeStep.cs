@@ -35,7 +35,7 @@
             IRenderSurface2D sourceSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
             RectStyle style = RectStyle.Default;
 
-            cmd.BeginDraw(StateConditions.ScissorTest);
+            cmd.BeginDraw();
             renderer.SpriteBatch.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Bounds.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
 
             if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
