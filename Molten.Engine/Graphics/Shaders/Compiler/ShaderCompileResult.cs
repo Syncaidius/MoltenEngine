@@ -14,7 +14,7 @@
         protected override void OnDispose() { }
 
         /// <summary>
-        /// Gets a <see cref="HlslGraphicsObject"/> of the specified name which was built successfully.
+        /// Gets a <see cref="HlslShader"/> of the specified name which was built successfully.
         /// </summary>
         /// <param name="shaderName">The name of the shader given to it it via its XML definition.</param>
         /// <returns></returns>

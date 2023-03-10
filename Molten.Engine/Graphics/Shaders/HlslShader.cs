@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public class HlslShader : HlslGraphicsObject
+    public class HlslShader : GraphicsObject
     {
         public IConstantBuffer[] ConstBuffers = new IConstantBuffer[0];
         public RWVariable[] UAVs = new RWVariable[0];
@@ -67,6 +67,8 @@
             else
                 return DefaultResources[slot];
         }
+
+        protected override void OnApply(GraphicsCommandQueue cmd) { }
 
         /// <summary>Gets or sets the value of a material parameter.</summary>
         /// <value>

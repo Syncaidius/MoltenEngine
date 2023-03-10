@@ -5,7 +5,7 @@ namespace Molten.Graphics
     /// <summary>
     /// An a base class implementation for key shader components, such as materials, material passes or compute tasks.
     /// </summary>
-    public abstract class HlslPass : HlslGraphicsObject, IEnumerable<ShaderComposition>, IEnumerable<ShaderType>
+    public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>, IEnumerable<ShaderType>
     {
         /// <summary>
         /// A callback that is used by <see cref="HlslPass"/> when it has finished its draw/dispatch call.

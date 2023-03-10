@@ -332,8 +332,14 @@ namespace Molten.Graphics
                         composition.ResourceIds.Add(bindPoint);
                         break;
 
-                    default:
-                        OnBuildVariableStructure(context, shader, result, bindInfo);
+                    case ShaderInputType.UavRWStructured:
+                        OnBuildRWStructuredVariable(context, shader, bindInfo);
+                        composition.UnorderedAccessIds.Add(bindPoint);
+                        break;
+
+                    case ShaderInputType.UavRWTyped:
+                        OnBuildRWTypedVariable(context, shader, bindInfo);
+                        composition.UnorderedAccessIds.Add(bindPoint);
                         break;
                 }
             }
@@ -376,22 +382,6 @@ namespace Molten.Graphics
             }
 
             return false;
-        }
-
-        private void OnBuildVariableStructure(
-            ShaderCompilerContext context,
-            HlslShader shader, ShaderCodeResult result, ShaderResourceInfo info)
-        {
-            switch (info.Type)
-            {
-                case ShaderInputType.UavRWStructured:
-                    OnBuildRWStructuredVariable(context, shader, info);
-                    break;
-
-                case ShaderInputType.UavRWTyped:
-                    OnBuildRWTypedVariable(context, shader, info);
-                    break;
-            }
         }
 
         private void OnBuildRWStructuredVariable

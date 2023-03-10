@@ -145,6 +145,13 @@ namespace Molten.Graphics
             _firstSegment.ByteCount = numBytes;
             _firstSegment.IsFree = true;
 
+            if (Description.StructureByteStride > 0)
+            {
+                _firstSegment.Stride = Description.StructureByteStride;
+                CreateResources(Description.StructureByteStride, 0, Description.ByteWidth / Description.StructureByteStride);
+            }
+
+
             _freeSegments.Add(_firstSegment);
         }
 

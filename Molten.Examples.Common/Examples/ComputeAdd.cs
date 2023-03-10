@@ -7,7 +7,10 @@ namespace Molten.Examples
     public class ComputeAdd : MoltenExample
     {
         const int NUM_SUMS = 100;
+        ComputeData[] _values0;
+        ComputeData[] _values1;
         ComputeData[] _result;
+        bool _computeFinished;
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         struct ComputeData
@@ -64,19 +67,19 @@ namespace Molten.Examples
                 IStagingBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(StagingBufferFlags.Read, numBytes);
 
                 // Setup arrays to hold our data
-                ComputeData[] values0 = new ComputeData[NUM_SUMS];
-                ComputeData[] values1 = new ComputeData[NUM_SUMS];
+                _values0 = new ComputeData[NUM_SUMS];
+                _values1 = new ComputeData[NUM_SUMS];
                 _result = new ComputeData[NUM_SUMS];
 
                 // Fill our data arrays
                 for(int i = 0; i < NUM_SUMS; i++)
                 {
-                    values0[i] = new ComputeData() { FValue = i, IValue = i };
-                    values1[i] = new ComputeData() { FValue = i*2, IValue = i*3 };
+                    _values0[i] = new ComputeData() { FValue = i, IValue = i };
+                    _values1[i] = new ComputeData() { FValue = i*2, IValue = i*3 };
                 }
 
-                numSeg0.SetData(GraphicsPriority.Apply, values0);
-                numSeg1.SetData(GraphicsPriority.Apply, values1);
+                numSeg0.SetData(GraphicsPriority.Apply, _values0);
+                numSeg1.SetData(GraphicsPriority.Apply, _values1);
 
                 compute["Buffer0"].Value = numSeg0;
                 compute["Buffer1"].Value = numSeg1;
@@ -87,6 +90,7 @@ namespace Molten.Examples
                     // We can get our data immediately, since the render thread is calling the completionCallback.
                     outBuffer.CopyTo(GraphicsPriority.Immediate, stagingBuffer);
                     stagingBuffer.GetData(GraphicsPriority.Immediate, _result, 0, NUM_SUMS, 0);
+                    _computeFinished = true;
                 });
             }
 
@@ -99,6 +103,34 @@ namespace Molten.Examples
             Mesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
             cube.SetVertices(SampleVertexData.TextureArrayCubeVertices);
             return cube;
+        }
+
+        protected override void OnDrawSprites(SpriteBatcher sb)
+        {
+            base.OnDrawSprites(sb);
+
+            // Draw compute results
+            Vector2F pos = new Vector2F(25, 30);
+            if (_computeFinished)
+            {
+                for (int i = 0; i < NUM_SUMS; i++)
+                {
+                    sb.DrawString(Font, $"I: {_values0[i].IValue} + {_values1[i].IValue} = {_result[i].IValue}", pos, Color.White);
+                    pos.Y += 20;
+                    sb.DrawString(Font, $"F: {_values0[i].FValue:N1} + {_values1[i].FValue:N1} = {_result[i].FValue:N1}", pos, Color.White);
+                    pos.Y += 20;
+
+                    if (pos.Y >= Window.RenderBounds.Height - 40)
+                    {
+                        pos.X += 200;
+                        pos.Y = 30;
+                    }
+                }
+            }
+            else
+            {
+                sb.DrawString(Font, $"Waiting for compute task...", pos, Color.White);
+            }
         }
     }
 }
