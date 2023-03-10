@@ -6,12 +6,14 @@ namespace Molten.Graphics
     {
         internal BufferSegment Segment;
 
+        internal IStagingBuffer Staging;
+
         /// <summary>A callback to interact with the retrieved stream.</summary>
         internal Action<IGraphicsBuffer, RawStream> StreamCallback;
 
         public void Process(GraphicsCommandQueue cmd)
         {
-            Segment.GetStream(GraphicsPriority.Immediate, StreamCallback);
+            Segment.GetStream(GraphicsPriority.Immediate, StreamCallback, Staging);
         }
     }
 }

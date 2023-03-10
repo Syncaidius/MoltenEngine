@@ -88,7 +88,7 @@
                 throw new InvalidOperationException($"Cannot set indices without valid index format and capacity. Try calling {nameof(SetIndexParameters)}() first.");
 
             IndexCount = count;
-            _iBuffer.SetData(GraphicsPriority.PreApply, data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _iBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         protected virtual void OnApply(GraphicsCommandQueue cmd)
@@ -182,7 +182,7 @@
         public void SetVertices(T[] data, uint startIndex, uint count)
         {
             VertexCount = count;
-            _vb.SetData(GraphicsPriority.PreApply, data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _vb.SetData(GraphicsPriority.Apply, data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)

@@ -2,15 +2,15 @@
 
 namespace Molten.Graphics
 {
-    public abstract class RendererTask : IPoolable
+    public abstract class RenderTask : IPoolable
     {
         public abstract void ClearForPool();
 
         public abstract void Process(RenderService renderer);
     }
 
-    public abstract class RendererTask<T> : RendererTask
-        where T : RendererTask, new()
+    public abstract class RenderTask<T> : RenderTask
+        where T : RenderTask, new()
     {
         static ObjectPool<T> _pool = new ObjectPool<T>(() => new T());
 

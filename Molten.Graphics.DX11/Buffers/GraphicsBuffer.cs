@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using System.Runtime.CompilerServices;
+using Molten.Collections;
 using Molten.IO;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
@@ -36,9 +37,13 @@ namespace Molten.Graphics
             InitializeBuffer(initialData);
         }
 
-        internal void QueueOperation(IBufferOperation op)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void QueueOperation(GraphicsPriority priority, IBufferOperation op)
         {
-            _pendingChanges.Enqueue(op);
+            if (priority == GraphicsPriority.Immediate)
+                op.Process(Device.Cmd);
+            else
+                _pendingChanges.Enqueue(op);
         }
 
         public void Defragment()
@@ -155,38 +160,29 @@ namespace Molten.Graphics
         /// <summary>Copies all the data in the current <see cref="GraphicsBuffer"/> to the destination <see cref="GraphicsBuffer"/>.</summary>
         /// <param name="cmd">The <see cref="CommandQueueDX11"/> that will perform the copy.</param>
         /// <param name="destination">The <see cref="GraphicsBuffer"/> to copy to.</param>
-        internal void CopyTo(GraphicsCommandQueue cmd, GraphicsBuffer destination)
+        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, Action completionCallback = null)
         {
-            if (destination.Description.ByteWidth < Description.ByteWidth)
+            if (destination.ByteCapacity < Description.ByteWidth)
                 throw new Exception("The destination buffer is not large enough.");
 
-            // If the current buffer is a staging buffer, initialize and apply all its pending changes.
-            if (Description.Usage == Usage.Staging)
-                ApplyChanges(cmd);
-
-            ValidateCopyBufferUsage(destination);
-            (cmd as CommandQueueDX11).Native->CopyResource(this, destination);
+            QueueOperation(priority, new BufferDirectCopyOperation()
+            {
+                SrcBuffer = this,
+                DestBuffer = destination as GraphicsBuffer,
+                CompletionCallback = completionCallback,
+            });
         }
 
-        internal void CopyTo(GraphicsCommandQueue cmd, GraphicsBuffer destination, Box sourceRegion, uint destByteOffset = 0)
+        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, Action completionCallback = null)
         {
-            // If the current buffer is a staging buffer, initialize and apply all its pending changes.
-            if (Description.Usage == Usage.Staging)
-                ApplyChanges(cmd);
-
-            ValidateCopyBufferUsage(destination);
-            (cmd as CommandQueueDX11).CopyResourceRegion(this, 0, ref sourceRegion, destination, 0, new Vector3UI(destByteOffset,0,0));
-            cmd.Profiler.Current.CopySubresourceCount++;
-        }
-
-        private void ValidateCopyBufferUsage(GraphicsBuffer destination)
-        {
-            if (Description.Usage != Usage.Default && 
-                Description.Usage != Usage.Immutable)
-                throw new Exception("The current buffer must have a usage flag of Default or Immutable. Only these flags allow the GPU read access for copying/reading data from the buffer.");
-
-            if (destination.Description.Usage != Usage.Default)
-                throw new Exception("The destination buffer must have a usage flag of Staging or Default. Only these two allow the GPU write access for copying/writing data to the destination.");
+            QueueOperation(priority, new BufferCopyOperation()
+            {
+                CompletionCallback = completionCallback,
+                SrcBuffer = this,
+                DestBuffer = destination as GraphicsBuffer,
+                DestByteOffset = destByteOffset,
+                SrcRegion = sourceRegion.ToApi(),
+            });
         }
 
         internal void GetStream(CommandQueueDX11 context, 
@@ -323,26 +319,25 @@ namespace Molten.Graphics
         /// <param name="dataStride">The size of the data being retrieved. The default value is 0. 
         /// A value of 0 will force the stride of <see cref="{T}"/> to be automatically calculated, which may cause a tiny performance hit.</param>
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        public void Get<T>(GraphicsCommandQueue cmd, T[] destination, uint startIndex, uint count, uint dataStride, uint byteOffset = 0)
+        public void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint byteOffset, Action<T[]> completionCallback)
             where T : unmanaged
         {
-            CommandQueueDX11 dx11Cmd = cmd as CommandQueueDX11;
-            uint readOffset = startIndex * dataStride;
-
             if ((Description.CPUAccessFlags & (uint)CpuAccessFlag.Read) != (uint)CpuAccessFlag.Read)
                 throw new InvalidOperationException("Cannot use GetData() on a non-readable buffer.");
 
             if (destination.Length < count)
                 throw new ArgumentException("The provided destination array is not large enough.");
 
-            //now set the structured variable's data
-            MappedSubresource dataBox = dx11Cmd.MapResource(NativePtr, 0, Map.Read, 0, out RawStream stream);
-            cmd.Profiler.Current.MapReadCount++;
-            stream.Position = byteOffset;
-            stream.ReadRange(destination, readOffset, count);
-
-            // Unmap
-            dx11Cmd.UnmapResource(NativePtr, 0);
+            QueueOperation(priority, new BufferGetOperation<T>()
+            {
+                ByteOffset = byteOffset,
+                DestArray = destination,
+                DestIndex = startIndex,
+                Count = count,
+                DataStride = (uint)sizeof(T),
+                CompletionCallback = completionCallback,
+                SrcBuffer = this,
+            });
         }
 
         /// <summary>Applies any pending changes onto the buffer.</summary>
@@ -475,7 +470,6 @@ namespace Molten.Graphics
             // Unable to allocate.
             return null;
         }
-
 
         /// <summary>Release the buffer space held by the specified segment.</summary>
         /// <param name="segment">The segment.</param>

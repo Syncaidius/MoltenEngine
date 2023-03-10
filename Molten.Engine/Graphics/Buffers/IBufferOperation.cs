@@ -2,6 +2,6 @@
 {
     public interface IBufferOperation
     {
-        void Process(GraphicsCommandQueue context);
+        void Process(GraphicsCommandQueue cmd);
     }
 }

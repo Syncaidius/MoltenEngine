@@ -1,16 +1,23 @@
-﻿namespace Molten.Graphics
+﻿using Silk.NET.Direct3D.Compilers;
+using Silk.NET.Direct3D11;
+
+namespace Molten.Graphics
 {
     internal struct BufferDirectCopyOperation : IBufferOperation
     {
-        internal GraphicsBuffer SourceBuffer;
+        internal GraphicsBuffer SrcBuffer;
 
-        internal GraphicsBuffer DestinationBuffer;
+        internal GraphicsBuffer DestBuffer;
 
         internal Action CompletionCallback;
 
-        public void Process(GraphicsCommandQueue cmd)
+        public unsafe void Process(GraphicsCommandQueue cmd)
         {
-            SourceBuffer.CopyTo(cmd, DestinationBuffer);
+            // If the current buffer is a staging buffer, initialize and apply all its pending changes.
+            if (SrcBuffer.Description.Usage == Usage.Staging)
+                SrcBuffer.Apply(cmd);
+
+            (cmd as CommandQueueDX11).Native->CopyResource(SrcBuffer, DestBuffer);
             CompletionCallback?.Invoke();
         }
     }

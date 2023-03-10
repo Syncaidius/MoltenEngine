@@ -13,7 +13,7 @@
         /// <summary>
         /// The task or command must be executed next time the object is applied on the GPU.
         /// </summary>
-        PreApply = 1,
+        Apply = 1,
 
         /// <summary>
         /// The task or command must be executed after the object has been used in a draw or dispatch call.

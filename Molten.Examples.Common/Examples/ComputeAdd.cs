@@ -7,6 +7,7 @@ namespace Molten.Examples
     public class ComputeAdd : MoltenExample
     {
         const int NUM_SUMS = 100;
+        ComputeData[] _result;
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         struct ComputeData
@@ -49,20 +50,43 @@ namespace Molten.Examples
                 uint numBytes = stride * NUM_SUMS;
 
                 // We want 2 segments, so double the size of the buffer.
-                numBytes *= 2;
+                IGraphicsBuffer numBuffer = Engine.Renderer.Device.CreateBuffer(GraphicsBufferFlags.Structured, BufferMode.DynamicRing, numBytes * 2, stride);
 
-                IGraphicsBuffer numBuffer = Engine.Renderer.Device.CreateBuffer(GraphicsBufferFlags.Structured, BufferMode.DynamicRing, numBytes, stride);
                 IGraphicsBufferSegment numSeg0 = numBuffer.Allocate<ComputeData>(NUM_SUMS);
                 IGraphicsBufferSegment numSeg1 = numBuffer.Allocate<ComputeData>(NUM_SUMS);
 
                 // A buffer to store our output data.
                 IGraphicsBuffer outBuffer = Engine.Renderer.Device.CreateBuffer(
-                    GraphicsBufferFlags.Structured | GraphicsBufferFlags.UnorderedAccess, BufferMode.DynamicDiscard, numBytes, stride);
-                IGraphicsBufferSegment outSeg = outBuffer.Allocate<ComputeData>(NUM_SUMS);
+                    GraphicsBufferFlags.Structured | GraphicsBufferFlags.UnorderedAccess, BufferMode.Default, numBytes, stride);
+
+                // Staging buffer for transferring our compute result off the GPU
+                IStagingBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(StagingBufferFlags.Read, numBytes);
+
+                // Setup arrays to hold our data
+                ComputeData[] values0 = new ComputeData[NUM_SUMS];
+                ComputeData[] values1 = new ComputeData[NUM_SUMS];
+                _result = new ComputeData[NUM_SUMS];
+
+                // Fill our data arrays
+                for(int i = 0; i < NUM_SUMS; i++)
+                {
+                    values0[i] = new ComputeData() { FValue = i, IValue = i };
+                    values1[i] = new ComputeData() { FValue = i*2, IValue = i*3 };
+                }
+
+                numSeg0.SetData(GraphicsPriority.Apply, values0);
+                numSeg1.SetData(GraphicsPriority.Apply, values1);
 
                 compute["Buffer0"].Value = numSeg0;
                 compute["Buffer1"].Value = numSeg1;
-                compute["BufferOut"].Value = outSeg;
+                compute["BufferOut"].Value = outBuffer;
+
+                Engine.Renderer.PushComputeTask(compute, NUM_SUMS, 1, 1, () =>
+                {
+                    // We can get our data immediately, since the render thread is calling the completionCallback.
+                    outBuffer.CopyTo(GraphicsPriority.Immediate, stagingBuffer);
+                    stagingBuffer.GetData(GraphicsPriority.Immediate, _result, 0, NUM_SUMS, 0);
+                });
             }
 
             shader.SetDefaultResource(texture, 0);

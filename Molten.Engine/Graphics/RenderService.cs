@@ -115,7 +115,7 @@ namespace Molten.Graphics
             }
 
             // Perform all queued tasks before proceeding
-            RendererTask task = null;
+            RenderTask task = null;
             while (Tasks.TryDequeue(out task))
                 task.Process(this);
 
@@ -298,7 +298,7 @@ namespace Molten.Graphics
         internal SceneRenderData CreateRenderData()
         {
             SceneRenderData rd = new SceneRenderData();
-            RendererAddScene task = RendererAddScene.Get();
+            RenderAddScene task = RenderAddScene.Get();
             task.Data = rd;
             PushTask(task);
             return rd;
@@ -306,21 +306,27 @@ namespace Molten.Graphics
 
         public void DestroyRenderData(SceneRenderData data)
         {
-            RendererRemoveScene task = RendererRemoveScene.Get();
+            RenderRemoveScene task = RenderRemoveScene.Get();
             task.Data = data;
             PushTask(task);
         }
 
-        public void PushTask(RendererTask task)
+        public void PushTask(RenderTask task)
         {
             Tasks.Enqueue(task);
         }
 
-        public void PushComputeTask(HlslShader shader, Vector3UI groups)
+        public void PushComputeTask(HlslShader shader, uint groupsX, uint groupsY, uint groupsZ, ComputeTaskCompletionCallback callback = null)
+        {
+            PushComputeTask(shader, new Vector3UI(groupsX, groupsY, groupsZ), callback);
+        }
+
+        public void PushComputeTask(HlslShader shader, Vector3UI groups, ComputeTaskCompletionCallback callback = null)
         {
             ComputeTask task = ComputeTask.Get();
             task.Shader = shader;
             task.Groups = groups;
+            task.CompletionCallback = callback; 
             Tasks.Enqueue(task);
         }
 
@@ -406,7 +412,7 @@ namespace Molten.Graphics
         /// </summary>
         protected internal List<SceneRenderData> Scenes { get; } = new List<SceneRenderData>();
 
-        private ThreadedQueue<RendererTask> Tasks { get; } = new ThreadedQueue<RendererTask>();
+        private ThreadedQueue<RenderTask> Tasks { get; } = new ThreadedQueue<RenderTask>();
 
         /// <summary>
         /// Gets the width of the biggest render surface used so far.

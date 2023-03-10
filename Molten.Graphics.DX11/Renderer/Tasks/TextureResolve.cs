@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics
 {
     /// <summary>A render task which resolves a multisampled texture into a non-multisampled one.</summary>
-    internal unsafe class TextureResolve : RendererTask<TextureResolve>
+    internal unsafe class TextureResolve : RenderTask<TextureResolve>
     {
         public TextureBase Source;
 

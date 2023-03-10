@@ -100,6 +100,7 @@ namespace Molten.Graphics
                 Staging = staging,
             };
 
+            // Custom handling of priority here so we can skip an array copy if possible.
             if(priority == GraphicsPriority.Immediate)
             {
                 op.Data = data;
@@ -110,7 +111,7 @@ namespace Molten.Graphics
                 // Clone the data for deferred operation.
                 op.Data = new T[count];
                 Array.Copy(data, startIndex, op.Data, 0, count);
-                _buffer.QueueOperation(op);
+                _buffer.QueueOperation(priority, op);
             }
         }
 
@@ -131,7 +132,7 @@ namespace Molten.Graphics
             }
             else
             {
-                _buffer.QueueOperation(new BufferGetStreamOperation()
+                _buffer.QueueOperation(priority, new BufferGetStreamOperation()
                 {
                     Segment = this,
                     StreamCallback = callback
@@ -148,25 +149,12 @@ namespace Molten.Graphics
         {
             uint tStride = (uint)sizeof(T);
             uint writeOffset = elementOffset * tStride;
+            uint byteOffset = ByteOffset + writeOffset;
 
-            BufferGetOperation<T> op = new BufferGetOperation<T>()
-            {
-                ByteOffset = ByteOffset + writeOffset,
-                DestinationArray = destination,
-                DestinationIndex = startIndex,
-                Count = count,
-                DataStride = (uint)sizeof(T),
-                CompletionCallback = completionCallback,
-                SourceSegment = this,
-            };
-
-            if (priority == GraphicsPriority.Immediate)
-                op.Process(Device.Cmd);
-            else
-                _buffer.QueueOperation(op);
+            _buffer.GetData(priority, destination, startIndex, count, byteOffset, completionCallback);
         }
 
-        internal void CopyTo(CommandQueueDX11 cmd, uint sourceByteOffset, BufferSegment destination, uint destByteOffset, uint count, bool isImmediate = false, Action completionCallback = null)
+        internal void CopyTo(GraphicsPriority priority, uint sourceByteOffset, BufferSegment destination, uint destByteOffset, uint count, Action completionCallback = null)
         {
             uint bytesToCopy = Stride * count;
             uint totalOffset = ByteOffset + sourceByteOffset;
@@ -176,7 +164,7 @@ namespace Molten.Graphics
             if (lastByte > destLastByte)
                 throw new OverflowException("specified copy region would exceed the bounds of the destination segment.");
 
-            Box sourceRegion = new Box()
+            ResourceRegion sourceRegion = new ResourceRegion()
             {
                 Left = totalOffset,
                 Right = lastByte,
@@ -184,22 +172,7 @@ namespace Molten.Graphics
                 Bottom = 1,
             };
 
-            if (isImmediate)
-            {
-                _buffer.CopyTo(cmd, destination._buffer, sourceRegion, destination.ByteOffset + destByteOffset);
-            }
-            else
-            {
-                _buffer.QueueOperation(new BufferCopyOperation()
-                {
-                    CompletionCallback = completionCallback,
-                    SourceBuffer = _buffer,
-                    DestinationBuffer = destination._buffer,
-                    DataStride = Stride,
-                    DestinationByteOffset = destination.ByteOffset + destByteOffset,
-                    SourceRegion = sourceRegion,
-                });
-            }
+            _buffer.CopyTo(priority, destination._buffer, sourceRegion, destination.ByteOffset + destByteOffset);
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)
