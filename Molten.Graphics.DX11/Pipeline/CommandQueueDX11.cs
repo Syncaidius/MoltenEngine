@@ -203,7 +203,7 @@ namespace Molten.Graphics
                     for (int j = 0; j < composition.UnorderedAccessIds.Count; j++)
                     {
                         uint slotID = composition.UnorderedAccessIds[j];
-                        _renderUAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.UnorderedResource as GraphicsResourceDX11;
+                        _renderUAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.Resource as GraphicsResourceDX11;
                     }
                 }
             }

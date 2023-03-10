@@ -23,7 +23,7 @@ namespace Molten.Graphics
                 for (int j = 0; j < composition.UnorderedAccessIds.Count; j++)
                 {
                     uint slotID = composition.UnorderedAccessIds[j];
-                    UAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.UnorderedResource as GraphicsResourceDX11;
+                    UAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.Resource as GraphicsResourceDX11;
                 }
 
                 uavChanged = UAVs.BindAll();
