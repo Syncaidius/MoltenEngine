@@ -180,6 +180,8 @@ namespace Molten.Graphics
 
             return new GraphicsBuffer(this, mode,
                 flag, byteCapacity, rFlag, StagingBufferFlags.None, structuredStride: stride);
+
+            ProcessDebugLayerMessages();
         }
 
         public override IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity)

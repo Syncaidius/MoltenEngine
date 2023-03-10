@@ -50,7 +50,8 @@ namespace Molten.Examples
                 uint numBytes = stride * NUM_SUMS;
 
                 // We want 2 segments, so double the size of the buffer.
-                IGraphicsBuffer numBuffer = Engine.Renderer.Device.CreateBuffer(GraphicsBufferFlags.Structured, BufferMode.DynamicRing, numBytes * 2, stride);
+                IGraphicsBuffer numBuffer = Engine.Renderer.Device.CreateBuffer(
+                    GraphicsBufferFlags.Structured | GraphicsBufferFlags.ShaderResource, BufferMode.DynamicRing, numBytes * 2, stride);
 
                 IGraphicsBufferSegment numSeg0 = numBuffer.Allocate<ComputeData>(NUM_SUMS);
                 IGraphicsBufferSegment numSeg1 = numBuffer.Allocate<ComputeData>(NUM_SUMS);

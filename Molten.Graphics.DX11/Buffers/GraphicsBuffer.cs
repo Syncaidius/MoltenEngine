@@ -394,7 +394,7 @@ namespace Molten.Graphics
                     Buffer = new BufferSrv()
                     {
                         NumElements = elementCount,
-                        FirstElement = byteOffset,
+                        FirstElement = byteOffset / stride,
                     },
                     ViewDimension = D3DSrvDimension.D3D11SrvDimensionBuffer,
                     Format = Format.FormatUnknown,

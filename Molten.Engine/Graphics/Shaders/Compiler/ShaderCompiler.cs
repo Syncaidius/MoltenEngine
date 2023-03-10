@@ -168,12 +168,18 @@ namespace Molten.Graphics
 
             if (!context.HasErrors)
             {
+                if (!ValidatePass(pass, ref passDef.Parameters, context))
+                    return;
+
+                pass.IsCompute = result[ShaderType.Compute] != null;
+
                 // Fill in any extra metadata
                 if (result[ShaderType.Geometry] != null)
                 {
                     ShaderCodeResult fcr = result[ShaderType.Geometry];
                     pass.GeometryPrimitive = fcr.Reflection.GSInputPrimitive;
                 }
+
 
                 // Validate I/O structure of each shader stage.
                 if (_layoutValidator.Validate(context, result))
@@ -206,14 +212,7 @@ namespace Molten.Graphics
             }
         }
 
-        private void BuildPassStructure(
-            ShaderCompilerContext context,
-            PassCompileResult pResult)
-        {
-            
-        }
-
-        private void ValidatePass(HlslPass pass, ref ShaderPassParameters parameters, ShaderCompilerContext context)
+        private bool ValidatePass(HlslPass pass, ref ShaderPassParameters parameters, ShaderCompilerContext context)
         {
             if (pass[ShaderType.Hull] != null)
             {
@@ -223,8 +222,9 @@ namespace Molten.Graphics
 
             if (pass[ShaderType.Compute] != null && pass.CompositionCount > 1)
                 context.AddError($"Invalid pass. Pass cannot mix compute entry points with render-stage entry points");
-        }
 
+            return !context.HasErrors;
+        }
 
         protected unsafe abstract ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData);
 
