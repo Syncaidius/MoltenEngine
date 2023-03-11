@@ -102,46 +102,59 @@ namespace Molten.Graphics
         /// <summary>
         /// Creates a standard mesh. Standard meshes enforce stricter rules aimed at deferred rendering.
         /// </summary>
+        /// <param name="mode"></param>
         /// <param name="maxVertices"></param>
-        /// <param name="topology"></param>
-        /// <param name="dynamic"></param>
+        /// <param name="indexFormat"></param>
+        /// <param name="maxIndices"></param>
+        /// <param name="initialVertices"></param>
+        /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public Mesh<GBufferVertex> CreateMesh(uint maxVertices, PrimitiveTopology topology = PrimitiveTopology.Triangle, bool dynamic = false)
+        public Mesh<GBufferVertex> CreateMesh(BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat = IndexBufferFormat.None, uint maxIndices = 0, 
+            GBufferVertex[] initialVertices = null, Array initialIndices = null)
         {
-            return new StandardMesh(_renderer, maxVertices, topology, dynamic);
+            return new StandardMesh(_renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices);
         }
 
         /// <summary>
-        /// Creates a new unindexed mesh. Unindexed meshes do not contain an index buffer to reduce vertex data size.
+        /// Creates a new mesh. Index data is optional, but can potentially lead to less data transfer when copying to/from the GPU.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of vertex data.</typeparam>
+        /// <param name="mode"></param>
         /// <param name="maxVertices"></param>
-        /// <param name="topology"></param>
-        /// <param name="dynamic"></param>
+        /// <param name="indexFormat"></param>
+        /// <param name="maxIndices"></param>
+        /// <param name="initialVertices"></param>
+        /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public Mesh<T> CreateMesh<T>(uint maxVertices, PrimitiveTopology topology = PrimitiveTopology.Triangle, bool dynamic = false)
+        public Mesh<T> CreateMesh<T>(BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat = IndexBufferFormat.None, uint maxIndices = 0,
+            T[] initialVertices = null, Array initialIndices = null)
             where T : unmanaged, IVertexType
         {
-            return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
+            return new Mesh<T>(_renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices);
         }
 
         /// <summary>
-        /// 
+        /// Creates a instanced mesh.
         /// </summary>
-        /// <typeparam name="V"></typeparam>
-        /// <typeparam name="I"></typeparam>
+        /// <typeparam name="V">The type of vertex data.</typeparam>
+        /// <typeparam name="I">The type if instance data.</typeparam>
+        /// <param name="mode"></param>
         /// <param name="maxVertices"></param>
         /// <param name="maxInstances"></param>
-        /// <param name="topology"></param>
-        /// <param name="dynamic"></param>
+        /// <param name="indexFormat"></param>
+        /// <param name="maxIndices"></param>
+        /// <param name="initialVertices"></param>
+        /// <param name="initialIndices"></param>
+        /// <param name="initialInstances"></param>
         /// <returns></returns>
-        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(uint maxVertices,
-            uint maxInstances, PrimitiveTopology topology = PrimitiveTopology.Triangle,
-            bool dynamic = false)
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(BufferMode mode, uint maxVertices, 
+            uint maxInstances,
+            IndexBufferFormat indexFormat = IndexBufferFormat.None, uint maxIndices = 0,
+            V[] initialVertices = null, Array initialIndices = null, I[] initialInstances = null)
             where V : unmanaged, IVertexType
             where I : unmanaged, IVertexInstanceType
         {
-            return new InstancedMesh<V, I>(_renderer, maxVertices, topology, maxInstances, dynamic);
+            return new InstancedMesh<V, I>(_renderer, mode, maxVertices, indexFormat, maxIndices, maxInstances, initialVertices, initialIndices, initialInstances);
         }
 
         /// <summary>

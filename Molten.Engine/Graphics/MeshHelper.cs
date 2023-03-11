@@ -69,12 +69,8 @@
             };
 
             CalculateTangents(vertices, indices);
-
-            Mesh<GBufferVertex> mesh = renderer.Resources.CreateMesh((uint)vertices.Length);
-            mesh.SetVertices(vertices);
-            mesh.SetIndexParameters((uint)indices.Length);
-            mesh.SetIndices(indices);
-            return mesh;
+            return renderer.Resources.CreateMesh(BufferMode.Immutable, (uint)vertices.Length,
+                IndexBufferFormat.Unsigned32Bit, (uint)indices.Length);
         }
 
         public static Mesh<GBufferVertex> PlainCentered(RenderService renderer, float uvTiling = 1.0f)
@@ -96,12 +92,8 @@
             indices[5] = 3;
 
             CalculateTangents(vertices, indices);
-
-            Mesh<GBufferVertex> mesh = renderer.Resources.CreateMesh((uint)vertices.Length);
-            mesh.SetVertices(vertices);
-            mesh.SetIndexParameters((uint)indices.Length);
-            mesh.SetIndices(indices);
-            return mesh;
+            return renderer.Resources.CreateMesh(BufferMode.Immutable, (uint)vertices.Length,
+                IndexBufferFormat.Unsigned32Bit, (uint)indices.Length);
         }
 
         public static Mesh<GBufferVertex> Plain(RenderService renderer, float uvTiling = 1.0f)
@@ -123,12 +115,8 @@
             indices[5] = 3;
 
             CalculateTangents(vertices, indices);
-
-            Mesh<GBufferVertex> mesh = renderer.Resources.CreateMesh((uint)vertices.Length);
-            mesh.SetVertices(vertices);
-            mesh.SetIndexParameters((uint)indices.Length);
-            mesh.SetIndices(indices);
-            return mesh;
+            return renderer.Resources.CreateMesh(BufferMode.Immutable, (uint)vertices.Length,
+                IndexBufferFormat.Unsigned32Bit, (uint)indices.Length);
         }
 
         /// <summary>Calculates the normals for a list of vertices and the provided index list.</summary>

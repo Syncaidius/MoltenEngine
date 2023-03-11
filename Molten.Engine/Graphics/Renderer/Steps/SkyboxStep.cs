@@ -19,10 +19,11 @@
             Vertex[] vertices;
             uint[] indices;
             MakeSphere(4, 4, out vertices, out indices);
-            _sphereMesh = renderer.Resources.CreateMesh<Vertex>((uint)vertices.Length);
-            _sphereMesh.SetVertices(vertices);
-            _sphereMesh.SetIndexParameters((uint)indices.Length);
-            _sphereMesh.SetIndices(indices);
+            _sphereMesh = renderer.Resources.CreateMesh(
+                BufferMode.Immutable, (uint)vertices.Length, 
+                IndexBufferFormat.Unsigned32Bit, (uint)indices.Length,
+                vertices, indices);
+
             _sphereMesh.Shader = _fxSky;
         }
 
@@ -65,25 +66,25 @@
 
             vertices = new Vertex[NumSphereVertices];
             indices = new uint[NumSphereFaces * 3];
-            float sphereYaw = 0.0f;
-            float spherePitch = 0.0f;
-            Matrix4F Rotationy = Matrix4F.Identity;
-            Matrix4F Rotationx = Matrix4F.Identity;
-            Vector3F currVertPos = new Vector3F(0.0f, 0.0f, 1.0f);
+            float sphereYaw;
+            float spherePitch;
+            Matrix4F rotY;
+            Matrix4F rotX;
+            Vector3F vertexPos = new Vector3F(0.0f, 0.0f, 1.0f);
 
             vertices[0] = new Vertex(0, 0, 1.0f);
 
             for (int i = 0; i < latLines - 2; i++)
             {
                 spherePitch = (i + 1) * (3.14f / (latLines - 1));
-                Rotationx = Matrix4F.RotationX(spherePitch);
+                rotX = Matrix4F.RotationX(spherePitch);
                 for (int j = 0; j < longLines; j++)
                 {
                     sphereYaw = j * (6.28f / (longLines));
-                    Rotationy = Matrix4F.RotationZ(sphereYaw);
-                    currVertPos = Vector3F.TransformNormal(new Vector3F(0.0f, 0.0f, 1.0f), (Rotationx * Rotationy));
-                    currVertPos.Normalize();
-                    vertices[i * longLines + j + 1] = new Vertex(currVertPos);
+                    rotY = Matrix4F.RotationZ(sphereYaw);
+                    vertexPos = Vector3F.TransformNormal(new Vector3F(0.0f, 0.0f, 1.0f), (rotX * rotY));
+                    vertexPos.Normalize();
+                    vertices[i * longLines + j + 1] = new Vertex(vertexPos);
                 }
             }
 
