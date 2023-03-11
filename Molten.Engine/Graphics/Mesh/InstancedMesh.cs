@@ -8,22 +8,6 @@ using Molten.IO;
 
 namespace Molten.Graphics
 {
-    /// <summary>
-    /// A helper version of <see cref="InstancedMesh{V, I}"/> that is defaulted to <see cref="InstanceData"/> for per-instance data.
-    /// </summary>
-    /// <typeparam name="V"></typeparam>
-    public class InstancedMesh<V> : InstancedMesh<V, InstanceData>
-        where V : unmanaged, IVertexType
-    {
-        internal InstancedMesh(RenderService renderer, 
-            BufferMode mode, uint maxVertices, 
-            IndexBufferFormat indexFormat, uint maxIndices, uint maxInstances, 
-            V[] initialVertices = null, Array initialIndices = null, InstanceData[] initialInstances = null) :
-            base(renderer, mode, maxVertices, indexFormat, maxIndices, maxInstances, initialVertices, initialIndices, initialInstances)
-        {
-        }
-    }
-
     public class InstancedMesh<V, I> : Mesh<V>
         where V : unmanaged, IVertexType
         where I : unmanaged, IVertexInstanceType
@@ -40,15 +24,13 @@ namespace Molten.Graphics
         /// <param name="indexFormat"></param>
         /// <param name="maxIndices"></param>
         /// <param name="maxInstances"></param>
-        /// <param name="initialInstances"></param>
         internal InstancedMesh(RenderService renderer, BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat, uint maxIndices, uint maxInstances,
             V[] initialVertices = null,
-            Array initialIndices = null,
-            I[] initialInstances = null) : 
+            Array initialIndices = null) : 
             base(renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices)
         {
             MaxInstances = maxInstances;
-            _instanceBuffer = Renderer.Device.CreateVertexBuffer(BufferMode.DynamicDiscard, maxIndices, initialInstances);
+            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(BufferMode.DynamicDiscard, maxIndices, null);
         }
 
         public void SetInstanceData(I[] data)

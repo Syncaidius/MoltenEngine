@@ -101,9 +101,7 @@ namespace Molten.Examples
 
         protected virtual Mesh GetTestCubeMesh()
         {
-            Mesh<VertexTexture> cube = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
-            cube.SetVertices(SampleVertexData.TexturedCube);
-            return cube;
+            return Engine.Renderer.Resources.CreateMesh(SampleVertexData.TexturedCube);
         }
 
         private SceneObject SpawnTestCube(Mesh mesh, Vector3F pos)

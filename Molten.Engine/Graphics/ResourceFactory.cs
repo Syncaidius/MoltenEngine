@@ -140,15 +140,13 @@ namespace Molten.Graphics
             return new Mesh<T>(_renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices);
         }
 
-        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, Array indices = null, I[] instances = null, 
-            BufferMode mode = BufferMode.Immutable, IndexBufferFormat indexFormat = IndexBufferFormat.None)
-            where V : unmanaged, IVertexType
-            where I : unmanaged, IVertexInstanceType
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, Array indices = null,
+        BufferMode mode = BufferMode.Immutable, IndexBufferFormat indexFormat = IndexBufferFormat.None)
+        where V : unmanaged, IVertexType
+        where I : unmanaged, IVertexInstanceType
         {
             uint indexCount = indices != null ? (uint)indices.Length : 0;
-            uint instanceCount = instances != null ? (uint)instances.Length : 0;
-
-            return new InstancedMesh<V, I>(_renderer, mode, (uint)vertices.Length, indexFormat, indexCount, instanceCount, vertices, indices, instances);
+            return new InstancedMesh<V, I>(_renderer, mode, (uint)vertices.Length, indexFormat, indexCount, maxInstances, vertices, indices);
         }
 
         /// <summary>
@@ -163,16 +161,15 @@ namespace Molten.Graphics
         /// <param name="maxIndices"></param>
         /// <param name="initialVertices"></param>
         /// <param name="initialIndices"></param>
-        /// <param name="initialInstances"></param>
         /// <returns></returns>
         public InstancedMesh<V, I> CreateInstancedMesh<V, I>(BufferMode mode, uint maxVertices, 
             uint maxInstances,
             IndexBufferFormat indexFormat = IndexBufferFormat.None, uint maxIndices = 0,
-            V[] initialVertices = null, Array initialIndices = null, I[] initialInstances = null)
+            V[] initialVertices = null, Array initialIndices = null)
             where V : unmanaged, IVertexType
             where I : unmanaged, IVertexInstanceType
         {
-            return new InstancedMesh<V, I>(_renderer, mode, maxVertices, indexFormat, maxIndices, maxInstances, initialVertices, initialIndices, initialInstances);
+            return new InstancedMesh<V, I>(_renderer, mode, maxVertices, indexFormat, maxIndices, maxInstances, initialVertices, initialIndices);
         }
 
         /// <summary>

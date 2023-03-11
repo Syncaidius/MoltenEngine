@@ -21,9 +21,7 @@ namespace Molten.Examples
 
         protected override Mesh GetTestCubeMesh()
         {
-            Mesh<VertexColor> cube = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
-            cube.SetVertices(SampleVertexData.ColoredCube);
-            return cube;
+            return Engine.Renderer.Resources.CreateMesh(SampleVertexData.ColoredCube);
         }
 
         protected override void OnLoadContent(ContentLoadBatch loader)

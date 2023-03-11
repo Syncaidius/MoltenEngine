@@ -13,14 +13,15 @@
         /// <param name="mode"></param>
         /// <param name="maxIndices">The maximum number of indices to allow in the current <see cref="Mesh"/>.</param>
         /// <param name="indexFormat">The index format.</param>
-        protected Mesh(RenderService renderer, BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat, uint maxIndices) : 
+        /// <param name="initialIndices"></param>
+        protected Mesh(RenderService renderer, BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat, uint maxIndices, Array initialIndices = null) : 
             base(renderer)
         {
             IndexFormat = indexFormat;
             MaxVertices = maxVertices;
 
             if(indexFormat != IndexBufferFormat.None)
-                _iBuffer = Renderer.Device.CreateIndexBuffer(indexFormat, mode, maxIndices);
+                _iBuffer = Renderer.Device.CreateIndexBuffer(indexFormat, mode, maxIndices, initialIndices);
         }
 
         public void SetIndices<I>(I[] data) where I : unmanaged

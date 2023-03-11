@@ -85,9 +85,7 @@ namespace Molten.Examples
 
         protected override Mesh GetTestCubeMesh()
         {
-            Mesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
-            cube.SetVertices(SampleVertexData.TextureArrayCubeVertices);
-            return cube;
+            return Engine.Renderer.Resources.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
         }
 
         private void InitializeFontDebug()

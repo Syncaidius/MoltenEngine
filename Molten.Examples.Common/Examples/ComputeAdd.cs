@@ -52,37 +52,31 @@ namespace Molten.Examples
                 uint stride = (uint)sizeof(ComputeData);
                 uint numBytes = stride * NUM_SUMS;
 
-                // We want 2 segments, so double the size of the buffer.
-                IGraphicsBuffer numBuffer = Engine.Renderer.Device.CreateBuffer(
-                    GraphicsBufferFlags.Structured | GraphicsBufferFlags.ShaderResource, BufferMode.Default, numBytes * 2, stride);
-
-                // Staging buffer for transferring our compute result off the GPU
-                IStagingBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(StagingBufferFlags.Read, numBytes);
-
-                IGraphicsBufferSegment numSeg0 = numBuffer.Allocate<ComputeData>(NUM_SUMS);
-                IGraphicsBufferSegment numSeg1 = numBuffer.Allocate<ComputeData>(NUM_SUMS);
-
-                // A buffer to store our output data.
-                IGraphicsBuffer outBuffer = Engine.Renderer.Device.CreateBuffer(
-                    GraphicsBufferFlags.Structured | GraphicsBufferFlags.UnorderedAccess, BufferMode.Default, numBytes, stride);
-
                 // Setup arrays to hold our data
                 _values0 = new ComputeData[NUM_SUMS];
                 _values1 = new ComputeData[NUM_SUMS];
                 _result = new ComputeData[NUM_SUMS];
 
                 // Fill our data arrays
-                for(int i = 0; i < NUM_SUMS; i++)
+                for (int i = 0; i < NUM_SUMS; i++)
                 {
                     _values0[i] = new ComputeData() { FValue = i, IValue = i };
-                    _values1[i] = new ComputeData() { FValue = i*2, IValue = i*3 };
+                    _values1[i] = new ComputeData() { FValue = i * 2, IValue = i * 3 };
                 }
 
-                numSeg0.SetData(GraphicsPriority.Apply, _values0, 0, (uint)_values0.Length, 0, stagingBuffer);
-                numSeg1.SetData(GraphicsPriority.Apply, _values1, 0, (uint)_values0.Length, 0, stagingBuffer);
+                // We want 2 segments, so double the size of the buffer.
+                IGraphicsBuffer numBuffer0 = Engine.Renderer.Device.CreateStructuredBuffer(_values0);
+                IGraphicsBuffer numBuffer1 = Engine.Renderer.Device.CreateStructuredBuffer(_values1);
 
-                compute["Buffer0"].Value = numSeg0;
-                compute["Buffer1"].Value = numSeg1;
+
+                // A buffer to store our output data.
+                IGraphicsBuffer outBuffer = Engine.Renderer.Device.CreateStructuredBuffer<ComputeData>(BufferMode.Default, NUM_SUMS, true, false);
+
+                // Staging buffer for transferring our compute result off the GPU
+                IStagingBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(StagingBufferFlags.Read, numBytes);
+
+                compute["Buffer0"].Value = numBuffer0;
+                compute["Buffer1"].Value = numBuffer1;
                 compute["BufferOut"].Value = outBuffer;
 
                 Engine.Renderer.PushComputeTask(compute, NUM_SUMS, 1, 1, () =>
@@ -100,9 +94,7 @@ namespace Molten.Examples
 
         protected override Mesh GetTestCubeMesh()
         {
-            Mesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
-            cube.SetVertices(SampleVertexData.TextureArrayCubeVertices);
-            return cube;
+            return Engine.Renderer.Resources.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
         }
 
         protected override void OnDrawSprites(SpriteBatcher sb)
