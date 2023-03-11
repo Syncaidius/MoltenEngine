@@ -21,7 +21,7 @@
             MakeSphere(4, 4, out vertices, out indices);
             _sphereMesh = renderer.Resources.CreateMesh(
                 BufferMode.Immutable, (uint)vertices.Length, 
-                IndexBufferFormat.Unsigned32Bit, (uint)indices.Length,
+                IndexBufferFormat.UInt32, (uint)indices.Length,
                 vertices, indices);
 
             _sphereMesh.Shader = _fxSky;

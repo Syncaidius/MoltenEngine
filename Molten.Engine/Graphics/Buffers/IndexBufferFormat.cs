@@ -9,9 +9,9 @@
         None = 0,
 
         /// <summary>A unsigned 32-bit integer (uint).</summary>
-        Unsigned32Bit = 1,
+        UInt32 = 1,
 
         /// <summary>A unsigned 16-bit integer (short).</summary>
-        Unsigned16Bit = 2,
+        UInt16 = 2,
     }
 }

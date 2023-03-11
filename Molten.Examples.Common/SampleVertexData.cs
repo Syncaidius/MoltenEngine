@@ -83,7 +83,7 @@ namespace Molten.Examples
                 new VertexColor(new Vector3F(1,1,-1), Color.White),
             };
 
-        public static readonly int[] CubeIndices = new int[]{
+        public static readonly uint[] CubeIndices = new uint[]{
                 0, 1, 2, 0, 2, 3,
                 4, 5, 6, 4, 7, 5,
                 8, 9, 10, 8, 10, 11,

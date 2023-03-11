@@ -70,7 +70,7 @@
 
             CalculateTangents(vertices, indices);
             return renderer.Resources.CreateMesh(BufferMode.Immutable, (uint)vertices.Length,
-                IndexBufferFormat.Unsigned32Bit, (uint)indices.Length);
+                IndexBufferFormat.UInt32, (uint)indices.Length);
         }
 
         public static Mesh<GBufferVertex> PlainCentered(RenderService renderer, float uvTiling = 1.0f)
@@ -93,7 +93,7 @@
 
             CalculateTangents(vertices, indices);
             return renderer.Resources.CreateMesh(BufferMode.Immutable, (uint)vertices.Length,
-                IndexBufferFormat.Unsigned32Bit, (uint)indices.Length);
+                IndexBufferFormat.UInt32, (uint)indices.Length);
         }
 
         public static Mesh<GBufferVertex> Plain(RenderService renderer, float uvTiling = 1.0f)
@@ -116,7 +116,7 @@
 
             CalculateTangents(vertices, indices);
             return renderer.Resources.CreateMesh(BufferMode.Immutable, (uint)vertices.Length,
-                IndexBufferFormat.Unsigned32Bit, (uint)indices.Length);
+                IndexBufferFormat.UInt32, (uint)indices.Length);
         }
 
         /// <summary>Calculates the normals for a list of vertices and the provided index list.</summary>

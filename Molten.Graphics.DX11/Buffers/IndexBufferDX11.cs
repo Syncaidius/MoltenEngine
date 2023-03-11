@@ -14,7 +14,7 @@ namespace Molten.Graphics
             base(device, 
                 mode, 
                 BindFlag.VertexBuffer, 
-                format == IndexBufferFormat.Unsigned32Bit ? 4U : 2U, 
+                format == IndexBufferFormat.UInt32 ? 4U : 2U, 
                 numElements,
                 ResourceMiscFlag.None, 
                 StagingBufferFlags.None,
@@ -24,11 +24,11 @@ namespace Molten.Graphics
 
             switch (format)
             {
-                case IndexBufferFormat.Unsigned32Bit:
+                case IndexBufferFormat.UInt32:
                     D3DFormat = Format.FormatR32Uint;
                     break;
 
-                case IndexBufferFormat.Unsigned16Bit:
+                case IndexBufferFormat.UInt16:
                     D3DFormat = Format.FormatR16Uint;
                     break;
             }
