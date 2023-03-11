@@ -10,7 +10,7 @@ namespace Molten.Graphics
     public class VertexBufferDX11<T> : GraphicsBuffer, IVertexBuffer
         where T : unmanaged, IVertexType
     {
-        public unsafe VertexBufferDX11(DeviceDX11 device, BufferMode mode, uint numElements, Array initialData = null) : 
+        public unsafe VertexBufferDX11(DeviceDX11 device, BufferMode mode, uint numElements, T[] initialData = null) : 
             base(device, mode, BindFlag.VertexBuffer, (uint)sizeof(T), numElements, ResourceMiscFlag.None, StagingBufferFlags.None, initialData)
         {
             VertexFormat = device.VertexFormatCache.Get<T>();

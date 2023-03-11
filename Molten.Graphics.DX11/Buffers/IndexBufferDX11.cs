@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
@@ -20,9 +21,22 @@ namespace Molten.Graphics
                 initialData)
         {
             IndexFormat = format;
+
+            switch (format)
+            {
+                case IndexBufferFormat.Unsigned32Bit:
+                    D3DFormat = Format.FormatR32Uint;
+                    break;
+
+                case IndexBufferFormat.Unsigned16Bit:
+                    D3DFormat = Format.FormatR16Uint;
+                    break;
+            }
         }
 
         /// <inheritdoc/>
         public IndexBufferFormat IndexFormat { get; }
+
+        internal Format D3DFormat { get; }
     }
 }
