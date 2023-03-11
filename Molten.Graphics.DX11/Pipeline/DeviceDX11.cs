@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Molten.Collections;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
@@ -14,8 +13,6 @@ namespace Molten.Graphics
         DeviceBuilderDX11 _builder;
         DisplayAdapterDXGI _adapter;
         DisplayManagerDXGI _displayManager;
-
-        ObjectPool<BufferSegment> _bufferSegmentPool;
 
         CommandQueueDX11 CmdList;
         List<CommandQueueDX11> _deferredContexts;
@@ -49,8 +46,6 @@ namespace Molten.Graphics
                         Format = att.Type.ToGraphicsFormat().ToApi()
                     };
                 });
-
-            _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
         }
 
         internal unsafe void ProcessDebugLayerMessages()
@@ -103,16 +98,6 @@ namespace Molten.Graphics
             CmdList = new CommandQueueDX11(this, deviceContext);
         }
 
-        internal BufferSegment GetBufferSegment()
-        {
-            return _bufferSegmentPool.GetInstance();
-        }
-
-        internal void RecycleBufferSegment(BufferSegment segment)
-        {
-            _bufferSegmentPool.Recycle(segment);
-        }
-
         /// <summary>Gets a new deferred <see cref="CommandQueueDX11"/>.</summary>
         /// <returns></returns>
         internal CommandQueueDX11 GetDeferredContext()
@@ -159,28 +144,19 @@ namespace Molten.Graphics
             return new ShaderPassDX11(shader, name);
         }
 
-        public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0, Array initialData = null)
+        public override IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint numVertices, T[] initialData = null)
         {
-            // Translate to bind flags
-            BindFlag flag = BindFlag.None;
-            if ((flags & GraphicsBufferFlags.ShaderResource) == GraphicsBufferFlags.ShaderResource)
-                flag |= BindFlag.ShaderResource;
+            return new VertexBufferDX11<T>(this, mode, numVertices, initialData);
+        }
 
-            if ((flags & GraphicsBufferFlags.Vertex) == GraphicsBufferFlags.Vertex)
-                flag |= BindFlag.VertexBuffer;
+        public override IIndexBuffer CreateIndexBuffer(IndexBufferFormat format, BufferMode mode, uint numIndices, Array initialData = null)
+        {
+            return new IndexBufferDX11(this, mode, format, numIndices, initialData);
+        }
 
-            if ((flags & GraphicsBufferFlags.Index) == GraphicsBufferFlags.Index)
-                flag |= BindFlag.IndexBuffer;
-
-            if ((flags & GraphicsBufferFlags.UnorderedAccess) == GraphicsBufferFlags.UnorderedAccess)
-                flag |= BindFlag.UnorderedAccess;
-
-            // Translate to resource flags
-            ResourceMiscFlag rFlag = ResourceMiscFlag.None;
-            if ((flags & GraphicsBufferFlags.Structured) == GraphicsBufferFlags.Structured)
-                rFlag |= ResourceMiscFlag.BufferStructured;
-
-            return new GraphicsBuffer(this, mode, flag, byteCapacity, rFlag, StagingBufferFlags.None, stride, initialData);
+        public override IStructuredBuffer CreateStructuredBuffer<T>(BufferMode mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        {
+            return new StructuredBufferDX11<T>(this, mode, numElements, allowUnorderedAccess, isShaderResource, initialData);
         }
 
         public override IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity)
@@ -196,7 +172,6 @@ namespace Molten.Graphics
 
             // TODO dispose of all bound IGraphicsResource
             VertexFormatCache.Dispose();
-            _bufferSegmentPool.Dispose();
 
             if (_debug != null)
             {

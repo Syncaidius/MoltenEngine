@@ -21,9 +21,6 @@ namespace Molten.Graphics
         internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
         internal HlslShader FxStandardMesh;
         internal HlslShader FxStandardMesh_NoNormalMap;
-
-        internal IGraphicsBuffer StaticVertexBuffer;
-        internal IGraphicsBuffer DynamicVertexBuffer;
         internal IStagingBuffer StagingBuffer;
 
         /// <summary>
@@ -269,8 +266,6 @@ namespace Molten.Graphics
             OnInitializeRenderer(settings);
 
             uint maxBufferSize = (uint)ByteMath.FromMegabytes(5.5);
-            StaticVertexBuffer = Device.CreateBuffer(GraphicsBufferFlags.Vertex | GraphicsBufferFlags.Index, BufferMode.Default, maxBufferSize);
-            DynamicVertexBuffer = Device.CreateBuffer(GraphicsBufferFlags.Vertex | GraphicsBufferFlags.Index, BufferMode.DynamicRing, maxBufferSize);
             StagingBuffer = Device.CreateStagingBuffer(StagingBufferFlags.Write, maxBufferSize);
             SpriteBatch = new SpriteBatcher(this, 3000, 20);
 
@@ -371,8 +366,7 @@ namespace Molten.Graphics
 
             _chain.Dispose();
             SpriteBatch.Dispose();
-            StaticVertexBuffer.Dispose();
-            DynamicVertexBuffer.Dispose();
+            StagingBuffer.Dispose();
 
             OnDisposeBeforeRender();
 

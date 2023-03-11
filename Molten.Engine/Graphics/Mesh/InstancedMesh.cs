@@ -15,40 +15,40 @@ namespace Molten.Graphics
     public class InstancedMesh<V> : InstancedMesh<V, InstanceData>
         where V : unmanaged, IVertexType
     {
-        internal InstancedMesh(RenderService renderer, uint maxVertices, PrimitiveTopology topology, uint numInstances, bool isDynamic) :
-            base(renderer, maxVertices, topology, numInstances, isDynamic)
-        { }
+        internal InstancedMesh(RenderService renderer, 
+            BufferMode mode, uint maxVertices, 
+            IndexBufferFormat indexFormat, uint maxIndices, uint maxInstances, 
+            V[] initialVertices = null, Array initialIndices = null, InstanceData[] initialInstances = null) :
+            base(renderer, mode, maxVertices, indexFormat, maxIndices, maxInstances, initialVertices, initialIndices, initialInstances)
+        {
+        }
     }
 
     public class InstancedMesh<V, I> : Mesh<V>
         where V : unmanaged, IVertexType
         where I : unmanaged, IVertexInstanceType
     {
-        IGraphicsBufferSegment _instanceBuffer;
+        IVertexBuffer _instanceBuffer;
         uint _instanceCount;
 
         /// <summary>
         /// Creates a new instance of <see cref="InstancedMesh{V, I}"/>.
         /// </summary>
         /// <param name="renderer"></param>
+        /// <param name="mode"></param>
         /// <param name="maxVertices"></param>
-        /// <param name="topology"></param>
-        /// <param name="numInstances"></param>
-        /// <param name="isDynamic"></param>
-        /// <para>Setting this to null will prevent automatic batching of the current <see cref="InstancedMesh{V, I}"/></para></param>
-        internal InstancedMesh(
-            RenderService renderer, 
-            uint maxVertices, 
-            PrimitiveTopology topology, 
-            uint numInstances, 
-            bool isDynamic) : 
-            base(renderer, maxVertices, topology, isDynamic)
+        /// <param name="indexFormat"></param>
+        /// <param name="maxIndices"></param>
+        /// <param name="maxInstances"></param>
+        /// <param name="initialInstances"></param>
+        internal InstancedMesh(RenderService renderer, BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat, uint maxIndices, uint maxInstances,
+            V[] initialVertices = null,
+            Array initialIndices = null,
+            I[] initialInstances = null) : 
+            base(renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices)
         {
-            MaxInstances = numInstances;
-
-            IGraphicsBuffer buffer = Renderer.DynamicVertexBuffer;
-            _instanceBuffer = buffer.Allocate<I>(numInstances);
-            _instanceBuffer.SetVertexFormat<I>();
+            MaxInstances = maxInstances;
+            _instanceBuffer = Renderer.Device.CreateVertexBuffer(mode, maxIndices, initialInstances);
         }
 
         public void SetInstanceData(I[] data)
@@ -124,7 +124,7 @@ namespace Molten.Graphics
         public override void Dispose()
         {
             base.Dispose();
-            _instanceBuffer.Release();
+            _instanceBuffer.Dispose();
         }
 
         public uint MaxInstances { get; }

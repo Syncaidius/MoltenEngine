@@ -65,8 +65,8 @@ namespace Molten.Graphics
             _viewports = new ViewportF[maxRTs];
 
             uint maxVBuffers = Device.Adapter.Capabilities.VertexBuffers.MaxSlots;
-            VertexBuffers = RegisterSlotGroup<IGraphicsBufferSegment, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
-            IndexBuffer = RegisterSlot<IGraphicsBufferSegment, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
+            VertexBuffers = RegisterSlotGroup<IVertexBuffer, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
+            IndexBuffer = RegisterSlot<IIndexBuffer, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
             _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(GraphicsBindTypeFlags.Input, "Vertex Input Layout", 0);
             Shader = RegisterSlot<HlslShader, ShaderBinder>(GraphicsBindTypeFlags.Input, "Shader", 0);
 
@@ -214,15 +214,15 @@ namespace Molten.Graphics
             bool uavChanged = _renderUAVs.BindAll();
 
             // Check index buffer
-            if (ibChanged)
+            /*if (ibChanged)
             {
-                BufferSegment ib = IndexBuffer.BoundValue as BufferSegment;
+                IndexBufferDX11 ib = IndexBuffer.BoundValue as IndexBufferDX11;
 
                 if (ib != null)
-                    Native->IASetIndexBuffer(ib, ib.DataFormat, ib.ByteOffset);
+                    Native->IASetIndexBuffer(ib, ib.D3DFormat, ib.ByteOffset);
                 else
                     Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
-            }
+            }*/
 
             // Does the vertex input layout need updating?
             if (vbChanged || vsChanged)

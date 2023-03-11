@@ -260,9 +260,9 @@ where B : GraphicsSlotBinder<T>, new()
         /// </summary>
         public GraphicsSlot<IDepthStencilSurface> DepthSurface { get; protected set; }
 
-        public GraphicsSlotGroup<IGraphicsBufferSegment> VertexBuffers { get; protected set; }
+        public GraphicsSlotGroup<IVertexBuffer> VertexBuffers { get; protected set; }
 
-        public GraphicsSlot<IGraphicsBufferSegment> IndexBuffer { get; protected set; }
+        public GraphicsSlot<IIndexBuffer> IndexBuffer { get; protected set; }
 
         public GraphicsSlot<HlslShader> Shader { get; protected set; }
 

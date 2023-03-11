@@ -2,15 +2,16 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class IndexBufferBinder : GraphicsSlotBinder<IGraphicsBufferSegment>
+    internal unsafe class IndexBufferBinder : GraphicsSlotBinder<IIndexBuffer>
     {
-        public override void Bind(GraphicsSlot<IGraphicsBufferSegment> slot, IGraphicsBufferSegment value)
+        public override void Bind(GraphicsSlot<IIndexBuffer> slot, IIndexBuffer value)
         {
-            BufferSegment buffer = value as BufferSegment;
-            (slot.Cmd as CommandQueueDX11).Native->IASetIndexBuffer(buffer, buffer.DataFormat, value.ByteOffset);
+            IndexBufferDX11 buffer = value as IndexBufferDX11;
+            uint byteOffset = 0; // value.ByteOffset - May need again later for multi-part meshes.
+            (slot.Cmd as CommandQueueDX11).Native->IASetIndexBuffer(buffer, buffer.D3DFormat, byteOffset);
         }
 
-        public override void Unbind(GraphicsSlot<IGraphicsBufferSegment> slot, IGraphicsBufferSegment value)
+        public override void Unbind(GraphicsSlot<IIndexBuffer> slot, IIndexBuffer value)
         {
             (slot.Cmd as CommandQueueDX11).Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
         }

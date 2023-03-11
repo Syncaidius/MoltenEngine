@@ -2,9 +2,11 @@
 {
     public class StandardMesh : Mesh<GBufferVertex>
     {
-        internal StandardMesh(RenderService renderer, uint maxVertices, PrimitiveTopology topology, bool dynamic) :
-            base(renderer, maxVertices, topology, dynamic)
-        { }
+        internal StandardMesh(RenderService renderer, BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat, uint maxIndices, 
+            GBufferVertex[] initialVertices = null, Array initialIndices = null) : 
+            base(renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices)
+        {
+        }
 
         protected override void OnApply(GraphicsCommandQueue cmd)
         {

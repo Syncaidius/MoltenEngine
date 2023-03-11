@@ -118,11 +118,13 @@ namespace Molten.Graphics
 
         protected abstract ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters);
 
-        public abstract IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint vertexCapacity, T[] initialData = null);
+        public abstract IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint numVertices, T[] initialData = null)
+            where T : unmanaged, IVertexType;
 
-        public abstract IIndexBuffer CreateIndexBuffer(IndexBufferFormat format, BufferMode mode, uint indexCapacity, Array initialData = null);
+        public abstract IIndexBuffer CreateIndexBuffer(IndexBufferFormat format, BufferMode mode, uint numIndices, Array initialData = null);
 
-        public abstract IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0, Array initialData = null);
+        public abstract IStructuredBuffer CreateStructuredBuffer<T>(BufferMode mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+            where T : unmanaged;
 
         public abstract IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity);
 

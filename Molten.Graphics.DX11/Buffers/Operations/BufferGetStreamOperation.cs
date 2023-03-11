@@ -4,7 +4,13 @@ namespace Molten.Graphics
 {
     internal struct BufferGetStreamOperation : IBufferOperation
     {
-        internal BufferSegment Segment;
+        internal uint ByteOffset;
+
+        internal uint Stride;
+
+        internal uint NumElements;
+
+        internal GraphicsBuffer SrcBuffer;
 
         internal IStagingBuffer Staging;
 
@@ -13,7 +19,7 @@ namespace Molten.Graphics
 
         public void Process(GraphicsCommandQueue cmd)
         {
-            Segment.GetStream(GraphicsPriority.Immediate, StreamCallback, Staging);
+            SrcBuffer.GetStream(cmd as CommandQueueDX11, ByteOffset, Stride, NumElements, StreamCallback);
         }
     }
 }

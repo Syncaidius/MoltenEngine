@@ -2,9 +2,9 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class VertexBufferGroupBinder : GraphicsGroupBinder<IGraphicsBufferSegment>
+    internal unsafe class VertexBufferGroupBinder : GraphicsGroupBinder<IVertexBuffer>
     {
-        public override void Bind(GraphicsSlotGroup<IGraphicsBufferSegment> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<IVertexBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             int iNumChanged = (int)numChanged;
 
@@ -12,21 +12,17 @@ namespace Molten.Graphics
             uint* pStrides = stackalloc uint[iNumChanged];
             uint* pOffsets = stackalloc uint[iNumChanged];
             uint p = 0;
-            BufferSegment seg = null;
+            VertexBufferDX11 buffer = null;
 
             for (uint i = startIndex; i <= endIndex; i++)
             {
-                seg = grp[i].BoundValue as BufferSegment;
+                buffer = grp[i].BoundValue as VertexBufferDX11;
 
-                if (seg != null)
+                if (buffer != null)
                 {
-                    GraphicsBuffer buffer = seg.Buffer as GraphicsBuffer;
-                    if ((buffer.BufferBindFlags & BindFlag.VertexBuffer) != BindFlag.VertexBuffer)
-                        throw new InvalidOperationException($"The buffer segment in vertex buffer slot {i} is not part of a vertex buffer.");
-
                     pBuffers[p] = buffer.ResourcePtr;
-                    pStrides[p] = seg.Stride;
-                    pOffsets[p] = seg.ByteOffset;
+                    pStrides[p] = buffer.Stride;
+                    pOffsets[p] = 0; // buffer.ByteOffset; - May need again for multi-part meshes with sub-meshes within the same buffer.
                 }
                 else
                 {
@@ -41,10 +37,9 @@ namespace Molten.Graphics
             (grp.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(startIndex, numChanged, pBuffers, pStrides, pOffsets);
         }
 
-        public override void Bind(GraphicsSlot<IGraphicsBufferSegment> slot, IGraphicsBufferSegment value)
+        public override void Bind(GraphicsSlot<IVertexBuffer> slot, IVertexBuffer value)
         {
-            BufferSegment seg = slot.BoundValue as BufferSegment;
-            GraphicsBuffer buffer = seg.Buffer as GraphicsBuffer;
+            VertexBufferDX11 buffer = slot.BoundValue as VertexBufferDX11;
 
             if ((buffer.BufferBindFlags & BindFlag.VertexBuffer) != BindFlag.VertexBuffer)
                 throw new InvalidOperationException($"The buffer segment in vertex buffer slot {slot.SlotIndex} is not part of a vertex buffer.");
@@ -53,11 +48,11 @@ namespace Molten.Graphics
             uint* pStrides = stackalloc uint[1];
             uint* pOffsets = stackalloc uint[1];
 
-            if (seg != null)
+            if (buffer != null)
             {
-                pBuffers[0] = seg;
-                pStrides[0] = seg.Stride;
-                pOffsets[0] = seg.ByteOffset;
+                pBuffers[0] = buffer;
+                pStrides[0] = buffer.Stride;
+                pOffsets[0] = 0; // buffer.ByteOffset; - May need again for multi-part meshes with sub-meshes within the same buffer.
             }
             else
             {
@@ -69,7 +64,7 @@ namespace Molten.Graphics
             (slot.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(slot.SlotIndex, 1, pBuffers, pStrides, pOffsets);
         }
 
-        public override void Unbind(GraphicsSlotGroup<IGraphicsBufferSegment> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<IVertexBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             int iNumChanged = (int)numChanged;
 
@@ -90,7 +85,7 @@ namespace Molten.Graphics
             (grp.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(startIndex, numChanged, pBuffers, pStrides, pOffsets);
         }
 
-        public override void Unbind(GraphicsSlot<IGraphicsBufferSegment> slot, IGraphicsBufferSegment value)
+        public override void Unbind(GraphicsSlot<IVertexBuffer> slot, IVertexBuffer value)
         {
             ID3D11Buffer** pBuffers = stackalloc ID3D11Buffer*[1];
             uint* pStrides = stackalloc uint[1];

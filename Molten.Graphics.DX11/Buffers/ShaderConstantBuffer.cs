@@ -15,8 +15,8 @@ namespace Molten.Graphics
         internal int Hash;
         byte* _constData;
 
-        internal ShaderConstantBuffer(DeviceDX11 device, BufferMode flags, ConstantBufferInfo desc)
-            : base(device, flags, BindFlag.ConstantBuffer, desc.Size)
+        internal ShaderConstantBuffer(DeviceDX11 device, BufferMode mode, ConstantBufferInfo desc)
+            : base(device, mode, BindFlag.ConstantBuffer, desc.Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
             _constData = (byte*)EngineUtil.Alloc(desc.Size);
@@ -56,7 +56,7 @@ namespace Molten.Graphics
             // Generate hash for comparing constant buffers.
             byte[] hashData = StringHelper.GetBytes(hashString, Encoding.Unicode);
             Hash = HashHelper.ComputeFNV(hashData);
-            Description.ByteWidth = desc.Size;
+            Desc.ByteWidth = desc.Size;
         }
 
         public override void GraphicsRelease()
@@ -81,7 +81,7 @@ namespace Molten.Graphics
                     v.Write(_constData + v.ByteOffset);
 
                 MappedSubresource data = dx11Cmd.MapResource(NativePtr, 0, Map.WriteDiscard, 0);
-                Buffer.MemoryCopy(_constData, data.PData, data.DepthPitch, Description.ByteWidth);
+                Buffer.MemoryCopy(_constData, data.PData, data.DepthPitch, Desc.ByteWidth);
                 dx11Cmd.UnmapResource(NativePtr, 0);
             }
             else

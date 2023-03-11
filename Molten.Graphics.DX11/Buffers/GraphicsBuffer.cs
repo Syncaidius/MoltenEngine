@@ -12,7 +12,7 @@ namespace Molten.Graphics
         ID3D11Buffer* _native;
         uint _ringPos;
 
-        internal BufferDesc Description;
+        internal BufferDesc Desc;
         ThreadedQueue<IBufferOperation> _pendingChanges;
 
         internal GraphicsBuffer(DeviceDX11 device,
@@ -37,6 +37,28 @@ namespace Molten.Graphics
             device.ProcessDebugLayerMessages();
         }
 
+        internal GraphicsBuffer(DeviceDX11 device,
+            BufferMode mode,
+            BindFlag bindFlags,
+            uint numBytes,
+            ResourceMiscFlag optionFlags = 0,
+            StagingBufferFlags stagingType = StagingBufferFlags.None,
+            Array initialData = null) : base(device,
+        ((bindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
+        ((bindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None))
+        {
+            Mode = mode;
+            Stride = 0;
+            ByteCapacity = numBytes;
+            ElementCount = 0;
+            _pendingChanges = new ThreadedQueue<IBufferOperation>();
+
+            BuildDescription(bindFlags, optionFlags, stagingType);
+            InitializeBuffer(initialData);
+            device.ProcessDebugLayerMessages();
+        }
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void QueueOperation(GraphicsPriority priority, IBufferOperation op)
         {
@@ -58,52 +80,52 @@ namespace Molten.Graphics
             ResourceMiscFlag opFlags,
             StagingBufferFlags stageMode)
         {
-            Description = new BufferDesc();
-            Description.Usage = Usage.Default;
-            Description.BindFlags = (uint)flags;
-            Description.MiscFlags = (uint)opFlags;
-            Description.ByteWidth = ByteCapacity;
+            Desc = new BufferDesc();
+            Desc.Usage = Usage.Default;
+            Desc.BindFlags = (uint)flags;
+            Desc.MiscFlags = (uint)opFlags;
+            Desc.ByteWidth = ByteCapacity;
 
             // Buffer mode.
             switch (Mode)
             {
                 case BufferMode.Default:
-                    Description.Usage = Usage.Default;
-                    Description.CPUAccessFlags = 0;
+                    Desc.Usage = Usage.Default;
+                    Desc.CPUAccessFlags = 0;
                     break;
 
                 case BufferMode.DynamicDiscard:
                 case BufferMode.DynamicRing:
-                    Description.Usage = Usage.Dynamic;
-                    Description.CPUAccessFlags = (uint)CpuAccessFlag.Write;
+                    Desc.Usage = Usage.Dynamic;
+                    Desc.CPUAccessFlags = (uint)CpuAccessFlag.Write;
                     break;
 
 
                 case BufferMode.Immutable:
-                    Description.Usage = Usage.Immutable;
-                    Description.CPUAccessFlags = 0;
+                    Desc.Usage = Usage.Immutable;
+                    Desc.CPUAccessFlags = 0;
                     break;
             }
 
             // Staging mode
             if (stageMode != StagingBufferFlags.None)
             {
-                Description.BindFlags = 0;
-                Description.MiscFlags = 0;
-                Description.Usage = Usage.Staging;
-                Description.CPUAccessFlags = (uint)CpuAccessFlag.Read;
-                Description.StructureByteStride = 0;
+                Desc.BindFlags = 0;
+                Desc.MiscFlags = 0;
+                Desc.Usage = Usage.Staging;
+                Desc.CPUAccessFlags = (uint)CpuAccessFlag.Read;
+                Desc.StructureByteStride = 0;
 
                 if ((stageMode & StagingBufferFlags.Read) == StagingBufferFlags.Read)
-                    Description.CPUAccessFlags = (uint)CpuAccessFlag.Read;
+                    Desc.CPUAccessFlags = (uint)CpuAccessFlag.Read;
 
                 if ((stageMode & StagingBufferFlags.Write) == StagingBufferFlags.Write)
-                    Description.CPUAccessFlags = (uint)CpuAccessFlag.Write;
+                    Desc.CPUAccessFlags = (uint)CpuAccessFlag.Write;
             }
 
             // Ensure structured buffers get the stride info.
-            if (Description.MiscFlags == (uint)ResourceMiscFlag.BufferStructured)
-                Description.StructureByteStride = Stride;
+            if (Desc.MiscFlags == (uint)ResourceMiscFlag.BufferStructured)
+                Desc.StructureByteStride = Stride;
         }
 
         /// <summary>
@@ -116,7 +138,7 @@ namespace Molten.Graphics
             if (Mode == BufferMode.Immutable && initialData == null)
                 throw new ArgumentNullException("Initial data cannot be null when buffer mode is Immutable.");
 
-            uint numBytes = Description.ByteWidth;
+            uint numBytes = Desc.ByteWidth;
 
 
             if (initialData != null)
@@ -125,12 +147,12 @@ namespace Molten.Graphics
                 {
                     SubresourceData srd = new SubresourceData(null, numBytes, numBytes);
                     srd.PSysMem = ptr.ToPointer();
-                    nDevice.Ptr->CreateBuffer(ref Description, ref srd, ref _native);
+                    nDevice.Ptr->CreateBuffer(ref Desc, ref srd, ref _native);
                 });
             }
             else
             {
-                nDevice.Ptr->CreateBuffer(ref Description, null, ref _native);
+                nDevice.Ptr->CreateBuffer(ref Desc, null, ref _native);
             }
 
             Device.AllocateVRAM(numBytes);
@@ -177,7 +199,7 @@ namespace Molten.Graphics
         /// <param name="destination">The <see cref="GraphicsBuffer"/> to copy to.</param>
         public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, Action completionCallback = null)
         {
-            if (destination.ByteCapacity < Description.ByteWidth)
+            if (ByteCapacity < Desc.ByteWidth)
                 throw new Exception("The destination buffer is not large enough.");
 
             QueueOperation(priority, new BufferDirectCopyOperation()
@@ -200,6 +222,19 @@ namespace Molten.Graphics
             });
         }
 
+        public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, RawStream> callback, IStagingBuffer staging = null)
+        {
+            QueueOperation(priority, new BufferGetStreamOperation()
+            {
+                ByteOffset = 0,
+                NumElements = ElementCount,
+                SrcBuffer = this,
+                Staging = staging,
+                StreamCallback = callback,
+                Stride = Stride
+            });
+        }
+
         internal void GetStream(CommandQueueDX11 cmd,
             uint byteOffset,
             uint stride,
@@ -208,9 +243,9 @@ namespace Molten.Graphics
             StagingBuffer staging = null)
         {
             // Check buffer type.
-            bool isDynamic = Description.Usage == Usage.Dynamic;
-            bool isStaged = Description.Usage == Usage.Staging &&
-                (Description.CPUAccessFlags & (uint)CpuAccessFlag.Write) == (uint)CpuAccessFlag.Write;
+            bool isDynamic = Desc.Usage == Usage.Dynamic;
+            bool isStaged = Desc.Usage == Usage.Staging &&
+                (Desc.CPUAccessFlags & (uint)CpuAccessFlag.Write) == (uint)CpuAccessFlag.Write;
 
             uint numBytes = stride * elementCount;
             RawStream stream;
@@ -231,7 +266,7 @@ namespace Molten.Graphics
                         // See: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476181(v=vs.85).aspx
                         if (HasFlags(BindFlag.VertexBuffer) || HasFlags(BindFlag.IndexBuffer))
                         {
-                            if (_ringPos > 0 && _ringPos + numBytes < Description.ByteWidth)
+                            if (_ringPos > 0 && _ringPos + numBytes < Desc.ByteWidth)
                             {
                                 cmd.MapResource(NativePtr, 0, Map.WriteNoOverwrite, 0, out stream);
                                 cmd.Profiler.Current.MapNoOverwriteCount++;
@@ -269,14 +304,14 @@ namespace Molten.Graphics
                 if (staging == null)
                     throw new GraphicsBufferException("Staging buffer required. Non-dynamic/staged buffers require a staging buffer to access data.");
 
-                isDynamic = staging.Description.Usage == Usage.Dynamic;
-                isStaged = staging.Description.Usage == Usage.Staging;
+                isDynamic = staging.Desc.Usage == Usage.Dynamic;
+                isStaged = staging.Desc.Usage == Usage.Staging;
 
                 if (!isDynamic && !isStaged)
                     throw new GraphicsBufferException("The provided staging buffer is invalid. Must be either dynamic or staged.");
 
-                if (staging.Description.ByteWidth < numBytes)
-                    throw new GraphicsBufferException($"The provided staging buffer is not large enough ({staging.Description.ByteWidth} bytes) to fit the provided data ({numBytes} bytes).");
+                if (staging.Desc.ByteWidth < numBytes)
+                    throw new GraphicsBufferException($"The provided staging buffer is not large enough ({staging.Desc.ByteWidth} bytes) to fit the provided data ({numBytes} bytes).");
 
                 // Write updated data into buffer
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
@@ -306,6 +341,12 @@ namespace Molten.Graphics
             }
         }
 
+        public void SetData<T>(GraphicsPriority priority, T[] data, IStagingBuffer staging = null, Action completeCallback = null)
+            where T : unmanaged
+        {
+            SetData(priority, data, 0, (uint)data.Length, 0, staging, completeCallback);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -317,7 +358,8 @@ namespace Molten.Graphics
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
         /// <param name="staging"></param>
         /// <param name="completeCallback"></param>
-        public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, uint byteOffset = 0, IStagingBuffer staging = null, Action completeCallback = null)
+        public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, uint byteOffset = 0, 
+            IStagingBuffer staging = null, Action completeCallback = null)
             where T : unmanaged
         {
             BufferSetOperation<T> op = new BufferSetOperation<T>()
@@ -358,7 +400,7 @@ namespace Molten.Graphics
         public void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint byteOffset, Action<T[]> completionCallback)
             where T : unmanaged
         {
-            if ((Description.CPUAccessFlags & (uint)CpuAccessFlag.Read) != (uint)CpuAccessFlag.Read)
+            if ((Desc.CPUAccessFlags & (uint)CpuAccessFlag.Read) != (uint)CpuAccessFlag.Read)
                 throw new InvalidOperationException("Cannot use GetData() on a non-readable buffer.");
 
             if (destination.Length < count)
@@ -396,12 +438,12 @@ namespace Molten.Graphics
 
         internal bool HasFlags(BindFlag flag)
         {
-            return ((BindFlag)Description.BindFlags & flag) == flag;
+            return ((BindFlag)Desc.BindFlags & flag) == flag;
         }
 
         internal bool HasFlag(CpuAccessFlag flag)
         {
-            return ((CpuAccessFlag)Description.CPUAccessFlags & flag) == flag;
+            return ((CpuAccessFlag)Desc.CPUAccessFlags & flag) == flag;
         }
 
         protected override void OnApply(GraphicsCommandQueue context)
@@ -416,7 +458,7 @@ namespace Molten.Graphics
             if (NativePtr != null)
             {
                 SilkUtil.ReleasePtr(ref _native);
-                Device.DeallocateVRAM(Description.ByteWidth);
+                Device.DeallocateVRAM(Desc.ByteWidth);
             }
         }
 
@@ -435,7 +477,7 @@ namespace Molten.Graphics
         public BufferMode Mode { get; }
 
         /// <summary>Gets the bind flags associated with the buffer.</summary>
-        public BindFlag BufferBindFlags => (BindFlag)Description.BindFlags;
+        public BindFlag BufferBindFlags => (BindFlag)Desc.BindFlags;
 
         /// <summary>Gets the underlying DirectX 11 buffer. </summary>
         internal override ID3D11Buffer* ResourcePtr => _native;
@@ -443,16 +485,16 @@ namespace Molten.Graphics
         public override unsafe ID3D11Resource* NativePtr => (ID3D11Resource*)_native;
 
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
-        public ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Description.MiscFlags;
+        public ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Desc.MiscFlags;
 
         /// <summary>
         /// Gets a value indicating whether the current buffer is a shader resource.
         /// </summary>
-        public bool IsShaderResource =>((BindFlag)Description.BindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource;
+        public bool IsShaderResource =>((BindFlag)Desc.BindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource;
 
         /// <summary>
         /// Gets a value indicating whether the current buffer has unordered access.
         /// </summary>
-        public bool IsUnorderedAccess => ((BindFlag)Description.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
+        public bool IsUnorderedAccess => ((BindFlag)Desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
     }
 }

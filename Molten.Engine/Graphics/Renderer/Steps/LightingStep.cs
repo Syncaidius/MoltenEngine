@@ -6,16 +6,13 @@ namespace Molten.Graphics
     {
         HlslShader _matPoint;
         HlslShader _matDebugPoint;
-        IGraphicsBuffer _lightDataBuffer;
-        IGraphicsBufferSegment _lightSegment;
+        IGraphicsBuffer _lightBuffer;
 
         internal override void Initialize(RenderService renderer)
         {
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings
-            uint bufferByteSize = stride * maxLights;
-            _lightDataBuffer = renderer.Device.CreateBuffer(GraphicsBufferFlags.Structured | GraphicsBufferFlags.ShaderResource, BufferMode.DynamicRing, bufferByteSize, stride);
-            _lightSegment = _lightDataBuffer.Allocate<LightData>(maxLights);
+            _lightBuffer = renderer.Device.CreateStructuredBuffer<LightData>(BufferMode.DynamicRing, maxLights, false, true);
 
             // Load shaders
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "light_point.mfx");
@@ -25,8 +22,7 @@ namespace Molten.Graphics
 
         public override void Dispose()
         {
-            _lightSegment.Dispose();
-            _lightDataBuffer.Dispose();
+            _lightBuffer.Dispose();
             _matPoint.Dispose();
             _matDebugPoint.Dispose();
         }
@@ -67,10 +63,10 @@ namespace Molten.Graphics
                 scene.PointLights.Data[i] = ld;
             }
 
-            _lightSegment.SetData(GraphicsPriority.Immediate, scene.PointLights.Data);
+            _lightBuffer.SetData(GraphicsPriority.Immediate, scene.PointLights.Data);
 
             // Set data buffer on domain and pixel shaders
-            _matPoint.Light.Data.Value = _lightSegment; // TODO Need to implement a dynamic structured buffer we can reuse here.
+            _matPoint.Light.Data.Value = _lightBuffer; // TODO Need to implement a dynamic structured buffer we can reuse here.
             _matPoint.Light.MapDiffuse.Value = sScene;
             _matPoint.Light.MapNormal.Value =  sNormals;
             _matPoint.Light.MapDepth.Value = dsSurface;

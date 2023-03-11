@@ -16,11 +16,11 @@
 
         public string Name { get; set; }
 
-        public HlslShader Parent { get; private set; }
+        public HlslShader Parent { get; }
 
         public object Value
         {
-            get => Resource;
+            get => _resource;
             set => _resource = OnSetResource(value);
         }
     }

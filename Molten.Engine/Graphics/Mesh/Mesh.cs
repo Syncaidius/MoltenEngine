@@ -3,89 +3,40 @@
     /// <summary>A base interface for mesh implementations.</summary>
     public abstract class Mesh : Renderable
     {
-        IGraphicsBufferSegment _iBuffer;
-        IndexBufferFormat _indexFormat;
+        IIndexBuffer _iBuffer;
 
         /// <summary>
         /// Creates a new instance of <see cref="Mesh"/>, but can only be called by derived mesh classes.
         /// </summary>
         /// <param name="renderer"></param>
         /// <param name="maxVertices"></param>
-        /// <param name="topology"></param>
-        /// <param name="isDynamic"></param>
-        protected Mesh(RenderService renderer, uint maxVertices, PrimitiveTopology topology, bool isDynamic) : base(renderer)
-        {
-            _indexFormat = IndexBufferFormat.None;
-            MaxVertices = maxVertices;
-            IsDynamic = isDynamic;
-        }
-
-        /// <summary>
-        /// After calling this method, any data that was set via <see cref="SetIndices{I}(I[], uint, uint)"/> or its overloads, will be invalidated and require updating.
-        /// <para>An index buffer will be allocated to match the capacity of <paramref name="maxIndices"/> multiplied by either 2 (UINT16) or 4 (UINT32) bytes.</para>
-        /// <para>If <see cref="IndexBufferFormat.None"/> is used, any existing index buffer will be released back into the buffer rersource bool for reuse elsewhere.</para>
-        /// </summary>
+        /// <param name="mode"></param>
         /// <param name="maxIndices">The maximum number of indices to allow in the current <see cref="Mesh"/>.</param>
-        /// <param name="format">The index format.</param>
-        public void SetIndexParameters(uint maxIndices, IndexBufferFormat format = IndexBufferFormat.Unsigned32Bit)
+        /// <param name="indexFormat">The index format.</param>
+        protected Mesh(RenderService renderer, BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat, uint maxIndices) : 
+            base(renderer)
         {
-            // Don't do anything if there are no parameter changes.
-            if (maxIndices == MaxIndices && format == _indexFormat)
-                return;
+            IndexFormat = indexFormat;
+            MaxVertices = maxVertices;
 
-            if (format != IndexBufferFormat.None)
-            {
-                if (maxIndices < 1)
-                    throw new InvalidOperationException("Cannot set maxIndices to less than 1 when a valid index format is provided.");
-
-                bool createBuffer = _iBuffer == null || format != IndexFormat || MaxIndices != maxIndices;
-
-                _iBuffer?.Release();
-
-                if (createBuffer)
-                {
-                    IGraphicsBuffer iBuffer = IsDynamic ? Renderer.DynamicVertexBuffer : Renderer.StaticVertexBuffer;
-
-                    // MSDN: Accepted formats for index buffer data are UINT16 (DXGI_FORMAT_R16_UINT) and UINT32 (DXGI_FORMAT_R32_UINT).
-                    switch (format)
-                    {
-                        case IndexBufferFormat.Unsigned16Bit:
-                            _iBuffer = iBuffer.Allocate<ushort>(maxIndices);
-                            break;
-
-                        case IndexBufferFormat.Unsigned32Bit:
-                            _iBuffer = iBuffer.Allocate<uint>(maxIndices);
-                            break;
-                    }
-
-                    _iBuffer.SetIndexFormat(format);
-                }
-
-                MaxIndices = maxIndices;
-                _indexFormat = format;
-            }
-            else
-            {
-                _iBuffer?.Release();
-                _iBuffer = null;
-                MaxIndices = 0;
-            }
+            if(indexFormat != IndexBufferFormat.None)
+                _iBuffer = Renderer.Device.CreateIndexBuffer(indexFormat, mode, maxIndices);
         }
 
         public void SetIndices<I>(I[] data) where I : unmanaged
         {
-            SetIndices<I>(data, 0, (uint)data.Length);
+            SetIndices(data, 0, (uint)data.Length);
         }
 
         public void SetIndices<I>(I[] data, uint count) where I : unmanaged
         {
-            SetIndices<I>(data, 0, count);
+            SetIndices(data, 0, count);
         }
 
         public void SetIndices<I>(I[] data, uint startIndex, uint count) where I : unmanaged
         {
             if (_iBuffer == null)
-                throw new InvalidOperationException($"Cannot set indices without valid index format and capacity. Try calling {nameof(SetIndexParameters)}() first.");
+                throw new InvalidOperationException($"Mesh is not indexed. Must be created with index format that isn't IndexBufferFormat.None.");
 
             IndexCount = count;
             _iBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
@@ -125,7 +76,7 @@
         public virtual void Dispose()
         {
             IsVisible = false;
-            _iBuffer.Release();
+            _iBuffer.Dispose();
         }
 
         /// <summary>
@@ -139,18 +90,18 @@
         public uint MaxVertices { get; }
 
         /// <summary>Gets the number of vertices stored in the mesh.</summary>
-        public uint VertexCount { get; protected set; }
+        public uint VertexCount { get; set; }
 
-        public uint MaxIndices { get; private set; }
+        public uint MaxIndices { get; set; }
 
-        public uint IndexCount { get; private set; }
+        public uint IndexCount { get; set; }
+
+        public IndexBufferFormat IndexFormat { get; }
 
         /// <summary>
         /// Gets or sets the material that should be used when rendering the current <see cref="Mesh"/>.
         /// </summary>
         public HlslShader Shader { get; set; }
-
-        public IndexBufferFormat IndexFormat => _indexFormat;
 
         public float EmissivePower { get; set; } = 1.0f;
     }
@@ -158,15 +109,15 @@
     public class Mesh<T> : Mesh
         where T : unmanaged, IVertexType
     {
-        private protected IGraphicsBufferSegment _vb;
+        IVertexBuffer _vb;
 
-        internal Mesh(RenderService renderer, uint maxVertices, PrimitiveTopology topology, bool isDynamic) :
-            base(renderer, maxVertices, topology, isDynamic)
+        internal Mesh(RenderService renderer, 
+            BufferMode mode, uint maxVertices, 
+            IndexBufferFormat indexFormat, uint maxIndices,
+            T[] initialVertices = null, Array initialIndices = null) :
+            base(renderer, mode, maxVertices, indexFormat, maxIndices)
         {
-            IGraphicsBuffer vBuffer = isDynamic ? Renderer.DynamicVertexBuffer : Renderer.StaticVertexBuffer;
-
-            _vb = vBuffer.Allocate<T>(MaxVertices);
-            _vb.SetVertexFormat<T>();
+            _vb = renderer.Device.CreateVertexBuffer<T>(mode, maxVertices);
         }
 
         public void SetVertices(T[] data)
@@ -200,7 +151,7 @@
         public override void Dispose()
         {
             base.Dispose();
-            _vb.Release();
+            _vb.Dispose();
         }
     }
 }

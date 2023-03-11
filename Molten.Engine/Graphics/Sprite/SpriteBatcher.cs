@@ -67,8 +67,7 @@ namespace Molten.Graphics
         uint _curRange;
         uint _dataCount;
 
-        IGraphicsBuffer _buffer;
-        IGraphicsBufferSegment _bufferData;
+        IStructuredBuffer _buffer;
 
         Func<GraphicsCommandQueue, SpriteRange, ObjectRenderData, HlslShader>[] _checkers;
         HlslShader _matDefault;
@@ -98,12 +97,7 @@ namespace Molten.Graphics
             ClipStack = new Rectangle[256];
             Reset();
 
-            _buffer = renderer.Device.CreateBuffer(
-            GraphicsBufferFlags.Structured | GraphicsBufferFlags.ShaderResource,
-            BufferMode.DynamicDiscard,
-            (uint)sizeof(GpuData) * dataCapacity,
-            (uint)sizeof(GpuData));
-            _bufferData = _buffer.Allocate<GpuData>(dataCapacity);
+            _buffer = renderer.Device.CreateStructuredBuffer<GpuData>(BufferMode.DynamicDiscard, dataCapacity, false, true);
 
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "sprite.mfx");
             _matDefaultNoTexture = result["sprite-no-texture"];
@@ -532,7 +526,7 @@ namespace Molten.Graphics
 
         private void FlushBuffer(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data, uint rangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
         {
-            _bufferData.GetStream(GraphicsPriority.Immediate, (buffer, stream) => stream.WriteRange(Data, vertexStartIndex, vertexCount));
+            _buffer.GetStream(GraphicsPriority.Immediate, (buffer, stream) => stream.WriteRange(Data, vertexStartIndex, vertexCount));
 
             // Draw calls
             uint bufferOffset = 0;
@@ -546,7 +540,7 @@ namespace Molten.Graphics
 
                 HlslShader shader = range.Shader ?? _checkers[(int)range.Type](cmd, range, data);
 
-                shader["spriteData"].Value = _bufferData;
+                shader["spriteData"].Value = _buffer;
                 shader["vertexOffset"].Value = bufferOffset;
 
                 // Set common material properties
@@ -626,8 +620,6 @@ namespace Molten.Graphics
             _matLine.Dispose();
             _matCircle.Dispose();
             _matCircleNoTexture.Dispose();
-
-            _bufferData.Dispose();
             _buffer.Dispose();
         }
 
