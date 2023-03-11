@@ -34,20 +34,21 @@ namespace Molten.Graphics
         /// <summary>Creates a new instance of <see cref="StructuredBuffer"/>.</summary>
         /// <param name="device">The graphics device to bind the buffer to.</param>
         /// <param name="stride">The expected size of 1 element, in bytes.</param>
-        /// <param name="capacity">The number of elements the buffer should be able to hold.</param>
-        /// <param name="binding">Custom bind flags.</param>
+        /// <param name="numElements"></param>
+        /// <param name="shaderResource"></param>
         /// <param name="flags"></param>
         /// <param name="unorderedAccess">If true, the buffer is given Read-Write access and a UAV is created for it. This is known as an RWStructuredBuffer in HLSL.</param>
         public TypedBuffer(
             DeviceDX11 device, 
             BufferMode flags, 
-            uint capacity, 
+            uint stride,
+            uint numElements,
             bool unorderedAccess = false, 
             bool shaderResource = true)
             : base(device, 
                   flags,
                   (shaderResource ? BindFlag.ShaderResource : 0) | (unorderedAccess ? BindFlag.UnorderedAccess : 0), 
-                  capacity, 
+                  stride, numElements, 
                   ResourceMiscFlag.BufferStructured)
         {
             _bufferType = typeof(T);
@@ -57,12 +58,14 @@ namespace Molten.Graphics
         /// <summary>Creates a new instance of <see cref="StructuredBuffer"/>.</summary>
         /// <param name="device">The graphics device to bind the buffer to.</param>
         /// <param name="stride">The expected size of 1 element, in bytes.</param>
-        /// <param name="capacity">The number of elements the buffer should be able to hold.</param>
-        public TypedBuffer(DeviceDX11 device, BufferMode mode, uint stride, uint capacity)
+        /// <param name="numElements"></param>
+        /// <param name="mode"></param>
+        public TypedBuffer(DeviceDX11 device, BufferMode mode, uint stride, uint numElements)
             : base(device, 
                   mode, 
                   BindFlag.ShaderResource, 
-                  capacity, 
+                  stride,
+                  numElements, 
                   ResourceMiscFlag.BufferStructured)
         {
             ValidateType();
@@ -80,7 +83,7 @@ namespace Molten.Graphics
             throw new InvalidOperationException("Typed buffers only accept scalar, vector and Matrix2x2 value types.");
         }
 
-        protected override void CreateResources(uint stride, uint byteOffset, uint elementCount, SRView srv, UAView uav)
+        protected override void CreateResources()
         {
             Type allocatedType = typeof(T);
             if (allocatedType != _bufferType)
@@ -88,11 +91,11 @@ namespace Molten.Graphics
 
             if (HasFlags(BindFlag.ShaderResource))
             {
-                srv.Desc = new ShaderResourceViewDesc1()
+                SRV.Desc = new ShaderResourceViewDesc1()
                 {
                     BufferEx = new BufferexSrv()
                     {
-                        NumElements = elementCount,
+                        NumElements = ElementCount,
                         FirstElement = 0,
                         Flags = 0 // See: https://docs.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_bufferex_srv_flag
                     },
@@ -100,7 +103,7 @@ namespace Molten.Graphics
                     Format = Format.FormatUnknown,
                 };
 
-                srv.Create(this);
+                SRV.Create(this);
             }
 
             // See UAV notes: https://docs.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-resources-intro#raw-views-of-buffers
@@ -112,8 +115,8 @@ namespace Molten.Graphics
                     ViewDimension = UavDimension.Buffer,
                     Buffer = new BufferUav()
                     {
-                        NumElements = elementCount,
-                        FirstElement = byteOffset / Description.StructureByteStride,
+                        NumElements = ElementCount,
+                        FirstElement = 0,
                         Flags = (uint)BufferUavFlag.Raw,
                     }
                 };

@@ -54,7 +54,10 @@ namespace Molten.Examples
 
                 // We want 2 segments, so double the size of the buffer.
                 IGraphicsBuffer numBuffer = Engine.Renderer.Device.CreateBuffer(
-                    GraphicsBufferFlags.Structured | GraphicsBufferFlags.ShaderResource, BufferMode.DynamicRing, numBytes * 2, stride);
+                    GraphicsBufferFlags.Structured | GraphicsBufferFlags.ShaderResource, BufferMode.Default, numBytes * 2, stride);
+
+                // Staging buffer for transferring our compute result off the GPU
+                IStagingBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(StagingBufferFlags.Read, numBytes);
 
                 IGraphicsBufferSegment numSeg0 = numBuffer.Allocate<ComputeData>(NUM_SUMS);
                 IGraphicsBufferSegment numSeg1 = numBuffer.Allocate<ComputeData>(NUM_SUMS);
@@ -62,9 +65,6 @@ namespace Molten.Examples
                 // A buffer to store our output data.
                 IGraphicsBuffer outBuffer = Engine.Renderer.Device.CreateBuffer(
                     GraphicsBufferFlags.Structured | GraphicsBufferFlags.UnorderedAccess, BufferMode.Default, numBytes, stride);
-
-                // Staging buffer for transferring our compute result off the GPU
-                IStagingBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(StagingBufferFlags.Read, numBytes);
 
                 // Setup arrays to hold our data
                 _values0 = new ComputeData[NUM_SUMS];
@@ -78,8 +78,8 @@ namespace Molten.Examples
                     _values1[i] = new ComputeData() { FValue = i*2, IValue = i*3 };
                 }
 
-                numSeg0.SetData(GraphicsPriority.Apply, _values0);
-                numSeg1.SetData(GraphicsPriority.Apply, _values1);
+                numSeg0.SetData(GraphicsPriority.Apply, _values0, 0, (uint)_values0.Length, 0, stagingBuffer);
+                numSeg1.SetData(GraphicsPriority.Apply, _values1, 0, (uint)_values0.Length, 0, stagingBuffer);
 
                 compute["Buffer0"].Value = numSeg0;
                 compute["Buffer1"].Value = numSeg1;

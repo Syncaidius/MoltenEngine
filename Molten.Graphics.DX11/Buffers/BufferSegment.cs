@@ -27,16 +27,6 @@ namespace Molten.Graphics
 
         internal BufferSegment(DeviceDX11 device) : base(device, GraphicsBindTypeFlags.None) { }
 
-        public void SetVertexFormat<T>() where T: struct, IVertexType
-        {
-            VertexFormat = (Buffer.Device as DeviceDX11).VertexFormatCache.Get<T>();
-        }
-
-        internal void SetVertexFormat(Type vertexType)
-        {
-            VertexFormat = (Buffer.Device as DeviceDX11).VertexFormatCache.Get(vertexType);
-        }
-
         public void SetIndexFormat(IndexBufferFormat format)
         {
             switch (format)
@@ -95,7 +85,7 @@ namespace Molten.Graphics
                 ByteOffset = ByteOffset + writeOffset,
                 StartIndex = startIndex,
                 Count = count,
-                DestinationSegment = this,
+                DestBuffer = this,
                 CompletionCallback = completionCallback,
                 Staging = staging,
             };

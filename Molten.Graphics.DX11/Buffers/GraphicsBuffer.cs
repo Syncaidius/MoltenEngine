@@ -7,33 +7,32 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    internal unsafe partial class GraphicsBuffer : ContextBindableResource<ID3D11Buffer>, IGraphicsBuffer
+    public abstract unsafe class GraphicsBuffer : ContextBindableResource<ID3D11Buffer>, IGraphicsBuffer
     {
         ID3D11Buffer* _native;
         uint _ringPos;
 
         internal BufferDesc Description;
-
         ThreadedQueue<IBufferOperation> _pendingChanges;
-        BufferSegment _firstSegment;
-        List<BufferSegment> _freeSegments;
 
         internal GraphicsBuffer(DeviceDX11 device,
             BufferMode mode,
             BindFlag bindFlags,
-            uint byteCapacity,
-            ResourceMiscFlag optionFlags = 0, 
-            StagingBufferFlags stagingType = StagingBufferFlags.None, 
-            uint structuredStride = 0, 
+            uint stride,
+            uint numElements,
+            ResourceMiscFlag optionFlags = 0,
+            StagingBufferFlags stagingType = StagingBufferFlags.None,
             Array initialData = null) : base(device,
                 ((bindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
                 ((bindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None))
         {
-            _freeSegments = new List<BufferSegment>();
             Mode = mode;
+            Stride = stride;
+            ByteCapacity = Stride * numElements;
+            ElementCount = numElements;
             _pendingChanges = new ThreadedQueue<IBufferOperation>();
 
-            BuildDescription(bindFlags, optionFlags, stagingType, byteCapacity, structuredStride);
+            BuildDescription(bindFlags, optionFlags, stagingType);
             InitializeBuffer(initialData);
             device.ProcessDebugLayerMessages();
         }
@@ -55,17 +54,15 @@ namespace Molten.Graphics
         }
 
         private void BuildDescription(
-            BindFlag flags, 
-            ResourceMiscFlag opFlags, 
-            StagingBufferFlags stageMode, 
-            uint byteCapacity,
-            uint structureByteStride)
+            BindFlag flags,
+            ResourceMiscFlag opFlags,
+            StagingBufferFlags stageMode)
         {
             Description = new BufferDesc();
             Description.Usage = Usage.Default;
             Description.BindFlags = (uint)flags;
             Description.MiscFlags = (uint)opFlags;
-            Description.ByteWidth = byteCapacity;
+            Description.ByteWidth = ByteCapacity;
 
             // Buffer mode.
             switch (Mode)
@@ -106,7 +103,7 @@ namespace Molten.Graphics
 
             // Ensure structured buffers get the stride info.
             if (Description.MiscFlags == (uint)ResourceMiscFlag.BufferStructured)
-                Description.StructureByteStride = structureByteStride;
+                Description.StructureByteStride = Stride;
         }
 
         /// <summary>
@@ -137,31 +134,41 @@ namespace Molten.Graphics
             }
 
             Device.AllocateVRAM(numBytes);
-
-            // Allocate the first segment.
-            _firstSegment = nDevice.GetBufferSegment();
-            _firstSegment.BindFlags = BindFlags;
-            _firstSegment.Buffer = this;
-            _firstSegment.ByteOffset = 0;
-            _firstSegment.ByteCount = numBytes;
-            _firstSegment.IsFree = true;
-
-            if (Description.StructureByteStride > 0)
-            {
-                _firstSegment.Stride = Description.StructureByteStride;
-                CreateResources(Description.StructureByteStride, 0, Description.ByteWidth / Description.StructureByteStride);
-            }
-
-
-            _freeSegments.Add(_firstSegment);
+            CreateResources();
         }
 
-        protected virtual void OnValidateAllocationStride(uint stride)
+        protected virtual void CreateResources()
         {
-            if (((BindFlag)Description.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess)
+            if (HasFlags(BindFlag.ShaderResource))
             {
-                if (stride != Description.StructureByteStride)
-                    throw new GraphicsBufferException("Buffer is structured. Stride must match that of the structured buffer.");
+                SRV.Desc = new ShaderResourceViewDesc1()
+                {
+                    Buffer = new BufferSrv()
+                    {
+                        NumElements = ElementCount,
+                        FirstElement = 0,
+                    },
+                    ViewDimension = D3DSrvDimension.D3D11SrvDimensionBuffer,
+                    Format = Format.FormatUnknown,
+                };
+
+                SRV.Create(this);
+            }
+
+            if (HasFlags(BindFlag.UnorderedAccess))
+            {
+                UAV.Desc = new UnorderedAccessViewDesc1()
+                {
+                    Format = Format.FormatUnknown,
+                    ViewDimension = UavDimension.Buffer,
+                    Buffer = new BufferUav()
+                    {
+                        NumElements = ElementCount,
+                        FirstElement = 0,
+                        Flags = 0, // TODO add support for append, raw and counter buffers. See: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_buffer_uav_flag
+                    }
+                };
+                UAV.Create(this);
             }
         }
 
@@ -193,10 +200,11 @@ namespace Molten.Graphics
             });
         }
 
-        internal void GetStream(CommandQueueDX11 context, 
-            uint byteOffset, 
-            uint dataSize, 
-            Action<GraphicsBuffer, RawStream> callback, 
+        internal void GetStream(CommandQueueDX11 cmd,
+            uint byteOffset,
+            uint stride,
+            uint elementCount,
+            Action<GraphicsBuffer, RawStream> callback,
             StagingBuffer staging = null)
         {
             // Check buffer type.
@@ -204,6 +212,7 @@ namespace Molten.Graphics
             bool isStaged = Description.Usage == Usage.Staging &&
                 (Description.CPUAccessFlags & (uint)CpuAccessFlag.Write) == (uint)CpuAccessFlag.Write;
 
+            uint numBytes = stride * elementCount;
             RawStream stream;
 
             // Check if the buffer is a dynamic-writable
@@ -212,9 +221,9 @@ namespace Molten.Graphics
                 switch (Mode)
                 {
                     case BufferMode.DynamicDiscard:
-                        context.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
+                        cmd.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
                         stream.Position = byteOffset;
-                        context.Profiler.Current.MapDiscardCount++;
+                        cmd.Profiler.Current.MapDiscardCount++;
                         break;
 
                     case BufferMode.DynamicRing:
@@ -222,37 +231,37 @@ namespace Molten.Graphics
                         // See: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476181(v=vs.85).aspx
                         if (HasFlags(BindFlag.VertexBuffer) || HasFlags(BindFlag.IndexBuffer))
                         {
-                            if (_ringPos > 0 && _ringPos + dataSize < Description.ByteWidth)
+                            if (_ringPos > 0 && _ringPos + numBytes < Description.ByteWidth)
                             {
-                                context.MapResource(NativePtr, 0, Map.WriteNoOverwrite, 0, out stream);
-                                context.Profiler.Current.MapNoOverwriteCount++;
+                                cmd.MapResource(NativePtr, 0, Map.WriteNoOverwrite, 0, out stream);
+                                cmd.Profiler.Current.MapNoOverwriteCount++;
                                 stream.Position = _ringPos;
-                                _ringPos += dataSize;
+                                _ringPos += numBytes;
                             }
                             else
-                            {                                
-                                context.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
-                                context.Profiler.Current.MapDiscardCount++;
+                            {
+                                cmd.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
+                                cmd.Profiler.Current.MapDiscardCount++;
                                 stream.Position = 0;
-                                _ringPos = dataSize;
+                                _ringPos = numBytes;
                             }
                         }
                         else
                         {
-                            context.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
-                            context.Profiler.Current.MapDiscardCount++;
+                            cmd.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
+                            cmd.Profiler.Current.MapDiscardCount++;
                             stream.Position = byteOffset;
                         }
                         break;
 
                     default:
-                        context.MapResource(NativePtr, 0, Map.Write, 0, out stream);
-                        context.Profiler.Current.MapWriteCount++;
+                        cmd.MapResource(NativePtr, 0, Map.Write, 0, out stream);
+                        cmd.Profiler.Current.MapWriteCount++;
                         break;
-                }     
-                
+                }
+
                 callback(this, stream);
-                context.UnmapResource(NativePtr, 0);
+                cmd.UnmapResource(NativePtr, 0);
             }
             else
             {
@@ -266,57 +275,76 @@ namespace Molten.Graphics
                 if (!isDynamic && !isStaged)
                     throw new GraphicsBufferException("The provided staging buffer is invalid. Must be either dynamic or staged.");
 
-                if (staging.Description.ByteWidth < dataSize)
-                    throw new GraphicsBufferException($"The provided staging buffer is not large enough ({staging.Description.ByteWidth} bytes) to fit the provided data ({dataSize} bytes).");
+                if (staging.Description.ByteWidth < numBytes)
+                    throw new GraphicsBufferException($"The provided staging buffer is not large enough ({staging.Description.ByteWidth} bytes) to fit the provided data ({numBytes} bytes).");
 
                 // Write updated data into buffer
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
                 {
-                    context.MapResource(staging.NativePtr, 0, Map.WriteDiscard, 0, out stream);
-                    context.Profiler.Current.MapDiscardCount++;
+                    cmd.MapResource(staging.NativePtr, 0, Map.WriteDiscard, 0, out stream);
+                    cmd.Profiler.Current.MapDiscardCount++;
                 }
                 else
                 {
-                    context.MapResource(staging.NativePtr, 0, Map.Write, 0, out stream);
-                    context.Profiler.Current.MapWriteCount++;
+                    cmd.MapResource(staging.NativePtr, 0, Map.Write, 0, out stream);
+                    cmd.Profiler.Current.MapWriteCount++;
                 }
 
                 callback(staging, stream);
-                context.UnmapResource(staging.NativePtr, 0);
+                cmd.UnmapResource(staging.NativePtr, 0);
 
                 Box stagingRegion = new Box()
                 {
                     Left = 0,
-                    Right = dataSize,
+                    Right = numBytes,
                     Back = 1,
                     Bottom = 1,
                 };
-                context.CopyResourceRegion(staging, 0, ref stagingRegion, 
+                cmd.CopyResourceRegion(staging, 0, ref stagingRegion,
                     this, 0, new Vector3UI(byteOffset, 0, 0));
-                context.Profiler.Current.CopySubresourceCount++;
+                cmd.Profiler.Current.CopySubresourceCount++;
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="priority"></param>
+        /// <param name="data"></param>
+        /// <param name="startIndex">The start index within <paramref name="data"/> to copy.</param>
+        /// <param name="elementCount"></param>
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        internal void Set<T>(
-            CommandQueueDX11 context,
-            T[] data,
-            uint startIndex,
-            uint count,
-            uint dataStride = 0,
-            uint byteOffset = 0,
-            StagingBuffer staging = null)
+        /// <param name="staging"></param>
+        /// <param name="completeCallback"></param>
+        public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, uint byteOffset = 0, IStagingBuffer staging = null, Action completeCallback = null)
             where T : unmanaged
         {
-            if (dataStride == 0)
-                dataStride = (uint)sizeof(T);
-
-            uint dataSize = count * dataStride;
-
-            GetStream(context, byteOffset, dataSize, (buffer, stream) =>
+            BufferSetOperation<T> op = new BufferSetOperation<T>()
             {
-                stream.WriteRange<T>(data, startIndex, count);
-            }, staging);
+                ByteOffset = byteOffset,
+                CompletionCallback = completeCallback,
+                DestBuffer = this,
+                ElementCount = elementCount,
+                Stride = (uint)sizeof(T),
+                Staging = staging as StagingBuffer,
+            };
+
+            // Custom handling of immediate command, so that we potentially avoid a data copy.
+            if(priority == GraphicsPriority.Immediate)
+            {
+                op.Data = data;
+                op.DataStartIndex = startIndex;
+                op.Process(Device.Cmd);
+            }
+            else
+            {
+                // Only copy the part we need from the source data, starting from startIndex.
+                op.Data = new T[data.Length];
+                op.DataStartIndex = 0;
+                Buffer.BlockCopy(data, (int)startIndex, op.Data, 0, (int)elementCount);
+                QueueOperation(priority, op);
+            }
         }
 
         /// <summary>Retrieves data from a <see cref="GraphicsBuffer"/>.</summary>
@@ -392,230 +420,16 @@ namespace Molten.Graphics
             }
         }
 
-        protected virtual void CreateResources(uint stride, uint byteOffset, uint elementCount,
-            SRView srv, UAView uav)
-        {
-            if (HasFlags(BindFlag.ShaderResource))
-            {
-                srv.Desc = new ShaderResourceViewDesc1()
-                {
-                    Buffer = new BufferSrv()
-                    {
-                        NumElements = elementCount,
-                        FirstElement = byteOffset / stride,
-                    },
-                    ViewDimension = D3DSrvDimension.D3D11SrvDimensionBuffer,
-                    Format = Format.FormatUnknown,
-                };
-
-                srv.Create(this);
-            }
-
-            if (HasFlags(BindFlag.UnorderedAccess))
-            {
-                uav.Desc = new UnorderedAccessViewDesc1()
-                {
-                    Format = Format.FormatUnknown,
-                    ViewDimension = UavDimension.Buffer,
-                    Buffer = new BufferUav()
-                    {
-                        NumElements = elementCount,
-                        FirstElement = byteOffset / Description.StructureByteStride,
-                        Flags = 0, // TODO add support for append, raw and counter buffers. See: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_buffer_uav_flag
-                    }
-                };
-                uav.Create(this);
-            }
-        }
-
-        private void CreateResources(uint stride, uint byteOffset, uint elementCount)
-        {
-            CreateResources(stride, byteOffset, elementCount, SRV, UAV);
-        }
-
-        private void CreateResources(BufferSegment segment)
-        {
-            CreateResources(segment.Stride, segment.ByteOffset, segment.ElementCount, segment.SRV, segment.UAV);
-        }
-
-        public IGraphicsBufferSegment Allocate<T>(uint count) where T : unmanaged
-        {
-            uint stride = (uint)sizeof(T);
-            OnValidateAllocationStride(stride);
-
-            BufferSegment seg;
-            uint byteCount = count * stride;
-
-            // iterate backwards
-            for (int i = _freeSegments.Count - 1; i >= 0; i--)
-            {
-                seg = _freeSegments[i];
-                if (seg.IsFree)
-                {
-                    // Downsize the current segment and insert a new allocated segment in front of it.
-                    if (seg.ByteCount > byteCount)
-                    {
-                        // Create a new segment to match the requested size
-                        BufferSegment newSeg = seg.SplitFromFront(byteCount);
-                        newSeg.ElementCount = count;
-                        newSeg.Stride = stride;
-                        CreateResources(newSeg);
-                        return newSeg;
-                    }
-                    else if (seg.ByteCount == byteCount) // Perfect. Use it without any resizing.
-                    {
-                        seg.IsFree = false;
-                        seg.ElementCount = count;
-                        seg.Stride = stride;
-
-                        _freeSegments.Remove(seg);
-                        CreateResources(seg);
-                        return seg;
-                    }
-                }
-            }
-
-            // Unable to allocate.
-            return null;
-        }
-
-        /// <summary>Release the buffer space held by the specified segment.</summary>
-        /// <param name="segment">The segment.</param>
-        public void Deallocate(IGraphicsBufferSegment seg)
-        {
-            DeviceDX11 nDevice = Device as DeviceDX11;
-            BufferSegment segment = seg as BufferSegment;
-
-            bool mergePrev = segment.Previous != null && segment.Previous.IsFree;
-            bool mergeNext = segment.Next != null && segment.Next.IsFree;
-
-            if (mergePrev && mergeNext)
-            {
-                // Merge the current and next into the previous. This removes two segments by merging a total of 3 together.
-                segment.Previous.ByteCount += segment.ByteCount;
-                segment.Previous.ByteCount += segment.Next.ByteCount;
-                segment.Previous.LinkNext(segment.Next.Next);
-
-                // The next one will be listed in _freeSegments, so removei t.
-                _freeSegments.Remove(segment.Next);
-
-                nDevice.RecycleBufferSegment(segment.Next);
-                nDevice.RecycleBufferSegment(segment);
-            }
-            else if (mergePrev)
-            {
-                segment.Previous.ByteCount += segment.ByteCount;
-                segment.Previous.LinkNext(segment.Next);
-                nDevice.RecycleBufferSegment(segment);
-            }
-            else if (mergeNext)
-            {
-                segment.ByteCount += segment.Next.ElementCount;
-                segment.LinkNext(segment.Next.Next);
-                segment.IsFree = true;
-
-                nDevice.RecycleBufferSegment(segment.Next);
-                _freeSegments.Add(segment);
-            }
-        }
-
-        /// <summary>Updates or resizes the allocation.</summary>
-        /// <param name="existing">The existing segment to be updated or reallocated if neccessary.</param>
-        /// <param name="count">The new element count.</param>
-        /// <returns></returns>
-        public IGraphicsBufferSegment UpdateAllocation<T>(IGraphicsBufferSegment existingSeg, uint count) 
-            where T : unmanaged
-        {
-            BufferSegment existing = existingSeg as BufferSegment;
-
-            uint newStride = (uint)sizeof(T);
-            OnValidateAllocationStride(newStride);
-
-            uint oldBytes = existing.ByteCount;
-            uint newBytes = newStride * count;
-            uint oldCount = existing.ElementCount;
-
-            if (oldBytes == newBytes)
-            {
-                return existing;
-            }
-            else if (oldBytes > newBytes) // Downsize
-            {
-                uint dif = oldBytes - newBytes;
-
-                BufferSegment freed = existing.SplitFromFront(dif);
-                freed.IsFree = true;
-                existing.Stride = newStride;
-                existing.ElementCount = count;
-                _freeSegments.Add(freed);
-            }
-            else if (newBytes > oldBytes) // Upsize
-            {
-                uint dif = newBytes - oldBytes;
-                bool canMergeNext = existing.Next != null && existing.Next.IsFree;
-                bool canMergePrev = existing.Previous != null && existing.Previous.IsFree;
-
-                if (canMergeNext && existing.Next.ByteCount >= dif)
-                {
-                    existing.ElementCount = count;
-                    existing.Stride = newStride;
-                    existing.TakeFromNext(dif);
-                }
-                else if (canMergePrev && existing.Previous.ByteCount >= dif)
-                {
-                    existing.ElementCount = count;
-                    existing.Stride = newStride;
-                    existing.TakeFromPrevious(dif);
-
-                    // TODO queue copy change to move the data backward to the new byte offset.
-                }
-                else
-                {
-                    if ((canMergeNext && canMergePrev) && ((existing.Previous.ByteCount + existing.Next.ByteCount) >= dif))
-                    {
-                        dif -= existing.Previous.ByteCount;
-
-                        existing.ElementCount = count;
-                        existing.Stride = newStride;
-                        existing.TakeFromPrevious(existing.Previous.ByteCount);
-                        existing.TakeFromNext(dif);
-
-                        // TODO queue copy change to move the data backward to the new byte offset.
-                    }
-                }
-            }
-
-            // If we've reached this far, there's not enough free space nearby. Find a new location.
-            if (existing.ByteCount != newBytes)
-            {
-                IGraphicsBufferSegment newSeg = Allocate<T>(count);
-
-                // TODO queue copy to move data from old to new segment (if allowed).
-
-                Deallocate(existing);
-                return newSeg;
-            }
-            else
-            {
-                SegmentResized(existing, oldBytes, newBytes, oldCount, count);
-                return existing;
-            }
-        }
-
-        private void SegmentResized(BufferSegment segment, uint oldByteCount, uint newByteCount, uint oldElementCount, uint newElementCount)
-        {
-            CreateResources(segment);
-            OnSegmentResized(segment, oldByteCount, newByteCount, oldElementCount, newElementCount);
-        }
-
-        protected virtual void OnSegmentResized(BufferSegment segment, uint oldByteCount, uint newByteCount, uint oldElementCount, uint newElementCount) { }
-
-        /// <summary>Gets the structured stride which <see cref="BufferSegment"/> instances must adhere to if they belong to the current <see cref="GraphicsBuffer"/>. 
-        /// This is ignored and unused if the <see cref="GraphicsBuffer"/> does not carry the <see cref="ResourceOptionFlags.BufferStructured"/> flag.</summary>
-        public uint StructuredStride => Description.StructureByteStride;
+        /// <summary>Gets the stride (byte size) of each element within the current <see cref="GraphicsBuffer"/>.</summary>
+        public uint Stride { get; }
 
         /// <summary>Gets the capacity of a single section within the buffer, in bytes.</summary>
-        public uint ByteCapacity => Description.ByteWidth;
+        public uint ByteCapacity { get; }
+
+        /// <summary>
+        /// Gets the number of elements that the current <see cref="GraphicsBuffer"/> can store.
+        /// </summary>
+        public uint ElementCount { get; }
 
         /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
         public BufferMode Mode { get; }
