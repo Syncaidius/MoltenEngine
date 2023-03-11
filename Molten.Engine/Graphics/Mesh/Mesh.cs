@@ -116,9 +116,9 @@
             BufferMode mode, uint maxVertices, 
             IndexBufferFormat indexFormat, uint maxIndices,
             T[] initialVertices = null, Array initialIndices = null) :
-            base(renderer, mode, maxVertices, indexFormat, maxIndices)
+            base(renderer, mode, maxVertices, indexFormat, maxIndices, initialIndices)
         {
-            _vb = renderer.Device.CreateVertexBuffer<T>(mode, maxVertices);
+            _vb = renderer.Device.CreateVertexBuffer<T>(mode, maxVertices, initialVertices);
         }
 
         public void SetVertices(T[] data)
