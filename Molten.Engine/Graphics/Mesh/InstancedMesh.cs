@@ -48,7 +48,7 @@ namespace Molten.Graphics
             base(renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices)
         {
             MaxInstances = maxInstances;
-            _instanceBuffer = Renderer.Device.CreateVertexBuffer(mode, maxIndices, initialInstances);
+            _instanceBuffer = Renderer.Device.CreateVertexBuffer(BufferMode.DynamicDiscard, maxIndices, initialInstances);
         }
 
         public void SetInstanceData(I[] data)

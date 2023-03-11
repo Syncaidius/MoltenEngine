@@ -118,10 +118,27 @@ namespace Molten.Graphics
 
         protected abstract ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters);
 
+        public IVertexBuffer CreateVertexBuffer<T>(T[] data, BufferMode mode = BufferMode.Immutable)
+            where T : unmanaged, IVertexType
+        {
+            return CreateVertexBuffer(mode, (uint)data.Length, data);
+        }
+
         public abstract IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint numVertices, T[] initialData = null)
             where T : unmanaged, IVertexType;
 
+        public IIndexBuffer CreateIndexBuffer(Array data, IndexBufferFormat format = IndexBufferFormat.UInt32, BufferMode mode = BufferMode.Immutable)
+        {
+            return CreateIndexBuffer(format, mode, (uint)data.Length, data);
+        }
+
         public abstract IIndexBuffer CreateIndexBuffer(IndexBufferFormat format, BufferMode mode, uint numIndices, Array initialData = null);
+
+        public IStructuredBuffer CreateStructuredBuffer<T>(T[] data, BufferMode mode = BufferMode.Immutable)
+            where T : unmanaged
+        {
+            return CreateStructuredBuffer(mode, (uint)data.Length, false, true, data);
+        }
 
         public abstract IStructuredBuffer CreateStructuredBuffer<T>(BufferMode mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
             where T : unmanaged;

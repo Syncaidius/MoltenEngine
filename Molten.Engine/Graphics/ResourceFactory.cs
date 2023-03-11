@@ -31,7 +31,7 @@ namespace Molten.Graphics
         public abstract IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
             uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, TextureFlags flags = TextureFlags.None, string name = null);
 
-        public abstract IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless, 
+        public abstract IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless,
             uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None,
             TextureFlags flags = TextureFlags.None, string name = null);
 
@@ -109,10 +109,17 @@ namespace Molten.Graphics
         /// <param name="initialVertices"></param>
         /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public Mesh<GBufferVertex> CreateMesh(BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat = IndexBufferFormat.None, uint maxIndices = 0, 
+        public Mesh<GBufferVertex> CreateMesh(BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat = IndexBufferFormat.None, uint maxIndices = 0,
             GBufferVertex[] initialVertices = null, Array initialIndices = null)
         {
             return new StandardMesh(_renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices);
+        }
+
+        public Mesh<T> CreateMesh<T>(T[] vertices, Array indices = null, BufferMode mode = BufferMode.Immutable, IndexBufferFormat indexFormat = IndexBufferFormat.None)
+            where T : unmanaged, IVertexType
+        {
+            uint indexCount = indices != null ? (uint)indices.Length : 0;
+            return CreateMesh(mode, (uint)vertices.Length, indexFormat, indexCount, vertices, indices);
         }
 
         /// <summary>
@@ -131,6 +138,17 @@ namespace Molten.Graphics
             where T : unmanaged, IVertexType
         {
             return new Mesh<T>(_renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices);
+        }
+
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, Array indices = null, I[] instances = null, 
+            BufferMode mode = BufferMode.Immutable, IndexBufferFormat indexFormat = IndexBufferFormat.None)
+            where V : unmanaged, IVertexType
+            where I : unmanaged, IVertexInstanceType
+        {
+            uint indexCount = indices != null ? (uint)indices.Length : 0;
+            uint instanceCount = instances != null ? (uint)instances.Length : 0;
+
+            return new InstancedMesh<V, I>(_renderer, mode, (uint)vertices.Length, indexFormat, indexCount, instanceCount, vertices, indices, instances);
         }
 
         /// <summary>
