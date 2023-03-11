@@ -35,6 +35,7 @@ namespace Molten.Graphics
 
             BuildDescription(bindFlags, optionFlags, stagingType, byteCapacity, structuredStride);
             InitializeBuffer(initialData);
+            device.ProcessDebugLayerMessages();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -420,7 +421,7 @@ namespace Molten.Graphics
                     {
                         NumElements = elementCount,
                         FirstElement = byteOffset / Description.StructureByteStride,
-                        Flags = 0,
+                        Flags = 0, // TODO add support for append, raw and counter buffers. See: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_buffer_uav_flag
                     }
                 };
                 uav.Create(this);

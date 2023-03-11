@@ -138,7 +138,7 @@ namespace Molten.Graphics
 
             bool canWrite = mapType != Map.Read;
             bool canRead = mapType == Map.Read || mapType == Map.ReadWrite;
-            stream = new RawStream(mapping.PData, uint.MaxValue, canRead, canWrite);
+            stream = new RawStream(mapping.PData, mapping.DepthPitch, canRead, canWrite);
 
             return mapping;
         }

@@ -118,7 +118,7 @@ namespace Molten.Graphics
 
         protected abstract ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters);
 
-        public abstract IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0);
+        public abstract IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0, Array initialData = null);
 
         public abstract IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity);
 

@@ -62,6 +62,8 @@ namespace Molten.Graphics
                 {
                     nuint msgSize = 0;
                     _debugInfo->GetMessageA(i, null, &msgSize);
+                    if (msgSize == 0)
+                        continue;
 
                     void* ptrMsg = EngineUtil.Alloc(msgSize);
                     Message* msg = (Message*)ptrMsg;
@@ -157,7 +159,7 @@ namespace Molten.Graphics
             return new ShaderPassDX11(shader, name);
         }
 
-        public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0)
+        public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0, Array initialData = null)
         {
             // Translate to bind flags
             BindFlag flag = BindFlag.None;
@@ -178,10 +180,7 @@ namespace Molten.Graphics
             if ((flags & GraphicsBufferFlags.Structured) == GraphicsBufferFlags.Structured)
                 rFlag |= ResourceMiscFlag.BufferStructured;
 
-            return new GraphicsBuffer(this, mode,
-                flag, byteCapacity, rFlag, StagingBufferFlags.None, structuredStride: stride);
-
-            ProcessDebugLayerMessages();
+            return new GraphicsBuffer(this, mode, flag, byteCapacity, rFlag, StagingBufferFlags.None, stride, initialData);
         }
 
         public override IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity)

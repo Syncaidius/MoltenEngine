@@ -44,7 +44,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0)
+        public override IGraphicsBuffer CreateBuffer(GraphicsBufferFlags flags, BufferMode mode, uint byteCapacity, uint stride = 0, Array initialData = null)
         {
             throw new NotImplementedException();
         }
