@@ -146,17 +146,26 @@ namespace Molten.Graphics
 
         public override IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint numVertices, T[] initialData = null)
         {
-            return new VertexBufferDX11<T>(this, mode, numVertices, initialData);
+            fixed (T* ptr = initialData)
+                return new VertexBufferDX11<T>(this, mode, numVertices, ptr);
         }
 
-        public override IIndexBuffer CreateIndexBuffer(IndexBufferFormat format, BufferMode mode, uint numIndices, Array initialData = null)
+        public override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, ushort[] initialData = null)
         {
-            return new IndexBufferDX11(this, mode, format, numIndices, initialData);
+            fixed (ushort* ptr = initialData)
+                return new IndexBufferDX11(this, mode, IndexBufferFormat.UInt16, numIndices, ptr);
+        }
+
+        public override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, uint[] initialData = null)
+        {
+            fixed (uint* ptr = initialData)
+                return new IndexBufferDX11(this, mode, IndexBufferFormat.UInt32, numIndices, ptr);
         }
 
         public override IStructuredBuffer CreateStructuredBuffer<T>(BufferMode mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
         {
-            return new StructuredBufferDX11<T>(this, mode, numElements, allowUnorderedAccess, isShaderResource, initialData);
+            fixed (T* ptr = initialData)
+                return new StructuredBufferDX11<T>(this, mode, numElements, allowUnorderedAccess, isShaderResource, ptr);
         }
 
         public override IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity)

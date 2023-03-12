@@ -52,7 +52,6 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             DisposeMarkedObjects();
-
             Cmd?.Dispose();
         }
 
@@ -127,12 +126,19 @@ namespace Molten.Graphics
         public abstract IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint numVertices, T[] initialData = null)
             where T : unmanaged, IVertexType;
 
-        public IIndexBuffer CreateIndexBuffer(Array data, IndexBufferFormat format = IndexBufferFormat.UInt32, BufferMode mode = BufferMode.Immutable)
+        public IIndexBuffer CreateIndexBuffer(ushort[] data, BufferMode mode = BufferMode.Immutable)
         {
-            return CreateIndexBuffer(format, mode, (uint)data.Length, data);
+            return CreateIndexBuffer(mode, (uint)data.Length, data);
         }
 
-        public abstract IIndexBuffer CreateIndexBuffer(IndexBufferFormat format, BufferMode mode, uint numIndices, Array initialData = null);
+        public IIndexBuffer CreateIndexBuffer(uint[] data, BufferMode mode = BufferMode.Immutable)
+        {
+            return CreateIndexBuffer(mode, (uint)data.Length, data);
+        }
+
+        public abstract IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, ushort[] initialData);
+
+        public abstract IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, uint[] initialData = null);
 
         public IStructuredBuffer CreateStructuredBuffer<T>(T[] data, BufferMode mode = BufferMode.Immutable)
             where T : unmanaged

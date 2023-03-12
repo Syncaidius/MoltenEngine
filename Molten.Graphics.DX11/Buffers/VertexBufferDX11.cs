@@ -7,9 +7,9 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    public abstract class VertexBufferDX11 : GraphicsBuffer, IVertexBuffer
+    public abstract unsafe class VertexBufferDX11 : GraphicsBuffer, IVertexBuffer
     {
-        protected VertexBufferDX11(DeviceDX11 device, BufferMode mode, uint stride, uint numElements, Array initialData = null) :
+        protected VertexBufferDX11(DeviceDX11 device, BufferMode mode, uint stride, uint numElements, void* initialData = null) :
             base(device, mode, BindFlag.VertexBuffer, stride, numElements, ResourceMiscFlag.None, StagingBufferFlags.None, initialData)
         {
             
@@ -22,7 +22,7 @@ namespace Molten.Graphics
     public unsafe class VertexBufferDX11<T> : VertexBufferDX11, IVertexBuffer
         where T : unmanaged, IVertexType
     {
-        public unsafe VertexBufferDX11(DeviceDX11 device, BufferMode mode, uint numElements, T[] initialData = null) : 
+        public unsafe VertexBufferDX11(DeviceDX11 device, BufferMode mode, uint numElements, void* initialData = null) : 
             base(device, mode, (uint)sizeof(T), numElements, initialData)
         {
             VertexFormat = device.VertexFormatCache.Get<T>();

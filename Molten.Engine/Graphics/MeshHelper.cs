@@ -8,12 +8,12 @@
         /// <param name="p2">The second point.</param>
         /// <param name="p3">The third point.</param>
         /// <returns>The resultant normal.</returns>
-        public static Vector3F CalculateNormal(Vector3F p1, Vector3F p2, Vector3F p3)
+        public static Vector3F CalculateNormal(ref Vector3F p1, ref Vector3F p2, ref Vector3F p3)
         {
             //calculate normals
             Vector3F vec1 = p3 - p1;
             Vector3F vec2 = p2 - p1;
-            Vector3F normal = Vector3F.Cross(vec1, vec2);
+            Vector3F normal = Vector3F.Cross(ref vec1, ref vec2);
 
             return normal;
         }
@@ -69,8 +69,7 @@
             };
 
             CalculateTangents(vertices, indices);
-            return renderer.Resources.CreateMesh(BufferMode.Immutable, (uint)vertices.Length,
-                IndexBufferFormat.UInt32, (uint)indices.Length);
+            return renderer.Resources.CreateMesh(vertices, indices);
         }
 
         public static Mesh<GBufferVertex> PlainCentered(RenderService renderer, float uvTiling = 1.0f)
@@ -92,8 +91,7 @@
             indices[5] = 3;
 
             CalculateTangents(vertices, indices);
-            return renderer.Resources.CreateMesh(BufferMode.Immutable, (uint)vertices.Length,
-                IndexBufferFormat.UInt32, (uint)indices.Length);
+            return renderer.Resources.CreateMesh(vertices, indices);
         }
 
         public static Mesh<GBufferVertex> Plain(RenderService renderer, float uvTiling = 1.0f)
@@ -115,8 +113,7 @@
             indices[5] = 3;
 
             CalculateTangents(vertices, indices);
-            return renderer.Resources.CreateMesh(BufferMode.Immutable, (uint)vertices.Length,
-                IndexBufferFormat.UInt32, (uint)indices.Length);
+            return renderer.Resources.CreateMesh(vertices, indices);
         }
 
         /// <summary>Calculates the normals for a list of vertices and the provided index list.</summary>

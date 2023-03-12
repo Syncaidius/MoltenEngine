@@ -42,7 +42,12 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override IIndexBuffer CreateIndexBuffer(IndexBufferFormat format, BufferMode mode, uint numIndices, Array initialData = null)
+        public override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, ushort[] initialData = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, uint[] initialData = null)
         {
             throw new NotImplementedException();
         }

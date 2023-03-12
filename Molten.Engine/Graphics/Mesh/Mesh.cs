@@ -12,16 +12,34 @@
         /// <param name="maxVertices"></param>
         /// <param name="mode"></param>
         /// <param name="maxIndices">The maximum number of indices to allow in the current <see cref="Mesh"/>.</param>
-        /// <param name="indexFormat">The index format.</param>
         /// <param name="initialIndices"></param>
-        protected Mesh(RenderService renderer, BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat, uint maxIndices, Array initialIndices = null) : 
+        protected Mesh(RenderService renderer, BufferMode mode, ushort maxVertices, uint maxIndices, ushort[] initialIndices = null) :
             base(renderer)
         {
-            IndexFormat = indexFormat;
+            IndexFormat = maxIndices > 0 ? IndexBufferFormat.UInt16 : IndexBufferFormat.None;
             MaxVertices = maxVertices;
 
-            if(indexFormat != IndexBufferFormat.None)
-                _iBuffer = Renderer.Device.CreateIndexBuffer(indexFormat, mode, maxIndices, initialIndices);
+            if (IndexFormat != IndexBufferFormat.None)
+                _iBuffer = Renderer.Device.CreateIndexBuffer(mode, maxIndices, initialIndices);
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="Mesh"/>, but can only be called by derived mesh classes.
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <param name="maxVertices"></param>
+        /// <param name="mode"></param>
+        /// <param name="maxIndices">The maximum number of indices to allow in the current <see cref="Mesh"/>.</param>
+        /// <param name="initialIndices"></param>
+        protected Mesh(RenderService renderer, BufferMode mode, uint maxVertices, uint maxIndices, uint[] initialIndices = null) :
+            base(renderer)
+        {
+            IndexFormat = maxIndices > 0 ? IndexBufferFormat.UInt32 : IndexBufferFormat.None;
+            MaxVertices = maxVertices;
+            MaxIndices = maxIndices;
+
+            if (IndexFormat != IndexBufferFormat.None)
+                _iBuffer = Renderer.Device.CreateIndexBuffer(mode, maxIndices, initialIndices);
         }
 
         public void SetIndices<I>(I[] data) where I : unmanaged
@@ -113,12 +131,19 @@
         IVertexBuffer _vb;
 
         internal Mesh(RenderService renderer, 
-            BufferMode mode, uint maxVertices, 
-            IndexBufferFormat indexFormat, uint maxIndices,
-            T[] initialVertices = null, Array initialIndices = null) :
-            base(renderer, mode, maxVertices, indexFormat, maxIndices, initialIndices)
+            BufferMode mode, ushort maxVertices, uint maxIndices,
+            T[] initialVertices = null, ushort[] initialIndices = null) :
+            base(renderer, mode, maxVertices, maxIndices, initialIndices)
         {
-            _vb = renderer.Device.CreateVertexBuffer<T>(mode, maxVertices, initialVertices);
+            _vb = renderer.Device.CreateVertexBuffer(mode, maxVertices, initialVertices);
+        }
+
+        internal Mesh(RenderService renderer,
+             BufferMode mode, uint maxVertices, uint maxIndices,
+             T[] initialVertices = null, uint[] initialIndices = null) :
+             base(renderer, mode, maxVertices, maxIndices, initialIndices)
+        {
+            _vb = renderer.Device.CreateVertexBuffer(mode, maxVertices, initialVertices);
         }
 
         public void SetVertices(T[] data)

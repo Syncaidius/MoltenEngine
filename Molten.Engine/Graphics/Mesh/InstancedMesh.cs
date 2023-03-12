@@ -16,18 +16,34 @@ namespace Molten.Graphics
         uint _instanceCount;
 
         /// <summary>
-        /// Creates a new instance of <see cref="InstancedMesh{V, I}"/>.
+        /// Creates a new instance of <see cref="InstancedMesh{V, I}"/>, with 16-bit indices.
         /// </summary>
         /// <param name="renderer"></param>
         /// <param name="mode"></param>
         /// <param name="maxVertices"></param>
-        /// <param name="indexFormat"></param>
         /// <param name="maxIndices"></param>
         /// <param name="maxInstances"></param>
-        internal InstancedMesh(RenderService renderer, BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat, uint maxIndices, uint maxInstances,
+        internal InstancedMesh(RenderService renderer, BufferMode mode, ushort maxVertices, uint maxIndices, uint maxInstances,
             V[] initialVertices = null,
-            Array initialIndices = null) : 
-            base(renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices)
+            ushort[] initialIndices = null) : 
+            base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
+        {
+            MaxInstances = maxInstances;
+            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(BufferMode.DynamicDiscard, maxIndices, null);
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="InstancedMesh{V, I}"/>, with 32-bit indices.
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <param name="mode"></param>
+        /// <param name="maxVertices"></param>
+        /// <param name="maxIndices"></param>
+        /// <param name="maxInstances"></param>
+        internal InstancedMesh(RenderService renderer, BufferMode mode, uint maxVertices, uint maxIndices, uint maxInstances,
+            V[] initialVertices = null,
+            uint[] initialIndices = null) :
+            base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
         {
             MaxInstances = maxInstances;
             _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(BufferMode.DynamicDiscard, maxIndices, null);

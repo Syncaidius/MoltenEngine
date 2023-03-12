@@ -104,22 +104,50 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="mode"></param>
         /// <param name="maxVertices"></param>
-        /// <param name="indexFormat"></param>
         /// <param name="maxIndices"></param>
         /// <param name="initialVertices"></param>
         /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public Mesh<GBufferVertex> CreateMesh(BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat = IndexBufferFormat.None, uint maxIndices = 0,
-            GBufferVertex[] initialVertices = null, Array initialIndices = null)
+        public Mesh<GBufferVertex> CreateMesh(BufferMode mode, ushort maxVertices, uint maxIndices, GBufferVertex[] initialVertices, ushort[] initialIndices)
         {
-            return new StandardMesh(_renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices);
+            return new StandardMesh(_renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices);
         }
 
-        public Mesh<T> CreateMesh<T>(T[] vertices, Array indices = null, BufferMode mode = BufferMode.Immutable, IndexBufferFormat indexFormat = IndexBufferFormat.None)
+        /// <summary>
+        /// Creates a standard mesh. Standard meshes enforce stricter rules aimed at deferred rendering.
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <param name="maxVertices"></param>
+        /// <param name="maxIndices"></param>
+        /// <param name="initialVertices"></param>
+        /// <param name="initialIndices"></param>
+        /// <returns></returns>
+        public Mesh<GBufferVertex> CreateMesh(BufferMode mode, uint maxVertices, uint maxIndices = 0, GBufferVertex[] initialVertices = null, uint[] initialIndices = null)
+        {
+            return new StandardMesh(_renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices);
+        }
+
+        public Mesh<T> CreateMesh<T>(T[] vertices, ushort[] indices, BufferMode mode = BufferMode.Immutable)
             where T : unmanaged, IVertexType
         {
+            if (vertices == null)
+                throw new ArgumentNullException($"Vertices array cannot be nulled");
+
+            if (vertices.Length >= ushort.MaxValue)
+                throw new NotSupportedException($"The maximum number of vertices is {ushort.MaxValue} when using 16-bit indexing values");
+
             uint indexCount = indices != null ? (uint)indices.Length : 0;
-            return CreateMesh(mode, (uint)vertices.Length, indexFormat, indexCount, vertices, indices);
+            return CreateMesh(mode, (ushort)vertices.Length, indexCount, vertices, indices);
+        }
+
+        public Mesh<T> CreateMesh<T>(T[] vertices, uint[] indices = null, BufferMode mode = BufferMode.Immutable)
+    where T : unmanaged, IVertexType
+        {
+            if (vertices == null)
+                throw new ArgumentNullException($"Vertices array cannot be nulled");
+
+            uint indexCount = indices != null ? (uint)indices.Length : 0;
+            return CreateMesh(mode, (uint)vertices.Length, indexCount, vertices, indices);
         }
 
         /// <summary>
@@ -128,25 +156,49 @@ namespace Molten.Graphics
         /// <typeparam name="T">The type of vertex data.</typeparam>
         /// <param name="mode"></param>
         /// <param name="maxVertices"></param>
-        /// <param name="indexFormat"></param>
         /// <param name="maxIndices"></param>
         /// <param name="initialVertices"></param>
         /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public Mesh<T> CreateMesh<T>(BufferMode mode, uint maxVertices, IndexBufferFormat indexFormat = IndexBufferFormat.None, uint maxIndices = 0,
-            T[] initialVertices = null, Array initialIndices = null)
+        public Mesh<T> CreateMesh<T>(BufferMode mode, ushort maxVertices, uint maxIndices, T[] initialVertices, ushort[] initialIndices)
             where T : unmanaged, IVertexType
         {
-            return new Mesh<T>(_renderer, mode, maxVertices, indexFormat, maxIndices, initialVertices, initialIndices);
+            return new Mesh<T>(_renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices);
         }
 
-        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, Array indices = null,
-        BufferMode mode = BufferMode.Immutable, IndexBufferFormat indexFormat = IndexBufferFormat.None)
-        where V : unmanaged, IVertexType
-        where I : unmanaged, IVertexInstanceType
+        /// <summary>
+        /// Creates a new mesh. Index data is optional, but can potentially lead to less data transfer when copying to/from the GPU.
+        /// </summary>
+        /// <typeparam name="T">The type of vertex data.</typeparam>
+        /// <param name="mode"></param>
+        /// <param name="maxVertices"></param>
+        /// <param name="maxIndices"></param>
+        /// <param name="initialVertices"></param>
+        /// <param name="initialIndices"></param>
+        /// <returns></returns>
+        public Mesh<T> CreateMesh<T>(BufferMode mode, uint maxVertices, uint maxIndices = 0, T[] initialVertices = null, uint[] initialIndices = null)
+            where T : unmanaged, IVertexType
         {
-            uint indexCount = indices != null ? (uint)indices.Length : 0;
-            return new InstancedMesh<V, I>(_renderer, mode, (uint)vertices.Length, indexFormat, indexCount, maxInstances, vertices, indices);
+            return new Mesh<T>(_renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices);
+        }
+
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, ushort[] indices, BufferMode mode = BufferMode.Immutable)
+            where V : unmanaged, IVertexType
+            where I : unmanaged, IVertexInstanceType
+        {
+            if (vertices.Length >= ushort.MaxValue)
+                throw new NotSupportedException($"The maximum number of vertices is {ushort.MaxValue} when using 16-bit indexing values");
+
+            uint maxIndices = indices != null ? (uint)indices.Length : 0;
+            return new InstancedMesh<V, I>(_renderer, mode, (ushort)vertices.Length, maxIndices, maxInstances, vertices, indices);
+        }
+
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, uint[] indices = null, BufferMode mode = BufferMode.Immutable)
+            where V : unmanaged, IVertexType
+            where I : unmanaged, IVertexInstanceType
+        {
+            uint maxIndices = indices != null ? (uint)indices.Length : 0;
+            return new InstancedMesh<V, I>(_renderer, mode, (ushort)vertices.Length, maxIndices, maxInstances, vertices, indices);
         }
 
         /// <summary>
@@ -157,19 +209,38 @@ namespace Molten.Graphics
         /// <param name="mode"></param>
         /// <param name="maxVertices"></param>
         /// <param name="maxInstances"></param>
-        /// <param name="indexFormat"></param>
         /// <param name="maxIndices"></param>
         /// <param name="initialVertices"></param>
         /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(BufferMode mode, uint maxVertices, 
-            uint maxInstances,
-            IndexBufferFormat indexFormat = IndexBufferFormat.None, uint maxIndices = 0,
-            V[] initialVertices = null, Array initialIndices = null)
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(BufferMode mode, ushort maxVertices, uint maxInstances, uint maxIndices, V[] initialVertices, ushort[] initialIndices)
             where V : unmanaged, IVertexType
             where I : unmanaged, IVertexInstanceType
         {
-            return new InstancedMesh<V, I>(_renderer, mode, maxVertices, indexFormat, maxIndices, maxInstances, initialVertices, initialIndices);
+            if (initialVertices != null && initialVertices.Length >= ushort.MaxValue)
+                throw new NotSupportedException($"The maximum number of vertices is {ushort.MaxValue} when using 16-bit indexing values");
+
+            return new InstancedMesh<V, I>(_renderer, mode, maxVertices, maxIndices, maxInstances, initialVertices, initialIndices);
+        }
+
+        /// <summary>
+        /// Creates a instanced mesh.
+        /// </summary>
+        /// <typeparam name="V">The type of vertex data.</typeparam>
+        /// <typeparam name="I">The type if instance data.</typeparam>
+        /// <param name="mode"></param>
+        /// <param name="maxVertices"></param>
+        /// <param name="maxInstances"></param>
+        /// <param name="maxIndices"></param>
+        /// <param name="initialVertices"></param>
+        /// <param name="initialIndices"></param>
+        /// <returns></returns>
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(BufferMode mode, uint maxVertices, uint maxInstances, uint maxIndices = 0,
+            V[] initialVertices = null, uint[] initialIndices = null)
+            where V : unmanaged, IVertexType
+            where I : unmanaged, IVertexInstanceType
+        {
+            return new InstancedMesh<V, I>(_renderer, mode, maxVertices, maxIndices, maxInstances, initialVertices, initialIndices);
         }
 
         /// <summary>

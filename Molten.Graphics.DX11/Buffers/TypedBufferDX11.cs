@@ -21,7 +21,8 @@ namespace Molten.Graphics
             TypedBufferFormat format,
             uint numElements,
             bool unorderedAccess = false, 
-            bool shaderResource = true)
+            bool shaderResource = true,
+            void* initialData = null)
             : base(device, 
                   flags,
                   (shaderResource ? BindFlag.ShaderResource : 0) | (unorderedAccess ? BindFlag.UnorderedAccess : 0), 
@@ -31,7 +32,7 @@ namespace Molten.Graphics
                       TypedBufferFormat.Int32 => sizeof(int),
                       TypedBufferFormat.Float => sizeof(float)
                   }, numElements, 
-                  ResourceMiscFlag.BufferStructured)
+                  ResourceMiscFlag.BufferStructured, StagingBufferFlags.None, initialData)
         {
             TypedFormat = format;
         }

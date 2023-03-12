@@ -16,12 +16,12 @@
             ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "skybox.mfx");
             _fxSky = result["skybox-default"];
 
-            Vertex[] vertices;
-            uint[] indices;
-            MakeSphere(4, 4, out vertices, out indices);
-            _sphereMesh = renderer.Resources.CreateMesh<Vertex>(BufferMode.Default, (uint)vertices.Length, IndexBufferFormat.UInt32, (uint)indices.Length);
+            MakeSphere(4, 4, out Vertex[] vertices, out uint[] indices);
+            /*_sphereMesh = renderer.Resources.CreateMesh<Vertex>(BufferMode.Default, (uint)vertices.Length, IndexBufferFormat.UInt32, (uint)indices.Length);
             _sphereMesh.SetVertices(vertices);
-            _sphereMesh.SetIndices(indices);
+            _sphereMesh.SetIndices(indices);*/
+
+            _sphereMesh = renderer.Resources.CreateMesh(vertices, indices);
             _sphereMesh.Shader = _fxSky;
         }
 

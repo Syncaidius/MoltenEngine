@@ -19,12 +19,13 @@ namespace Molten.Graphics
             BufferMode flags,
             uint numElements,
             bool unorderedAccess = false,
-            bool shaderResource = true)
+            bool shaderResource = true,
+            void* initialData = null)
             : base(device,
                   flags,
                   (shaderResource ? BindFlag.ShaderResource : 0) | (unorderedAccess ? BindFlag.UnorderedAccess : 0),
                   sizeof(uint), numElements,
-                  ResourceMiscFlag.BufferStructured | ResourceMiscFlag.BufferAllowRawViews)
+                  ResourceMiscFlag.BufferStructured | ResourceMiscFlag.BufferAllowRawViews, StagingBufferFlags.None, initialData)
         {
             
         }
