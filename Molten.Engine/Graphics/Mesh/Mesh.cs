@@ -20,7 +20,12 @@
             MaxVertices = maxVertices;
 
             if (IndexFormat != IndexBufferFormat.None)
+            {
                 _iBuffer = Renderer.Device.CreateIndexBuffer(mode, maxIndices, initialIndices);
+
+                if (initialIndices != null)
+                    IndexCount = (uint)initialIndices.Length;
+            }
         }
 
         /// <summary>
@@ -39,7 +44,12 @@
             MaxIndices = maxIndices;
 
             if (IndexFormat != IndexBufferFormat.None)
+            {
                 _iBuffer = Renderer.Device.CreateIndexBuffer(mode, maxIndices, initialIndices);
+
+                if (initialIndices != null)
+                    IndexCount = (uint)initialIndices.Length;
+            }
         }
 
         public void SetIndices<I>(I[] data) where I : unmanaged
@@ -136,6 +146,9 @@
             base(renderer, mode, maxVertices, maxIndices, initialIndices)
         {
             _vb = renderer.Device.CreateVertexBuffer(mode, maxVertices, initialVertices);
+
+            if (initialVertices != null)
+                VertexCount = (uint)initialVertices.Length;
         }
 
         internal Mesh(RenderService renderer,
@@ -143,7 +156,10 @@
              T[] initialVertices = null, uint[] initialIndices = null) :
              base(renderer, mode, maxVertices, maxIndices, initialIndices)
         {
-            _vb = renderer.Device.CreateVertexBuffer(mode, maxVertices, initialVertices);
+            _vb = renderer.Device.CreateVertexBuffer(mode, maxVertices, initialVertices); 
+            
+            if (initialVertices != null)
+                VertexCount = (uint)initialVertices.Length;
         }
 
         public void SetVertices(T[] data)
