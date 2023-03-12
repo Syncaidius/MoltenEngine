@@ -145,8 +145,7 @@ namespace Molten.Graphics
             {
                 EngineUtil.PinObject(initialData, (ptr) =>
                 {
-                    SubresourceData srd = new SubresourceData(null, numBytes, numBytes);
-                    srd.PSysMem = ptr.ToPointer();
+                    SubresourceData srd = new SubresourceData(ptr.ToPointer(), numBytes, numBytes);
                     nDevice.Ptr->CreateBuffer(ref Desc, ref srd, ref _native);
                 });
             }

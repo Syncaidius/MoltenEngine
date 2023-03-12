@@ -13,7 +13,7 @@ namespace Molten.Graphics
         public unsafe IndexBufferDX11(DeviceDX11 device, BufferMode mode, IndexBufferFormat format, uint numElements, Array initialData = null) : 
             base(device, 
                 mode, 
-                BindFlag.VertexBuffer, 
+                BindFlag.IndexBuffer, 
                 format == IndexBufferFormat.UInt32 ? 4U : 2U, 
                 numElements,
                 ResourceMiscFlag.None, 
