@@ -383,7 +383,7 @@ namespace Molten.Graphics
                 // Only copy the part we need from the source data, starting from startIndex.
                 op.Data = new T[data.Length];
                 op.DataStartIndex = 0;
-                Buffer.BlockCopy(data, (int)startIndex, op.Data, 0, (int)elementCount);
+                Array.Copy(data, (int)startIndex, op.Data, 0, elementCount);
                 QueueOperation(priority, op);
             }
         }
