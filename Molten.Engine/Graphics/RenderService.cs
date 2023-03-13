@@ -113,8 +113,10 @@ namespace Molten.Graphics
 
             // Perform all queued tasks before proceeding
             RenderTask task = null;
+            Device.Cmd.BeginEvent("Process tasks");
             while (Tasks.TryDequeue(out task))
                 task.Process(this);
+            Device.Cmd.EndEvent();
 
             // Perform preliminary checks on active scene data.
             // Also ensure the backbuffer is always big enough for the largest scene render surface.
