@@ -113,14 +113,14 @@ namespace Molten.Graphics
                 Desc.BindFlags = 0;
                 Desc.MiscFlags = 0;
                 Desc.Usage = Usage.Staging;
-                Desc.CPUAccessFlags = (uint)CpuAccessFlag.Read;
+                Desc.CPUAccessFlags = (uint)CpuAccessFlag.None;
                 Desc.StructureByteStride = 0;
 
                 if ((stageMode & StagingBufferFlags.Read) == StagingBufferFlags.Read)
-                    Desc.CPUAccessFlags = (uint)CpuAccessFlag.Read;
+                    Desc.CPUAccessFlags |= (uint)CpuAccessFlag.Read;
 
                 if ((stageMode & StagingBufferFlags.Write) == StagingBufferFlags.Write)
-                    Desc.CPUAccessFlags = (uint)CpuAccessFlag.Write;
+                    Desc.CPUAccessFlags |= (uint)CpuAccessFlag.Write;
             }
 
             // Ensure structured buffers get the stride info.
