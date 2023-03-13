@@ -14,6 +14,14 @@ namespace Molten.Graphics
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="CommandQueueDX11"/>.</summary>
     public unsafe partial class CommandQueueDX11 : GraphicsCommandQueue
     {
+        internal const uint D3D11_KEEP_UNORDERED_ACCESS_VIEWS = 0xffffffff;
+
+        /// <summary>
+        ///  If you set NumRTVs to D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL (0xffffffff), 
+        ///  this method does not modify the currently bound render-target views (RTVs) and also does not modify depth-stencil view (DSV).
+        /// </summary>
+        internal const uint D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL = 0xffffffff;
+
         ID3D11DeviceContext4* _context;
 
         Rectangle[] _scissorRects;
