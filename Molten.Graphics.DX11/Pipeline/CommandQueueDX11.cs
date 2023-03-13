@@ -221,17 +221,6 @@ namespace Molten.Graphics
             bool vbChanged = VertexBuffers.BindAll();
             bool uavChanged = _renderUAVs.BindAll();
 
-            // Check index buffer
-            /*if (ibChanged)
-            {
-                IndexBufferDX11 ib = IndexBuffer.BoundValue as IndexBufferDX11;
-
-                if (ib != null)
-                    Native->IASetIndexBuffer(ib, ib.D3DFormat, ib.ByteOffset);
-                else
-                    Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
-            }*/
-
             // Does the vertex input layout need updating?
             if (vbChanged || vsChanged)
             {
@@ -361,6 +350,9 @@ namespace Molten.Graphics
 
             Shader.Value = shader;
             bool shaderChanged = Shader.Bind();
+
+            if (Shader.BoundValue == null)
+                return GraphicsBindResult.NoShader;
 
             // Re-render the same material for mat.Iterations.
             BeginEvent($"{mode} Call");

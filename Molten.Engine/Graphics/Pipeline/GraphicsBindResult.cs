@@ -48,7 +48,12 @@
         InvalidDomainShader = 1 << 12,
 
         /// <summary>The input-output link between two or more shaders is invalid. Input and output must have the same layout.</summary>
-        InvalidShaderIOChain = 1 << 14,
+        InvalidShaderIOChain = 1 << 13,
+
+        /// <summary>
+        /// No shader was set.
+        /// </summary>
+        NoShader = 1 << 14,
 
         /// <summary>The current setup of vertex buffers and vertex shader does not form a layout capable of handling per-instance data.</summary>
         NonInstancedVertexLayout = 1 << 15,
