@@ -17,7 +17,7 @@ namespace Molten.Graphics
             if (SrcBuffer.Desc.Usage == Usage.Staging)
                 SrcBuffer.Apply(cmd);
 
-            (cmd as CommandQueueDX11).Native->CopyResource(SrcBuffer, DestBuffer);
+            (cmd as CommandQueueDX11).Native->CopyResource(DestBuffer, SrcBuffer);
             CompletionCallback?.Invoke();
         }
     }
