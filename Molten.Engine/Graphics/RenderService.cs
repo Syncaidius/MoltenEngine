@@ -280,7 +280,7 @@ namespace Molten.Graphics
 
         private void LoadDefaultShaders()
         {
-            ShaderCompileResult result = Resources.LoadEmbeddedShader("Molten.Assets", "gbuffer.mfx");
+            ShaderCompileResult result = Device.LoadEmbeddedShader("Molten.Assets", "gbuffer.mfx");
             FxStandardMesh = result["gbuffer"];
             FxStandardMesh_NoNormalMap = result["gbuffer-sans-nmap"];
         }
@@ -391,12 +391,6 @@ namespace Molten.Graphics
         /// Gets the <see cref="GraphicsDevice"/> bound to the current <see cref="RenderService"/>.
         /// </summary>
         public GraphicsDevice Device { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="ResourceFactory"/> bound to the renderer.
-        /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
-        /// </summary>
-        public abstract ResourceFactory Resources { get; }
 
         /// <summary>
         /// Gets a list of all the output <see cref="ISwapChainSurface"/> instances attached to the renderer. These are automatically presented to the graphics device by the renderer, if active.

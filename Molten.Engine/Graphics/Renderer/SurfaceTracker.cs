@@ -5,15 +5,14 @@ namespace Molten.Graphics
     {
         SurfaceSizeMode _mode;
         Dictionary<AntiAliasLevel, IRenderSurface2D> _surfaces;
-        ResourceFactory _factory;
 
+        GraphicsDevice _device;
         uint _width;
         uint _height;
         GraphicsFormat _format;
         string _name;
 
-        internal SurfaceTracker(
-            RenderService renderer,
+        internal SurfaceTracker(GraphicsDevice device,
             AntiAliasLevel[] aaLevels,
             uint width,
             uint height,
@@ -21,12 +20,12 @@ namespace Molten.Graphics
             string name,
             SurfaceSizeMode mode = SurfaceSizeMode.Full)
         {
+            _device = device;
             _width = width;
             _height = height;
             _format = format;
             _name = name;
             _mode = mode;
-            _factory = renderer.Resources;
             _surfaces = new Dictionary<AntiAliasLevel, IRenderSurface2D>();
         }
 
@@ -51,7 +50,7 @@ namespace Molten.Graphics
 
         private IRenderSurface2D Create(AntiAliasLevel aa)
         {
-            IRenderSurface2D rs = _factory.CreateSurface(_width, _height, _format, 1, 1, aa, TextureFlags.None, $"{_name}_{aa}aa");
+            IRenderSurface2D rs = _device.CreateSurface(_width, _height, _format, 1, 1, aa, TextureFlags.None, $"{_name}_{aa}aa");
             _surfaces[aa] = rs;
             return rs;
         }

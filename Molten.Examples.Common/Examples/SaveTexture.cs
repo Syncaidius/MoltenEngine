@@ -37,7 +37,7 @@ namespace Molten.Examples
 
             Texture2DProperties p = texture.Get2DProperties();
             p.Flags = TextureFlags.Staging;
-            ITexture2D staging = Engine.Renderer.Resources.CreateTexture2D(p);
+            ITexture2D staging = Engine.Renderer.Device.CreateTexture2D(p);
 
             TextureData loadedData = _hTexData.Get<TextureData>();
             loadedData.Decompress(Log);
@@ -57,7 +57,7 @@ namespace Molten.Examples
 
         protected override Mesh GetTestCubeMesh()
         {
-            Mesh<CubeArrayVertex> cube = Engine.Renderer.Resources.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
+            Mesh<CubeArrayVertex> cube = Engine.Renderer.Device.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
             return cube;
         }
 

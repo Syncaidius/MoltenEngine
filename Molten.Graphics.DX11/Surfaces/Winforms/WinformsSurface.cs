@@ -24,7 +24,7 @@ namespace Molten.Graphics
         protected WindowMode _mode = WindowMode.Windowed;
         WindowMode _requestedMode = WindowMode.Windowed;
 
-        internal WinformsSurface(string controlTitle, string controlName, RendererDX11 renderer, uint mipCount) : 
+        internal WinformsSurface(RenderService renderer, string controlTitle, string controlName, uint mipCount) : 
             base(renderer, mipCount)
         {
             _title = controlTitle;

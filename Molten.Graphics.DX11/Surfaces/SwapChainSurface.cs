@@ -18,7 +18,7 @@ namespace Molten.Graphics
         ThreadedQueue<Action> _dispatchQueue;
         uint _vsync;
 
-        internal SwapChainSurface(RendererDX11 renderer, uint mipCount)
+        internal SwapChainSurface(RenderService renderer, uint mipCount)
             : base(renderer, 1, 1, Format.FormatB8G8R8A8Unorm, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, TextureFlags.NoShaderResource)
         {
             _dispatchQueue = new ThreadedQueue<Action>();

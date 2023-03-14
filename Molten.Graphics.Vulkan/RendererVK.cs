@@ -13,7 +13,6 @@ namespace Molten.Graphics
     {
         internal unsafe delegate Result EnumerateCallback<T>(uint* count, T* info) where T : unmanaged;
 
-        ResourceFactoryVK _resFactory;
         DisplayManagerVK _displayManager;
         InstanceLoaderVK _instanceLoader;
         Instance* _instance;
@@ -92,7 +91,6 @@ namespace Molten.Graphics
         {
             Assembly includeAssembly = GetType().Assembly;
             _shaderCompiler = new DxcCompiler(this, "\\Assets\\HLSL\\include\\", includeAssembly);
-            _resFactory = new ResourceFactoryVK(this, _shaderCompiler);
         }
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -251,7 +249,5 @@ namespace Molten.Graphics
         public override DxcCompiler Compiler => _shaderCompiler;
 
         internal VersionVK ApiVersion { get; }
-
-        public override ResourceFactory Resources => _resFactory;
     }
 }

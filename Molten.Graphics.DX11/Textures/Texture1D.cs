@@ -10,7 +10,7 @@ namespace Molten.Graphics
         Texture1DDesc _description;
 
         internal Texture1D(
-            RendererDX11 renderer, 
+            RenderService renderer, 
             uint width, 
             Format format = Format.FormatR8G8B8A8Unorm, 
             uint mipCount = 1, 

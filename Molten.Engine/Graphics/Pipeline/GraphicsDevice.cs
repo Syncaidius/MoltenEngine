@@ -1,12 +1,14 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using Molten.Collections;
+using Molten.IO;
 
 namespace Molten.Graphics
 {
     /// <summary>
     /// The base class for an API-specific implementation of a graphics device, which provides command/resource access to a GPU.
     /// </summary>
-    public abstract class GraphicsDevice : EngineObject
+    public abstract partial class GraphicsDevice : EngineObject
     {
         long _allocatedVRAM;
         ThreadedQueue<GraphicsObject> _objectsToDispose;
@@ -17,10 +19,11 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="settings">The <see cref="GraphicsSettings"/> to bind to the device.</param>
         /// <param name="log">The <see cref="Logger"/> to use for outputting information.</param>
-        protected GraphicsDevice(GraphicsSettings settings, Logger log)
+        protected GraphicsDevice(RenderService renderer, GraphicsSettings settings)
         {
             Settings = settings;
-            Log = log;
+            Renderer = renderer;
+            Log = renderer.Log;
             _objectsToDispose = new ThreadedQueue<GraphicsObject>();
             _objectCache = new Dictionary<Type, Dictionary<StructKey, GraphicsObject>>();
         }
@@ -30,7 +33,6 @@ namespace Molten.Graphics
             OnInitialize();
 
             ShaderSamplerParameters samplerParams = new ShaderSamplerParameters(SamplerPreset.Default);
-            DefaultSampler = CreateSampler(ref samplerParams);
         }
 
         protected abstract void OnInitialize();
@@ -89,11 +91,19 @@ namespace Molten.Graphics
             return newObj;
         }
 
-        /// <summary>
-        /// Requests a new <see cref="HlslPass"/> from the current <see cref="GraphicsDevice"/>.
-        /// </summary>
-        /// <returns></returns>
-        public abstract HlslPass CreateShaderPass(HlslShader shader, string name = null);
+        /// <summary>Track a VRAM allocation.</summary>
+        /// <param name="bytes">The number of bytes that were allocated.</param>
+        public void AllocateVRAM(long bytes)
+        {
+            Interlocked.Add(ref _allocatedVRAM, bytes);
+        }
+
+        /// <summary>Track a VRAM deallocation.</summary>
+        /// <param name="bytes">The number of bytes that were deallocated.</param>
+        public void DeallocateVRAM(long bytes)
+        {
+            Interlocked.Add(ref _allocatedVRAM, -bytes);
+        }
 
         /// <summary>
         /// Requests a new <see cref="ShaderSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
@@ -115,7 +125,15 @@ namespace Molten.Graphics
             return result;
         }
 
+
         protected abstract ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters);
+
+        internal HlslPass CreateShaderPass(HlslShader shader, string name = null)
+        {
+            return OnCreateShaderPass(shader, name);
+        }
+
+        protected abstract HlslPass OnCreateShaderPass(HlslShader shader, string name);
 
         public IVertexBuffer CreateVertexBuffer<T>(T[] data, BufferMode mode = BufferMode.Immutable)
             where T : unmanaged, IVertexType
@@ -151,18 +169,50 @@ namespace Molten.Graphics
 
         public abstract IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity);
 
-        /// <summary>Track a VRAM allocation.</summary>
-        /// <param name="bytes">The number of bytes that were allocated.</param>
-        public void AllocateVRAM(long bytes)
+        /// <summary>
+        /// Loads an embedded shader from the target assembly. If an assembly is not provided, the current renderer's assembly is used instead.
+        /// </summary>
+        /// <param name="nameSpace"></param>
+        /// <param name="filename"></param>
+        /// <param name="assembly">The assembly that contains the embedded shadr. If an assembly is not provided, the current renderer's assembly is used instead.</param>
+        /// <returns></returns>
+        public ShaderCompileResult LoadEmbeddedShader(string nameSpace, string filename, Assembly assembly = null)
         {
-            Interlocked.Add(ref _allocatedVRAM, bytes);
+            string src = "";
+            assembly = assembly ?? typeof(RenderService).Assembly;
+            Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{filename}", assembly);
+            if (stream != null)
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                    src = reader.ReadToEnd();
+
+                stream.Dispose();
+            }
+            else
+            {
+                Log.Error($"Attempt to load embedded shader failed: '{filename}' not found in namespace '{nameSpace}' of assembly '{assembly.FullName}'");
+                return new ShaderCompileResult();
+            }
+
+            return Renderer.Compiler.Compile(src, filename, ShaderCompileFlags.EmbeddedFile, assembly, nameSpace);
         }
 
-        /// <summary>Track a VRAM deallocation.</summary>
-        /// <param name="bytes">The number of bytes that were deallocated.</param>
-        public void DeallocateVRAM(long bytes)
+        /// <summary>Compiles a set of shaders from the provided source string.</summary>
+        /// <param name="source">The source code to be parsed and compiled.</param>
+        /// <param name="filename">The name of the source file. Used as a pouint of reference in debug/error messages only.</param>
+        /// <returns></returns>
+        public ShaderCompileResult CompileShaders(ref string source, string filename = null)
         {
-            Interlocked.Add(ref _allocatedVRAM, -bytes);
+            ShaderCompileFlags flags = ShaderCompileFlags.EmbeddedFile;
+
+            if (!string.IsNullOrWhiteSpace(filename))
+            {
+                FileInfo fInfo = new FileInfo(filename);
+                DirectoryInfo dir = fInfo.Directory;
+                flags = ShaderCompileFlags.None;
+            }
+
+            return Renderer.Compiler.Compile(source, filename, flags, null, null);
         }
 
         /// <summary>
@@ -196,7 +246,10 @@ namespace Molten.Graphics
         /// </summary>
         public abstract GraphicsCommandQueue Cmd { get; }
 
-        public ShaderSampler DefaultSampler { get; private set; }
+        /// <summary>
+        /// Gets the <see cref="RenderService"/> that created and owns the current <see cref="GraphicsDevice"/> instance.
+        /// </summary>
+        public RenderService Renderer { get; }
     }
 
     /// <summary>
@@ -208,8 +261,8 @@ namespace Molten.Graphics
     {
         T* _ptr;
 
-        protected GraphicsDevice(GraphicsSettings settings, Logger log, bool allocate) :
-            base(settings, log)
+        protected GraphicsDevice(RenderService renderer, GraphicsSettings settings, bool allocate) :
+            base(renderer, settings)
         {
             if (allocate)
                 _ptr = EngineUtil.Alloc<T>();

@@ -23,6 +23,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Renderer\**" />
+    <EmbeddedResource Remove="Renderer\**" />
+    <None Remove="Renderer\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\Images\logo_128.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -51,10 +57,6 @@
     <None Update="d3d12SDKLayers.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Renderer\" />
   </ItemGroup>
 
 </Project>

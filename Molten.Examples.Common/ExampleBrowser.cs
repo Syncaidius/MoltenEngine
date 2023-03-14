@@ -247,7 +247,7 @@ namespace Molten.Examples
 
             if (_chkNativeWindow.IsChecked)
             {
-                binding.NativeWindow = Engine.Renderer.Resources.CreateFormSurface(selected.Text, selected.Text.Replace(" ", ""));
+                binding.NativeWindow = Engine.Renderer.Device.CreateFormSurface(selected.Text, selected.Text.Replace(" ", ""));
                 Engine.Renderer.OutputSurfaces.Add(binding.NativeWindow);
                 HookWindow(binding.NativeWindow);
 
@@ -269,7 +269,7 @@ namespace Molten.Examples
             }
             else
             {
-                IRenderSurface2D surface = Engine.Renderer.Resources.CreateSurface(800, 600, name: $"{selected.Text} Example");
+                IRenderSurface2D surface = Engine.Renderer.Device.CreateSurface(800, 600, name: $"{selected.Text} Example");
 
                 binding.Window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
                 {

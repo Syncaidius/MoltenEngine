@@ -42,7 +42,7 @@ namespace Molten.Graphics
             RegisterMainSurface(MainSurfaceType.Composition1, width, height, GraphicsFormat.R16G16B16A16_Float);
             RegisterMainSurface(MainSurfaceType.Composition2, width, height, GraphicsFormat.R16G16B16A16_Float);
             RegisterMainSurface(MainSurfaceType.Lighting, width, height, GraphicsFormat.R16G16B16A16_Float);
-            _depthSurface = new DepthSurfaceTracker(_renderer, _aaLevels, width, height, DepthFormat.R24G8_Typeless);
+            _depthSurface = new DepthSurfaceTracker(_renderer.Device, _aaLevels, width, height, DepthFormat.R24G8_Typeless);
         }
 
         internal void ClearIfFirstUse(IRenderSurface2D surface, Color color)
@@ -85,7 +85,7 @@ namespace Molten.Graphics
             key = key.ToLower();
             if (!_surfacesByKey.TryGetValue(key, out SurfaceTracker config))
             {
-                config = new SurfaceTracker(_renderer, _aaLevels, width, height, format, key, sizeMode);
+                config = new SurfaceTracker(_renderer.Device, _aaLevels, width, height, format, key, sizeMode);
                 _surfacesByKey.TryAdd(key, config);
                 _surfaces.Add(config);
             }

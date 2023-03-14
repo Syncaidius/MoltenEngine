@@ -99,7 +99,7 @@ namespace Molten.Graphics
 
             _buffer = renderer.Device.CreateStructuredBuffer<GpuData>(BufferMode.DynamicDiscard, dataCapacity, false, true);
 
-            ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "sprite.mfx");
+            ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "sprite.mfx");
             _matDefaultNoTexture = result["sprite-no-texture"];
             _matDefault = result["sprite-texture"];
             _matCircle = result["circle"];
@@ -108,7 +108,7 @@ namespace Molten.Graphics
             _matGrid = result["grid"];
             //_matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
 
-            ShaderCompileResult resultSdf = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "sprite_sdf.mfx");
+            ShaderCompileResult resultSdf = renderer.Device.LoadEmbeddedShader("Molten.Assets", "sprite_sdf.mfx");
             _matMsdf = resultSdf["sprite-msdf"];
 
             _checkers = new Func<GraphicsCommandQueue, SpriteRange, ObjectRenderData, HlslShader>[7];

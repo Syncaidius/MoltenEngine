@@ -69,7 +69,7 @@
             };
 
             CalculateTangents(vertices, indices);
-            return renderer.Resources.CreateMesh(vertices, indices);
+            return renderer.Device.CreateMesh(vertices, indices);
         }
 
         public static Mesh<GBufferVertex> PlainCentered(RenderService renderer, float uvTiling = 1.0f)
@@ -91,7 +91,7 @@
             indices[5] = 3;
 
             CalculateTangents(vertices, indices);
-            return renderer.Resources.CreateMesh(vertices, indices);
+            return renderer.Device.CreateMesh(vertices, indices);
         }
 
         public static Mesh<GBufferVertex> Plain(RenderService renderer, float uvTiling = 1.0f)
@@ -113,7 +113,7 @@
             indices[5] = 3;
 
             CalculateTangents(vertices, indices);
-            return renderer.Resources.CreateMesh(vertices, indices);
+            return renderer.Device.CreateMesh(vertices, indices);
         }
 
         /// <summary>Calculates the normals for a list of vertices and the provided index list.</summary>

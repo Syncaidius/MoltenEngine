@@ -18,7 +18,7 @@ namespace Molten.Content
             using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 2048, true))
             {
                 string source = reader.ReadToEnd();
-                ShaderCompileResult result = handle.Manager.Engine.Renderer.Resources.CompileShaders(ref source, handle.RelativePath);
+                ShaderCompileResult result = handle.Manager.Engine.Renderer.Device.CompileShaders(ref source, handle.RelativePath);
 
                 // Temp solution to limitation of new content manager.
                 partAsset = result[0];

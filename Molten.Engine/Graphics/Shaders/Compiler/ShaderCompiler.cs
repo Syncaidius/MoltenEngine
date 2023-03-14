@@ -203,7 +203,7 @@ namespace Molten.Graphics
                     for (int i = 0; i < passDef.Samplers.Length; i++)
                     {
                         ref ShaderSamplerParameters sp = ref passDef.Samplers[i];
-                        pass.Samplers[i] = pass.Device.CreateSampler(ref sp);
+                        pass.Samplers[i] = Renderer.Device.CreateSampler(ref sp);
                     }
 
                     pass.Initialize(ref passDef.Parameters);

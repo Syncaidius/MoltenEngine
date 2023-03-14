@@ -14,7 +14,7 @@ namespace Molten.Graphics
         /// <param name="descTexture">The <see cref="Texture2D"/> to use as a template configuration for a new <see cref="Texture2D"/> instance.</param>
         /// <param name="flags">A set of flags to override those of the provided template texture.</param>
         internal Texture2D(Texture2D descTexture, TextureFlags flags)
-            : this(descTexture.Renderer as RendererDX11, 
+            : this(descTexture.Renderer, 
                   descTexture.Width,
                   descTexture.Height, 
                   descTexture.DxgiFormat, 
@@ -30,7 +30,7 @@ namespace Molten.Graphics
         /// of the provided texture in to the new instance.</summary>
         /// <param name="descTexture">The <see cref="Texture2D"/> to use as a template configuration for a new <see cref="Texture2D"/> instance.</param>
         internal Texture2D(Texture2D descTexture)
-            : this(descTexture.Renderer as RendererDX11, 
+            : this(descTexture.Renderer, 
                   descTexture.Width, 
                   descTexture.Height, 
                   descTexture.DxgiFormat, 
@@ -43,7 +43,7 @@ namespace Molten.Graphics
         { }
 
         internal Texture2D(
-            RendererDX11 renderer,
+            RenderService renderer,
             uint width,
             uint height,
             Format format = Format.FormatR8G8B8A8Unorm,

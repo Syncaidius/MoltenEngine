@@ -27,14 +27,13 @@ namespace Molten.Graphics
         public event TextureHandler OnResize;
 
         ID3D11Resource* _native;
-        RendererDX11 _renderer;
 
-        internal TextureBase(RendererDX11 renderer, uint width, uint height, uint depth, uint mipCount, 
-            uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, TextureFlags flags, string name) : base(renderer.NativeDevice,
+        internal TextureBase(RenderService renderer, uint width, uint height, uint depth, uint mipCount, 
+            uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, TextureFlags flags, string name) : base(renderer.Device as DeviceDX11,
                 ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
                 ((flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None))
         {
-            _renderer = renderer;
+            Renderer = renderer;
             Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{width}x{height}" : name;
             Flags = flags;
             ValidateFlagCombination();
@@ -521,7 +520,7 @@ namespace Molten.Graphics
 
             ApplyObjectTask applyTask = ApplyObjectTask.Get();
             applyTask.Object = this;
-            _renderer.PushTask(applyTask);
+            Renderer.PushTask(applyTask);
         }
 
         public void CopyTo(uint sourceLevel, uint sourceSlice, ITexture destination, uint destLevel, uint destSlice)
@@ -564,7 +563,7 @@ namespace Molten.Graphics
 
             ApplyObjectTask applyTask = ApplyObjectTask.Get();
             applyTask.Object = this;
-            _renderer.PushTask(applyTask);
+            Renderer.PushTask(applyTask);
         }
 
         /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the
@@ -638,6 +637,6 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the renderer that the texture is bound to.
         /// </summary>
-        public RenderService Renderer => _renderer;
+        public RenderService Renderer { get; }
     }
 }

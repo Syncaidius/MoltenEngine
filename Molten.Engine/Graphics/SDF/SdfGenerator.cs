@@ -53,7 +53,7 @@ namespace Molten.Graphics.SDF
 
             uint rowPitch = (src.Width * (uint)sizeof(Color));
             Color[] finalData = new Color[src.Width * src.Height];
-            ITexture2D tex = renderer.Resources.CreateTexture2D(new Texture2DProperties()
+            ITexture2D tex = renderer.Device.CreateTexture2D(new Texture2DProperties()
             {
                 Width = src.Width,
                 Height = src.Height,

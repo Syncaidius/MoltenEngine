@@ -24,7 +24,7 @@ namespace Molten.Graphics
 
         protected override GraphicsDevice OnCreateDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
         {
-            NativeDevice = new DeviceDX12(settings, Builder, Log, _displayManager.SelectedAdapter);
+            NativeDevice = new DeviceDX12(this, settings, Builder, _displayManager.SelectedAdapter);
             return NativeDevice;
         }
 
@@ -52,8 +52,6 @@ namespace Molten.Graphics
         internal DeviceDX12 NativeDevice { get; private set; }
 
         internal DeviceBuilderDX12 Builder { get; private set; }
-
-        public override ResourceFactory Resources { get; }
 
         public override DxcCompiler Compiler { get; }
     }

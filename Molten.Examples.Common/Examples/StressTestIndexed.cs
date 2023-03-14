@@ -34,7 +34,7 @@ namespace Molten.Examples
 
         protected override Mesh GetTestCubeMesh()
         {
-            return Engine.Renderer.Resources.CreateMesh(SampleVertexData.IndexedColorCubeVertices, SampleVertexData.CubeIndices);
+            return Engine.Renderer.Device.CreateMesh(SampleVertexData.IndexedColorCubeVertices, SampleVertexData.CubeIndices);
         }
 
         private void SpawnRandomTestCube(Mesh mesh, int spawnRadius)

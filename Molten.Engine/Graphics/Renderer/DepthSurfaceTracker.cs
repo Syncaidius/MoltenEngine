@@ -4,14 +4,14 @@
     {
         SurfaceSizeMode _mode;
         Dictionary<AntiAliasLevel, IDepthStencilSurface> _surfaces;
-        ResourceFactory _factory;
+        GraphicsDevice _device;
 
         uint _width;
         uint _height;
         DepthFormat _format;
 
         internal DepthSurfaceTracker(
-            RenderService renderer,
+            GraphicsDevice device,
             AntiAliasLevel[] aaLevels,
             uint width,
             uint height,
@@ -22,7 +22,7 @@
             _height = height;
             _format = format;
             _mode = mode;
-            _factory = renderer.Resources;
+            _device = device;
             _surfaces = new Dictionary<AntiAliasLevel, IDepthStencilSurface>();
         }
 
@@ -47,7 +47,7 @@
 
         internal IDepthStencilSurface Create(AntiAliasLevel aa)
         {
-            IDepthStencilSurface ds = _factory.CreateDepthSurface(_width, _height, _format, 1, 1, aa, TextureFlags.None, $"depth_{aa}aa");
+            IDepthStencilSurface ds = _device.CreateDepthSurface(_width, _height, _format, 1, 1, aa, TextureFlags.None, $"depth_{aa}aa");
             _surfaces[aa] = ds;
             return ds;
         }

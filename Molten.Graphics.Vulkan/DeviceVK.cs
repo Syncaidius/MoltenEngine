@@ -23,7 +23,7 @@ namespace Molten.Graphics
         /// <param name="instance"></param>
         /// <param name="requiredCap">Required capabilities</param>
         internal DeviceVK(RendererVK renderer, DisplayAdapterVK adapter, Instance* instance, CommandSetCapabilityFlags requiredCap) :
-            base(renderer.Settings.Graphics, renderer.Log, true)
+            base(renderer, renderer.Settings.Graphics, true)
         {
             _queues = new List<CommandQueueVK>();
             _renderer = renderer;
@@ -34,32 +34,7 @@ namespace Molten.Graphics
 
         protected override void OnInitialize()
         {
-            
-        }
 
-        public override IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint numVertices, T[] initialData = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, ushort[] initialData = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, uint[] initialData = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IStructuredBuffer CreateStructuredBuffer<T>(BufferMode mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity)
-        {
-            throw new NotImplementedException();
         }
 
         internal void AddExtension<E>(Action<E> loadCallback = null, Action<E> destroyCallback = null)
@@ -72,16 +47,6 @@ namespace Molten.Graphics
             where E : NativeExtension<Vk>
         {
             return _loader.GetExtension<E>();
-        }
-
-        public override HlslPass CreateShaderPass(HlslShader shader, string name = null)
-        {
-            return new MaterialPassVK(shader, name);
-        }
-
-        protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
-        {
-            throw new NotImplementedException();
         }
 
         internal bool Initialize()
@@ -157,6 +122,113 @@ namespace Molten.Graphics
             _renderer.VK.DestroyDevice(*Ptr, null);
 
             base.OnDispose();
+        }
+
+        protected override HlslPass OnCreateShaderPass(HlslShader shader, string name)
+        {
+            return new MaterialPassVK(shader, name);
+        }
+
+        protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint numVertices, T[] initialData = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, ushort[] initialData = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, uint[] initialData = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IStructuredBuffer CreateStructuredBuffer<T>(BufferMode mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless, uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, TextureFlags flags = TextureFlags.None, string name = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1)
+        {
+            return new WindowSurfaceVK(_renderer.NativeDevice, GraphicsFormat.B8G8R8A8_UNorm, formTitle, 1024, 800);
+        }
+
+        public override IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
+            uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None,
+            TextureFlags flags = TextureFlags.None, string name = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ITexture CreateTexture1D(Texture1DProperties properties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ITexture CreateTexture1D(TextureData data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ITexture2D CreateTexture2D(Texture2DProperties properties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ITexture2D CreateTexture2D(TextureData data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ITexture3D CreateTexture3D(Texture3DProperties properties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ITexture3D CreateTexture3D(TextureData data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ITextureCube CreateTextureCube(Texture2DProperties properties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ITextureCube CreateTextureCube(TextureData data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ResolveTexture(ITexture source, ITexture destination)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ResolveTexture(ITexture source, ITexture destination, uint sourceMipLevel, uint sourceArraySlice, uint destMiplevel, uint destArraySlice)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

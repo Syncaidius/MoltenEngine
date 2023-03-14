@@ -10,7 +10,6 @@ namespace Molten.Graphics
         D3D11 _api;
         DisplayManagerDXGI _displayManager;
         DeviceBuilderDX11 _deviceBuilder;
-        ResourceFactoryDX11 _resFactory;
         FxcCompiler _shaderCompiler;
 
         internal static Guid WKPDID_D3DDebugObjectName = new Guid(0x429b8c22, 0x9188, 0x4b0c, 0x87, 0x42, 0xac, 0xb0, 0xbf, 0x85, 0xc2, 0x00);
@@ -30,7 +29,7 @@ namespace Molten.Graphics
 
         protected override GraphicsDevice OnCreateDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
         {
-            NativeDevice = new DeviceDX11(settings, _deviceBuilder, Log, _displayManager.SelectedAdapter);
+            NativeDevice = new DeviceDX11(this, settings, _deviceBuilder, _displayManager.SelectedAdapter);
             return NativeDevice;
         }
 
@@ -39,7 +38,6 @@ namespace Molten.Graphics
             Assembly includeAssembly = GetType().Assembly;
             
             _shaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
-            _resFactory = new ResourceFactoryDX11(this);
         }
 
         protected override void OnPrePresent(Timing time) { }
@@ -48,7 +46,6 @@ namespace Molten.Graphics
 
         protected override void OnDisposeBeforeRender()
         {
-            _resFactory.Dispose();
             _displayManager.Dispose();
             NativeDevice?.Dispose();
             _api.Dispose();
@@ -57,11 +54,5 @@ namespace Molten.Graphics
         internal DeviceDX11 NativeDevice { get; private set; }
 
         public override FxcCompiler Compiler => _shaderCompiler;
-
-        /// <summary>
-        /// Gets the resource manager bound to the renderer.
-        /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
-        /// </summary>
-        public override ResourceFactory Resources => _resFactory;
     }
 }

@@ -124,11 +124,11 @@ namespace Molten.Content
             ContentManager manager = handle.Manager;
 
             if (handle.ContentType == typeof(ITexture2D))
-                tex = manager.Engine.Renderer.Resources.CreateTexture2D(data);
+                tex = manager.Engine.Renderer.Device.CreateTexture2D(data);
             else if (handle.ContentType == typeof(ITextureCube))
-                tex = manager.Engine.Renderer.Resources.CreateTextureCube(data);
+                tex = manager.Engine.Renderer.Device.CreateTextureCube(data);
             else if (handle.ContentType == typeof(ITexture))
-                tex = manager.Engine.Renderer.Resources.CreateTexture1D(data);
+                tex = manager.Engine.Renderer.Device.CreateTexture1D(data);
             else
                 manager.Log.Error($"Unsupported texture type {handle.ContentType}", handle.RelativePath);
 
@@ -222,7 +222,7 @@ namespace Molten.Content
                 switch (tex)
                 {
                     case ITextureCube texCube:
-                        staging = handle.Manager.Engine.Renderer.Resources.CreateTextureCube(new Texture2DProperties()
+                        staging = handle.Manager.Engine.Renderer.Device.CreateTextureCube(new Texture2DProperties()
                         {
                             Flags = TextureFlags.Staging,
                             Format = texCube.DataFormat,
@@ -236,7 +236,7 @@ namespace Molten.Content
                         break;
 
                     case ITexture2D tex2D:
-                        staging = handle.Manager.Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
+                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture2D(new Texture2DProperties()
                         {
                             Flags = TextureFlags.Staging,
                             Format = tex2D.DataFormat,
@@ -250,7 +250,7 @@ namespace Molten.Content
                         break;
 
                     case ITexture tex1D:
-                        staging = handle.Manager.Engine.Renderer.Resources.CreateTexture1D(new Texture1DProperties()
+                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture1D(new Texture1DProperties()
                         {
                             Flags = TextureFlags.Staging,
                             Format = tex1D.DataFormat,

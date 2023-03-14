@@ -9,7 +9,7 @@ namespace Molten.Graphics
         ViewportF _vp;
 
         internal RenderSurface2D(
-            RendererDX11 renderer,
+            RenderService renderer,
             uint width,
             uint height,
             Format format = Format.FormatR8G8B8A8SNorm,
@@ -23,7 +23,7 @@ namespace Molten.Graphics
             Viewport = new ViewportF(0, 0, width, height);
 
             Name = $"Surface_{name ?? GetType().Name}";
-            RTV = new RenderTargetView(renderer.NativeDevice)
+            RTV = new RenderTargetView(renderer.Device as DeviceDX11)
             {
                 Desc = new RenderTargetViewDesc1()
                 {

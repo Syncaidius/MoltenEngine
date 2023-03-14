@@ -13,15 +13,11 @@
         {
             _skyboxData = new ObjectRenderData();
 
-            ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "skybox.mfx");
+            ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "skybox.mfx");
             _fxSky = result["skybox-default"];
 
             MakeSphere(4, 4, out Vertex[] vertices, out uint[] indices);
-            /*_sphereMesh = renderer.Resources.CreateMesh<Vertex>(BufferMode.Default, (uint)vertices.Length, IndexBufferFormat.UInt32, (uint)indices.Length);
-            _sphereMesh.SetVertices(vertices);
-            _sphereMesh.SetIndices(indices);*/
-
-            _sphereMesh = renderer.Resources.CreateMesh(vertices, indices);
+            _sphereMesh = renderer.Device.CreateMesh(vertices, indices);
             _sphereMesh.Shader = _fxSky;
         }
 

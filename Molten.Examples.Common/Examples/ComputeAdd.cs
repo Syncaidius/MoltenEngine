@@ -64,9 +64,11 @@ namespace Molten.Examples
                     _values1[i] = new ComputeData() { FValue = i * 2, IValue = i * 3 };
                 }
 
-                // We want 2 segments, so double the size of the buffer.
+                // Setup two input buffers for our numbers. By default these are immutable - cannot be changed after creation.
                 IStructuredBuffer numBuffer0 = Engine.Renderer.Device.CreateStructuredBuffer(_values0);
                 IStructuredBuffer numBuffer1 = Engine.Renderer.Device.CreateStructuredBuffer(_values1);
+
+                // Setup one output buffer for results
                 IStructuredBuffer outBuffer = Engine.Renderer.Device.CreateStructuredBuffer<ComputeData>(BufferMode.Default, NUM_SUMS, true, false);
 
                 // Staging buffer for transferring our compute result off the GPU
@@ -92,7 +94,7 @@ namespace Molten.Examples
 
         protected override Mesh GetTestCubeMesh()
         {
-            return Engine.Renderer.Resources.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
+            return Engine.Renderer.Device.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
         }
 
         protected override void OnDrawSprites(SpriteBatcher sb)

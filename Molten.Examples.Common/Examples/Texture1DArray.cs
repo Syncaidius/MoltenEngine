@@ -34,7 +34,7 @@ namespace Molten.Examples
 
         protected override Mesh GetTestCubeMesh()
         {
-            return Engine.Renderer.Resources.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
+            return Engine.Renderer.Device.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
         }
     }
 }

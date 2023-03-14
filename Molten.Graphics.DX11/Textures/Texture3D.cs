@@ -14,7 +14,7 @@ namespace Molten.Graphics
         /// <param name="other"></param>
         /// <param name="flags">A set of flags to override those of the provided texture.</param>
         internal Texture3D(Texture3D other, TextureFlags flags)
-            : this(other.Renderer as RendererDX11, other.Width, other.Height, other.Depth,
+            : this(other.Renderer, other.Width, other.Height, other.Depth,
                   other.DxgiFormat, other.MipMapCount, flags)
         { }
 
@@ -22,11 +22,11 @@ namespace Molten.Graphics
         /// of the provided texture in to the new instance.</summary>
         /// <param name="other"></param>
         internal Texture3D(Texture3D other)
-            : this(other.Renderer as RendererDX11, other.Width, other.Height, other.Depth, other.DxgiFormat, other.MipMapCount, other.Flags)
+            : this(other.Renderer, other.Width, other.Height, other.Depth, other.DxgiFormat, other.MipMapCount, other.Flags)
         { }
 
         internal Texture3D(
-            RendererDX11 renderer,
+            RenderService renderer,
             uint width,
             uint height,
             uint depth,

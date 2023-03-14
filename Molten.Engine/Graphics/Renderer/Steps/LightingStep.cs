@@ -15,7 +15,7 @@ namespace Molten.Graphics
             _lightBuffer = renderer.Device.CreateStructuredBuffer<LightData>(BufferMode.DynamicRing, maxLights, false, true);
 
             // Load shaders
-            ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Assets", "light_point.mfx");
+            ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "light_point.mfx");
             _matPoint = result["light-point"];
             _matDebugPoint = result["light-point-debug"];
         }

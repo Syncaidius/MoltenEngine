@@ -24,7 +24,7 @@ namespace Molten.Graphics
         /// <param name="aaLevel"></param>
         /// <param name="msaa"></param>
         /// <param name="flags">Texture flags</param>
-        internal DepthStencilSurface(RendererDX11 renderer,
+        internal DepthStencilSurface(RenderService renderer,
             uint width, 
             uint height,
             DepthFormat format = DepthFormat.R24G8_Typeless,

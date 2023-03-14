@@ -2,6 +2,7 @@
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 using Message = Silk.NET.Direct3D11.Message;
 
 namespace Molten.Graphics
@@ -22,8 +23,8 @@ namespace Molten.Graphics
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The physical display adapter to bind the new device to.</param>
-        internal DeviceDX11(GraphicsSettings settings, DeviceBuilderDX11 builder, Logger log, IDisplayAdapter adapter) :
-            base(settings, log, false)
+        internal DeviceDX11(RenderService renderer, GraphicsSettings settings, DeviceBuilderDX11 builder, IDisplayAdapter adapter) :
+            base(renderer, settings, false)
         {
             _builder = builder;
             _displayManager = adapter.Manager as DisplayManagerDXGI;
@@ -134,45 +135,6 @@ namespace Molten.Graphics
             // TODO add the context's profiler stats to the device's main profiler.
         }
 
-        protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
-        {
-            return new ShaderSamplerDX11(this, ref parameters);
-        }
-
-        public override HlslPass CreateShaderPass(HlslShader shader, string name = null)
-        {
-            return new ShaderPassDX11(shader, name);
-        }
-
-        public override IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint numVertices, T[] initialData = null)
-        {
-            fixed (T* ptr = initialData)
-                return new VertexBufferDX11<T>(this, mode, numVertices, ptr);
-        }
-
-        public override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, ushort[] initialData = null)
-        {
-            fixed (ushort* ptr = initialData)
-                return new IndexBufferDX11(this, mode, IndexBufferFormat.UInt16, numIndices, ptr);
-        }
-
-        public override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, uint[] initialData = null)
-        {
-            fixed (uint* ptr = initialData)
-                return new IndexBufferDX11(this, mode, IndexBufferFormat.UInt32, numIndices, ptr);
-        }
-
-        public override IStructuredBuffer CreateStructuredBuffer<T>(BufferMode mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
-        {
-            fixed (T* ptr = initialData)
-                return new StructuredBufferDX11<T>(this, mode, numElements, allowUnorderedAccess, isShaderResource, ptr);
-        }
-
-        public override IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity)
-        {
-            return new StagingBuffer(this, staging, byteCapacity);
-        }
-
         /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
@@ -191,6 +153,221 @@ namespace Molten.Graphics
             }
 
             base.OnDispose();
+        }
+
+
+        public override IDepthStencilSurface CreateDepthSurface(
+            uint width,
+            uint height,
+            DepthFormat format = DepthFormat.R24G8_Typeless,
+            uint mipCount = 1,
+            uint arraySize = 1,
+            AntiAliasLevel aaLevel = AntiAliasLevel.None,
+            TextureFlags flags = TextureFlags.None,
+            string name = "surface")
+        {
+            MSAAQuality msaa = MSAAQuality.CenterPattern;
+            return new DepthStencilSurface(Renderer, width, height, format, mipCount, arraySize, aaLevel, msaa, flags, name);
+        }
+
+        protected override HlslPass OnCreateShaderPass(HlslShader shader, string name = null)
+        {
+            return new ShaderPassDX11(shader, name);
+        }
+
+        public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1)
+        {
+            return new RenderFormSurface(Renderer, formTitle, formName, mipCount);
+        }
+
+        public override INativeSurface CreateControlSurface(string formTitle, string controlName, uint mipCount = 1)
+        {
+            return new RenderControlSurface(Renderer, formTitle, controlName, mipCount);
+        }
+
+        public override IRenderSurface2D CreateSurface(
+            uint width,
+            uint height,
+            GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
+            uint mipCount = 1,
+            uint arraySize = 1,
+            AntiAliasLevel aaLevel = AntiAliasLevel.None,
+            TextureFlags flags = TextureFlags.None,
+            string name = null)
+        {
+            MSAAQuality msaa = MSAAQuality.CenterPattern;
+            return new RenderSurface2D(Renderer, width, height, (Format)format, mipCount, arraySize, aaLevel, msaa, flags, name);
+        }
+
+        public override ITexture CreateTexture1D(Texture1DProperties properties)
+        {
+            return new Texture1D(Renderer, properties.Width, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
+        }
+
+        public override ITexture CreateTexture1D(TextureData data)
+        {
+            Texture1D tex = new Texture1D(Renderer, data.Width, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
+            tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
+            return tex;
+        }
+
+        public override ITexture2D CreateTexture2D(Texture2DProperties properties)
+        {
+            return new Texture2D(Renderer,
+                properties.Width,
+                properties.Height,
+                properties.Format.ToApi(),
+                properties.MipMapLevels,
+                properties.ArraySize,
+                properties.Flags,
+                properties.MultiSampleLevel,
+                properties.SampleQuality,
+                properties.Name);
+        }
+
+        public override ITexture2D CreateTexture2D(TextureData data)
+        {
+            Texture2D tex = new Texture2D(Renderer,
+                data.Width,
+                data.Height,
+                data.Format.ToApi(),
+                data.MipMapLevels,
+                data.ArraySize,
+                data.Flags,
+                data.MultiSampleLevel);
+
+            tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
+            return tex;
+        }
+
+        public override ITexture3D CreateTexture3D(Texture3DProperties properties)
+        {
+            return new Texture3D(Renderer,
+                properties.Width,
+                properties.Height,
+                properties.Depth,
+                properties.Format.ToApi(),
+                properties.MipMapLevels,
+                properties.Flags);
+        }
+
+        public override ITexture3D CreateTexture3D(TextureData data)
+        {
+            throw new NotImplementedException();
+
+            // TODO TextureData needs support for 3D data
+
+            /*Texture3D tex = new Texture3D(_renderer,
+                data.Width,
+                data.Height,
+                data.Depth,
+                data.Format.ToApi(),
+                data.MipMapLevels,
+                data.Flags);
+
+            tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
+            return tex;*/
+        }
+
+        public override ITextureCube CreateTextureCube(Texture2DProperties properties)
+        {
+            uint cubeCount = Math.Max(properties.ArraySize / 6, 1);
+            return new TextureCubeDX11(Renderer, properties.Width, properties.Height, properties.Format.ToApi(), properties.MipMapLevels, cubeCount, properties.Flags);
+        }
+
+        public override ITextureCube CreateTextureCube(TextureData data)
+        {
+            uint cubeCount = Math.Max(data.ArraySize / 6, 1);
+            TextureCubeDX11 tex = new TextureCubeDX11(Renderer, data.Width, data.Height, data.Format.ToApi(), data.MipMapLevels, cubeCount, data.Flags);
+            tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
+            return tex;
+        }
+
+        /// <summary>
+        /// Resolves a source texture into a destination texture. <para/>
+        /// This is most useful when re-using the resulting rendertarget of one render pass as an input to a second render pass. <para/>
+        /// Another common use is transferring (resolving) a multisampled texture into a non-multisampled texture.
+        /// </summary>
+        /// <param name="source">The source texture.</param>
+        /// <param name="destination">The destination texture.</param>
+        public override void ResolveTexture(ITexture source, ITexture destination)
+        {
+            if (source.DataFormat != destination.DataFormat)
+                throw new Exception("The source and destination texture must be the same format.");
+
+            uint arrayLevels = Math.Min(source.ArraySize, destination.ArraySize);
+            uint mipLevels = Math.Min(source.MipMapCount, destination.MipMapCount);
+
+            for (uint i = 0; i < arrayLevels; i++)
+            {
+                for (uint j = 0; j < mipLevels; j++)
+                {
+                    TextureResolve task = TextureResolve.Get();
+                    task.Source = source as TextureBase;
+                    task.Destination = destination as TextureBase;
+                    task.SourceMipLevel = j;
+                    task.SourceArraySlice = i;
+                    task.DestMipLevel = j;
+                    task.DestArraySlice = i;
+                    Renderer.PushTask(task);
+                }
+            }
+        }
+
+        /// <summary>Resources the specified sub-resource of a source texture into the sub-resource of a destination texture.</summary>
+        /// <param name="source">The source texture.</param>
+        /// <param name="destination">The destination texture.</param>
+        /// <param name="sourceMipLevel">The source mip-map level.</param>
+        /// <param name="sourceArraySlice">The source array slice.</param>
+        /// <param name="destMiplevel">The destination mip-map level.</param>
+        /// <param name="destArraySlice">The destination array slice.</param>
+        public override void ResolveTexture(ITexture source, ITexture destination,
+            uint sourceMipLevel,
+            uint sourceArraySlice,
+            uint destMiplevel,
+            uint destArraySlice)
+        {
+            if (source.DataFormat != destination.DataFormat)
+                throw new Exception("The source and destination texture must be the same format.");
+
+            TextureResolve task = TextureResolve.Get();
+            task.Source = source as TextureBase;
+            task.Destination = destination as TextureBase;
+            Renderer.PushTask(task);
+        }
+
+        protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
+        {
+            return new ShaderSamplerDX11(this, ref parameters);
+        }
+
+        public unsafe override IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint numVertices, T[] initialData = null)
+        {
+            fixed (T* ptr = initialData)
+                return new VertexBufferDX11<T>(this, mode, numVertices, ptr);
+        }
+
+        public unsafe override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, ushort[] initialData = null)
+        {
+            fixed (ushort* ptr = initialData)
+                return new IndexBufferDX11(this, mode, IndexBufferFormat.UInt16, numIndices, ptr);
+        }
+
+        public unsafe override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, uint[] initialData = null)
+        {
+            fixed (uint* ptr = initialData)
+                return new IndexBufferDX11(this, mode, IndexBufferFormat.UInt32, numIndices, ptr);
+        }
+
+        public unsafe override IStructuredBuffer CreateStructuredBuffer<T>(BufferMode mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        {
+            fixed (T* ptr = initialData)
+                return new StructuredBufferDX11<T>(this, mode, numElements, allowUnorderedAccess, isShaderResource, ptr);
+        }
+
+        public override IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity)
+        {
+            return new StagingBuffer(this, staging, byteCapacity);
         }
 
         public override DisplayManagerDXGI DisplayManager => _displayManager;
