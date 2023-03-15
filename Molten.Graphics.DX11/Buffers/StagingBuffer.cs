@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal class StagingBuffer : GraphicsBuffer, IStagingBuffer
+    internal class StagingBuffer : BufferDX11, IStagingBuffer
     {
         /// <summary>Creates a new instance of <see cref="StagingBuffer"/>.</summary>
         /// <param name="device">The graphics device to bind the buffer to.</param>

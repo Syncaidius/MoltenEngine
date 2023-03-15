@@ -5,9 +5,9 @@ namespace Molten.Graphics
 {
     internal struct BufferCopyOperation : IBufferOperation
     {
-        internal GraphicsBuffer SrcBuffer;
+        internal BufferDX11 SrcBuffer;
 
-        internal GraphicsBuffer DestBuffer;
+        internal BufferDX11 DestBuffer;
 
         internal Box SrcRegion;
 

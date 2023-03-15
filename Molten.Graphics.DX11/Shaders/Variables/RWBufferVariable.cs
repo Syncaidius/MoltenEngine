@@ -6,7 +6,7 @@
 
         protected override IShaderResource OnSetUnorderedResource(object value)
         {
-            GraphicsBuffer buffer = value as GraphicsBuffer;
+            BufferDX11 buffer = value as BufferDX11;
             if (buffer != null && buffer.IsUnorderedAccess == false)
                 throw new InvalidOperationException("A structured buffer with unordered access must be set to '" + nameof(RWBufferVariable) + "'");
 

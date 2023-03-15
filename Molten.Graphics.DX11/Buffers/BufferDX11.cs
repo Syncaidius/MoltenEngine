@@ -7,7 +7,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public abstract unsafe class GraphicsBuffer : ContextBindableResource<ID3D11Buffer>, IGraphicsBuffer
+    public abstract unsafe class BufferDX11 : ContextBindableResource<ID3D11Buffer>, IGraphicsBuffer
     {
         ID3D11Buffer* _native;
         uint _ringPos;
@@ -15,7 +15,7 @@ namespace Molten.Graphics
         internal BufferDesc Desc;
         ThreadedQueue<IBufferOperation> _pendingChanges;
 
-        internal GraphicsBuffer(DeviceDX11 device,
+        internal BufferDX11(DeviceDX11 device,
             BufferMode mode,
             BindFlag bindFlags,
             uint stride,
@@ -37,7 +37,7 @@ namespace Molten.Graphics
             device.ProcessDebugLayerMessages();
         }
 
-        internal GraphicsBuffer(DeviceDX11 device,
+        internal BufferDX11(DeviceDX11 device,
             BufferMode mode,
             BindFlag bindFlags,
             uint numBytes,
@@ -66,13 +66,6 @@ namespace Molten.Graphics
                 op.Process(Device.Cmd);
             else
                 _pendingChanges.Enqueue(op);
-        }
-
-        public void Defragment()
-        {
-            throw new NotImplementedException("Needs to move data around in the underlying GPU buffers when defragmenting. Run every few frames, if needed.");
-            // TODO also consider removing map sectors from the end of the list if we end up with more than 1 that is completely empty after defragmentation.
-            // TODO consider running based off the number of segments in _freeSegments list.
         }
 
         private void BuildDescription(
@@ -136,18 +129,15 @@ namespace Molten.Graphics
         {
             DeviceDX11 nDevice = Device as DeviceDX11;
             if (Mode == BufferMode.Immutable && initialData == null)
-                throw new ArgumentNullException("Initial data cannot be null when buffer mode is Immutable.");
+                throw new GraphicsBufferException(this, "Initial data cannot be null when buffer mode is Immutable.");
 
             uint numBytes = Desc.ByteWidth;
 
 
             if (initialData != null)
             {
-                //EngineUtil.PinObject(initialData, (ptr) =>
-                //{
-                    SubresourceData srd = new SubresourceData(initialData, numBytes, numBytes);
-                    nDevice.Ptr->CreateBuffer(ref Desc, ref srd, ref _native);
-                //});
+                SubresourceData srd = new SubresourceData(initialData, numBytes, numBytes);
+                nDevice.Ptr->CreateBuffer(ref Desc, ref srd, ref _native);
             }
             else
             {
@@ -193,18 +183,18 @@ namespace Molten.Graphics
             }
         }
 
-        /// <summary>Copies all the data in the current <see cref="GraphicsBuffer"/> to the destination <see cref="GraphicsBuffer"/>.</summary>
+        /// <summary>Copies all the data in the current <see cref="BufferDX11"/> to the destination <see cref="BufferDX11"/>.</summary>
         /// <param name="cmd">The <see cref="CommandQueueDX11"/> that will perform the copy.</param>
-        /// <param name="destination">The <see cref="GraphicsBuffer"/> to copy to.</param>
+        /// <param name="destination">The <see cref="BufferDX11"/> to copy to.</param>
         public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, Action completionCallback = null)
         {
             if (ByteCapacity < Desc.ByteWidth)
-                throw new Exception("The destination buffer is not large enough.");
+                throw new GraphicsBufferException(this, "The destination buffer is not large enough.");
 
             QueueOperation(priority, new BufferDirectCopyOperation()
             {
                 SrcBuffer = this,
-                DestBuffer = destination as GraphicsBuffer,
+                DestBuffer = destination as BufferDX11,
                 CompletionCallback = completionCallback,
             });
         }
@@ -215,7 +205,7 @@ namespace Molten.Graphics
             {
                 CompletionCallback = completionCallback,
                 SrcBuffer = this,
-                DestBuffer = destination as GraphicsBuffer,
+                DestBuffer = destination as BufferDX11,
                 DestByteOffset = destByteOffset,
                 SrcRegion = sourceRegion.ToApi(),
             });
@@ -238,7 +228,7 @@ namespace Molten.Graphics
             uint byteOffset,
             uint stride,
             uint elementCount,
-            Action<GraphicsBuffer, RawStream> callback,
+            Action<BufferDX11, RawStream> callback,
             StagingBuffer staging = null)
         {
             // Check buffer type.
@@ -301,16 +291,16 @@ namespace Molten.Graphics
             {
                 // Write to the provided staging buffer instead.
                 if (staging == null)
-                    throw new GraphicsBufferException("Staging buffer required. Non-dynamic/staged buffers require a staging buffer to access data.");
+                    throw new GraphicsBufferException(this, "Staging buffer required. Non-dynamic/staged buffers require a staging buffer to access data.");
 
                 isDynamic = staging.Desc.Usage == Usage.Dynamic;
                 isStaged = staging.Desc.Usage == Usage.Staging;
 
                 if (!isDynamic && !isStaged)
-                    throw new GraphicsBufferException("The provided staging buffer is invalid. Must be either dynamic or staged.");
+                    throw new GraphicsBufferException(this, "The provided staging buffer is invalid. Must be either dynamic or staged.");
 
                 if (staging.Desc.ByteWidth < numBytes)
-                    throw new GraphicsBufferException($"The provided staging buffer is not large enough ({staging.Desc.ByteWidth} bytes) to fit the provided data ({numBytes} bytes).");
+                    throw new GraphicsBufferException(this, $"The provided staging buffer is not large enough ({staging.Desc.ByteWidth} bytes) to fit the provided data ({numBytes} bytes).");
 
                 // Write updated data into buffer
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
@@ -388,7 +378,7 @@ namespace Molten.Graphics
             }
         }
 
-        /// <summary>Retrieves data from a <see cref="GraphicsBuffer"/>.</summary>
+        /// <summary>Retrieves data from a <see cref="BufferDX11"/>.</summary>
         /// <param name="cmd">The <see cref="CommandQueueDX11"/> that will perform the 'get' operation.</param>
         /// <param name="destination">The destination array. Must be big enough to contain the retrieved data.</param>
         /// <param name="startIndex">The start index within the destination array at which to place the retrieved data.</param>
@@ -400,7 +390,7 @@ namespace Molten.Graphics
             where T : unmanaged
         {
             if ((Desc.CPUAccessFlags & (uint)CpuAccessFlag.Read) != (uint)CpuAccessFlag.Read)
-                throw new InvalidOperationException("Cannot use GetData() on a non-readable buffer.");
+                throw new GraphicsBufferException(this, "Cannot use GetData() on a non-readable buffer.");
 
             if (destination.Length < count)
                 throw new ArgumentException("The provided destination array is not large enough.");
@@ -461,14 +451,14 @@ namespace Molten.Graphics
             }
         }
 
-        /// <summary>Gets the stride (byte size) of each element within the current <see cref="GraphicsBuffer"/>.</summary>
+        /// <summary>Gets the stride (byte size) of each element within the current <see cref="BufferDX11"/>.</summary>
         public uint Stride { get; }
 
         /// <summary>Gets the capacity of a single section within the buffer, in bytes.</summary>
         public uint ByteCapacity { get; }
 
         /// <summary>
-        /// Gets the number of elements that the current <see cref="GraphicsBuffer"/> can store.
+        /// Gets the number of elements that the current <see cref="BufferDX11"/> can store.
         /// </summary>
         public uint ElementCount { get; }
 

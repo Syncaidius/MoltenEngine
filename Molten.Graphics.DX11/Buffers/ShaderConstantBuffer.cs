@@ -5,7 +5,7 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    internal unsafe class ShaderConstantBuffer : GraphicsBuffer, IConstantBuffer
+    internal unsafe class ShaderConstantBuffer : BufferDX11, IConstantBuffer
     {
         internal D3DShaderCBufferFlags Flags;
         internal D3DCBufferType Type;

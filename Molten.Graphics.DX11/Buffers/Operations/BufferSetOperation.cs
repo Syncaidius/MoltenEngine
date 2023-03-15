@@ -21,7 +21,7 @@ namespace Molten.Graphics
         /// <summary>The data to be set.</summary>
         internal T[] Data;
 
-        internal GraphicsBuffer DestBuffer;
+        internal BufferDX11 DestBuffer;
 
         internal Action CompletionCallback;
 
@@ -33,7 +33,7 @@ namespace Molten.Graphics
             CompletionCallback?.Invoke();
         }
 
-        private void WriteDataCallback(GraphicsBuffer buffer, RawStream stream)
+        private void WriteDataCallback(BufferDX11 buffer, RawStream stream)
         {
             stream.WriteRange(Data, DataStartIndex, ElementCount);
         }

@@ -8,7 +8,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public class IndexBufferDX11 : GraphicsBuffer, IIndexBuffer
+    public class IndexBufferDX11 : BufferDX11, IIndexBuffer
     {
         public unsafe IndexBufferDX11(DeviceDX11 device, BufferMode mode, IndexBufferFormat format, uint numElements, void* initialData) : 
             base(device, 

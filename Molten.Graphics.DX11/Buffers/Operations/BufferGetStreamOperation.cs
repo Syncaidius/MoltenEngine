@@ -10,7 +10,7 @@ namespace Molten.Graphics
 
         internal uint NumElements;
 
-        internal GraphicsBuffer SrcBuffer;
+        internal BufferDX11 SrcBuffer;
 
         internal IStagingBuffer Staging;
 

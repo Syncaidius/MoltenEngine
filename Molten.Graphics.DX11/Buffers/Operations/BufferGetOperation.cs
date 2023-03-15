@@ -18,7 +18,7 @@ namespace Molten.Graphics
         /// <summary>The first index at which to start placing the retrieved data within <see cref="DestArray"/>.</summary>
         internal uint DestIndex;
 
-        internal GraphicsBuffer SrcBuffer;
+        internal BufferDX11 SrcBuffer;
 
         /// <summary>A callback to send the retrieved data to.</summary>
         internal Action<T[]> CompletionCallback;

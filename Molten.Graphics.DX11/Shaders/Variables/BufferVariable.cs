@@ -6,7 +6,7 @@
 
         protected override IShaderResource OnSetResource(object value)
         {
-            return value as GraphicsBuffer;
+            return value as BufferDX11;
         }
     }
 }

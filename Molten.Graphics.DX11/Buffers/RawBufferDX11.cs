@@ -6,7 +6,7 @@ namespace Molten.Graphics
 {
     /// <summary>A raw byte-addressed buffer. In HLSL these are intended for use only with unsigned 32-bit integer elements (UInt32). 
     /// <para>If the values you want to store in the buffer, are not UInt32, you could use a HLSL function such as <see cref="asfloat"/>.</para></summary>
-    internal unsafe class RawBufferDX11 : GraphicsBuffer
+    internal unsafe class RawBufferDX11 : BufferDX11
     {
         /// <summary>Creates a new instance of <see cref="StructuredBuffer"/>.</summary>
         /// <param name="device">The graphics device to bind the buffer to.</param>

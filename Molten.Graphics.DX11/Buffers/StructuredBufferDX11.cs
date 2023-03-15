@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal class StructuredBufferDX11<T> : GraphicsBuffer, IStructuredBuffer
+    internal class StructuredBufferDX11<T> : BufferDX11, IStructuredBuffer
         where T : unmanaged
     {
         /// <summary>Creates a new instance of <see cref="StagingBuffer"/>.</summary>
