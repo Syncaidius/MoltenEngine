@@ -3,12 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
     internal unsafe class MaterialPassVK : HlslPass
     {
+        static readonly ShaderType[] _stageOrder = new ShaderType[] {
+            ShaderType.Vertex,
+            ShaderType.Hull,
+            ShaderType.Domain,
+            ShaderType.Geometry,
+            ShaderType.Pixel,
+            ShaderType.Compute
+        };
+
+        static readonly Dictionary<ShaderType, ShaderStageFlags> _stageTypeLookup = new Dictionary<ShaderType, ShaderStageFlags>()
+        {
+            [ShaderType.Vertex] = ShaderStageFlags.VertexBit,
+            [ShaderType.Hull] = ShaderStageFlags.TessellationControlBit,
+            [ShaderType.Domain] = ShaderStageFlags.TessellationEvaluationBit,
+            [ShaderType.Geometry] = ShaderStageFlags.GeometryBit,
+            [ShaderType.Pixel] = ShaderStageFlags.FragmentBit
+        };
+
         GraphicsPipelineCreateInfo _info;
         Pipeline _pipeline;
 
@@ -24,6 +43,7 @@ namespace Molten.Graphics
             _info = new GraphicsPipelineCreateInfo();
             _info.SType = StructureType.GraphicsPipelineCreateInfo;
             _info.Flags = PipelineCreateFlags.None;
+            _info.PNext = null;
         }
 
         protected override void OnInitialize(ref ShaderPassParameters parameters)
@@ -51,16 +71,34 @@ namespace Molten.Graphics
             _dynamicState = new DynamicStateVK(device, ref parameters, dynamics);
             _dynamicState = device.CacheObject(_dynamicState.Desc, _dynamicState);
 
+            // Setup shader stage info
+            _info.PStages = EngineUtil.AllocArray<PipelineShaderStageCreateInfo>((uint)CompositionCount);
+            _info.StageCount = 0;
+
+            // Iterate over and add pass compositions in the order Vulkan expects.
+            foreach (ShaderType type in _stageOrder)
+            {
+                ShaderComposition c = this[type];
+                if (c == null)
+                    continue;
+
+                ref PipelineShaderStageCreateInfo stageDesc = ref _info.PStages[_info.StageCount++];
+                stageDesc.SType = StructureType.PipelineShaderStageCreateInfo;
+                stageDesc.PName = (byte*)SilkMarshal.StringToPtr(c.EntryPoint, NativeStringEncoding.UTF8);
+                stageDesc.Stage = _stageTypeLookup[type];
+                stageDesc.Module = *(ShaderModule*)c.PtrShader;
+                stageDesc.Flags = PipelineShaderStageCreateFlags.None;
+                stageDesc.PNext = null;
+            }
+
             _info.PMultisampleState = null;                         // TODO initialize
             _info.Layout = new PipelineLayout();                    // TODO initialize
             _info.BasePipelineIndex = 0;                            // TODO initialize
             _info.BasePipelineHandle = new Pipeline();              // TODO initialize
             _info.PTessellationState = null;                        // TODO initialize
             _info.PVertexInputState = null;                         // TODO initialize
-            _info.PViewportState = null;                            // Ignored since need to be able to change the viewport
+            _info.PViewportState = null;                            // Ignored. Set in dynamic state.
             _info.RenderPass = new RenderPass();                    // TODO initialize
-            _info.PStages = null;                                   // TODO initialize
-            _info.StageCount = 0;                                   // TODO initialize
             _info.Subpass = 0;                                      // TODO initialize
 
             _info.PColorBlendState = _blendState.Desc;
@@ -72,7 +110,14 @@ namespace Molten.Graphics
 
         public override void GraphicsRelease()
         {
+            // Release indirect memory allocations for pipleine shader stages
+            for(uint i = 0; i < _info.StageCount; i++)
+            {
+                ref PipelineShaderStageCreateInfo stageDesc = ref _info.PStages[i];
+                SilkMarshal.FreeString((nint)stageDesc.PName);
+            }
 
+            EngineUtil.Free(ref _info.PStages);
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd) { }

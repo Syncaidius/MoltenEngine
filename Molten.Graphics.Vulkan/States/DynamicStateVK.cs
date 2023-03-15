@@ -22,8 +22,10 @@ namespace Molten.Graphics
         {
             Desc = new StructKey<PipelineDynamicStateCreateInfo>();
             ref PipelineDynamicStateCreateInfo desc = ref Desc.Value;
+            desc.SType = StructureType.PipelineDynamicStateCreateInfo;
             desc.DynamicStateCount = (uint)states.Length;
             desc.PDynamicStates = EngineUtil.AllocArray<DynamicState>(desc.DynamicStateCount);
+            desc.PNext = null;
 
             uint numBytes = sizeof(DynamicState) * desc.DynamicStateCount;
             fixed(DynamicState* ptr = &states[0])

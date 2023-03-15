@@ -20,6 +20,7 @@ namespace Molten.Graphics
 
             Color4 blendConsts = parameters.BlendFactor;
             bDesc.SType = StructureType.PipelineColorBlendStateCreateInfo;
+            bDesc.PNext = null;
             bDesc.BlendConstants[0] = blendConsts.R;
             bDesc.BlendConstants[1] = blendConsts.G;
             bDesc.BlendConstants[2] = blendConsts.B;

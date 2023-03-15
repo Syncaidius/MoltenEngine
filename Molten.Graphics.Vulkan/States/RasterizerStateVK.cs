@@ -18,6 +18,7 @@ namespace Molten.Graphics
 
             ref PipelineRasterizationStateCreateInfo raDesc = ref Desc.Value;
             raDesc.SType = StructureType.PipelineRasterizationStateCreateInfo;
+            raDesc.PNext = null;
             raDesc.PolygonMode = parameters.Fill.ToApi();
             raDesc.CullMode = parameters.Cull.ToApi();
             raDesc.DepthBiasClamp = parameters.DepthBiasClamp;

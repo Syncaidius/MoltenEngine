@@ -18,6 +18,7 @@ namespace Molten.Graphics
 
             ref PipelineDepthStencilStateCreateInfo dDesc = ref Desc.Value;
             dDesc.SType = StructureType.PipelineDepthStencilStateCreateInfo;
+            dDesc.PNext = null;
             dDesc.DepthTestEnable = parameters.IsDepthEnabled;
             dDesc.StencilTestEnable = parameters.IsStencilEnabled;
             dDesc.DepthWriteEnable = parameters.DepthWriteEnabled;

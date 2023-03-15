@@ -14,12 +14,13 @@ namespace Molten.Graphics
     {
         internal StructKey<PipelineInputAssemblyStateCreateInfo> Desc { get; }
 
-        public InputAssemblyStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) : 
+        public unsafe InputAssemblyStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             Desc = new StructKey<PipelineInputAssemblyStateCreateInfo>();
             ref PipelineInputAssemblyStateCreateInfo desc = ref Desc.Value;
             desc.SType = StructureType.PipelineInputAssemblyStateCreateInfo;
+            desc.PNext = null;
             desc.Topology = parameters.Topology.ToApi();
             desc.PrimitiveRestartEnable = false;
         }
