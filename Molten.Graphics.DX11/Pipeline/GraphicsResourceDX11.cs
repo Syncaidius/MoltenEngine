@@ -35,10 +35,10 @@ namespace Molten.Graphics
         }
     }
 
-    public unsafe abstract class ContextBindableResource<T> : GraphicsResourceDX11
+    public unsafe abstract class GraphicsResourceDX11<T> : GraphicsResourceDX11
         where T : unmanaged
     {
-        internal ContextBindableResource(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : 
+        internal GraphicsResourceDX11(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
         }
@@ -48,7 +48,7 @@ namespace Molten.Graphics
         /// </summary>
         internal abstract T* ResourcePtr { get; }
 
-        public static implicit operator T*(ContextBindableResource<T> resource)
+        public static implicit operator T*(GraphicsResourceDX11<T> resource)
         {
             return resource.ResourcePtr;
         }

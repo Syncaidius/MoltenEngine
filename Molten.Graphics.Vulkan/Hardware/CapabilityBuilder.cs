@@ -11,17 +11,12 @@ namespace Molten.Graphics
             public void* PNext;
         }
 
-        internal unsafe GraphicsCapabilities Build(PhysicalDevice device, RendererVK renderer, ref PhysicalDeviceProperties2 properties)
+        internal unsafe GraphicsCapabilities Build(PhysicalDevice device, RendererVK renderer, ref PhysicalDeviceProperties2 properties, ref PhysicalDeviceMemoryProperties2 mem)
         {
             PhysicalDeviceFeatures2 dFeatures = new PhysicalDeviceFeatures2(StructureType.PhysicalDeviceFeatures2);
             renderer.VK.GetPhysicalDeviceFeatures2(device, &dFeatures);
             PhysicalDeviceFeatures features = dFeatures.Features;
-
             ref PhysicalDeviceLimits limits = ref properties.Properties.Limits;
-
-            PhysicalDeviceMemoryProperties2 mem = new PhysicalDeviceMemoryProperties2(StructureType.PhysicalDeviceMemoryProperties2);
-            renderer.VK.GetPhysicalDeviceMemoryProperties2(device, &mem);
-
             GraphicsCapabilities cap = new GraphicsCapabilities();
 
             cap.MaxTexture1DSize = limits.MaxImageDimension1D;
@@ -113,7 +108,7 @@ namespace Molten.Graphics
             // Search here for device spec references: http://vulkan.gpuinfo.org/listdevices.php
             for (int i = 0; i < mem.MemoryProperties.MemoryTypeCount; i++)
             {
-                MemoryType mType = mem.MemoryProperties.MemoryTypes[i];
+                ref MemoryType mType = ref mem.MemoryProperties.MemoryTypes[i];
                 if (!heapFlags.ContainsKey(mType.HeapIndex))
                     heapFlags[mType.HeapIndex] = mType.PropertyFlags;
                 else
@@ -122,7 +117,7 @@ namespace Molten.Graphics
 
             foreach(uint heapIndex in heapFlags.Keys)
             {
-                MemoryHeap mHeap = mem.MemoryProperties.MemoryHeaps[(int)heapIndex];
+                ref MemoryHeap mHeap = ref mem.MemoryProperties.MemoryHeaps[(int)heapIndex];
                 MemoryPropertyFlags flags = heapFlags[heapIndex];
 
                 double heapSize = ByteMath.ToMegabytes(mHeap.Size);
