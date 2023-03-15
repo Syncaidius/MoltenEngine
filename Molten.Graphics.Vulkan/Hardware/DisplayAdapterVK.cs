@@ -60,7 +60,7 @@ namespace Molten.Graphics
             for (int i = 0; i < _memProperties.MemoryProperties.MemoryTypeCount; i++)
             {
                 ref MemoryType mType = ref _memProperties.MemoryProperties.MemoryTypes[i];
-                if ((requirements.MemoryTypeBits & (1U << i)) == (i << 1) && (mType.PropertyFlags & flags) == flags)
+                if ((requirements.MemoryTypeBits & (1U << i)) == (1U << i) && (mType.PropertyFlags & flags) == flags)
                     return (uint)i;
             }
 
