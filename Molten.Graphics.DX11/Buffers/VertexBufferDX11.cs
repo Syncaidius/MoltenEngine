@@ -9,8 +9,8 @@ namespace Molten.Graphics
 {
     public abstract unsafe class VertexBufferDX11 : BufferDX11, IVertexBuffer
     {
-        protected VertexBufferDX11(DeviceDX11 device, BufferMode mode, uint stride, uint numElements, void* initialData = null) :
-            base(device, mode, BindFlag.VertexBuffer, stride, numElements, ResourceMiscFlag.None, StagingBufferFlags.None, initialData)
+        protected VertexBufferDX11(DeviceDX11 device, BufferFlags mode, uint stride, uint numElements, void* initialData = null) :
+            base(device, mode, BindFlag.VertexBuffer, stride, numElements, ResourceMiscFlag.None, initialData)
         {
             
         }
@@ -22,7 +22,7 @@ namespace Molten.Graphics
     public unsafe class VertexBufferDX11<T> : VertexBufferDX11, IVertexBuffer
         where T : unmanaged, IVertexType
     {
-        public unsafe VertexBufferDX11(DeviceDX11 device, BufferMode mode, uint numElements, void* initialData = null) : 
+        public unsafe VertexBufferDX11(DeviceDX11 device, BufferFlags mode, uint numElements, void* initialData = null) : 
             base(device, mode, (uint)sizeof(T), numElements, initialData)
         {
             VertexFormat = device.VertexFormatCache.Get<T>();

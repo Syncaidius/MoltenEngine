@@ -23,13 +23,13 @@ namespace Molten.Graphics
         /// <param name="maxVertices"></param>
         /// <param name="maxIndices"></param>
         /// <param name="maxInstances"></param>
-        internal InstancedMesh(RenderService renderer, BufferMode mode, ushort maxVertices, uint maxIndices, uint maxInstances,
+        internal InstancedMesh(RenderService renderer, BufferFlags mode, ushort maxVertices, uint maxIndices, uint maxInstances,
             V[] initialVertices = null,
             ushort[] initialIndices = null) : 
             base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
         {
             MaxInstances = maxInstances;
-            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(BufferMode.DynamicDiscard, maxIndices, null);
+            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(BufferFlags.CpuWrite | BufferFlags.GpuRead | BufferFlags.Discard, maxIndices, null);
         }
 
         /// <summary>
@@ -40,13 +40,13 @@ namespace Molten.Graphics
         /// <param name="maxVertices"></param>
         /// <param name="maxIndices"></param>
         /// <param name="maxInstances"></param>
-        internal InstancedMesh(RenderService renderer, BufferMode mode, uint maxVertices, uint maxIndices, uint maxInstances,
+        internal InstancedMesh(RenderService renderer, BufferFlags mode, uint maxVertices, uint maxIndices, uint maxInstances,
             V[] initialVertices = null,
             uint[] initialIndices = null) :
             base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
         {
             MaxInstances = maxInstances;
-            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(BufferMode.DynamicDiscard, maxInstances, null);
+            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(BufferFlags.CpuWrite | BufferFlags.GpuRead | BufferFlags.Discard, maxInstances, null);
         }
 
         public void SetInstanceData(I[] data)

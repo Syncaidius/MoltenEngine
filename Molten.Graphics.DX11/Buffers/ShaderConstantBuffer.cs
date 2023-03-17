@@ -7,7 +7,6 @@ namespace Molten.Graphics
 {
     internal unsafe class ShaderConstantBuffer : BufferDX11, IConstantBuffer
     {
-        internal D3DShaderCBufferFlags Flags;
         internal D3DCBufferType Type;
         internal ShaderConstantVariable[] Variables;
         internal bool DirtyVariables;
@@ -15,15 +14,14 @@ namespace Molten.Graphics
         internal int Hash;
         byte* _constData;
 
-        internal ShaderConstantBuffer(DeviceDX11 device, BufferMode mode, ConstantBufferInfo desc)
-            : base(device, mode, BindFlag.ConstantBuffer, desc.Size)
+        internal ShaderConstantBuffer(DeviceDX11 device, BufferFlags flags, ConstantBufferInfo desc)
+            : base(device, flags, BindFlag.ConstantBuffer, desc.Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
             _constData = (byte*)EngineUtil.Alloc(desc.Size);
 
             // Read sdescription data
             BufferName = desc.Name;
-            Flags = (D3DShaderCBufferFlags)desc.Flags;
             Type = (D3DCBufferType)desc.Type;
 
             string hashString = BufferName;

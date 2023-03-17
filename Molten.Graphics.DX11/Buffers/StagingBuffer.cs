@@ -1,18 +1,17 @@
-﻿namespace Molten.Graphics
+﻿using Silk.NET.Direct3D11;
+
+namespace Molten.Graphics
 {
     internal class StagingBuffer : BufferDX11, IStagingBuffer
     {
         /// <summary>Creates a new instance of <see cref="StagingBuffer"/>.</summary>
         /// <param name="device">The graphics device to bind the buffer to.</param>
-        /// <param name="stageType">Access flags for the buffer.</param>
+        /// <param name="stagingFlags">Access flags for the buffer.</param>
         /// <param name="capacity">The number of elements the buffer should be able to hold.</param>
-        internal unsafe StagingBuffer(DeviceDX11 device, StagingBufferFlags stageType, uint capacity)
-            : base(device, BufferMode.Default, 0, capacity, 0, stageType)
+        internal unsafe StagingBuffer(DeviceDX11 device, BufferFlags flags, uint capacity)
+            : base(device, flags, BindFlag.None, capacity, ResourceMiscFlag.None)
         {
-            StagingType = stageType;
+            
         }
-
-        /// <summary>Gets the staging mode of the buffer.</summary>
-        public StagingBufferFlags StagingType { get; }
     }
 }

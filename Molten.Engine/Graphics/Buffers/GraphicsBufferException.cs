@@ -8,5 +8,7 @@
         }
 
         public IGraphicsBuffer Buffer { get; }
+
+        public BufferFlags Flags => Buffer?.Flags ?? BufferFlags.None;
     }
 }

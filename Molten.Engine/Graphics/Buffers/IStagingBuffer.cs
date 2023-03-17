@@ -5,9 +5,6 @@
     /// </summary>
     public interface IStagingBuffer : IGraphicsBuffer
     {
-        /// <summary>
-        /// Gets the staging buffer access flags.
-        /// </summary>
-        StagingBufferFlags StagingType { get; }
+
     }
 }

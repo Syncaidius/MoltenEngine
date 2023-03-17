@@ -69,10 +69,10 @@ namespace Molten.Examples
                 IStructuredBuffer numBuffer1 = Engine.Renderer.Device.CreateStructuredBuffer(_values1);
 
                 // Setup one output buffer for results
-                IStructuredBuffer outBuffer = Engine.Renderer.Device.CreateStructuredBuffer<ComputeData>(BufferMode.Default, NUM_SUMS, true, false);
+                IStructuredBuffer outBuffer = Engine.Renderer.Device.CreateStructuredBuffer<ComputeData>(BufferFlags.GpuRead | BufferFlags.GpuWrite, NUM_SUMS, true, false);
 
                 // Staging buffer for transferring our compute result off the GPU
-                IStagingBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(StagingBufferFlags.Read, numBytes);
+                IStagingBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(true, false, numBytes);
 
                 // Send our compute shader off to the renderer to be worked on.
                 Engine.Renderer.PushComputeTask(compute, NUM_SUMS, 1, 1, () =>

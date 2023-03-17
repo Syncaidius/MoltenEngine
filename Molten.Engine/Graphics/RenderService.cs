@@ -268,7 +268,7 @@ namespace Molten.Graphics
             OnInitializeRenderer(settings);
 
             uint maxBufferSize = (uint)ByteMath.FromMegabytes(5.5);
-            StagingBuffer = Device.CreateStagingBuffer(StagingBufferFlags.Write, maxBufferSize);
+            StagingBuffer = Device.CreateStagingBuffer(true, true, maxBufferSize);
             SpriteBatch = new SpriteBatcher(this, 3000, 20);
 
             LoadDefaultShaders();

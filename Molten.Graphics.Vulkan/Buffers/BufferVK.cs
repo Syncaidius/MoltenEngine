@@ -15,12 +15,11 @@ namespace Molten.Graphics
         DeviceMemory* _memory;
 
         protected BufferVK(GraphicsDevice device,
-            BufferMode mode,
+            BufferFlags bufferFlags,
             BufferUsageFlags usageFlags,
-            MemoryPropertyFlags memFlags,
             uint stride,
             uint numElements,
-            StagingBufferFlags stagingType = StagingBufferFlags.None) :
+            void* initialData = null) :
             base(device,
                 ((usageFlags & BufferUsageFlags.StorageBufferBit) == BufferUsageFlags.StorageBufferBit ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
                 (
@@ -32,25 +31,41 @@ namespace Molten.Graphics
                     ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None)
                 )
         {
-            Mode = mode;
+            Flags = bufferFlags;
             Stride = stride;
             ByteCapacity = Stride * numElements;
             ElementCount = numElements;
 
-            BuildDescription(usageFlags);
-            InitializeBuffer(memFlags);
+            MemoryPropertyFlags memFlags = BuildDescription(bufferFlags, usageFlags);
+            InitializeBuffer(memFlags, initialData);
         }
 
-        private void BuildDescription(BufferUsageFlags usage)
+        private MemoryPropertyFlags BuildDescription(BufferFlags bufferFlags, BufferUsageFlags usage)
         {
+            MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
+
+            // Does the memory need to be host-visible?
+            if(bufferFlags.HasFlags(BufferFlags.CpuRead) || bufferFlags.HasFlags(BufferFlags.CpuWrite))
+                memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
+            else
+                memFlags |= MemoryPropertyFlags.DeviceLocalBit;
+
+            if (bufferFlags.HasFlags(BufferFlags.GpuRead))
+                usage |= BufferUsageFlags.TransferSrcBit;
+
+            if (bufferFlags.HasFlags(BufferFlags.GpuWrite))
+                usage |= BufferUsageFlags.TransferDstBit;
+
             _desc.SType = StructureType.BufferCreateInfo;
             _desc.Usage = usage;
             _desc.SharingMode = SharingMode.Exclusive;
             _desc.Flags = BufferCreateFlags.None;
             _desc.Size = Stride * ElementCount;
+
+            return memFlags;
         }
 
-        private void InitializeBuffer(MemoryPropertyFlags memFlags)
+        private void InitializeBuffer(MemoryPropertyFlags memFlags, void* initialData)
         {
             _buffer = EngineUtil.Alloc<Buffer>();
             _memory = EngineUtil.Alloc<DeviceMemory>();
@@ -67,6 +82,7 @@ namespace Molten.Graphics
             memInfo.SType = StructureType.MemoryAllocateInfo;
             memInfo.AllocationSize = memRequirements.Size;
             memInfo.MemoryTypeIndex = device.Adapter.GetMemoryTypeIndex(ref memRequirements, memFlags);
+
 
             r = device.VK.AllocateMemory(device, &memInfo, null, _memory);
             if (!device.Renderer.CheckResult(r))
@@ -108,6 +124,6 @@ namespace Molten.Graphics
         public uint ElementCount { get; }
 
         /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
-        public BufferMode Mode { get; }
+        public BufferFlags Flags { get; }
     }
 }

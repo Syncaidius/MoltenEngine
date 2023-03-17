@@ -340,33 +340,40 @@ namespace Molten.Graphics
             return new ShaderSamplerDX11(this, ref parameters);
         }
 
-        public unsafe override IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint numVertices, T[] initialData = null)
+        public unsafe override IVertexBuffer CreateVertexBuffer<T>(BufferFlags flags, uint numVertices, T[] initialData = null)
         {
             fixed (T* ptr = initialData)
-                return new VertexBufferDX11<T>(this, mode, numVertices, ptr);
+                return new VertexBufferDX11<T>(this, flags, numVertices, ptr);
         }
 
-        public unsafe override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, ushort[] initialData = null)
+        public unsafe override IIndexBuffer CreateIndexBuffer(BufferFlags flags, uint numIndices, ushort[] initialData = null)
         {
             fixed (ushort* ptr = initialData)
-                return new IndexBufferDX11(this, mode, IndexBufferFormat.UInt16, numIndices, ptr);
+                return new IndexBufferDX11(this, flags, IndexBufferFormat.UInt16, numIndices, ptr);
         }
 
-        public unsafe override IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, uint[] initialData = null)
+        public unsafe override IIndexBuffer CreateIndexBuffer(BufferFlags flags, uint numIndices, uint[] initialData = null)
         {
             fixed (uint* ptr = initialData)
-                return new IndexBufferDX11(this, mode, IndexBufferFormat.UInt32, numIndices, ptr);
+                return new IndexBufferDX11(this, flags, IndexBufferFormat.UInt32, numIndices, ptr);
         }
 
-        public unsafe override IStructuredBuffer CreateStructuredBuffer<T>(BufferMode mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        public unsafe override IStructuredBuffer CreateStructuredBuffer<T>(BufferFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
         {
             fixed (T* ptr = initialData)
-                return new StructuredBufferDX11<T>(this, mode, numElements, allowUnorderedAccess, isShaderResource, ptr);
+                return new StructuredBufferDX11<T>(this, flags, numElements, allowUnorderedAccess, isShaderResource, ptr);
         }
 
-        public override IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity)
+        public override IStagingBuffer CreateStagingBuffer(bool allowRead, bool allowWrite, uint byteCapacity)
         {
-            return new StagingBuffer(this, staging, byteCapacity);
+            BufferFlags flags = BufferFlags.None;
+            if (allowRead)
+                flags |= BufferFlags.CpuRead;
+
+            if (allowWrite)
+                flags |= BufferFlags.CpuWrite;
+
+            return new StagingBuffer(this, flags, byteCapacity);
         }
 
         public override DisplayManagerDXGI DisplayManager => _displayManager;

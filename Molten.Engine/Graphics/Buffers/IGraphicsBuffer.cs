@@ -36,6 +36,6 @@ namespace Molten.Graphics
         uint ElementCount { get; }
 
         /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
-        BufferMode Mode { get; }
+        BufferFlags Flags { get; }
     }
 }

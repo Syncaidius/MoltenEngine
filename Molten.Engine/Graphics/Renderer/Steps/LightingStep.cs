@@ -12,7 +12,7 @@ namespace Molten.Graphics
         {
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings
-            _lightBuffer = renderer.Device.CreateStructuredBuffer<LightData>(BufferMode.DynamicRing, maxLights, false, true);
+            _lightBuffer = renderer.Device.CreateStructuredBuffer<LightData>(BufferFlags.CpuWrite | BufferFlags.GpuRead | BufferFlags.Ring, maxLights, false, true);
 
             // Load shaders
             ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "light_point.mfx");

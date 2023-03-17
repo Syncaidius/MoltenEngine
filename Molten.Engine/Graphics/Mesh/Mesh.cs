@@ -13,7 +13,7 @@
         /// <param name="mode"></param>
         /// <param name="maxIndices">The maximum number of indices to allow in the current <see cref="Mesh"/>.</param>
         /// <param name="initialIndices"></param>
-        protected Mesh(RenderService renderer, BufferMode mode, ushort maxVertices, uint maxIndices, ushort[] initialIndices = null) :
+        protected Mesh(RenderService renderer, BufferFlags mode, ushort maxVertices, uint maxIndices, ushort[] initialIndices = null) :
             base(renderer)
         {
             IndexFormat = maxIndices > 0 ? IndexBufferFormat.UInt16 : IndexBufferFormat.None;
@@ -36,7 +36,7 @@
         /// <param name="mode"></param>
         /// <param name="maxIndices">The maximum number of indices to allow in the current <see cref="Mesh"/>.</param>
         /// <param name="initialIndices"></param>
-        protected Mesh(RenderService renderer, BufferMode mode, uint maxVertices, uint maxIndices, uint[] initialIndices = null) :
+        protected Mesh(RenderService renderer, BufferFlags mode, uint maxVertices, uint maxIndices, uint[] initialIndices = null) :
             base(renderer)
         {
             IndexFormat = maxIndices > 0 ? IndexBufferFormat.UInt32 : IndexBufferFormat.None;
@@ -141,7 +141,7 @@
         IVertexBuffer _vb;
 
         internal Mesh(RenderService renderer, 
-            BufferMode mode, ushort maxVertices, uint maxIndices,
+            BufferFlags mode, ushort maxVertices, uint maxIndices,
             T[] initialVertices = null, ushort[] initialIndices = null) :
             base(renderer, mode, maxVertices, maxIndices, initialIndices)
         {
@@ -152,7 +152,7 @@
         }
 
         internal Mesh(RenderService renderer,
-             BufferMode mode, uint maxVertices, uint maxIndices,
+             BufferFlags mode, uint maxVertices, uint maxIndices,
              T[] initialVertices = null, uint[] initialIndices = null) :
              base(renderer, mode, maxVertices, maxIndices, initialIndices)
         {

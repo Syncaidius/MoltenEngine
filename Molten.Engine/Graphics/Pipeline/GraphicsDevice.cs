@@ -135,39 +135,39 @@ namespace Molten.Graphics
 
         protected abstract HlslPass OnCreateShaderPass(HlslShader shader, string name);
 
-        public IVertexBuffer CreateVertexBuffer<T>(T[] data, BufferMode mode = BufferMode.Immutable)
+        public IVertexBuffer CreateVertexBuffer<T>(T[] data, BufferFlags flags = BufferFlags.GpuRead)
             where T : unmanaged, IVertexType
         {
-            return CreateVertexBuffer(mode, (uint)data.Length, data);
+            return CreateVertexBuffer(flags, (uint)data.Length, data);
         }
 
-        public abstract IVertexBuffer CreateVertexBuffer<T>(BufferMode mode, uint numVertices, T[] initialData = null)
+        public abstract IVertexBuffer CreateVertexBuffer<T>(BufferFlags flags, uint numVertices, T[] initialData = null)
             where T : unmanaged, IVertexType;
 
-        public IIndexBuffer CreateIndexBuffer(ushort[] data, BufferMode mode = BufferMode.Immutable)
+        public IIndexBuffer CreateIndexBuffer(ushort[] data, BufferFlags flags = BufferFlags.GpuRead)
         {
-            return CreateIndexBuffer(mode, (uint)data.Length, data);
+            return CreateIndexBuffer(flags, (uint)data.Length, data);
         }
 
-        public IIndexBuffer CreateIndexBuffer(uint[] data, BufferMode mode = BufferMode.Immutable)
+        public IIndexBuffer CreateIndexBuffer(uint[] data, BufferFlags flags = BufferFlags.GpuRead)
         {
-            return CreateIndexBuffer(mode, (uint)data.Length, data);
+            return CreateIndexBuffer(flags, (uint)data.Length, data);
         }
 
-        public abstract IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, ushort[] initialData);
+        public abstract IIndexBuffer CreateIndexBuffer(BufferFlags flags, uint numIndices, ushort[] initialData);
 
-        public abstract IIndexBuffer CreateIndexBuffer(BufferMode mode, uint numIndices, uint[] initialData = null);
+        public abstract IIndexBuffer CreateIndexBuffer(BufferFlags flags, uint numIndices, uint[] initialData = null);
 
-        public IStructuredBuffer CreateStructuredBuffer<T>(T[] data, BufferMode mode = BufferMode.Immutable)
+        public IStructuredBuffer CreateStructuredBuffer<T>(T[] data, BufferFlags flags = BufferFlags.GpuRead)
             where T : unmanaged
         {
-            return CreateStructuredBuffer(mode, (uint)data.Length, false, true, data);
+            return CreateStructuredBuffer(flags, (uint)data.Length, false, true, data);
         }
 
-        public abstract IStructuredBuffer CreateStructuredBuffer<T>(BufferMode mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        public abstract IStructuredBuffer CreateStructuredBuffer<T>(BufferFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
             where T : unmanaged;
 
-        public abstract IStagingBuffer CreateStagingBuffer(StagingBufferFlags staging, uint byteCapacity);
+        public abstract IStagingBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity);
 
         /// <summary>
         /// Loads an embedded shader from the target assembly. If an assembly is not provided, the current renderer's assembly is used instead.

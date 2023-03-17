@@ -17,7 +17,7 @@ namespace Molten.Graphics
         /// <param name="unorderedAccess">If true, the buffer is given Read-Write access and a UAV is created for it. This is known as an RWStructuredBuffer in HLSL.</param>
         public TypedBuffer(
             DeviceDX11 device, 
-            BufferMode flags, 
+            BufferFlags flags, 
             TypedBufferFormat format,
             uint numElements,
             bool unorderedAccess = false, 
@@ -32,14 +32,14 @@ namespace Molten.Graphics
                       TypedBufferFormat.Int32 => sizeof(int),
                       TypedBufferFormat.Float => sizeof(float)
                   }, numElements, 
-                  ResourceMiscFlag.BufferStructured, StagingBufferFlags.None, initialData)
+                  ResourceMiscFlag.BufferStructured, initialData)
         {
             TypedFormat = format;
         }
 
         protected override void CreateResources()
         {
-            if (HasFlags(BindFlag.ShaderResource))
+            if (HasBindFlags(BindFlag.ShaderResource))
             {
                 SRV.Desc = new ShaderResourceViewDesc1()
                 {
@@ -57,7 +57,7 @@ namespace Molten.Graphics
             }
 
             // See UAV notes: https://docs.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-resources-intro#raw-views-of-buffers
-            if (HasFlags(BindFlag.UnorderedAccess))
+            if (HasBindFlags(BindFlag.UnorderedAccess))
             {
                 UAV.Desc = new UnorderedAccessViewDesc1()
                 {
