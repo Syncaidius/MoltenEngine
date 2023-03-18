@@ -158,7 +158,7 @@ namespace Molten.Graphics
         /// <summary>Copies all the data in the current <see cref="BufferDX11"/> to the destination <see cref="BufferDX11"/>.</summary>
         /// <param name="cmd">The <see cref="CommandQueueDX11"/> that will perform the copy.</param>
         /// <param name="destination">The <see cref="BufferDX11"/> to copy to.</param>
-        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, Action completionCallback = null)
+        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
         {
             if (ByteCapacity < Desc.ByteWidth)
                 throw new GraphicsBufferException(this, "The destination buffer is not large enough.");
@@ -170,13 +170,14 @@ namespace Molten.Graphics
             });
         }
 
-        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, Action completionCallback = null)
+        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, 
+            Action<GraphicsResource> completionCallback = null)
         {
-            QueueOperation(priority, new BufferCopyOperation()
+            QueueOperation(priority, new ResourceCopyTask()
             {
                 CompletionCallback = completionCallback,
-                DestBuffer = destination as BufferDX11,
-                DestByteOffset = destByteOffset,
+                DestResource = destination as BufferDX11,
+                DestStart = new Vector3UI(destByteOffset, 0, 0),
                 SrcRegion = sourceRegion.ToApi(),
             });
         }
@@ -408,6 +409,8 @@ namespace Molten.Graphics
         /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
         public BufferFlags Flags { get; }
 
+        internal override Usage UsageFlags => Desc.Usage;
+
         /// <summary>Gets the bind flags associated with the buffer.</summary>
         public BindFlag BufferBindFlags => (BindFlag)Desc.BindFlags;
 
@@ -417,16 +420,6 @@ namespace Molten.Graphics
         internal override unsafe ID3D11Resource* ResourcePtr => (ID3D11Resource*)_native;
 
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
-        public ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Desc.MiscFlags;
-
-        /// <summary>
-        /// Gets a value indicating whether the current buffer is a shader resource.
-        /// </summary>
-        public bool IsShaderResource =>((BindFlag)Desc.BindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource;
-
-        /// <summary>
-        /// Gets a value indicating whether the current buffer has unordered access.
-        /// </summary>
-        public bool IsUnorderedAccess => ((BindFlag)Desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
+        internal ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Desc.MiscFlags;
     }
 }

@@ -257,7 +257,6 @@ namespace Molten.Graphics
             uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0)
         {
             TextureSlice level = null;
-
             for(uint a = 0; a < arrayCount; a++)
             {
                 for(uint m = 0; m < mipCount; m++)
@@ -522,7 +521,10 @@ namespace Molten.Graphics
             Renderer.PushTask(applyTask);
         }
 
-        public void CopyTo(uint sourceLevel, uint sourceSlice, ITexture destination, uint destLevel, uint destSlice)
+        public void CopyTo(GraphicsPriority priority, 
+            uint sourceLevel, uint sourceSlice, 
+            ITexture destination, uint destLevel, uint destSlice, 
+            Action<GraphicsResource> completeCallback = null)
         {
             TextureBase destTexture = destination as TextureBase;
 
@@ -551,18 +553,15 @@ namespace Molten.Graphics
             if (destSlice >= destTexture.ArraySize)
                 throw new TextureCopyException(this, destTexture, "The destination array slice exceeds the total number of slices in the destination texture.");
 
-            QueueChange(new TextureCopyLevel()
+            QueueOperation(priority, new ResourceCopyTask()
             {
-                Destination = destination as TextureBase,
-                SourceLevel = sourceLevel,
-                SourceSlice = sourceSlice,
-                DestinationLevel = destLevel,
-                DestinationSlice = destSlice,
+                SrcRegion = null,
+                SrcSubResource = (sourceSlice * MipMapCount) + sourceLevel,
+                DestResource = destination as ResourceDX11,
+                DestStart = Vector3UI.Zero,
+                DestSubResource = (destSlice * destination.MipMapCount) + destLevel,
+                CompletionCallback = completeCallback,
             });
-
-            ApplyObjectTask applyTask = ApplyObjectTask.Get();
-            applyTask.Object = this;
-            Renderer.PushTask(applyTask);
         }
 
         /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the
@@ -579,6 +578,8 @@ namespace Molten.Graphics
             bool altered = false;
 
             CommandQueueDX11 cmdNative = cmd as CommandQueueDX11;
+
+            base.OnApply(cmd);
 
             // process all changes for the current pipe.
             while (_pendingChanges.Count > 0)

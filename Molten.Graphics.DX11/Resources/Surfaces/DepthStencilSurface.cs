@@ -37,8 +37,8 @@ namespace Molten.Graphics
             : base(renderer, width, height, Format.FormatR24G8Typeless, mipCount, arraySize, flags, aaLevel, msaa)
         {
             _depthFormat = format;
-            _description.ArraySize = arraySize;
-            _description.Format = GetFormat().ToApi();
+            _desc.ArraySize = arraySize;
+            _desc.Format = GetFormat().ToApi();
             _depthDesc = new DepthStencilViewDesc();
             _depthDesc.Format = GetDSVFormat().ToApi();
 
@@ -51,7 +51,7 @@ namespace Molten.Graphics
                 _depthDesc.Flags = 0U; // DsvFlag.None;
                 _depthDesc.Texture2DMSArray = new Tex2DmsArrayDsv()
                 {
-                    ArraySize = _description.ArraySize,
+                    ArraySize = _desc.ArraySize,
                     FirstArraySlice = 0,
                 };
             }
@@ -61,7 +61,7 @@ namespace Molten.Graphics
                 _depthDesc.Flags = 0U; //DsvFlag.None;
                 _depthDesc.Texture2DArray = new Tex2DArrayDsv()
                 {
-                    ArraySize = _description.ArraySize,
+                    ArraySize = _desc.ArraySize,
                     FirstArraySlice = 0,
                     MipSlice = 0,
                 };
@@ -89,7 +89,7 @@ namespace Molten.Graphics
 
         private void UpdateViewport()
         {
-            _vp = new Viewport(0, 0, (int)_description.Width, (int)_description.Height);
+            _vp = new Viewport(0, 0, (int)_desc.Width, (int)_desc.Height);
         }
 
         private GraphicsFormat GetFormat()
@@ -133,8 +133,8 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _depthView);
             SilkUtil.ReleasePtr(ref _readOnlyView);
 
-            _description.Width = Math.Max(1, _description.Width);
-            _description.Height = Math.Max(1, _description.Height);
+            _desc.Width = Math.Max(1, _desc.Width);
+            _desc.Height = Math.Max(1, _desc.Height);
 
             // Create render target texture
             NativeTexture = (ID3D11Texture2D1*)base.CreateResource(resize);

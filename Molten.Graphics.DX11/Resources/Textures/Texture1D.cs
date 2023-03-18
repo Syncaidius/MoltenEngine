@@ -7,7 +7,7 @@ namespace Molten.Graphics
     public unsafe class Texture1D : TextureBase, ITexture
     {
         internal ID3D11Texture1D* NativeTexture;
-        Texture1DDesc _description;
+        Texture1DDesc _desc;
 
         internal Texture1D(
             RenderService renderer, 
@@ -22,7 +22,7 @@ namespace Molten.Graphics
             if (IsBlockCompressed)
                 throw new NotSupportedException("1D textures do not supports block-compressed formats.");
 
-            _description = new Texture1DDesc()
+            _desc = new Texture1DDesc()
             {
                 Width = width,
                 MipLevels = mipCount,
@@ -41,8 +41,8 @@ namespace Molten.Graphics
             desc.ViewDimension = D3DSrvDimension.D3DSrvDimensionTexture1Darray;
             desc.Texture1DArray = new Tex1DArraySrv()
             {
-                ArraySize = _description.ArraySize,
-                MipLevels = _description.MipLevels,
+                ArraySize = _desc.ArraySize,
+                MipLevels = _desc.MipLevels,
                 MostDetailedMip = 0,
                 FirstArraySlice = 0,
             };
@@ -55,23 +55,25 @@ namespace Molten.Graphics
             desc.Buffer = new BufferUav()
             {
                 FirstElement = 0,
-                NumElements = _description.Width * _description.ArraySize,
+                NumElements = _desc.Width * _desc.ArraySize,
             };
         }
 
         protected override ID3D11Resource* CreateResource(bool resize)
         {
             SubresourceData* subData = null;
-            (Device as DeviceDX11).Ptr->CreateTexture1D(ref _description, subData, ref NativeTexture);
+            (Device as DeviceDX11).Ptr->CreateTexture1D(ref _desc, subData, ref NativeTexture);
             return (ID3D11Resource*)NativeTexture;
         }
 
         protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
-            _description.Width = newWidth;
-            _description.ArraySize = newArraySize;
-            _description.MipLevels = newMipMapCount;
-            _description.Format = newFormat;
+            _desc.Width = newWidth;
+            _desc.ArraySize = newArraySize;
+            _desc.MipLevels = newMipMapCount;
+            _desc.Format = newFormat;
         }
+
+        internal override Usage UsageFlags => _desc.Usage;
     }
 }

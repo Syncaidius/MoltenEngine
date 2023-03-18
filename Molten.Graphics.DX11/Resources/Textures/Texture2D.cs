@@ -7,7 +7,7 @@ namespace Molten.Graphics
     public unsafe class Texture2D : TextureBase, ITexture2D
     {
         internal ID3D11Texture2D1* NativeTexture;
-        protected Texture2DDesc1 _description;
+        protected Texture2DDesc1 _desc;
 
         /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
@@ -55,7 +55,7 @@ namespace Molten.Graphics
             string name = null)
             : base(renderer, width, height, 1, mipCount, arraySize, aaLevel, msaa, format, flags, name)
         {
-            _description = new Texture2DDesc1()
+            _desc = new Texture2DDesc1()
             {
                 Width = Math.Max(width, 1),
                 Height = Math.Max(height, 1),
@@ -93,18 +93,18 @@ namespace Molten.Graphics
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
             SubresourceData* subData = null;
-            (Device as DeviceDX11).Ptr->CreateTexture2D1(ref _description, subData, ref NativeTexture);
+            (Device as DeviceDX11).Ptr->CreateTexture2D1(ref _desc, subData, ref NativeTexture);
             return (ID3D11Resource*)NativeTexture;
         }
 
         protected override void SetSRVDescription(ref ShaderResourceViewDesc1 desc)
         {
-            if (_description.SampleDesc.Count > 1)
+            if (_desc.SampleDesc.Count > 1)
             {
                 desc.ViewDimension = D3DSrvDimension.D3D101SrvDimensionTexture2Dmsarray;
                 desc.Texture2DMSArray = new Tex2DmsArraySrv()
                 {
-                    ArraySize = _description.ArraySize,
+                    ArraySize = _desc.ArraySize,
                     FirstArraySlice = 0,
                 };
             }
@@ -113,8 +113,8 @@ namespace Molten.Graphics
                 desc.ViewDimension = D3DSrvDimension.D3DSrvDimensionTexture2Darray;
                 desc.Texture2DArray = new Tex2DArraySrv1()
                 {
-                    ArraySize = _description.ArraySize,
-                    MipLevels = _description.MipLevels,
+                    ArraySize = _desc.ArraySize,
+                    MipLevels = _desc.MipLevels,
                     MostDetailedMip = 0,
                     FirstArraySlice = 0,
                     PlaneSlice = 0,
@@ -129,7 +129,7 @@ namespace Molten.Graphics
             
             desc.Texture2DArray = new Tex2DArrayUav1()
             {
-                ArraySize = _description.ArraySize,
+                ArraySize = _desc.ArraySize,
                 FirstArraySlice = srvDesc.Texture2DArray.FirstArraySlice,
                 MipSlice = 0,
                 PlaneSlice = 0
@@ -138,18 +138,18 @@ namespace Molten.Graphics
             desc.Buffer = new BufferUav()
             {
                 FirstElement = 0,
-                NumElements = _description.Width * _description.Height * _description.ArraySize,
+                NumElements = _desc.Width * _desc.Height * _desc.ArraySize,
             };
         }
 
         protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, 
             uint newMipMapCount, uint newArraySize, Format newFormat)
         {
-            _description.ArraySize = newArraySize;
-            _description.Width = newWidth;
-            _description.Height = newHeight;
-            _description.MipLevels = newMipMapCount;
-            _description.Format = newFormat;
+            _desc.ArraySize = newArraySize;
+            _desc.Width = newWidth;
+            _desc.Height = newHeight;
+            _desc.MipLevels = newMipMapCount;
+            _desc.Format = newFormat;
         }
 
         public void Resize(uint newWidth, uint newHeight)
@@ -159,7 +159,7 @@ namespace Molten.Graphics
                 NewWidth = newWidth,
                 NewHeight = newHeight,
                 NewMipMapCount = MipMapCount,
-                NewArraySize = _description.ArraySize,
+                NewArraySize = _desc.ArraySize,
                 NewFormat = DxgiFormat,
             });
         }
@@ -174,9 +174,11 @@ namespace Molten.Graphics
                 NewWidth = newWidth,
                 NewHeight = newHeight,
                 NewMipMapCount = newMipMapCount == 0 ? MipMapCount : newMipMapCount,
-                NewArraySize = newArraySize == 0 ? _description.ArraySize : newArraySize,
+                NewArraySize = newArraySize == 0 ? _desc.ArraySize : newArraySize,
                 NewFormat = newFormat.ToApi(),
             });
         }
+
+        internal override Usage UsageFlags => _desc.Usage;
     }
 }

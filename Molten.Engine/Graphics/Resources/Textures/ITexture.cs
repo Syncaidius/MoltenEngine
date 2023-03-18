@@ -47,12 +47,17 @@
         /// <summary>
         /// Copies the current texture to the destination texture. Both texture levels must be of the same format and dimensions.
         /// </summary>
+        /// <param name="priority"></param>
         /// <param name="destination">The destination texture.</param>
         /// <param name="destLevel">The destination mip-map level.</param>
         /// <param name="destSlice">The destination array slice.</param>
         /// <param name="sourceLevel">The source mip-map level.</param>
         /// <param name="sourceSlice">The source array slice.</param>
-        void CopyTo(uint sourceLevel, uint sourceSlice, ITexture destination, uint destLevel, uint destSlice);
+        /// <param name="completeCallback"></param>
+        void CopyTo(GraphicsPriority priority,
+            uint sourceLevel, uint sourceSlice,
+            ITexture destination, uint destLevel, uint destSlice,
+            Action<GraphicsResource> completeCallback = null);
 
         /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>
         /// <param name="data"></param>

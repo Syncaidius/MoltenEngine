@@ -34,8 +34,13 @@ namespace Molten.Graphics
             if (_pendingChanges.Count > 0)
             {
                 IGraphicsResourceTask op = null;
+                bool invalidated = false;
                 while (_pendingChanges.TryDequeue(out op))
-                    op.Process(context, this);
+                    invalidated = op.Process(context, this);
+
+                // If the resource was invalided, let the pipeline know it needs to be reapplied by incrementing version.
+                if (invalidated)
+                    Version++;
             }
         }
 
@@ -44,9 +49,9 @@ namespace Molten.Graphics
             _pendingChanges.Clear();
         }
 
-        protected override void OnApply(GraphicsCommandQueue context)
+        protected override void OnApply(GraphicsCommandQueue cmd)
         {
-            ApplyChanges(context);
+            ApplyChanges(cmd);
         }
     }
 }

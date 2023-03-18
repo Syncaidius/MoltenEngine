@@ -15,9 +15,10 @@ namespace Molten.Graphics
         /// <summary>A callback to interact with the retrieved stream.</summary>
         internal Action<IGraphicsBuffer, RawStream> StreamCallback;
 
-        public void Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
             (resource as BufferDX11).GetStream(cmd as CommandQueueDX11, ByteOffset, Stride, NumElements, StreamCallback);
+            return false;
         }
     }
 }

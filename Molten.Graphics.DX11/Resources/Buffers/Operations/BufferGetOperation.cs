@@ -24,7 +24,7 @@ namespace Molten.Graphics
         /// <summary>The destination array to store the retrieved data.</summary>
         internal T[] DestArray;
 
-        public unsafe void Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public unsafe bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
             CommandQueueDX11 dx11Cmd = cmd as CommandQueueDX11;
             BufferDX11 srcBuffer = resource as BufferDX11;
@@ -38,6 +38,7 @@ namespace Molten.Graphics
             dx11Cmd.UnmapResource(srcBuffer.ResourcePtr, 0);
 
             CompletionCallback?.Invoke(DestArray);
+            return false;
         }
     }
 }

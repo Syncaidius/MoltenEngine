@@ -7,7 +7,7 @@ namespace Molten.Graphics
     public unsafe class Texture3D : TextureBase, ITexture3D
     {
         internal ID3D11Texture3D1* NativeTexture;
-        protected Texture3DDesc1 _description;
+        protected Texture3DDesc1 _desc;
 
         /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
@@ -36,7 +36,7 @@ namespace Molten.Graphics
             string name = null)
             : base(renderer, width, height, depth, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
         {
-            _description = new Texture3DDesc1()
+            _desc = new Texture3DDesc1()
             {
                 Width = Math.Max(width, 1),
                 Height = Math.Max(height, 1),
@@ -66,7 +66,7 @@ namespace Molten.Graphics
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
             SubresourceData* subData = null;
-            (Device as DeviceDX11).Ptr->CreateTexture3D1(ref _description, subData, ref NativeTexture);
+            (Device as DeviceDX11).Ptr->CreateTexture3D1(ref _desc, subData, ref NativeTexture);
             return (ID3D11Resource*)NativeTexture;
         }
 
@@ -75,7 +75,7 @@ namespace Molten.Graphics
                 desc.ViewDimension = D3DSrvDimension.D3D101SrvDimensionTexture3D;
                 desc.Texture3D = new Tex3DSrv()
                 {
-                    MipLevels = _description.MipLevels,
+                    MipLevels = _desc.MipLevels,
                     MostDetailedMip = 0,
                 };
         }
@@ -93,18 +93,18 @@ namespace Molten.Graphics
             desc.Buffer = new BufferUav()
             {
                 FirstElement = 0,
-                NumElements = _description.Width * _description.Height * _description.Depth,
+                NumElements = _desc.Width * _desc.Height * _desc.Depth,
             };
         }
 
         protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, 
             uint newMipMapCount, uint newArraySize, Format newFormat)
         {
-            _description.Width = newWidth;
-            _description.Height = newHeight; 
-            _description.Depth = newDepth;
-            _description.MipLevels = newMipMapCount;
-            _description.Format = newFormat;
+            _desc.Width = newWidth;
+            _desc.Height = newHeight; 
+            _desc.Depth = newDepth;
+            _desc.MipLevels = newMipMapCount;
+            _desc.Format = newFormat;
         }
 
         public void Resize(uint newWidth, uint newHeight, uint newDepth, 
@@ -121,5 +121,7 @@ namespace Molten.Graphics
                 NewFormat = newFormat == GraphicsFormat.Unknown ? DxgiFormat : newFormat.ToApi()
             });
         }
+
+        internal override Usage UsageFlags => _desc.Usage;
     }
 }

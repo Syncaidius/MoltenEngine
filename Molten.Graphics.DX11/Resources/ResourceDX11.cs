@@ -43,6 +43,8 @@ namespace Molten.Graphics
         /// Gets the native pointer of the current <see cref="GraphicsObject{T}"/>, as a <typeparamref name="T"/> pointer.
         /// </summary>
         internal abstract ID3D11Resource* ResourcePtr { get; }
+
+        internal abstract Usage UsageFlags { get; }
     }
 
     public unsafe abstract class ResourceDX11<T> : ResourceDX11

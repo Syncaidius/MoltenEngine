@@ -39,12 +39,12 @@ namespace Molten.Graphics
             ID3D11Resource* resource =  base.CreateResource(resize);
             SetRTVDescription(ref RTV.Desc);
 
-            if (_description.SampleDesc.Count > 1)
+            if (_desc.SampleDesc.Count > 1)
             {
                 RTV.Desc.ViewDimension = RtvDimension.Texture2Dmsarray;
                 RTV.Desc.Texture2DMSArray = new Tex2DmsArrayRtv
                 {
-                    ArraySize = _description.ArraySize,
+                    ArraySize = _desc.ArraySize,
                     FirstArraySlice = 0,
                 };
             }
@@ -53,7 +53,7 @@ namespace Molten.Graphics
                 RTV.Desc.ViewDimension = RtvDimension.Texture2Darray;
                 RTV.Desc.Texture2DArray = new Tex2DArrayRtv1()
                 {
-                    ArraySize = _description.ArraySize,
+                    ArraySize = _desc.ArraySize,
                     MipSlice = 0,
                     FirstArraySlice = 0,
                     PlaneSlice = 0,
@@ -68,9 +68,9 @@ namespace Molten.Graphics
 
         protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
-            _description.Width = newWidth;
-            _description.Height = newHeight;
-            _description.Format = newFormat;
+            _desc.Width = newWidth;
+            _desc.Height = newHeight;
+            _desc.Format = newFormat;
             //_description.MipLevels = newMipMapCount; // NOTE: Do we set this on render targets?
 
             Viewport = new ViewportF(_vp.X, _vp.Y, newWidth, newHeight);

@@ -6,9 +6,9 @@ namespace Molten.Graphics
     {
         internal BufferDX11 DestBuffer;
 
-        internal Action CompletionCallback;
+        internal Action<GraphicsResource> CompletionCallback;
 
-        public unsafe void Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public unsafe bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
             BufferDX11 srcBuffer = resource as BufferDX11;
 
@@ -17,7 +17,9 @@ namespace Molten.Graphics
                 srcBuffer.Apply(cmd);
 
             (cmd as CommandQueueDX11).Native->CopyResource(DestBuffer, srcBuffer);
-            CompletionCallback?.Invoke();
+            CompletionCallback?.Invoke(resource);
+
+            return false;
         }
     }
 }
