@@ -23,7 +23,7 @@ namespace Molten.Graphics
                 for (int j = 0; j < composition.UnorderedAccessIds.Count; j++)
                 {
                     uint slotID = composition.UnorderedAccessIds[j];
-                    UAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.Resource as GraphicsResourceDX11;
+                    UAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.Resource as ResourceDX11;
                 }
 
                 uavChanged = UAVs.BindAll();
@@ -61,6 +61,6 @@ namespace Molten.Graphics
             Cmd.Native->CSSetUnorderedAccessViews(startSlot, numUAVs, (ID3D11UnorderedAccessView**)ppUnorderedAccessViews, pUAVInitialCounts);
         }
 
-        internal GraphicsSlotGroup<GraphicsResourceDX11> UAVs { get; }
+        internal GraphicsSlotGroup<ResourceDX11> UAVs { get; }
     }
 }

@@ -151,7 +151,7 @@ namespace Molten.Graphics
 
         internal void SubmitContext(CommandQueueDX11 context)
         {
-            if (context.Type != GraphicsContextType.Deferred)
+            if (context.Type != CommandQueueType.Deferred)
                 throw new Exception("Cannot submit immediate graphics contexts, only deferred.");
 
             // TODO take the underlying DX context from the GraphicsContext and give it a new/recycled one to work with.

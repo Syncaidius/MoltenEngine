@@ -4,7 +4,7 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics
 {
     /// <summary>A helper class that safely wraps InputLayout.</summary>
-    internal unsafe class VertexInputLayout : GraphicsObject<ID3D11InputLayout>
+    internal unsafe class VertexInputLayout : GraphicsObject
     {
         ID3D11InputLayout* _native;
         ulong[] _expectedFormatIDs;
@@ -12,7 +12,8 @@ namespace Molten.Graphics
         internal VertexInputLayout(DeviceDX11 device, 
             GraphicsSlotGroup<IVertexBuffer> vbSlots, 
             ID3D10Blob* vertexBytecode,
-            ShaderIOStructure io) : base(device, GraphicsBindTypeFlags.Input)
+            ShaderIOStructure io) : 
+            base(device, GraphicsBindTypeFlags.Input)
         {
             IsValid = true;
             _expectedFormatIDs = new ulong[vbSlots.SlotCount];
@@ -137,6 +138,11 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _native);
         }
 
+        public static implicit operator ID3D11InputLayout*(VertexInputLayout resource)
+        {
+            return resource.NativePtr;
+        }
+
         /// <summary>Gets whether or not the input layout is valid.</summary>
         internal bool IsValid { get; }
 
@@ -148,6 +154,6 @@ namespace Molten.Graphics
         /// </summary>
         public bool IsNullBuffer { get; }
 
-        public override unsafe ID3D11InputLayout* NativePtr => _native;
+        internal ref ID3D11InputLayout* NativePtr => ref _native;
     }
 }

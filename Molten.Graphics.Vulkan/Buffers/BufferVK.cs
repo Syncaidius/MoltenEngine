@@ -8,7 +8,7 @@ using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class BufferVK : GraphicsObject<Buffer> //, IGraphicsBuffer
+    internal unsafe abstract class BufferVK : GraphicsObject //, IGraphicsBuffer
     {
         Buffer* _buffer;
         BufferCreateInfo _desc;
@@ -110,7 +110,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override unsafe Buffer* NativePtr => _buffer;
+        public unsafe Buffer* NativePtr => _buffer;
 
         /// <summary>Gets the stride (byte size) of each element within the current <see cref="BufferDX11"/>.</summary>
         public uint Stride { get; }

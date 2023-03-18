@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class ResourceGroupBinder : GraphicsGroupBinder<GraphicsResourceDX11>
+    internal unsafe class ResourceGroupBinder : GraphicsGroupBinder<ResourceDX11>
     {
         ShaderStageDX11 _stage;
 
@@ -11,7 +11,7 @@ namespace Molten.Graphics
             _stage = stage;
         }
 
-        public override void Bind(GraphicsSlotGroup<GraphicsResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<ResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             ID3D11ShaderResourceView1** res = stackalloc ID3D11ShaderResourceView1*[(int)numChanged];
 
@@ -24,14 +24,14 @@ namespace Molten.Graphics
             _stage.SetResources(startIndex, numChanged, res);
         }
 
-        public override void Bind(GraphicsSlot<GraphicsResourceDX11> slot, GraphicsResourceDX11 value)
+        public override void Bind(GraphicsSlot<ResourceDX11> slot, ResourceDX11 value)
         {
             ID3D11ShaderResourceView1** res = stackalloc ID3D11ShaderResourceView1*[1];
             res[0] = slot.BoundValue != null ? slot.BoundValue.SRV.Ptr : null;
             _stage.SetResources(slot.SlotIndex, 1, res);
         }
 
-        public override void Unbind(GraphicsSlotGroup<GraphicsResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<ResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             ID3D11ShaderResourceView1** res = stackalloc ID3D11ShaderResourceView1*[(int)numChanged];
 
@@ -41,7 +41,7 @@ namespace Molten.Graphics
             _stage.SetResources(startIndex, numChanged, res);
         }
 
-        public override void Unbind(GraphicsSlot<GraphicsResourceDX11> slot, GraphicsResourceDX11 value)
+        public override void Unbind(GraphicsSlot<ResourceDX11> slot, ResourceDX11 value)
         {
             ID3D11ShaderResourceView1** res = stackalloc ID3D11ShaderResourceView1*[1];
             res[0] = null;

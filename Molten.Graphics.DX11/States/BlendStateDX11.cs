@@ -4,7 +4,7 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics
 {
     /// <summary>Stores a blend state for use with a <see cref="CommandQueueDX11"/>.</summary>
-    public unsafe class BlendStateDX11 : GraphicsObject<ID3D11BlendState1>
+    public unsafe class BlendStateDX11 : GraphicsObject
     {
         internal StructKey<BlendDesc1> Desc { get; }
 
@@ -59,7 +59,7 @@ namespace Molten.Graphics
             return (ID3D11BlendState*)state._native;
         }
 
-        public override unsafe ID3D11BlendState1* NativePtr => _native;
+        internal unsafe ref ID3D11BlendState1* NativePtr => ref _native;
 
         internal Color4 BlendFactor { get; }
 

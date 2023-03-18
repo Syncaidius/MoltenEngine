@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     public delegate void TextureEvent(TextureBase texture);
 
-    public unsafe abstract partial class TextureBase : GraphicsResourceDX11, ITexture
+    public unsafe abstract partial class TextureBase : ResourceDX11, ITexture
     {
         ThreadedQueue<ITextureTask> _pendingChanges;
 
@@ -359,7 +359,7 @@ namespace Molten.Graphics
 
             if (staging != null)
             {
-                cmd.Native->CopyResource(staging.NativePtr, _native);
+                cmd.Native->CopyResource(staging.ResourcePtr, _native);
                 cmd.Profiler.Current.CopyResourceCount++;
                 resToMap = staging._native;
             }
@@ -632,7 +632,7 @@ namespace Molten.Graphics
 
         public bool IsValid { get; protected set; }
 
-        public override unsafe ID3D11Resource* NativePtr => _native;
+        internal override unsafe ID3D11Resource* ResourcePtr => _native;
 
         /// <summary>
         /// Gets the renderer that the texture is bound to.

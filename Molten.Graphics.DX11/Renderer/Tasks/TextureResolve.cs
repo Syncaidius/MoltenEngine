@@ -28,8 +28,8 @@
 
             RendererDX11 dx11Renderer = renderer as RendererDX11;
             Destination.Apply(dx11Renderer.NativeDevice.Cmd);
-            dx11Renderer.NativeDevice.Cmd.Native->ResolveSubresource(Destination.NativePtr, subDest,
-                Source.NativePtr, subSource, Source.DxgiFormat);
+            dx11Renderer.NativeDevice.Cmd.Native->ResolveSubresource(Destination.ResourcePtr, subDest,
+                Source.ResourcePtr, subSource, Source.DxgiFormat);
             Recycle(this);
         }
     }

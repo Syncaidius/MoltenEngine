@@ -26,7 +26,7 @@ namespace Molten.Graphics
                 cb = grp[sid++].BoundValue;
                 if (cb != null)
                 {
-                    cBuffers[i] = cb.ResourcePtr;
+                    cBuffers[i] = cb.NativePtr;
                     cFirstConstants[i] = 0; // TODO implement this using BufferSegment
                     cNumConstants[i] = (uint)cb.Variables.Length;
                 }

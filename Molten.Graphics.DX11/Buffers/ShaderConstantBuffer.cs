@@ -78,9 +78,9 @@ namespace Molten.Graphics
                 foreach(ShaderConstantVariable v in Variables)
                     v.Write(_constData + v.ByteOffset);
 
-                MappedSubresource data = dx11Cmd.MapResource(NativePtr, 0, Map.WriteDiscard, 0);
+                MappedSubresource data = dx11Cmd.MapResource(ResourcePtr, 0, Map.WriteDiscard, 0);
                 Buffer.MemoryCopy(_constData, data.PData, data.DepthPitch, Desc.ByteWidth);
-                dx11Cmd.UnmapResource(NativePtr, 0);
+                dx11Cmd.UnmapResource(ResourcePtr, 0);
             }
             else
             {

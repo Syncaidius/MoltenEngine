@@ -111,7 +111,7 @@ namespace Molten.Graphics
                 RawStream stream = null;
 
                 MappedSubresource destBox = cmd.MapResource(
-                    texture.NativePtr,
+                    texture.ResourcePtr,
                     subLevel,
                     Map.WriteDiscard,
                     0,
@@ -139,7 +139,7 @@ namespace Molten.Graphics
                     stream.WriteRange(ptrData, NumElements);
                 }
 
-                cmd.UnmapResource(texture.NativePtr, subLevel);
+                cmd.UnmapResource(texture.ResourcePtr, subLevel);
                 cmd.Profiler.Current.MapDiscardCount++;
             }
             else

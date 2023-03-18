@@ -3,7 +3,7 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    public unsafe abstract class GraphicsResourceDX11 : GraphicsObject<ID3D11Resource>
+    public unsafe abstract class ResourceDX11 : GraphicsObject
     {
         /// <summary>Gets or sets the <see cref="ID3D11UnorderedAccessView1"/> attached to the object.</summary>
         internal UAView UAV { get; }
@@ -11,7 +11,7 @@ namespace Molten.Graphics
         /// <summary>Gets the <see cref="ID3D11ShaderResourceView1"/> attached to the object.</summary>
         internal SRView SRV { get; }
 
-        internal GraphicsResourceDX11(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : 
+        internal ResourceDX11(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
             SRV = new SRView(device);
@@ -23,7 +23,7 @@ namespace Molten.Graphics
             if (!string.IsNullOrWhiteSpace(debugName))
             {
                 void* ptrName = (void*)SilkMarshal.StringToPtr(debugName, NativeStringEncoding.LPStr);
-                NativePtr->SetPrivateData(ref RendererDX11.WKPDID_D3DDebugObjectName, (uint)debugName.Length, ptrName);
+                ResourcePtr->SetPrivateData(ref RendererDX11.WKPDID_D3DDebugObjectName, (uint)debugName.Length, ptrName);
                 SilkMarshal.FreeString((nint)ptrName, NativeStringEncoding.LPStr);
             }
         }
@@ -33,24 +33,34 @@ namespace Molten.Graphics
             UAV.Release();
             SRV.Release();
         }
+
+        public static implicit operator ID3D11Resource*(ResourceDX11 resource)
+        {
+            return resource.ResourcePtr;
+        }
+
+        /// <summary>
+        /// Gets the native pointer of the current <see cref="GraphicsObject{T}"/>, as a <typeparamref name="T"/> pointer.
+        /// </summary>
+        internal abstract ID3D11Resource* ResourcePtr { get; }
     }
 
-    public unsafe abstract class GraphicsResourceDX11<T> : GraphicsResourceDX11
+    public unsafe abstract class ResourceDX11<T> : ResourceDX11
         where T : unmanaged
     {
-        internal GraphicsResourceDX11(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : 
+        internal ResourceDX11(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
+        }
+
+        public static implicit operator T*(ResourceDX11<T> resource)
+        {
+            return resource.NativePtr;
         }
 
         /// <summary>
         /// Gets the underlying resource pointer. This should be the same address as <see cref="ContextBindable{ID3D11Resource}.NativePtr"/>
         /// </summary>
-        internal abstract T* ResourcePtr { get; }
-
-        public static implicit operator T*(GraphicsResourceDX11<T> resource)
-        {
-            return resource.ResourcePtr;
-        }
+        internal abstract T* NativePtr { get; }
     }
 }

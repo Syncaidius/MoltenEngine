@@ -63,31 +63,4 @@ namespace Molten.Graphics
         /// </summary>
         public uint LastUsedFrameID { get; private set; }
     }
-
-    public unsafe abstract class GraphicsObject<T> : GraphicsObject
-    where T : unmanaged
-    {
-        protected GraphicsObject(GraphicsDevice device, GraphicsBindTypeFlags bindFlags) :
-            base(device, bindFlags)
-        { }
-
-        /// <summary>
-        /// Gets the native pointer of the current <see cref="GraphicsObject{T}"/>, as a <typeparamref name="T"/> pointer.
-        /// </summary>
-        public abstract T* NativePtr { get; }
-
-        /// <summary>
-        /// Gets the native pointer of the current <see cref="GraphicsObject{T}"/>,as a <see cref="void"/> pointer.
-        /// </summary>
-        public void* RawNative => NativePtr;
-
-        /// <summary>
-        /// Implict cast to from a <see cref="GraphicsObject{T}"/> to a pointer of type <typeparamref name="T"/>.
-        /// </summary>
-        /// <param name="obj">The object to be cast</param>
-        public static implicit operator T*(GraphicsObject<T> obj)
-        {
-            return obj.NativePtr;
-        }
-    }
 }

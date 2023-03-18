@@ -15,7 +15,7 @@
                 Destination.Depth != texture.Depth)
                 throw new TextureCopyException(texture, Destination, "The source and destination textures must have the same dimensions.");
 
-            cmd.Native->CopyResource(Destination.NativePtr, texture.NativePtr);
+            cmd.Native->CopyResource(Destination.ResourcePtr, texture.ResourcePtr);
             return Destination == texture;
         }
     }

@@ -3,7 +3,7 @@
 namespace Molten.Graphics
 {
     /// <summary>Stores a depth-stencil state for use with a <see cref="CommandQueueDX11"/>.</summary>
-    internal unsafe class DepthStateDX11 : GraphicsObject<ID3D11DepthStencilState>
+    internal unsafe class DepthStateDX11 : GraphicsObject
     {
         internal StructKey<DepthStencilDesc> Desc { get; }
 
@@ -49,7 +49,7 @@ namespace Molten.Graphics
             Desc.Dispose();
         }
 
-        public override unsafe ID3D11DepthStencilState* NativePtr => _native;
+        internal unsafe ref ID3D11DepthStencilState* NativePtr => ref _native;
 
         public uint StencilReference { get; set; }
     }

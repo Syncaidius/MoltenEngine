@@ -48,7 +48,7 @@ namespace Molten.Graphics
         GraphicsSlot<BlendStateDX11> _stateBlend;
         GraphicsSlot<RasterizerStateDX11> _stateRaster;
         GraphicsSlot<DepthStateDX11> _stateDepth;
-        GraphicsSlotGroup<GraphicsResourceDX11> _renderUAVs;
+        GraphicsSlotGroup<ResourceDX11> _renderUAVs;
 
         internal CommandQueueDX11(DeviceDX11 device, ID3D11DeviceContext4* context) :
             base(device)
@@ -57,9 +57,9 @@ namespace Molten.Graphics
             DXDevice = device;
 
             if (_context->GetType() == DeviceContextType.Immediate)
-                Type = GraphicsContextType.Immediate;
+                Type = CommandQueueType.Immediate;
             else
-                Type = GraphicsContextType.Deferred;
+                Type = CommandQueueType.Deferred;
 
             _nullViewport = new ViewportF[1];
 
@@ -211,7 +211,7 @@ namespace Molten.Graphics
                     for (int j = 0; j < composition.UnorderedAccessIds.Count; j++)
                     {
                         uint slotID = composition.UnorderedAccessIds[j];
-                        _renderUAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.Resource as GraphicsResourceDX11;
+                        _renderUAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.Resource as ResourceDX11;
                     }
                 }
             }
@@ -708,7 +708,7 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _debugAnnotation);
 
             // Dispose context.
-            if (Type != GraphicsContextType.Immediate)
+            if (Type != CommandQueueType.Immediate)
             {
                 SilkUtil.ReleasePtr(ref _context);
                 DXDevice.RemoveDeferredContext(this);
@@ -716,7 +716,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the current <see cref="CommandQueueDX11"/> type. This value will not change during the context's life.</summary>
-        public GraphicsContextType Type { get; private set; }
+        public CommandQueueType Type { get; private set; }
 
         internal DeviceDX11 DXDevice { get; private set; }
 

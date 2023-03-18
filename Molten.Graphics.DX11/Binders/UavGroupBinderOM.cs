@@ -5,11 +5,11 @@ namespace Molten.Graphics
     /// <summary>
     /// Binds UAVs to the output-merger (OM).
     /// </summary>
-    internal unsafe class UavGroupBinderOM : GraphicsGroupBinder<GraphicsResourceDX11>
+    internal unsafe class UavGroupBinderOM : GraphicsGroupBinder<ResourceDX11>
     {
         internal UavGroupBinderOM() { }
 
-        public override void Bind(GraphicsSlotGroup<GraphicsResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<ResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             // Set unordered access resources
             ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[(int)numChanged];
@@ -26,7 +26,7 @@ namespace Molten.Graphics
                 startIndex, numChanged, pUavs);
         }
 
-        public override void Bind(GraphicsSlot<GraphicsResourceDX11> slot, GraphicsResourceDX11 value)
+        public override void Bind(GraphicsSlot<ResourceDX11> slot, ResourceDX11 value)
         {
             ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[1];
             pUavs[0] = slot.BoundValue != null ? (ID3D11UnorderedAccessView*)slot.BoundValue.UAV.Ptr : null;
@@ -36,7 +36,7 @@ namespace Molten.Graphics
                 slot.SlotIndex, 1, pUavs);
         }
 
-        public override void Unbind(GraphicsSlotGroup<GraphicsResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<ResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             // Set unordered access resources
             ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[(int)numChanged];
@@ -52,7 +52,7 @@ namespace Molten.Graphics
                 startIndex, numChanged, pUavs);
         }
 
-        public override void Unbind(GraphicsSlot<GraphicsResourceDX11> slot, GraphicsResourceDX11 value)
+        public override void Unbind(GraphicsSlot<ResourceDX11> slot, ResourceDX11 value)
         {
             ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[1];
             pUavs[0] = null; 

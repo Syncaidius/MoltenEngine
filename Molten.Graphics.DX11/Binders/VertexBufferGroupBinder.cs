@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
                 if (buffer != null)
                 {
-                    pBuffers[p] = buffer.ResourcePtr;
+                    pBuffers[p] = buffer.NativePtr;
                     pStrides[p] = buffer.Stride;
                     pOffsets[p] = 0; // buffer.ByteOffset; - May need again for multi-part meshes with sub-meshes within the same buffer.
                 }

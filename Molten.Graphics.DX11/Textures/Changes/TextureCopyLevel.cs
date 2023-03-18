@@ -16,7 +16,7 @@
             uint srcSub = (SourceSlice * texture.MipMapCount) + SourceLevel;
             uint destSub = (DestinationSlice * Destination.MipMapCount) + DestinationLevel;
 
-            cmd.CopyResourceRegion(texture.NativePtr, srcSub, null, Destination.NativePtr, destSub, Vector3UI.Zero);
+            cmd.CopyResourceRegion(texture.ResourcePtr, srcSub, null, Destination.ResourcePtr, destSub, Vector3UI.Zero);
             return Destination == texture;
         }
     }

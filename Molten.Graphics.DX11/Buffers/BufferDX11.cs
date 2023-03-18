@@ -7,7 +7,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public abstract unsafe class BufferDX11 : GraphicsResourceDX11<ID3D11Buffer>, IGraphicsBuffer
+    public abstract unsafe class BufferDX11 : ResourceDX11<ID3D11Buffer>, IGraphicsBuffer
     {
         ID3D11Buffer* _native;
         uint _ringPos;
@@ -148,7 +148,7 @@ namespace Molten.Graphics
                     Format = Format.FormatUnknown,
                 };
 
-                SRV.Create(this);
+                SRV.Create(ResourcePtr);
             }
 
             if (HasBindFlags(BindFlag.UnorderedAccess))
@@ -164,7 +164,7 @@ namespace Molten.Graphics
                         Flags = 0, // TODO add support for append, raw and counter buffers. See: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_buffer_uav_flag
                     }
                 };
-                UAV.Create(this);
+                UAV.Create(ResourcePtr);
             }
         }
 
@@ -229,7 +229,7 @@ namespace Molten.Graphics
             {
                 if (Flags.HasFlags(BufferFlags.Discard))
                 {
-                    cmd.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
+                    cmd.MapResource(ResourcePtr, 0, Map.WriteDiscard, 0, out stream);
                     stream.Position = byteOffset;
                     cmd.Profiler.Current.MapDiscardCount++;
                 }
@@ -241,14 +241,14 @@ namespace Molten.Graphics
                     {
                         if (_ringPos > 0 && _ringPos + numBytes < Desc.ByteWidth)
                         {
-                            cmd.MapResource(NativePtr, 0, Map.WriteNoOverwrite, 0, out stream);
+                            cmd.MapResource(ResourcePtr, 0, Map.WriteNoOverwrite, 0, out stream);
                             cmd.Profiler.Current.MapNoOverwriteCount++;
                             stream.Position = _ringPos;
                             _ringPos += numBytes;
                         }
                         else
                         {
-                            cmd.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
+                            cmd.MapResource(ResourcePtr, 0, Map.WriteDiscard, 0, out stream);
                             cmd.Profiler.Current.MapDiscardCount++;
                             stream.Position = 0;
                             _ringPos = numBytes;
@@ -256,19 +256,19 @@ namespace Molten.Graphics
                     }
                     else
                     {
-                        cmd.MapResource(NativePtr, 0, Map.WriteDiscard, 0, out stream);
+                        cmd.MapResource(ResourcePtr, 0, Map.WriteDiscard, 0, out stream);
                         cmd.Profiler.Current.MapDiscardCount++;
                         stream.Position = byteOffset;
                     }
                 }
                 else
                 {
-                    cmd.MapResource(NativePtr, 0, Map.Write, 0, out stream);
+                    cmd.MapResource(ResourcePtr, 0, Map.Write, 0, out stream);
                     cmd.Profiler.Current.MapWriteCount++;
                 }
 
                 callback(this, stream);
-                cmd.UnmapResource(NativePtr, 0);
+                cmd.UnmapResource(ResourcePtr, 0);
             }
             else
             {
@@ -288,17 +288,17 @@ namespace Molten.Graphics
                 // Write updated data into buffer
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
                 {
-                    cmd.MapResource(staging.NativePtr, 0, Map.WriteDiscard, 0, out stream);
+                    cmd.MapResource(staging.ResourcePtr, 0, Map.WriteDiscard, 0, out stream);
                     cmd.Profiler.Current.MapDiscardCount++;
                 }
                 else
                 {
-                    cmd.MapResource(staging.NativePtr, 0, Map.Write, 0, out stream);
+                    cmd.MapResource(staging.ResourcePtr, 0, Map.Write, 0, out stream);
                     cmd.Profiler.Current.MapWriteCount++;
                 }
 
                 callback(staging, stream);
-                cmd.UnmapResource(staging.NativePtr, 0);
+                cmd.UnmapResource(staging.ResourcePtr, 0);
 
                 Box stagingRegion = new Box()
                 {
@@ -307,8 +307,8 @@ namespace Molten.Graphics
                     Back = 1,
                     Bottom = 1,
                 };
-                cmd.CopyResourceRegion(staging, 0, ref stagingRegion,
-                    this, 0, new Vector3UI(byteOffset, 0, 0));
+                cmd.CopyResourceRegion(staging.ResourcePtr, 0, ref stagingRegion,
+                    ResourcePtr, 0, new Vector3UI(byteOffset, 0, 0));
                 cmd.Profiler.Current.CopySubresourceCount++;
             }
         }
@@ -427,7 +427,7 @@ namespace Molten.Graphics
         {
             base.GraphicsRelease();
 
-            if (NativePtr != null)
+            if (ResourcePtr != null)
             {
                 SilkUtil.ReleasePtr(ref _native);
                 Device.DeallocateVRAM(Desc.ByteWidth);
@@ -452,9 +452,9 @@ namespace Molten.Graphics
         public BindFlag BufferBindFlags => (BindFlag)Desc.BindFlags;
 
         /// <summary>Gets the underlying DirectX 11 buffer. </summary>
-        internal override ID3D11Buffer* ResourcePtr => _native;
+        internal override ID3D11Buffer* NativePtr => _native;
 
-        public override unsafe ID3D11Resource* NativePtr => (ID3D11Resource*)_native;
+        internal override unsafe ID3D11Resource* ResourcePtr => (ID3D11Resource*)_native;
 
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
         public ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Desc.MiscFlags;
