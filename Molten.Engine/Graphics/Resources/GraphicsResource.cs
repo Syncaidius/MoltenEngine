@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Molten.Collections;
 
 namespace Molten.Graphics
@@ -11,12 +9,6 @@ namespace Molten.Graphics
     public abstract class GraphicsResource : GraphicsObject
     {
         ThreadedQueue<IGraphicsResourceTask> _applyTaskQueue;
-        static GraphicsPriority[] _priorities;
-
-        static GraphicsResource()
-        {
-            _priorities = Enum.GetValues<GraphicsPriority>().Where(p => p != GraphicsPriority.Immediate).ToArray(); 
-        }
 
         protected GraphicsResource(GraphicsDevice device, GraphicsBindTypeFlags bindFlags) : 
             base(device, bindFlags)

@@ -3,6 +3,10 @@ using System.Collections.Concurrent;
 
 namespace Molten.Collections
 {
+    /// <summary>
+    /// A thread-safe queue collection where items are added to the end and removed from the start. A first-in-first-out collection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public partial class ThreadedQueue<T> : IEnumerable<T>, ICollection, IEnumerable, IProducerConsumerCollection<T>
     {
         T[] _items;
@@ -14,6 +18,11 @@ namespace Molten.Collections
         object _locker;
         Interlocker _interlocker;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="ThreadedQueue{T}"/>, with the specified initial capacity. 
+        /// <para>The default initial capacity is 20.</para>
+        /// </summary>
+        /// <param name="initialCapacity">The initial capacity of the queue. The default is 20.</param>
         public ThreadedQueue(int initialCapacity = 20)
         {
             _items = new T[initialCapacity];
@@ -60,14 +69,20 @@ namespace Molten.Collections
             });
         }
 
-        public void CopyTo(Array array, int index)
+        /// <summary>
+        /// Copies the contents of the queue to the specified array, starting at the given array index.
+        /// </summary>
+        /// <param name="destination">The array to copy to.</param>
+        /// <param name="startIndex">The start index within the <paramref name="destination"/> array.</param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void CopyTo(Array destination, int startIndex)
         {
-            T[] destination = array as T[];
+            T[] dest = destination as T[];
 
-            if (destination == null)
+            if (dest == null)
                 throw new InvalidOperationException("The target array is not of the correct type");
 
-            _interlocker.Lock(() => CopyToArray(destination, index));
+            _interlocker.Lock(() => CopyToArray(dest, startIndex));
         }
 
         public void CopyTo(T[] array, int index)
@@ -122,6 +137,11 @@ namespace Molten.Collections
             _interlocker.Lock(() => InsertRange(range));
         }
 
+        /// <summary>
+        /// Tries to take the next item from the queue.
+        /// </summary>
+        /// <param name="item">The item output.</param>
+        /// <returns>True if the item was successfully de-queued. Returns false if the queue was empty.</returns>
         public bool TryDequeue(out T item)
         {
             bool result = false;
@@ -142,6 +162,11 @@ namespace Molten.Collections
             return result;
         }
 
+        /// <summary>
+        /// Checks if the queue contains the specified item.
+        /// </summary>
+        /// <param name="item">The item to be checked.</param>
+        /// <returns>True if the item exists in the queue.</returns>
         public bool Contains(T item)
         {
             bool result = false;
@@ -380,6 +405,9 @@ namespace Molten.Collections
 
         public override string ToString() => $"Count: {_count}";
 
+        /// <summary>
+        /// Gets the number of items in the current <see cref="ThreadedQueue{T}"/>.
+        /// </summary>
         public int Count => _count;
 
         object ICollection.SyncRoot => _locker;
