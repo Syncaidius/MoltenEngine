@@ -4,16 +4,16 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public unsafe class Texture2D : TextureBase, ITexture2D
+    public unsafe class Texture2DDX11 : TextureDX11, ITexture2D
     {
         internal ID3D11Texture2D1* NativeTexture;
         protected Texture2DDesc1 _desc;
 
-        /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
+        /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
-        /// <param name="descTexture">The <see cref="Texture2D"/> to use as a template configuration for a new <see cref="Texture2D"/> instance.</param>
+        /// <param name="descTexture">The <see cref="Texture2DDX11"/> to use as a template configuration for a new <see cref="Texture2DDX11"/> instance.</param>
         /// <param name="flags">A set of flags to override those of the provided template texture.</param>
-        internal Texture2D(Texture2D descTexture, TextureFlags flags)
+        internal Texture2DDX11(Texture2DDX11 descTexture, TextureFlags flags)
             : this(descTexture.Renderer, 
                   descTexture.Width,
                   descTexture.Height, 
@@ -26,10 +26,10 @@ namespace Molten.Graphics
                   descTexture.Name)
         { }
 
-        /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
+        /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
-        /// <param name="descTexture">The <see cref="Texture2D"/> to use as a template configuration for a new <see cref="Texture2D"/> instance.</param>
-        internal Texture2D(Texture2D descTexture)
+        /// <param name="descTexture">The <see cref="Texture2DDX11"/> to use as a template configuration for a new <see cref="Texture2DDX11"/> instance.</param>
+        internal Texture2DDX11(Texture2DDX11 descTexture)
             : this(descTexture.Renderer, 
                   descTexture.Width, 
                   descTexture.Height, 
@@ -42,7 +42,7 @@ namespace Molten.Graphics
                   descTexture.Name)
         { }
 
-        internal Texture2D(
+        internal Texture2DDX11(
             RenderService renderer,
             uint width,
             uint height,

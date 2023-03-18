@@ -8,6 +8,6 @@
         /// <param name="cmd">The command queue that is used for processing the task.</param>
         /// <param name="texture"></param>
         /// <returns></returns>
-        bool Process(CommandQueueDX11 cmd, TextureBase texture);
+        bool Process(CommandQueueDX11 cmd, TextureDX11 texture);
     }
 }

@@ -4,12 +4,12 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public unsafe class Texture1D : TextureBase, ITexture
+    public unsafe class Texture1DDX11 : TextureDX11, ITexture
     {
         internal ID3D11Texture1D* NativeTexture;
         Texture1DDesc _desc;
 
-        internal Texture1D(
+        internal Texture1DDX11(
             RenderService renderer, 
             uint width, 
             Format format = Format.FormatR8G8B8A8Unorm, 

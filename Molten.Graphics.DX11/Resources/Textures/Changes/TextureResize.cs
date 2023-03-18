@@ -16,7 +16,7 @@ namespace Molten.Graphics
 
         public Format NewFormat;
 
-        public bool Process(CommandQueueDX11 cmd, TextureBase texture)
+        public bool Process(CommandQueueDX11 cmd, TextureDX11 texture)
         {
             texture.SetSizeInternal(NewWidth, NewHeight, NewDepth, NewMipMapCount, NewArraySize, NewFormat);
             return true;

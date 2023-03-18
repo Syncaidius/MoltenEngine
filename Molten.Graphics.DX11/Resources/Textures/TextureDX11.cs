@@ -7,9 +7,9 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public delegate void TextureEvent(TextureBase texture);
+    public delegate void TextureEvent(TextureDX11 texture);
 
-    public unsafe abstract partial class TextureBase : ResourceDX11, ITexture
+    public unsafe abstract partial class TextureDX11 : ResourceDX11, ITexture
     {
         ThreadedQueue<ITextureTask> _pendingChanges;
 
@@ -29,7 +29,7 @@ namespace Molten.Graphics
 
         ID3D11Resource* _native;
 
-        internal TextureBase(RenderService renderer, uint width, uint height, uint depth, uint mipCount, 
+        internal TextureDX11(RenderService renderer, uint width, uint height, uint depth, uint mipCount, 
             uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, TextureFlags flags, string name) : base(renderer.Device as DeviceDX11,
                 ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
                 ((flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None))
@@ -322,7 +322,7 @@ namespace Molten.Graphics
         {
             _pendingChanges.Enqueue(new TextureGet()
             {
-                StagingTexture = stagingTexture as TextureBase,
+                StagingTexture = stagingTexture as TextureDX11,
                 Callback = callback,
             });
         }
@@ -331,14 +331,14 @@ namespace Molten.Graphics
         {
             _pendingChanges.Enqueue(new TextureGetSlice()
             {
-                StagingTexture = stagingTexture as TextureBase,
+                StagingTexture = stagingTexture as TextureDX11,
                 Callback = callback,
                 ArrayIndex = arrayIndex,
                 MipMapLevel = mipLevel,
             });
         }
 
-        internal TextureData GetAllData(CommandQueueDX11 cmd, TextureBase staging)
+        internal TextureData GetAllData(CommandQueueDX11 cmd, TextureDX11 staging)
         {
             if (staging == null && !HasFlags(TextureFlags.Staging))
                 throw new TextureCopyException(this, null, "A null staging texture was provided, but this is only valid if the current texture is a staging texture. A staging texture is required to retrieve data from non-staged textures.");
@@ -395,7 +395,7 @@ namespace Molten.Graphics
         /// <param name="level">The mip-map level.</param>
         /// <param name="arraySlice">The array slice.</param>
         /// <returns></returns>
-        internal unsafe TextureSlice GetSliceData(GraphicsCommandQueue cmd, TextureBase staging, uint level, uint arraySlice)
+        internal unsafe TextureSlice GetSliceData(GraphicsCommandQueue cmd, TextureDX11 staging, uint level, uint arraySlice)
         {
             uint subID = (arraySlice * MipMapCount) + level;
             uint subWidth = Width >> (int)level;
@@ -501,13 +501,13 @@ namespace Molten.Graphics
 
         public void CopyTo(GraphicsPriority priority, ITexture destination, Action<GraphicsResource> completeCallback = null)
         {
-            TextureBase destTexture = destination as TextureBase;
+            TextureDX11 destTexture = destination as TextureDX11;
 
             if (DataFormat != destination.DataFormat)
                 throw new TextureCopyException(this, destTexture, "The source and destination texture formats do not match.");
 
             if (destination.HasFlags(TextureFlags.Dynamic))
-                throw new TextureCopyException(this, destination as TextureBase, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");
+                throw new TextureCopyException(this, destination as TextureDX11, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");
 
             // Validate dimensions.
             if (destTexture.Width != Width ||
@@ -517,7 +517,7 @@ namespace Molten.Graphics
 
             QueueTask(priority, new ResourceCopyTask()
             {
-                Destination = destination as TextureBase,
+                Destination = destination as TextureDX11,
                 CompletionCallback = completeCallback,
             });
         }
@@ -527,7 +527,7 @@ namespace Molten.Graphics
             ITexture destination, uint destLevel, uint destSlice, 
             Action<GraphicsResource> completeCallback = null)
         {
-            TextureBase destTexture = destination as TextureBase;
+            TextureDX11 destTexture = destination as TextureDX11;
 
             if (destination.HasFlags(TextureFlags.Dynamic))
                 throw new TextureCopyException(this, destTexture, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");

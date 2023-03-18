@@ -3,13 +3,13 @@
     /// <summary>A render task which resolves a multisampled texture into a non-multisampled one.</summary>
     internal unsafe class TextureResolve : RenderTask<TextureResolve>
     {
-        public TextureBase Source;
+        public TextureDX11 Source;
 
         public uint SourceArraySlice;
 
         public uint SourceMipLevel;
 
-        public TextureBase Destination;
+        public TextureDX11 Destination;
 
         public uint DestArraySlice;
 

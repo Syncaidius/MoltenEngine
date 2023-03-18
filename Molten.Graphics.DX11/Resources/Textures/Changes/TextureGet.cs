@@ -2,11 +2,11 @@
 {
     internal struct TextureGet : ITextureTask
     {
-        public TextureBase StagingTexture;
+        public TextureDX11 StagingTexture;
 
         public Action<TextureData> Callback;
 
-        public bool Process(CommandQueueDX11 cmd, TextureBase texture)
+        public bool Process(CommandQueueDX11 cmd, TextureDX11 texture)
         {
             if (!StagingTexture.HasFlags(TextureFlags.Staging))
                 throw new TextureFlagException(StagingTexture.Flags, "Provided staging texture does not have the staging flag set.");

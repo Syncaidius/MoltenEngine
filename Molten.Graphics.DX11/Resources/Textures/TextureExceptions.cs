@@ -21,11 +21,11 @@
 
     public class TextureCopyException : Exception
     {
-        public TextureCopyException(TextureBase source, TextureBase destination)
+        public TextureCopyException(TextureDX11 source, TextureDX11 destination)
         : this(source, destination, "Invalid copy operation.")
         { }
 
-        public TextureCopyException(TextureBase source, TextureBase destination, string message)
+        public TextureCopyException(TextureDX11 source, TextureDX11 destination, string message)
             : base(message)
         {
             SourceTexture = source;
@@ -36,23 +36,23 @@
         /// <summary>
         /// The source texture.
         /// </summary>
-        public TextureBase SourceTexture { get; private set; }
+        public TextureDX11 SourceTexture { get; private set; }
 
         /// <summary>
         /// The destination texture.
         /// </summary>
-        public TextureBase DestTexture { get; private set; }
+        public TextureDX11 DestTexture { get; private set; }
     }
 
     public class TextureDescriptionException : Exception
     {
-        public TextureDescriptionException(TextureBase texture, string msg)
+        public TextureDescriptionException(TextureDX11 texture, string msg)
         : base(msg)
         {
             Texture = texture;
         }
 
-        public TextureBase Texture { get; private set; }
+        public TextureDX11 Texture { get; private set; }
 
     }
 }

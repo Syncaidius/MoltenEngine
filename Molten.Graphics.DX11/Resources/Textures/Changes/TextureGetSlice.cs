@@ -2,7 +2,7 @@
 {
     internal struct TextureGetSlice : ITextureTask
     {
-        public TextureBase StagingTexture;
+        public TextureDX11 StagingTexture;
 
         public Action<TextureSlice> Callback;
 
@@ -10,7 +10,7 @@
 
         public uint ArrayIndex;
 
-        public bool Process(CommandQueueDX11 pipe, TextureBase texture)
+        public bool Process(CommandQueueDX11 pipe, TextureDX11 texture)
         {
             if (!StagingTexture.HasFlags(TextureFlags.Staging) && !texture.HasFlags(TextureFlags.Staging))
                 throw new TextureFlagException(StagingTexture.Flags, "Provided staging texture does not have the staging flag set.");

@@ -224,19 +224,19 @@ namespace Molten.Graphics
 
         public override ITexture CreateTexture1D(Texture1DProperties properties)
         {
-            return new Texture1D(Renderer, properties.Width, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
+            return new Texture1DDX11(Renderer, properties.Width, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
         }
 
         public override ITexture CreateTexture1D(TextureData data)
         {
-            Texture1D tex = new Texture1D(Renderer, data.Width, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
+            Texture1DDX11 tex = new Texture1DDX11(Renderer, data.Width, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
             tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
 
         public override ITexture2D CreateTexture2D(Texture2DProperties properties)
         {
-            return new Texture2D(Renderer,
+            return new Texture2DDX11(Renderer,
                 properties.Width,
                 properties.Height,
                 properties.Format.ToApi(),
@@ -250,7 +250,7 @@ namespace Molten.Graphics
 
         public override ITexture2D CreateTexture2D(TextureData data)
         {
-            Texture2D tex = new Texture2D(Renderer,
+            Texture2DDX11 tex = new Texture2DDX11(Renderer,
                 data.Width,
                 data.Height,
                 data.Format.ToApi(),
@@ -265,7 +265,7 @@ namespace Molten.Graphics
 
         public override ITexture3D CreateTexture3D(Texture3DProperties properties)
         {
-            return new Texture3D(Renderer,
+            return new Texture3DDX11(Renderer,
                 properties.Width,
                 properties.Height,
                 properties.Depth,
@@ -326,8 +326,8 @@ namespace Molten.Graphics
                 for (uint j = 0; j < mipLevels; j++)
                 {
                     TextureResolve task = TextureResolve.Get();
-                    task.Source = source as TextureBase;
-                    task.Destination = destination as TextureBase;
+                    task.Source = source as TextureDX11;
+                    task.Destination = destination as TextureDX11;
                     task.SourceMipLevel = j;
                     task.SourceArraySlice = i;
                     task.DestMipLevel = j;
@@ -354,8 +354,8 @@ namespace Molten.Graphics
                 throw new Exception("The source and destination texture must be the same format.");
 
             TextureResolve task = TextureResolve.Get();
-            task.Source = source as TextureBase;
-            task.Destination = destination as TextureBase;
+            task.Source = source as TextureDX11;
+            task.Destination = destination as TextureDX11;
             Renderer.PushTask(RenderTaskPriority.StartOfFrame, task);
         }
 

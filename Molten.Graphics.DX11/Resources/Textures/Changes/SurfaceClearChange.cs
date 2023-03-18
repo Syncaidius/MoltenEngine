@@ -6,7 +6,7 @@
 
         public Color Color;
 
-        public bool Process(CommandQueueDX11 cmd, TextureBase texture)
+        public bool Process(CommandQueueDX11 cmd, TextureDX11 texture)
         {
             Surface.Clear(cmd, Color);
             return false;

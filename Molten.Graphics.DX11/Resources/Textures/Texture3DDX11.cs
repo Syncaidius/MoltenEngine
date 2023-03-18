@@ -4,28 +4,28 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public unsafe class Texture3D : TextureBase, ITexture3D
+    public unsafe class Texture3DDX11 : TextureDX11, ITexture3D
     {
         internal ID3D11Texture3D1* NativeTexture;
         protected Texture3DDesc1 _desc;
 
-        /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
+        /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="other"></param>
         /// <param name="flags">A set of flags to override those of the provided texture.</param>
-        internal Texture3D(Texture3D other, TextureFlags flags)
+        internal Texture3DDX11(Texture3DDX11 other, TextureFlags flags)
             : this(other.Renderer, other.Width, other.Height, other.Depth,
                   other.DxgiFormat, other.MipMapCount, flags)
         { }
 
-        /// <summary>Creates a new instance of <see cref="Texture2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
+        /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="other"></param>
-        internal Texture3D(Texture3D other)
+        internal Texture3DDX11(Texture3DDX11 other)
             : this(other.Renderer, other.Width, other.Height, other.Depth, other.DxgiFormat, other.MipMapCount, other.Flags)
         { }
 
-        internal Texture3D(
+        internal Texture3DDX11(
             RenderService renderer,
             uint width,
             uint height,

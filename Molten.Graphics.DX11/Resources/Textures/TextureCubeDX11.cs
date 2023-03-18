@@ -4,7 +4,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public unsafe class TextureCubeDX11 : TextureBase, ITextureCube
+    public unsafe class TextureCubeDX11 : TextureDX11, ITextureCube
     {
         internal ID3D11Texture2D1* NativeTexture;
         Texture2DDesc1 _desc;
