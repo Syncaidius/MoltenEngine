@@ -27,7 +27,7 @@ namespace Molten.Graphics
 
         internal StagingBuffer Staging;
 
-        public void Process(GraphicsCommandQueue cmd)
+        public void Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
             DestBuffer.GetStream(cmd as CommandQueueDX11, ByteOffset, Stride, ElementCount, WriteDataCallback, Staging);
             CompletionCallback?.Invoke();

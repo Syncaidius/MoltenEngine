@@ -10,16 +10,14 @@ namespace Molten.Graphics
 
         internal uint NumElements;
 
-        internal BufferDX11 SrcBuffer;
-
         internal IStagingBuffer Staging;
 
         /// <summary>A callback to interact with the retrieved stream.</summary>
         internal Action<IGraphicsBuffer, RawStream> StreamCallback;
 
-        public void Process(GraphicsCommandQueue cmd)
+        public void Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
-            SrcBuffer.GetStream(cmd as CommandQueueDX11, ByteOffset, Stride, NumElements, StreamCallback);
+            (resource as BufferDX11).GetStream(cmd as CommandQueueDX11, ByteOffset, Stride, NumElements, StreamCallback);
         }
     }
 }

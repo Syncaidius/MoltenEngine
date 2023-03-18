@@ -2,6 +2,6 @@
 {
     public interface IGraphicsResourceTask
     {
-        void Process(GraphicsCommandQueue cmd);
+        void Process(GraphicsCommandQueue cmd, GraphicsResource resource);
     }
 }

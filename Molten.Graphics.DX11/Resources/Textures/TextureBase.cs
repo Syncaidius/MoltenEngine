@@ -222,7 +222,6 @@ namespace Molten.Graphics
         {
             uint texturePitch = area.Width * bytesPerPixel;
             uint pixels = area.Width * area.Height;
-
             uint expectedBytes = pixels * bytesPerPixel;
             uint dataBytes = (uint)(numElements * sizeof(T));
 

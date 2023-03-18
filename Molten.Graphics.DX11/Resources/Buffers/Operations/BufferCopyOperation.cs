@@ -1,11 +1,9 @@
-﻿using Silk.NET.Direct3D.Compilers;
-using Silk.NET.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
     internal struct BufferCopyOperation : IGraphicsResourceTask
     {
-        internal BufferDX11 SrcBuffer;
 
         internal BufferDX11 DestBuffer;
 
@@ -16,23 +14,24 @@ namespace Molten.Graphics
 
         internal Action CompletionCallback;
 
-        public unsafe void Process(GraphicsCommandQueue cmd)
+        public unsafe void Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
-            ValidateCopyBufferUsage();
+            BufferDX11 srcBuffer = resource as BufferDX11;
+            ValidateCopyBufferUsage(srcBuffer);
 
             // If the current buffer is a staging buffer, initialize and apply all its pending changes.
-            if (SrcBuffer.Desc.Usage == Usage.Staging)
-                SrcBuffer.Apply(cmd);
+            if (srcBuffer.Desc.Usage == Usage.Staging)
+                srcBuffer.Apply(cmd);
 
-            (cmd as CommandQueueDX11).CopyResourceRegion(SrcBuffer, 0, ref SrcRegion, DestBuffer, 0, new Vector3UI(DestByteOffset, 0, 0));
+            (cmd as CommandQueueDX11).CopyResourceRegion(srcBuffer, 0, ref SrcRegion, DestBuffer, 0, new Vector3UI(DestByteOffset, 0, 0));
             cmd.Profiler.Current.CopySubresourceCount++;
             CompletionCallback?.Invoke();
         }
 
-        private void ValidateCopyBufferUsage()
+        private void ValidateCopyBufferUsage(BufferDX11 srcBuffer)
         {
-            if (SrcBuffer.Desc.Usage != Usage.Default &&
-                SrcBuffer.Desc.Usage != Usage.Immutable)
+            if (srcBuffer.Desc.Usage != Usage.Default &&
+                srcBuffer.Desc.Usage != Usage.Immutable)
                 throw new Exception("The current buffer must have a usage flag of Default or Immutable. Only these flags allow the GPU read access for copying/reading data from the buffer.");
 
             if (DestBuffer.Desc.Usage != Usage.Default)

@@ -1,5 +1,4 @@
-﻿using Molten.Graphics.Resources;
-using Silk.NET.Core.Native;
+﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics

@@ -6,11 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Molten.Collections;
 
-namespace Molten.Graphics.Resources
+namespace Molten.Graphics
 {
     public abstract class GraphicsResource : GraphicsObject
     {
-
         ThreadedQueue<IGraphicsResourceTask> _pendingChanges;
 
         protected GraphicsResource(GraphicsDevice device, GraphicsBindTypeFlags bindFlags) : 
@@ -23,21 +22,20 @@ namespace Molten.Graphics.Resources
         protected void QueueOperation(GraphicsPriority priority, IGraphicsResourceTask op)
         {
             if (priority == GraphicsPriority.Immediate)
-                op.Process(Device.Cmd);
+                op.Process(Device.Cmd, this);
             else
                 _pendingChanges.Enqueue(op);
         }
 
         /// <summary>Applies any pending changes onto the buffer.</summary>
         /// <param name="context">The graphics pipe to use when process changes.</param>
-        /// <param name="forceInitialize">If set to true, the buffer will be initialized if not done so already.</param>
         protected void ApplyChanges(GraphicsCommandQueue context)
         {
             if (_pendingChanges.Count > 0)
             {
                 IGraphicsResourceTask op = null;
                 while (_pendingChanges.TryDequeue(out op))
-                    op.Process(context);
+                    op.Process(context, this);
             }
         }
 

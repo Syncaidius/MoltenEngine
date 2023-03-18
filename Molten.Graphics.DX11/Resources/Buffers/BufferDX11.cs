@@ -165,7 +165,6 @@ namespace Molten.Graphics
 
             QueueOperation(priority, new BufferDirectCopyOperation()
             {
-                SrcBuffer = this,
                 DestBuffer = destination as BufferDX11,
                 CompletionCallback = completionCallback,
             });
@@ -176,7 +175,6 @@ namespace Molten.Graphics
             QueueOperation(priority, new BufferCopyOperation()
             {
                 CompletionCallback = completionCallback,
-                SrcBuffer = this,
                 DestBuffer = destination as BufferDX11,
                 DestByteOffset = destByteOffset,
                 SrcRegion = sourceRegion.ToApi(),
@@ -189,7 +187,6 @@ namespace Molten.Graphics
             {
                 ByteOffset = 0,
                 NumElements = ElementCount,
-                SrcBuffer = this,
                 Staging = staging,
                 StreamCallback = callback,
                 Stride = Stride
@@ -336,7 +333,7 @@ namespace Molten.Graphics
             {
                 op.Data = data;
                 op.DataStartIndex = startIndex;
-                op.Process(Device.Cmd);
+                op.Process(Device.Cmd, this);
             }
             else
             {
@@ -373,7 +370,6 @@ namespace Molten.Graphics
                 Count = count,
                 DataStride = (uint)sizeof(T),
                 CompletionCallback = completionCallback,
-                SrcBuffer = this,
             });
         }
 
