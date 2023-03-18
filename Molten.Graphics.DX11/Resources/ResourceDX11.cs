@@ -1,9 +1,10 @@
-﻿using Silk.NET.Core.Native;
+﻿using Molten.Graphics.Resources;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    public unsafe abstract class ResourceDX11 : GraphicsObject
+    public unsafe abstract class ResourceDX11 : GraphicsResource
     {
         /// <summary>Gets or sets the <see cref="ID3D11UnorderedAccessView1"/> attached to the object.</summary>
         internal UAView UAV { get; }

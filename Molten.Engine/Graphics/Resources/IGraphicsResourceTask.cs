@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public interface IBufferOperation
+    public interface IGraphicsResourceTask
     {
         void Process(GraphicsCommandQueue cmd);
     }

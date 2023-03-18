@@ -13,7 +13,6 @@ namespace Molten.Graphics
         uint _ringPos;
 
         internal BufferDesc Desc;
-        ThreadedQueue<IBufferOperation> _pendingChanges;
 
         internal BufferDX11(DeviceDX11 device,
             BufferFlags bufferFlags,
@@ -29,7 +28,6 @@ namespace Molten.Graphics
             Stride = stride;
             ByteCapacity = Stride * numElements;
             ElementCount = numElements;
-            _pendingChanges = new ThreadedQueue<IBufferOperation>();
 
             InitializeBuffer( bindFlags, optionFlags, initialData);
             device.ProcessDebugLayerMessages();
@@ -48,20 +46,9 @@ namespace Molten.Graphics
             Stride = 0;
             ByteCapacity = numBytes;
             ElementCount = 0;
-            _pendingChanges = new ThreadedQueue<IBufferOperation>();
 
             InitializeBuffer( bindFlags, optionFlags, initialData);
             device.ProcessDebugLayerMessages();
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void QueueOperation(GraphicsPriority priority, IBufferOperation op)
-        {
-            if (priority == GraphicsPriority.Immediate)
-                op.Process(Device.Cmd);
-            else
-                _pendingChanges.Enqueue(op);
         }
 
         /// <summary>
@@ -390,24 +377,6 @@ namespace Molten.Graphics
             });
         }
 
-        /// <summary>Applies any pending changes onto the buffer.</summary>
-        /// <param name="context">The graphics pipe to use when process changes.</param>
-        /// <param name="forceInitialize">If set to true, the buffer will be initialized if not done so already.</param>
-        protected void ApplyChanges(GraphicsCommandQueue context)
-        {
-            if (_pendingChanges.Count > 0)
-            {
-                IBufferOperation op = null;
-                while (_pendingChanges.TryDequeue(out op))
-                    op.Process(context);
-            }
-        }
-
-        internal void Clear()
-        {
-            _pendingChanges.Clear();
-        }
-
         internal bool HasBindFlags(BindFlag flag)
         {
             return ((BindFlag)Desc.BindFlags & flag) == flag;
@@ -416,11 +385,6 @@ namespace Molten.Graphics
         internal bool HasFlag(CpuAccessFlag flag)
         {
             return ((CpuAccessFlag)Desc.CPUAccessFlags & flag) == flag;
-        }
-
-        protected override void OnApply(GraphicsCommandQueue context)
-        {
-            ApplyChanges(context);
         }
 
         public override void GraphicsRelease()

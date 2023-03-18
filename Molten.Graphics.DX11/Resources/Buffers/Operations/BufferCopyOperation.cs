@@ -3,7 +3,7 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    internal struct BufferCopyOperation : IBufferOperation
+    internal struct BufferCopyOperation : IGraphicsResourceTask
     {
         internal BufferDX11 SrcBuffer;
 
