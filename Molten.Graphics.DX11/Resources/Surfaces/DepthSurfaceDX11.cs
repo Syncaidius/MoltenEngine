@@ -4,7 +4,7 @@ using Silk.NET.DXGI;
 namespace Molten.Graphics
 {
     /// <summary>A special kind of render surface for use as a depth-stencil buffer.</summary>
-    public unsafe class DepthStencilSurface : Texture2DDX11, IDepthStencilSurface
+    public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface
     {
         ID3D11DepthStencilView* _depthView;
         ID3D11DepthStencilView* _readOnlyView;
@@ -24,7 +24,7 @@ namespace Molten.Graphics
         /// <param name="aaLevel"></param>
         /// <param name="msaa"></param>
         /// <param name="flags">Texture flags</param>
-        internal DepthStencilSurface(RenderService renderer,
+        internal DepthSurfaceDX11(RenderService renderer,
             uint width, 
             uint height,
             DepthFormat format = DepthFormat.R24G8_Typeless,
@@ -201,7 +201,7 @@ namespace Molten.Graphics
         /// <summary>Gets the depth-specific format of the surface.</summary>
         public DepthFormat DepthFormat => _depthFormat;
 
-        /// <summary>Gets the viewport of the <see cref="DepthStencilSurface"/>.</summary>
+        /// <summary>Gets the viewport of the <see cref="DepthSurfaceDX11"/>.</summary>
         public Viewport Viewport => _vp;
     }
 }

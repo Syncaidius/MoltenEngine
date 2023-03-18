@@ -8,7 +8,7 @@ using Silk.NET.DXGI;
 namespace Molten.Graphics
 {
     /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
-    public unsafe abstract class SwapChainSurface : RenderSurface2D, ISwapChainSurface
+    public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapChainSurface
     {
         protected internal IDXGISwapChain4* NativeSwapChain;
 
@@ -18,7 +18,7 @@ namespace Molten.Graphics
         ThreadedQueue<Action> _dispatchQueue;
         uint _vsync;
 
-        internal SwapChainSurface(RenderService renderer, uint mipCount)
+        internal SwapChainSurfaceDX11(RenderService renderer, uint mipCount)
             : base(renderer, 1, 1, Format.FormatB8G8R8A8Unorm, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, TextureFlags.NoShaderResource)
         {
             _dispatchQueue = new ThreadedQueue<Action>();

@@ -270,7 +270,7 @@ namespace Molten.Graphics
                         if (Surfaces[i].BoundValue != null)
                         {
                             _numRTVs = (i + 1);
-                            RTVs[i] = (Surfaces[i].BoundValue as RenderSurface2D).RTV.Ptr;
+                            RTVs[i] = (Surfaces[i].BoundValue as RenderSurface2DDX11).RTV.Ptr;
                         }
                         else
                         {
@@ -283,7 +283,7 @@ namespace Molten.Graphics
                 {
                     if (DepthSurface.BoundValue != null && depthWriteMode != GraphicsDepthWritePermission.Disabled)
                     {
-                        DepthStencilSurface dss = DepthSurface.BoundValue as DepthStencilSurface;
+                        DepthSurfaceDX11 dss = DepthSurface.BoundValue as DepthSurfaceDX11;
                         if (depthWriteMode == GraphicsDepthWritePermission.ReadOnly)
                             DSV = dss.ReadOnlyView;
                         else
@@ -475,7 +475,7 @@ namespace Molten.Graphics
             if (surfaces != null)
             {
                 for (uint i = 0; i < count; i++)
-                    Surfaces[i].Value = surfaces[i] as RenderSurface2D;
+                    Surfaces[i].Value = surfaces[i] as RenderSurface2DDX11;
             }
             else
             {
@@ -489,7 +489,7 @@ namespace Molten.Graphics
 
         public override void SetRenderSurface(IRenderSurface2D surface, uint slot)
         {
-            Surfaces[slot].Value = surface as RenderSurface2D;
+            Surfaces[slot].Value = surface as RenderSurface2DDX11;
         }
 
         public override void GetRenderSurfaces(IRenderSurface2D[] destinationArray)

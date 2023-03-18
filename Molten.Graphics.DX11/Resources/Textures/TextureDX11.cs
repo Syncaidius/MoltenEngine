@@ -72,7 +72,7 @@ namespace Molten.Graphics
             // Validate RT mip-maps
             if (HasFlags(TextureFlags.AllowMipMapGeneration))
             {
-                if(HasFlags(TextureFlags.NoShaderResource) || !(this is RenderSurface2D))
+                if(HasFlags(TextureFlags.NoShaderResource) || !(this is RenderSurface2DDX11))
                     throw new TextureFlagException(Flags, "Mip-map generation is only available on render-surface shader resources.");
             }
 
@@ -95,10 +95,10 @@ namespace Molten.Graphics
             if (!HasFlags(TextureFlags.NoShaderResource))
                 result |= BindFlag.ShaderResource;
 
-            if (this is RenderSurface2D)
+            if (this is RenderSurface2DDX11)
                 result |= BindFlag.RenderTarget;
 
-            if (this is DepthStencilSurface)
+            if (this is DepthSurfaceDX11)
                 result |= BindFlag.DepthStencil;
 
             return result;

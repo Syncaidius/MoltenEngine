@@ -2,7 +2,7 @@
 {
     internal struct SurfaceClearChange : ITextureTask
     {
-        public RenderSurface2D Surface;
+        public RenderSurface2DDX11 Surface;
 
         public Color Color;
 

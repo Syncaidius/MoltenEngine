@@ -3,12 +3,12 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public unsafe class RenderSurface2D : Texture2DDX11, IRenderSurface2D
+    public unsafe class RenderSurface2DDX11 : Texture2DDX11, IRenderSurface2D
     {
         /// <summary>The viewport which represents the current render surface.</summary>
         ViewportF _vp;
 
-        internal RenderSurface2D(
+        internal RenderSurface2DDX11(
             RenderService renderer,
             uint width,
             uint height,

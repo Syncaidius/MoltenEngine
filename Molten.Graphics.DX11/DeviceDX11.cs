@@ -190,7 +190,7 @@ namespace Molten.Graphics
             string name = "surface")
         {
             MSAAQuality msaa = MSAAQuality.CenterPattern;
-            return new DepthStencilSurface(Renderer, width, height, format, mipCount, arraySize, aaLevel, msaa, flags, name);
+            return new DepthSurfaceDX11(Renderer, width, height, format, mipCount, arraySize, aaLevel, msaa, flags, name);
         }
 
         protected override HlslPass OnCreateShaderPass(HlslShader shader, string name = null)
@@ -219,7 +219,7 @@ namespace Molten.Graphics
             string name = null)
         {
             MSAAQuality msaa = MSAAQuality.CenterPattern;
-            return new RenderSurface2D(Renderer, width, height, (Format)format, mipCount, arraySize, aaLevel, msaa, flags, name);
+            return new RenderSurface2DDX11(Renderer, width, height, (Format)format, mipCount, arraySize, aaLevel, msaa, flags, name);
         }
 
         public override ITexture CreateTexture1D(Texture1DProperties properties)

@@ -5,7 +5,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public unsafe abstract class WinformsSurface<T> : SwapChainSurface
+    public unsafe abstract class WinformsSurface<T> : SwapChainSurfaceDX11
         where T : Control
     {
         T _control;

@@ -2,7 +2,7 @@
 {
     internal struct DepthClearChange : ITextureTask
     {
-        public DepthStencilSurface Surface;
+        public DepthSurfaceDX11 Surface;
 
         public DepthClearFlags Flags;
 
