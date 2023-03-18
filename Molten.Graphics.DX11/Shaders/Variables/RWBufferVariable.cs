@@ -9,7 +9,7 @@ namespace Molten.Graphics
         protected override IShaderResource OnSetUnorderedResource(object value)
         {
             BufferDX11 buffer = value as BufferDX11;
-            if (buffer != null && !buffer.HasBindFlags(BindFlag.UnorderedAccess) == false)
+            if (buffer != null && !buffer.HasBindFlags(BindFlag.UnorderedAccess))
                 throw new InvalidOperationException("A structured buffer with unordered access must be set to '" + nameof(RWBufferVariable) + "'");
 
             return buffer;
