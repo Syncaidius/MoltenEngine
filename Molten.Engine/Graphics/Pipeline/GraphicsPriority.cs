@@ -11,13 +11,18 @@
         Immediate = 0,
 
         /// <summary>
-        /// The task or command must be executed next time the object is applied on the GPU.
+        /// The task or command must be executed next time the object is applied to the pipeline.
         /// </summary>
         Apply = 1,
 
         /// <summary>
-        /// The task or command must be executed after the object has been used in a draw or dispatch call.
+        /// The task or command will be executed at the start of the next frame, before render.
         /// </summary>
-        PostDrawDispatch = 1,
+        StartOfFrame = 2,
+
+        /// <summary>
+        /// The task or command will be executed at the end of the current frame, after render.
+        /// </summary>
+        EndOfFrame = 3,
     }
 }

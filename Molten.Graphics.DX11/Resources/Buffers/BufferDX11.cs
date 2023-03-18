@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Molten.Collections;
-using Molten.IO;
+﻿using Molten.IO;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
@@ -11,7 +9,6 @@ namespace Molten.Graphics
     {
         ID3D11Buffer* _native;
         uint _ringPos;
-
         internal BufferDesc Desc;
 
         internal BufferDX11(DeviceDX11 device,
@@ -163,9 +160,9 @@ namespace Molten.Graphics
             if (ByteCapacity < Desc.ByteWidth)
                 throw new GraphicsBufferException(this, "The destination buffer is not large enough.");
 
-            QueueOperation(priority, new BufferDirectCopyOperation()
+            QueueTask(priority, new ResourceCopyTask()
             {
-                DestBuffer = destination as BufferDX11,
+                Destination = destination as BufferDX11,
                 CompletionCallback = completionCallback,
             });
         }
@@ -173,7 +170,7 @@ namespace Molten.Graphics
         public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, 
             Action<GraphicsResource> completionCallback = null)
         {
-            QueueOperation(priority, new ResourceCopyTask()
+            QueueTask(priority, new SubResourceCopyTask()
             {
                 CompletionCallback = completionCallback,
                 DestResource = destination as BufferDX11,
@@ -184,7 +181,7 @@ namespace Molten.Graphics
 
         public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, RawStream> callback, IStagingBuffer staging = null)
         {
-            QueueOperation(priority, new BufferGetStreamOperation()
+            QueueTask(priority, new BufferGetStreamOperation()
             {
                 ByteOffset = 0,
                 NumElements = ElementCount,
@@ -342,7 +339,7 @@ namespace Molten.Graphics
                 op.Data = new T[data.Length];
                 op.DataStartIndex = 0;
                 Array.Copy(data, (int)startIndex, op.Data, 0, elementCount);
-                QueueOperation(priority, op);
+                QueueTask(priority, op);
             }
         }
 
@@ -363,7 +360,7 @@ namespace Molten.Graphics
             if (destination.Length < count)
                 throw new ArgumentException("The provided destination array is not large enough.");
 
-            QueueOperation(priority, new BufferGetOperation<T>()
+            QueueTask(priority, new BufferGetOperation<T>()
             {
                 ByteOffset = byteOffset,
                 DestArray = destination,

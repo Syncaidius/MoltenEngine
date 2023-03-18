@@ -10,12 +10,11 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class RenderService : EngineService
     {
-        public static readonly Matrix4F DefaultView3D = Matrix4F.LookAtLH(new Vector3F(0, 0, -5), new Vector3F(0, 0, 0), Vector3F.UnitY);
-
         bool _disposeRequested;
         bool _shouldPresent;
         bool _surfaceResizeRequired;
         RenderChain _chain;
+        Dictionary<RenderTaskPriority, ThreadedQueue<RenderTask>> _tasks;
         AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
 
         internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
@@ -28,6 +27,11 @@ namespace Molten.Graphics
         /// </summary>
         public RenderService()
         {
+            _tasks = new Dictionary<RenderTaskPriority, ThreadedQueue<RenderTask>>();
+            RenderTaskPriority[] priorities = Enum.GetValues<RenderTaskPriority>();
+            foreach (RenderTaskPriority p in priorities)
+                _tasks[p] = new ThreadedQueue<RenderTask>();
+
             Surfaces = new SurfaceManager(this);
             Overlay = new OverlayProvider();
             Log.WriteLine("Acquiring render chain");
@@ -44,32 +48,21 @@ namespace Molten.Graphics
             _shouldPresent = false;
         }
 
+        private void ProcessTasks(RenderTaskPriority priority)
+        {
+            ThreadedQueue<RenderTask> queue = _tasks[priority];
+            Device.Cmd.BeginEvent($"Process '{priority}' tasks");
+            while (queue.TryDequeue(out RenderTask task))
+                task.Process(this);
+            Device.Cmd.EndEvent();
+        }
+
         /// <summary>
         /// Present's the renderer to it's bound output devices/surfaces.
         /// </summary>
         /// <param name="time"></param>
         protected override sealed void OnUpdate(Timing time)
         {
-            /* DESIGN NOTES:
-             *  - Store a hashset of materials used in each scene so that the renderer can set the "Common" buffer in one pass
-             *  
-             *  
-             * MULTI-THREADING
-             *  - Consider using 2+ worker threads to prepare a command list/deferred context from each scene, which can then
-             *    be dispatched to the immediate context when all scenes have been processed
-             *  - Avoid the above if any scenes interact with a render form surface at any point, since those can only be handled on the thread they're created on.
-             *  
-             *  - Consider using worker threads to:
-             *      -- Sort front-to-back for rendering opaque objects (front-to-back reduces overdraw)
-             *      -- Sort by buffer, material or textures (later in time)
-             *      -- Sort back-to-front for rendering transparent objects (back-to-front reduces issues in alpha-blending)
-             *  
-             * 
-             * 2D & UI Rendering:
-             *  - Provide a sprite-batch for rendering 2D and UI
-             *  - Prepare rendering of these on worker threads.
-             */
-
             /* TODO: 
             *  Procedure:
             *      1) Calculate:
@@ -111,12 +104,7 @@ namespace Molten.Graphics
                 _surfaceResizeRequired = true;
             }
 
-            // Perform all queued tasks before proceeding
-            RenderTask task = null;
-            Device.Cmd.BeginEvent("Process tasks");
-            while (Tasks.TryDequeue(out task))
-                task.Process(this);
-            Device.Cmd.EndEvent();
+            ProcessTasks(RenderTaskPriority.StartOfFrame);
 
             // Perform preliminary checks on active scene data.
             // Also ensure the backbuffer is always big enough for the largest scene render surface.
@@ -205,6 +193,8 @@ namespace Molten.Graphics
             });
 
             OnPostPresent(time);
+
+            ProcessTasks(RenderTaskPriority.EndOfFrame);
             Profiler.End(time);
         }
 
@@ -297,7 +287,7 @@ namespace Molten.Graphics
             SceneRenderData rd = new SceneRenderData();
             RenderAddScene task = RenderAddScene.Get();
             task.Data = rd;
-            PushTask(task);
+            PushTask(RenderTaskPriority.StartOfFrame, task);
             return rd;
         }
 
@@ -305,26 +295,34 @@ namespace Molten.Graphics
         {
             RenderRemoveScene task = RenderRemoveScene.Get();
             task.Data = data;
-            PushTask(task);
+            PushTask(RenderTaskPriority.StartOfFrame, task);
         }
 
-        public void PushTask(RenderTask task)
+        public void PushTask(RenderTaskPriority priority, RenderTask task)
         {
-            Tasks.Enqueue(task);
+            _tasks[priority].Enqueue(task);
         }
 
-        public void PushComputeTask(HlslShader shader, uint groupsX, uint groupsY, uint groupsZ, ComputeTaskCompletionCallback callback = null)
+        /// <summary>
+        /// Pushes a compute-based shader as a task.
+        /// </summary>
+        /// <param name="shader">The compute shader to be run inside the task.</param>
+        /// <param name="groupsX">The number of X compute thread groups.</param>
+        /// <param name="groupsY">The number of Y compute thread groups.</param>
+        /// <param name="groupsZ">The number of Z compute thread groups.</param>
+        /// <param name="callback">A callback to run once the task is completed.</param>
+        public void PushTask(RenderTaskPriority priority, HlslShader shader, uint groupsX, uint groupsY, uint groupsZ, ComputeTaskCompletionCallback callback = null)
         {
-            PushComputeTask(shader, new Vector3UI(groupsX, groupsY, groupsZ), callback);
+            PushComputeTask(priority, shader, new Vector3UI(groupsX, groupsY, groupsZ), callback);
         }
 
-        public void PushComputeTask(HlslShader shader, Vector3UI groups, ComputeTaskCompletionCallback callback = null)
+        public void PushComputeTask(RenderTaskPriority priority, HlslShader shader, Vector3UI groups, ComputeTaskCompletionCallback callback = null)
         {
             ComputeTask task = ComputeTask.Get();
             task.Shader = shader;
             task.Groups = groups;
-            task.CompletionCallback = callback; 
-            Tasks.Enqueue(task);
+            task.CompletionCallback = callback;
+            PushTask(priority, task);
         }
 
         /// <summary>
@@ -401,8 +399,6 @@ namespace Molten.Graphics
         /// Gets a list of all the scenes current attached to the renderer.
         /// </summary>
         protected internal List<SceneRenderData> Scenes { get; } = new List<SceneRenderData>();
-
-        private ThreadedQueue<RenderTask> Tasks { get; } = new ThreadedQueue<RenderTask>();
 
         /// <summary>
         /// Gets the width of the biggest render surface used so far.

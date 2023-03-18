@@ -332,7 +332,7 @@ namespace Molten.Graphics
                     task.SourceArraySlice = i;
                     task.DestMipLevel = j;
                     task.DestArraySlice = i;
-                    Renderer.PushTask(task);
+                    Renderer.PushTask(RenderTaskPriority.StartOfFrame, task);
                 }
             }
         }
@@ -356,7 +356,7 @@ namespace Molten.Graphics
             TextureResolve task = TextureResolve.Get();
             task.Source = source as TextureBase;
             task.Destination = destination as TextureBase;
-            Renderer.PushTask(task);
+            Renderer.PushTask(RenderTaskPriority.StartOfFrame, task);
         }
 
         protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)

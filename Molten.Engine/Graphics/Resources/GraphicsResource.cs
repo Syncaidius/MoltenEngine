@@ -10,32 +10,69 @@ namespace Molten.Graphics
 {
     public abstract class GraphicsResource : GraphicsObject
     {
-        ThreadedQueue<IGraphicsResourceTask> _pendingChanges;
+        ThreadedQueue<IGraphicsResourceTask> _applyTaskQueue;
+        static GraphicsPriority[] _priorities;
+
+        static GraphicsResource()
+        {
+            _priorities = Enum.GetValues<GraphicsPriority>().Where(p => p != GraphicsPriority.Immediate).ToArray(); 
+        }
 
         protected GraphicsResource(GraphicsDevice device, GraphicsBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
-            _pendingChanges = new ThreadedQueue<IGraphicsResourceTask>();
+            _applyTaskQueue = new ThreadedQueue<IGraphicsResourceTask>();
         }
 
+        /// <summary>
+        /// Queues a <see cref="IGraphicsResourceTask"/> on the current <see cref="GraphicsResource"/>.
+        /// </summary>
+        /// <param name="priority"></param>
+        /// <param name="op"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void QueueOperation(GraphicsPriority priority, IGraphicsResourceTask op)
+        protected void QueueTask(GraphicsPriority priority, IGraphicsResourceTask op)
         {
-            if (priority == GraphicsPriority.Immediate)
-                op.Process(Device.Cmd, this);
-            else
-                _pendingChanges.Enqueue(op);
+            switch (priority)
+            {
+                default:
+                case GraphicsPriority.Immediate:
+                    if (op.Process(Device.Cmd, this))
+                        Version++;
+                    break;
+
+                case GraphicsPriority.Apply:
+                    _applyTaskQueue.Enqueue(op);
+                    break;
+
+                case GraphicsPriority.StartOfFrame:
+                    {
+                        RunResourceTask task = RunResourceTask.Get();
+                        task.Task = op;
+                        task.Resource = this;
+                        Device.Renderer.PushTask(RenderTaskPriority.StartOfFrame, task);
+                    }
+                    break;
+
+                case GraphicsPriority.EndOfFrame:
+                    {
+                        RunResourceTask task = RunResourceTask.Get();
+                        task.Task = op;
+                        task.Resource = this;
+                        Device.Renderer.PushTask(RenderTaskPriority.EndOfFrame, task);
+                    }
+                    break;
+            }
         }
 
-        /// <summary>Applies any pending changes onto the buffer.</summary>
+        /// <summary>Applies any pending changes to the resource, from the specified priority queue.</summary>
         /// <param name="context">The graphics pipe to use when process changes.</param>
         protected void ApplyChanges(GraphicsCommandQueue context)
         {
-            if (_pendingChanges.Count > 0)
+            if (_applyTaskQueue.Count > 0)
             {
                 IGraphicsResourceTask op = null;
                 bool invalidated = false;
-                while (_pendingChanges.TryDequeue(out op))
+                while (_applyTaskQueue.TryDequeue(out op))
                     invalidated = op.Process(context, this);
 
                 // If the resource was invalided, let the pipeline know it needs to be reapplied by incrementing version.
@@ -44,14 +81,15 @@ namespace Molten.Graphics
             }
         }
 
-        internal void Clear()
-        {
-            _pendingChanges.Clear();
-        }
-
         protected override void OnApply(GraphicsCommandQueue cmd)
         {
             ApplyChanges(cmd);
+            _applyTaskQueue.Clear();
+        }
+
+        internal void Clear()
+        {
+            _applyTaskQueue.Clear();
         }
     }
 }

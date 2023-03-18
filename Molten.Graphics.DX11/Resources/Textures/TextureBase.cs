@@ -1,5 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Graphics.Textures;
+using Molten.UI;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
@@ -498,12 +499,15 @@ namespace Molten.Graphics
             });
         }
 
-        public void CopyTo(ITexture destination)
+        public void CopyTo(GraphicsPriority priority, ITexture destination, Action<GraphicsResource> completeCallback = null)
         {
             TextureBase destTexture = destination as TextureBase;
 
             if (DataFormat != destination.DataFormat)
                 throw new TextureCopyException(this, destTexture, "The source and destination texture formats do not match.");
+
+            if (destination.HasFlags(TextureFlags.Dynamic))
+                throw new TextureCopyException(this, destination as TextureBase, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");
 
             // Validate dimensions.
             if (destTexture.Width != Width ||
@@ -511,14 +515,11 @@ namespace Molten.Graphics
                 destTexture.Depth != Depth)
                 throw new TextureCopyException(this, destTexture, "The source and destination textures must have the same dimensions.");
 
-            QueueChange(new TextureCopyTo()
+            QueueTask(priority, new ResourceCopyTask()
             {
                 Destination = destination as TextureBase,
+                CompletionCallback = completeCallback,
             });
-
-            ApplyObjectTask applyTask = ApplyObjectTask.Get();
-            applyTask.Object = this;
-            Renderer.PushTask(applyTask);
         }
 
         public void CopyTo(GraphicsPriority priority, 
@@ -553,7 +554,7 @@ namespace Molten.Graphics
             if (destSlice >= destTexture.ArraySize)
                 throw new TextureCopyException(this, destTexture, "The destination array slice exceeds the total number of slices in the destination texture.");
 
-            QueueOperation(priority, new ResourceCopyTask()
+            QueueTask(priority, new SubResourceCopyTask()
             {
                 SrcRegion = null,
                 SrcSubResource = (sourceSlice * MipMapCount) + sourceLevel,
@@ -576,11 +577,11 @@ namespace Molten.Graphics
                 CreateTexture(false);
 
             bool altered = false;
-
             CommandQueueDX11 cmdNative = cmd as CommandQueueDX11;
 
             base.OnApply(cmd);
 
+            // TODO remove once texture tasks are upgraded to IGraphicsResourceTask
             // process all changes for the current pipe.
             while (_pendingChanges.Count > 0)
             {

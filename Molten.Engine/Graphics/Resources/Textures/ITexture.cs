@@ -7,7 +7,7 @@
     public delegate void TextureHandler(ITexture texture);
 
     /// <summary>Represents a 1D texture, while also acting as the base for all other texture implementations.</summary>
-    /// <seealso cref="System.IDisposable" />
+    /// <seealso cref="IDisposable" />
     public interface ITexture : IShaderResource
     {
         /// <summary>
@@ -41,19 +41,21 @@
         /// <summary>
         /// Copies the current texture to the destination texture. Both textures must be of the same format and dimensions.
         /// </summary>
+        /// <param name="priority">The priority of the copy operation.</param>
         /// <param name="destination">The destination texture.</param>
-        void CopyTo(ITexture destination);
+        /// <param name="completeCallback">A callback to run once the operation has completed.</param>
+        void CopyTo(GraphicsPriority priority, ITexture destination, Action<GraphicsResource> completeCallback = null);
 
         /// <summary>
         /// Copies the current texture to the destination texture. Both texture levels must be of the same format and dimensions.
         /// </summary>
-        /// <param name="priority"></param>
+        /// <param name="priority">The priority of the copy operation.</param>
         /// <param name="destination">The destination texture.</param>
         /// <param name="destLevel">The destination mip-map level.</param>
         /// <param name="destSlice">The destination array slice.</param>
         /// <param name="sourceLevel">The source mip-map level.</param>
         /// <param name="sourceSlice">The source array slice.</param>
-        /// <param name="completeCallback"></param>
+        /// <param name="completeCallback">A callback to run once the operation has completed.</param>
         void CopyTo(GraphicsPriority priority,
             uint sourceLevel, uint sourceSlice,
             ITexture destination, uint destLevel, uint destSlice,
@@ -71,15 +73,15 @@
 
         /// <summary>Copies the provided data into the texture.</summary>
         /// <param name="data">The data to copy to the texture.</param>
+        /// <param name="pitch"></param>
+        /// <param name="startIndex"></param>
         /// <param name="level">The mip-map level to copy the data to.</param>
         /// <param name="count">The number of elements to copy from the provided data array.</param>
-        /// <param name="mipIndex">The index at which to start copying from the provided data array.</param>
         /// <param name="arraySlice">The position in the texture array to start copying the texture data to. For a non-array texture, this should be 0.</param>
         void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0) where T : unmanaged;
 
         /// <summary>Copies the provided data into the texture.</summary>
         /// <param name="data">The slice data to copy to the texture.</param>
-        /// <param name="mipCount">The number of mip maps to copy from the source data.</param>
         /// <param name="mipLevel">The mip-map level at which to start copying to within the texture.</param>
         /// <param name="arraySlice">The position in the texture array to start copying the texture data to. For a non-array texture, this should be 0.</param>
         void SetData(TextureSlice data, uint mipLevel, uint arraySlice);
