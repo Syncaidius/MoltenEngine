@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
@@ -96,6 +97,29 @@ namespace Molten.Graphics
             }
 
             CmdList = new CommandQueueDX11(this, deviceContext);
+        }
+
+        /// <summary>Queries the underlying texture's interface.</summary>
+        /// <typeparam name="Q">The type of object to request in the query.</typeparam>
+        /// <returns></returns>
+        internal Q* QueryInterface<Q>(void* ptrObject) where Q : unmanaged
+        {
+            if (ptrObject != null)
+            {
+                IUnknown* ptr = (IUnknown*)ptrObject;
+                Type t = typeof(Q);
+                FieldInfo mInfo = t.GetField("Guid");
+
+                if (mInfo == null)
+                    throw new Exception("");
+
+                void* result = null;
+                Guid guid = (Guid)mInfo.GetValue(null);
+                ptr->QueryInterface(&guid, &result);
+                return (Q*)result;
+            }
+
+            return null;
         }
 
         /// <summary>Gets a new deferred <see cref="CommandQueueDX11"/>.</summary>

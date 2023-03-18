@@ -89,28 +89,5 @@ namespace Molten.Graphics
         {
             return obj.NativePtr;
         }
-
-        /// <summary>Queries the underlying texture's interface.</summary>
-        /// <typeparam name="Q">The type of object to request in the query.</typeparam>
-        /// <returns></returns>
-        public Q* QueryInterface<Q>() where Q : unmanaged
-        {
-            if (NativePtr != null)
-            {
-                IUnknown* ptr = (IUnknown*)RawNative;
-                Type t = typeof(Q);
-                FieldInfo mInfo = t.GetField("Guid");
-
-                if (mInfo == null)
-                    throw new Exception("");
-
-                void* result = null;
-                Guid guid = (Guid)mInfo.GetValue(null);
-                ptr->QueryInterface(&guid, &result);
-                return (Q*)result;
-            }
-
-            return null;
-        }
     }
 }
