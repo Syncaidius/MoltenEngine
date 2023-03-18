@@ -10,7 +10,7 @@
         /// <param name="depthValue">The value to clear the depth to. Only applies if <see cref="DepthClearFlags.Depth"/> flag was provided.</param>
         /// <param name="stencilValue">The value to clear the stencil to. Only applies if <see cref="DepthClearFlags.Stencil"/> flag was provided.</param>
         /// <param name="priority">The priority of the clear command.</param>
-        void Clear(DepthClearFlags flags, GraphicsPriority priority, float depthValue = 1.0f, byte stencilValue = 0);
+        void Clear(GraphicsPriority priority, DepthClearFlags flags, float depthValue = 1.0f, byte stencilValue = 0);
 
         /// <summary>Gets the depth-specific format of the surface.</summary>
         DepthFormat DepthFormat { get; }

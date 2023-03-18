@@ -160,28 +160,21 @@ namespace Molten.Graphics
             UpdateViewport();
         }
 
-        internal void Clear(CommandQueueDX11 cmd, DepthClearFlags clearFlags = DepthClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
+        internal void OnClear(CommandQueueDX11 cmd, ref DepthClearTask task)
         {
             if (_depthView == null)
                 CreateTexture(false);
 
-            cmd.Native->ClearDepthStencilView(_depthView, (uint)clearFlags, depth, stencil);
+            cmd.Native->ClearDepthStencilView(_depthView, (uint)task.Flags, task.DepthClearValue, task.StencilClearValue);
         }
 
-        public void Clear(DepthClearFlags flags, GraphicsPriority priority, float depth = 1.0f, byte stencil = 0)
+        public void Clear(GraphicsPriority priority, DepthClearFlags flags, float depth = 1.0f, byte stencil = 0)
         {
-            if (priority == GraphicsPriority.Immediate)
+            QueueTask(priority, new DepthClearTask()
             {
-                Clear((Device as DeviceDX11).Cmd, flags, depth, stencil);
-            }
-            else
-            {
-                QueueChange(new DepthClearChange()
-                {
-                    Flags = flags,
-                    Surface = this,
-                });
-            }
+                Flags = flags,
+                Surface = this,
+            });
         }
 
         public override void GraphicsRelease()
