@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    internal struct SurfaceClearChange : IGraphicsResourceTask
+    internal struct SurfaceClearTask : IGraphicsResourceTask
     {
         public RenderSurface2DDX11 Surface;
 

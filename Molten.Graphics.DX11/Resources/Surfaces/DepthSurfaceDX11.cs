@@ -176,6 +176,8 @@ namespace Molten.Graphics
             {
                 Flags = flags,
                 Surface = this,
+                DepthClearValue = depth,
+                StencilClearValue = stencil
             });
         }
 

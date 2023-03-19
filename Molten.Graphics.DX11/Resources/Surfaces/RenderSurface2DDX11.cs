@@ -89,7 +89,7 @@ namespace Molten.Graphics
 
         public void Clear(GraphicsPriority priority, Color color)
         {
-            QueueTask(priority, new SurfaceClearChange()
+            QueueTask(priority, new SurfaceClearTask()
             {
                 Color = color,
                 Surface = this,
