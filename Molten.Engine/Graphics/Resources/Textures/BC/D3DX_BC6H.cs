@@ -22,11 +22,11 @@ namespace Molten.Graphics.Textures
     {
         internal class Context : BCContext, IPoolable
         {
-            internal INTColor[] aPalette = new INTColor[BC67.BC6H_MAX_INDICES];
-            internal INTColor[] aPalette_mapColors = new INTColor[BC67.BC6H_MAX_INDICES];
-            internal INTColor[][] aPalette_indices;
+            internal IntColor[] aPalette = new IntColor[BC67.BC6H_MAX_INDICES];
+            internal IntColor[] aPalette_mapColors = new IntColor[BC67.BC6H_MAX_INDICES];
+            internal IntColor[][] aPalette_indices;
 
-            internal INTColor[] aPixels = new INTColor[BC.NUM_PIXELS_PER_BLOCK];
+            internal IntColor[] aPixels = new IntColor[BC.NUM_PIXELS_PER_BLOCK];
             internal float[] afRoughMSE = new float[BC67.BC6H_MAX_SHAPES];
             internal byte[] auShape = new byte[BC67.BC6H_MAX_SHAPES];
 
@@ -34,7 +34,7 @@ namespace Molten.Graphics.Textures
             internal uint[] auPixIdx = new uint[BC.NUM_PIXELS_PER_BLOCK];
 
             // EndPointsFit
-            internal INTColor[] aBits = new INTColor[4];
+            internal IntColor[] aBits = new IntColor[4];
 
             internal float[] aOrgErr = new float[BC67.BC6H_MAX_REGIONS];
             internal float[] aOptErr = new float[BC67.BC6H_MAX_REGIONS];
@@ -48,9 +48,9 @@ namespace Molten.Graphics.Textures
             internal Context()
             {
                 // build list of possibles
-                aPalette_indices = new INTColor[BC67.BC6H_MAX_REGIONS][];
+                aPalette_indices = new IntColor[BC67.BC6H_MAX_REGIONS][];
                 for (int i = 0; i < aPalette_indices.Length; i++)
-                    aPalette_indices[i] = new INTColor[BC67.BC6H_MAX_INDICES];
+                    aPalette_indices[i] = new IntColor[BC67.BC6H_MAX_INDICES];
             }
 
             public void ClearForPool()
@@ -69,7 +69,7 @@ namespace Molten.Graphics.Textures
             public byte uShape;
             public Color4[] aHDRPixels;
             public BC67.INTEndPntPair[][] aUnqEndPts;
-            public INTColor[] aIPixels;
+            public IntColor[] aIPixels;
 
             internal EncodeParams()
             {
@@ -77,7 +77,7 @@ namespace Molten.Graphics.Textures
                 for (int i = 0; i < aUnqEndPts.Length; i++)
                     aUnqEndPts[i] = new BC67.INTEndPntPair[BC67.BC6H_MAX_REGIONS];
 
-                aIPixels = new INTColor[BC.NUM_PIXELS_PER_BLOCK];
+                aIPixels = new IntColor[BC.NUM_PIXELS_PER_BLOCK];
                 fBestErr = float.MaxValue;
                 uMode = 0;
                 uShape = 0;
@@ -402,18 +402,18 @@ namespace Molten.Graphics.Textures
                         switch (desc[uCurBit].m_eField)
                         {
                             case EField.D: uShape |= (uint)(1 << desc[uCurBit].m_uBit); break;
-                            case EField.RW: aEndPts[0].A.r |= 1 << desc[uCurBit].m_uBit; break;
-                            case EField.RX: aEndPts[0].B.r |= 1 << desc[uCurBit].m_uBit; break;
-                            case EField.RY: aEndPts[1].A.r |= 1 << desc[uCurBit].m_uBit; break;
-                            case EField.RZ: aEndPts[1].B.r |= 1 << desc[uCurBit].m_uBit; break;
-                            case EField.GW: aEndPts[0].A.g |= 1 << desc[uCurBit].m_uBit; break;
-                            case EField.GX: aEndPts[0].B.g |= 1 << desc[uCurBit].m_uBit; break;
-                            case EField.GY: aEndPts[1].A.g |= 1 << desc[uCurBit].m_uBit; break;
-                            case EField.GZ: aEndPts[1].B.g |= 1 << desc[uCurBit].m_uBit; break;
-                            case EField.BW: aEndPts[0].A.b |= 1 << desc[uCurBit].m_uBit; break;
-                            case EField.BX: aEndPts[0].B.b |= 1 << desc[uCurBit].m_uBit; break;
-                            case EField.BY: aEndPts[1].A.b |= 1 << desc[uCurBit].m_uBit; break;
-                            case EField.BZ: aEndPts[1].B.b |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.RW: aEndPts[0].A.R |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.RX: aEndPts[0].B.R |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.RY: aEndPts[1].A.R |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.RZ: aEndPts[1].B.R |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.GW: aEndPts[0].A.G |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.GX: aEndPts[0].B.G |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.GY: aEndPts[1].A.G |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.GZ: aEndPts[1].B.G |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.BW: aEndPts[0].A.B |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.BX: aEndPts[0].B.B |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.BY: aEndPts[1].A.B |= 1 << desc[uCurBit].m_uBit; break;
+                            case EField.BZ: aEndPts[1].B.B |= 1 << desc[uCurBit].m_uBit; break;
                             default:
                                 {
                                     log.Error("BC6H: Invalid header bits encountered during decoding\n");
@@ -470,18 +470,18 @@ namespace Molten.Graphics.Textures
                     Debug.Assert(uRegion < BC67.BC6H_MAX_REGIONS);
 
                     // Unquantize endpoints and interpolate
-                    int r1 = Unquantize(aEndPts[uRegion].A.r, info.RGBAPrec[0][0].R, bSigned);
-                    int g1 = Unquantize(aEndPts[uRegion].A.g, info.RGBAPrec[0][0].G, bSigned);
-                    int b1 = Unquantize(aEndPts[uRegion].A.b, info.RGBAPrec[0][0].B, bSigned);
-                    int r2 = Unquantize(aEndPts[uRegion].B.r, info.RGBAPrec[0][0].R, bSigned);
-                    int g2 = Unquantize(aEndPts[uRegion].B.g, info.RGBAPrec[0][0].G, bSigned);
-                    int b2 = Unquantize(aEndPts[uRegion].B.b, info.RGBAPrec[0][0].B, bSigned);
+                    int r1 = Unquantize(aEndPts[uRegion].A.R, info.RGBAPrec[0][0].R, bSigned);
+                    int g1 = Unquantize(aEndPts[uRegion].A.G, info.RGBAPrec[0][0].G, bSigned);
+                    int b1 = Unquantize(aEndPts[uRegion].A.B, info.RGBAPrec[0][0].B, bSigned);
+                    int r2 = Unquantize(aEndPts[uRegion].B.R, info.RGBAPrec[0][0].R, bSigned);
+                    int g2 = Unquantize(aEndPts[uRegion].B.G, info.RGBAPrec[0][0].G, bSigned);
+                    int b2 = Unquantize(aEndPts[uRegion].B.B, info.RGBAPrec[0][0].B, bSigned);
                     int[] aWeights = info.uPartitions > 0 ? BC67.g_aWeights3 : BC67.g_aWeights4;
-                    INTColor fc = new INTColor()
+                    IntColor fc = new IntColor()
                     {
-                        r = FinishUnquantize((r1 * (BC67.BC67_WEIGHT_MAX - aWeights[uIndex]) + r2 * aWeights[uIndex] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT, bSigned),
-                        g = FinishUnquantize((g1 * (BC67.BC67_WEIGHT_MAX - aWeights[uIndex]) + g2 * aWeights[uIndex] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT, bSigned),
-                        b = FinishUnquantize((b1 * (BC67.BC67_WEIGHT_MAX - aWeights[uIndex]) + b2 * aWeights[uIndex] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT, bSigned),
+                        R = FinishUnquantize((r1 * (BC67.BC67_WEIGHT_MAX - aWeights[uIndex]) + r2 * aWeights[uIndex] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT, bSigned),
+                        G = FinishUnquantize((g1 * (BC67.BC67_WEIGHT_MAX - aWeights[uIndex]) + g2 * aWeights[uIndex] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT, bSigned),
+                        B = FinishUnquantize((b1 * (BC67.BC67_WEIGHT_MAX - aWeights[uIndex]) + b2 * aWeights[uIndex] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT, bSigned),
                     };
 
 
@@ -635,43 +635,43 @@ namespace Molten.Graphics.Textures
         {
             bool bTransformed = ms_aInfo[pEP.uMode].bTransformed;
             bool bIsSigned = pEP.bSigned;
-            INTColor[] aBits = context.aBits;
+            IntColor[] aBits = context.aBits;
 
             Color Prec0 = ms_aInfo[pEP.uMode].RGBAPrec[0][0];
             Color Prec1 = ms_aInfo[pEP.uMode].RGBAPrec[0][1];
             Color Prec2 = ms_aInfo[pEP.uMode].RGBAPrec[1][0];
             Color Prec3 = ms_aInfo[pEP.uMode].RGBAPrec[1][1];
 
-            aBits[0].r = BC67.NBits(aEndPts[0].A.r, bIsSigned);
-            aBits[0].g = BC67.NBits(aEndPts[0].A.g, bIsSigned);
-            aBits[0].b = BC67.NBits(aEndPts[0].A.b, bIsSigned);
-            aBits[1].r = BC67.NBits(aEndPts[0].B.r, bTransformed || bIsSigned);
-            aBits[1].g = BC67.NBits(aEndPts[0].B.g, bTransformed || bIsSigned);
-            aBits[1].b = BC67.NBits(aEndPts[0].B.b, bTransformed || bIsSigned);
-            if (aBits[0].r > Prec0.R || aBits[1].r > Prec1.R ||
-                aBits[0].g > Prec0.G || aBits[1].g > Prec1.G ||
-                aBits[0].b > Prec0.B || aBits[1].b > Prec1.B)
+            aBits[0].R = BC67.NBits(aEndPts[0].A.R, bIsSigned);
+            aBits[0].G = BC67.NBits(aEndPts[0].A.G, bIsSigned);
+            aBits[0].B = BC67.NBits(aEndPts[0].A.B, bIsSigned);
+            aBits[1].R = BC67.NBits(aEndPts[0].B.R, bTransformed || bIsSigned);
+            aBits[1].G = BC67.NBits(aEndPts[0].B.G, bTransformed || bIsSigned);
+            aBits[1].B = BC67.NBits(aEndPts[0].B.B, bTransformed || bIsSigned);
+            if (aBits[0].R > Prec0.R || aBits[1].R > Prec1.R ||
+                aBits[0].G > Prec0.G || aBits[1].G > Prec1.G ||
+                aBits[0].B > Prec0.B || aBits[1].B > Prec1.B)
                 return false;
 
             if (ms_aInfo[pEP.uMode].uPartitions > 0)
             {
-                aBits[2].r = BC67.NBits(aEndPts[1].A.r, bTransformed || bIsSigned);
-                aBits[2].g = BC67.NBits(aEndPts[1].A.g, bTransformed || bIsSigned);
-                aBits[2].b = BC67.NBits(aEndPts[1].A.b, bTransformed || bIsSigned);
-                aBits[3].r = BC67.NBits(aEndPts[1].B.r, bTransformed || bIsSigned);
-                aBits[3].g = BC67.NBits(aEndPts[1].B.g, bTransformed || bIsSigned);
-                aBits[3].b = BC67.NBits(aEndPts[1].B.b, bTransformed || bIsSigned);
+                aBits[2].R = BC67.NBits(aEndPts[1].A.R, bTransformed || bIsSigned);
+                aBits[2].G = BC67.NBits(aEndPts[1].A.G, bTransformed || bIsSigned);
+                aBits[2].B = BC67.NBits(aEndPts[1].A.B, bTransformed || bIsSigned);
+                aBits[3].R = BC67.NBits(aEndPts[1].B.R, bTransformed || bIsSigned);
+                aBits[3].G = BC67.NBits(aEndPts[1].B.G, bTransformed || bIsSigned);
+                aBits[3].B = BC67.NBits(aEndPts[1].B.B, bTransformed || bIsSigned);
 
-                if (aBits[2].r > Prec2.R || aBits[3].r > Prec3.R ||
-                    aBits[2].g > Prec2.G || aBits[3].g > Prec3.G ||
-                    aBits[2].b > Prec2.B || aBits[3].b > Prec3.B)
+                if (aBits[2].R > Prec2.R || aBits[3].R > Prec3.R ||
+                    aBits[2].G > Prec2.G || aBits[3].G > Prec3.G ||
+                    aBits[2].B > Prec2.B || aBits[3].B > Prec3.B)
                     return false;
             }
 
             return true;
         }
 
-        void GeneratePaletteQuantized(EncodeParams pEP, BC67.INTEndPntPair endPts, INTColor[] aPalette)
+        void GeneratePaletteQuantized(EncodeParams pEP, BC67.INTEndPntPair endPts, IntColor[] aPalette)
         {
             int uIndexPrec = ms_aInfo[pEP.uMode].uIndexPrec;
             int uNumIndices = 1 << uIndexPrec;
@@ -680,12 +680,12 @@ namespace Molten.Graphics.Textures
 
             // scale endpoints
             BC67.INTEndPntPair unqEndPts = new BC67.INTEndPntPair();
-            unqEndPts.A.r = Unquantize(endPts.A.r, Prec.R, pEP.bSigned);
-            unqEndPts.A.g = Unquantize(endPts.A.g, Prec.G, pEP.bSigned);
-            unqEndPts.A.b = Unquantize(endPts.A.b, Prec.B, pEP.bSigned);
-            unqEndPts.B.r = Unquantize(endPts.B.r, Prec.R, pEP.bSigned);
-            unqEndPts.B.g = Unquantize(endPts.B.g, Prec.G, pEP.bSigned);
-            unqEndPts.B.b = Unquantize(endPts.B.b, Prec.B, pEP.bSigned);
+            unqEndPts.A.R = Unquantize(endPts.A.R, Prec.R, pEP.bSigned);
+            unqEndPts.A.G = Unquantize(endPts.A.G, Prec.G, pEP.bSigned);
+            unqEndPts.A.B = Unquantize(endPts.A.B, Prec.B, pEP.bSigned);
+            unqEndPts.B.R = Unquantize(endPts.B.R, Prec.R, pEP.bSigned);
+            unqEndPts.B.G = Unquantize(endPts.B.G, Prec.G, pEP.bSigned);
+            unqEndPts.B.B = Unquantize(endPts.B.B, Prec.B, pEP.bSigned);
 
             // interpolate
             int[] aWeights = null;
@@ -696,7 +696,7 @@ namespace Molten.Graphics.Textures
                 default:
                     Debug.Assert(false);
                     for (uint i = 0; i < uNumIndices; ++i)
-                        aPalette[i] = new INTColor(0, 0, 0);
+                        aPalette[i] = new IntColor(0, 0, 0);
                     return;
             }
 
@@ -704,22 +704,22 @@ namespace Molten.Graphics.Textures
             for (uint i = 0; i < uNumIndices; ++i)
             {
                 weight = aWeights[i];
-                aPalette[i] = new INTColor()
+                aPalette[i] = new IntColor()
                 {
-                    r = FinishUnquantize(
-                    (unqEndPts.A.r * (BC67.BC67_WEIGHT_MAX - weight) + unqEndPts.B.r * weight + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
+                    R = FinishUnquantize(
+                    (unqEndPts.A.R * (BC67.BC67_WEIGHT_MAX - weight) + unqEndPts.B.R * weight + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
                     pEP.bSigned),
-                    g = FinishUnquantize(
-                    (unqEndPts.A.g * (BC67.BC67_WEIGHT_MAX - weight) + unqEndPts.B.g * weight + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
+                    G = FinishUnquantize(
+                    (unqEndPts.A.G * (BC67.BC67_WEIGHT_MAX - weight) + unqEndPts.B.G * weight + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
                     pEP.bSigned),
-                    b = FinishUnquantize(
-                    (unqEndPts.A.b * (BC67.BC67_WEIGHT_MAX - weight) + unqEndPts.B.b * weight + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
+                    B = FinishUnquantize(
+                    (unqEndPts.A.B * (BC67.BC67_WEIGHT_MAX - weight) + unqEndPts.B.B * weight + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
                     pEP.bSigned)
                 };
             }
         }
 
-        private unsafe float MapColorsQuantized(EncodeParams pEP, INTColor[] aColors, uint np, BC67.INTEndPntPair endPts, Context context)
+        private unsafe float MapColorsQuantized(EncodeParams pEP, IntColor[] aColors, uint np, BC67.INTEndPntPair endPts, Context context)
         {
             byte uIndexPrec = ms_aInfo[pEP.uMode].uIndexPrec;
             byte uNumIndices = (byte)(1U << uIndexPrec);
@@ -728,11 +728,11 @@ namespace Molten.Graphics.Textures
             float fTotErr = 0;
             for (uint i = 0; i < np; ++i)
             {
-                INTColor aColor = aColors[i];
+                IntColor aColor = aColors[i];
                 Vector3F vcolors = *(Vector3F*)&aColor; // new Vector3F(aColor.r, aColor.g, aColor.b);
 
                 // Compute ErrorMetricRGB
-                INTColor aPal = context.aPalette[0];
+                IntColor aPal = context.aPalette[0];
                 Vector3F tpal = *(Vector3F*)&aPal; // new Vector3F(aPal.r, aPal.g, aPal.b); // XMLoadSInt4(reinterpret_cast <const XMINT4*> (&));
                 tpal = vcolors - tpal;                                          // XMVectorSubtract(vcolors, tpal);
                 float fBestErr = Vector3F.Dot(tpal, tpal);  // XMVectorGetX(XMVector3Dot(tpal, tpal));
@@ -752,7 +752,7 @@ namespace Molten.Graphics.Textures
             return fTotErr;
         }
 
-        float PerturbOne(EncodeParams pEP, INTColor[] aColors, uint np, byte ch,
+        float PerturbOne(EncodeParams pEP, IntColor[] aColors, uint np, byte ch,
             BC67.INTEndPntPair oldEndPts, ref BC67.INTEndPntPair newEndPts, float fOldErr, int do_b, Context context)
         {
             byte uPrec = 0;
@@ -817,7 +817,7 @@ namespace Molten.Graphics.Textures
             return fMinErr;
         }
 
-        private void OptimizeOne(EncodeParams pEP, INTColor[] aColors, uint np, float aOrgErr,
+        private void OptimizeOne(EncodeParams pEP, IntColor[] aColors, uint np, float aOrgErr,
             BC67.INTEndPntPair aOrgEndPts, ref BC67.INTEndPntPair aOptEndPts, Context context)
         {
             float aOptErr = aOrgErr;
@@ -958,12 +958,12 @@ namespace Molten.Graphics.Textures
             for (uint p = 0; p <= uPartitions; ++p)
             {
                 unqEndPts = aUnqEndPts[p];
-                aQntEndPts[p].A.r = Quantize(unqEndPts.A.r, Prec.R, pEP.bSigned);
-                aQntEndPts[p].A.g = Quantize(unqEndPts.A.g, Prec.G, pEP.bSigned);
-                aQntEndPts[p].A.b = Quantize(unqEndPts.A.b, Prec.B, pEP.bSigned);
-                aQntEndPts[p].B.r = Quantize(unqEndPts.B.r, Prec.R, pEP.bSigned);
-                aQntEndPts[p].B.g = Quantize(unqEndPts.B.g, Prec.G, pEP.bSigned);
-                aQntEndPts[p].B.b = Quantize(unqEndPts.B.b, Prec.B, pEP.bSigned);
+                aQntEndPts[p].A.R = Quantize(unqEndPts.A.R, Prec.R, pEP.bSigned);
+                aQntEndPts[p].A.G = Quantize(unqEndPts.A.G, Prec.G, pEP.bSigned);
+                aQntEndPts[p].A.B = Quantize(unqEndPts.A.B, Prec.B, pEP.bSigned);
+                aQntEndPts[p].B.R = Quantize(unqEndPts.B.R, Prec.R, pEP.bSigned);
+                aQntEndPts[p].B.G = Quantize(unqEndPts.B.G, Prec.G, pEP.bSigned);
+                aQntEndPts[p].B.B = Quantize(unqEndPts.B.B, Prec.B, pEP.bSigned);
             }
         }
 
@@ -982,18 +982,18 @@ namespace Molten.Graphics.Textures
                 {
                     case EField.M: SetBit(ref uStartBit, (byte)((uRealMode >> desc[uStartBit].m_uBit) & 0x01)); break;
                     case EField.D: SetBit(ref uStartBit, (byte)((pEP.uShape >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.RW: SetBit(ref uStartBit, (byte)((aEndPts[0].A.r >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.RX: SetBit(ref uStartBit, (byte)((aEndPts[0].B.r >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.RY: SetBit(ref uStartBit, (byte)((aEndPts[1].A.r >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.RZ: SetBit(ref uStartBit, (byte)((aEndPts[1].B.r >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.GW: SetBit(ref uStartBit, (byte)((aEndPts[0].A.g >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.GX: SetBit(ref uStartBit, (byte)((aEndPts[0].B.g >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.GY: SetBit(ref uStartBit, (byte)((aEndPts[1].A.g >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.GZ: SetBit(ref uStartBit, (byte)((aEndPts[1].B.g >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.BW: SetBit(ref uStartBit, (byte)((aEndPts[0].A.b >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.BX: SetBit(ref uStartBit, (byte)((aEndPts[0].B.b >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.BY: SetBit(ref uStartBit, (byte)((aEndPts[1].A.b >> desc[uStartBit].m_uBit) & 0x01)); break;
-                    case EField.BZ: SetBit(ref uStartBit, (byte)((aEndPts[1].B.b >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.RW: SetBit(ref uStartBit, (byte)((aEndPts[0].A.R >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.RX: SetBit(ref uStartBit, (byte)((aEndPts[0].B.R >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.RY: SetBit(ref uStartBit, (byte)((aEndPts[1].A.R >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.RZ: SetBit(ref uStartBit, (byte)((aEndPts[1].B.R >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.GW: SetBit(ref uStartBit, (byte)((aEndPts[0].A.G >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.GX: SetBit(ref uStartBit, (byte)((aEndPts[0].B.G >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.GY: SetBit(ref uStartBit, (byte)((aEndPts[1].A.G >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.GZ: SetBit(ref uStartBit, (byte)((aEndPts[1].B.G >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.BW: SetBit(ref uStartBit, (byte)((aEndPts[0].A.B >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.BX: SetBit(ref uStartBit, (byte)((aEndPts[0].B.B >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.BY: SetBit(ref uStartBit, (byte)((aEndPts[1].A.B >> desc[uStartBit].m_uBit) & 0x01)); break;
+                    case EField.BZ: SetBit(ref uStartBit, (byte)((aEndPts[1].B.B >> desc[uStartBit].m_uBit) & 0x01)); break;
                     default:
                         Debug.Assert(false);
                         break;
@@ -1061,7 +1061,7 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private void GeneratePaletteUnquantized(EncodeParams pEP, uint uRegion, INTColor[] aPalette)
+        private void GeneratePaletteUnquantized(EncodeParams pEP, uint uRegion, IntColor[] aPalette)
         {
             Debug.Assert(uRegion < BC67.BC6H_MAX_REGIONS && pEP.uShape < BC67.BC6H_MAX_SHAPES);
             BC67.INTEndPntPair endPts = pEP.aUnqEndPts[pEP.uShape][uRegion];
@@ -1077,15 +1077,15 @@ namespace Molten.Graphics.Textures
                 default:
                     Debug.Assert(false);
                     for (uint i = 0; i < uNumIndices; ++i)
-                        aPalette[i] = new INTColor(0, 0, 0);
+                        aPalette[i] = new IntColor(0, 0, 0);
                     return;
             }
 
             for (uint i = 0; i < uNumIndices; ++i)
             {
-                aPalette[i].r = (endPts.A.r * (BC67.BC67_WEIGHT_MAX - aWeights[i]) + endPts.B.r * aWeights[i] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT;
-                aPalette[i].g = (endPts.A.g * (BC67.BC67_WEIGHT_MAX - aWeights[i]) + endPts.B.g * aWeights[i] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT;
-                aPalette[i].b = (endPts.A.b * (BC67.BC67_WEIGHT_MAX - aWeights[i]) + endPts.B.b * aWeights[i] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT;
+                aPalette[i].R = (endPts.A.R * (BC67.BC67_WEIGHT_MAX - aWeights[i]) + endPts.B.R * aWeights[i] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT;
+                aPalette[i].G = (endPts.A.G * (BC67.BC67_WEIGHT_MAX - aWeights[i]) + endPts.B.G * aWeights[i] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT;
+                aPalette[i].B = (endPts.A.B * (BC67.BC67_WEIGHT_MAX - aWeights[i]) + endPts.B.B * aWeights[i] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT;
             }
         }
 

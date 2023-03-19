@@ -63,15 +63,15 @@ namespace Molten.Graphics.Textures
 
         internal struct INTEndPntPair
         {
-            internal INTColor A;
-            internal INTColor B;
+            internal IntColor A;
+            internal IntColor B;
 
             /// <summary>
             /// Swaps points A and B.
             /// </summary>
             internal void SwapPoints()
             {
-                INTColor C = A;
+                IntColor C = A;
                 A = B;
                 B = C;
             }
@@ -115,7 +115,7 @@ namespace Molten.Graphics.Textures
 
         internal static void TransformInverse(INTEndPntPair[] aEndPts, Color Prec, bool bSigned)
         {
-            INTColor WrapMask = new INTColor((1 << Prec.R) - 1, (1 << Prec.G) - 1, (1 << Prec.B) - 1);
+            IntColor WrapMask = new IntColor((1 << Prec.R) - 1, (1 << Prec.G) - 1, (1 << Prec.B) - 1);
             aEndPts[0].B += aEndPts[0].A; aEndPts[0].B &= WrapMask;
             aEndPts[1].A += aEndPts[0].A; aEndPts[1].A &= WrapMask;
             aEndPts[1].B += aEndPts[0].A; aEndPts[1].B &= WrapMask;
@@ -127,11 +127,11 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        internal static float Norm(INTColor a, INTColor b)
+        internal static float Norm(IntColor a, IntColor b)
         {
-            float dr = a.r - b.r;
-            float dg = a.g - b.g;
-            float db = a.b - b.b;
+            float dr = a.R - b.R;
+            float dg = a.G - b.G;
+            float db = a.B - b.B;
             return dr * dr + dg * dg + db * db;
         }
 
@@ -222,20 +222,20 @@ namespace Molten.Graphics.Textures
                 Pt.B = (pPoints[pIndex[iPoint]].B - Mid.B) * Dir.B;
 
                 float f;
-                f = Pt.R + Pt.G + Pt.B; cxt.fDir[0] += f * f;
-                f = Pt.R + Pt.G - Pt.B; cxt.fDir[1] += f * f;
-                f = Pt.R - Pt.G + Pt.B; cxt.fDir[2] += f * f;
-                f = Pt.R - Pt.G - Pt.B; cxt.fDir[3] += f * f;
+                f = Pt.R + Pt.G + Pt.B; cxt.FDir[0] += f * f;
+                f = Pt.R + Pt.G - Pt.B; cxt.FDir[1] += f * f;
+                f = Pt.R - Pt.G + Pt.B; cxt.FDir[2] += f * f;
+                f = Pt.R - Pt.G - Pt.B; cxt.FDir[3] += f * f;
             }
 
-            float fDirMax = cxt.fDir[0];
+            float fDirMax = cxt.FDir[0];
             uint iDirMax = 0;
 
             for (uint iDir = 1; iDir < 4; iDir++)
             {
-                if (cxt.fDir[iDir] > fDirMax)
+                if (cxt.FDir[iDir] > fDirMax)
                 {
-                    fDirMax = cxt.fDir[iDir];
+                    fDirMax = cxt.FDir[iDir];
                     iDirMax = iDir;
                 }
             }
@@ -268,9 +268,9 @@ namespace Molten.Graphics.Textures
             {
                 for (uint iStep = 0; iStep < cSteps; iStep++)
                 {
-                    cxt.pSteps[iStep].R = X.R * pC[iStep] + Y.R * pD[iStep];
-                    cxt.pSteps[iStep].G = X.G * pC[iStep] + Y.G * pD[iStep];
-                    cxt.pSteps[iStep].B = X.B * pC[iStep] + Y.B * pD[iStep];
+                    cxt.PSteps[iStep].R = X.R * pC[iStep] + Y.R * pD[iStep];
+                    cxt.PSteps[iStep].G = X.G * pC[iStep] + Y.G * pD[iStep];
+                    cxt.PSteps[iStep].B = X.B * pC[iStep] + Y.B * pD[iStep];
                 }
 
                 // Calculate color direction
@@ -309,9 +309,9 @@ namespace Molten.Graphics.Textures
                         iStep = (uint)(fDot + 0.5f);
 
                     Color4 Diff;
-                    Diff.R = cxt.pSteps[iStep].R - pPoints[pIndex[iPoint]].R;
-                    Diff.G = cxt.pSteps[iStep].G - pPoints[pIndex[iPoint]].G;
-                    Diff.B = cxt.pSteps[iStep].B - pPoints[pIndex[iPoint]].B;
+                    Diff.R = cxt.PSteps[iStep].R - pPoints[pIndex[iPoint]].R;
+                    Diff.G = cxt.PSteps[iStep].G - pPoints[pIndex[iPoint]].G;
+                    Diff.B = cxt.PSteps[iStep].B - pPoints[pIndex[iPoint]].B;
 
                     float fC = pC[iStep] * (1.0f / 8.0f);
                     float fD = pD[iStep] * (1.0f / 8.0f);

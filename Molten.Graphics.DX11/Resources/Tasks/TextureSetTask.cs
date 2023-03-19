@@ -122,8 +122,7 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    long numBytes = NumElements * Stride;
-                    stream.WriteRange(ptrData, NumElements);
+                    stream.WriteRange(ptrData, NumBytes);
                 }
 
                 cmdDx11.UnmapResource(texture.ResourcePtr, subLevel);
@@ -155,8 +154,7 @@ namespace Molten.Graphics
                         region.Left = rect.X;
                         region.Right = rect.Right;
 
-                        uint numBytes = NumElements * Stride;
-                        cmdDx11.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, numBytes);
+                        cmdDx11.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, NumBytes);
                     }
                     else
                     {

@@ -16,7 +16,7 @@ namespace Molten.Graphics
             if (src.UsageFlags == Usage.Staging)
                 src.Apply(cmd);
 
-            (cmd as CommandQueueDX11).Native->CopyResource(Destination, src);
+            (cmd as CommandQueueDX11).CopyResource(src, Destination);
             CompletionCallback?.Invoke(resource);
 
             return false;

@@ -3,32 +3,32 @@ using Molten.HalfPrecision;
 
 namespace Molten.Graphics.Textures
 {
-    internal struct INTColor
+    internal struct IntColor
     {
-        public int r, g, b;
-        public int pad;
+        public int R, G, B;
+        public int Pad;
 
-        public INTColor(int nr, int ng, int nb)
+        public IntColor(int nr, int ng, int nb)
         {
-            r = nr;
-            g = ng;
-            b = nb;
-            pad = 0;
+            R = nr;
+            G = ng;
+            B = nb;
+            Pad = 0;
         }
 
-        public static INTColor operator +(INTColor c0, INTColor c1)
+        public static IntColor operator +(IntColor c0, IntColor c1)
         {
-            return new INTColor(c0.r + c1.r, c0.g + c1.g, c0.b + c1.b);
+            return new IntColor(c0.R + c1.R, c0.G + c1.G, c0.B + c1.B);
         }
 
-        public static INTColor operator -(INTColor c0, INTColor c1)
+        public static IntColor operator -(IntColor c0, IntColor c1)
         {
-            return new INTColor(c0.r - c1.r, c0.g - c1.g, c0.b - c1.b);
+            return new IntColor(c0.R - c1.R, c0.G - c1.G, c0.B - c1.B);
         }
 
-        public static INTColor operator &(INTColor c0, INTColor c1)
+        public static IntColor operator &(IntColor c0, IntColor c1)
         {
-            return new INTColor(c0.r & c1.r, c0.g & c1.g, c0.b & c1.b);
+            return new IntColor(c0.R & c1.R, c0.G & c1.G, c0.B & c1.B);
         }
 
         public int this[byte i]
@@ -37,9 +37,9 @@ namespace Molten.Graphics.Textures
             {
                 switch (i)
                 {
-                    case 0: return r;
-                    case 1: return g;
-                    case 2: return b;
+                    case 0: return R;
+                    case 1: return G;
+                    case 2: return B;
                     default:
                         Debug.Assert(false);
                         return 0;
@@ -50,9 +50,9 @@ namespace Molten.Graphics.Textures
             {
                 switch (i)
                 {
-                    case 0: r = value; break;
-                    case 1: g = value; break;
-                    case 2: b = value; break;
+                    case 0: R = value; break;
+                    case 1: G = value; break;
+                    case 2: B = value; break;
                     default:
                         Debug.Assert(false);
                         break;
@@ -64,31 +64,31 @@ namespace Molten.Graphics.Textures
         {
             Half4 aF16 = new Half4(c.R, c.G, c.B, c.A);
 
-            r = F16ToINT(aF16.X, bSigned);
-            g = F16ToINT(aF16.Y, bSigned);
-            b = F16ToINT(aF16.Z, bSigned);
+            R = F16ToINT(aF16.X, bSigned);
+            G = F16ToINT(aF16.Y, bSigned);
+            B = F16ToINT(aF16.Z, bSigned);
         }
 
         public void Clamp(int iMin, int iMax)
         {
-            r = Math.Min(iMax, Math.Max(iMin, r));
-            g = Math.Min(iMax, Math.Max(iMin, g));
-            b = Math.Min(iMax, Math.Max(iMin, b));
+            R = Math.Min(iMax, Math.Max(iMin, R));
+            G = Math.Min(iMax, Math.Max(iMin, G));
+            B = Math.Min(iMax, Math.Max(iMin, B));
         }
 
         public void SignExtend(Color Prec)
         {
-            r = BC67.SIGN_EXTEND(r, Prec.R);
-            g = BC67.SIGN_EXTEND(g, Prec.G);
-            b = BC67.SIGN_EXTEND(b, Prec.B);
+            R = BC67.SIGN_EXTEND(R, Prec.R);
+            G = BC67.SIGN_EXTEND(G, Prec.G);
+            B = BC67.SIGN_EXTEND(B, Prec.B);
         }
 
         public Half[] ToF16(bool bSigned)
         {
             Half[] aF16 = new Half[3];
-            aF16[0] = INT2F16(r, bSigned);
-            aF16[1] = INT2F16(g, bSigned);
-            aF16[2] = INT2F16(b, bSigned);
+            aF16[0] = INT2F16(R, bSigned);
+            aF16[1] = INT2F16(G, bSigned);
+            aF16[2] = INT2F16(B, bSigned);
             return aF16;
         }
 

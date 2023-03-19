@@ -19,16 +19,6 @@ namespace Molten.Graphics
                 if (!Staging.HasFlags(TextureFlags.Staging))
                     throw new TextureFlagException(Staging.Flags, "Provided staging texture does not have the staging flag set.");
 
-
-                // Validate dimensions.
-                if (Staging.Width != texture.Width ||
-                    Staging.Height != texture.Height ||
-                    Staging.Depth != texture.Depth)
-                    throw new TextureCopyException(texture, Staging, "Staging texture dimensions do not match current texture.");
-
-                if (!Staging.HasFlags(TextureFlags.Staging))
-                    throw new TextureFlagException(Staging.Flags, "Provided staging texture does not have the staging flag set.");
-
                 // Validate dimensions.
                 if (Staging.Width != texture.Width ||
                     Staging.Height != texture.Height ||
@@ -39,9 +29,7 @@ namespace Molten.Graphics
                     texture.Apply(cmd);
 
                 Staging.Apply(cmd);
-
-                cmdDX11.Native->CopyResource(Staging.ResourcePtr, texture.ResourcePtr);
-                cmdDX11.Profiler.Current.CopyResourceCount++;
+                cmdDX11.CopyResource(texture, Staging);
             }
             else
             {

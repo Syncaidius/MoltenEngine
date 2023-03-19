@@ -19,15 +19,6 @@ namespace Molten.Graphics.Textures
     // BC67 compression (16b bits per texel)
     internal class D3DX_BC7 : BC67.CBits
     {
-        internal class Context : BCContext, IPoolable
-        {
-
-            public void ClearForPool()
-            {
-
-            }
-        }
-
         class EncodeParams
         {
             internal byte uMode;
@@ -314,7 +305,7 @@ namespace Molten.Graphics.Textures
             return pOut;
         }
 
-        public void Encode(BCFlags flags, Color4[] pIn, Context context)
+        public void Encode(BCFlags flags, Color4[] pIn, BCContext context)
         {
             byte[] final = new byte[m_uBits.Length];
             Buffer.BlockCopy(m_uBits, 0, final, 0, final.Length);
@@ -983,7 +974,7 @@ namespace Molten.Graphics.Textures
             return fTotalErr;
         }
 
-        private float RoughMSE(EncodeParams pEP, uint uShape, uint uIndexMode, Context cxt)
+        private float RoughMSE(EncodeParams pEP, uint uShape, uint uIndexMode, BCContext cxt)
         {
             Debug.Assert(uShape < BC67.BC7_MAX_SHAPES);
             BC67.LDREndPntPair[] aEndPts = pEP.aEndPts[uShape];

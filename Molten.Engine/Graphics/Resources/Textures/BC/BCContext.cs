@@ -1,10 +1,14 @@
-﻿namespace Molten.Graphics.Textures
+﻿using Molten.Collections;
+
+namespace Molten.Graphics.Textures
 {
-    internal abstract class BCContext
+    internal class BCContext : IPoolable
     {
-        internal float[] fDir = new float[4];
+        internal float[] FDir = new float[4];
 
         // Calculate new steps
-        internal Color4[] pSteps = new Color4[4];
+        internal Color4[] PSteps = new Color4[4];
+
+        public void ClearForPool() { }
     }
 }

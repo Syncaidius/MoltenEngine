@@ -5,7 +5,7 @@ namespace Molten.Graphics.Textures
     internal class BC7Parser : BCBlockParser
     {
         public override GraphicsFormat ExpectedFormat => GraphicsFormat.BC7_UNorm;
-        ObjectPool<D3DX_BC7.Context> _contextPool = new ObjectPool<D3DX_BC7.Context>(() => new D3DX_BC7.Context());
+        ObjectPool<BCContext> _contextPool = new ObjectPool<BCContext>(() => new BCContext());
 
         internal unsafe override Color4[] Decode(BinaryReader imageReader, Logger log)
         {
@@ -26,7 +26,7 @@ namespace Molten.Graphics.Textures
         internal unsafe override void Encode(BinaryWriter writer, Color4[] uncompressed, Logger log)
         {
             D3DX_BC7 bc = new D3DX_BC7();
-            D3DX_BC7.Context context = _contextPool.GetInstance();
+            BCContext context = _contextPool.GetInstance();
             bc.Encode(BCFlags.NONE, uncompressed, context);
             _contextPool.Recycle(context);
             bc.Write(writer);

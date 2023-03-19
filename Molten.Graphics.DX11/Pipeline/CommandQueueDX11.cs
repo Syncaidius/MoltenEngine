@@ -184,6 +184,12 @@ namespace Molten.Graphics
             Profiler.Current.UpdateSubresourceCount++;
         }
 
+        internal void CopyResource(ID3D11Resource* src, ID3D11Resource* dest)
+        {
+            Native->CopyResource(dest, src);
+            Profiler.Current.CopyResourceCount++;
+        }
+
         private GraphicsBindResult ApplyRenderState(ShaderPassDX11 pass,
             QueueValidationMode mode)
         {
