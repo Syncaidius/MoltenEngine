@@ -76,7 +76,7 @@ namespace Molten.Graphics
             Viewport = new ViewportF(_vp.X, _vp.Y, newWidth, newHeight);
         }
 
-        internal virtual void Clear(CommandQueueDX11 cmd, Color color)
+        internal virtual void OnClear(CommandQueueDX11 cmd, Color color)
         {
             OnApply(cmd);
 
@@ -87,20 +87,13 @@ namespace Molten.Graphics
             }
         }
 
-        public void Clear(Color color, GraphicsPriority priority)
+        public void Clear(GraphicsPriority priority, Color color)
         {
-            if (priority == GraphicsPriority.Immediate)
+            QueueTask(priority, new SurfaceClearChange()
             {
-                Clear(Device.Cmd as CommandQueueDX11, color);
-            }
-            else
-            {
-                QueueChange(new SurfaceClearChange()
-                {
-                    Color = color,
-                    Surface = this,
-                });
-            }
+                Color = color,
+                Surface = this,
+            });
         }
 
         /// <summary>Called when the render target needs to be disposed.</summary>

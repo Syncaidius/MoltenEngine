@@ -34,7 +34,7 @@ namespace Molten.Graphics
 
             GraphicsCommandQueue cmd = renderer.Device.Cmd;
 
-            _surfaceLighting.Clear(context.Scene.AmbientLightColor, GraphicsPriority.Immediate);
+            _surfaceLighting.Clear(GraphicsPriority.Immediate, context.Scene.AmbientLightColor);
             cmd.ResetRenderSurfaces();
             cmd.SetRenderSurface(_surfaceLighting, 0);
             cmd.DepthSurface.Value = sDepth;

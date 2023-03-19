@@ -14,9 +14,9 @@
             GraphicsCommandQueue cmd = renderer.Device.Cmd;
 
             cmd.SetRenderSurfaces(null);
-            sScene.Clear(camera.BackgroundColor, GraphicsPriority.Immediate);
-            sNormals.Clear(Color.White * 0.5f, GraphicsPriority.Immediate);
-            sEmissive.Clear(Color.Black, GraphicsPriority.Immediate);
+            sScene.Clear(GraphicsPriority.Immediate, camera.BackgroundColor);
+            sNormals.Clear(GraphicsPriority.Immediate, Color.White * 0.5f);
+            sEmissive.Clear(GraphicsPriority.Immediate, Color.Black);
             sDepth.Clear(GraphicsPriority.Immediate, DepthClearFlags.Depth | DepthClearFlags.Stencil, 1, 0);
 
             renderer.SpriteBatch.Reset((Rectangle)camera.Surface.Viewport.Bounds);

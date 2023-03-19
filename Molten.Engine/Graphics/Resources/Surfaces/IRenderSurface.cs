@@ -7,7 +7,7 @@
     {        
         /// <summary>Clears the provided <see cref="IRenderSurface2D"/> with the specified color.</summary>
         /// <param name="color">The color to use for clearing the surface.</param>
-        /// <param name="priority">The priority of the clear command.</param>
-        void Clear(Color color, GraphicsPriority priority);
+        /// <param name="priority">The priority of the operation.</param>
+        void Clear(GraphicsPriority priority, Color color);
     }
 }

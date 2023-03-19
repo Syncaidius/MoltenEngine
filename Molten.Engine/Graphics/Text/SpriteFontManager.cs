@@ -53,7 +53,7 @@ namespace Molten.Graphics
                 BackgroundColor = Color.Transparent,
             };
 
-            _camera.Surface.Clear(Color.Transparent, GraphicsPriority.Immediate);
+            _camera.Surface.Clear(GraphicsPriority.Immediate, Color.Transparent);
             _renderData.AddObject(_camera);
         }
 
@@ -70,7 +70,7 @@ namespace Molten.Graphics
                     (uint)PageSize,
                     arraySize: newArraySize,
                     flags: TextureFlags.AllowMipMapGeneration);
-                _camera.Surface.Clear(Color.Transparent, GraphicsPriority.Immediate);
+                _camera.Surface.Clear(GraphicsPriority.Immediate, Color.Transparent);
 
                 RectangleF rtBounds = new RectangleF(0, 0, PageSize, PageSize);
                 for(uint i = 0; i < _rtTransfer.ArraySize; i++)

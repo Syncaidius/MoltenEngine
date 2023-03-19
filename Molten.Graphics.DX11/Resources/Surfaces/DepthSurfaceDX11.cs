@@ -162,6 +162,8 @@ namespace Molten.Graphics
 
         internal void OnClear(CommandQueueDX11 cmd, ref DepthClearTask task)
         {
+            OnApply(cmd);
+
             if (_depthView == null)
                 CreateTexture(false);
 

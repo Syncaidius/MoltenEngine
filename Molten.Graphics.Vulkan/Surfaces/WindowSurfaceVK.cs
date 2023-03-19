@@ -351,7 +351,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void Clear(Color color, GraphicsPriority priority)
+        public void Clear(GraphicsPriority priority, Color color)
         {
             throw new NotImplementedException();
         }

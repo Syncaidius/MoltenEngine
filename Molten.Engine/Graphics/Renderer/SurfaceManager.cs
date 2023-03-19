@@ -52,7 +52,7 @@ namespace Molten.Graphics
 
             if(!_firstCleared.Contains(surface))
             {
-                surface.Clear(color, GraphicsPriority.Immediate);
+                surface.Clear(GraphicsPriority.Immediate, color);
                 _firstCleared.Add(surface);
             }
         }
