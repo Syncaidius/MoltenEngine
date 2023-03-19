@@ -311,7 +311,7 @@ namespace Molten.Examples
                         int w = binding.Window.RenderBounds.Width;
                         int h = binding.Window.RenderBounds.Height;
 
-                        surface.Resize((uint)w, (uint)h);
+                        surface.Resize(GraphicsPriority.Apply, (uint)w, (uint)h);
                         windowTex.LocalBounds = new Rectangle(0,0, w, h);
                     };
                 }

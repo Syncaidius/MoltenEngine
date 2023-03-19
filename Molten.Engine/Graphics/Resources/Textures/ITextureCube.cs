@@ -2,7 +2,7 @@
 {
     public interface ITextureCube : ITexture
     {
-        void Resize(uint newWidth, uint newHeight, uint newMipMapCount);
+        void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount);
 
         /// <summary>Gets the height of the texture.</summary>
         uint Height { get; }

@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal struct BufferGetStreamOperation : IGraphicsResourceTask
+    internal struct BufferGetStreamTask : IGraphicsResourceTask
     {
         internal uint ByteOffset;
 

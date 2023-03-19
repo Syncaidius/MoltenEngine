@@ -35,12 +35,12 @@
             {
                 case SurfaceSizeMode.Full:
                     foreach(IDepthStencilSurface rs in _surfaces.Values)
-                        rs?.Resize(minWidth, minHeight);
+                        rs?.Resize(GraphicsPriority.Apply, minWidth, minHeight);
                     break;
 
                 case SurfaceSizeMode.Half:
                     foreach (IDepthStencilSurface rs in _surfaces.Values)
-                        rs?.Resize((minWidth / 2) + 1, (minHeight / 2) + 1);
+                        rs?.Resize(GraphicsPriority.Apply, (minWidth / 2) + 1, (minHeight / 2) + 1);
                     break;
             }
         }
@@ -69,7 +69,7 @@
                 }
                 else if (rs.Width != _width || rs.Height != _height)
                 {
-                    rs.Resize(_width, _height);
+                    rs.Resize(GraphicsPriority.Apply, _width, _height);
                 }
 
                 return rs;

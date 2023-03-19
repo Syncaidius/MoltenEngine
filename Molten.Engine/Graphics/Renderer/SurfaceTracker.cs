@@ -38,12 +38,12 @@ namespace Molten.Graphics
             {
                 case SurfaceSizeMode.Full:
                     foreach(IRenderSurface2D rs in _surfaces.Values)
-                        rs?.Resize(minWidth, minHeight);
+                        rs?.Resize(GraphicsPriority.Apply, minWidth, minHeight);
                     break;
 
                 case SurfaceSizeMode.Half:
                     foreach (IRenderSurface2D rs in _surfaces.Values)
-                        rs?.Resize((minWidth / 2) + 1, (minHeight / 2) + 1);
+                        rs?.Resize(GraphicsPriority.Apply, (minWidth / 2) + 1, (minHeight / 2) + 1);
                     break;
             }
         }
@@ -72,7 +72,7 @@ namespace Molten.Graphics
                 }
                 else if (rs.Width != _width || rs.Height != _height)
                 {
-                    rs.Resize(_width, _height);
+                    rs.Resize(GraphicsPriority.Apply, _width, _height);
                 }
 
                 return rs;

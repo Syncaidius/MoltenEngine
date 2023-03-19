@@ -22,20 +22,6 @@
         Texture1DProperties Get1DProperties();
 
         /// <summary>
-        /// Resizes a texture to match the specified width, mip-map count and graphics format.
-        /// </summary>
-        /// <param name="newWidth">The new width.</param>
-        /// <param name="newMipMapCount">The new mip-map count.</param>
-        /// <param name="format">The new format.</param>
-        void Resize(uint newWidth, uint newMipMapCount, GraphicsFormat format);
-
-        /// <summary>
-        /// Resizes a texture to match the specified width.
-        /// </summary>
-        /// <param name="newWidth">The new width.</param>
-        void Resize(uint newWidth);
-
-        /// <summary>
         /// Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="TextureFlags.AllowMipMapGeneration"/>.
         /// </summary>
         /// <param name="priority">The priority of the copy operation.</param>
@@ -124,6 +110,9 @@
         /// <returns>True if the specified flags exist.</returns>
         bool HasFlags(TextureFlags flags);
 
+        /// <summary>Gets the width of the texture.</summary>
+        uint Width { get; }
+
         /// <summary>Gets the flags that were passed in when the texture was created.</summary>
         TextureFlags Flags { get; }
 
@@ -132,9 +121,6 @@
 
         /// <summary>Gets whether or not the texture is using a supported block-compressed format.</summary>
         bool IsBlockCompressed { get; }
-
-        /// <summary>Gets the width of the texture.</summary>
-        uint Width { get; }
 
         /// <summary>Gets the number of mip map levels in the texture.</summary>
         uint MipMapCount { get; }

@@ -408,7 +408,7 @@ namespace Molten.Graphics
             {
                 case ShaderResourceDimension.Texture1DArray:
                 case ShaderResourceDimension.Texture1D:
-                    resource = GetVariableResource<RWVariable<ITexture>>(context, shader, info);
+                    resource = GetVariableResource<RWVariable<ITexture1D>>(context, shader, info);
                     break;
 
                 case ShaderResourceDimension.Texture2DMS:
@@ -444,7 +444,7 @@ namespace Molten.Graphics
             {
                 case ShaderResourceDimension.Texture1DArray:
                 case ShaderResourceDimension.Texture1D:
-                    obj = GetVariableResource<ShaderResourceVariable<ITexture>>(context, shader, info);
+                    obj = GetVariableResource<ShaderResourceVariable<ITexture1D>>(context, shader, info);
                     break;
 
                 case ShaderResourceDimension.Texture2DMS:

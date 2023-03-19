@@ -83,9 +83,9 @@ namespace Molten.Graphics
             _desc.Format = newFormat;
         }
 
-        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount)
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount)
         {
-            QueueChange(new TextureResize()
+            QueueTask(priority, new TextureResizeTask()
             {
                 NewWidth = newWidth,
                 NewHeight = newHeight,
@@ -93,9 +93,9 @@ namespace Molten.Graphics
             });
         }
 
-        public void Resize(uint newWidth, uint newMipMapCount)
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newMipMapCount)
         {
-            QueueChange(new TextureResize()
+            QueueTask(priority, new TextureResizeTask()
             {
                 NewWidth = newWidth,
                 NewHeight = Height,

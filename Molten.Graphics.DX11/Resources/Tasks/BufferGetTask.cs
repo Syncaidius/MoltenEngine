@@ -3,7 +3,7 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    internal struct BufferGetOperation<T> : IGraphicsResourceTask 
+    internal struct BufferGetTask<T> : IGraphicsResourceTask 
         where T : unmanaged
     {
         /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="SrcSegment"/>.</summary>

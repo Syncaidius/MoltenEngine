@@ -19,7 +19,7 @@
         /// <param name="newMipMapCount">The new mip-map level count.</param>
         /// <param name="newDepth">The new depth of the current <see cref="ITexture3D"/>.</param>
         /// <param name="newFormat">The new graphics format.</param>
-        void Resize(uint newWidth, 
+        void Resize(GraphicsPriority priority, uint newWidth, 
             uint newHeight, 
             uint newDepth, 
             uint newMipMapCount = 0, 

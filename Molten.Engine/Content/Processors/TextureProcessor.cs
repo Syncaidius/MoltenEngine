@@ -127,7 +127,7 @@ namespace Molten.Content
                 tex = manager.Engine.Renderer.Device.CreateTexture2D(data);
             else if (handle.ContentType == typeof(ITextureCube))
                 tex = manager.Engine.Renderer.Device.CreateTextureCube(data);
-            else if (handle.ContentType == typeof(ITexture))
+            else if (handle.ContentType == typeof(ITexture1D))
                 tex = manager.Engine.Renderer.Device.CreateTexture1D(data);
             else
                 manager.Log.Error($"Unsupported texture type {handle.ContentType}", handle.RelativePath);
@@ -144,7 +144,7 @@ namespace Molten.Content
                     if (texCube.Width != data.Width ||
                         texCube.Height != data.Height ||
                         tex.MipMapCount != data.MipMapLevels)
-                        texCube.Resize(data.Width, data.Height, data.MipMapLevels);
+                        texCube.Resize(GraphicsPriority.Apply, data.Width, data.Height, data.MipMapLevels);
 
                     texCube.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, Math.Min(data.ArraySize, 6), 0, 0);
                     break;
@@ -156,16 +156,16 @@ namespace Molten.Content
                         tex2d.ArraySize != data.ArraySize ||
                         tex.MipMapCount != data.MipMapLevels)
                     {
-                        tex2d.Resize(data.Width, data.Height, data.MipMapLevels, data.ArraySize, data.Format);
+                        tex2d.Resize(GraphicsPriority.Apply, data.Width, data.Height, data.MipMapLevels, data.ArraySize, data.Format);
                     }
 
                     tex2d.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
                     break;
 
-                default:
+                case ITexture1D tex1d:
                     // TODO include mip-map count in resize
-                    if (tex.Width != data.Width || tex.MipMapCount != data.MipMapLevels)
-                        tex.Resize(data.Width, data.MipMapLevels, data.Format);
+                    if (tex1d.Width != data.Width || tex.MipMapCount != data.MipMapLevels)
+                        tex1d.Resize(GraphicsPriority.Apply, data.Width, data.MipMapLevels, data.Format);
 
                     tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
                     break;

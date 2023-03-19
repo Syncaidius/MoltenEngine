@@ -434,24 +434,24 @@ namespace Molten.Graphics
             return slice;
         }
 
-        internal void SetSizeInternal(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
+        internal void OnSetSize(ref TextureResizeTask task)
         {
             // Avoid resizing/recreation if nothing has actually changed.
-            if (Width == newWidth && 
-                Height == newHeight && 
-                Depth == newDepth && 
-                MipMapCount == newMipMapCount && 
-                ArraySize == newArraySize && 
-                DxgiFormat == newFormat)
+            if (Width == task.NewWidth && 
+                Height == task.NewHeight && 
+                Depth == task.NewDepth && 
+                MipMapCount == task.NewMipMapCount && 
+                ArraySize == task.NewArraySize && 
+                DataFormat == task.NewFormat)
                 return;
 
-            Width = Math.Max(1, newWidth);
-            Height = Math.Max(1, newHeight);
-            Depth = Math.Max(1, newDepth);
-            MipMapCount = Math.Max(1, newMipMapCount);
-            DxgiFormat = newFormat;
+            Width = Math.Max(1, task.NewWidth);
+            Height = Math.Max(1, task.NewHeight);
+            Depth = Math.Max(1, task.NewDepth);
+            MipMapCount = Math.Max(1, task.NewMipMapCount);
+            DxgiFormat = task.NewFormat.ToApi();
 
-            UpdateDescription(Width, Height, Depth, Math.Max(1, newMipMapCount), Math.Max(1, newArraySize), newFormat);
+            UpdateDescription(Width, Height, Depth, Math.Max(1, task.NewMipMapCount), Math.Max(1, task.NewArraySize), DxgiFormat);
             CreateTexture(true);
             OnResize?.Invoke(this);
         }
@@ -467,20 +467,20 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public void Resize(uint newWidth)
+        public void Resize(GraphicsPriority priority, uint newWidth)
         {
-            Resize(newWidth, MipMapCount, DxgiFormat.FromApi());
+            Resize(priority, newWidth, MipMapCount, DataFormat);
         }
 
-        public void Resize(uint newWidth, uint newMipMapCount, GraphicsFormat newFormat)
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newMipMapCount, GraphicsFormat newFormat)
         {
-            QueueChange(new TextureResize()
+            QueueTask(priority, new TextureResizeTask()
             {
                 NewWidth = newWidth,
                 NewHeight = Height,
                 NewMipMapCount = newMipMapCount,
                 NewArraySize = ArraySize,
-                NewFormat = DxgiFormat,
+                NewFormat = newFormat,
             });
         }
 

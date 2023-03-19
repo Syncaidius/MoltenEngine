@@ -120,7 +120,7 @@
             uint h = (uint)Control.ClientSize.Height;
 
             if (w != Width || h != Height)
-                Resize(w, h);
+                Resize(GraphicsPriority.Apply, w, h);
         }
 
         protected override void UpdateControlMode(RenderControl control, WindowMode mode)

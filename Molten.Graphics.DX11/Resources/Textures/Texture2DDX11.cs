@@ -152,30 +152,30 @@ namespace Molten.Graphics
             _desc.Format = newFormat;
         }
 
-        public void Resize(uint newWidth, uint newHeight)
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight)
         {
-            QueueChange(new TextureResize()
+            QueueTask(priority, new TextureResizeTask()
             {
                 NewWidth = newWidth,
                 NewHeight = newHeight,
                 NewMipMapCount = MipMapCount,
                 NewArraySize = _desc.ArraySize,
-                NewFormat = DxgiFormat,
+                NewFormat = DataFormat,
             });
         }
 
-        public void Resize(uint newWidth, uint newHeight, 
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, 
             uint newMipMapCount, 
             uint newArraySize, 
             GraphicsFormat newFormat)
         {
-            QueueChange(new TextureResize()
+            QueueTask(priority, new TextureResizeTask()
             {
                 NewWidth = newWidth,
                 NewHeight = newHeight,
                 NewMipMapCount = newMipMapCount == 0 ? MipMapCount : newMipMapCount,
                 NewArraySize = newArraySize == 0 ? _desc.ArraySize : newArraySize,
-                NewFormat = newFormat.ToApi(),
+                NewFormat = newFormat,
             });
         }
 

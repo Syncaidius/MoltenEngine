@@ -181,7 +181,7 @@ namespace Molten.Graphics
 
         public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, RawStream> callback, IStagingBuffer staging = null)
         {
-            QueueTask(priority, new BufferGetStreamOperation()
+            QueueTask(priority, new BufferGetStreamTask()
             {
                 ByteOffset = 0,
                 NumElements = ElementCount,
@@ -316,7 +316,7 @@ namespace Molten.Graphics
             IStagingBuffer staging = null, Action completeCallback = null)
             where T : unmanaged
         {
-            BufferSetOperation<T> op = new BufferSetOperation<T>()
+            BufferSetTask<T> op = new BufferSetTask<T>()
             {
                 ByteOffset = byteOffset,
                 CompletionCallback = completeCallback,
@@ -360,7 +360,7 @@ namespace Molten.Graphics
             if (destination.Length < count)
                 throw new ArgumentException("The provided destination array is not large enough.");
 
-            QueueTask(priority, new BufferGetOperation<T>()
+            QueueTask(priority, new BufferGetTask<T>()
             {
                 ByteOffset = byteOffset,
                 DestArray = destination,

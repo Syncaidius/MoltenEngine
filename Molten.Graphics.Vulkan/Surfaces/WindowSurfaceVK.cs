@@ -274,27 +274,17 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void Resize(uint newWidth, uint newHeight)
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight)
         {
             throw new NotImplementedException();
         }
 
-        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount, uint newArraySize, GraphicsFormat newFormat)
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount, uint newArraySize, GraphicsFormat newFormat)
         {
             throw new NotImplementedException();
         }
 
         public Texture1DProperties Get1DProperties()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Resize(uint newWidth, uint newMipMapCount, GraphicsFormat format)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Resize(uint newWidth)
         {
             throw new NotImplementedException();
         }
