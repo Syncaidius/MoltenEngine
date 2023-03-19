@@ -146,7 +146,7 @@ namespace Molten.Content
                         tex.MipMapCount != data.MipMapLevels)
                         texCube.Resize(data.Width, data.Height, data.MipMapLevels);
 
-                    texCube.SetData(data, 0, 0, data.MipMapLevels, Math.Min(data.ArraySize, 6), 0, 0);
+                    texCube.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, Math.Min(data.ArraySize, 6), 0, 0);
                     break;
 
                 case ITexture2D tex2d:
@@ -159,7 +159,7 @@ namespace Molten.Content
                         tex2d.Resize(data.Width, data.Height, data.MipMapLevels, data.ArraySize, data.Format);
                     }
 
-                    tex2d.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
+                    tex2d.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
                     break;
 
                 default:
@@ -167,7 +167,7 @@ namespace Molten.Content
                     if (tex.Width != data.Width || tex.MipMapCount != data.MipMapLevels)
                         tex.Resize(data.Width, data.MipMapLevels, data.Format);
 
-                    tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
+                    tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
                     break;
             }
         }

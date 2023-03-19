@@ -316,22 +316,22 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void SetData(TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0)
+        public void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0)
         {
             throw new NotImplementedException();
         }
 
-        public void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0) where T : unmanaged
+        public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0) where T : unmanaged
         {
             throw new NotImplementedException();
         }
 
-        public void SetData(TextureSlice data, uint mipLevel, uint arraySlice)
+        public void SetData(GraphicsPriority priority, TextureSlice data, uint mipLevel, uint arraySlice)
         {
             throw new NotImplementedException();
         }
 
-        public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : unmanaged
+        public void SetData<T>(GraphicsPriority priority, RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : unmanaged
         {
             throw new NotImplementedException();
         }

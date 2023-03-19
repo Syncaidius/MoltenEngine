@@ -78,7 +78,7 @@ namespace Molten.Graphics.SDF
                 }
             }
 
-            tex.SetData(0, finalData, 0, (uint)finalData.Length, rowPitch);
+            tex.SetData(GraphicsPriority.Apply, 0, finalData, 0, (uint)finalData.Length, rowPitch);
             return tex;
         }
 

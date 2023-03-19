@@ -204,14 +204,14 @@ namespace Molten.Graphics
             QueueTask(priority, new GenerateMipMapsTask());
         }
 
-        public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0)
+        public void SetData<T>(GraphicsPriority priority, RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0)
             where T : unmanaged
         {
             fixed (T* ptrData = data)
-                SetData(area, ptrData, (uint)data.Length, bytesPerPixel, level, arrayIndex);
+                SetData(priority, area, ptrData, (uint)data.Length, bytesPerPixel, level, arrayIndex);
         }
 
-        public void SetData<T>(RectangleUI area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0)
+        public void SetData<T>(GraphicsPriority priority, RectangleUI area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0)
             where T : unmanaged
         {
             uint texturePitch = area.Width * bytesPerPixel;
@@ -227,16 +227,14 @@ namespace Molten.Graphics
             if (!texBounds.Contains(area))
                 throw new Exception("The provided area would go outside of the current texture's bounds.");
 
-            TextureSet<T> change = new TextureSet<T>(data, 0, numElements)
+            QueueTask(priority, new TextureSet<T>(data, 0, numElements)
             {
                 Pitch = texturePitch,
                 StartIndex = 0,
                 ArrayIndex = arrayIndex,
                 MipLevel = level,
                 Area = area,
-            };
-
-            _pendingChanges.Enqueue(change);
+            });
         }
 
         /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>
@@ -247,7 +245,7 @@ namespace Molten.Graphics
         /// <param name="arrayCount">The number of array slices to copy from the provided <see cref="TextureData"/>.</param>
         /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
         /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
-        public void SetData(TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount,
+        public void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount,
             uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0)
         {
             TextureSlice level = null;
@@ -265,50 +263,44 @@ namespace Molten.Graphics
 
                     uint destSlice = destArraySlice + a;
                     uint destMip = destMipIndex + m;
-                    SetData(destMip, level.Data, 0, level.TotalBytes, level.Pitch, destSlice);
+                    SetData(priority, destMip, level.Data, 0, level.TotalBytes, level.Pitch, destSlice);
                 }
             }
         }
 
-        public void SetData(TextureSlice data, uint mipIndex, uint arraySlice)
+        public void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice)
         {
-            TextureSet<byte> change = new TextureSet<byte>(data.Data, 0, data.TotalBytes)
+            // Store pending change.
+            QueueTask(priority, new TextureSet<byte>(data.Data, 0, data.TotalBytes)
             {
                 Pitch = data.Pitch,
                 ArrayIndex = arraySlice,
                 MipLevel = mipIndex,
-            };
-
-            // Store pending change.
-            _pendingChanges.Enqueue(change);
+            });
         }
 
-        public void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex) 
+        public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex) 
             where T : unmanaged
         {
-            TextureSet<T> change = new TextureSet<T>(data, startIndex, count)
+            // Store pending change.
+            QueueTask(priority, new TextureSet<T>(data, startIndex, count)
             {
                 Pitch = pitch,
                 ArrayIndex = arrayIndex,
                 MipLevel = level,
-            };
-
-            // Store pending change.
-            _pendingChanges.Enqueue(change);
+            });
         }
 
-        public void SetData<T>(uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex)
+        public void SetData<T>(GraphicsPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex)
             where T : unmanaged
         {
-            TextureSet<T> change = new TextureSet<T>(data, startIndex, count)
+            // Store pending change.
+            QueueTask(priority, new TextureSet<T>(data, startIndex, count)
             {
                 Pitch = pitch,
                 ArrayIndex = arrayIndex,
                 MipLevel = level,
-            };
-
-            // Store pending change.
-            _pendingChanges.Enqueue(change);
+            });
         }
 
         public void GetData(ITexture stagingTexture, Action<TextureData> callback)

@@ -4,7 +4,7 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    internal unsafe class TextureSet<T> : ITextureTask, IDisposable
+    public unsafe struct TextureSet<T> : IGraphicsResourceTask
         where T: unmanaged
     {
         T* _data;
@@ -54,19 +54,10 @@ namespace Molten.Graphics
             Buffer.MemoryCopy(ptrStart, Data, NumBytes, NumBytes);
         }
 
-        ~TextureSet()
+        public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
-            Dispose();
-        }
+            TextureDX11 texture = resource as TextureDX11;
 
-        public void Dispose()
-        {
-            if (_data != null)
-                EngineUtil.Free(ref _data);
-        }
-
-        public unsafe bool Process(CommandQueueDX11 cmd, TextureDX11 texture)
-        {
             // Calculate size of a single array slice
             uint arraySliceBytes = 0;
             uint blockSize = 8; // default block size
@@ -105,10 +96,11 @@ namespace Molten.Graphics
             ptrData += startBytes;
 
             uint subLevel = (texture.MipMapCount * ArrayIndex) + MipLevel;
+            CommandQueueDX11 cmdDx11 = cmd as CommandQueueDX11;
 
             if (texture.HasFlags(TextureFlags.Dynamic))
             {
-                MappedSubresource destBox = cmd.MapResource(texture.ResourcePtr, subLevel, Map.WriteDiscard, 0, out RawStream stream);
+                MappedSubresource destBox = cmdDx11.MapResource(texture.ResourcePtr, subLevel, Map.WriteDiscard, 0, out RawStream stream);
 
                 // Are we constrained to an area of the texture?
                 if (Area != null)
@@ -132,8 +124,8 @@ namespace Molten.Graphics
                     stream.WriteRange(ptrData, NumElements);
                 }
 
-                cmd.UnmapResource(texture.ResourcePtr, subLevel);
-                cmd.Profiler.Current.MapDiscardCount++;
+                cmdDx11.UnmapResource(texture.ResourcePtr, subLevel);
+                cmdDx11.Profiler.Current.MapDiscardCount++;
             }
             else
             {
@@ -145,7 +137,7 @@ namespace Molten.Graphics
                     uint bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
 
                     // TODO support copy flags (DX11.1 feature)
-                    cmd.UpdateResource(texture, subLevel, null, ptrData, bcPitch, arraySliceBytes);
+                    cmdDx11.UpdateResource(texture, subLevel, null, ptrData, bcPitch, arraySliceBytes);
                 }
                 else
                 {
@@ -162,7 +154,7 @@ namespace Molten.Graphics
                         region.Right = rect.Right;
 
                         uint numBytes = NumElements * Stride;
-                        cmd.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, numBytes);
+                        cmdDx11.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, numBytes);
                     }
                     else
                     {
@@ -170,11 +162,12 @@ namespace Molten.Graphics
                         //uint y = 0;
                         //uint w = Math.Max(texture.Width >> (int)MipLevel, 1);
                         //uint h = Math.Max(texture.Height >> (int)MipLevel, 1);
-                        cmd.UpdateResource(texture, subLevel, null, ptrData, Pitch, arraySliceBytes);
+                        cmdDx11.UpdateResource(texture, subLevel, null, ptrData, Pitch, arraySliceBytes);
                     }
                 }
             }
 
+            EngineUtil.Free(ref _data);
             return true;
         }
     }

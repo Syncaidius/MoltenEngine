@@ -8,7 +8,8 @@
         public ShaderSamplerVariable[] SamplerVariables = new ShaderSamplerVariable[0];
         public Dictionary<string, ShaderVariable> Variables = new Dictionary<string, ShaderVariable>();
         
-        public GraphicsResource[] DefaultResources;
+        internal GraphicsResource[] DefaultResources;
+
         HlslPass[] _passes = new HlslPass[0];
 
         /// <summary>

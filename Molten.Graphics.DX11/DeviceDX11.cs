@@ -230,7 +230,7 @@ namespace Molten.Graphics
         public override ITexture CreateTexture1D(TextureData data)
         {
             Texture1DDX11 tex = new Texture1DDX11(Renderer, data.Width, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
-            tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
+            tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
 
@@ -259,7 +259,7 @@ namespace Molten.Graphics
                 data.Flags,
                 data.MultiSampleLevel);
 
-            tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
+            tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
 
@@ -302,7 +302,7 @@ namespace Molten.Graphics
         {
             uint cubeCount = Math.Max(data.ArraySize / 6, 1);
             TextureCubeDX11 tex = new TextureCubeDX11(Renderer, data.Width, data.Height, data.Format.ToApi(), data.MipMapLevels, cubeCount, data.Flags);
-            tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
+            tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
 

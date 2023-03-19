@@ -200,6 +200,7 @@ namespace Molten.Graphics
                     }
 
                     // Initialize samplers.
+                    pass.Samplers = new ShaderSampler[passDef.Samplers.Length];
                     for (int i = 0; i < passDef.Samplers.Length; i++)
                     {
                         ref ShaderSamplerParameters sp = ref passDef.Samplers[i];
