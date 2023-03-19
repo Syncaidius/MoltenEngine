@@ -132,7 +132,7 @@ namespace Molten.Graphics
 
         internal Logger Log { get; }
 
-        internal DeviceVK Device => _device;
+        internal DeviceVK VKDevice => _device;
 
         /// <summary>
         /// Gets the Queue family index, in relation to the bound <see cref="DeviceVK"/>.
