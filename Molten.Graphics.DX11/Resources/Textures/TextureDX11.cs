@@ -11,8 +11,6 @@ namespace Molten.Graphics
 
     public unsafe abstract partial class TextureDX11 : ResourceDX11, ITexture
     {
-        ThreadedQueue<ITextureTask> _pendingChanges;
-
         /// <summary>Triggered right before the internal texture resource is created.</summary>
         public event TextureEvent OnPreCreate;
 
@@ -39,7 +37,6 @@ namespace Molten.Graphics
             Flags = flags;
             ValidateFlagCombination();
 
-            _pendingChanges = new ThreadedQueue<ITextureTask>();
             MSAASupport msaaSupport = MSAASupport.NotSupported; // TODO re-support. _renderer.Device.Features.GetMSAASupport(format, aaLevel);
 
             Width = width;
@@ -405,11 +402,6 @@ namespace Molten.Graphics
 
         protected abstract ID3D11Resource* CreateResource(bool resize);
 
-        private protected void QueueChange(ITextureTask change)
-        {
-            _pendingChanges.Enqueue(change);
-        }
-
         public void Resize(GraphicsPriority priority, uint newWidth)
         {
             Resize(priority, newWidth, MipMapCount, DataFormat);
@@ -504,21 +496,7 @@ namespace Molten.Graphics
             if(_native == null)
                 CreateTexture(false);
 
-            bool altered = false;
-            CommandQueueDX11 cmdNative = cmd as CommandQueueDX11;
-
             base.OnApply(cmd);
-
-            // TODO remove once texture tasks are upgraded to IGraphicsResourceTask
-            // process all changes for the current pipe.
-            while (_pendingChanges.Count > 0)
-            {
-                if (_pendingChanges.TryDequeue(out ITextureTask change))
-                    altered = change.Process(cmdNative, this) || altered;
-            }
-
-            if (altered)
-                Version++;
         }
 
         /// <summary>Gets the flags that were passed in when the texture was created.</summary>
