@@ -4,7 +4,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public unsafe class Texture1DDX11 : TextureDX11, ITexture
+    public unsafe class Texture1DDX11 : TextureDX11, ITexture1D
     {
         internal ID3D11Texture1D* NativeTexture;
         Texture1DDesc _desc;
@@ -32,6 +32,18 @@ namespace Molten.Graphics
                 CPUAccessFlags = (uint)GetAccessFlags(),
                 Usage = GetUsageFlags(),
                 MiscFlags = (uint)GetResourceFlags(),
+            };
+        }
+
+        public Texture1DProperties Get1DProperties()
+        {
+            return new Texture1DProperties()
+            {
+                Width = Width,
+                ArraySize = ArraySize,
+                Flags = Flags,
+                Format = DataFormat,
+                MipMapLevels = MipMapCount,
             };
         }
 

@@ -306,32 +306,32 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0)
+        public void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, Action<GraphicsResource> completeCallback = null)
         {
             throw new NotImplementedException();
         }
 
-        public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0) where T : unmanaged
+        public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0, Action<GraphicsResource> completeCallback = null) where T : unmanaged
         {
             throw new NotImplementedException();
         }
 
-        public void SetData(GraphicsPriority priority, TextureSlice data, uint mipLevel, uint arraySlice)
+        public void SetData(GraphicsPriority priority, TextureSlice data, uint mipLevel, uint arraySlice, Action<GraphicsResource> completeCallback = null)
         {
             throw new NotImplementedException();
         }
 
-        public void SetData<T>(GraphicsPriority priority, RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : unmanaged
+        public void SetData<T>(GraphicsPriority priority, RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, Action<GraphicsResource> completeCallback = null) where T : unmanaged
         {
             throw new NotImplementedException();
         }
 
-        public void GetData(ITexture stagingTexture, Action<TextureData> callback)
+        public void GetData(GraphicsPriority priority, ITexture stagingTexture, Action<TextureData> completeCallback = null)
         {
             throw new NotImplementedException();
         }
 
-        public void GetData(ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> callback)
+        public void GetData(GraphicsPriority priority, ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null)
         {
             throw new NotImplementedException();
         }

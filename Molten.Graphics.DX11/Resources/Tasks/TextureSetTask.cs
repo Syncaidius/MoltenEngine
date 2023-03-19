@@ -27,6 +27,8 @@ namespace Molten.Graphics
 
         public bool UpdatesTexture => true;
 
+        public Action<GraphicsResource> CompleteCallback;
+
         public TextureSet(T[] data, uint startIndex, uint numElements)
         {
             Stride = (uint)sizeof(T);
@@ -168,6 +170,7 @@ namespace Molten.Graphics
             }
 
             EngineUtil.Free(ref _data);
+            CompleteCallback?.Invoke(resource);
             return true;
         }
     }

@@ -264,8 +264,9 @@ namespace Molten.Content
 
                 if (staging != null)
                 {
+                    // TODO move TextureWriter into GetData callback to prevent undefined behaviour from going out of scope by the time the callback is run.
                     TextureData tData = null;
-                    tex.GetData(staging, (data) =>
+                    tex.GetData(GraphicsPriority.EndOfFrame, staging, (data) =>
                     {
                         tData = data;
                     });

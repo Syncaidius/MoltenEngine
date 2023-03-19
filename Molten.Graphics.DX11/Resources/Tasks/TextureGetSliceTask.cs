@@ -1,17 +1,19 @@
 ﻿namespace Molten.Graphics
 {
-    internal struct TextureGetSlice : ITextureTask
+    internal struct TextureGetSliceTask : IGraphicsResourceTask
     {
         public TextureDX11 StagingTexture;
 
-        public Action<TextureSlice> Callback;
+        public Action<TextureSlice> CompleteCallback;
 
         public uint MipMapLevel;
 
         public uint ArrayIndex;
 
-        public bool Process(CommandQueueDX11 pipe, TextureDX11 texture)
+        public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
+            TextureDX11 texture = resource as TextureDX11;
+
             if (!StagingTexture.HasFlags(TextureFlags.Staging) && !texture.HasFlags(TextureFlags.Staging))
                 throw new TextureFlagException(StagingTexture.Flags, "Provided staging texture does not have the staging flag set.");
 
@@ -30,18 +32,17 @@
                 if (ArrayIndex >= texture.ArraySize)
                     throw new TextureCopyException(texture, StagingTexture, "array slice must be less than the array size of the texture.");
 
-                StagingTexture.Apply(pipe);
+                StagingTexture.Apply(cmd);
             }
             else
             {
                 StagingTexture = null;
             }
 
-            TextureSlice slice = texture.GetSliceData(pipe, StagingTexture, MipMapLevel, ArrayIndex);
+            TextureSlice slice = texture.OnGetSliceData(cmd, StagingTexture, MipMapLevel, ArrayIndex);
 
             // Return resulting data
-            Callback(slice);
-
+            CompleteCallback?.Invoke(slice);
             return false;
         }
     }

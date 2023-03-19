@@ -55,18 +55,6 @@ namespace Molten.Graphics
             IsBlockCompressed = BCHelper.GetBlockCompressed(DxgiFormat.FromApi());
         }
 
-        public Texture1DProperties Get1DProperties()
-        {
-            return new Texture1DProperties()
-            {
-                Width = Width,
-                ArraySize = ArraySize,
-                Flags = Flags,
-                Format = DataFormat,
-                MipMapLevels = MipMapCount,
-            };
-        }
-
         private void ValidateFlagCombination()
         {
             // Validate RT mip-maps
@@ -204,14 +192,16 @@ namespace Molten.Graphics
             QueueTask(priority, new GenerateMipMapsTask());
         }
 
-        public void SetData<T>(GraphicsPriority priority, RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0)
+        public void SetData<T>(GraphicsPriority priority, RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, 
+            Action<GraphicsResource> completeCallback = null)
             where T : unmanaged
         {
             fixed (T* ptrData = data)
-                SetData(priority, area, ptrData, (uint)data.Length, bytesPerPixel, level, arrayIndex);
+                SetData(priority, area, ptrData, (uint)data.Length, bytesPerPixel, level, arrayIndex, completeCallback);
         }
 
-        public void SetData<T>(GraphicsPriority priority, RectangleUI area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0)
+        public void SetData<T>(GraphicsPriority priority, RectangleUI area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0, 
+            Action<GraphicsResource> completeCallback = null)
             where T : unmanaged
         {
             uint texturePitch = area.Width * bytesPerPixel;
@@ -234,6 +224,7 @@ namespace Molten.Graphics
                 ArrayIndex = arrayIndex,
                 MipLevel = level,
                 Area = area,
+                CompleteCallback = completeCallback,
             });
         }
 
@@ -246,7 +237,7 @@ namespace Molten.Graphics
         /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
         /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
         public void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount,
-            uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0)
+            uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, Action<GraphicsResource> completeCallback = null)
         {
             TextureSlice level = null;
             for(uint a = 0; a < arrayCount; a++)
@@ -263,12 +254,12 @@ namespace Molten.Graphics
 
                     uint destSlice = destArraySlice + a;
                     uint destMip = destMipIndex + m;
-                    SetData(priority, destMip, level.Data, 0, level.TotalBytes, level.Pitch, destSlice);
+                    SetData(priority, destMip, level.Data, 0, level.TotalBytes, level.Pitch, destSlice, completeCallback);
                 }
             }
         }
 
-        public void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice)
+        public void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null)
         {
             // Store pending change.
             QueueTask(priority, new TextureSet<byte>(data.Data, 0, data.TotalBytes)
@@ -276,10 +267,11 @@ namespace Molten.Graphics
                 Pitch = data.Pitch,
                 ArrayIndex = arraySlice,
                 MipLevel = mipIndex,
+                CompleteCallback = completeCallback,
             });
         }
 
-        public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex) 
+        public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null) 
             where T : unmanaged
         {
             // Store pending change.
@@ -288,10 +280,11 @@ namespace Molten.Graphics
                 Pitch = pitch,
                 ArrayIndex = arrayIndex,
                 MipLevel = level,
+                CompleteCallback = completeCallback
             });
         }
 
-        public void SetData<T>(GraphicsPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex)
+        public void SetData<T>(GraphicsPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
             where T : unmanaged
         {
             // Store pending change.
@@ -300,78 +293,28 @@ namespace Molten.Graphics
                 Pitch = pitch,
                 ArrayIndex = arrayIndex,
                 MipLevel = level,
+                CompleteCallback = completeCallback
             });
         }
 
-        public void GetData(ITexture stagingTexture, Action<TextureData> callback)
+        public void GetData(GraphicsPriority priority, ITexture stagingTexture, Action<TextureData> callback)
         {
-            _pendingChanges.Enqueue(new TextureGet()
+            QueueTask(priority, new TextureGetTask()
             {
-                StagingTexture = stagingTexture as TextureDX11,
-                Callback = callback,
+                Staging = stagingTexture as TextureDX11,
+                CompleteCallback = callback,
             });
         }
 
-        public void GetData(ITexture stagingTexture, uint mipLevel, uint arrayIndex, Action<TextureSlice> callback)
+        public void GetData(GraphicsPriority priority, ITexture stagingTexture, uint mipLevel, uint arrayIndex, Action<TextureSlice> callback)
         {
-            _pendingChanges.Enqueue(new TextureGetSlice()
+            QueueTask(priority, new TextureGetSliceTask()
             {
                 StagingTexture = stagingTexture as TextureDX11,
-                Callback = callback,
+                CompleteCallback = callback,
                 ArrayIndex = arrayIndex,
                 MipMapLevel = mipLevel,
             });
-        }
-
-        internal TextureData GetAllData(CommandQueueDX11 cmd, TextureDX11 staging)
-        {
-            if (staging == null && !HasFlags(TextureFlags.Staging))
-                throw new TextureCopyException(this, null, "A null staging texture was provided, but this is only valid if the current texture is a staging texture. A staging texture is required to retrieve data from non-staged textures.");
-
-            if (!staging.HasFlags(TextureFlags.Staging))
-                throw new TextureFlagException(staging.Flags, "Provided staging texture does not have the staging flag set.");
-
-            // Validate dimensions.
-            if (staging.Width != Width ||
-                staging.Height != Height ||
-                staging.Depth != Depth)
-                throw new TextureCopyException(this, staging, "Staging texture dimensions do not match current texture.");
-
-            staging.OnApply(cmd);
-
-            ID3D11Resource* resToMap = _native;
-
-            if (staging != null)
-            {
-                cmd.Native->CopyResource(staging.ResourcePtr, _native);
-                cmd.Profiler.Current.CopyResourceCount++;
-                resToMap = staging._native;
-            }
-
-            TextureData data = new TextureData(Width, Height, MipMapCount, ArraySize)
-            {
-                Flags = Flags,
-                Format = DataFormat,
-                HighestMipMap = 0,
-                IsCompressed = IsBlockCompressed,
-            };
-
-            uint blockSize = BCHelper.GetBlockSize(DataFormat);
-            uint expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
-            uint expectedSlicePitch = expectedRowPitch * Height;
-
-            // Iterate over each array slice.
-            for (uint a = 0; a < ArraySize; a++)
-            {
-                // Iterate over all mip-map levels of the array slice.
-                for (uint i = 0; i < MipMapCount; i++)
-                {
-                    uint subID = (a * MipMapCount) + i;
-                    data.Levels[subID] = GetSliceData(cmd, staging, i, a);
-                }
-            }
-
-            return data;
         }
 
         /// <summary>A private helper method for retrieving the data of a subresource.</summary>
@@ -380,7 +323,7 @@ namespace Molten.Graphics
         /// <param name="level">The mip-map level.</param>
         /// <param name="arraySlice">The array slice.</param>
         /// <returns></returns>
-        internal unsafe TextureSlice GetSliceData(GraphicsCommandQueue cmd, TextureDX11 staging, uint level, uint arraySlice)
+        internal unsafe TextureSlice OnGetSliceData(GraphicsCommandQueue cmd, TextureDX11 staging, uint level, uint arraySlice)
         {
             uint subID = (arraySlice * MipMapCount) + level;
             uint subWidth = Width >> (int)level;
