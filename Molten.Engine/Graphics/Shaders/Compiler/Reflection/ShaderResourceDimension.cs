@@ -24,7 +24,7 @@
 
         Texture3D = 8,
 
-        Texturecube = 9,
+        TextureCube = 9,
 
         TextureCubeArray = 10,
 

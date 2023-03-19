@@ -6,9 +6,9 @@
         public RWVariable[] UAVs = new RWVariable[0];
         public ShaderResourceVariable[] Resources = new ShaderResourceVariable[0];
         public ShaderSamplerVariable[] SamplerVariables = new ShaderSamplerVariable[0];
-        public Dictionary<string, IShaderValue> Variables = new Dictionary<string, IShaderValue>();
+        public Dictionary<string, ShaderVariable> Variables = new Dictionary<string, ShaderVariable>();
         
-        public IShaderResource[] DefaultResources;
+        public GraphicsResource[] DefaultResources;
         HlslPass[] _passes = new HlslPass[0];
 
         /// <summary>
@@ -51,16 +51,16 @@
             base.OnDispose();
         }
 
-        public void SetDefaultResource(IShaderResource resource, uint slot)
+        public void SetDefaultResource(IGraphicsResource resource, uint slot)
         {
             if (slot >= DefaultResources.Length)
                 throw new IndexOutOfRangeException($"The highest slot number must be less-or-equal to the highest slot number used in the shader source code ({DefaultResources.Length}).");
 
             EngineUtil.ArrayResize(ref DefaultResources, slot + 1);
-            DefaultResources[slot] = resource;
+            DefaultResources[slot] = resource as GraphicsResource;
         }
 
-        public IShaderResource GetDefaultResource(uint slot)
+        public GraphicsResource GetDefaultResource(uint slot)
         {
             if (slot >= DefaultResources.Length)
                 throw new IndexOutOfRangeException($"The highest slot number must be less-or-equal to the highest slot number used in the shader source code ({DefaultResources.Length}).");
@@ -72,15 +72,15 @@
 
         /// <summary>Gets or sets the value of a material parameter.</summary>
         /// <value>
-        /// The <see cref="IShaderValue"/>.
+        /// The <see cref="ShaderVariable"/>.
         /// </value>
         /// <param name="varName">The varialbe name.</param>
         /// <returns></returns>
-        public IShaderValue this[string varName]
+        public ShaderVariable this[string varName]
         {
             get
             {
-                if (Variables.TryGetValue(varName, out IShaderValue varInstance))
+                if (Variables.TryGetValue(varName, out ShaderVariable varInstance))
                     return varInstance;
                 else
                     return null;
@@ -88,7 +88,7 @@
 
             set
             {
-                if (Variables.TryGetValue(varName, out IShaderValue varInstance))
+                if (Variables.TryGetValue(varName, out ShaderVariable varInstance))
                     varInstance.Value = value;
             }
         }

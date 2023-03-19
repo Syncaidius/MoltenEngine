@@ -1,22 +1,17 @@
 ﻿namespace Molten.Graphics
 {
-    public class ShaderSamplerVariable : IShaderValue
+    public class ShaderSamplerVariable : ShaderVariable
     {
         public ShaderSampler Sampler { get; private set; }
 
-        public ShaderSamplerVariable(HlslShader shader)
+        protected override void Initialize()
         {
-            Parent = shader;
-            ShaderSamplerParameters defaultParams = new ShaderSamplerParameters();
-            defaultParams.ApplyPreset(SamplerPreset.Default);
-            Sampler = shader.Device.CreateSampler(ref defaultParams);
+            ShaderSamplerParameters defaultParams = new ShaderSamplerParameters(SamplerPreset.Default);
+            Sampler = Parent.Device.CreateSampler(ref defaultParams);
         }
 
-        public HlslShader Parent { get; private set; }
-
-        public string Name { get; set; }
-
-        public object Value
+        /// <inheritdoc/>
+        public override object Value
         {
             get => Sampler;
             set

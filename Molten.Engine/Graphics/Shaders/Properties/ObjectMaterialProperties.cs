@@ -2,11 +2,11 @@
 {
     public class ObjectMaterialProperties : CommonShaderProperties
     {
-        public IShaderValue World { get; set; }
+        public ShaderVariable World { get; set; }
 
-        public IShaderValue Wvp { get; set; }
+        public ShaderVariable Wvp { get; set; }
 
-        public IShaderValue EmissivePower { get; set; }
+        public ShaderVariable EmissivePower { get; set; }
 
         public ObjectMaterialProperties(HlslShader shader) : base(shader)
         {

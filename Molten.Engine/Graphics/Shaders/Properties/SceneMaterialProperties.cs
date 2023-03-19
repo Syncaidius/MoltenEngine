@@ -2,15 +2,15 @@
 {
     public class SceneMaterialProperties : CommonShaderProperties
     {
-        public IShaderValue View { get; private set; }
+        public ShaderVariable View { get; private set; }
 
-        public IShaderValue Projection { get; private set; }
+        public ShaderVariable Projection { get; private set; }
 
-        public IShaderValue ViewProjection { get; private set; }
+        public ShaderVariable ViewProjection { get; private set; }
 
-        public IShaderValue InvViewProjection { get; private set; }
+        public ShaderVariable InvViewProjection { get; private set; }
 
-        public IShaderValue MaxSurfaceUV { get; private set; }
+        public ShaderVariable MaxSurfaceUV { get; private set; }
 
         public SceneMaterialProperties(HlslShader shader) : base(shader)
         {

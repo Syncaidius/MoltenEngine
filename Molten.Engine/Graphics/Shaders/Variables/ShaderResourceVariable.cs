@@ -1,27 +1,45 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract class ShaderResourceVariable : IShaderValue
+    public abstract class ShaderResourceVariable : ShaderVariable
     {
-        IShaderResource _resource;
+        GraphicsResource _resource;
 
-        public ShaderResourceVariable(HlslShader shader)
-        {
-            Parent = shader;
-        }
-
-        protected abstract IShaderResource OnSetResource(object value);
+        protected abstract bool ValidateResource(GraphicsResource value);
 
         /// <summary>Gets the resource bound to the variable.</summary>
-        public IShaderResource Resource => _resource;
+        public GraphicsResource Resource => _resource;
 
-        public string Name { get; set; }
-
-        public HlslShader Parent { get; }
-
-        public object Value
+        /// <summary>
+        /// Gets or sets the value of the resource variable.
+        /// </summary>
+        public override object Value
         {
             get => _resource;
-            set => _resource = OnSetResource(value);
+            set
+            {
+                if (value != _resource)
+                {
+                    if (value != null)
+                    {
+                        if (value is GraphicsResource res && ValidateResource(res))
+                            _resource = res;
+                        else
+                            Parent.Device.Log.Warning($"Cannot set '{value.GetType().Name}' object on resource variable '{Name}'");
+                    }
+                    else
+                    {
+                        _resource = null;
+                    }
+                }
+            }
+        }
+    }
+
+    public class ShaderResourceVariable<T> : ShaderResourceVariable
+    {
+        protected override bool ValidateResource(GraphicsResource value)
+        {
+            return value is T;
         }
     }
 }

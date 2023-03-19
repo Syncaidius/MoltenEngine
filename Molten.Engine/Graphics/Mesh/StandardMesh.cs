@@ -15,7 +15,7 @@
         protected override void OnApply(GraphicsCommandQueue cmd)
         {
             base.OnApply(cmd);
-            IShaderResource normal = GetResource(1);
+            GraphicsResource normal = GetResource(1);
 
             if (Shader == null)
             {

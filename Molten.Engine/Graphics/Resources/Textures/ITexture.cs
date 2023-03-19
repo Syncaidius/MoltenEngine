@@ -8,7 +8,7 @@
 
     /// <summary>Represents a 1D texture, while also acting as the base for all other texture implementations.</summary>
     /// <seealso cref="IDisposable" />
-    public interface ITexture : IShaderResource
+    public interface ITexture : IGraphicsResource
     {
         /// <summary>
         /// Occurs after the <see cref="ITexture"/> is done resizing. Executed by the renderer thread it is bound to.

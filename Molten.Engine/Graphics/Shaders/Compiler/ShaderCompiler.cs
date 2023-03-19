@@ -128,7 +128,7 @@ namespace Molten.Graphics
             shader.Light = new LightMaterialProperties(shader);
 
             // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
-            shader.DefaultResources = new IShaderResource[shader.Resources.Length];
+            shader.DefaultResources = new GraphicsResource[shader.Resources.Length];
             return shader;
         }
 

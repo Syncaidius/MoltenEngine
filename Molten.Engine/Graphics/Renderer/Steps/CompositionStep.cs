@@ -8,8 +8,8 @@
         IRenderSurface2D _surfaceLighting;
         IRenderSurface2D _surfaceEmissive;
         HlslShader _fxCompose;
-        IShaderValue _valLighting;
-        IShaderValue _valEmissive;
+        ShaderVariable _valLighting;
+        ShaderVariable _valEmissive;
 
         internal override void Initialize(RenderService renderer)
         {

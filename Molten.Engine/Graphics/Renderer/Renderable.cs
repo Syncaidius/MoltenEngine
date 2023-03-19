@@ -2,19 +2,19 @@
 {
     public abstract class Renderable
     {
-        IShaderResource[] _resources;
+        GraphicsResource[] _resources;
 
         protected Renderable(RenderService renderer)
         {
             Renderer = renderer;
             IsVisible = false;
-            _resources = new IShaderResource[0];
+            _resources = new GraphicsResource[0];
         }
 
-        /// <summary>Applies a shader resource to the mesh at the specified slot.</summary>
+        /// <summary>Applies a shader resource to the renderable at the specified slot.</summary>
         /// <param name="resource">The resource.</param>
         /// <param name="slot">The slot ID.</param>
-        public void SetResource(IShaderResource resource, uint slot)
+        public void SetResource(IGraphicsResource resource, uint slot)
         {
             if (slot >= Renderer.Device.Adapter.Capabilities.PixelShader.MaxInResources)
                 throw new IndexOutOfRangeException("The maximum slot number must be less than the maximum supported by the graphics device.");
@@ -22,13 +22,13 @@
             if (slot >= _resources.Length)
                 EngineUtil.ArrayResize(ref _resources, slot + 1U);
 
-            _resources[slot] = resource;
+            _resources[slot] = resource as GraphicsResource;
         }
 
         /// <summary>Gets the shader resource applied to the mesh at the specified slot.</summary>
         /// <param name="slot">The slot ID.</param>
-        /// <returns>An <see cref="IShaderResource"/> that was applied at the specified slot.</returns>
-        public IShaderResource GetResource(uint slot)
+        /// <returns>An <see cref="GraphicsResource"/> that was applied at the specified slot.</returns>
+        public GraphicsResource GetResource(uint slot)
         {
             if (slot >= _resources.Length)
                 return null;

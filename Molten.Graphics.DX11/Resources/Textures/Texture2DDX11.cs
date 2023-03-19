@@ -180,5 +180,7 @@ namespace Molten.Graphics
         }
 
         internal override Usage UsageFlags => _desc.Usage;
+
+        public override bool IsUnorderedAccess => ((BindFlag)_desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
     }
 }

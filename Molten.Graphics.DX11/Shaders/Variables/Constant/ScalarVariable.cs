@@ -8,7 +8,8 @@ namespace Molten.Graphics
         uint _expectedElements;
         T* _value;
 
-        internal ScalarVariable(ShaderConstantBuffer parent, uint rows, uint columns) : base(parent)
+        internal ScalarVariable(ShaderConstantBuffer parent, uint rows, uint columns, string name) : 
+            base(parent, name)
         {
             _expectedElements = columns * rows;
             SizeOf = _stride * _expectedElements;

@@ -5,8 +5,8 @@
     {
         Matrix4F _value;
 
-        public ScalarFloat4x4Variable(ShaderConstantBuffer parent)
-            : base(parent)
+        public ScalarFloat4x4Variable(ShaderConstantBuffer parent, string name)
+            : base(parent, name)
         {
             SizeOf = (uint)sizeof(Matrix4F);
         }

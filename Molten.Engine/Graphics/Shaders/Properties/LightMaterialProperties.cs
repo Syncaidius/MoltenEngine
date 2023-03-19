@@ -2,17 +2,17 @@
 {
     public class LightMaterialProperties : CommonShaderProperties
     {
-        public IShaderValue Data { get; set; }
+        public ShaderVariable Data { get; set; }
 
-        public IShaderValue MapDiffuse { get; set; }
+        public ShaderVariable MapDiffuse { get; set; }
 
-        public IShaderValue MapNormal { get; set; }
+        public ShaderVariable MapNormal { get; set; }
 
-        public IShaderValue MapDepth { get; set; }
+        public ShaderVariable MapDepth { get; set; }
 
-        public IShaderValue InvViewProjection { get; set; }
+        public ShaderVariable InvViewProjection { get; set; }
 
-        public IShaderValue CameraPosition { get; set; }
+        public ShaderVariable CameraPosition { get; set; }
 
         public LightMaterialProperties(HlslShader shader) : base(shader)
         {

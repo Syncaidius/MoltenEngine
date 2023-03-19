@@ -32,13 +32,12 @@ namespace Molten.Graphics
             for (int c = 0; c < desc.Variables.Count; c++)
             {
                 ConstantBufferVariableInfo variable = desc.Variables[c];
-                ShaderConstantVariable sv = GetShaderVariable(variable);
+                ShaderConstantVariable sv = GetVariable(variable, variable.Name);
 
                 // Throw exception if the variable type is unsupported.
                 if (sv == null) // TODO remove this exception!
                     throw new NotSupportedException("Shader pipeline does not support HLSL variables of type: " + variable.Type.Type + " -- " + variable.Type.Class);
 
-                sv.Name = variable.Name;
                 sv.ByteOffset = variable.StartOffset;
 
                 if(variable.DefaultValue != null)
@@ -91,7 +90,7 @@ namespace Molten.Graphics
         /// <summary>Figures out what type to use for a shader variable.</summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        private unsafe ShaderConstantVariable GetShaderVariable(ConstantBufferVariableInfo vInfo)
+        private unsafe ShaderConstantVariable GetVariable(ConstantBufferVariableInfo vInfo, string name)
         {
             uint columns = vInfo.Type.ColumnCount;
             uint rows = vInfo.Type.RowCount;
@@ -106,11 +105,11 @@ namespace Molten.Graphics
                         switch (vInfo.Type.Type)
                         {
                             case ShaderVariableType.Int:
-                                return new ScalarArray<int>(this, elementCount);
+                                return new ScalarArray<int>(this, elementCount, name);
                             case ShaderVariableType.Uint:
-                                return new ScalarArray<uint>(this, elementCount);
+                                return new ScalarArray<uint>(this, elementCount, name);
                             case ShaderVariableType.Float:
-                                return new ScalarArray<float>(this, elementCount);
+                                return new ScalarArray<float>(this, elementCount, name);
                         }
                     }
                     else
@@ -118,11 +117,11 @@ namespace Molten.Graphics
                         switch (vInfo.Type.Type)
                         {
                             case ShaderVariableType.Int:
-                                return new ScalarVariable<int>(this, rows, columns);
+                                return new ScalarVariable<int>(this, rows, columns, name);
                             case ShaderVariableType.Uint:
-                                return new ScalarVariable<uint>(this, rows, columns);
+                                return new ScalarVariable<uint>(this, rows, columns, name);
                             case ShaderVariableType.Float:
-                                return new ScalarVariable<float>(this, rows, columns);
+                                return new ScalarVariable<float>(this, rows, columns, name);
                         }
                     }
                     break;
@@ -134,14 +133,14 @@ namespace Molten.Graphics
                         {
                             case ShaderVariableType.Float:
                                 if (columns == 4 && rows == 4)
-                                    return new ScalarFloat4x4ArrayVariable(this, elementCount);
+                                    return new ScalarFloat4x4ArrayVariable(this, elementCount, name);
                                 else if (columns == 3 && rows == 3)
-                                    return new ScalarFloat3x3ArrayVariable(this, elementCount);
+                                    return new ScalarFloat3x3ArrayVariable(this, elementCount, name);
                                 else
-                                    return new ScalarMatrixArray<float>(this, rows, columns, elementCount);
+                                    return new ScalarMatrixArray<float>(this, rows, columns, elementCount, name);
 
                             default:
-                                return new ScalarMatrixArray<float>(this, rows, columns, elementCount);
+                                return new ScalarMatrixArray<float>(this, rows, columns, elementCount, name);
                         }
                     }
                     else
@@ -150,16 +149,16 @@ namespace Molten.Graphics
                         {
                             case ShaderVariableType.Float:
                                 if (vInfo.Type.ColumnCount == 4 && rows == 4)
-                                    return new ScalarFloat4x4Variable(this);
+                                    return new ScalarFloat4x4Variable(this, name);
                                 else if (vInfo.Type.ColumnCount == 2 && rows == 3)
-                                    return new ScalarFloat3x2Variable(this);
+                                    return new ScalarFloat3x2Variable(this, name);
                                 else if (vInfo.Type.ColumnCount == 3 && rows == 3)
-                                    return new ScalarFloat3x3Variable(this);
+                                    return new ScalarFloat3x3Variable(this, name);
                                 else
-                                    return new ScalarVariable<float>(this, rows, columns);
+                                    return new ScalarVariable<float>(this, rows, columns, name);
 
                             default:
-                                return new ScalarVariable<float>(this, rows, columns);
+                                return new ScalarVariable<float>(this, rows, columns, name);
                         }
                     }
             }

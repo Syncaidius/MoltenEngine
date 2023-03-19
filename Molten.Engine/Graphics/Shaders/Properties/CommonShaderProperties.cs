@@ -7,7 +7,7 @@
     {
         protected CommonShaderProperties(HlslShader shader) { }
 
-        protected IShaderValue MapValue(HlslShader shader, string name)
+        protected ShaderVariable MapValue(HlslShader shader, string name)
         {
             return shader[name] ?? new DummyShaderValue();
         }

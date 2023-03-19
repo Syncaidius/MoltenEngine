@@ -3,7 +3,7 @@ using Molten.IO;
 
 namespace Molten.Graphics
 {
-    public interface IGraphicsBuffer : IShaderResource
+    public interface IGraphicsBuffer : IGraphicsResource
     {
         void SetData<T>(GraphicsPriority priority, T[] data, IStagingBuffer staging = null, Action completeCallback = null)
             where T : unmanaged;

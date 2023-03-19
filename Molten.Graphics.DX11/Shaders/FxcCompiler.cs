@@ -314,7 +314,7 @@ namespace Molten.Graphics
                             int oldLength = shader.SamplerVariables.Length;
                             EngineUtil.ArrayResize(ref shader.SamplerVariables, bindPoint + 1);
                             for (int i = oldLength; i < shader.SamplerVariables.Length; i++)
-                                shader.SamplerVariables[i] = (i == bindPoint ? sampler : new ShaderSamplerVariable(shader));
+                                shader.SamplerVariables[i] = (i == bindPoint ? sampler : ShaderVariable.Create<ShaderSamplerVariable>(shader, bindInfo.Name));
                         }
                         else
                         {
@@ -324,7 +324,7 @@ namespace Molten.Graphics
                         break;
 
                     case ShaderInputType.Structured:
-                        BufferVariable bVar = GetVariableResource<BufferVariable>(context, shader, bindInfo);
+                        ShaderResourceVariable bVar = GetVariableResource<ShaderResourceVariable<BufferDX11>>(context, shader, bindInfo);
                         if (bindPoint >= shader.Resources.Length)
                             EngineUtil.ArrayResize(ref shader.Resources, bindPoint + 1);
 
@@ -388,7 +388,7 @@ namespace Molten.Graphics
             (ShaderCompilerContext context,
             HlslShader shader, ShaderResourceInfo info)
         {
-            RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(context, shader, info);
+            RWVariable rwBuffer = GetVariableResource<RWVariable<BufferDX11>>(context, shader, info);
             uint bindPoint = info.BindPoint;
 
             if (bindPoint >= shader.UAVs.Length)
@@ -406,12 +406,25 @@ namespace Molten.Graphics
 
             switch (info.Dimension)
             {
+                case ShaderResourceDimension.Texture1DArray:
                 case ShaderResourceDimension.Texture1D:
-                    resource = GetVariableResource<RWTexture1DVariable>(context, shader, info);
+                    resource = GetVariableResource<RWVariable<ITexture>>(context, shader, info);
                     break;
 
+                case ShaderResourceDimension.Texture2DMS:
+                case ShaderResourceDimension.Texture2DMSArray:
+                case ShaderResourceDimension.Texture2DArray:
                 case ShaderResourceDimension.Texture2D:
-                    resource = GetVariableResource<RWTexture2DVariable>(context, shader, info);
+                    resource = GetVariableResource<RWVariable<ITexture2D>>(context, shader, info);
+                    break;
+
+                case ShaderResourceDimension.Texture3D:
+                    resource = GetVariableResource<RWVariable<ITexture3D>>(context, shader, info);
+                    break;
+
+                case ShaderResourceDimension.TextureCube:
+                case ShaderResourceDimension.TextureCubeArray:
+                    resource = GetVariableResource<RWVariable<ITextureCube>>(context, shader, info);
                     break;
             }
 
@@ -431,18 +444,22 @@ namespace Molten.Graphics
             {
                 case ShaderResourceDimension.Texture1DArray:
                 case ShaderResourceDimension.Texture1D:
-                    obj = GetVariableResource<Texture1DVariable>(context, shader, info);
+                    obj = GetVariableResource<ShaderResourceVariable<ITexture>>(context, shader, info);
                     break;
 
                 case ShaderResourceDimension.Texture2DMS:
                 case ShaderResourceDimension.Texture2DMSArray:
                 case ShaderResourceDimension.Texture2DArray:
                 case ShaderResourceDimension.Texture2D:
-                    obj = GetVariableResource<Texture2DVariable>(context, shader, info);
+                    obj = GetVariableResource<ShaderResourceVariable<ITexture2D>>(context, shader, info);
                     break;
 
-                case ShaderResourceDimension.Texturecube:
-                    obj = GetVariableResource<TextureCubeVariable>(context, shader, info);
+                case ShaderResourceDimension.Texture3D:
+                    obj = GetVariableResource<ShaderResourceVariable<ITexture3D>>(context, shader, info);
+                    break;
+
+                case ShaderResourceDimension.TextureCube:
+                    obj = GetVariableResource<ShaderResourceVariable<ITextureCube>>(context, shader, info);
                     break;
             }
 
@@ -507,11 +524,10 @@ namespace Molten.Graphics
             return cBuffer;
         }
 
-        protected T GetVariableResource<T>(ShaderCompilerContext context,
-            HlslShader shader, ShaderResourceInfo info)
-            where T : class, IShaderValue
+        protected T GetVariableResource<T>(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
+            where T : ShaderVariable, new()
         {
-            IShaderValue existing = null;
+            ShaderVariable existing = null;
             T bVar = null;
             Type t = typeof(T);
 
@@ -532,10 +548,7 @@ namespace Molten.Graphics
             }
             else
             {
-                BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                bVar = Activator.CreateInstance(typeof(T), bindFlags, null, new object[] { shader }, null) as T;
-                bVar.Name = info.Name;
-
+                bVar = ShaderVariable.Create<T>(shader, info.Name);
                 shader.Variables.Add(bVar.Name, bVar);
             }
 

@@ -82,5 +82,10 @@ namespace Molten.Graphics
         {
             _applyTaskQueue.Clear();
         }
+
+        /// <summary>
+        /// Gets whether the current <see cref="GraphicsResource"/> is unordered-access, meaning it can be written to by certain shaders.
+        /// </summary>
+        public abstract bool IsUnorderedAccess { get; }
     }
 }

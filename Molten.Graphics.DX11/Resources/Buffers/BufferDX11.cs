@@ -408,6 +408,8 @@ namespace Molten.Graphics
 
         internal override Usage UsageFlags => Desc.Usage;
 
+        public override bool IsUnorderedAccess => ((BindFlag)Desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
+
         /// <summary>Gets the bind flags associated with the buffer.</summary>
         public BindFlag BufferBindFlags => (BindFlag)Desc.BindFlags;
 

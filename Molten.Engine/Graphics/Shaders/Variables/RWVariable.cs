@@ -2,13 +2,22 @@
 {
     public abstract class RWVariable : ShaderResourceVariable
     {
-        protected RWVariable(HlslShader shader) : base(shader) { }
-
-        protected sealed override IShaderResource OnSetResource(object value)
+        protected override bool ValidateResource(GraphicsResource res)
         {
-            return OnSetUnorderedResource(value);
-        }
+            if (res.IsUnorderedAccess && !(res is ISwapChainSurface))
+                return true;
+            else
+                Parent.Device.Log.Warning($"Cannot use non-unordered-access or non-storage resource in ${nameof(RWVariable)}");
 
-        protected abstract IShaderResource OnSetUnorderedResource(object value);
+            return false;
+        }
+    }
+
+    public class RWVariable<T> : RWVariable
+    {
+        protected override bool ValidateResource(GraphicsResource res)
+        {
+            return res is T && base.ValidateResource(res);
+        }
     }
 }

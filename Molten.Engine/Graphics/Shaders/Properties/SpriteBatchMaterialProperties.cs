@@ -2,7 +2,7 @@
 {
     public class SpriteBatchMaterialProperties : CommonShaderProperties
     {
-        public IShaderValue TextureSize { get; set; }
+        public ShaderVariable TextureSize { get; set; }
 
         public SpriteBatchMaterialProperties(HlslShader shader) : base(shader)
         {

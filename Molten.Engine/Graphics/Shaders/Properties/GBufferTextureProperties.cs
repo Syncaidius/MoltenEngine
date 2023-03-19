@@ -2,15 +2,15 @@
 {
     public class GBufferTextureProperties : CommonShaderProperties
     {
-        public IShaderValue DiffuseTexture { get; set; }
+        public ShaderVariable DiffuseTexture { get; set; }
 
-        public IShaderValue DiffuseTextureMS { get; set; }
+        public ShaderVariable DiffuseTextureMS { get; set; }
 
-        public IShaderValue SampleCount { get; set; }
+        public ShaderVariable SampleCount { get; set; }
 
-        public IShaderValue NormalTexture { get; set; }
+        public ShaderVariable NormalTexture { get; set; }
 
-        public IShaderValue EmissiveTexture { get; set; }
+        public ShaderVariable EmissiveTexture { get; set; }
 
         public GBufferTextureProperties(HlslShader shader)  : base(shader)
         {
