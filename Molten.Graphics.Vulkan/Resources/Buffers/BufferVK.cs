@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.IO;
 using Silk.NET.Vulkan;
 using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class BufferVK : GraphicsObject //, IGraphicsBuffer
+    internal unsafe abstract class BufferVK : GraphicsResource, IGraphicsBuffer
     {
         Buffer* _buffer;
         BufferCreateInfo _desc;
@@ -61,6 +62,9 @@ namespace Molten.Graphics
             _desc.SharingMode = SharingMode.Exclusive;
             _desc.Flags = BufferCreateFlags.None;
             _desc.Size = Stride * ElementCount;
+            _desc.PQueueFamilyIndices = EngineUtil.AllocArray<uint>(1);
+            _desc.PQueueFamilyIndices[0] = (Device.Cmd as CommandQueueVK).Index;
+            _desc.QueueFamilyIndexCount = 1;
 
             return memFlags;
         }
@@ -83,12 +87,13 @@ namespace Molten.Graphics
             memInfo.AllocationSize = memRequirements.Size;
             memInfo.MemoryTypeIndex = device.Adapter.GetMemoryTypeIndex(ref memRequirements, memFlags);
 
-
             r = device.VK.AllocateMemory(device, &memInfo, null, _memory);
             if (!device.Renderer.CheckResult(r))
                 return;
 
-            device.VK.BindBufferMemory(device, *_buffer, *_memory, 0);
+            r = device.VK.BindBufferMemory(device, *_buffer, *_memory, 0);
+            if (!device.Renderer.CheckResult(r))
+                return;
         }
 
         public override void GraphicsRelease()
@@ -102,13 +107,52 @@ namespace Molten.Graphics
 
                 EngineUtil.Free(ref _memory);
                 EngineUtil.Free(ref _buffer);
+                EngineUtil.Free(ref _desc.PQueueFamilyIndices);
             }
         }
 
-        protected override void OnApply(GraphicsCommandQueue cmd)
+        public void SetData<T>(GraphicsPriority priority, T[] data, IStagingBuffer staging = null, Action completeCallback = null) 
+            where T : unmanaged
         {
             throw new NotImplementedException();
         }
+
+        public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, uint byteOffset = 0, IStagingBuffer staging = null,
+            Action completeCallback = null) 
+            where T : unmanaged
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint elementOffset, 
+            Action<T[]> completionCallback = null) 
+            where T : unmanaged
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, 
+            Action<GraphicsResource> completionCallback = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, RawStream> callback, IStagingBuffer staging = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal bool HasFlags(BufferUsageFlags flags)
+        {
+            return (_desc.Usage & flags) == flags;
+        }
+
+        protected override void OnApply(GraphicsCommandQueue cmd) { }
 
         public unsafe Buffer* NativePtr => _buffer;
 
@@ -125,5 +169,7 @@ namespace Molten.Graphics
 
         /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
         public BufferFlags Flags { get; }
+
+        public override bool IsUnorderedAccess => HasFlags(BufferUsageFlags.StorageBufferBit);
     }
 }

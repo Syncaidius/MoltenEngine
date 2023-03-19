@@ -156,7 +156,7 @@ namespace Molten.Graphics
 
         public override IStagingBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity)
         {
-            throw new NotImplementedException();
+            return new StagingBufferVK(this, 1, byteCapacity);
         }
 
         public override INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1)
