@@ -21,7 +21,6 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="priority"></param>
         /// <param name="op"></param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void QueueTask(GraphicsPriority priority, IGraphicsResourceTask op)
         {
             switch (priority)

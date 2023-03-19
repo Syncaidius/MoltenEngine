@@ -115,7 +115,7 @@ namespace Molten.Graphics
 
         private void _renderData_OnPostRender(RenderService renderer, SceneRenderData data)
         {
-            _camera.Surface.GenerateMipMaps();
+            _camera.Surface.GenerateMipMaps(GraphicsPriority.Apply);
         }
 
         internal SpriteFont LoadFont(Stream stream, string path, float size = 16)

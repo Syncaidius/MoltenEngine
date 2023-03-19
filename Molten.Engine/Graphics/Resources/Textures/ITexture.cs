@@ -35,8 +35,11 @@
         /// <param name="newWidth">The new width.</param>
         void Resize(uint newWidth);
 
-        /// <summary>Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="TextureFlags.AllowMipMapGeneration"/>.</summary>
-        void GenerateMipMaps();
+        /// <summary>
+        /// Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="TextureFlags.AllowMipMapGeneration"/>.
+        /// </summary>
+        /// <param name="priority">The priority of the copy operation.</param>
+        void GenerateMipMaps(GraphicsPriority priority);
 
         /// <summary>
         /// Copies the current texture to the destination texture. Both textures must be of the same format and dimensions.

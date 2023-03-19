@@ -196,19 +196,12 @@ namespace Molten.Graphics
         }
 
         /// <summary>Generates mip maps for the texture via the provided <see cref="CommandQueueDX11"/>.</summary>
-        public void GenerateMipMaps()
+        public void GenerateMipMaps(GraphicsPriority priority)
         {
             if (!((Flags & TextureFlags.AllowMipMapGeneration) == TextureFlags.AllowMipMapGeneration))
                 throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
 
-            TexturegenMipMaps change = new TexturegenMipMaps();
-            _pendingChanges.Enqueue(change);
-        }
-
-        internal void GenerateMipMaps(CommandQueueDX11 pipe)
-        {
-            if (SRV != null)
-                pipe.Native->GenerateMips(SRV);
+            QueueTask(priority, new GenerateMipMapsTask());
         }
 
         public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0)

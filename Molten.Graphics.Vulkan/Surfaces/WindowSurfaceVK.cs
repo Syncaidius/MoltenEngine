@@ -299,7 +299,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void GenerateMipMaps()
+        public void GenerateMipMaps(GraphicsPriority priority)
         {
             throw new NotImplementedException();
         }
