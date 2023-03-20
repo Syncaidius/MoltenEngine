@@ -80,7 +80,7 @@ namespace Molten.Graphics
             VkNonDispatchableHandle surfaceHandle = new VkNonDispatchableHandle();
 
             Result r = (Result)renderer.GLFW.CreateWindowSurface(instanceHandle, _window, null, &surfaceHandle);
-            if (!renderer.CheckResult(r))
+            if (!r.Check(renderer))
                 return;
 
             Native = new SurfaceKHR(surfaceHandle.Handle);
@@ -94,7 +94,7 @@ namespace Molten.Graphics
 
             // Check surface capabilities
             r = extSurface.GetPhysicalDeviceSurfaceCapabilities(device.Adapter, Native, out _cap);
-            if (!renderer.CheckResult(r))
+            if (!r.Check(renderer))
                 return;
 
             if (!IsFormatSupported(extSurface, format, _colorSpace))
@@ -108,7 +108,7 @@ namespace Molten.Graphics
             ValidateBackBufferSize();
 
             r = CreateSwapChain();
-            if (renderer.CheckResult(r))
+            if (r.Check(renderer))
                 _backBuffer = GetBackBufferImages();
         }
 
@@ -179,7 +179,7 @@ namespace Molten.Graphics
                 buffer[i].Texture = images[i];
                 createInfo.Image = images[i];
                 Result r = Device.Renderer.VK.CreateImageView(Device, &createInfo, null, out buffer[i].View);
-                if (!Device.Renderer.CheckResult(r, () => $"Failed to create image view for back-buffer image {i}"))
+                if (!r.Check(Device, () => $"Failed to create image view for back-buffer image {i}"))
                     break;
             }
 

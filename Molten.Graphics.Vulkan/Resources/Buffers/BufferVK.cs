@@ -76,7 +76,7 @@ namespace Molten.Graphics
 
             DeviceVK device = Device as DeviceVK;
             Result r = device.VK.CreateBuffer(device, in _desc, null, _buffer);
-            if (!device.Renderer.CheckResult(r))
+            if (!r.Check(device))
                 return;
 
             MemoryRequirements memRequirements;
@@ -88,11 +88,11 @@ namespace Molten.Graphics
             memInfo.MemoryTypeIndex = device.Adapter.GetMemoryTypeIndex(ref memRequirements, memFlags);
 
             r = device.VK.AllocateMemory(device, &memInfo, null, _memory);
-            if (!device.Renderer.CheckResult(r))
+            if (!r.Check(device))
                 return;
 
             r = device.VK.BindBufferMemory(device, *_buffer, *_memory, 0);
-            if (!device.Renderer.CheckResult(r))
+            if (!r.Check(device))
                 return;
         }
 

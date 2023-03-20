@@ -125,7 +125,7 @@ namespace Molten.Graphics
             };
 
             Result r = OnBuild(Renderer, apiVersion, tmp, _bind, ptr);
-            bool success = Renderer.CheckResult(r); 
+            bool success = r.Check(Renderer);
             if (success)
             {
 

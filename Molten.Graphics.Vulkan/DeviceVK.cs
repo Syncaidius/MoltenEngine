@@ -92,7 +92,7 @@ namespace Molten.Graphics
             foreach (CommandQueueVK queue in _queues)
             {
                 Result r = extSurface.GetPhysicalDeviceSurfaceSupport(Adapter.Native, queue.FamilyIndex, surface.Native, &presentSupported);
-                if (_renderer.CheckResult(r) && presentSupported)
+                if (r.Check(_renderer) && presentSupported)
                     return queue;
             }
 

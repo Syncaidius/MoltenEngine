@@ -98,7 +98,7 @@ namespace Molten.Graphics
 
                 // Create the instance
                 r = renderer.VK.CreateDevice(_adapter, &createInfo, null, obj);
-                renderer.CheckResult(r, () => $"Failed to create logical device on '{_adapter.Name}' adapter");
+                r.Check(renderer, () => $"Failed to create logical device on '{_adapter.Name}' adapter");
             }
             return r;
         }

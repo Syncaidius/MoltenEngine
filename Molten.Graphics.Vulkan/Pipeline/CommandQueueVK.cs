@@ -5,6 +5,10 @@ namespace Molten.Graphics
     internal class CommandQueueVK : GraphicsCommandQueue
     {
         DeviceVK _device;
+        CommandPoolVK _cmdPool;
+        CommandPoolVK _cmdTransientPool;
+
+        CommandListVK _cmdMain;
 
         internal CommandQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
             base(device)
@@ -16,6 +20,11 @@ namespace Molten.Graphics
             Index = queueIndex;
             Native = queue;
             Set = set;
+
+            _cmdPool = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
+            _cmdTransientPool = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit | CommandPoolCreateFlags.TransientBit, 5);
+
+            _cmdMain = _cmdPool.Allocate(CommandBufferLevel.Primary);
         }
 
         internal bool HasFlags(CommandSetCapabilityFlags flags)
@@ -25,7 +34,9 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            
+            _cmdMain.Free();
+            _cmdPool.Dispose();
+            _cmdTransientPool.Dispose();
         }
 
         public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)

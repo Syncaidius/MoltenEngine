@@ -130,23 +130,8 @@ namespace Molten.Graphics
 
             _debugMessengerHandle = EngineUtil.Alloc<DebugUtilsMessengerEXT>();
             Result r = ext.CreateDebugUtilsMessenger(*_instance, &debugCreateInfo, null, _debugMessengerHandle);
-            if (!CheckResult(r))
+            if (!r.Check(this))
                 EngineUtil.Free(ref _debugMessengerHandle);
-        }
-
-        internal bool CheckResult(Result r, Func<string> getMsg = null)
-        {
-            if (r != Result.Success)
-            {
-                if (getMsg == null)
-                    Log.Error($"Vulkan error: {r}");
-                else
-                    Log.Error($"Vulkan error: {r} -- {getMsg()}");
-
-                return false;
-            }
-
-            return true;
         }
 
         internal unsafe T[] Enumerate<T>(EnumerateCallback<T> callback, string callbackName = "")
@@ -157,12 +142,12 @@ namespace Molten.Graphics
             uint count = 0;
             Result r = callback(&count, null);
 
-            if (CheckResult(r, () =>$"Enumerate: Failed to get {GetCallbackName} count"))
+            if (r.Check(this, () =>$"Enumerate: Failed to get {GetCallbackName} count"))
             {
                 T* items = EngineUtil.AllocArray<T>(count);
                 r = callback(&count, items);
 
-                if (CheckResult(r, () => $"Enumerate: Failed get {GetCallbackName} items"))
+                if (r.Check(this, () => $"Enumerate: Failed get {GetCallbackName} items"))
                 {
                     T[] result = new T[count];
                     fixed (T* ptrResult = result)
