@@ -30,24 +30,6 @@ namespace Molten.Graphics
             device.ProcessDebugLayerMessages();
         }
 
-        internal BufferDX11(DeviceDX11 device,
-            BufferFlags bufferFlags,
-            BindFlag bindFlags,
-            uint numBytes,
-            ResourceMiscFlag optionFlags = 0,
-            void* initialData = null) : base(device,
-        ((bindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
-        ((bindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None))
-        {
-            Flags = bufferFlags;
-            Stride = 0;
-            ByteCapacity = numBytes;
-            ElementCount = 0;
-
-            InitializeBuffer( bindFlags, optionFlags, initialData);
-            device.ProcessDebugLayerMessages();
-        }
-
         /// <summary>
         /// 
         /// </summary>

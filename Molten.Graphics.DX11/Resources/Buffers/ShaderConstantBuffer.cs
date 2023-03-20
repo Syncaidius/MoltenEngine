@@ -15,7 +15,7 @@ namespace Molten.Graphics
         byte* _constData;
 
         internal ShaderConstantBuffer(DeviceDX11 device, BufferFlags flags, ConstantBufferInfo desc)
-            : base(device, flags, BindFlag.ConstantBuffer, desc.Size)
+            : base(device, flags, BindFlag.ConstantBuffer, 1, desc.Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
             _constData = (byte*)EngineUtil.Alloc(desc.Size);
