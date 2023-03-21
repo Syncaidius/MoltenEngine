@@ -9,14 +9,14 @@ using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class BufferVK : GraphicsResource, IGraphicsBuffer
+    internal unsafe abstract class BufferVK : ResourceVK, IGraphicsBuffer
     {
         Buffer* _buffer;
         BufferCreateInfo _desc;
         DeviceMemory* _memory;
 
         protected BufferVK(GraphicsDevice device,
-            BufferFlags bufferFlags,
+            GraphicsResourceFlags bufferFlags,
             BufferUsageFlags usageFlags,
             uint stride,
             uint numElements,
@@ -34,27 +34,27 @@ namespace Molten.Graphics
         {
             Flags = bufferFlags;
             Stride = stride;
-            ByteCapacity = Stride * numElements;
+            SizeInBytes = Stride * numElements;
             ElementCount = numElements;
 
             MemoryPropertyFlags memFlags = BuildDescription(bufferFlags, usageFlags);
             InitializeBuffer(memFlags, initialData);
         }
 
-        private MemoryPropertyFlags BuildDescription(BufferFlags bufferFlags, BufferUsageFlags usage)
+        private MemoryPropertyFlags BuildDescription(GraphicsResourceFlags bufferFlags, BufferUsageFlags usage)
         {
             MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
 
             // Does the memory need to be host-visible?
-            if(bufferFlags.HasFlags(BufferFlags.CpuRead) || bufferFlags.HasFlags(BufferFlags.CpuWrite))
+            if(bufferFlags.Has(GraphicsResourceFlags.CpuRead) || bufferFlags.Has(GraphicsResourceFlags.CpuWrite))
                 memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
             else
                 memFlags |= MemoryPropertyFlags.DeviceLocalBit;
 
-            if (bufferFlags.HasFlags(BufferFlags.GpuRead))
+            if (bufferFlags.Has(GraphicsResourceFlags.GpuRead))
                 usage |= BufferUsageFlags.TransferSrcBit;
 
-            if (bufferFlags.HasFlags(BufferFlags.GpuWrite))
+            if (bufferFlags.Has(GraphicsResourceFlags.GpuWrite))
                 usage |= BufferUsageFlags.TransferDstBit;
 
             _desc.SType = StructureType.BufferCreateInfo;
@@ -154,13 +154,15 @@ namespace Molten.Graphics
 
         protected override void OnApply(GraphicsCommandQueue cmd) { }
 
-        public unsafe Buffer* NativePtr => _buffer;
+        internal unsafe Buffer* NativePtr => _buffer;
+
+        internal override DeviceMemory* Memory => _memory;
 
         /// <summary>Gets the stride (byte size) of each element within the current <see cref="BufferDX11"/>.</summary>
         public uint Stride { get; }
 
         /// <summary>Gets the capacity of a single section within the buffer, in bytes.</summary>
-        public uint ByteCapacity { get; }
+        public override uint SizeInBytes { get; }
 
         /// <summary>
         /// Gets the number of elements that the current <see cref="BufferDX11"/> can store.
@@ -168,7 +170,7 @@ namespace Molten.Graphics
         public uint ElementCount { get; }
 
         /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
-        public BufferFlags Flags { get; }
+        public override GraphicsResourceFlags Flags { get; }
 
         public override bool IsUnorderedAccess => HasFlags(BufferUsageFlags.StorageBufferBit);
     }

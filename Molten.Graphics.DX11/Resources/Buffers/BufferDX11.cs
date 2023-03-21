@@ -12,7 +12,7 @@ namespace Molten.Graphics
         internal BufferDesc Desc;
 
         internal BufferDX11(DeviceDX11 device,
-            BufferFlags bufferFlags,
+            GraphicsResourceFlags bufferFlags,
             BindFlag bindFlags,
             uint stride,
             uint numElements,
@@ -23,7 +23,7 @@ namespace Molten.Graphics
         {
             Flags = bufferFlags;
             Stride = stride;
-            ByteCapacity = Stride * numElements;
+            SizeInBytes = Stride * numElements;
             ElementCount = numElements;
 
             InitializeBuffer( bindFlags, optionFlags, initialData);
@@ -41,19 +41,19 @@ namespace Molten.Graphics
                 throw new GraphicsBufferException(this, "Initial data cannot be null when buffer mode is Immutable.");
 
             Desc = new BufferDesc();
-            Desc.ByteWidth = ByteCapacity;
+            Desc.ByteWidth = SizeInBytes;
             Desc.StructureByteStride = 0;
 
             // Only staging allows CPU reads.
             // See for ref: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_usage
-            if (Flags.HasFlags(BufferFlags.CpuRead))
+            if (Flags.Has(Graphics.GraphicsResourceFlags.CpuRead))
             {
                 Desc.Usage = Usage.Staging;
                 Desc.MiscFlags = 0U;
                 Desc.BindFlags = 0U;
                 Desc.CPUAccessFlags |= (uint)CpuAccessFlag.Read;
 
-                if (Flags.HasFlags(BufferFlags.CpuWrite))
+                if (Flags.Has(Graphics.GraphicsResourceFlags.CpuWrite))
                     Desc.CPUAccessFlags |= (uint)CpuAccessFlag.Write;
             }
             else
@@ -64,15 +64,15 @@ namespace Molten.Graphics
                 Desc.CPUAccessFlags = (uint)CpuAccessFlag.None;
 
                 // Only dynamic buffers allow CPU-write, excluding a staging buffer.
-                if (Flags.HasFlags(BufferFlags.CpuWrite))
+                if (Flags.Has(Graphics.GraphicsResourceFlags.CpuWrite))
                 {
                     Desc.Usage = Usage.Dynamic;
                     Desc.CPUAccessFlags = (uint)CpuAccessFlag.Write;
                 }
-                else if(Flags.HasFlags(BufferFlags.GpuRead))
+                else if(Flags.Has(Graphics.GraphicsResourceFlags.GpuRead))
                 {
                     // GPU read-only?
-                    if(!Flags.HasFlags(BufferFlags.GpuWrite))
+                    if(!Flags.Has(Graphics.GraphicsResourceFlags.GpuWrite))
                         Desc.Usage = Usage.Immutable;  
                 }
                 else
@@ -87,7 +87,7 @@ namespace Molten.Graphics
 
             if (initialData != null)
             {
-                SubresourceData srd = new SubresourceData(initialData, ByteCapacity, ByteCapacity);
+                SubresourceData srd = new SubresourceData(initialData, SizeInBytes, SizeInBytes);
                 nDevice.Ptr->CreateBuffer(ref Desc, ref srd, ref _native);
             }
             else
@@ -95,7 +95,7 @@ namespace Molten.Graphics
                 nDevice.Ptr->CreateBuffer(ref Desc, null, ref _native);
             }
 
-            Device.AllocateVRAM(ByteCapacity);
+            Device.AllocateVRAM(SizeInBytes);
             CreateResources();
         }
 
@@ -139,7 +139,7 @@ namespace Molten.Graphics
         /// <param name="destination">The <see cref="BufferDX11"/> to copy to.</param>
         public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
         {
-            if (ByteCapacity < Desc.ByteWidth)
+            if (SizeInBytes < Desc.ByteWidth)
                 throw new GraphicsBufferException(this, "The destination buffer is not large enough.");
 
             QueueTask(priority, new ResourceCopyTask()
@@ -191,13 +191,13 @@ namespace Molten.Graphics
             // Check if the buffer is a dynamic-writable
             if (isDynamic || isStaged)
             {
-                if (Flags.HasFlags(BufferFlags.Discard))
+                if (Flags.Has(Graphics.GraphicsResourceFlags.Discard))
                 {
-                    cmd.MapResource(ResourcePtr, 0, Map.WriteDiscard, 0, out stream);
+                    cmd.MapResource(this, 0, Map.WriteDiscard, 0, out stream);
                     stream.Position = byteOffset;
                     cmd.Profiler.Current.MapDiscardCount++;
                 }
-                else if (Flags.HasFlags(BufferFlags.Ring))
+                else if (Flags.Has(Graphics.GraphicsResourceFlags.Ring))
                 {
                     // NOTE: D3D11_MAP_WRITE_NO_OVERWRITE is only valid on vertex and index buffers. 
                     // See: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476181(v=vs.85).aspx
@@ -205,14 +205,14 @@ namespace Molten.Graphics
                     {
                         if (_ringPos > 0 && _ringPos + numBytes < Desc.ByteWidth)
                         {
-                            cmd.MapResource(ResourcePtr, 0, Map.WriteNoOverwrite, 0, out stream);
+                            cmd.MapResource(this, 0, Map.WriteNoOverwrite, 0, out stream);
                             cmd.Profiler.Current.MapNoOverwriteCount++;
                             stream.Position = _ringPos;
                             _ringPos += numBytes;
                         }
                         else
                         {
-                            cmd.MapResource(ResourcePtr, 0, Map.WriteDiscard, 0, out stream);
+                            cmd.MapResource(this, 0, Map.WriteDiscard, 0, out stream);
                             cmd.Profiler.Current.MapDiscardCount++;
                             stream.Position = 0;
                             _ringPos = numBytes;
@@ -220,14 +220,14 @@ namespace Molten.Graphics
                     }
                     else
                     {
-                        cmd.MapResource(ResourcePtr, 0, Map.WriteDiscard, 0, out stream);
+                        cmd.MapResource(this, 0, Map.WriteDiscard, 0, out stream);
                         cmd.Profiler.Current.MapDiscardCount++;
                         stream.Position = byteOffset;
                     }
                 }
                 else
                 {
-                    cmd.MapResource(ResourcePtr, 0, Map.Write, 0, out stream);
+                    cmd.MapResource(this, 0, Map.Write, 0, out stream);
                     cmd.Profiler.Current.MapWriteCount++;
                 }
 
@@ -252,12 +252,12 @@ namespace Molten.Graphics
                 // Write updated data into buffer
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
                 {
-                    cmd.MapResource(staging.ResourcePtr, 0, Map.WriteDiscard, 0, out stream);
+                    cmd.MapResource(staging, 0, Map.WriteDiscard, 0, out stream);
                     cmd.Profiler.Current.MapDiscardCount++;
                 }
                 else
                 {
-                    cmd.MapResource(staging.ResourcePtr, 0, Map.Write, 0, out stream);
+                    cmd.MapResource(staging, 0, Map.Write, 0, out stream);
                     cmd.Profiler.Current.MapWriteCount++;
                 }
 
@@ -377,8 +377,8 @@ namespace Molten.Graphics
         /// <summary>Gets the stride (byte size) of each element within the current <see cref="BufferDX11"/>.</summary>
         public uint Stride { get; }
 
-        /// <summary>Gets the capacity of a single section within the buffer, in bytes.</summary>
-        public uint ByteCapacity { get; }
+        /// <summary>Gets the capacity of the buffer, in bytes.</summary>
+        public override uint SizeInBytes { get; }
 
         /// <summary>
         /// Gets the number of elements that the current <see cref="BufferDX11"/> can store.
@@ -386,7 +386,7 @@ namespace Molten.Graphics
         public uint ElementCount { get; }
 
         /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
-        public BufferFlags Flags { get; }
+        public override GraphicsResourceFlags Flags { get; }
 
         internal override Usage UsageFlags => Desc.Usage;
 

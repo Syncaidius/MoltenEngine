@@ -2,12 +2,12 @@
 {
     public class StandardMesh : Mesh<GBufferVertex>
     {
-        internal StandardMesh(RenderService renderer, BufferFlags mode, ushort maxVertices, uint maxIndices,
+        internal StandardMesh(RenderService renderer, GraphicsResourceFlags mode, ushort maxVertices, uint maxIndices,
             GBufferVertex[] initialVertices = null, ushort[] initialIndices = null) :
             base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
         { }
 
-        internal StandardMesh(RenderService renderer, BufferFlags mode, uint maxVertices, uint maxIndices,
+        internal StandardMesh(RenderService renderer, GraphicsResourceFlags mode, uint maxVertices, uint maxIndices,
             GBufferVertex[] initialVertices = null, uint[] initialIndices = null) :
             base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
         { }

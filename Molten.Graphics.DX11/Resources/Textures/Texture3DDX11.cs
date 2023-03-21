@@ -22,7 +22,7 @@ namespace Molten.Graphics
         /// of the provided texture in to the new instance.</summary>
         /// <param name="other"></param>
         internal Texture3DDX11(Texture3DDX11 other)
-            : this(other.Renderer, other.Width, other.Height, other.Depth, other.DxgiFormat, other.MipMapCount, other.Flags)
+            : this(other.Renderer, other.Width, other.Height, other.Depth, other.DxgiFormat, other.MipMapCount, other.AccessFlags)
         { }
 
         internal Texture3DDX11(
@@ -57,7 +57,7 @@ namespace Molten.Graphics
                 Width = Width,
                 Height = Height,
                 ArraySize = ArraySize,
-                Flags = Flags,
+                Flags = AccessFlags,
                 Format = DataFormat,
                 MipMapLevels = MipMapCount
             };

@@ -11,28 +11,13 @@ namespace Molten.IO
         long _length;
         byte* _ptrDataStart;
         byte* _ptrData;
-        bool _canRead;
-        bool _canWrite;
 
         public RawStream(void* ptrData, uint numBytes, bool canRead, bool canWrite)
         {
-            SetSource(ptrData, numBytes, canRead, canWrite);
-        }
-
-        /// <summary>
-        /// Sets the data source of the current <see cref="RawStream"/>.
-        /// </summary>
-        /// <remarks>Resets <see cref="Position"/> to zero and updates <see cref="Length"/>.</remarks>
-        /// <param name="ptrData">A pointer to the source data.</param>
-        /// <param name="numBytes">The number of bytes that <paramref name="ptrData"/> represents</param>.
-        /// <param name="canRead"></param>
-        /// <param name="canWrite"></param>
-        public void SetSource(void* ptrData, uint numBytes, bool canRead, bool canWrite)
-        {
             _ptrData = (byte*)ptrData;
             _ptrDataStart = _ptrData;
-            _canRead = canRead;
-            _canWrite = canWrite;
+            CanRead = canRead;
+            CanWrite = canWrite;
             _length = numBytes;
         }
 
@@ -248,12 +233,12 @@ namespace Molten.IO
         /// <summary>
         /// Gets whether or not the stream can perform read operations.
         /// </summary>
-        public override bool CanRead => _canRead;
+        public override bool CanRead { get; }
 
         /// <summary>
         /// Gets whether or not the stream can perform write operations.
         /// </summary>
-        public override bool CanWrite => _canWrite;
+        public override bool CanWrite { get; }
 
         /// <summary>
         /// Gets whether or not the stream will timeout.

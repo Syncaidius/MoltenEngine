@@ -41,7 +41,7 @@ namespace Molten.Graphics
             {
                 Width = Width,
                 ArraySize = ArraySize,
-                Flags = Flags,
+                Flags = AccessFlags,
                 Format = DataFormat,
                 MipMapLevels = MipMapCount,
             };

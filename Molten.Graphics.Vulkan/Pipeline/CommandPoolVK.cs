@@ -34,14 +34,12 @@ namespace Molten.Graphics
 
         internal CommandListVK Allocate(CommandBufferLevel level)
         {
-            CommandListVK list = null;
-
             foreach(CommandPoolAllocation a in _allocations)
             {
                 if (a.Level != level)
                     continue;
 
-                list = a.Get();
+                CommandListVK list = a.Get();
                 if (list != null)
                     return list;
             }

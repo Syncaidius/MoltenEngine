@@ -34,11 +34,12 @@ namespace Molten.Graphics
         {
             Renderer = renderer;
             Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{width}x{height}" : name;
-            Flags = flags;
+            AccessFlags = flags;
             ValidateFlagCombination();
 
             MSAASupport msaaSupport = MSAASupport.NotSupported; // TODO re-support. _renderer.Device.Features.GetMSAASupport(format, aaLevel);
 
+            Flags = GraphicsResourceFlags.None; // TODO refactor textures to use GraphicsResourceFlags.
             Width = width;
             Height = height;
             Depth = depth;
@@ -50,6 +51,11 @@ namespace Molten.Graphics
             IsValid = false;
 
             IsBlockCompressed = BCHelper.GetBlockCompressed(DxgiFormat.FromApi());
+
+            if (IsBlockCompressed)
+                SizeInBytes = BCHelper.GetBCSize(DataFormat, width, height, mipCount) * arraySize;
+            else
+                SizeInBytes = (DataFormat.BytesPerPixel() * (width * height)) * arraySize;
         }
 
         private void ValidateFlagCombination()
@@ -58,15 +64,15 @@ namespace Molten.Graphics
             if (HasFlags(TextureFlags.AllowMipMapGeneration))
             {
                 if(HasFlags(TextureFlags.NoShaderResource) || !(this is RenderSurface2DDX11))
-                    throw new TextureFlagException(Flags, "Mip-map generation is only available on render-surface shader resources.");
+                    throw new TextureFlagException(AccessFlags, "Mip-map generation is only available on render-surface shader resources.");
             }
 
             if (HasFlags(TextureFlags.Staging))
             {
-                if (Flags != (TextureFlags.Staging) && Flags != (TextureFlags.Staging | TextureFlags.NoShaderResource))
-                    throw new TextureFlagException(Flags, "Staging textures cannot have other flags set except NoShaderResource.");
+                if (AccessFlags != (TextureFlags.Staging) && AccessFlags != (TextureFlags.Staging | TextureFlags.NoShaderResource))
+                    throw new TextureFlagException(AccessFlags, "Staging textures cannot have other flags set except NoShaderResource.");
 
-                Flags |= TextureFlags.NoShaderResource;
+                AccessFlags |= TextureFlags.NoShaderResource;
             }
         }
 
@@ -177,13 +183,13 @@ namespace Molten.Graphics
 
         public bool HasFlags(TextureFlags flags)
         {
-            return (Flags & flags) == flags;
+            return (AccessFlags & flags) == flags;
         }
 
         /// <summary>Generates mip maps for the texture via the provided <see cref="CommandQueueDX11"/>.</summary>
         public void GenerateMipMaps(GraphicsPriority priority)
         {
-            if (!((Flags & TextureFlags.AllowMipMapGeneration) == TextureFlags.AllowMipMapGeneration))
+            if (!((AccessFlags & TextureFlags.AllowMipMapGeneration) == TextureFlags.AllowMipMapGeneration))
                 throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
 
             QueueTask(priority, new GenerateMipMapsTask());
@@ -500,7 +506,9 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the flags that were passed in when the texture was created.</summary>
-        public TextureFlags Flags { get; protected set; }
+        public TextureFlags AccessFlags { get; protected set; }
+
+        public override GraphicsResourceFlags Flags { get; }
 
         /// <summary>Gets the format of the texture.</summary>
         public Format DxgiFormat { get; protected set; }
@@ -524,6 +532,8 @@ namespace Molten.Graphics
 
         /// <summary>Gets the number of array slices in the texture. For a cube-map, this value will a multiple of 6. For example, a cube map with 2 array elements will have 12 array slices.</summary>
         public uint ArraySize { get; protected set; }
+
+        public override uint SizeInBytes { get; }
 
         /// <summary>
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 

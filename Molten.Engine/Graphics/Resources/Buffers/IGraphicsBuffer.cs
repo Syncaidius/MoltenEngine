@@ -28,7 +28,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the capacity of a single section within the buffer, in bytes.
         /// </summary>
-        uint ByteCapacity { get; }
+        uint SizeInBytes { get; }
 
         /// <summary>
         /// Gets the number of elements that the current <see cref="IGraphicsBuffer"/> can store.
@@ -36,6 +36,6 @@ namespace Molten.Graphics
         uint ElementCount { get; }
 
         /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
-        BufferFlags Flags { get; }
+        GraphicsResourceFlags Flags { get; }
     }
 }

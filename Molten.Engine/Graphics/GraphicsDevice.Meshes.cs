@@ -17,7 +17,7 @@ namespace Molten.Graphics
         /// <param name="initialVertices"></param>
         /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public Mesh<GBufferVertex> CreateMesh(BufferFlags mode, ushort maxVertices, uint maxIndices, GBufferVertex[] initialVertices, ushort[] initialIndices)
+        public Mesh<GBufferVertex> CreateMesh(GraphicsResourceFlags mode, ushort maxVertices, uint maxIndices, GBufferVertex[] initialVertices, ushort[] initialIndices)
         {
             return new StandardMesh(Renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices);
         }
@@ -31,12 +31,12 @@ namespace Molten.Graphics
         /// <param name="initialVertices"></param>
         /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public Mesh<GBufferVertex> CreateMesh(BufferFlags mode, uint maxVertices, uint maxIndices = 0, GBufferVertex[] initialVertices = null, uint[] initialIndices = null)
+        public Mesh<GBufferVertex> CreateMesh(GraphicsResourceFlags mode, uint maxVertices, uint maxIndices = 0, GBufferVertex[] initialVertices = null, uint[] initialIndices = null)
         {
             return new StandardMesh(Renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices);
         }
 
-        public Mesh<T> CreateMesh<T>(T[] vertices, ushort[] indices, BufferFlags flags = BufferFlags.GpuRead)
+        public Mesh<T> CreateMesh<T>(T[] vertices, ushort[] indices, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
             where T : unmanaged, IVertexType
         {
             if (vertices == null)
@@ -49,7 +49,7 @@ namespace Molten.Graphics
             return CreateMesh(flags, (ushort)vertices.Length, indexCount, vertices, indices);
         }
 
-        public Mesh<T> CreateMesh<T>(T[] vertices, uint[] indices = null, BufferFlags flags = BufferFlags.GpuRead)
+        public Mesh<T> CreateMesh<T>(T[] vertices, uint[] indices = null, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
     where T : unmanaged, IVertexType
         {
             if (vertices == null)
@@ -69,7 +69,7 @@ namespace Molten.Graphics
         /// <param name="initialVertices"></param>
         /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public Mesh<T> CreateMesh<T>(BufferFlags mode, ushort maxVertices, uint maxIndices, T[] initialVertices, ushort[] initialIndices)
+        public Mesh<T> CreateMesh<T>(GraphicsResourceFlags mode, ushort maxVertices, uint maxIndices, T[] initialVertices, ushort[] initialIndices)
             where T : unmanaged, IVertexType
         {
             return new Mesh<T>(Renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices);
@@ -85,13 +85,13 @@ namespace Molten.Graphics
         /// <param name="initialVertices"></param>
         /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public Mesh<T> CreateMesh<T>(BufferFlags mode, uint maxVertices, uint maxIndices = 0, T[] initialVertices = null, uint[] initialIndices = null)
+        public Mesh<T> CreateMesh<T>(GraphicsResourceFlags mode, uint maxVertices, uint maxIndices = 0, T[] initialVertices = null, uint[] initialIndices = null)
             where T : unmanaged, IVertexType
         {
             return new Mesh<T>(Renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices);
         }
 
-        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, ushort[] indices, BufferFlags flags = BufferFlags.GpuRead)
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, ushort[] indices, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
             where V : unmanaged, IVertexType
             where I : unmanaged, IVertexInstanceType
         {
@@ -102,7 +102,7 @@ namespace Molten.Graphics
             return new InstancedMesh<V, I>(Renderer, flags, (ushort)vertices.Length, maxIndices, maxInstances, vertices, indices);
         }
 
-        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, uint[] indices = null, BufferFlags flags = BufferFlags.GpuRead)
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, uint[] indices = null, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
             where V : unmanaged, IVertexType
             where I : unmanaged, IVertexInstanceType
         {
@@ -122,7 +122,7 @@ namespace Molten.Graphics
         /// <param name="initialVertices"></param>
         /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(BufferFlags mode, ushort maxVertices, uint maxInstances, uint maxIndices, V[] initialVertices, ushort[] initialIndices)
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(GraphicsResourceFlags mode, ushort maxVertices, uint maxInstances, uint maxIndices, V[] initialVertices, ushort[] initialIndices)
             where V : unmanaged, IVertexType
             where I : unmanaged, IVertexInstanceType
         {
@@ -144,7 +144,7 @@ namespace Molten.Graphics
         /// <param name="initialVertices"></param>
         /// <param name="initialIndices"></param>
         /// <returns></returns>
-        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(BufferFlags mode, uint maxVertices, uint maxInstances, uint maxIndices = 0,
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(GraphicsResourceFlags mode, uint maxVertices, uint maxInstances, uint maxIndices = 0,
             V[] initialVertices = null, uint[] initialIndices = null)
             where V : unmanaged, IVertexType
             where I : unmanaged, IVertexInstanceType

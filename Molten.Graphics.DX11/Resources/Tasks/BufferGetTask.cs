@@ -31,7 +31,7 @@ namespace Molten.Graphics
             DestArray = DestArray ?? new T[Count];
 
             // Now set the structured variable's data
-            MappedSubresource dataBox = dx11Cmd.MapResource(srcBuffer.ResourcePtr, 0, Map.Read, 0, out RawStream stream);
+            MappedSubresource dataBox = dx11Cmd.MapResource(srcBuffer, 0, Map.Read, 0, out RawStream stream);
             cmd.Profiler.Current.MapReadCount++;
             stream.Position = ByteOffset;
             stream.ReadRange(DestArray, 0, Count);

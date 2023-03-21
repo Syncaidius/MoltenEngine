@@ -102,7 +102,7 @@ namespace Molten.Graphics
 
             if (texture.HasFlags(TextureFlags.Dynamic))
             {
-                MappedSubresource destBox = cmdDx11.MapResource(texture.ResourcePtr, subLevel, Map.WriteDiscard, 0, out RawStream stream);
+                MappedSubresource destBox = cmdDx11.MapResource(texture, subLevel, Map.WriteDiscard, 0, out RawStream stream);
 
                 // Are we constrained to an area of the texture?
                 if (Area != null)

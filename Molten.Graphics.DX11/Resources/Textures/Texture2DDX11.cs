@@ -36,7 +36,7 @@ namespace Molten.Graphics
                   descTexture.DxgiFormat, 
                   descTexture.MipMapCount, 
                   descTexture.ArraySize, 
-                  descTexture.Flags, 
+                  descTexture.AccessFlags, 
                   descTexture.MultiSampleLevel,
                   descTexture.SampleQuality,
                   descTexture.Name)
@@ -82,7 +82,7 @@ namespace Molten.Graphics
                 Width = Width,
                 Height = Height,
                 ArraySize = ArraySize,
-                Flags = Flags,
+                Flags = AccessFlags,
                 Format = DataFormat,
                 MipMapLevels = MipMapCount,
                 MultiSampleLevel = MultiSampleLevel,

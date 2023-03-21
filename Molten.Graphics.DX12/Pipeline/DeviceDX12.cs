@@ -50,22 +50,22 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override IVertexBuffer CreateVertexBuffer<T>(BufferFlags flags, uint numVertices, T[] initialData = null)
+        public override IVertexBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
         {
             throw new NotImplementedException();
         }
 
-        public override IIndexBuffer CreateIndexBuffer(BufferFlags flags, uint numIndices, ushort[] initialData)
+        public override IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData)
         {
             throw new NotImplementedException();
         }
 
-        public override IIndexBuffer CreateIndexBuffer(BufferFlags flags, uint numIndices, uint[] initialData = null)
+        public override IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null)
         {
             throw new NotImplementedException();
         }
 
-        public override IStructuredBuffer CreateStructuredBuffer<T>(BufferFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        public override IStructuredBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
         {
             throw new NotImplementedException();
         }

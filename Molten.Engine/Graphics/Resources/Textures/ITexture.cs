@@ -118,7 +118,7 @@
         uint Width { get; }
 
         /// <summary>Gets the flags that were passed in when the texture was created.</summary>
-        TextureFlags Flags { get; }
+        TextureFlags AccessFlags { get; }
 
         /// <summary>Gets the format of the texture.</summary>
         GraphicsFormat DataFormat { get; }

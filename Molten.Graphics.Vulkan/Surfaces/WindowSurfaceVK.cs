@@ -379,7 +379,7 @@ namespace Molten.Graphics
 
         public ViewportF Viewport => throw new NotImplementedException();
 
-        public TextureFlags Flags => throw new NotImplementedException();
+        public TextureFlags AccessFlags => throw new NotImplementedException();
 
         public GraphicsFormat DataFormat => _format.FromApi();
 

@@ -15,7 +15,7 @@
             TextureDX11 texture = resource as TextureDX11;
 
             if (!StagingTexture.HasFlags(TextureFlags.Staging) && !texture.HasFlags(TextureFlags.Staging))
-                throw new TextureFlagException(StagingTexture.Flags, "Provided staging texture does not have the staging flag set.");
+                throw new TextureFlagException(StagingTexture.AccessFlags, "Provided staging texture does not have the staging flag set.");
 
             // If the source texture is a staging texture itself, we don't need to use the provided staging texture.
             if (!texture.HasFlags(TextureFlags.Staging))

@@ -257,6 +257,26 @@ namespace Molten.Graphics.Textures
             return (blockCountX * blockSize) * blockCountY;
         }
 
+        /// <summary>
+        /// Gets the total size of a texture of the given dimensions.
+        /// </summary>        
+        /// <param name="format">The format to use in the calculation.</param>
+        /// <param name="height">The expected height.</param>
+        /// <param name="width">The expected width.</param>
+        /// <param name="numLevels">The number of mip-map levels.</param>
+        public static uint GetBCSize(GraphicsFormat format, uint width, uint height, uint numLevels)
+        {
+            uint totalBytes = 0;
+            for(uint i = 0; i < numLevels; i++)
+            {
+                totalBytes += GetBCSliceSize(format, width, height);
+                width /= 2;
+                height /= 2;
+            }
+
+            return totalBytes;
+        }
+
         /// <summary>Gets the block-compressed pitch size of a mip-map level</summary>
         /// <param name="width"></param>
         /// <param name="height"></param>

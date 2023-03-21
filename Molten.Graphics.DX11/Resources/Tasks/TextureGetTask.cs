@@ -17,7 +17,7 @@ namespace Molten.Graphics
             if (Staging != null)
             {
                 if (!Staging.HasFlags(TextureFlags.Staging))
-                    throw new TextureFlagException(Staging.Flags, "Provided staging texture does not have the staging flag set.");
+                    throw new TextureFlagException(Staging.AccessFlags, "Provided staging texture does not have the staging flag set.");
 
                 // Validate dimensions.
                 if (Staging.Width != texture.Width ||
@@ -39,7 +39,7 @@ namespace Molten.Graphics
 
             TextureData data = new TextureData(texture.Width, texture.Height, texture.MipMapCount, texture.ArraySize)
             {
-                Flags = texture.Flags,
+                Flags = texture.AccessFlags,
                 Format = texture.DataFormat,
                 HighestMipMap = 0,
                 IsCompressed = texture.IsBlockCompressed,

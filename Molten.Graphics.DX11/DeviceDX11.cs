@@ -364,25 +364,25 @@ namespace Molten.Graphics
             return new ShaderSamplerDX11(this, ref parameters);
         }
 
-        public unsafe override IVertexBuffer CreateVertexBuffer<T>(BufferFlags flags, uint numVertices, T[] initialData = null)
+        public unsafe override IVertexBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
         {
             fixed (T* ptr = initialData)
                 return new VertexBufferDX11<T>(this, flags, numVertices, ptr);
         }
 
-        public unsafe override IIndexBuffer CreateIndexBuffer(BufferFlags flags, uint numIndices, ushort[] initialData = null)
+        public unsafe override IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData = null)
         {
             fixed (ushort* ptr = initialData)
                 return new IndexBufferDX11(this, flags, IndexBufferFormat.UInt16, numIndices, ptr);
         }
 
-        public unsafe override IIndexBuffer CreateIndexBuffer(BufferFlags flags, uint numIndices, uint[] initialData = null)
+        public unsafe override IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null)
         {
             fixed (uint* ptr = initialData)
                 return new IndexBufferDX11(this, flags, IndexBufferFormat.UInt32, numIndices, ptr);
         }
 
-        public unsafe override IStructuredBuffer CreateStructuredBuffer<T>(BufferFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        public unsafe override IStructuredBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
         {
             fixed (T* ptr = initialData)
                 return new StructuredBufferDX11<T>(this, flags, numElements, allowUnorderedAccess, isShaderResource, ptr);
@@ -390,12 +390,12 @@ namespace Molten.Graphics
 
         public override IStagingBuffer CreateStagingBuffer(bool allowRead, bool allowWrite, uint byteCapacity)
         {
-            BufferFlags flags = BufferFlags.None;
+            GraphicsResourceFlags flags = GraphicsResourceFlags.None;
             if (allowRead)
-                flags |= BufferFlags.CpuRead;
+                flags |= GraphicsResourceFlags.CpuRead;
 
             if (allowWrite)
-                flags |= BufferFlags.CpuWrite;
+                flags |= GraphicsResourceFlags.CpuWrite;
 
             return new StagingBuffer(this, flags, byteCapacity);
         }

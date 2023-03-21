@@ -138,11 +138,11 @@ namespace Molten.Graphics
         /// <param name="mapFlags"></param>
         /// <param name="stream"></param>
         /// <returns></returns>
-        internal MappedSubresource MapResource<T>(T* resource, uint subresource, Map mapType, MapFlag mapFlags, out RawStream stream)
-            where T: unmanaged
+        internal MappedSubresource MapResource(GraphicsResource resource, uint subresource, Map mapType, MapFlag mapFlags, out RawStream stream)
         {
+            ResourceDX11 res = resource as ResourceDX11;
             MappedSubresource mapping = new MappedSubresource();
-            Native->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
+            Native->Map(res.ResourcePtr, subresource, mapType, (uint)mapFlags, ref mapping);
 
             bool canWrite = mapType != Map.Read;
             bool canRead = mapType == Map.Read || mapType == Map.ReadWrite;
