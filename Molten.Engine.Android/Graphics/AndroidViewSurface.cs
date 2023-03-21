@@ -200,6 +200,56 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount = 0, uint newArraySize = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GenerateMipMaps(GraphicsPriority priority)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, Action<GraphicsResource> completeCallback = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0, Action<GraphicsResource> completeCallback = null) where T : unmanaged
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetData(GraphicsPriority priority, TextureSlice data, uint mipLevel, uint arraySlice, Action<GraphicsResource> completeCallback = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetData<T>(GraphicsPriority priority, RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, Action<GraphicsResource> completeCallback = null) where T : unmanaged
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetData(GraphicsPriority priority, ITexture stagingTexture, Action<TextureData> completeCallback = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetData(GraphicsPriority priority, ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear(GraphicsPriority priority, Color color)
+        {
+            throw new NotImplementedException();
+        }
+
         public string Title
         {
             get => TargetActivity.UnderlyingActivity.Title;
