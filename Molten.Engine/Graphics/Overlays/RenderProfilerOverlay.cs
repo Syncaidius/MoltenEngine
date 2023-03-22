@@ -62,8 +62,8 @@
             textPos.Y += lineHeight; sb.DrawString(font, $"Sub-resource copy: {frame.CopySubresourceCount}", textPos, _colText);
             textPos.Y += lineHeight; sb.DrawString(font, $"Map discard: {frame.MapDiscardCount}", textPos, _colText);
             textPos.Y += lineHeight; sb.DrawString(font, $"Map no-overwrite: {frame.MapNoOverwriteCount}", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Map read: {frame.MapReadCount}", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Map write: {frame.MapWriteCount}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Map read: {frame.MapReadWriteCount}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Map write: {frame.MapReadWriteCount}", textPos, _colText);
             textPos.Y += lineHeight; sb.DrawString(font, $"Resource bindings: {frame.GpuBindings}", textPos, _colText);
         }
 

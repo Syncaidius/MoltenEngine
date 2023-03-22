@@ -47,7 +47,7 @@
 
         internal IDepthStencilSurface Create(AntiAliasLevel aa)
         {
-            IDepthStencilSurface ds = _device.CreateDepthSurface(_width, _height, _format, 1, 1, aa, TextureFlags.None, $"depth_{aa}aa");
+            IDepthStencilSurface ds = _device.CreateDepthSurface(_width, _height, _format, aaLevel:aa, allowMipMapGen: false, name:$"depth_{aa}aa");
             _surfaces[aa] = ds;
             return ds;
         }

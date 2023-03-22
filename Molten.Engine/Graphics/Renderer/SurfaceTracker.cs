@@ -50,7 +50,7 @@ namespace Molten.Graphics
 
         private IRenderSurface2D Create(AntiAliasLevel aa)
         {
-            IRenderSurface2D rs = _device.CreateSurface(_width, _height, _format, 1, 1, aa, TextureFlags.None, $"{_name}_{aa}aa");
+            IRenderSurface2D rs = _device.CreateSurface(_width, _height, _format, aaLevel:aa, name: $"{_name}_{aa}aa");
             _surfaces[aa] = rs;
             return rs;
         }

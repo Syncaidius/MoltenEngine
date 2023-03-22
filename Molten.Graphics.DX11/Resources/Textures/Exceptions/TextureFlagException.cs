@@ -9,19 +9,19 @@ namespace Molten.Graphics
     /// <summary>Thrown when invalid texture flags were passed during the creation of a new texture.</summary>
     public class TextureFlagException : Exception
     {
-        public TextureFlagException(TextureFlags flags)
+        public TextureFlagException(GraphicsResourceFlags flags)
             : base("Invalid texture flags")
         {
             Flags = flags;
         }
 
-        public TextureFlagException(TextureFlags flags, string message)
+        public TextureFlagException(GraphicsResourceFlags flags, string message)
             : base(message)
         {
             Flags = flags;
         }
 
         /// <summary>Gets the texture flags value which caused the exception.</summary>
-        public TextureFlags Flags { get; private set; }
+        public GraphicsResourceFlags Flags { get; private set; }
     }
 }

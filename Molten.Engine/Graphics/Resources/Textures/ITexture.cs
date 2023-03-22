@@ -67,7 +67,7 @@
         /// <param name="count">The number of elements to copy from the provided data array.</param>
         /// <param name="arraySlice">The position in the texture array to start copying the texture data to. For a non-array texture, this should be 0.</param>
         /// <param name="completeCallback">A callback to run once the operation has completed.</param>
-        void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, 
+        void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex,
             uint count, uint pitch, uint arraySlice = 0,
             Action<GraphicsResource> completeCallback = null) where T : unmanaged;
 
@@ -107,18 +107,8 @@
         /// <param name="completeCallback">The callback for when the data retrieval is completed.</param>
         void GetData(GraphicsPriority priority, ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null);
 
-        /// <summary>
-        /// Returns true if the texture was created with the specified flags.
-        /// </summary>
-        /// <param name="flags">The flags to check.</param>
-        /// <returns>True if the specified flags exist.</returns>
-        bool HasFlags(TextureFlags flags);
-
         /// <summary>Gets the width of the texture.</summary>
         uint Width { get; }
-
-        /// <summary>Gets the flags that were passed in when the texture was created.</summary>
-        TextureFlags AccessFlags { get; }
 
         /// <summary>Gets the format of the texture.</summary>
         GraphicsFormat DataFormat { get; }

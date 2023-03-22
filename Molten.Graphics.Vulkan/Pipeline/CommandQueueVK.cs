@@ -140,7 +140,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        internal unsafe bool MapResource(GraphicsResource resource, uint subresource, out RawStream stream)
+        internal unsafe bool MapResource(GraphicsResource resource, uint subresource, uint streamOffset, out RawStream stream)
         {
             ResourceVK res = resource as ResourceVK;
 
@@ -157,6 +157,7 @@ namespace Molten.Graphics
             bool canWrite = res.Flags.Has(GraphicsResourceFlags.CpuWrite);
             bool canRead = res.Flags.Has(GraphicsResourceFlags.CpuRead);
             stream = new RawStream(ptr, res.SizeInBytes, canRead, canWrite);
+            stream.Position = streamOffset;
             return true;
         }
 

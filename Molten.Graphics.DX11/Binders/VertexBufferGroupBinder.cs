@@ -41,8 +41,8 @@ namespace Molten.Graphics
         {
             VertexBufferDX11 buffer = slot.BoundValue as VertexBufferDX11;
 
-            if ((buffer.BufferBindFlags & BindFlag.VertexBuffer) != BindFlag.VertexBuffer)
-                throw new InvalidOperationException($"The buffer segment in vertex buffer slot {slot.SlotIndex} is not part of a vertex buffer.");
+            if (!(buffer is IVertexBuffer))
+                throw new InvalidOperationException($"The buffer in vertex buffer slot {slot.SlotIndex} is not a vertex buffer.");
 
             ID3D11Buffer** pBuffers = stackalloc ID3D11Buffer*[1];
             uint* pStrides = stackalloc uint[1];

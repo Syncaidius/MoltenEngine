@@ -58,9 +58,7 @@ namespace Molten.Graphics
 
             public uint MapNoOverwriteCount { get; set; }
 
-            public uint MapWriteCount { get; set; }
-
-            public uint MapReadCount { get; set; }
+            public uint MapReadWriteCount { get; set; }
 
             public uint UpdateSubresourceCount { get; set; }
 
@@ -83,8 +81,7 @@ namespace Molten.Graphics
                 AllocatedVRAM = 0;
                 MapDiscardCount = 0;
                 MapNoOverwriteCount = 0;
-                MapWriteCount = 0;
-                MapReadCount = 0;
+                MapReadWriteCount = 0;
                 UpdateSubresourceCount = 0;
                 CopySubresourceCount = 0;
                 CopyResourceCount = 0;
@@ -103,8 +100,7 @@ namespace Molten.Graphics
                 Time += other.Time;
                 MapDiscardCount += other.MapDiscardCount;
                 MapNoOverwriteCount += other.MapNoOverwriteCount;
-                MapWriteCount += other.MapWriteCount;
-                MapReadCount += other.MapReadCount;
+                MapReadWriteCount += other.MapReadWriteCount;
                 UpdateSubresourceCount += other.UpdateSubresourceCount;
                 CopySubresourceCount += other.CopySubresourceCount;
                 CopyResourceCount += other.CopyResourceCount;

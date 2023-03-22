@@ -224,7 +224,7 @@ namespace Molten.Content
                     case ITextureCube texCube:
                         staging = handle.Manager.Engine.Renderer.Device.CreateTextureCube(new Texture2DProperties()
                         {
-                            Flags = TextureFlags.Staging,
+                            Flags = (GraphicsResourceFlags.AllReadWrite),
                             Format = texCube.DataFormat,
                             ArraySize = texCube.ArraySize,
                             Height = texCube.Height,
@@ -238,7 +238,7 @@ namespace Molten.Content
                     case ITexture2D tex2D:
                         staging = handle.Manager.Engine.Renderer.Device.CreateTexture2D(new Texture2DProperties()
                         {
-                            Flags = TextureFlags.Staging,
+                            Flags = (GraphicsResourceFlags.AllReadWrite),
                             Format = tex2D.DataFormat,
                             ArraySize = tex2D.ArraySize,
                             Height = tex2D.Height,
@@ -252,7 +252,7 @@ namespace Molten.Content
                     case ITexture tex1D:
                         staging = handle.Manager.Engine.Renderer.Device.CreateTexture1D(new Texture1DProperties()
                         {
-                            Flags = TextureFlags.Staging,
+                            Flags = (GraphicsResourceFlags.AllReadWrite),
                             Format = tex1D.DataFormat,
                             ArraySize = tex1D.ArraySize,
                             MipMapLevels = tex1D.MipMapCount,

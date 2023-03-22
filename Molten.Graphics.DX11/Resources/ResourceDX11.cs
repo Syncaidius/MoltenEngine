@@ -1,19 +1,17 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
     public unsafe abstract class ResourceDX11 : GraphicsResource
     {
-        /// <summary>Gets or sets the <see cref="ID3D11UnorderedAccessView1"/> attached to the object.</summary>
-        internal UAView UAV { get; }
-
-        /// <summary>Gets the <see cref="ID3D11ShaderResourceView1"/> attached to the object.</summary>
-        internal SRView SRV { get; }
+        MappedSubresource _mapPtr;
 
         internal ResourceDX11(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
+            _mapPtr = new MappedSubresource();
             SRV = new SRView(device);
             UAV = new UAView(device);
         }
@@ -26,6 +24,68 @@ namespace Molten.Graphics
                 ResourcePtr->SetPrivateData(ref RendererDX11.WKPDID_D3DDebugObjectName, (uint)debugName.Length, ptrName);
                 SilkMarshal.FreeString((nint)ptrName, NativeStringEncoding.LPStr);
             }
+        }
+
+        protected Usage GetUsageFlags()
+        {
+            if (Flags.Has(GraphicsResourceFlags.GpuRead))
+            {
+                if (Flags.Has(GraphicsResourceFlags.GpuWrite))
+                {
+                    if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
+                        return Usage.Staging;
+                    else
+                        return Usage.Default;
+                }
+                else
+                {
+                    if (Flags.Has(GraphicsResourceFlags.CpuWrite))
+                        return Usage.Dynamic;
+                    else
+                        return Usage.Immutable;
+                }
+            }
+
+            return Usage.None;
+        }
+
+        protected virtual BindFlag GetBindFlags()
+        {
+            BindFlag result = 0;
+
+            if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+                result |= BindFlag.UnorderedAccess;
+
+            if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+                result |= BindFlag.ShaderResource;
+
+            return result;
+        }
+
+        protected ResourceMiscFlag GetResourceFlags(bool allowMipMapGen)
+        {
+            ResourceMiscFlag result = 0;
+
+            if (Flags.Has(GraphicsResourceFlags.Shared))
+                result |= ResourceMiscFlag.Shared;
+
+            if (allowMipMapGen)
+                result |= ResourceMiscFlag.GenerateMips;
+
+            return result;
+        }
+
+        protected CpuAccessFlag GetCpuFlags()
+        {
+            CpuAccessFlag access = CpuAccessFlag.None;
+
+            if (Flags.Has(GraphicsResourceFlags.CpuRead))
+                access |= CpuAccessFlag.Read;
+
+            if (Flags.Has(GraphicsResourceFlags.CpuWrite))
+                access |= CpuAccessFlag.Write;
+
+            return access;
         }
 
         public override void GraphicsRelease()
@@ -44,7 +104,15 @@ namespace Molten.Graphics
         /// </summary>
         internal abstract ID3D11Resource* ResourcePtr { get; }
 
+        internal ref MappedSubresource MapPtr => ref _mapPtr;
+
         internal abstract Usage UsageFlags { get; }
+
+        /// <summary>Gets or sets the <see cref="ID3D11UnorderedAccessView1"/> attached to the object.</summary>
+        internal UAView UAV { get; }
+
+        /// <summary>Gets the <see cref="ID3D11ShaderResourceView1"/> attached to the object.</summary>
+        internal SRView SRV { get; }
     }
 
     public unsafe abstract class ResourceDX11<T> : ResourceDX11

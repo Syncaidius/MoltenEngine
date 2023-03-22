@@ -100,9 +100,9 @@ namespace Molten.Graphics
             uint subLevel = (texture.MipMapCount * ArrayIndex) + MipLevel;
             CommandQueueDX11 cmdDx11 = cmd as CommandQueueDX11;
 
-            if (texture.HasFlags(TextureFlags.Dynamic))
+            if (texture.Flags.Has(GraphicsResourceFlags.CpuWrite))
             {
-                MappedSubresource destBox = cmdDx11.MapResource(texture, subLevel, Map.WriteDiscard, 0, out RawStream stream);
+                cmdDx11.MapResource(texture, subLevel, 0, out RawStream stream);
 
                 // Are we constrained to an area of the texture?
                 if (Area != null)
@@ -125,7 +125,7 @@ namespace Molten.Graphics
                     stream.WriteRange(ptrData, NumBytes);
                 }
 
-                cmdDx11.UnmapResource(texture.ResourcePtr, subLevel);
+                cmdDx11.UnmapResource(texture, subLevel);
                 cmdDx11.Profiler.Current.MapDiscardCount++;
             }
             else

@@ -26,7 +26,7 @@ namespace Molten.Graphics.Textures
                 IsCompressed = false,
                 HighestMipMap = 0,
                 MultiSampleLevel = AntiAliasLevel.None,
-                Flags = TextureFlags.None,
+                Flags = GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.GpuWrite,
                 Format = GraphicsFormat.R8G8B8A8_UNorm,
             };
 

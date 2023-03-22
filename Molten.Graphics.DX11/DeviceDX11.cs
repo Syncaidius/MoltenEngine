@@ -211,11 +211,11 @@ namespace Molten.Graphics
         public override IRenderSurface2D CreateSurface(
             uint width,
             uint height,
+            GraphicsResourceFlags flags,
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
             uint mipCount = 1,
             uint arraySize = 1,
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
-            TextureFlags flags = TextureFlags.None,
             string name = null)
         {
             MSAAQuality msaa = MSAAQuality.CenterPattern;
@@ -224,12 +224,12 @@ namespace Molten.Graphics
 
         public override ITexture CreateTexture1D(Texture1DProperties properties)
         {
-            return new Texture1DDX11(Renderer, properties.Width, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
+            return new Texture1DDX11(Renderer, properties.Width, properties.Flags, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
         }
 
         public override ITexture CreateTexture1D(TextureData data)
         {
-            Texture1DDX11 tex = new Texture1DDX11(Renderer, data.Width, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
+            Texture1DDX11 tex = new Texture1DDX11(Renderer, data.Width, data.Flags, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
             tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
@@ -239,12 +239,13 @@ namespace Molten.Graphics
             return new Texture2DDX11(Renderer,
                 properties.Width,
                 properties.Height,
+                properties.Flags,
                 properties.Format.ToApi(),
                 properties.MipMapLevels,
                 properties.ArraySize,
-                properties.Flags,
                 properties.MultiSampleLevel,
                 properties.SampleQuality,
+                false,
                 properties.Name);
         }
 
@@ -253,10 +254,10 @@ namespace Molten.Graphics
             Texture2DDX11 tex = new Texture2DDX11(Renderer,
                 data.Width,
                 data.Height,
+                data.Flags,
                 data.Format.ToApi(),
                 data.MipMapLevels,
                 data.ArraySize,
-                data.Flags,
                 data.MultiSampleLevel);
 
             tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
@@ -269,9 +270,9 @@ namespace Molten.Graphics
                 properties.Width,
                 properties.Height,
                 properties.Depth,
+                properties.Flags,
                 properties.Format.ToApi(),
-                properties.MipMapLevels,
-                properties.Flags);
+                properties.MipMapLevels);
         }
 
         public override ITexture3D CreateTexture3D(TextureData data)
@@ -295,13 +296,13 @@ namespace Molten.Graphics
         public override ITextureCube CreateTextureCube(Texture2DProperties properties)
         {
             uint cubeCount = Math.Max(properties.ArraySize / 6, 1);
-            return new TextureCubeDX11(Renderer, properties.Width, properties.Height, properties.Format.ToApi(), properties.MipMapLevels, cubeCount, properties.Flags);
+            return new TextureCubeDX11(Renderer, properties.Width, properties.Height, properties.Flags, properties.Format.ToApi(), properties.MipMapLevels, cubeCount);
         }
 
         public override ITextureCube CreateTextureCube(TextureData data)
         {
             uint cubeCount = Math.Max(data.ArraySize / 6, 1);
-            TextureCubeDX11 tex = new TextureCubeDX11(Renderer, data.Width, data.Height, data.Format.ToApi(), data.MipMapLevels, cubeCount, data.Flags);
+            TextureCubeDX11 tex = new TextureCubeDX11(Renderer, data.Width, data.Height, data.Flags, data.Format.ToApi(), data.MipMapLevels, cubeCount);
             tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }

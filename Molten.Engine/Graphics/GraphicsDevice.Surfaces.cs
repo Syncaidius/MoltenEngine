@@ -3,28 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.Graphics.Textures;
 
 namespace Molten.Graphics
 {
     public abstract partial class GraphicsDevice
     {
-        public IRenderSurface2D CreateSurface(Texture2DProperties properties)
+        public IRenderSurface2D CreateSurface(Texture2DProperties properties, bool allowMipMapGen = false)
         {
             return CreateSurface(properties.Width,
                 properties.Height,
                 properties.Format,
+                (GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.GpuWrite),
                 properties.MipMapLevels,
                 properties.ArraySize,
                 properties.MultiSampleLevel,
-                properties.Flags);
+                allowMipMapGen);
         }
 
-        public abstract IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
-            uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, TextureFlags flags = TextureFlags.None, string name = null);
+        public abstract IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm, 
+            GraphicsResourceFlags flags = (GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.GpuWrite),
+            uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null);
 
         public abstract IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless,
-            uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None,
-            TextureFlags flags = TextureFlags.None, string name = null);
+            GraphicsResourceFlags flags = (GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.GpuWrite),
+            uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null);
 
         /// <summary>Creates a form with a surface which can be rendered on to.</summary>
         /// <param name="formTitle">The title of the form.</param>

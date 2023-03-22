@@ -16,7 +16,7 @@ namespace Molten.Graphics
 
         public TextureSlice[] Levels;
         public GraphicsFormat Format;
-        public TextureFlags Flags;
+        public GraphicsResourceFlags Flags;
 
         public bool IsCompressed;
 

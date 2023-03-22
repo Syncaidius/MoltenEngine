@@ -9,10 +9,10 @@ namespace Molten.Graphics
         internal ID3D11Texture2D1* NativeTexture;
         Texture2DDesc1 _desc;
 
-        internal TextureCubeDX11(RenderService renderer, uint width,
-            uint height, Format format = Format.FormatR8G8B8A8Unorm, uint mipCount = 1, 
-            uint cubeCount = 1, TextureFlags flags = TextureFlags.None, string name = null)
-            : base(renderer, width, height, 1, mipCount, 6, AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
+        internal TextureCubeDX11(RenderService renderer, uint width, uint height, GraphicsResourceFlags flags, 
+            Format format = Format.FormatR8G8B8A8Unorm, uint mipCount = 1, uint cubeCount = 1,
+            bool allowMipMapGen = false, string name = null)
+            : base(renderer, width, height, 1, mipCount, 6, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
         {
             CubeCount = cubeCount;
             _desc = new Texture2DDesc1()
@@ -22,15 +22,11 @@ namespace Molten.Graphics
                 MipLevels = mipCount,
                 ArraySize = 6 * CubeCount,
                 Format = format,
-                BindFlags = (uint)BindFlag.ShaderResource,
-                CPUAccessFlags = (uint)GetAccessFlags(),
-                SampleDesc = new SampleDesc()
-                {
-                    Count = 1,
-                    Quality = 0,
-                },
+                BindFlags = (uint)(flags.Has(GraphicsResourceFlags.NoShaderAccess) ? BindFlag.None : BindFlag.ShaderResource),
+                CPUAccessFlags = (uint)GetCpuFlags(),
+                SampleDesc = new SampleDesc(1, 0),
                 Usage = GetUsageFlags(),
-                MiscFlags = (uint)(GetResourceFlags() | ResourceMiscFlag.Texturecube),
+                MiscFlags = (uint)(GetResourceFlags(allowMipMapGen) | ResourceMiscFlag.Texturecube),
                 TextureLayout = TextureLayout.None
             };
         }

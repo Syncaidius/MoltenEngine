@@ -12,13 +12,14 @@ namespace Molten.Graphics
             RenderService renderer,
             uint width,
             uint height,
+            GraphicsResourceFlags flags,
             Format format = Format.FormatR8G8B8A8SNorm,
             uint mipCount = 1,
             uint arraySize = 1,
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
             MSAAQuality msaa = MSAAQuality.Default,
-            TextureFlags flags = TextureFlags.None, string name = null)
-            : base(renderer, width, height, format, mipCount, arraySize, flags, aaLevel, msaa, name)
+            bool allowMipMapGen, string name = null)
+            : base(renderer, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
         {
             Viewport = new ViewportF(0, 0, width, height);
 

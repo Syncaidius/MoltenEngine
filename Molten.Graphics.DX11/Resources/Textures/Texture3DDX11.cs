@@ -13,16 +13,15 @@ namespace Molten.Graphics
         /// of the provided texture in to the new instance.</summary>
         /// <param name="other"></param>
         /// <param name="flags">A set of flags to override those of the provided texture.</param>
-        internal Texture3DDX11(Texture3DDX11 other, TextureFlags flags)
-            : this(other.Renderer, other.Width, other.Height, other.Depth,
-                  other.DxgiFormat, other.MipMapCount, flags)
+        internal Texture3DDX11(Texture3DDX11 other, GraphicsResourceFlags flags)
+            : this(other.Renderer, other.Width, other.Height, other.Depth, flags, other.DxgiFormat, other.MipMapCount)
         { }
 
         /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="other"></param>
         internal Texture3DDX11(Texture3DDX11 other)
-            : this(other.Renderer, other.Width, other.Height, other.Depth, other.DxgiFormat, other.MipMapCount, other.AccessFlags)
+            : this(other.Renderer, other.Width, other.Height, other.Depth, other.Flags, other.DxgiFormat, other.MipMapCount, other.MipMapGenAllowed)
         { }
 
         internal Texture3DDX11(
@@ -30,11 +29,12 @@ namespace Molten.Graphics
             uint width,
             uint height,
             uint depth,
+            GraphicsResourceFlags flags,
             Format format = Format.FormatR8G8B8A8Unorm,
             uint mipCount = 1,
-            TextureFlags flags = TextureFlags.None,
+            bool allowMipMapGen = false,
             string name = null)
-            : base(renderer, width, height, depth, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
+            : base(renderer, width, height, depth, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
         {
             _desc = new Texture3DDesc1()
             {
@@ -44,9 +44,9 @@ namespace Molten.Graphics
                 MipLevels = mipCount,
                 Format = format,
                 BindFlags = (uint)GetBindFlags(),
-                CPUAccessFlags = (uint)GetAccessFlags(),
+                CPUAccessFlags = (uint)GetCpuFlags(),
                 Usage = GetUsageFlags(),
-                MiscFlags = (uint)GetResourceFlags(),
+                MiscFlags = (uint)GetResourceFlags(allowMipMapGen),
             };
         }
 
@@ -57,7 +57,7 @@ namespace Molten.Graphics
                 Width = Width,
                 Height = Height,
                 ArraySize = ArraySize,
-                Flags = AccessFlags,
+                Flags = Flags,
                 Format = DataFormat,
                 MipMapLevels = MipMapCount
             };

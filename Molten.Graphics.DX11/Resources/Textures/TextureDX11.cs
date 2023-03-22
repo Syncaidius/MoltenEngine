@@ -1,7 +1,4 @@
-﻿using Molten.Collections;
-using Molten.Graphics.Textures;
-using Molten.UI;
-using Silk.NET.Core.Native;
+﻿using Molten.Graphics.Textures;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
@@ -26,20 +23,22 @@ namespace Molten.Graphics
         public event TextureHandler OnResize;
 
         ID3D11Resource* _native;
+        bool _allowMipMapGen;
 
         internal TextureDX11(RenderService renderer, uint width, uint height, uint depth, uint mipCount, 
-            uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, TextureFlags flags, string name) : base(renderer.Device as DeviceDX11,
-                ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
-                ((flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None))
+            uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
+            base(renderer.Device as DeviceDX11,
+                (flags.Has(GraphicsResourceFlags.UnorderedAccess) ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None |
+                (flags.Has(GraphicsResourceFlags.NoShaderAccess) ? GraphicsBindTypeFlags.None : GraphicsBindTypeFlags.Input)))
         {
             Renderer = renderer;
             Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{width}x{height}" : name;
-            AccessFlags = flags;
+            _allowMipMapGen = allowMipMapGen;
             ValidateFlagCombination();
 
             MSAASupport msaaSupport = MSAASupport.NotSupported; // TODO re-support. _renderer.Device.Features.GetMSAASupport(format, aaLevel);
 
-            Flags = GraphicsResourceFlags.None; // TODO refactor textures to use GraphicsResourceFlags.
+            Flags = flags;
             Width = width;
             Height = height;
             Depth = depth;
@@ -49,8 +48,7 @@ namespace Molten.Graphics
             SampleQuality = msaaSupport != MSAASupport.NotSupported ? sampleQuality : MSAAQuality.Default;
             DxgiFormat = format;
             IsValid = false;
-
-            IsBlockCompressed = BCHelper.GetBlockCompressed(DxgiFormat.FromApi());
+            IsBlockCompressed = BCHelper.GetBlockCompressed(DataFormat);
 
             if (IsBlockCompressed)
                 SizeInBytes = BCHelper.GetBCSize(DataFormat, width, height, mipCount) * arraySize;
@@ -61,30 +59,27 @@ namespace Molten.Graphics
         private void ValidateFlagCombination()
         {
             // Validate RT mip-maps
-            if (HasFlags(TextureFlags.AllowMipMapGeneration))
+            if (_allowMipMapGen)
             {
-                if(HasFlags(TextureFlags.NoShaderResource) || !(this is RenderSurface2DDX11))
-                    throw new TextureFlagException(AccessFlags, "Mip-map generation is only available on render-surface shader resources.");
+                if(Flags.Has(GraphicsResourceFlags.NoShaderAccess) || !(this is RenderSurface2DDX11))
+                    throw new TextureFlagException(Flags, "Mip-map generation is only available on render-surface shader resources.");
             }
 
-            if (HasFlags(TextureFlags.Staging))
+            // Only staging resources have CPU-write access.
+            if (Flags.Has(GraphicsResourceFlags.CpuWrite))
             {
-                if (AccessFlags != (TextureFlags.Staging) && AccessFlags != (TextureFlags.Staging | TextureFlags.NoShaderResource))
-                    throw new TextureFlagException(AccessFlags, "Staging textures cannot have other flags set except NoShaderResource.");
+                if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+                    throw new TextureFlagException(Flags, "Staging textures cannot allow shader access. Add GraphicsResourceFlags.NoShaderAccess flag.");
 
-                AccessFlags |= TextureFlags.NoShaderResource;
+                // Staging buffers cannot have any other flags aside from 
+                if (Flags != (GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.GpuWrite))
+                    throw new TextureFlagException(Flags, "Staging textures must have all CPU/GPU read and write flags.");
             }
         }
 
-        protected BindFlag GetBindFlags()
+        protected override BindFlag GetBindFlags()
         {
-            BindFlag result = 0;
-
-            if (HasFlags(TextureFlags.AllowUAV))
-                result |= BindFlag.UnorderedAccess;
-
-            if (!HasFlags(TextureFlags.NoShaderResource))
-                result |= BindFlag.ShaderResource;
+            BindFlag result = base.GetBindFlags();
 
             if (this is RenderSurface2DDX11)
                 result |= BindFlag.RenderTarget;
@@ -93,39 +88,6 @@ namespace Molten.Graphics
                 result |= BindFlag.DepthStencil;
 
             return result;
-        }
-
-        protected ResourceMiscFlag GetResourceFlags()
-        {
-            ResourceMiscFlag result = 0;
-
-            if (HasFlags(TextureFlags.SharedResource))
-                result |= ResourceMiscFlag.Shared;
-
-            if (HasFlags(TextureFlags.AllowMipMapGeneration))
-                result |= ResourceMiscFlag.GenerateMips;
-
-            return result;
-        }
-
-        protected Usage GetUsageFlags()
-        {
-            if (HasFlags(TextureFlags.Staging))
-                return Usage.Staging;
-            else if (HasFlags(TextureFlags.Dynamic))
-                return Usage.Dynamic;
-            else
-                return Usage.Default;
-        }
-
-        protected CpuAccessFlag GetAccessFlags()
-        {
-            if (HasFlags(TextureFlags.Staging))
-                return CpuAccessFlag.Read;
-            else if (HasFlags(TextureFlags.Dynamic))
-                return CpuAccessFlag.Write;
-            else
-                return 0;
         }
 
         protected void CreateTexture(bool resize)
@@ -139,14 +101,14 @@ namespace Molten.Graphics
 
             if (_native != null)
             {
-                if (!HasFlags(TextureFlags.NoShaderResource))
+                if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
                 {
                     SetSRVDescription(ref SRV.Desc);
                     SRV.Create(_native);
                     SRV.SetDebugName($"{Name}_SRV");
                 }
 
-                if (HasFlags(TextureFlags.AllowUAV))
+                if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
                 {
                     SetUAVDescription(ref SRV.Desc, ref UAV.Desc);
                     UAV.Create(_native);
@@ -181,15 +143,10 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _native);
         }
 
-        public bool HasFlags(TextureFlags flags)
-        {
-            return (AccessFlags & flags) == flags;
-        }
-
         /// <summary>Generates mip maps for the texture via the provided <see cref="CommandQueueDX11"/>.</summary>
         public void GenerateMipMaps(GraphicsPriority priority)
         {
-            if (!((AccessFlags & TextureFlags.AllowMipMapGeneration) == TextureFlags.AllowMipMapGeneration))
+            if (!_allowMipMapGen)
                 throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
 
             QueueTask(priority, new GenerateMipMapsTask());
@@ -370,7 +327,7 @@ namespace Molten.Graphics
                     p += mapping.RowPitch;
                 }
             }
-            cmdNative.UnmapResource(_native, subID);
+            cmdNative.UnmapResource(this, subID);
 
             TextureSlice slice = new TextureSlice(subWidth, subHeight, sliceData)
             {
@@ -432,8 +389,8 @@ namespace Molten.Graphics
             if (DataFormat != destination.DataFormat)
                 throw new TextureCopyException(this, destTexture, "The source and destination texture formats do not match.");
 
-            if (destination.HasFlags(TextureFlags.Dynamic))
-                throw new TextureCopyException(this, destination as TextureDX11, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");
+            if (!destTexture.Flags.Has(GraphicsResourceFlags.GpuWrite))
+                throw new TextureCopyException(this, destTexture, "Cannoy copy to a buffer that does not have GPU-write permission.");
 
             // Validate dimensions.
             if (destTexture.Width != Width ||
@@ -443,7 +400,7 @@ namespace Molten.Graphics
 
             QueueTask(priority, new ResourceCopyTask()
             {
-                Destination = destination as TextureDX11,
+                Destination = destTexture,
                 CompletionCallback = completeCallback,
             });
         }
@@ -455,8 +412,8 @@ namespace Molten.Graphics
         {
             TextureDX11 destTexture = destination as TextureDX11;
 
-            if (destination.HasFlags(TextureFlags.Dynamic))
-                throw new TextureCopyException(this, destTexture, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");
+            if (!destTexture.Flags.Has(GraphicsResourceFlags.GpuWrite))
+                throw new TextureCopyException(this, destTexture, "Cannoy copy to a buffer that does not have GPU-write permission.");
 
             if (DataFormat != destination.DataFormat)
                 throw new TextureCopyException(this, destTexture, "The source and destination texture formats do not match.");
@@ -484,7 +441,7 @@ namespace Molten.Graphics
             {
                 SrcRegion = null,
                 SrcSubResource = (sourceSlice * MipMapCount) + sourceLevel,
-                DestResource = destination as ResourceDX11,
+                DestResource = destTexture,
                 DestStart = Vector3UI.Zero,
                 DestSubResource = (destSlice * destination.MipMapCount) + destLevel,
                 CompletionCallback = completeCallback,
@@ -504,9 +461,6 @@ namespace Molten.Graphics
 
             base.OnApply(cmd);
         }
-
-        /// <summary>Gets the flags that were passed in when the texture was created.</summary>
-        public TextureFlags AccessFlags { get; protected set; }
 
         public override GraphicsResourceFlags Flags { get; }
 
@@ -534,6 +488,8 @@ namespace Molten.Graphics
         public uint ArraySize { get; protected set; }
 
         public override uint SizeInBytes { get; }
+
+        public bool MipMapGenAllowed => _allowMipMapGen;
 
         /// <summary>
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 

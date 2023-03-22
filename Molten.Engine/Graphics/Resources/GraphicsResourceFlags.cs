@@ -38,6 +38,29 @@
         /// Each data is uploaded to the resource, the current resource memory is discarded after the GPU has finished with it. New area of memory is allocated to accomodate the new data.
         /// </summary>
         Discard = 1 << 5,
+
+        /// <summary>
+        /// Allow unordered/storage access from supported shader stages.
+        /// <para>These are UAV resources in DX11 and DX12.</para>
+        /// <para>These are Shader Storage Objects (SSO) resources in OpenGL and Vulkan.</para>
+        /// </summary>
+        UnorderedAccess = 1 << 6,
+
+        /// <summary>
+        /// Do not allow shader access. For example in DX11 this would prevent a shader resource view (SRV) from being bound to the resource.
+        /// </summary>
+        NoShaderAccess = 1 << 7,
+
+        /// <summary>
+        /// Allows the resource to be shared between logical devices, such as ID3D11Device, ID3D12Device or vkDevice instances.
+        /// </summary>
+        Shared = 1 << 8,
+
+
+        /// <summary>
+        /// All of the GPU and CPU read/write flags.
+        /// </summary>
+        AllReadWrite = (CpuRead | CpuWrite | GpuRead | GpuWrite),
     }
 
     public static class ResourceFlagsExtensions
