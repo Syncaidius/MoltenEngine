@@ -27,14 +27,15 @@ namespace Molten.Graphics
         internal DepthSurfaceDX11(RenderService renderer,
             uint width, 
             uint height,
+            GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
             DepthFormat format = DepthFormat.R24G8_Typeless,
             uint mipCount = 1, 
             uint arraySize = 1, 
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
             MSAAQuality msaa = MSAAQuality.Default,
-            TextureFlags flags = TextureFlags.None, 
+            bool allowMipMapGen = false,
             string name = "surface")
-            : base(renderer, width, height, Format.FormatR24G8Typeless, mipCount, arraySize, flags, aaLevel, msaa)
+            : base(renderer, width, height, flags, Format.FormatR24G8Typeless, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
         {
             _depthFormat = format;
             _desc.ArraySize = arraySize;

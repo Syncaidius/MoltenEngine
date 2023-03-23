@@ -36,7 +36,7 @@ namespace Molten.Examples
             TestMesh.Shader = mat;
 
             Texture2DProperties p = texture.Get2DProperties();
-            p.Flags = TextureFlags.Staging;
+            p.Flags = GraphicsResourceFlags.AllReadWrite;
             ITexture2D staging = Engine.Renderer.Device.CreateTexture2D(p);
 
             TextureData loadedData = _hTexData.Get<TextureData>();

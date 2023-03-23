@@ -10,7 +10,7 @@ namespace Molten.Graphics
     internal class StagingBufferVK : BufferVK, IStagingBuffer
     {
         internal unsafe StagingBufferVK(GraphicsDevice device, uint stride, uint numElements) : 
-            base(device, GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.GpuWrite, BufferUsageFlags.None, stride, numElements, null)
+            base(device, GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuWrite, BufferUsageFlags.None, stride, numElements, null)
         {
         }
     }

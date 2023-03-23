@@ -27,23 +27,6 @@ namespace Molten.Graphics
                   descTexture.Name)
         { }
 
-        /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
-        /// of the provided texture in to the new instance.</summary>
-        /// <param name="descTexture">The <see cref="Texture2DDX11"/> to use as a template configuration for a new <see cref="Texture2DDX11"/> instance.</param>
-        internal Texture2DDX11(Texture2DDX11 descTexture)
-            : this(descTexture.Renderer, 
-                  descTexture.Width, 
-                  descTexture.Height,
-                  descTexture.Flags,
-                  descTexture.DxgiFormat, 
-                  descTexture.MipMapCount, 
-                  descTexture.ArraySize, 
-                  descTexture.MultiSampleLevel,
-                  descTexture.SampleQuality,
-                  descTexture.MipMapGenAllowed,
-                  descTexture.Name)
-        { }
-
         internal Texture2DDX11(
             RenderService renderer,
             uint width,
@@ -93,6 +76,11 @@ namespace Molten.Graphics
         {
             SubresourceData* subData = null;
             (Device as DeviceDX11).Ptr->CreateTexture2D1(ref _desc, subData, ref NativeTexture);
+
+            if(NativeTexture == null)
+            {
+
+            }
             return (ID3D11Resource*)NativeTexture;
         }
 
@@ -149,6 +137,7 @@ namespace Molten.Graphics
             _desc.Height = newHeight;
             _desc.MipLevels = newMipMapCount;
             _desc.Format = newFormat;
+            _desc.TextureLayout = TextureLayout.LayoutUndefined;
         }
 
         public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight)

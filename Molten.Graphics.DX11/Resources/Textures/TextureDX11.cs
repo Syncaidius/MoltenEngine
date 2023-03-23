@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics.Textures;
+using Molten.IO;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
@@ -72,7 +73,7 @@ namespace Molten.Graphics
                     throw new TextureFlagException(Flags, "Staging textures cannot allow shader access. Add GraphicsResourceFlags.NoShaderAccess flag.");
 
                 // Staging buffers cannot have any other flags aside from 
-                if (Flags != (GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.GpuWrite))
+                if (Flags != (GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite))
                     throw new TextureFlagException(Flags, "Staging textures must have all CPU/GPU read and write flags.");
             }
         }
@@ -270,7 +271,7 @@ namespace Molten.Graphics
         {
             QueueTask(priority, new TextureGetSliceTask()
             {
-                StagingTexture = stagingTexture as TextureDX11,
+                Staging = stagingTexture as TextureDX11,
                 CompleteCallback = callback,
                 ArrayIndex = arrayIndex,
                 MipMapLevel = mipLevel,
@@ -289,18 +290,18 @@ namespace Molten.Graphics
             uint subWidth = Width >> (int)level;
             uint subHeight = Height >> (int)level;
 
-            ID3D11Resource* resToMap = _native;
+            ResourceDX11 resToMap = this;
             CommandQueueDX11 cmdNative = cmd as CommandQueueDX11;
 
             if (staging != null)
             {
                 cmdNative.CopyResourceRegion(_native, subID, null, staging._native, subID, Vector3UI.Zero);
                 cmd.Profiler.Current.CopySubresourceCount++;
-                resToMap = staging._native;
+                resToMap = staging;
             }
 
             // Now pull data from it
-            MappedSubresource mapping = cmdNative.MapResource(resToMap, subID, Map.Read, 0);
+            RawStream stream = cmdNative.MapResource(resToMap, subID, 0);
             // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
             // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
 
@@ -316,18 +317,19 @@ namespace Molten.Graphics
             fixed (byte* ptrFixedSlice = sliceData)
             {
                 byte* ptrSlice = ptrFixedSlice;
-                byte* ptrDatabox = (byte*)mapping.PData;
+                //byte* ptrDatabox = (byte*)mapping.PData;
 
                 uint p = 0;
-                while (p < mapping.DepthPitch)
+                while (p < resToMap.MapPtr.DepthPitch)
                 {
-                    Buffer.MemoryCopy(ptrDatabox, ptrSlice, expectedSlicePitch, expectedRowPitch);
-                    ptrDatabox += mapping.RowPitch;
+                    stream.ReadRange(ptrSlice, expectedRowPitch);
+                    //Buffer.MemoryCopy(ptrDatabox, ptrSlice, expectedSlicePitch, expectedRowPitch);
+                    //ptrDatabox += resToMap.MapPtr.RowPitch;
                     ptrSlice += expectedRowPitch;
-                    p += mapping.RowPitch;
+                    p += resToMap.MapPtr.RowPitch;
                 }
             }
-            cmdNative.UnmapResource(this, subID);
+            cmdNative.UnmapResource(resToMap, subID);
 
             TextureSlice slice = new TextureSlice(subWidth, subHeight, sliceData)
             {

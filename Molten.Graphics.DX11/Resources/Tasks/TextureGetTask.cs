@@ -14,10 +14,13 @@ namespace Molten.Graphics
             TextureDX11 texture = resource as TextureDX11;
             CommandQueueDX11 cmdDX11 = cmd as CommandQueueDX11;
 
+            bool isStaging = texture.Flags.Has(GraphicsResourceFlags.AllReadWrite);
+            bool stagingValid = Staging.Flags.Has(GraphicsResourceFlags.AllReadWrite);
+
             if (Staging != null)
             {
-                if (!Staging.HasFlags(TextureFlags.Staging))
-                    throw new TextureFlagException(Staging.AccessFlags, "Provided staging texture does not have the staging flag set.");
+                if (!stagingValid)
+                    throw new TextureFlagException(Staging.Flags, "Provided staging texture does not have the staging flag set.");
 
                 // Validate dimensions.
                 if (Staging.Width != texture.Width ||
@@ -33,13 +36,13 @@ namespace Molten.Graphics
             }
             else
             {
-                if (!texture.HasFlags(TextureFlags.Staging))
+                if (!isStaging)
                     throw new TextureCopyException(texture, null, "A null staging texture was provided, but this is only valid if the target texture is a staging texture. A staging texture is required to retrieve data from non-staged textures.");
             }
 
             TextureData data = new TextureData(texture.Width, texture.Height, texture.MipMapCount, texture.ArraySize)
             {
-                Flags = texture.AccessFlags,
+                Flags = texture.Flags,
                 Format = texture.DataFormat,
                 HighestMipMap = 0,
                 IsCompressed = texture.IsBlockCompressed,

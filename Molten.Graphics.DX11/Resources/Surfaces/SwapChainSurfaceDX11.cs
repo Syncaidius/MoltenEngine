@@ -18,8 +18,10 @@ namespace Molten.Graphics
         ThreadedQueue<Action> _dispatchQueue;
         uint _vsync;
 
-        internal SwapChainSurfaceDX11(RenderService renderer, uint mipCount)
-            : base(renderer, 1, 1, Format.FormatB8G8R8A8Unorm, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, TextureFlags.NoShaderResource)
+        internal SwapChainSurfaceDX11(RenderService renderer, uint mipCount, Format format = Format.FormatB8G8R8A8Unorm)
+            : base(renderer, 1, 1, 
+                  GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite,
+                  format, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default)
         {
             _dispatchQueue = new ThreadedQueue<Action>();
             _presentParams = EngineUtil.Alloc<PresentParameters>();

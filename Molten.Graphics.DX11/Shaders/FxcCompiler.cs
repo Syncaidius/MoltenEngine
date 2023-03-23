@@ -473,7 +473,7 @@ namespace Molten.Graphics
         private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext context,
             HlslShader shader, ConstantBufferInfo info)
         {
-            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.Device as DeviceDX11, GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.Discard, info);
+            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.Device as DeviceDX11, info);
             string localName = cBuffer.BufferName;
 
             if (cBuffer.BufferName == "$Globals")

@@ -14,7 +14,7 @@ namespace Molten.Graphics
             return CreateSurface(properties.Width,
                 properties.Height,
                 properties.Format,
-                (GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.GpuWrite),
+                GraphicsResourceFlags.GpuWrite,
                 properties.MipMapLevels,
                 properties.ArraySize,
                 properties.MultiSampleLevel,
@@ -22,11 +22,11 @@ namespace Molten.Graphics
         }
 
         public abstract IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm, 
-            GraphicsResourceFlags flags = (GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.GpuWrite),
+            GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
             uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null);
 
         public abstract IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless,
-            GraphicsResourceFlags flags = (GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.GpuWrite),
+            GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
             uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null);
 
         /// <summary>Creates a form with a surface which can be rendered on to.</summary>

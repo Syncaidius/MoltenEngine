@@ -336,11 +336,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public bool HasFlags(TextureFlags flags)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Clear(GraphicsPriority priority, Color color)
         {
             throw new NotImplementedException();
@@ -378,8 +373,6 @@ namespace Molten.Graphics
         public nint? WindowHandle => throw new NotImplementedException();
 
         public ViewportF Viewport => throw new NotImplementedException();
-
-        public TextureFlags AccessFlags => throw new NotImplementedException();
 
         public GraphicsFormat DataFormat => _format.FromApi();
 

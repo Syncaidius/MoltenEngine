@@ -9,7 +9,7 @@ namespace Molten.Graphics
         /// <param name="numBytes">The number of elements the buffer should be able to hold.</param>
         /// <param name="flags">The flags to use when creating the buffer.</param>
         internal unsafe StagingBuffer(DeviceDX11 device, GraphicsResourceFlags flags, uint numBytes)
-            : base(device, flags, BindFlag.None, 1, numBytes, ResourceMiscFlag.None)
+            : base(device, flags | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite, BindFlag.None, 1, numBytes, ResourceMiscFlag.None)
         {
             
         }

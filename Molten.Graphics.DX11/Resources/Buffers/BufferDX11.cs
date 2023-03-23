@@ -38,7 +38,7 @@ namespace Molten.Graphics
         {
             DeviceDX11 nDevice = Device as DeviceDX11;
             if (Flags.IsImmutable() && initialData == null)
-                throw new GraphicsBufferException(this, "Initial data cannot be null when buffer mode is Immutable.");
+                throw new GraphicsResourceException(this, "Initial data cannot be null when buffer mode is Immutable.");
 
             Desc = new BufferDesc();
             Desc.ByteWidth = SizeInBytes;
@@ -60,9 +60,6 @@ namespace Molten.Graphics
 
                 if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
                     Desc.BindFlags |= (uint)BindFlag.ShaderResource;
-
-                if(Desc.Usage == Usage.None)
-                    throw new GraphicsBufferException(this, "Invalid buffer usage value");
             }
 
             // Ensure structured buffers get the stride info.
@@ -124,7 +121,7 @@ namespace Molten.Graphics
         public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
         {
             if (SizeInBytes < Desc.ByteWidth)
-                throw new GraphicsBufferException(this, "The destination buffer is not large enough.");
+                throw new GraphicsResourceException(this, "The destination buffer is not large enough.");
 
             QueueTask(priority, new ResourceCopyTask()
             {
@@ -177,7 +174,7 @@ namespace Molten.Graphics
             {
                 if (Flags.Has(GraphicsResourceFlags.Discard))
                 {
-                    cmd.MapResource(this, 0, byteOffset, out stream);
+                    stream = cmd.MapResource(this, 0, byteOffset);
                 }
                 else if (Flags.Has(GraphicsResourceFlags.Ring))
                 {
@@ -187,24 +184,24 @@ namespace Molten.Graphics
                     {
                         if (_ringPos > 0 && _ringPos + numBytes < Desc.ByteWidth)
                         {
-                            cmd.MapResource(this, 0, _ringPos, out stream);
+                            stream = cmd.MapResource(this, 0, _ringPos);
                             _ringPos += numBytes;
                         }
                         else
                         {
-                            cmd.MapResource(this, 0, 0, out stream);
+                            stream = cmd.MapResource(this, 0, 0);
                             stream.Position = 0;
                             _ringPos = numBytes;
                         }
                     }
                     else
                     {
-                        cmd.MapResource(this, 0, byteOffset, out stream);
+                        stream = cmd.MapResource(this, 0, byteOffset);
                     }
                 }
                 else
                 {
-                    cmd.MapResource(this, 0, 0, out stream);
+                    stream = cmd.MapResource(this, 0, 0);
                 }
 
                 callback(this, stream);
@@ -214,25 +211,25 @@ namespace Molten.Graphics
             {
                 // Write to the provided staging buffer instead.
                 if (staging == null)
-                    throw new GraphicsBufferException(this, "Staging buffer required. Non-dynamic/staged buffers require a staging buffer to access data.");
+                    throw new GraphicsResourceException(this, "Staging buffer required. Non-dynamic/staged buffers require a staging buffer to access data.");
 
                 isDynamic = staging.Desc.Usage == Usage.Dynamic;
                 isStaged = staging.Desc.Usage == Usage.Staging;
 
                 if (!isDynamic && !isStaged)
-                    throw new GraphicsBufferException(this, "The provided staging buffer is invalid. Must be either dynamic or staged.");
+                    throw new GraphicsResourceException(this, "The provided staging buffer is invalid. Must be either dynamic or staged.");
 
                 if (staging.Desc.ByteWidth < numBytes)
-                    throw new GraphicsBufferException(this, $"The provided staging buffer is not large enough ({staging.Desc.ByteWidth} bytes) to fit the provided data ({numBytes} bytes).");
+                    throw new GraphicsResourceException(this, $"The provided staging buffer is not large enough ({staging.Desc.ByteWidth} bytes) to fit the provided data ({numBytes} bytes).");
 
                 // Write updated data into buffer
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
                 {
-                    cmd.MapResource(staging, 0, 0, out stream);
+                    stream = cmd.MapResource(staging, 0, 0);
                 }
                 else
                 {
-                    cmd.MapResource(staging, 0, 0, out stream);
+                    stream = cmd.MapResource(staging, 0, 0);
                 }
 
                 callback(staging, stream);
@@ -311,7 +308,7 @@ namespace Molten.Graphics
             where T : unmanaged
         {
             if ((Desc.CPUAccessFlags & (uint)CpuAccessFlag.Read) != (uint)CpuAccessFlag.Read)
-                throw new GraphicsBufferException(this, "Cannot use GetData() on a non-readable buffer.");
+                throw new GraphicsResourceException(this, "Cannot use GetData() on a non-readable buffer.");
 
             if (destination.Length < count)
                 throw new ArgumentException("The provided destination array is not large enough.");

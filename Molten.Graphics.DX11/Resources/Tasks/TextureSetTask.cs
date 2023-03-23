@@ -102,7 +102,7 @@ namespace Molten.Graphics
 
             if (texture.Flags.Has(GraphicsResourceFlags.CpuWrite))
             {
-                cmdDx11.MapResource(texture, subLevel, 0, out RawStream stream);
+                RawStream stream = cmdDx11.MapResource(texture, subLevel, 0);
 
                 // Are we constrained to an area of the texture?
                 if (Area != null)

@@ -29,7 +29,7 @@ namespace Molten.Graphics
             base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
         {
             MaxInstances = maxInstances;
-            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.Discard, maxIndices, null);
+            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.Discard, maxIndices, null);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Molten.Graphics
             base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
         {
             MaxInstances = maxInstances;
-            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.Discard, maxInstances, null);
+            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.Discard, maxInstances, null);
         }
 
         public void SetInstanceData(I[] data)

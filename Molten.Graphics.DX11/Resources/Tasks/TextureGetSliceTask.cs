@@ -2,7 +2,7 @@
 {
     internal struct TextureGetSliceTask : IGraphicsResourceTask
     {
-        public TextureDX11 StagingTexture;
+        public TextureDX11 Staging;
 
         public Action<TextureSlice> CompleteCallback;
 
@@ -14,32 +14,35 @@
         {
             TextureDX11 texture = resource as TextureDX11;
 
-            if (!StagingTexture.HasFlags(TextureFlags.Staging) && !texture.HasFlags(TextureFlags.Staging))
-                throw new TextureFlagException(StagingTexture.AccessFlags, "Provided staging texture does not have the staging flag set.");
+            bool isStaging = texture.Flags.Has(GraphicsResourceFlags.AllReadWrite);
+            bool stagingValid = Staging.Flags.Has(GraphicsResourceFlags.AllReadWrite);
+
+            if (!stagingValid && !isStaging)
+                throw new TextureFlagException(Staging.Flags, "Provided staging texture does not have the staging flag set.");
 
             // If the source texture is a staging texture itself, we don't need to use the provided staging texture.
-            if (!texture.HasFlags(TextureFlags.Staging))
+            if (!isStaging)
             {
                 // Validate dimensions.
-                if (StagingTexture.Width != texture.Width ||
-                    StagingTexture.Height != texture.Height ||
-                    StagingTexture.Depth != texture.Depth)
-                    throw new TextureCopyException(texture, StagingTexture, "Staging texture dimensions do not match current texture.");
+                if (Staging.Width != texture.Width ||
+                    Staging.Height != texture.Height ||
+                    Staging.Depth != texture.Depth)
+                    throw new TextureCopyException(texture, Staging, "Staging texture dimensions do not match current texture.");
 
                 if (MipMapLevel >= texture.MipMapCount)
-                    throw new TextureCopyException(texture, StagingTexture, "mip-map level must be less than the total mip-map levels of the texture.");
+                    throw new TextureCopyException(texture, Staging, "mip-map level must be less than the total mip-map levels of the texture.");
 
                 if (ArrayIndex >= texture.ArraySize)
-                    throw new TextureCopyException(texture, StagingTexture, "array slice must be less than the array size of the texture.");
+                    throw new TextureCopyException(texture, Staging, "array slice must be less than the array size of the texture.");
 
-                StagingTexture.Apply(cmd);
+                Staging.Apply(cmd);
             }
             else
             {
-                StagingTexture = null;
+                Staging = null;
             }
 
-            TextureSlice slice = texture.OnGetSliceData(cmd, StagingTexture, MipMapLevel, ArrayIndex);
+            TextureSlice slice = texture.OnGetSliceData(cmd, Staging, MipMapLevel, ArrayIndex);
 
             // Return resulting data
             CompleteCallback?.Invoke(slice);

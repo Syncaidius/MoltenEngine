@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Molten.IO;
 using Molten.Utility;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
@@ -14,8 +15,10 @@ namespace Molten.Graphics
         internal int Hash;
         byte* _constData;
 
-        internal ShaderConstantBuffer(DeviceDX11 device, GraphicsResourceFlags flags, ConstantBufferInfo desc)
-            : base(device, flags, BindFlag.ConstantBuffer, 1, desc.Size)
+        internal ShaderConstantBuffer(DeviceDX11 device, ConstantBufferInfo desc)
+            : base(device, 
+                  GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.None | GraphicsResourceFlags.Discard, 
+                  BindFlag.ConstantBuffer, 1, desc.Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
             _constData = (byte*)EngineUtil.Alloc(desc.Size);
@@ -77,9 +80,9 @@ namespace Molten.Graphics
                 foreach(ShaderConstantVariable v in Variables)
                     v.Write(_constData + v.ByteOffset);
 
-                MappedSubresource data = dx11Cmd.MapResource(ResourcePtr, 0, Map.WriteDiscard, 0);
-                Buffer.MemoryCopy(_constData, data.PData, data.DepthPitch, Desc.ByteWidth);
-                dx11Cmd.UnmapResource(ResourcePtr, 0);
+                RawStream stream = dx11Cmd.MapResource(this, 0, 0);
+                stream.WriteRange(_constData, Desc.ByteWidth);
+                dx11Cmd.UnmapResource(this, 0);
             }
             else
             {
@@ -95,7 +98,6 @@ namespace Molten.Graphics
             uint columns = vInfo.Type.ColumnCount;
             uint rows = vInfo.Type.RowCount;
             uint elementCount = vInfo.Type.Elements;
-            uint offset = vInfo.Type.Offset;
 
             switch (vInfo.Type.Class)
             {

@@ -96,12 +96,16 @@ namespace Molten.IO
         public void WriteRange<T>(T[] values, uint startIndex, uint count)
             where T : unmanaged
         {
-            long numBytes = sizeof(T) * count;
-
             fixed (T* ptr = &values[startIndex])
-                WriteRange(ptr, numBytes);
+                WriteRange(ptr, sizeof(T) * count);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ptrData"></param>
+        /// <param name="numBytes">The number of bytes to write.</param>
+        /// <exception cref="RawStreamException"></exception>
         public void WriteRange(void* ptrData, long numBytes)
         {
             if (!CanWrite)
@@ -122,17 +126,28 @@ namespace Molten.IO
         public void ReadRange<T>(T[] destination, uint startIndex, uint count)
             where T : unmanaged
         {
+            fixed (T* ptr = &destination[startIndex])
+                ReadRange(ptr, sizeof(T) * count);
+        }
+
+        /// <summary>
+        /// Reads the specified number of bytes from the current <see cref="RawStream"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of element to read.</typeparam>
+        /// <param name="destination">The destination pointer to which values will be copied to.</param>
+        /// <param name="numBytes">The number of bytes to read.</param>
+        /// <exception cref="RawStreamException"></exception>
+        public void ReadRange(void* destination, long numBytes)
+        {
             if (!CanRead)
                 throw new RawStreamException(this, $"Map mode does not allow reading.");
 
-            long numBytes = sizeof(T) * count;
-            fixed(T* ptr = &destination[startIndex])
-                Buffer.MemoryCopy(_ptrData, ptr, numBytes, numBytes);
-
+            Buffer.MemoryCopy(_ptrData, destination, numBytes, numBytes);
             Position += numBytes;
         }
 
-        public T Read<T>() where T : unmanaged
+        public T Read<T>() 
+            where T : unmanaged
         {
             T* tmp = stackalloc T[1];
             Buffer.MemoryCopy(_ptrData, tmp, sizeof(T), sizeof(T));
@@ -140,7 +155,8 @@ namespace Molten.IO
             return tmp[0];
         }
 
-        public void Read<T>(ref T dest) where T : unmanaged
+        public void Read<T>(ref T dest)
+            where T : unmanaged
         {
             T* tmp = stackalloc T[1];
             Buffer.MemoryCopy(_ptrData, tmp, sizeof(T), sizeof(T));

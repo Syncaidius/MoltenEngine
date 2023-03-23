@@ -10,35 +10,35 @@ namespace Molten.Graphics
     {
         /// <summary>Creates a new 1D texture and returns it.</summary>
         /// <param name="properties">A set of 1D texture properties.</param>
-        public abstract ITexture CreateTexture1D(Texture1DProperties properties);
+        public abstract ITexture CreateTexture1D(Texture1DProperties properties, bool allowMipMapGen = false, string name = null);
 
         /// <summary>Creates a new 1D texture and returns it.</summary>
         /// <param name="data">The data from which to create the texture.</param>
-        public abstract ITexture CreateTexture1D(TextureData data);
+        public abstract ITexture CreateTexture1D(TextureData data, bool allowMipMapGen = false, string name = null);
 
         /// <summary>Creates a new 2D texture and returns it.</summary>
         /// <param name="properties">A set of 2D texture properties.</param>
-        public abstract ITexture2D CreateTexture2D(Texture2DProperties properties);
+        public abstract ITexture2D CreateTexture2D(Texture2DProperties properties, bool allowMipMapGen = false, string name = null);
 
         /// <summary>Creates a new 2D texture and returns it.</summary>
         /// <param name="data">The data from which to create the texture.</param>
-        public abstract ITexture2D CreateTexture2D(TextureData data);
+        public abstract ITexture2D CreateTexture2D(TextureData data, bool allowMipMapGen = false, string name = null);
 
         /// <summary>Creates a new 3D texture and returns it.</summary>
         /// <param name="properties">A set of 3D texture properties.</param>
-        public abstract ITexture3D CreateTexture3D(Texture3DProperties properties);
+        public abstract ITexture3D CreateTexture3D(Texture3DProperties properties, bool allowMipMapGen = false, string name = null);
 
         /// <summary>Creates a new 3D texture and returns it.</summary>
         /// <param name="data">The data from which to create the texture.</param>
-        public abstract ITexture3D CreateTexture3D(TextureData data);
+        public abstract ITexture3D CreateTexture3D(TextureData data, bool allowMipMapGen = false, string name = null);
 
         /// <summary>Creates a new cube texture (cube-map) and returns it.</summary>
         /// <param name="properties">A set of 2D texture properties.</param>
-        public abstract ITextureCube CreateTextureCube(Texture2DProperties properties);
+        public abstract ITextureCube CreateTextureCube(Texture2DProperties properties, bool allowMipMapGen = false, string name = null);
 
         /// <summary>Creates a new cube texture (cube-map) and returns it.</summary>
         /// <param name="data">The data from which to create the texture.</param>
-        public abstract ITextureCube CreateTextureCube(TextureData data);
+        public abstract ITextureCube CreateTextureCube(TextureData data, bool allowMipMapGen = false, string name = null);
 
         /// <summary>
         /// Resolves a source texture into a destination texture. <para/>

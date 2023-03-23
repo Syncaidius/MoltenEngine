@@ -111,24 +111,6 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Maps a resource on the current <see cref="CommandQueueDX11"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="resource"></param>
-        /// <param name="subresource"></param>
-        /// <param name="mapType"></param>
-        /// <param name="mapFlags"></param>
-        /// <returns></returns>
-        internal MappedSubresource MapResource<T>(T* resource, uint subresource, Map mapType, MapFlag mapFlags)
-            where T : unmanaged
-        {
-            MappedSubresource mapping = new MappedSubresource();
-            Native->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
-
-            return mapping;
-        }
-
-        /// <summary>
         /// Maps a resource on the current <see cref="CommandQueueDX11"/> and provides a <see cref="RawStream"/> to aid read-write operations.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -138,7 +120,7 @@ namespace Molten.Graphics
         /// <param name="mapFlags"></param>
         /// <param name="stream"></param>
         /// <returns></returns>
-        internal void MapResource(GraphicsResource resource, uint subresource, uint streamOffset, out RawStream stream)
+        internal RawStream MapResource(GraphicsResource resource, uint subresource, uint streamOffset)
         {
             ResourceDX11 res = resource as ResourceDX11;
             if (res.MapPtr.PData != null)
@@ -199,8 +181,9 @@ namespace Molten.Graphics
             }
 
             Native->Map(res.ResourcePtr, subresource, map, (uint)mFlags, ref res.MapPtr);
-            stream = new RawStream(res.MapPtr.PData, res.MapPtr.DepthPitch, canRead, canWrite);
+            RawStream stream = new RawStream(res.MapPtr.PData, res.MapPtr.DepthPitch, canRead, canWrite);
             stream.Position = streamOffset;
+            return stream;
         }
 
         internal void UnmapResource(GraphicsResource resource, uint subresource)

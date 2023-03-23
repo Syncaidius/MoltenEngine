@@ -31,7 +31,7 @@
             {
                 Levels = _levelData,
                 Format = _headerDXT10.ImageFormat,
-                Flags = GraphicsResourceFlags.GpuRead | GraphicsResourceFlags.GpuWrite,
+                Flags = GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite,
                 IsCompressed = true,
                 MultiSampleLevel = AntiAliasLevel.None,
                 HighestMipMap = 0,

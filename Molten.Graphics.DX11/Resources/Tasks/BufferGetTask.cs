@@ -31,7 +31,7 @@ namespace Molten.Graphics
             DestArray = DestArray ?? new T[Count];
 
             // Now set the structured variable's data
-            dx11Cmd.MapResource(srcBuffer, 0, ByteOffset, out RawStream stream);
+            RawStream stream = dx11Cmd.MapResource(srcBuffer, 0, ByteOffset);
             stream.ReadRange(DestArray, 0, Count);
             dx11Cmd.UnmapResource(srcBuffer, 0);
 

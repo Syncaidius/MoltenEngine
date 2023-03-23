@@ -28,25 +28,20 @@ namespace Molten.Graphics
 
         protected Usage GetUsageFlags()
         {
-            if (Flags.Has(GraphicsResourceFlags.GpuRead))
+            if (Flags.Has(GraphicsResourceFlags.GpuWrite))
             {
-                if (Flags.Has(GraphicsResourceFlags.GpuWrite))
-                {
-                    if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
-                        return Usage.Staging;
-                    else
-                        return Usage.Default;
-                }
+                if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
+                    return Usage.Staging;
                 else
-                {
-                    if (Flags.Has(GraphicsResourceFlags.CpuWrite))
-                        return Usage.Dynamic;
-                    else
-                        return Usage.Immutable;
-                }
+                    return Usage.Default;
             }
-
-            return Usage.None;
+            else
+            {
+                if (Flags.Has(GraphicsResourceFlags.CpuWrite))
+                    return Usage.Dynamic;
+                else
+                    return Usage.Immutable;
+            }
         }
 
         protected virtual BindFlag GetBindFlags()

@@ -36,7 +36,7 @@ namespace Molten.Graphics
             return new StandardMesh(Renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices);
         }
 
-        public Mesh<T> CreateMesh<T>(T[] vertices, ushort[] indices, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
+        public Mesh<T> CreateMesh<T>(T[] vertices, ushort[] indices, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite)
             where T : unmanaged, IVertexType
         {
             if (vertices == null)
@@ -49,7 +49,7 @@ namespace Molten.Graphics
             return CreateMesh(flags, (ushort)vertices.Length, indexCount, vertices, indices);
         }
 
-        public Mesh<T> CreateMesh<T>(T[] vertices, uint[] indices = null, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
+        public Mesh<T> CreateMesh<T>(T[] vertices, uint[] indices = null, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite)
     where T : unmanaged, IVertexType
         {
             if (vertices == null)
@@ -91,7 +91,7 @@ namespace Molten.Graphics
             return new Mesh<T>(Renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices);
         }
 
-        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, ushort[] indices, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, ushort[] indices, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
             where V : unmanaged, IVertexType
             where I : unmanaged, IVertexInstanceType
         {
@@ -102,7 +102,7 @@ namespace Molten.Graphics
             return new InstancedMesh<V, I>(Renderer, flags, (ushort)vertices.Length, maxIndices, maxInstances, vertices, indices);
         }
 
-        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, uint[] indices = null, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
+        public InstancedMesh<V, I> CreateInstancedMesh<V, I>(V[] vertices, uint maxInstances, uint[] indices = null, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
             where V : unmanaged, IVertexType
             where I : unmanaged, IVertexInstanceType
         {

@@ -51,7 +51,7 @@ namespace Molten.Graphics
             else
                 memFlags |= MemoryPropertyFlags.DeviceLocalBit;
 
-            if (bufferFlags.Has(GraphicsResourceFlags.GpuRead))
+            if (bufferFlags.Has(GraphicsResourceFlags.None))
                 usage |= BufferUsageFlags.TransferSrcBit;
 
             if (bufferFlags.Has(GraphicsResourceFlags.GpuWrite))

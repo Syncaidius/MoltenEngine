@@ -135,7 +135,7 @@ namespace Molten.Graphics
 
         protected abstract HlslPass OnCreateShaderPass(HlslShader shader, string name);
 
-        public IVertexBuffer CreateVertexBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
+        public IVertexBuffer CreateVertexBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
             where T : unmanaged, IVertexType
         {
             return CreateVertexBuffer(flags, (uint)data.Length, data);
@@ -144,12 +144,12 @@ namespace Molten.Graphics
         public abstract IVertexBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
             where T : unmanaged, IVertexType;
 
-        public IIndexBuffer CreateIndexBuffer(ushort[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
+        public IIndexBuffer CreateIndexBuffer(ushort[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
         {
             return CreateIndexBuffer(flags, (uint)data.Length, data);
         }
 
-        public IIndexBuffer CreateIndexBuffer(uint[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
+        public IIndexBuffer CreateIndexBuffer(uint[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
         {
             return CreateIndexBuffer(flags, (uint)data.Length, data);
         }
@@ -158,7 +158,7 @@ namespace Molten.Graphics
 
         public abstract IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null);
 
-        public IStructuredBuffer CreateStructuredBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.GpuRead)
+        public IStructuredBuffer CreateStructuredBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
             where T : unmanaged
         {
             return CreateStructuredBuffer(flags, (uint)data.Length, false, true, data);

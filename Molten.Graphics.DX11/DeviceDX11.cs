@@ -178,19 +178,13 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-
-        public override IDepthStencilSurface CreateDepthSurface(
-            uint width,
-            uint height,
-            DepthFormat format = DepthFormat.R24G8_Typeless,
-            uint mipCount = 1,
-            uint arraySize = 1,
-            AntiAliasLevel aaLevel = AntiAliasLevel.None,
-            TextureFlags flags = TextureFlags.None,
-            string name = "surface")
+        public override IDepthStencilSurface CreateDepthSurface(uint width, uint height, 
+            DepthFormat format = DepthFormat.R24G8_Typeless, 
+            GraphicsResourceFlags flags = GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite, 
+            uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null)
         {
             MSAAQuality msaa = MSAAQuality.CenterPattern;
-            return new DepthSurfaceDX11(Renderer, width, height, format, mipCount, arraySize, aaLevel, msaa, flags, name);
+            return new DepthSurfaceDX11(Renderer, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name);
         }
 
         protected override HlslPass OnCreateShaderPass(HlslShader shader, string name = null)
@@ -208,33 +202,32 @@ namespace Molten.Graphics
             return new RenderControlSurface(Renderer, formTitle, controlName, mipCount);
         }
 
-        public override IRenderSurface2D CreateSurface(
-            uint width,
-            uint height,
-            GraphicsResourceFlags flags,
-            GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
-            uint mipCount = 1,
-            uint arraySize = 1,
-            AntiAliasLevel aaLevel = AntiAliasLevel.None,
-            string name = null)
+        public override IRenderSurface2D CreateSurface(uint width, uint height, 
+            GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm, 
+            GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite, 
+            uint mipCount = 1, 
+            uint arraySize = 1, 
+            AntiAliasLevel aaLevel = AntiAliasLevel.None, 
+            bool allowMipMapGen = false, string name = null)
         {
             MSAAQuality msaa = MSAAQuality.CenterPattern;
-            return new RenderSurface2DDX11(Renderer, width, height, (Format)format, mipCount, arraySize, aaLevel, msaa, flags, name);
+            return new RenderSurface2DDX11(Renderer, width, height, flags, (Format)format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name);
         }
 
-        public override ITexture CreateTexture1D(Texture1DProperties properties)
+
+        public override ITexture CreateTexture1D(Texture1DProperties properties, bool allowMipMapGen = false, string name = null)
         {
-            return new Texture1DDX11(Renderer, properties.Width, properties.Flags, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
+            return new Texture1DDX11(Renderer, properties.Width, properties.Flags, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, allowMipMapGen, name);
         }
 
-        public override ITexture CreateTexture1D(TextureData data)
+        public override ITexture CreateTexture1D(TextureData data, bool allowMipMapGen = false, string name = null)
         {
-            Texture1DDX11 tex = new Texture1DDX11(Renderer, data.Width, data.Flags, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
+            Texture1DDX11 tex = new Texture1DDX11(Renderer, data.Width, data.Flags, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, allowMipMapGen, name);
             tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
 
-        public override ITexture2D CreateTexture2D(Texture2DProperties properties)
+        public override ITexture2D CreateTexture2D(Texture2DProperties properties, bool allowMipMapGen = false, string name = null)
         {
             return new Texture2DDX11(Renderer,
                 properties.Width,
@@ -249,7 +242,7 @@ namespace Molten.Graphics
                 properties.Name);
         }
 
-        public override ITexture2D CreateTexture2D(TextureData data)
+        public override ITexture2D CreateTexture2D(TextureData data, bool allowMipMapGen = false, string name = null)
         {
             Texture2DDX11 tex = new Texture2DDX11(Renderer,
                 data.Width,
@@ -264,7 +257,7 @@ namespace Molten.Graphics
             return tex;
         }
 
-        public override ITexture3D CreateTexture3D(Texture3DProperties properties)
+        public override ITexture3D CreateTexture3D(Texture3DProperties properties, bool allowMipMapGen = false, string name = null)
         {
             return new Texture3DDX11(Renderer,
                 properties.Width,
@@ -275,7 +268,7 @@ namespace Molten.Graphics
                 properties.MipMapLevels);
         }
 
-        public override ITexture3D CreateTexture3D(TextureData data)
+        public override ITexture3D CreateTexture3D(TextureData data, bool allowMipMapGen = false, string name = null)
         {
             throw new NotImplementedException();
 
@@ -293,13 +286,13 @@ namespace Molten.Graphics
             return tex;*/
         }
 
-        public override ITextureCube CreateTextureCube(Texture2DProperties properties)
+        public override ITextureCube CreateTextureCube(Texture2DProperties properties, bool allowMipMapGen = false, string name = null)
         {
             uint cubeCount = Math.Max(properties.ArraySize / 6, 1);
             return new TextureCubeDX11(Renderer, properties.Width, properties.Height, properties.Flags, properties.Format.ToApi(), properties.MipMapLevels, cubeCount);
         }
 
-        public override ITextureCube CreateTextureCube(TextureData data)
+        public override ITextureCube CreateTextureCube(TextureData data, bool allowMipMapGen = false, string name = null)
         {
             uint cubeCount = Math.Max(data.ArraySize / 6, 1);
             TextureCubeDX11 tex = new TextureCubeDX11(Renderer, data.Width, data.Height, data.Flags, data.Format.ToApi(), data.MipMapLevels, cubeCount);
