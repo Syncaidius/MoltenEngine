@@ -180,7 +180,7 @@ namespace Molten.Graphics
 
         public override IDepthStencilSurface CreateDepthSurface(uint width, uint height, 
             DepthFormat format = DepthFormat.R24G8_Typeless, 
-            GraphicsResourceFlags flags = GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite, 
+            GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite, 
             uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null)
         {
             MSAAQuality msaa = MSAAQuality.CenterPattern;

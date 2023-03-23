@@ -11,7 +11,7 @@
 
         public uint ArraySize = 1;
 
-        public GraphicsResourceFlags Flags = GraphicsResourceFlags.None;
+        public GraphicsResourceFlags Flags = GraphicsResourceFlags.GpuWrite;
 
         public string Name = null;
     }
