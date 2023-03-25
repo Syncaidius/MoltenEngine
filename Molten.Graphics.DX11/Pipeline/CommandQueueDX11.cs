@@ -207,9 +207,9 @@ namespace Molten.Graphics
             Profiler.Current.UpdateSubresourceCount++;
         }
 
-        internal void CopyResource(ID3D11Resource* src, ID3D11Resource* dest)
+        protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
         {
-            Native->CopyResource(dest, src);
+            Native->CopyResource((dest as ResourceDX11).ResourcePtr, (src as ResourceDX11).ResourcePtr);
             Profiler.Current.CopyResourceCount++;
         }
 

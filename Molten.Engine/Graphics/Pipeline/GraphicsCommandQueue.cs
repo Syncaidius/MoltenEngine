@@ -88,6 +88,8 @@
 
         protected internal abstract unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch);
 
+        protected internal abstract void CopyResource(GraphicsResource src, GraphicsResource dest);
+
         public void BeginDraw()
         {
 #if DEBUG

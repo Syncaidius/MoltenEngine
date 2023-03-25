@@ -4,6 +4,9 @@
     /// <seealso cref="IDisposable" />
     public interface IGraphicsResource : IGraphicsObject
     {
+        /// <summary>
+        /// Gets the <see cref="GraphicsResourceFlags"/> that were provided when the current <see cref="IGraphicsResource"/> was created.
+        /// </summary>
         GraphicsResourceFlags Flags { get; }
     }
 }

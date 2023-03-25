@@ -162,6 +162,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
+        {
+            throw new NotImplementedException();
+        }
+
         internal Vk VK { get; }
 
         internal Logger Log { get; }

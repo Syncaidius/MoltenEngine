@@ -12,7 +12,9 @@ namespace Molten.Graphics
         public T* Data => _data;
 
         public uint StartIndex;
+
         public uint Pitch;
+
         public uint ArrayIndex;
 
         public uint NumElements { get; private set; }
