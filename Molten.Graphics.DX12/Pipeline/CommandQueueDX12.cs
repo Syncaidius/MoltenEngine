@@ -151,6 +151,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
+        {
+            throw new NotImplementedException();
+        }
+
         internal DeviceDX12 Device { get; }
 
         internal Logger Log { get; }

@@ -87,6 +87,9 @@ namespace Molten.Graphics
         /// </summary>
         public abstract bool IsUnorderedAccess { get; }
 
+        /// <summary>
+        /// The total size of the resource, in bytes.
+        /// </summary>
         public abstract uint SizeInBytes { get; }
 
         public abstract GraphicsResourceFlags Flags { get; }

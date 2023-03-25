@@ -192,10 +192,18 @@ namespace Molten.Graphics
             Profiler.Current.CopySubresourceCount++;
         }
 
-        internal void UpdateResource(ID3D11Resource* resource, uint subresource, 
-            Box* region, void* ptrData, uint rowPitch, uint slicePitch)
+        protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
         {
-            Native->UpdateSubresource(resource, subresource, region, ptrData, rowPitch, slicePitch);
+            ResourceDX11 res = resource as ResourceDX11;
+            Box* destBox = null;
+
+            if (region != null)
+            {
+                ResourceRegion value = region.Value;
+                destBox = (Box*)&value;
+            }
+
+            Native->UpdateSubresource(res.ResourcePtr, subresource, destBox, ptrData, rowPitch, slicePitch);
             Profiler.Current.UpdateSubresourceCount++;
         }
 

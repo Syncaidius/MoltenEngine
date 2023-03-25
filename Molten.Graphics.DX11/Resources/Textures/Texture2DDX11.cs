@@ -76,11 +76,6 @@ namespace Molten.Graphics
         {
             SubresourceData* subData = null;
             (Device as DeviceDX11).Ptr->CreateTexture2D1(ref _desc, subData, ref NativeTexture);
-
-            if(NativeTexture == null)
-            {
-
-            }
             return (ID3D11Resource*)NativeTexture;
         }
 
@@ -165,6 +160,32 @@ namespace Molten.Graphics
                 NewArraySize = newArraySize == 0 ? _desc.ArraySize : newArraySize,
                 NewFormat = newFormat,
             });
+        }
+
+        public override void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null)
+        {
+            // Store pending change.
+            QueueTask(priority, new Texture2DSetTask<byte>(data.Data, 0, data.TotalBytes)
+            {
+                Pitch = data.Pitch,
+                ArrayIndex = arraySlice,
+                MipLevel = mipIndex,
+                CompleteCallback = completeCallback,
+            });
+        }
+
+        public override void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
+        {
+            fixed (T* ptrData = data)
+            {
+                QueueTask(priority, new Texture2DSetTask<T>(ptrData, startIndex, count)
+                {
+                    Pitch = pitch,
+                    ArrayIndex = arrayIndex,
+                    MipLevel = level,
+                    CompleteCallback = completeCallback
+                });
+            }
         }
 
         internal override Usage UsageFlags => _desc.Usage;

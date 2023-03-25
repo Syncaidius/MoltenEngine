@@ -4,6 +4,6 @@
     /// <seealso cref="IDisposable" />
     public interface IGraphicsResource : IGraphicsObject
     {
-
+        GraphicsResourceFlags Flags { get; }
     }
 }

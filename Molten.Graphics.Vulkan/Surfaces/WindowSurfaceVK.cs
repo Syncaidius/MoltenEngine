@@ -407,5 +407,7 @@ namespace Molten.Graphics
         public bool IsVisible { get; set; }
 
         internal SurfaceKHR Native { get; private set; }
+
+        public GraphicsResourceFlags Flags => throw new NotImplementedException();
     }
 }

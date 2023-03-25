@@ -190,7 +190,6 @@ namespace Molten.Graphics
                         else
                         {
                             stream = cmd.MapResource(this, 0, 0);
-                            stream.Position = 0;
                             _ringPos = numBytes;
                         }
                     }
@@ -201,7 +200,7 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    stream = cmd.MapResource(this, 0, 0);
+                    stream = cmd.MapResource(this, 0, byteOffset);
                 }
 
                 callback(this, stream);
@@ -222,16 +221,7 @@ namespace Molten.Graphics
                 if (staging.Desc.ByteWidth < numBytes)
                     throw new GraphicsResourceException(this, $"The provided staging buffer is not large enough ({staging.Desc.ByteWidth} bytes) to fit the provided data ({numBytes} bytes).");
 
-                // Write updated data into buffer
-                if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
-                {
-                    stream = cmd.MapResource(staging, 0, 0);
-                }
-                else
-                {
-                    stream = cmd.MapResource(staging, 0, 0);
-                }
-
+                stream = cmd.MapResource(staging, 0, 0);
                 callback(staging, stream);
                 stream.Dispose();
 

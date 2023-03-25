@@ -4,23 +4,23 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public unsafe class TextureCubeDX11 : TextureDX11, ITextureCube
+    public unsafe class TextureCubeDX11 : Texture2DDX11, ITextureCube
     {
         internal ID3D11Texture2D1* NativeTexture;
-        Texture2DDesc1 _desc;
 
         internal TextureCubeDX11(RenderService renderer, uint width, uint height, GraphicsResourceFlags flags, 
             Format format = Format.FormatR8G8B8A8Unorm, uint mipCount = 1, uint cubeCount = 1,
             bool allowMipMapGen = false, string name = null)
-            : base(renderer, width, height, 1, mipCount, 6, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
+            : base(renderer, width, height, flags, format, mipCount, 6 * cubeCount, AntiAliasLevel.None, MSAAQuality.Default, allowMipMapGen, name)
         {
             CubeCount = cubeCount;
+
             _desc = new Texture2DDesc1()
             {
                 Width = width,
                 Height = height,
                 MipLevels = mipCount,
-                ArraySize = 6 * CubeCount,
+                ArraySize = ArraySize,
                 Format = format,
                 BindFlags = (uint)(flags.Has(GraphicsResourceFlags.NoShaderAccess) ? BindFlag.None : BindFlag.ShaderResource),
                 CPUAccessFlags = (uint)GetCpuFlags(),
@@ -62,13 +62,6 @@ namespace Molten.Graphics
                 FirstElement = 0,
                 NumElements = _desc.Width * _desc.Height * _desc.ArraySize,
             };
-        }
-
-        protected override ID3D11Resource* CreateResource(bool resize)
-        {
-            SubresourceData* subData = null;
-            (Device as DeviceDX11).Ptr->CreateTexture2D1(ref _desc, subData, ref NativeTexture);
-            return (ID3D11Resource*)NativeTexture;
         }
 
         protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)

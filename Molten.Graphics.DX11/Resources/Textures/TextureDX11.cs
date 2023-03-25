@@ -178,7 +178,7 @@ namespace Molten.Graphics
             if (!texBounds.Contains(area))
                 throw new Exception("The provided area would go outside of the current texture's bounds.");
 
-            QueueTask(priority, new TextureSet<T>(data, 0, numElements)
+            QueueTask(priority, new Texture2DSetTask<T>(data, 0, numElements)
             {
                 Pitch = texturePitch,
                 StartIndex = 0,
@@ -220,36 +220,15 @@ namespace Molten.Graphics
             }
         }
 
-        public void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null)
-        {
-            // Store pending change.
-            QueueTask(priority, new TextureSet<byte>(data.Data, 0, data.TotalBytes)
-            {
-                Pitch = data.Pitch,
-                ArrayIndex = arraySlice,
-                MipLevel = mipIndex,
-                CompleteCallback = completeCallback,
-            });
-        }
+        public abstract void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null);
 
-        public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null) 
-            where T : unmanaged
-        {
-            // Store pending change.
-            QueueTask(priority, new TextureSet<T>(data, startIndex, count)
-            {
-                Pitch = pitch,
-                ArrayIndex = arrayIndex,
-                MipLevel = level,
-                CompleteCallback = completeCallback
-            });
-        }
+        public abstract void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
+            where T : unmanaged;
 
         public void SetData<T>(GraphicsPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
             where T : unmanaged
         {
-            // Store pending change.
-            QueueTask(priority, new TextureSet<T>(data, startIndex, count)
+            QueueTask(priority, new Texture2DSetTask<T>(data, startIndex, count)
             {
                 Pitch = pitch,
                 ArrayIndex = arrayIndex,
@@ -318,14 +297,10 @@ namespace Molten.Graphics
                 fixed (byte* ptrFixedSlice = sliceData)
                 {
                     byte* ptrSlice = ptrFixedSlice;
-                    //byte* ptrDatabox = (byte*)mapping.PData;
-
                     uint p = 0;
                     while (p < stream.Map.DepthPitch)
                     {
                         stream.ReadRange(ptrSlice, expectedRowPitch);
-                        //Buffer.MemoryCopy(ptrDatabox, ptrSlice, expectedSlicePitch, expectedRowPitch);
-                        //ptrDatabox += resToMap.MapPtr.RowPitch;
                         ptrSlice += expectedRowPitch;
                         p += stream.Map.RowPitch;
                     }

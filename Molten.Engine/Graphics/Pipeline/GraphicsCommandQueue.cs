@@ -86,6 +86,8 @@
 
         protected abstract void OnUnmapResource(GraphicsResource resource, uint subresource);
 
+        protected internal abstract unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch);
+
         public void BeginDraw()
         {
 #if DEBUG

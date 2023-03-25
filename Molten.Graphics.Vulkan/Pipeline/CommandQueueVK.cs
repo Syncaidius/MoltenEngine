@@ -157,6 +157,11 @@ namespace Molten.Graphics
             VK.UnmapMemory(_device, *(resource as ResourceVK).Memory);
         }
 
+        protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
+        {
+            throw new NotImplementedException();
+        }
+
         internal Vk VK { get; }
 
         internal Logger Log { get; }

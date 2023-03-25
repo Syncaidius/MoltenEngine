@@ -22,5 +22,15 @@ namespace Molten.Graphics
         public uint Bottom;
 
         public uint Back;
+
+        public ResourceRegion(uint left, uint top, uint front, uint right, uint bottom, uint back)
+        {
+            Left = left;
+            Top = top;
+            Front = front;
+            Right = right;
+            Bottom = bottom;
+            Back = back;
+        }
     }
 }

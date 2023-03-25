@@ -1,10 +1,8 @@
 ﻿using Molten.Graphics.Textures;
-using Molten.IO;
-using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    public unsafe struct TextureSet<T> : IGraphicsResourceTask
+    public unsafe struct Texture2DSetTask<T> : IGraphicsResourceTask
         where T: unmanaged
     {
         T* _data;
@@ -25,26 +23,9 @@ namespace Molten.Graphics
 
         public RectangleUI? Area;
 
-        public bool UpdatesTexture => true;
-
         public Action<GraphicsResource> CompleteCallback;
 
-        public TextureSet(T[] data, uint startIndex, uint numElements)
-        {
-            Stride = (uint)sizeof(T);
-            NumElements = numElements;
-            NumBytes = Stride * NumElements;
-
-            _data = (T*)EngineUtil.Alloc(NumBytes);
-
-            fixed (T* ptrData = data)
-            {
-                T* ptrStart = ptrData + startIndex;
-                Buffer.MemoryCopy(ptrStart, Data, NumBytes, NumBytes);
-            }
-        }
-
-        public TextureSet(T* data, uint startIndex, uint numElements)
+        public Texture2DSetTask(T* data, uint startIndex, uint numElements)
         {
             Stride = (uint)sizeof(T);
             NumElements = numElements;
@@ -58,7 +39,7 @@ namespace Molten.Graphics
 
         public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
-            TextureDX11 texture = resource as TextureDX11;
+            ITexture2D texture = resource as ITexture2D;
 
             // Calculate size of a single array slice
             uint arraySliceBytes = 0;
@@ -98,11 +79,10 @@ namespace Molten.Graphics
             ptrData += startBytes;
 
             uint subLevel = (texture.MipMapCount * ArrayIndex) + MipLevel;
-            CommandQueueDX11 cmdDx11 = cmd as CommandQueueDX11;
 
             if (texture.Flags.Has(GraphicsResourceFlags.CpuWrite))
             {
-                using (RawStream stream = cmdDx11.MapResource(texture, subLevel, 0))
+                using (GraphicsStream stream = cmd.MapResource(resource, subLevel, 0))
                 {
                     // Are we constrained to an area of the texture?
                     if (Area != null)
@@ -125,7 +105,7 @@ namespace Molten.Graphics
                         stream.WriteRange(ptrData, NumBytes);
                     }
                 }
-                cmdDx11.Profiler.Current.MapDiscardCount++;
+                cmd.Profiler.Current.MapDiscardCount++;
             }
             else
             {
@@ -137,7 +117,7 @@ namespace Molten.Graphics
                     uint bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
 
                     // TODO support copy flags (DX11.1 feature)
-                    cmdDx11.UpdateResource(texture, subLevel, null, ptrData, bcPitch, arraySliceBytes);
+                    cmd.UpdateResource(resource, subLevel, null, ptrData, bcPitch, arraySliceBytes);
                 }
                 else
                 {
@@ -145,23 +125,12 @@ namespace Molten.Graphics
                     {
                         RectangleUI rect = Area.Value;
                         uint areaPitch = Stride * rect.Width;
-                        Box region = new Box();
-                        region.Top = rect.Y;
-                        region.Front = 0;
-                        region.Back = 1;
-                        region.Bottom = rect.Bottom;
-                        region.Left = rect.X;
-                        region.Right = rect.Right;
-
-                        cmdDx11.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, NumBytes);
+                        ResourceRegion region = new ResourceRegion(rect.X, rect.Y, 0, rect.Right, rect.Bottom, 1);
+                        cmd.UpdateResource(resource, subLevel, region, ptrData, areaPitch, NumBytes);
                     }
                     else
                     {
-                        //uint x = 0;
-                        //uint y = 0;
-                        //uint w = Math.Max(texture.Width >> (int)MipLevel, 1);
-                        //uint h = Math.Max(texture.Height >> (int)MipLevel, 1);
-                        cmdDx11.UpdateResource(texture, subLevel, null, ptrData, Pitch, arraySliceBytes);
+                        cmd.UpdateResource(resource, subLevel, null, ptrData, Pitch, arraySliceBytes);
                     }
                 }
             }
