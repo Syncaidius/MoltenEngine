@@ -382,6 +382,8 @@ namespace Molten.Graphics
 
         public uint Height => _height;
 
+        public uint Depth => 1;
+
         public uint MipMapCount => throw new NotImplementedException();
 
         public uint ArraySize => throw new NotImplementedException();
