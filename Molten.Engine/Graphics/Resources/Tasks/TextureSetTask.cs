@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public unsafe struct Texture2DSetTask<T> : IGraphicsResourceTask
+    public unsafe struct TextureSetTask<T> : IGraphicsResourceTask
         where T: unmanaged
     {
         T* _data;
@@ -25,7 +25,7 @@ namespace Molten.Graphics
 
         public Action<GraphicsResource> CompleteCallback;
 
-        public Texture2DSetTask(T* data, uint startIndex, uint numElements)
+        public TextureSetTask(T* data, uint startIndex, uint numElements)
         {
             Stride = (uint)sizeof(T);
             NumElements = numElements;

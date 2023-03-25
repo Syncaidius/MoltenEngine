@@ -162,32 +162,6 @@ namespace Molten.Graphics
             });
         }
 
-        public override void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null)
-        {
-            // Store pending change.
-            QueueTask(priority, new Texture2DSetTask<byte>(data.Data, 0, data.TotalBytes)
-            {
-                Pitch = data.Pitch,
-                ArrayIndex = arraySlice,
-                MipLevel = mipIndex,
-                CompleteCallback = completeCallback,
-            });
-        }
-
-        public override void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
-        {
-            fixed (T* ptrData = data)
-            {
-                QueueTask(priority, new Texture2DSetTask<T>(ptrData, startIndex, count)
-                {
-                    Pitch = pitch,
-                    ArrayIndex = arrayIndex,
-                    MipLevel = level,
-                    CompleteCallback = completeCallback
-                });
-            }
-        }
-
         internal override Usage UsageFlags => _desc.Usage;
 
         public override bool IsUnorderedAccess => ((BindFlag)_desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;

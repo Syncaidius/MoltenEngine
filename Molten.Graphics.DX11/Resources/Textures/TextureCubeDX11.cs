@@ -6,8 +6,6 @@ namespace Molten.Graphics
 {
     public unsafe class TextureCubeDX11 : Texture2DDX11, ITextureCube
     {
-        internal ID3D11Texture2D1* NativeTexture;
-
         internal TextureCubeDX11(RenderService renderer, uint width, uint height, GraphicsResourceFlags flags, 
             Format format = Format.FormatR8G8B8A8Unorm, uint mipCount = 1, uint cubeCount = 1,
             bool allowMipMapGen = false, string name = null)
@@ -99,7 +97,5 @@ namespace Molten.Graphics
         public uint CubeCount { get; private set; }
 
         internal override Usage UsageFlags => _desc.Usage;
-
-        public override bool IsUnorderedAccess => ((BindFlag)_desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
     }
 }

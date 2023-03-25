@@ -32,8 +32,5 @@
             uint newMipMapCount = 0, 
             uint newArraySize = 0, 
             GraphicsFormat newFormat = GraphicsFormat.Unknown);
-
-        /// <summary>Gets the height of the texture.</summary>
-        uint Height { get; }
     }
 }

@@ -110,6 +110,12 @@
         /// <summary>Gets the width of the texture.</summary>
         uint Width { get; }
 
+        /// <summary>Gets the height of the texture.</summary>
+        uint Height { get; }
+
+        /// <summary>Gets the depth of the texture.</summary>
+        uint Depth { get; }
+
         /// <summary>Gets the format of the texture.</summary>
         GraphicsFormat DataFormat { get; }
 

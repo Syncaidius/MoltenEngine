@@ -24,13 +24,5 @@
             uint newDepth, 
             uint newMipMapCount = 0, 
             GraphicsFormat newFormat = GraphicsFormat.Unknown);
-
-        /// <summary>Gets the height of the texture.</summary>
-        uint Height { get; }
-
-        /// <summary>
-        /// The depth (or number of layers) of the 3D texture.
-        /// </summary>
-        uint Depth { get; }
     }
 }

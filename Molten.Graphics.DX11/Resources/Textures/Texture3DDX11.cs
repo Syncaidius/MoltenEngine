@@ -122,16 +122,6 @@ namespace Molten.Graphics
             });
         }
 
-        public override void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
-        {
-            throw new NotImplementedException();
-        }
-
         internal override Usage UsageFlags => _desc.Usage;
 
         public override bool IsUnorderedAccess => ((BindFlag)_desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;

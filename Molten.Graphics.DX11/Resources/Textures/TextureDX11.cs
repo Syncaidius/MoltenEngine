@@ -178,7 +178,7 @@ namespace Molten.Graphics
             if (!texBounds.Contains(area))
                 throw new Exception("The provided area would go outside of the current texture's bounds.");
 
-            QueueTask(priority, new Texture2DSetTask<T>(data, 0, numElements)
+            QueueTask(priority, new TextureSetTask<T>(data, 0, numElements)
             {
                 Pitch = texturePitch,
                 StartIndex = 0,
@@ -220,15 +220,37 @@ namespace Molten.Graphics
             }
         }
 
-        public abstract void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null);
+        public void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null)
+        {
+            // Store pending change.
+            QueueTask(priority, new TextureSetTask<byte>(data.Data, 0, data.TotalBytes)
+            {
+                Pitch = data.Pitch,
+                ArrayIndex = arraySlice,
+                MipLevel = mipIndex,
+                CompleteCallback = completeCallback,
+            });
+        }
 
-        public abstract void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
-            where T : unmanaged;
+        public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
+            where T : unmanaged
+        {
+            fixed (T* ptrData = data)
+            {
+                QueueTask(priority, new TextureSetTask<T>(ptrData, startIndex, count)
+                {
+                    Pitch = pitch,
+                    ArrayIndex = arrayIndex,
+                    MipLevel = level,
+                    CompleteCallback = completeCallback
+                });
+            }
+        }
 
         public void SetData<T>(GraphicsPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
             where T : unmanaged
         {
-            QueueTask(priority, new Texture2DSetTask<T>(data, startIndex, count)
+            QueueTask(priority, new TextureSetTask<T>(data, startIndex, count)
             {
                 Pitch = pitch,
                 ArrayIndex = arrayIndex,
