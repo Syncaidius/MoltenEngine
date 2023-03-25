@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics
+﻿using Molten.Graphics.Textures;
+
+namespace Molten.Graphics
 {
     /// <summary>Represents a slice of texture data. This can either be a mip map level or array element in a texture array (which could still technically a mip-map level of 0).</summary>
     public unsafe class TextureSlice : IDisposable
@@ -55,6 +57,11 @@
                 Buffer.MemoryCopy(ptrData, Data, numBytes, numBytes);
         }
 
+        ~TextureSlice()
+        {
+            Dispose();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -79,9 +86,62 @@
                 sr.UpdateReference();
         }
 
-        ~TextureSlice()
+        /// <summary>Gets a new instance of <see cref="TextureSlice"/> that is populated with data from a texture <see cref="GraphicsResource"/>.</summary>
+        /// <param name="cmd">The command queue that is to perform the retrieval.</param>
+        /// <param name="staging">The staging texture to copy the data to.</param>
+        /// <param name="level">The mip-map level.</param>
+        /// <param name="arraySlice">The array slice.</param>
+        /// <returns></returns>
+        internal static unsafe TextureSlice FromTextureSlice(GraphicsCommandQueue cmd, ITexture tex, ITexture staging, uint level, uint arraySlice)
         {
-            Dispose();
+            uint subID = (arraySlice * tex.MipMapCount) + level;
+            uint subWidth = tex.Width >> (int)level;
+            uint subHeight = tex.Height >> (int)level;
+
+            GraphicsResource resMap = tex as GraphicsResource;
+            GraphicsResource resStaging = staging as GraphicsResource;
+
+            if (staging != null)
+            {
+                cmd.CopyResourceRegion(resMap, subID, null, resStaging, subID, Vector3UI.Zero);
+                cmd.Profiler.Current.CopySubresourceCount++;
+                resMap = resStaging;
+            }
+
+            uint blockSize = BCHelper.GetBlockSize(tex.DataFormat);
+            uint expectedRowPitch = 4 * tex.Width; // 4-bytes per pixel * Width.
+            uint expectedSlicePitch = expectedRowPitch * tex.Height;
+
+            if (blockSize > 0)
+                BCHelper.GetBCLevelSizeAndPitch(subWidth, subHeight, blockSize, out expectedSlicePitch, out expectedRowPitch);
+
+            byte[] sliceData = new byte[expectedSlicePitch];
+
+            // Now pull data from it
+            using (GraphicsStream stream = cmd.MapResource(resMap, subID, 0))
+            {
+                // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
+                // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
+
+                fixed (byte* ptrFixedSlice = sliceData)
+                {
+                    byte* ptrSlice = ptrFixedSlice;
+                    uint p = 0;
+                    while (p < stream.Map.DepthPitch)
+                    {
+                        stream.ReadRange(ptrSlice, expectedRowPitch);
+                        ptrSlice += expectedRowPitch;
+                        p += stream.Map.RowPitch;
+                    }
+                }
+            }
+
+            TextureSlice slice = new TextureSlice(subWidth, subHeight, sliceData)
+            {
+                Pitch = expectedRowPitch,
+            };
+
+            return slice;
         }
 
         public void Dispose()

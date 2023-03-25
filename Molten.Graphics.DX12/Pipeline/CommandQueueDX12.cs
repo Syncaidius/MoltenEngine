@@ -161,6 +161,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
+        {
+            throw new NotImplementedException();
+        }
+
         internal DeviceDX12 Device { get; }
 
         internal Logger Log { get; }

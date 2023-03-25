@@ -142,7 +142,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, RawStream> callback, IStagingBuffer staging = null)
+        public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, GraphicsStream> callback, IStagingBuffer staging = null)
         {
             throw new NotImplementedException();
         }

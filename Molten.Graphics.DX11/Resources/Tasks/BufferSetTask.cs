@@ -25,7 +25,7 @@ namespace Molten.Graphics
 
         internal Action CompletionCallback;
 
-        internal StagingBuffer Staging;
+        internal StagingBufferDX11 Staging;
 
         public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {

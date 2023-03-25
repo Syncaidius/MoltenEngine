@@ -1,18 +1,17 @@
 ﻿using Molten.Graphics.Textures;
-using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    internal struct TextureGetTask : IGraphicsResourceTask
+    public struct TextureGetTask : IGraphicsResourceTask
     {
-        public TextureDX11 Staging;
+        public GraphicsResource Staging;
 
         public Action<TextureData> CompleteCallback;
 
         public unsafe bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
-            TextureDX11 texture = resource as TextureDX11;
-            CommandQueueDX11 cmdDX11 = cmd as CommandQueueDX11;
+            ITexture texture = resource as ITexture;
+            ITexture texStaging = Staging as ITexture;
 
             bool isStaging = texture.Flags.Has(GraphicsResourceFlags.AllReadWrite);
             bool stagingValid = Staging.Flags.Has(GraphicsResourceFlags.AllReadWrite);
@@ -20,24 +19,20 @@ namespace Molten.Graphics
             if (Staging != null)
             {
                 if (!stagingValid)
-                    throw new TextureFlagException(Staging.Flags, "Provided staging texture does not have the staging flag set.");
+                    throw new GraphicsResourceException(Staging, "Provided staging texture does not have the staging flag set.");
 
                 // Validate dimensions.
-                if (Staging.Width != texture.Width ||
-                    Staging.Height != texture.Height ||
-                    Staging.Depth != texture.Depth)
-                    throw new TextureCopyException(texture, Staging, "Staging texture dimensions do not match current texture.");
+                if (texStaging.Width != texture.Width ||
+                    texStaging.Height != texture.Height ||
+                    texStaging.Depth != texture.Depth)
+                    throw new ResourceCopyException(resource, Staging, "Staging texture dimensions do not match current texture.");
 
-                if (texture.ResourcePtr == null)
-                    texture.Apply(cmd);
-
-                Staging.Apply(cmd);
-                cmdDX11.CopyResource(texture, Staging);
+                cmd.CopyResource(resource, Staging);
             }
             else
             {
                 if (!isStaging)
-                    throw new TextureCopyException(texture, null, "A null staging texture was provided, but this is only valid if the target texture is a staging texture. A staging texture is required to retrieve data from non-staged textures.");
+                    throw new ResourceCopyException(resource, null, "A null staging texture was provided, but this is only valid if the target texture is a staging texture. A staging texture is required to retrieve data from non-staged textures.");
             }
 
             TextureData data = new TextureData(texture.Width, texture.Height, texture.MipMapCount, texture.ArraySize)
@@ -59,7 +54,7 @@ namespace Molten.Graphics
                 for (uint i = 0; i < texture.MipMapCount; i++)
                 {
                     uint subID = (a * texture.MipMapCount) + i;
-                    data.Levels[subID] = texture.OnGetSliceData(cmd, Staging, i, a);
+                    data.Levels[subID] = TextureSlice.FromTextureSlice(cmd, texture, texStaging, i, a);
                 }
             }
 

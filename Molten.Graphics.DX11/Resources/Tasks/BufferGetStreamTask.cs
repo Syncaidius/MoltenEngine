@@ -13,7 +13,7 @@ namespace Molten.Graphics
         internal IStagingBuffer Staging;
 
         /// <summary>A callback to interact with the retrieved stream.</summary>
-        internal Action<IGraphicsBuffer, RawStream> StreamCallback;
+        internal Action<IGraphicsBuffer, GraphicsStream> StreamCallback;
 
         public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {

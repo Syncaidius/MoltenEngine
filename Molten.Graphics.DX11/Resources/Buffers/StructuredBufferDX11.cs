@@ -5,7 +5,7 @@ namespace Molten.Graphics
     internal class StructuredBufferDX11<T> : BufferDX11, IStructuredBuffer
         where T : unmanaged
     {
-        /// <summary>Creates a new instance of <see cref="StagingBuffer"/>.</summary>
+        /// <summary>Creates a new instance of <see cref="StagingBufferDX11"/>.</summary>
         /// <param name="device">The graphics device to bind the buffer to.</param>
         /// <param name="flags"></param>
         /// <param name="numElements">The maximum number of elements that the buffer can store</param>

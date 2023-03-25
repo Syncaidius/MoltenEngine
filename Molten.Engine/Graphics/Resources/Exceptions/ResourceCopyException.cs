@@ -6,28 +6,27 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class TextureCopyException : Exception
+    public class ResourceCopyException : Exception
     {
-        public TextureCopyException(TextureDX11 source, TextureDX11 destination)
+        public ResourceCopyException(GraphicsResource source, GraphicsResource destination)
         : this(source, destination, "Invalid copy operation.")
         { }
 
-        public TextureCopyException(TextureDX11 source, TextureDX11 destination, string message)
+        public ResourceCopyException(GraphicsResource source, GraphicsResource destination, string message)
             : base(message)
         {
             SourceTexture = source;
             DestTexture = destination;
-
         }
 
         /// <summary>
         /// The source texture.
         /// </summary>
-        public TextureDX11 SourceTexture { get; private set; }
+        public GraphicsResource SourceTexture { get; private set; }
 
         /// <summary>
         /// The destination texture.
         /// </summary>
-        public TextureDX11 DestTexture { get; private set; }
+        public GraphicsResource DestTexture { get; private set; }
     }
 }

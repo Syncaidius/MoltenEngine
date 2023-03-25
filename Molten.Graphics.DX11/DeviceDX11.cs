@@ -391,7 +391,7 @@ namespace Molten.Graphics
             if (allowWrite)
                 flags |= GraphicsResourceFlags.CpuWrite;
 
-            return new StagingBuffer(this, flags, byteCapacity);
+            return new StagingBufferDX11(this, flags, byteCapacity);
         }
 
         public override DisplayManagerDXGI DisplayManager => _displayManager;

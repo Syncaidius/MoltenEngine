@@ -172,23 +172,15 @@ namespace Molten.Graphics
             Native->Unmap(res.ResourcePtr, subresource);
         }
 
-        internal void CopyResourceRegion(
-            ID3D11Resource* source, uint srcSubresource, ref Box sourceRegion, 
-            ID3D11Resource* dest, uint destSubresource, Vector3UI destStart)
+        public override unsafe void CopyResourceRegion(
+            GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, 
+            GraphicsResource dest, uint destSubresource, Vector3UI destStart)
         {
-            Native->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
-                source, srcSubresource, ref sourceRegion);
+            ResourceDX11 src = source as ResourceDX11;
+            ResourceDX11 dst = dest as ResourceDX11;
+            Box* box = (Box*)sourceRegion;
 
-            Profiler.Current.CopySubresourceCount++;
-        }
-
-        internal void CopyResourceRegion(
-            ID3D11Resource* source, uint srcSubresource, Box* sourceRegion,
-            ID3D11Resource* dest, uint destSubresource, Vector3UI destStart)
-        {
-            Native->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
-                source, srcSubresource, sourceRegion);
-
+            Native->CopySubresourceRegion(dst.ResourcePtr, destSubresource, destStart.X, destStart.Y, destStart.Z, src.ResourcePtr, srcSubresource, box);
             Profiler.Current.CopySubresourceCount++;
         }
 
@@ -209,7 +201,16 @@ namespace Molten.Graphics
 
         protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
         {
-            Native->CopyResource((dest as ResourceDX11).ResourcePtr, (src as ResourceDX11).ResourcePtr);
+            ResourceDX11 srcDx11 = src as ResourceDX11;
+            ResourceDX11 destDx11 = dest as ResourceDX11;
+
+            if (srcDx11.ResourcePtr == null)
+                srcDx11.Apply(this);
+
+            if(dest is StagingBufferDX11)
+                dest.Apply(this);
+
+            Native->CopyResource(destDx11.ResourcePtr, srcDx11.ResourcePtr);
             Profiler.Current.CopyResourceCount++;
         }
 

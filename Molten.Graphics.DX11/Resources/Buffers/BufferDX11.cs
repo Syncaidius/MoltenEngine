@@ -138,11 +138,11 @@ namespace Molten.Graphics
                 CompletionCallback = completionCallback,
                 DestResource = destination as BufferDX11,
                 DestStart = new Vector3UI(destByteOffset, 0, 0),
-                SrcRegion = sourceRegion.ToApi(),
+                SrcRegion = sourceRegion,
             });
         }
 
-        public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, RawStream> callback, IStagingBuffer staging = null)
+        public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, GraphicsStream> callback, IStagingBuffer staging = null)
         {
             QueueTask(priority, new BufferGetStreamTask()
             {
@@ -159,7 +159,7 @@ namespace Molten.Graphics
             uint stride,
             uint elementCount,
             Action<BufferDX11, GraphicsStream> callback,
-            StagingBuffer staging = null)
+            StagingBufferDX11 staging = null)
         {
             // Check buffer type.
             bool isDynamic = Desc.Usage == Usage.Dynamic;
@@ -225,15 +225,14 @@ namespace Molten.Graphics
                 callback(staging, stream);
                 stream.Dispose();
 
-                Box stagingRegion = new Box()
+                ResourceRegion stagingRegion = new ResourceRegion()
                 {
                     Left = 0,
                     Right = numBytes,
                     Back = 1,
                     Bottom = 1,
                 };
-                cmd.CopyResourceRegion(staging.ResourcePtr, 0, ref stagingRegion,
-                    ResourcePtr, 0, new Vector3UI(byteOffset, 0, 0));
+                cmd.CopyResourceRegion(staging, 0, &stagingRegion, this, 0, new Vector3UI(byteOffset, 0, 0));
                 cmd.Profiler.Current.CopySubresourceCount++;
             }
         }
@@ -266,7 +265,7 @@ namespace Molten.Graphics
                 DestBuffer = this,
                 ElementCount = elementCount,
                 Stride = (uint)sizeof(T),
-                Staging = staging as StagingBuffer,
+                Staging = staging as StagingBufferDX11,
             };
 
             // Custom handling of immediate command, so that we potentially avoid a data copy.

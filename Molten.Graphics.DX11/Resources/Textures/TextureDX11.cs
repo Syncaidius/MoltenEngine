@@ -63,18 +63,18 @@ namespace Molten.Graphics
             if (_allowMipMapGen)
             {
                 if(Flags.Has(GraphicsResourceFlags.NoShaderAccess) || !(this is RenderSurface2DDX11))
-                    throw new TextureFlagException(Flags, "Mip-map generation is only available on render-surface shader resources.");
+                    throw new GraphicsResourceException(this, "Mip-map generation is only available on render-surface shader resources.");
             }
 
             // Only staging resources have CPU-write access.
             if (Flags.Has(GraphicsResourceFlags.CpuWrite))
             {
                 if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
-                    throw new TextureFlagException(Flags, "Staging textures cannot allow shader access. Add GraphicsResourceFlags.NoShaderAccess flag.");
+                    throw new GraphicsResourceException(this, "Staging textures cannot allow shader access. Add GraphicsResourceFlags.NoShaderAccess flag.");
 
                 // Staging buffers cannot have any other flags aside from 
                 if (Flags != (GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite))
-                    throw new TextureFlagException(Flags, "Staging textures must have all CPU/GPU read and write flags.");
+                    throw new GraphicsResourceException(this, "Staging textures must have all CPU/GPU read and write flags.");
             }
         }
 
@@ -279,64 +279,6 @@ namespace Molten.Graphics
             });
         }
 
-        /// <summary>A private helper method for retrieving the data of a subresource.</summary>
-        /// <param name="cmd">The command queue that is to perform the retrieval.</param>
-        /// <param name="staging">The staging texture to copy the data to.</param>
-        /// <param name="level">The mip-map level.</param>
-        /// <param name="arraySlice">The array slice.</param>
-        /// <returns></returns>
-        internal unsafe TextureSlice OnGetSliceData(GraphicsCommandQueue cmd, TextureDX11 staging, uint level, uint arraySlice)
-        {
-            uint subID = (arraySlice * MipMapCount) + level;
-            uint subWidth = Width >> (int)level;
-            uint subHeight = Height >> (int)level;
-
-            ResourceDX11 resToMap = this;
-            CommandQueueDX11 cmdNative = cmd as CommandQueueDX11;
-
-            if (staging != null)
-            {
-                cmdNative.CopyResourceRegion(_native, subID, null, staging._native, subID, Vector3UI.Zero);
-                cmd.Profiler.Current.CopySubresourceCount++;
-                resToMap = staging;
-            }
-
-            uint blockSize = BCHelper.GetBlockSize(DataFormat);
-            uint expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
-            uint expectedSlicePitch = expectedRowPitch * Height;
-
-            if (blockSize > 0)
-                BCHelper.GetBCLevelSizeAndPitch(subWidth, subHeight, blockSize, out expectedSlicePitch, out expectedRowPitch);
-
-            byte[] sliceData = new byte[expectedSlicePitch];
-
-            // Now pull data from it
-            using (GraphicsStream stream = cmdNative.MapResource(resToMap, subID, 0))
-            {
-                // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
-                // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
-
-                fixed (byte* ptrFixedSlice = sliceData)
-                {
-                    byte* ptrSlice = ptrFixedSlice;
-                    uint p = 0;
-                    while (p < stream.Map.DepthPitch)
-                    {
-                        stream.ReadRange(ptrSlice, expectedRowPitch);
-                        ptrSlice += expectedRowPitch;
-                        p += stream.Map.RowPitch;
-                    }
-                }
-            }
-
-            TextureSlice slice = new TextureSlice(subWidth, subHeight, sliceData)
-            {
-                Pitch = expectedRowPitch,
-            };
-
-            return slice;
-        }
-
         internal void OnSetSize(ref TextureResizeTask task)
         {
             // Avoid resizing/recreation if nothing has actually changed.
@@ -387,16 +329,16 @@ namespace Molten.Graphics
             TextureDX11 destTexture = destination as TextureDX11;
 
             if (DataFormat != destination.DataFormat)
-                throw new TextureCopyException(this, destTexture, "The source and destination texture formats do not match.");
+                throw new ResourceCopyException(this, destTexture, "The source and destination texture formats do not match.");
 
             if (!destTexture.Flags.Has(GraphicsResourceFlags.GpuWrite))
-                throw new TextureCopyException(this, destTexture, "Cannoy copy to a buffer that does not have GPU-write permission.");
+                throw new ResourceCopyException(this, destTexture, "Cannoy copy to a buffer that does not have GPU-write permission.");
 
             // Validate dimensions.
             if (destTexture.Width != Width ||
                 destTexture.Height != Height ||
                 destTexture.Depth != Depth)
-                throw new TextureCopyException(this, destTexture, "The source and destination textures must have the same dimensions.");
+                throw new ResourceCopyException(this, destTexture, "The source and destination textures must have the same dimensions.");
 
             QueueTask(priority, new ResourceCopyTask()
             {
@@ -413,29 +355,29 @@ namespace Molten.Graphics
             TextureDX11 destTexture = destination as TextureDX11;
 
             if (!destTexture.Flags.Has(GraphicsResourceFlags.GpuWrite))
-                throw new TextureCopyException(this, destTexture, "Cannoy copy to a buffer that does not have GPU-write permission.");
+                throw new ResourceCopyException(this, destTexture, "Cannoy copy to a buffer that does not have GPU-write permission.");
 
             if (DataFormat != destination.DataFormat)
-                throw new TextureCopyException(this, destTexture, "The source and destination texture formats do not match.");
+                throw new ResourceCopyException(this, destTexture, "The source and destination texture formats do not match.");
 
             // Validate dimensions.
             // TODO this should only test the source and destination level dimensions, not the textures themselves.
             if (destTexture.Width != Width ||
                 destTexture.Height != Height ||
                 destTexture.Depth != Depth)
-                throw new TextureCopyException(this, destTexture, "The source and destination textures must have the same dimensions.");
+                throw new ResourceCopyException(this, destTexture, "The source and destination textures must have the same dimensions.");
 
             if (sourceLevel >= MipMapCount)
-                throw new TextureCopyException(this, destTexture, "The source mip-map level exceeds the total number of levels in the source texture.");
+                throw new ResourceCopyException(this, destTexture, "The source mip-map level exceeds the total number of levels in the source texture.");
 
             if (sourceSlice >= ArraySize)
-                throw new TextureCopyException(this, destTexture, "The source array slice exceeds the total number of slices in the source texture.");
+                throw new ResourceCopyException(this, destTexture, "The source array slice exceeds the total number of slices in the source texture.");
 
             if (destLevel >= destTexture.MipMapCount)
-                throw new TextureCopyException(this, destTexture, "The destination mip-map level exceeds the total number of levels in the destination texture.");
+                throw new ResourceCopyException(this, destTexture, "The destination mip-map level exceeds the total number of levels in the destination texture.");
 
             if (destSlice >= destTexture.ArraySize)
-                throw new TextureCopyException(this, destTexture, "The destination array slice exceeds the total number of slices in the destination texture.");
+                throw new ResourceCopyException(this, destTexture, "The destination array slice exceeds the total number of slices in the destination texture.");
 
             QueueTask(priority, new SubResourceCopyTask()
             {

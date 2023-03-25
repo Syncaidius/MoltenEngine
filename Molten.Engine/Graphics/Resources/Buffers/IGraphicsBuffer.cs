@@ -18,7 +18,7 @@ namespace Molten.Graphics
 
         void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, Action<GraphicsResource> completionCallback = null);
 
-        void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, RawStream> callback, IStagingBuffer staging = null);
+        void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, GraphicsStream> callback, IStagingBuffer staging = null);
 
         /// <summary>
         /// Gets the stride (byte size) of each element within the current <see cref="IGraphicsBuffer"/>.
