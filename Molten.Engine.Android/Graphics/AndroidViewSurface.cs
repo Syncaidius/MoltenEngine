@@ -180,11 +180,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public bool HasFlags(TextureFlags flags)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Dispose()
         {
             throw new NotImplementedException();
@@ -285,8 +280,6 @@ namespace Molten.Graphics
             set => throw new NotImplementedException();
         }
 
-        public TextureFlags AccessFlags => throw new NotImplementedException();
-
         public GraphicsFormat DataFormat => throw new NotImplementedException();
 
         public bool IsBlockCompressed => throw new NotImplementedException();
@@ -294,6 +287,8 @@ namespace Molten.Graphics
         public uint Width => (uint)_vp.Width;
 
         public uint Height => (uint)_vp.Height;
+
+        public uint Depth => 1;
 
         public uint MipMapCount => throw new NotImplementedException();
 
@@ -321,5 +316,7 @@ namespace Molten.Graphics
         public GraphicsBindTypeFlags BindFlags { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public uint LastUsedFrameID => throw new NotImplementedException();
+
+        public GraphicsResourceFlags Flags => throw new NotImplementedException();
     }
 }
