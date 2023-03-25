@@ -53,6 +53,39 @@
             _defaultProfiler = _profiler = new RenderProfiler();
         }
 
+        public unsafe GraphicsStream MapResource(GraphicsResource resource, uint subresource, uint streamOffset)
+        {
+            if (resource.Stream != null)
+                throw new GraphicsResourceException(resource, $"Cannot map a resource that is already mapped. Dispose of the provided {nameof(GraphicsStream)} first");
+
+            ResourceMap map = GetResourcePtr(resource, subresource, streamOffset);
+            resource.Stream = new GraphicsStream(this, resource, ref map);
+            resource.Stream.Position = streamOffset;
+            return resource.Stream;
+        }
+
+        internal void UnmapResource(GraphicsResource resource)
+        {
+#if DEBUG
+            if (resource.Stream == null)
+                throw new GraphicsResourceException(resource, "$Cannot unmap a resource that has not been mapped yet. Call MapResource first");
+#endif
+
+            OnUnmapResource(resource, resource.Stream.SubResourceIndex);
+            resource.Stream = null;
+        }
+
+        /// <summary>
+        /// Invoked when a <see cref="GraphicsResource"/> is mapped for reading or writing by the CPU/system.
+        /// </summary>
+        /// <param name="resource">The <see cref="GraphicsResource"/></param>
+        /// <param name="subresource">The sub-resource index. e.g. a texture mip-map level, or array slice.</param>
+        /// <param name="streamOffset">An offset from the start of the sub-resource, in bytes.</param>
+        /// <returns></returns>
+        protected abstract ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset);
+
+        protected abstract void OnUnmapResource(GraphicsResource resource, uint subresource);
+
         public void BeginDraw()
         {
 #if DEBUG

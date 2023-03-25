@@ -1,4 +1,5 @@
-﻿using Molten.IO;
+﻿using System.IO;
+using Molten.IO;
 using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
@@ -140,35 +141,20 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        internal unsafe bool MapResource(GraphicsResource resource, uint subresource, uint streamOffset, out RawStream stream)
+        protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset)
         {
             ResourceVK res = resource as ResourceVK;
-
-            if (res.MapPtr != null)
-                throw new InvalidOperationException($"Cannot map resource memory that is already mapped. Call UnmapResource() first");
-
-            stream = null;
-            void* ptr = null;
-            Result r = VK.MapMemory(_device, *res.Memory, 0, res.SizeInBytes, 0, &ptr);
+            ResourceMap map = new ResourceMap(null, res.SizeInBytes, res.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
+            Result r = VK.MapMemory(_device, *res.Memory, 0, res.SizeInBytes, 0, &map.Ptr);
             if (!r.Check(_device))
-                return false;
+                return new ResourceMap();
 
-            res.MapPtr = ptr;
-            bool canWrite = res.Flags.Has(GraphicsResourceFlags.CpuWrite);
-            bool canRead = res.Flags.Has(GraphicsResourceFlags.CpuRead);
-            stream = new RawStream(ptr, res.SizeInBytes, canRead, canWrite);
-            stream.Position = streamOffset;
-            return true;
+            return map;
         }
 
-        internal unsafe void UnmapResource(GraphicsResource resource, uint subresource)
+        protected override unsafe void OnUnmapResource(GraphicsResource resource, uint subresource)
         {
-            ResourceVK res = resource as ResourceVK;
-            if (res.MapPtr == null)
-                throw new InvalidOperationException($"Cannot unmap resource memory that is not mapped. Call MapResource() first");
-
-            VK.UnmapMemory(_device, *res.Memory);
-            res.MapPtr = null;
+            VK.UnmapMemory(_device, *(resource as ResourceVK).Memory);
         }
 
         internal Vk VK { get; }

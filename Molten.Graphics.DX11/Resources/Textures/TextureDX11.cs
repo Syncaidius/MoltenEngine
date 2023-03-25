@@ -300,12 +300,6 @@ namespace Molten.Graphics
                 resToMap = staging;
             }
 
-            // Now pull data from it
-            RawStream stream = cmdNative.MapResource(resToMap, subID, 0);
-            // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
-            // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
-
-
             uint blockSize = BCHelper.GetBlockSize(DataFormat);
             uint expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
             uint expectedSlicePitch = expectedRowPitch * Height;
@@ -314,22 +308,29 @@ namespace Molten.Graphics
                 BCHelper.GetBCLevelSizeAndPitch(subWidth, subHeight, blockSize, out expectedSlicePitch, out expectedRowPitch);
 
             byte[] sliceData = new byte[expectedSlicePitch];
-            fixed (byte* ptrFixedSlice = sliceData)
-            {
-                byte* ptrSlice = ptrFixedSlice;
-                //byte* ptrDatabox = (byte*)mapping.PData;
 
-                uint p = 0;
-                while (p < resToMap.MapPtr.DepthPitch)
+            // Now pull data from it
+            using (GraphicsStream stream = cmdNative.MapResource(resToMap, subID, 0))
+            {
+                // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
+                // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
+
+                fixed (byte* ptrFixedSlice = sliceData)
                 {
-                    stream.ReadRange(ptrSlice, expectedRowPitch);
-                    //Buffer.MemoryCopy(ptrDatabox, ptrSlice, expectedSlicePitch, expectedRowPitch);
-                    //ptrDatabox += resToMap.MapPtr.RowPitch;
-                    ptrSlice += expectedRowPitch;
-                    p += resToMap.MapPtr.RowPitch;
+                    byte* ptrSlice = ptrFixedSlice;
+                    //byte* ptrDatabox = (byte*)mapping.PData;
+
+                    uint p = 0;
+                    while (p < stream.Map.DepthPitch)
+                    {
+                        stream.ReadRange(ptrSlice, expectedRowPitch);
+                        //Buffer.MemoryCopy(ptrDatabox, ptrSlice, expectedSlicePitch, expectedRowPitch);
+                        //ptrDatabox += resToMap.MapPtr.RowPitch;
+                        ptrSlice += expectedRowPitch;
+                        p += stream.Map.RowPitch;
+                    }
                 }
             }
-            cmdNative.UnmapResource(resToMap, subID);
 
             TextureSlice slice = new TextureSlice(subWidth, subHeight, sliceData)
             {

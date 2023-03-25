@@ -158,7 +158,7 @@ namespace Molten.Graphics
             uint byteOffset,
             uint stride,
             uint elementCount,
-            Action<BufferDX11, RawStream> callback,
+            Action<BufferDX11, GraphicsStream> callback,
             StagingBuffer staging = null)
         {
             // Check buffer type.
@@ -167,7 +167,7 @@ namespace Molten.Graphics
                 (Desc.CPUAccessFlags & (uint)CpuAccessFlag.Write) == (uint)CpuAccessFlag.Write;
 
             uint numBytes = stride * elementCount;
-            RawStream stream;
+            GraphicsStream stream;
 
             // Check if the buffer is a dynamic-writable
             if (isDynamic || isStaged)
@@ -205,7 +205,7 @@ namespace Molten.Graphics
                 }
 
                 callback(this, stream);
-                cmd.UnmapResource(this, 0);
+                stream.Dispose();
             }
             else
             {
@@ -233,7 +233,7 @@ namespace Molten.Graphics
                 }
 
                 callback(staging, stream);
-                cmd.UnmapResource(staging, 0);
+                stream.Dispose();
 
                 Box stagingRegion = new Box()
                 {
@@ -319,7 +319,6 @@ namespace Molten.Graphics
                 DestArray = destination,
                 DestIndex = startIndex,
                 Count = count,
-                DataStride = (uint)sizeof(T),
                 CompletionCallback = completionCallback,
             });
         }

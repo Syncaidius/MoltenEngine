@@ -8,10 +8,6 @@ namespace Molten.Graphics
     {
         /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="SrcSegment"/>.</summary>
         internal uint ByteOffset;
-
-        /// <summary>The number of bytes per element in <see cref="Data"/>.</summary>
-        internal uint DataStride;
-
         /// <summary>The number of elements to be copied.</summary>
         internal uint Count;
 
@@ -26,14 +22,12 @@ namespace Molten.Graphics
 
         public unsafe bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
-            CommandQueueDX11 dx11Cmd = cmd as CommandQueueDX11;
             BufferDX11 srcBuffer = resource as BufferDX11;
             DestArray = DestArray ?? new T[Count];
 
             // Now set the structured variable's data
-            RawStream stream = dx11Cmd.MapResource(srcBuffer, 0, ByteOffset);
-            stream.ReadRange(DestArray, 0, Count);
-            dx11Cmd.UnmapResource(srcBuffer, 0);
+            using (GraphicsStream stream = cmd.MapResource(srcBuffer, 0, ByteOffset))
+                stream.ReadRange(DestArray, DestIndex, Count);
 
             CompletionCallback?.Invoke(DestArray);
             return false;

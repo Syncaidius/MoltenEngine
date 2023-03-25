@@ -141,6 +141,16 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        protected override ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnUnmapResource(GraphicsResource resource, uint subresource)
+        {
+            throw new NotImplementedException();
+        }
+
         internal DeviceDX12 Device { get; }
 
         internal Logger Log { get; }

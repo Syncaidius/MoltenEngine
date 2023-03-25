@@ -149,19 +149,19 @@ namespace Molten.IO
         public T Read<T>() 
             where T : unmanaged
         {
-            T* tmp = stackalloc T[1];
-            Buffer.MemoryCopy(_ptrData, tmp, sizeof(T), sizeof(T));
+            T tmp = new T();
+            Buffer.MemoryCopy(_ptrData, &tmp, sizeof(T), sizeof(T));
             Position += sizeof(T);
-            return tmp[0];
+            return tmp;
         }
 
         public void Read<T>(ref T dest)
             where T : unmanaged
         {
-            T* tmp = stackalloc T[1];
-            Buffer.MemoryCopy(_ptrData, tmp, sizeof(T), sizeof(T));
+            T tmp = new T();
+            Buffer.MemoryCopy(_ptrData, &tmp, sizeof(T), sizeof(T));
             Position += sizeof(T);
-            dest = tmp[0];
+            dest = tmp;
         }
 
         /// <summary>

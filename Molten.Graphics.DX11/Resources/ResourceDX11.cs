@@ -6,12 +6,9 @@ namespace Molten.Graphics
 {
     public unsafe abstract class ResourceDX11 : GraphicsResource
     {
-        MappedSubresource _mapPtr;
-
         internal ResourceDX11(DeviceDX11 device, GraphicsBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
-            _mapPtr = new MappedSubresource();
             SRV = new SRView(device);
             UAV = new UAView(device);
         }
@@ -98,8 +95,6 @@ namespace Molten.Graphics
         /// Gets the native pointer of the current <see cref="GraphicsObject{T}"/>, as a <typeparamref name="T"/> pointer.
         /// </summary>
         internal abstract ID3D11Resource* ResourcePtr { get; }
-
-        internal ref MappedSubresource MapPtr => ref _mapPtr;
 
         internal abstract Usage UsageFlags { get; }
 

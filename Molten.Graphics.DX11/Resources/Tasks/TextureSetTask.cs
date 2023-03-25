@@ -102,30 +102,29 @@ namespace Molten.Graphics
 
             if (texture.Flags.Has(GraphicsResourceFlags.CpuWrite))
             {
-                RawStream stream = cmdDx11.MapResource(texture, subLevel, 0);
-
-                // Are we constrained to an area of the texture?
-                if (Area != null)
+                using (RawStream stream = cmdDx11.MapResource(texture, subLevel, 0))
                 {
-                    RectangleUI rect = Area.Value;
-                    uint areaPitch = Stride * rect.Width;
-                    uint aX = rect.X;
-                    uint aY = rect.Y;
-
-                    for (uint y = aY, end = rect.Bottom; y < end; y++)
+                    // Are we constrained to an area of the texture?
+                    if (Area != null)
                     {
-                        stream.Position = (Pitch * aY) + (aX * Stride);
-                        stream.WriteRange(ptrData, areaPitch);
-                        ptrData += areaPitch;
-                        aY++;
+                        RectangleUI rect = Area.Value;
+                        uint areaPitch = Stride * rect.Width;
+                        uint aX = rect.X;
+                        uint aY = rect.Y;
+
+                        for (uint y = aY, end = rect.Bottom; y < end; y++)
+                        {
+                            stream.Position = (Pitch * aY) + (aX * Stride);
+                            stream.WriteRange(ptrData, areaPitch);
+                            ptrData += areaPitch;
+                            aY++;
+                        }
+                    }
+                    else
+                    {
+                        stream.WriteRange(ptrData, NumBytes);
                     }
                 }
-                else
-                {
-                    stream.WriteRange(ptrData, NumBytes);
-                }
-
-                cmdDx11.UnmapResource(texture, subLevel);
                 cmdDx11.Profiler.Current.MapDiscardCount++;
             }
             else

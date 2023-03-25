@@ -110,33 +110,15 @@ namespace Molten.Graphics
             Native->ClearState();
         }
 
-        /// <summary>
-        /// Maps a resource on the current <see cref="CommandQueueDX11"/> and provides a <see cref="RawStream"/> to aid read-write operations.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="resource"></param>
-        /// <param name="subresource"></param>
-        /// <param name="mapType"></param>
-        /// <param name="mapFlags"></param>
-        /// <param name="stream"></param>
-        /// <returns></returns>
-        internal RawStream MapResource(GraphicsResource resource, uint subresource, uint streamOffset)
+        protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset)
         {
             ResourceDX11 res = resource as ResourceDX11;
-            if (res.MapPtr.PData != null)
-                throw new InvalidOperationException("Cannot map a resource that is already mapped. Call UnmapResource() first");
-
-            res.MapPtr = new MappedSubresource();
             Map map = Map.None;
             MapFlag mFlags = 0;
-            bool canRead = false;
-            bool canWrite = false;
             GraphicsResourceFlags flags = res.Flags;
 
             if (flags.Has(GraphicsResourceFlags.CpuWrite))
             {
-                canWrite = true;
-
                 if (flags.Has(GraphicsResourceFlags.Discard))
                 {
                     map = Map.WriteDiscard;
@@ -170,30 +152,24 @@ namespace Molten.Graphics
                 }
             }
 
-            if(flags.Has(GraphicsResourceFlags.CpuRead))
+            if (flags.Has(GraphicsResourceFlags.CpuRead))
             {
                 map |= Map.Read;
-                canRead = true;
 
                 // Only increment if we haven't already incremented during write flag check (above).
-                if(!flags.Has(GraphicsResourceFlags.CpuWrite))
+                if (!flags.Has(GraphicsResourceFlags.CpuWrite))
                     Profiler.Current.MapReadWriteCount++;
             }
 
-            Native->Map(res.ResourcePtr, subresource, map, (uint)mFlags, ref res.MapPtr);
-            RawStream stream = new RawStream(res.MapPtr.PData, res.MapPtr.DepthPitch, canRead, canWrite);
-            stream.Position = streamOffset;
-            return stream;
+            MappedSubresource resMap = new MappedSubresource();
+            Native->Map(res.ResourcePtr, subresource, map, (uint)mFlags, &resMap);
+            return new ResourceMap(resMap.PData, resMap.RowPitch, resMap.DepthPitch);
         }
 
-        internal void UnmapResource(GraphicsResource resource, uint subresource)
+        protected override void OnUnmapResource(GraphicsResource resource, uint subresource)
         {
             ResourceDX11 res = resource as ResourceDX11;
-            if (res.MapPtr.PData == null)
-                throw new InvalidOperationException("Cannot unmap a resource that is not mapped yet. Call MapResource() first");
-
             Native->Unmap(res.ResourcePtr, subresource);
-            res.MapPtr = new MappedSubresource();
         }
 
         internal void CopyResourceRegion(

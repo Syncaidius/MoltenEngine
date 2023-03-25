@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Molten.Collections;
 
 namespace Molten.Graphics
@@ -91,5 +90,7 @@ namespace Molten.Graphics
         public abstract uint SizeInBytes { get; }
 
         public abstract GraphicsResourceFlags Flags { get; }
+
+        internal GraphicsStream Stream { get; set; }
     }
 }

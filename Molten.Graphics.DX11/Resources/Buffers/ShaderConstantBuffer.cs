@@ -80,9 +80,8 @@ namespace Molten.Graphics
                 foreach(ShaderConstantVariable v in Variables)
                     v.Write(_constData + v.ByteOffset);
 
-                RawStream stream = dx11Cmd.MapResource(this, 0, 0);
-                stream.WriteRange(_constData, Desc.ByteWidth);
-                dx11Cmd.UnmapResource(this, 0);
+                using (GraphicsStream stream = dx11Cmd.MapResource(this, 0, 0))
+                    stream.WriteRange(_constData, Desc.ByteWidth);
             }
             else
             {

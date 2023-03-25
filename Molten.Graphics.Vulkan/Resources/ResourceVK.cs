@@ -14,7 +14,6 @@ namespace Molten.Graphics
         {
 
         }
-        internal unsafe void* MapPtr { get; set; }
 
         internal unsafe abstract DeviceMemory* Memory { get; }
     }
