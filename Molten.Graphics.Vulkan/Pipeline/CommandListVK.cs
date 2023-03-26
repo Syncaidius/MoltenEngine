@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Silk.NET.Vulkan;
+using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics
 {
-    internal class CommandListVK
+    internal unsafe class CommandListVK
     {
         CommandPoolAllocation _allocation;
         CommandBuffer _cmdBuffer;
@@ -53,6 +54,28 @@ namespace Molten.Graphics
 
             _vk.EndCommandBuffer(_cmdBuffer);
             HasBegun = false;
+        }
+
+        internal unsafe void Submit()
+        {
+            SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
+            submit.CommandBufferCount = 1;
+
+            CommandBuffer* ptrBuffer = stackalloc CommandBuffer[] { _cmdBuffer };
+            submit.PCommandBuffers = ptrBuffer;
+        }
+
+        internal void CopyResource(GraphicsResource src, GraphicsResource dest)
+        {
+            /*switch (src.ResourceType) {
+                case GraphicsResourceType.Buffer:
+                    _vk.CmdCopyBuffer(_cmdBuffer, *(Buffer*)src.Ptr, *(Buffer*)dest.Ptr);
+                    break;
+
+                case GraphicsResourceType.Texture:
+                    // _vk.CmdCopyImage();
+                    break;
+            }*/
         }
 
         // TODO implement command buffer commands - CmdDraw, CmdCopyBuffer, etc

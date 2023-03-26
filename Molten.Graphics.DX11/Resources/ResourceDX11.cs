@@ -18,7 +18,7 @@ namespace Molten.Graphics
             if (!string.IsNullOrWhiteSpace(debugName))
             {
                 void* ptrName = (void*)SilkMarshal.StringToPtr(debugName, NativeStringEncoding.LPStr);
-                ResourcePtr->SetPrivateData(ref RendererDX11.WKPDID_D3DDebugObjectName, (uint)debugName.Length, ptrName);
+                ((ID3D11Resource*)Handle)->SetPrivateData(ref RendererDX11.WKPDID_D3DDebugObjectName, (uint)debugName.Length, ptrName);
                 SilkMarshal.FreeString((nint)ptrName, NativeStringEncoding.LPStr);
             }
         }
@@ -88,13 +88,8 @@ namespace Molten.Graphics
 
         public static implicit operator ID3D11Resource*(ResourceDX11 resource)
         {
-            return resource.ResourcePtr;
+            return (ID3D11Resource*)resource.Handle;
         }
-
-        /// <summary>
-        /// Gets the native pointer of the current <see cref="GraphicsObject{T}"/>, as a <typeparamref name="T"/> pointer.
-        /// </summary>
-        internal abstract ID3D11Resource* ResourcePtr { get; }
 
         internal abstract Usage UsageFlags { get; }
 

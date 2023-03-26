@@ -95,5 +95,7 @@ namespace Molten.Graphics
         public abstract GraphicsResourceFlags Flags { get; }
 
         internal GraphicsStream Stream { get; set; }
+
+        public abstract unsafe void* Handle { get; }
     }
 }

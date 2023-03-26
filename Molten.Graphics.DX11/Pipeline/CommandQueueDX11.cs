@@ -112,10 +112,9 @@ namespace Molten.Graphics
 
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset)
         {
-            ResourceDX11 res = resource as ResourceDX11;
             Map map = Map.None;
             MapFlag mFlags = 0;
-            GraphicsResourceFlags flags = res.Flags;
+            GraphicsResourceFlags flags = resource.Flags;
 
             if (flags.Has(GraphicsResourceFlags.CpuWrite))
             {
@@ -162,31 +161,27 @@ namespace Molten.Graphics
             }
 
             MappedSubresource resMap = new MappedSubresource();
-            Native->Map(res.ResourcePtr, subresource, map, (uint)mFlags, &resMap);
+            Native->Map((ID3D11Resource*)resource.Handle, subresource, map, (uint)mFlags, &resMap);
             return new ResourceMap(resMap.PData, resMap.RowPitch, resMap.DepthPitch);
         }
 
         protected override void OnUnmapResource(GraphicsResource resource, uint subresource)
         {
-            ResourceDX11 res = resource as ResourceDX11;
-            Native->Unmap(res.ResourcePtr, subresource);
+            Native->Unmap((ID3D11Resource*)resource.Handle, subresource);
         }
 
         public override unsafe void CopyResourceRegion(
             GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, 
             GraphicsResource dest, uint destSubresource, Vector3UI destStart)
         {
-            ResourceDX11 src = source as ResourceDX11;
-            ResourceDX11 dst = dest as ResourceDX11;
             Box* box = (Box*)sourceRegion;
 
-            Native->CopySubresourceRegion(dst.ResourcePtr, destSubresource, destStart.X, destStart.Y, destStart.Z, src.ResourcePtr, srcSubresource, box);
+            Native->CopySubresourceRegion((ID3D11Resource*)dest.Handle, destSubresource, destStart.X, destStart.Y, destStart.Z, (ID3D11Resource*)source.Handle, srcSubresource, box);
             Profiler.Current.CopySubresourceCount++;
         }
 
         protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
         {
-            ResourceDX11 res = resource as ResourceDX11;
             Box* destBox = null;
 
             if (region != null)
@@ -195,22 +190,19 @@ namespace Molten.Graphics
                 destBox = (Box*)&value;
             }
 
-            Native->UpdateSubresource(res.ResourcePtr, subresource, destBox, ptrData, rowPitch, slicePitch);
+            Native->UpdateSubresource((ID3D11Resource*)resource.Handle, subresource, destBox, ptrData, rowPitch, slicePitch);
             Profiler.Current.UpdateSubresourceCount++;
         }
 
         protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
         {
-            ResourceDX11 srcDx11 = src as ResourceDX11;
-            ResourceDX11 destDx11 = dest as ResourceDX11;
-
-            if (srcDx11.ResourcePtr == null)
-                srcDx11.Apply(this);
+            if (src.Handle == null)
+                src.Apply(this);
 
             if(dest is StagingBufferDX11)
                 dest.Apply(this);
 
-            Native->CopyResource(destDx11.ResourcePtr, srcDx11.ResourcePtr);
+            Native->CopyResource((ID3D11Resource*)dest.Handle, (ID3D11Resource*)src.Handle);
             Profiler.Current.CopyResourceCount++;
         }
 

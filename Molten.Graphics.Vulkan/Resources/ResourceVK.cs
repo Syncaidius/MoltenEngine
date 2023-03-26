@@ -15,6 +15,8 @@ namespace Molten.Graphics
 
         }
 
+        public override unsafe void* Handle => throw new NotImplementedException();
+
         internal unsafe abstract DeviceMemory* Memory { get; }
     }
 }

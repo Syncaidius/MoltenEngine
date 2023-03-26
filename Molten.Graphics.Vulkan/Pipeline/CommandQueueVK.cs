@@ -164,7 +164,9 @@ namespace Molten.Graphics
 
         protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
         {
-            throw new NotImplementedException();
+            _cmdMain.Begin();
+            _cmdMain.CopyResource(src, dest);
+            _cmdMain.End();
         }
 
         public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)

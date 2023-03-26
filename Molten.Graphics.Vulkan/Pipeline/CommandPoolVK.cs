@@ -32,7 +32,7 @@ namespace Molten.Graphics
             _allocations = new List<CommandPoolAllocation>();
         }
 
-        internal CommandListVK Allocate(CommandBufferLevel level)
+        internal CommandListVK Allocate(CommandBufferLevel level = CommandBufferLevel.Primary)
         {
             foreach(CommandPoolAllocation a in _allocations)
             {
