@@ -96,6 +96,15 @@ namespace Molten.Graphics
 
         internal GraphicsStream Stream { get; set; }
 
+        /// <summary>
+        /// Gets the underlying native resource handle.
+        /// </summary>
         public abstract unsafe void* Handle { get; }
+
+        /// <summary>Gets the native shader resource view attached to the object.</summary>
+        public abstract unsafe void* SRV { get; }
+
+        /// <summary>Gets the native unordered-acess/storage view attached to the object.</summary>
+        public abstract unsafe void* UAV { get; }
     }
 }

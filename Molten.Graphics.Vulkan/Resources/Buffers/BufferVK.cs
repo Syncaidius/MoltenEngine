@@ -9,11 +9,10 @@ using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class BufferVK : ResourceVK, IGraphicsBuffer
+    internal unsafe abstract class BufferVK : GraphicsResource, IGraphicsBuffer
     {
-        Buffer* _buffer;
         BufferCreateInfo _desc;
-        DeviceMemory* _memory;
+        ResourceHandleVK* _handle;
 
         protected BufferVK(GraphicsDevice device,
             GraphicsResourceFlags bufferFlags,
@@ -36,6 +35,7 @@ namespace Molten.Graphics
             Stride = stride;
             SizeInBytes = Stride * numElements;
             ElementCount = numElements;
+            _handle = EngineUtil.Alloc<ResourceHandleVK>();
 
             MemoryPropertyFlags memFlags = BuildDescription(bufferFlags, usageFlags);
             InitializeBuffer(memFlags, initialData);
@@ -71,27 +71,27 @@ namespace Molten.Graphics
 
         private void InitializeBuffer(MemoryPropertyFlags memFlags, void* initialData)
         {
-            _buffer = EngineUtil.Alloc<Buffer>();
-            _memory = EngineUtil.Alloc<DeviceMemory>();
+            _handle->Ptr = EngineUtil.Alloc<Buffer>();
+            _handle->Memory = EngineUtil.Alloc<DeviceMemory>();
 
             DeviceVK device = Device as DeviceVK;
-            Result r = device.VK.CreateBuffer(device, in _desc, null, _buffer);
+            Result r = device.VK.CreateBuffer(device, in _desc, null, (Buffer*)_handle->Ptr);
             if (!r.Check(device))
                 return;
 
             MemoryRequirements memRequirements;
-            device.VK.GetBufferMemoryRequirements(device, *_buffer, &memRequirements);
+            device.VK.GetBufferMemoryRequirements(device, *(Buffer*)_handle->Ptr, &memRequirements);
 
             MemoryAllocateInfo memInfo = new MemoryAllocateInfo();
             memInfo.SType = StructureType.MemoryAllocateInfo;
             memInfo.AllocationSize = memRequirements.Size;
             memInfo.MemoryTypeIndex = device.Adapter.GetMemoryTypeIndex(ref memRequirements, memFlags);
 
-            r = device.VK.AllocateMemory(device, &memInfo, null, _memory);
+            r = device.VK.AllocateMemory(device, &memInfo, null, _handle->Memory);
             if (!r.Check(device))
                 return;
 
-            r = device.VK.BindBufferMemory(device, *_buffer, *_memory, 0);
+            r = device.VK.BindBufferMemory(device, *(Buffer*)_handle->Ptr, *_handle->Memory, 0);
             if (!r.Check(device))
                 return;
         }
@@ -100,13 +100,14 @@ namespace Molten.Graphics
         {
             DeviceVK device = Device as DeviceVK;
 
-            if (_buffer != null)
+            if (_handle->Ptr != null)
             {
-                device.VK.DestroyBuffer(device, *_buffer, null);
-                device.VK.FreeMemory(device, *_memory, null);
+                device.VK.DestroyBuffer(device, *(Buffer*)_handle->Ptr, null);
+                device.VK.FreeMemory(device, *_handle->Memory, null);
 
-                EngineUtil.Free(ref _memory);
-                EngineUtil.Free(ref _buffer);
+                EngineUtil.Free(ref _handle->Memory);
+                EngineUtil.Free(ref _handle->Ptr);
+                EngineUtil.Free(ref _handle);
                 EngineUtil.Free(ref _desc.PQueueFamilyIndices);
             }
         }
@@ -154,10 +155,6 @@ namespace Molten.Graphics
 
         protected override void OnApply(GraphicsCommandQueue cmd) { }
 
-        internal unsafe Buffer* NativePtr => _buffer;
-
-        internal override DeviceMemory* Memory => _memory;
-
         /// <summary>Gets the stride (byte size) of each element within the current <see cref="BufferDX11"/>.</summary>
         public uint Stride { get; }
 
@@ -173,5 +170,11 @@ namespace Molten.Graphics
         public override GraphicsResourceFlags Flags { get; }
 
         public override bool IsUnorderedAccess => HasFlags(BufferUsageFlags.StorageBufferBit);
+
+        public override unsafe void* Handle => _handle;
+
+        public override unsafe void* UAV => throw new NotImplementedException();
+
+        public override unsafe void* SRV => throw new NotImplementedException();
     }
 }

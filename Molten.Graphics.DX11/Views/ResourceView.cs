@@ -16,9 +16,10 @@ namespace Molten.Graphics
         V* _native;
         D _desc;
 
-        internal ResourceView(DeviceDX11 device)
+        internal ResourceView(GraphicsResource resource)
         {
-            Device = device;
+            Resource = resource;
+            Device = resource.Device as DeviceDX11;
         }
 
         internal unsafe V* Ptr => _native;
@@ -27,11 +28,22 @@ namespace Molten.Graphics
 
         internal DeviceDX11 Device { get; }
 
+        internal GraphicsResource Resource { get; }
+
+        internal void Create()
+        {
+            SilkUtil.ReleasePtr(ref _native);
+            OnCreateView((ID3D11Resource*)Resource.Handle, ref _desc, ref _native);
+            SetDebugName($"{Resource.Name}_{GetType().Name}");
+        }
+
         internal void Create(ID3D11Resource* resource)
         {
             SilkUtil.ReleasePtr(ref _native);
             OnCreateView(resource, ref _desc, ref _native);
+            SetDebugName($"{Resource.Name}_{GetType().Name}");
         }
+
         internal void SetDebugName(string debugName)
         {
             if (!string.IsNullOrWhiteSpace(debugName))
@@ -41,7 +53,6 @@ namespace Molten.Graphics
                 SilkMarshal.FreeString((nint)ptrName, NativeStringEncoding.LPStr);
             }
         }
-
 
         protected abstract void OnCreateView(ID3D11Resource* resource, ref D desc, ref V* view);
 

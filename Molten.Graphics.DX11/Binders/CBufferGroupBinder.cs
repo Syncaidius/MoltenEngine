@@ -26,7 +26,7 @@ namespace Molten.Graphics
                 cb = grp[sid++].BoundValue;
                 if (cb != null)
                 {
-                    cBuffers[i] = cb.NativePtr;
+                    cBuffers[i] = (ID3D11Buffer*)cb.Handle;
                     cFirstConstants[i] = 0; // TODO implement this using BufferSegment
                     cNumConstants[i] = (uint)cb.Variables.Length;
                 }
@@ -44,7 +44,7 @@ namespace Molten.Graphics
         public override void Bind(GraphicsSlot<ShaderConstantBuffer> slot, ShaderConstantBuffer value)
         {
             ID3D11Buffer** buffers = stackalloc ID3D11Buffer*[1];
-            buffers[0] = slot.BoundValue;
+            buffers[0] = (ID3D11Buffer*)slot.BoundValue.Handle;
             _stage.SetConstantBuffers(slot.SlotIndex, 1, buffers);
         }
 

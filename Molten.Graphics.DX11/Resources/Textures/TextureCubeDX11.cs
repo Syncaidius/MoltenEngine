@@ -21,10 +21,10 @@ namespace Molten.Graphics
                 ArraySize = ArraySize,
                 Format = format,
                 BindFlags = (uint)(flags.Has(GraphicsResourceFlags.NoShaderAccess) ? BindFlag.None : BindFlag.ShaderResource),
-                CPUAccessFlags = (uint)GetCpuFlags(),
+                CPUAccessFlags = (uint)Flags.ToCpuFlags(),
                 SampleDesc = new SampleDesc(1, 0),
-                Usage = GetUsageFlags(),
-                MiscFlags = (uint)(GetResourceFlags(allowMipMapGen) | ResourceMiscFlag.Texturecube),
+                Usage = Flags.ToUsageFlags(),
+                MiscFlags = (uint)(Flags.ToMiscFlags(allowMipMapGen) | ResourceMiscFlag.Texturecube),
                 TextureLayout = TextureLayout.None
             };
         }
@@ -95,7 +95,5 @@ namespace Molten.Graphics
 
         /// <summary>Gets the number of cube maps stored in the texture. This is greater than 1 if the texture is a cube-map array.</summary>
         public uint CubeCount { get; private set; }
-
-        internal override Usage UsageFlags => _desc.Usage;
     }
 }

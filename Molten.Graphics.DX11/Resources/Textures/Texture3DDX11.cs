@@ -44,9 +44,9 @@ namespace Molten.Graphics
                 MipLevels = mipCount,
                 Format = format,
                 BindFlags = (uint)GetBindFlags(),
-                CPUAccessFlags = (uint)GetCpuFlags(),
-                Usage = GetUsageFlags(),
-                MiscFlags = (uint)GetResourceFlags(allowMipMapGen),
+                CPUAccessFlags = (uint)Flags.ToCpuFlags(),
+                Usage = Flags.ToUsageFlags(),
+                MiscFlags = (uint)Flags.ToMiscFlags(allowMipMapGen),
             };
         }
 
@@ -121,8 +121,6 @@ namespace Molten.Graphics
                 NewFormat = newFormat == GraphicsFormat.Unknown ? DataFormat : newFormat
             });
         }
-
-        internal override Usage UsageFlags => _desc.Usage;
 
         public override bool IsUnorderedAccess => ((BindFlag)_desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
     }

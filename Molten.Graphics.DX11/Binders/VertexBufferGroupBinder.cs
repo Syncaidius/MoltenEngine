@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
                 if (buffer != null)
                 {
-                    pBuffers[p] = buffer.NativePtr;
+                    pBuffers[p] = (ID3D11Buffer*)buffer.Handle;
                     pStrides[p] = buffer.Stride;
                     pOffsets[p] = 0; // buffer.ByteOffset; - May need again for multi-part meshes with sub-meshes within the same buffer.
                 }
@@ -50,7 +50,7 @@ namespace Molten.Graphics
 
             if (buffer != null)
             {
-                pBuffers[0] = buffer;
+                pBuffers[0] = (ID3D11Buffer*)buffer.Handle;
                 pStrides[0] = buffer.Stride;
                 pOffsets[0] = 0; // buffer.ByteOffset; - May need again for multi-part meshes with sub-meshes within the same buffer.
             }

@@ -49,10 +49,10 @@ namespace Molten.Graphics
                 ArraySize = Math.Max(arraySize, 1),
                 Format = format,
                 BindFlags = (uint)GetBindFlags(),
-                CPUAccessFlags = (uint)GetCpuFlags(),
+                CPUAccessFlags = (uint)Flags.ToCpuFlags(),
                 SampleDesc = new SampleDesc((uint)aaLevel, (uint)msaa),
-                Usage = GetUsageFlags(),
-                MiscFlags = (uint)GetResourceFlags(allowMipMapGen),
+                Usage = Flags.ToUsageFlags(),
+                MiscFlags = (uint)Flags.ToMiscFlags(allowMipMapGen),
                 TextureLayout = TextureLayout.None,
             };
         }
@@ -161,8 +161,6 @@ namespace Molten.Graphics
                 NewFormat = newFormat,
             });
         }
-
-        internal override Usage UsageFlags => _desc.Usage;
 
         public override bool IsUnorderedAccess => ((BindFlag)_desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
     }

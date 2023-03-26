@@ -1,5 +1,6 @@
 ﻿using Molten.Graphics.Textures;
 using Molten.IO;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
@@ -7,7 +8,7 @@ namespace Molten.Graphics
 {
     public delegate void TextureEvent(TextureDX11 texture);
 
-    public unsafe abstract partial class TextureDX11 : ResourceDX11, ITexture
+    public unsafe abstract partial class TextureDX11 : GraphicsResource, ITexture
     {
         /// <summary>Triggered right before the internal texture resource is created.</summary>
         public event TextureEvent OnPreCreate;
@@ -26,12 +27,18 @@ namespace Molten.Graphics
         ID3D11Resource* _native;
         bool _allowMipMapGen;
 
+        SRView _srv;
+        UAView _uav;
+
         internal TextureDX11(RenderService renderer, uint width, uint height, uint depth, uint mipCount, 
             uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
             base(renderer.Device as DeviceDX11,
                 (flags.Has(GraphicsResourceFlags.UnorderedAccess) ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None |
                 (flags.Has(GraphicsResourceFlags.NoShaderAccess) ? GraphicsBindTypeFlags.None : GraphicsBindTypeFlags.Input)))
         {
+            _srv = new SRView(this);
+            _uav = new UAView(this);
+
             Renderer = renderer;
             Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{width}x{height}" : name;
             _allowMipMapGen = allowMipMapGen;
@@ -78,9 +85,19 @@ namespace Molten.Graphics
             }
         }
 
-        protected override BindFlag GetBindFlags()
+        protected void SetDebugName(string debugName)
         {
-            BindFlag result = base.GetBindFlags();
+            if (!string.IsNullOrWhiteSpace(debugName))
+            {
+                void* ptrName = (void*)SilkMarshal.StringToPtr(debugName, NativeStringEncoding.LPStr);
+                ((ID3D11Resource*)Handle)->SetPrivateData(ref RendererDX11.WKPDID_D3DDebugObjectName, (uint)debugName.Length, ptrName);
+                SilkMarshal.FreeString((nint)ptrName, NativeStringEncoding.LPStr);
+            }
+        }
+
+        protected BindFlag GetBindFlags()
+        {
+            BindFlag result = Flags.ToBindFlags();
 
             if (this is RenderSurface2DDX11)
                 result |= BindFlag.RenderTarget;
@@ -104,16 +121,14 @@ namespace Molten.Graphics
             {
                 if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
                 {
-                    SetSRVDescription(ref SRV.Desc);
-                    SRV.Create(_native);
-                    SRV.SetDebugName($"{Name}_SRV");
+                    SetSRVDescription(ref _srv.Desc);
+                    _srv.Create();
                 }
 
                 if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
                 {
-                    SetUAVDescription(ref SRV.Desc, ref UAV.Desc);
-                    UAV.Create(_native);
-                    SRV.SetDebugName($"{Name}_UAV");
+                    SetUAVDescription(ref _srv.Desc, ref _uav.Desc);
+                    _uav.Create();
                 }
 
                 Version++;
@@ -138,7 +153,8 @@ namespace Molten.Graphics
 
         public override void GraphicsRelease()
         {
-            base.GraphicsRelease();
+            _srv.Release();
+            _uav.Release();
 
             //TrackDeallocation();
             SilkUtil.ReleasePtr(ref _native);
@@ -447,7 +463,11 @@ namespace Molten.Graphics
 
         public bool IsValid { get; protected set; }
 
-        internal override unsafe ID3D11Resource* ResourcePtr => _native;
+        public override unsafe void* Handle => _native;
+
+        public override unsafe void* SRV => _srv.Ptr;
+
+        public override unsafe void* UAV => _uav.Ptr;
 
         /// <summary>
         /// Gets the renderer that the texture is bound to.

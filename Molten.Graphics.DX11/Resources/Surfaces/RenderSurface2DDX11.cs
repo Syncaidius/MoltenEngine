@@ -25,12 +25,9 @@ namespace Molten.Graphics
             Viewport = new ViewportF(0, 0, width, height);
 
             Name = $"Surface_{name ?? GetType().Name}";
-            RTV = new RenderTargetView(renderer.Device as DeviceDX11)
+            RTV = new RenderTargetView(this)
             {
-                Desc = new RenderTargetViewDesc1()
-                {
-                    Format = DxgiFormat,
-                }
+                Desc = new RenderTargetViewDesc1(DxgiFormat),
             };
         }
 

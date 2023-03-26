@@ -34,7 +34,7 @@ namespace Molten.Graphics
         {
             if (HasBindFlags(BindFlag.ShaderResource))
             {
-                SRV.Desc = new ShaderResourceViewDesc1()
+                NativeSRV.Desc = new ShaderResourceViewDesc1()
                 {
                     BufferEx = new BufferexSrv()
                     {
@@ -46,13 +46,13 @@ namespace Molten.Graphics
                     Format = Format.FormatR32Typeless, // TODO we need to set it to R32Typeless?
                 };
 
-                SRV.Create(this);
+                NativeSRV.Create();
             }
 
             // See UAV notes: https://docs.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-resources-intro#raw-views-of-buffers
             if (HasBindFlags(BindFlag.UnorderedAccess))
             {
-                UAV.Desc = new UnorderedAccessViewDesc1()
+                NativeUAV.Desc = new UnorderedAccessViewDesc1()
                 {
                     // Raw UAVs require the format to be DXGI_FORMAT_R32_TYPELESS.
                     // See: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_buffer_uav_flag
@@ -65,7 +65,7 @@ namespace Molten.Graphics
                         Flags = (uint)BufferUavFlag.Raw,
                     },
                 };
-                UAV.Create(this);
+                NativeUAV.Create();
             }
         }
     }

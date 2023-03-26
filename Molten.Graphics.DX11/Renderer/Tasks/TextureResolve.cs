@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics
+﻿using Silk.NET.Direct3D11;
+
+namespace Molten.Graphics
 {
     /// <summary>A render task which resolves a multisampled texture into a non-multisampled one.</summary>
     internal unsafe class TextureResolve : RenderTask<TextureResolve>
@@ -28,8 +30,8 @@
 
             RendererDX11 dx11Renderer = renderer as RendererDX11;
             Destination.Apply(dx11Renderer.NativeDevice.Cmd);
-            dx11Renderer.NativeDevice.Cmd.Native->ResolveSubresource(Destination.ResourcePtr, subDest,
-                Source.ResourcePtr, subSource, Source.DxgiFormat);
+            dx11Renderer.NativeDevice.Cmd.Native->ResolveSubresource((ID3D11Resource*)Destination.Handle, subDest,
+                (ID3D11Resource*)Source.Handle, subSource, Source.DxgiFormat);
             Recycle(this);
         }
     }

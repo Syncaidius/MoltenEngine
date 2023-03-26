@@ -361,7 +361,7 @@ namespace Molten.Graphics
         public unsafe override IVertexBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
         {
             fixed (T* ptr = initialData)
-                return new VertexBufferDX11<T>(this, flags, numVertices, ptr);
+                return new VertexBufferDX11<T>(this, flags | GraphicsResourceFlags.NoShaderAccess, numVertices, ptr);
         }
 
         public unsafe override IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData = null)
@@ -373,7 +373,7 @@ namespace Molten.Graphics
         public unsafe override IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null)
         {
             fixed (uint* ptr = initialData)
-                return new IndexBufferDX11(this, flags, IndexBufferFormat.UInt32, numIndices, ptr);
+                return new IndexBufferDX11(this, flags | GraphicsResourceFlags.NoShaderAccess, IndexBufferFormat.UInt32, numIndices, ptr);
         }
 
         public unsafe override IStructuredBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)

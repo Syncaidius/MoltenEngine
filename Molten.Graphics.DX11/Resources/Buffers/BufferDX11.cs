@@ -5,7 +5,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public abstract unsafe class BufferDX11 : ResourceDX11<ID3D11Buffer>, IGraphicsBuffer
+    public abstract unsafe class BufferDX11 : GraphicsResource, IGraphicsBuffer
     {
         ID3D11Buffer* _native;
         uint _ringPos;
@@ -21,6 +21,9 @@ namespace Molten.Graphics
                 ((bindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
                 ((bindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None))
         {
+            NativeSRV = new SRView(this);
+            NativeUAV = new UAView(this);
+
             Flags = bufferFlags;
             Stride = stride;
             SizeInBytes = Stride * numElements;
@@ -43,8 +46,8 @@ namespace Molten.Graphics
             Desc = new BufferDesc();
             Desc.ByteWidth = SizeInBytes;
             Desc.StructureByteStride = 0;
-            Desc.Usage = GetUsageFlags();
-            Desc.CPUAccessFlags = (uint)GetCpuFlags();
+            Desc.Usage = Flags.ToUsageFlags();
+            Desc.CPUAccessFlags = (uint)Flags.ToCpuFlags();
 
             // Only staging allows CPU reads.
             // See for ref: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_usage
@@ -84,7 +87,7 @@ namespace Molten.Graphics
         {
             if (HasBindFlags(BindFlag.ShaderResource))
             {
-                SRV.Desc = new ShaderResourceViewDesc1()
+                NativeSRV.Desc = new ShaderResourceViewDesc1()
                 {
                     Buffer = new BufferSrv()
                     {
@@ -95,12 +98,12 @@ namespace Molten.Graphics
                     Format = Format.FormatUnknown,
                 };
 
-                SRV.Create(ResourcePtr);
+                NativeSRV.Create();
             }
 
             if (HasBindFlags(BindFlag.UnorderedAccess))
             {
-                UAV.Desc = new UnorderedAccessViewDesc1()
+                NativeUAV.Desc = new UnorderedAccessViewDesc1()
                 {
                     Format = Format.FormatUnknown,
                     ViewDimension = UavDimension.Buffer,
@@ -111,7 +114,7 @@ namespace Molten.Graphics
                         Flags = 0, // TODO add support for append, raw and counter buffers. See: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_buffer_uav_flag
                     }
                 };
-                UAV.Create(ResourcePtr);
+                NativeUAV.Create();
             }
         }
 
@@ -317,16 +320,22 @@ namespace Molten.Graphics
             return ((BindFlag)Desc.BindFlags & flag) == flag;
         }
 
-        internal bool HasFlag(CpuAccessFlag flag)
+        protected void SetDebugName(string debugName)
         {
-            return ((CpuAccessFlag)Desc.CPUAccessFlags & flag) == flag;
+            if (!string.IsNullOrWhiteSpace(debugName))
+            {
+                void* ptrName = (void*)SilkMarshal.StringToPtr(debugName, NativeStringEncoding.LPStr);
+                ((ID3D11Resource*)Handle)->SetPrivateData(ref RendererDX11.WKPDID_D3DDebugObjectName, (uint)debugName.Length, ptrName);
+                SilkMarshal.FreeString((nint)ptrName, NativeStringEncoding.LPStr);
+            }
         }
 
         public override void GraphicsRelease()
         {
-            base.GraphicsRelease();
+            NativeSRV.Release();
+            NativeUAV.Release();
 
-            if (ResourcePtr != null)
+            if (Handle != null)
             {
                 SilkUtil.ReleasePtr(ref _native);
                 Device.DeallocateVRAM(Desc.ByteWidth);
@@ -347,16 +356,19 @@ namespace Molten.Graphics
         /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
         public override GraphicsResourceFlags Flags { get; }
 
-        internal override Usage UsageFlags => Desc.Usage;
-
         public override bool IsUnorderedAccess => ((BindFlag)Desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
-
-        /// <summary>Gets the underlying DirectX 11 buffer. </summary>
-        internal override ID3D11Buffer* NativePtr => _native;
-
-        internal override unsafe ID3D11Resource* ResourcePtr => (ID3D11Resource*)_native;
 
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
         internal ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Desc.MiscFlags;
+
+        public override unsafe void* Handle => _native;
+
+        public override unsafe void* SRV => NativeSRV.Ptr;
+
+        public override unsafe void* UAV => NativeUAV.Ptr;
+
+        internal SRView NativeSRV { get; }
+
+        internal UAView NativeUAV { get; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class UavGroupBinder : GraphicsGroupBinder<ResourceDX11>
+    internal unsafe class UavGroupBinder : GraphicsGroupBinder<GraphicsResource>
     {
         ShaderCSStage _stage;
 
@@ -11,7 +11,7 @@ namespace Molten.Graphics
             _stage = stage;
         }
 
-        public override void Bind(GraphicsSlotGroup<ResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<GraphicsResource> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             // Set unordered access resources
             ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[(int)numChanged];
@@ -20,7 +20,7 @@ namespace Molten.Graphics
             uint sid = startIndex;
             for (int i = 0; i < numChanged; i++)
             {
-                pUavs[i] = grp[sid].BoundValue != null ? grp[sid].BoundValue.UAV.Ptr : null;
+                pUavs[i] = grp[sid].BoundValue != null ? (ID3D11UnorderedAccessView1*)grp[sid].BoundValue.UAV : null;
                 pInitialCounts[i] = 0; // TODO set initial counts. Research this more.
                 sid++;
             }
@@ -28,16 +28,16 @@ namespace Molten.Graphics
             _stage.SetUnorderedAccessViews(startIndex, numChanged, pUavs, pInitialCounts);
         }
 
-        public override void Bind(GraphicsSlot<ResourceDX11> slot, ResourceDX11 value)
+        public override void Bind(GraphicsSlot<GraphicsResource> slot, GraphicsResource value)
         {
             ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[1];
             uint* pInitialCounts = stackalloc uint[1];
-            pUavs[0] = slot.BoundValue != null ? slot.BoundValue.UAV.Ptr : null;
+            pUavs[0] = slot.BoundValue != null ? (ID3D11UnorderedAccessView1*)slot.BoundValue.UAV : null;
             pInitialCounts[0] = 0;
             _stage.SetUnorderedAccessViews(slot.SlotIndex, 1, pUavs, pInitialCounts);
         }
 
-        public override void Unbind(GraphicsSlotGroup<ResourceDX11> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<GraphicsResource> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             // Set unordered access resources
             ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[(int)numChanged];
@@ -53,7 +53,7 @@ namespace Molten.Graphics
             _stage.SetUnorderedAccessViews(startIndex, numChanged, pUavs, pInitialCounts);
         }
 
-        public override void Unbind(GraphicsSlot<ResourceDX11> slot, ResourceDX11 value)
+        public override void Unbind(GraphicsSlot<GraphicsResource> slot, GraphicsResource value)
         {
             ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[1];
             uint* pInitialCounts = stackalloc uint[1];

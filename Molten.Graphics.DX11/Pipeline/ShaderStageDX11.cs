@@ -37,7 +37,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < composition.ResourceIds.Count; i++)
                 {
                     uint slotID = composition.ResourceIds[i];
-                    Resources[slotID].Value = composition.Pass.Parent.Resources[slotID]?.Resource as ResourceDX11;
+                    Resources[slotID].Value = composition.Pass.Parent.Resources[slotID]?.Resource;
                 }
 
                 // Apply pass samplers to slots
@@ -78,7 +78,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the slots for binding <see cref="ResourceDX11"/> to the current <see cref="ContextShaderStage{T}"/>.
         /// </summary>
-        internal GraphicsSlotGroup<ResourceDX11> Resources { get; }
+        internal GraphicsSlotGroup<GraphicsResource> Resources { get; }
 
         /// <summary>
         /// Gets the slots for binding <see cref="ShaderConstantBuffer"/> to the current <see cref="ContextShaderStage{T}"/>/

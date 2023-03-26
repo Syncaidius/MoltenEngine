@@ -48,7 +48,7 @@ namespace Molten.Graphics
         GraphicsSlot<BlendStateDX11> _stateBlend;
         GraphicsSlot<RasterizerStateDX11> _stateRaster;
         GraphicsSlot<DepthStateDX11> _stateDepth;
-        GraphicsSlotGroup<ResourceDX11> _renderUAVs;
+        GraphicsSlotGroup<GraphicsResource> _renderUAVs;
 
         internal CommandQueueDX11(DeviceDX11 device, ID3D11DeviceContext4* context) :
             base(device)
@@ -233,7 +233,7 @@ namespace Molten.Graphics
                     for (int j = 0; j < composition.UnorderedAccessIds.Count; j++)
                     {
                         uint slotID = composition.UnorderedAccessIds[j];
-                        _renderUAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.Resource as ResourceDX11;
+                        _renderUAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.Resource;
                     }
                 }
             }
