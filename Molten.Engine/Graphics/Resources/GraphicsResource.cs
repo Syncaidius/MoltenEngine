@@ -9,9 +9,11 @@ namespace Molten.Graphics
     {
         ThreadedQueue<IGraphicsResourceTask> _applyTaskQueue;
 
-        protected GraphicsResource(GraphicsDevice device, GraphicsBindTypeFlags bindFlags) : 
-            base(device, bindFlags)
+        protected GraphicsResource(GraphicsDevice device, GraphicsResourceFlags flags) : 
+            base(device, (flags.Has(GraphicsResourceFlags.UnorderedAccess) ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
+                (flags.Has(GraphicsResourceFlags.NoShaderAccess) ? GraphicsBindTypeFlags.None : GraphicsBindTypeFlags.Input))
         {
+            Flags = flags;
             _applyTaskQueue = new ThreadedQueue<IGraphicsResourceTask>();
         }
 
@@ -92,7 +94,10 @@ namespace Molten.Graphics
         /// </summary>
         public abstract uint SizeInBytes { get; }
 
-        public abstract GraphicsResourceFlags Flags { get; }
+        /// <summary>
+        /// Gets the resource flags that provided given when the current <see cref="GraphicsResource"/> was created.
+        /// </summary>
+        public GraphicsResourceFlags Flags { get; }
 
         internal GraphicsStream Stream { get; set; }
 

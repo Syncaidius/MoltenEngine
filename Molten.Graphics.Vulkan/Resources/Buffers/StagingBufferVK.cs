@@ -7,10 +7,12 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal class StagingBufferVK : BufferVK, IStagingBuffer
+    internal class StagingBufferVK : BufferVK
     {
         internal unsafe StagingBufferVK(GraphicsDevice device, uint stride, uint numElements) : 
-            base(device, GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuWrite, BufferUsageFlags.None, stride, numElements, null)
+            base(device, GraphicsBufferType.StagingBuffer, 
+                GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuWrite, 
+                BufferUsageFlags.None, stride, numElements, null)
         {
         }
     }

@@ -9,35 +9,23 @@ using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class BufferVK : GraphicsResource, IGraphicsBuffer
+    internal unsafe abstract class BufferVK : GraphicsBuffer
     {
         BufferCreateInfo _desc;
         ResourceHandleVK* _handle;
 
         protected BufferVK(GraphicsDevice device,
-            GraphicsResourceFlags bufferFlags,
+            GraphicsBufferType type,
+            GraphicsResourceFlags flags,
             BufferUsageFlags usageFlags,
             uint stride,
             uint numElements,
             void* initialData = null) :
-            base(device,
-                ((usageFlags & BufferUsageFlags.StorageBufferBit) == BufferUsageFlags.StorageBufferBit ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
-                (
-                    (usageFlags & BufferUsageFlags.TransferSrcBit) == BufferUsageFlags.TransferSrcBit ||
-                    (usageFlags & BufferUsageFlags.VertexBufferBit) == BufferUsageFlags.VertexBufferBit || 
-                    (usageFlags & BufferUsageFlags.IndexBufferBit) == BufferUsageFlags.IndexBufferBit || 
-                    (usageFlags & BufferUsageFlags.UniformBufferBit) == BufferUsageFlags.UniformBufferBit ||
-                    (usageFlags & BufferUsageFlags.UniformTexelBufferBit) == BufferUsageFlags.UniformTexelBufferBit
-                    ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None)
-                )
+            base(device, stride, numElements, flags, type)
         {
-            Flags = bufferFlags;
-            Stride = stride;
-            SizeInBytes = Stride * numElements;
-            ElementCount = numElements;
             _handle = EngineUtil.Alloc<ResourceHandleVK>();
 
-            MemoryPropertyFlags memFlags = BuildDescription(bufferFlags, usageFlags);
+            MemoryPropertyFlags memFlags = BuildDescription(flags, usageFlags);
             InitializeBuffer(memFlags, initialData);
         }
 
@@ -112,38 +100,35 @@ namespace Molten.Graphics
             }
         }
 
-        public void SetData<T>(GraphicsPriority priority, T[] data, IStagingBuffer staging = null, Action completeCallback = null) 
-            where T : unmanaged
+        public override void SetData<T>(GraphicsPriority priority, T[] data, GraphicsBuffer staging = null, Action completeCallback = null) 
         {
             throw new NotImplementedException();
         }
 
-        public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, uint byteOffset = 0, IStagingBuffer staging = null,
+        public override void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, uint byteOffset = 0, GraphicsBuffer staging = null,
             Action completeCallback = null) 
-            where T : unmanaged
         {
             throw new NotImplementedException();
         }
 
-        public void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint elementOffset, 
+        public override void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint elementOffset, 
             Action<T[]> completionCallback = null) 
-            where T : unmanaged
         {
             throw new NotImplementedException();
         }
 
-        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
+        public override void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
         {
             throw new NotImplementedException();
         }
 
-        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, 
+        public override void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, 
             Action<GraphicsResource> completionCallback = null)
         {
             throw new NotImplementedException();
         }
 
-        public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, GraphicsStream> callback, IStagingBuffer staging = null)
+        public override void GetStream(GraphicsPriority priority, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null)
         {
             throw new NotImplementedException();
         }
@@ -154,20 +139,6 @@ namespace Molten.Graphics
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd) { }
-
-        /// <summary>Gets the stride (byte size) of each element within the current <see cref="BufferDX11"/>.</summary>
-        public uint Stride { get; }
-
-        /// <summary>Gets the capacity of a single section within the buffer, in bytes.</summary>
-        public override uint SizeInBytes { get; }
-
-        /// <summary>
-        /// Gets the number of elements that the current <see cref="BufferDX11"/> can store.
-        /// </summary>
-        public uint ElementCount { get; }
-
-        /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
-        public override GraphicsResourceFlags Flags { get; }
 
         public override bool IsUnorderedAccess => HasFlags(BufferUsageFlags.StorageBufferBit);
 

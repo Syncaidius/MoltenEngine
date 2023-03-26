@@ -65,14 +65,14 @@ namespace Molten.Examples
                 }
 
                 // Setup two input buffers for our numbers. By default these are immutable - cannot be changed after creation.
-                IStructuredBuffer numBuffer0 = Engine.Renderer.Device.CreateStructuredBuffer(_values0);
-                IStructuredBuffer numBuffer1 = Engine.Renderer.Device.CreateStructuredBuffer(_values1);
+                GraphicsBuffer numBuffer0 = Engine.Renderer.Device.CreateStructuredBuffer(_values0);
+                GraphicsBuffer numBuffer1 = Engine.Renderer.Device.CreateStructuredBuffer(_values1);
 
                 // Setup one output buffer for results
-                IStructuredBuffer outBuffer = Engine.Renderer.Device.CreateStructuredBuffer<ComputeData>(GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite, NUM_SUMS, true, false);
+                GraphicsBuffer outBuffer = Engine.Renderer.Device.CreateStructuredBuffer<ComputeData>(GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite, NUM_SUMS, true, false);
 
                 // Staging buffer for transferring our compute result off the GPU
-                IStagingBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(true, false, numBytes);
+                GraphicsBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(true, false, numBytes);
 
                 // Send our compute shader off to the renderer to be worked on.
                 Engine.Renderer.PushTask(RenderTaskPriority.StartOfFrame, compute, NUM_SUMS, 1, 1, () =>

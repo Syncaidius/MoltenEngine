@@ -8,7 +8,7 @@ namespace Molten.Graphics
     /// <para>If the values you want to store in the buffer, are not UInt32, you could use a HLSL function such as <see cref="asfloat"/>.</para></summary>
     internal unsafe class RawBufferDX11 : BufferDX11
     {
-        /// <summary>Creates a new instance of <see cref="StructuredBuffer"/>.</summary>
+        /// <summary>Creates a new instance of <see cref="RawBufferDX11"/>.</summary>
         /// <param name="device">The graphics device to bind the buffer to.</param>
         /// <param name="flags"></param>
         /// <param name="numElements"></param>
@@ -22,6 +22,7 @@ namespace Molten.Graphics
             bool shaderResource = true,
             void* initialData = null)
             : base(device,
+                  GraphicsBufferType.ByteAddressBuffer,
                   flags,
                   (shaderResource ? BindFlag.ShaderResource : 0) | (unorderedAccess ? BindFlag.UnorderedAccess : 0),
                   sizeof(uint), numElements,

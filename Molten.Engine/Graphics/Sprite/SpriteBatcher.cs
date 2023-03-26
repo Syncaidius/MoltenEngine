@@ -67,7 +67,7 @@ namespace Molten.Graphics
         uint _curRange;
         uint _dataCount;
 
-        IStructuredBuffer _buffer;
+        GraphicsBuffer _buffer;
 
         Func<GraphicsCommandQueue, SpriteRange, ObjectRenderData, HlslShader>[] _checkers;
         HlslShader _matDefault;

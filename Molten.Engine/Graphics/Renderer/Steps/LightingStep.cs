@@ -6,7 +6,7 @@ namespace Molten.Graphics
     {
         HlslShader _matPoint;
         HlslShader _matDebugPoint;
-        IGraphicsBuffer _lightBuffer;
+        GraphicsBuffer _lightBuffer;
 
         internal override void Initialize(RenderService renderer)
         {

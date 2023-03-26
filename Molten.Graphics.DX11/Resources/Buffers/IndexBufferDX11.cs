@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public class IndexBufferDX11 : BufferDX11, IIndexBuffer
+    public class IndexBufferDX11 : BufferDX11
     {
         public unsafe IndexBufferDX11(DeviceDX11 device, GraphicsResourceFlags mode, IndexBufferFormat format, uint numElements, void* initialData) :
-            base(device, mode, BindFlag.IndexBuffer, (uint)format, numElements, ResourceMiscFlag.None, initialData)
+            base(device, GraphicsBufferType.IndexBuffer, mode, BindFlag.IndexBuffer, (uint)format, numElements, ResourceMiscFlag.None, initialData)
         {
             IndexFormat = format;
 
@@ -26,9 +25,6 @@ namespace Molten.Graphics
                     break;
             }
         }
-
-        /// <inheritdoc/>
-        public IndexBufferFormat IndexFormat { get; }
 
         internal Format D3DFormat { get; }
     }

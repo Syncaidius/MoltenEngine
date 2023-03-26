@@ -12,7 +12,7 @@ namespace Molten.Graphics
         where V : unmanaged, IVertexType
         where I : unmanaged, IVertexInstanceType
     {
-        IVertexBuffer _instanceBuffer;
+        GraphicsBuffer _instanceBuffer;
         uint _instanceCount;
 
         /// <summary>

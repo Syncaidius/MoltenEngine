@@ -53,7 +53,6 @@ namespace Molten.Graphics
         /// </summary>
         Shared = 1 << 7,
 
-
         /// <summary>
         /// All of the GPU and CPU read/write flags. Generally used by staging resources.
         /// </summary>

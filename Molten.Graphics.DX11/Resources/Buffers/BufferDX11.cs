@@ -5,29 +5,23 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public abstract unsafe class BufferDX11 : GraphicsResource, IGraphicsBuffer
+    public abstract unsafe class BufferDX11 : GraphicsBuffer
     {
         ID3D11Buffer* _native;
         uint _ringPos;
         internal BufferDesc Desc;
 
         internal BufferDX11(DeviceDX11 device,
-            GraphicsResourceFlags bufferFlags,
+            GraphicsBufferType type,
+            GraphicsResourceFlags flags,
             BindFlag bindFlags,
             uint stride,
             uint numElements,
             ResourceMiscFlag optionFlags = 0,
-            void* initialData = null) : base(device,
-                ((bindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
-                ((bindFlags & BindFlag.ShaderResource) == BindFlag.ShaderResource ? GraphicsBindTypeFlags.Input : GraphicsBindTypeFlags.None))
+            void* initialData = null) : base(device, stride, numElements, flags, type)
         {
             NativeSRV = new SRView(this);
             NativeUAV = new UAView(this);
-
-            Flags = bufferFlags;
-            Stride = stride;
-            SizeInBytes = Stride * numElements;
-            ElementCount = numElements;
 
             InitializeBuffer( bindFlags, optionFlags, initialData);
             device.ProcessDebugLayerMessages();
@@ -121,7 +115,7 @@ namespace Molten.Graphics
         /// <summary>Copies all the data in the current <see cref="BufferDX11"/> to the destination <see cref="BufferDX11"/>.</summary>
         /// <param name="cmd">The <see cref="CommandQueueDX11"/> that will perform the copy.</param>
         /// <param name="destination">The <see cref="BufferDX11"/> to copy to.</param>
-        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
+        public override void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
         {
             if (SizeInBytes < Desc.ByteWidth)
                 throw new GraphicsResourceException(this, "The destination buffer is not large enough.");
@@ -133,7 +127,7 @@ namespace Molten.Graphics
             });
         }
 
-        public void CopyTo(GraphicsPriority priority, IGraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, 
+        public override void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, 
             Action<GraphicsResource> completionCallback = null)
         {
             QueueTask(priority, new SubResourceCopyTask()
@@ -145,7 +139,7 @@ namespace Molten.Graphics
             });
         }
 
-        public void GetStream(GraphicsPriority priority, Action<IGraphicsBuffer, GraphicsStream> callback, IStagingBuffer staging = null)
+        public override void GetStream(GraphicsPriority priority, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null)
         {
             QueueTask(priority, new BufferGetStreamTask()
             {
@@ -240,8 +234,7 @@ namespace Molten.Graphics
             }
         }
 
-        public void SetData<T>(GraphicsPriority priority, T[] data, IStagingBuffer staging = null, Action completeCallback = null)
-            where T : unmanaged
+        public override void SetData<T>(GraphicsPriority priority, T[] data, GraphicsBuffer staging = null, Action completeCallback = null)
         {
             SetData(priority, data, 0, (uint)data.Length, 0, staging, completeCallback);
         }
@@ -257,9 +250,8 @@ namespace Molten.Graphics
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
         /// <param name="staging"></param>
         /// <param name="completeCallback"></param>
-        public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, uint byteOffset = 0, 
-            IStagingBuffer staging = null, Action completeCallback = null)
-            where T : unmanaged
+        public override void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, uint byteOffset = 0,
+            GraphicsBuffer staging = null, Action completeCallback = null)
         {
             BufferSetTask<T> op = new BufferSetTask<T>()
             {
@@ -296,8 +288,7 @@ namespace Molten.Graphics
         /// <param name="dataStride">The size of the data being retrieved. The default value is 0. 
         /// A value of 0 will force the stride of <see cref="{T}"/> to be automatically calculated, which may cause a tiny performance hit.</param>
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        public void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint byteOffset, Action<T[]> completionCallback)
-            where T : unmanaged
+        public override void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint byteOffset, Action<T[]> completionCallback)
         {
             if ((Desc.CPUAccessFlags & (uint)CpuAccessFlag.Read) != (uint)CpuAccessFlag.Read)
                 throw new GraphicsResourceException(this, "Cannot use GetData() on a non-readable buffer.");
@@ -341,20 +332,6 @@ namespace Molten.Graphics
                 Device.DeallocateVRAM(Desc.ByteWidth);
             }
         }
-
-        /// <summary>Gets the stride (byte size) of each element within the current <see cref="BufferDX11"/>.</summary>
-        public uint Stride { get; }
-
-        /// <summary>Gets the capacity of the buffer, in bytes.</summary>
-        public override uint SizeInBytes { get; }
-
-        /// <summary>
-        /// Gets the number of elements that the current <see cref="BufferDX11"/> can store.
-        /// </summary>
-        public uint ElementCount { get; }
-
-        /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
-        public override GraphicsResourceFlags Flags { get; }
 
         public override bool IsUnorderedAccess => ((BindFlag)Desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
 

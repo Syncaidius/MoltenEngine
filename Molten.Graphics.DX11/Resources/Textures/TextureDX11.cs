@@ -32,9 +32,7 @@ namespace Molten.Graphics
 
         internal TextureDX11(RenderService renderer, uint width, uint height, uint depth, uint mipCount, 
             uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, Format format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
-            base(renderer.Device as DeviceDX11,
-                (flags.Has(GraphicsResourceFlags.UnorderedAccess) ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None |
-                (flags.Has(GraphicsResourceFlags.NoShaderAccess) ? GraphicsBindTypeFlags.None : GraphicsBindTypeFlags.Input)))
+            base(renderer.Device as DeviceDX11, flags)
         {
             _srv = new SRView(this);
             _uav = new UAView(this);
@@ -46,7 +44,6 @@ namespace Molten.Graphics
 
             MSAASupport msaaSupport = MSAASupport.NotSupported; // TODO re-support. _renderer.Device.Features.GetMSAASupport(format, aaLevel);
 
-            Flags = flags;
             Width = width;
             Height = height;
             Depth = depth;
@@ -419,8 +416,6 @@ namespace Molten.Graphics
 
             base.OnApply(cmd);
         }
-
-        public override GraphicsResourceFlags Flags { get; }
 
         /// <summary>Gets the format of the texture.</summary>
         public Format DxgiFormat { get; protected set; }

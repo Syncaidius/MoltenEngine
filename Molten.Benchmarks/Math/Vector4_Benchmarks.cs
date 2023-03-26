@@ -41,11 +41,30 @@ namespace Molten.Benchmarks
             W = value;
         }
 
+        ///<summary>Performs a add operation on two <see cref="Vector4F"/>.</summary>
+        ///<param name="a">The first <see cref="Vector4F"/> to add.</param>
+        ///<param name="b">The second <see cref="Vector4F"/> to add.</param>
+        ///<param name="result">Output for the result of the operation.</param>
+        public static void Add(ref NewVector4F a, ref NewVector4F b, out NewVector4F result)
+        {
+            NewVector4F r;
+
+            fixed (float* aPtr = a.Values)
+            {
+                fixed (float* bPtr = b.Values)
+                {
+                    Sse.Store(r.Values, Sse.Add(Sse.LoadVector128(aPtr), Sse.LoadVector128(bPtr)));
+                }
+            }
+
+            result = r;
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static NewVector4F operator +(NewVector4F a, NewVector4F b)
         {
-            Sse.Store(a.Values, Sse.Add(Sse.LoadAlignedVector128(a.Values), Sse.LoadAlignedVector128(b.Values)));
+            Sse.Store(a.Values, Sse.Add(Sse.LoadVector128(a.Values), Sse.LoadVector128(b.Values)));
             return a;
         }
     }
@@ -55,7 +74,7 @@ namespace Molten.Benchmarks
         public const int ITERATIONS = 1000;
 
         [Benchmark]
-        public void Vector4F()
+        public void Vector4F_ByOperator()
         {
             Vector4F a, b, result;
             for (int i = 0; i < ITERATIONS; i++)
@@ -74,12 +93,12 @@ namespace Molten.Benchmarks
             {
                 a = new Vector4F(85640.1F, 3560.2F, 248.5f, 19.8f);
                 b = new Vector4F(i);
-                Molten.Vector4F.Add(ref a, ref b, out result);
+                Vector4F.Add(ref a, ref b, out result);
             }
         }
 
         [Benchmark]
-        public unsafe void NewVector4F_GenericOperator()
+        public unsafe void NewVector4F_SIMD_ByOperator()
         {
             NewVector4F a, result;
             NewVector4F b;
@@ -88,6 +107,34 @@ namespace Molten.Benchmarks
                 a = new NewVector4F(85640.1F, 3560.2F, 248.5f, 19.8f);
                 b = new NewVector4F(i);
                 result = a + b;
+            }
+        }
+
+
+
+        [Benchmark]
+        public unsafe void NewVector4F_SIMD_Ref()
+        {
+            NewVector4F a, result;
+            NewVector4F b;
+            for (int i = 0; i < ITERATIONS; i++)
+            {
+                a = new NewVector4F(85640.1F, 3560.2F, 248.5f, 19.8f);
+                b = new NewVector4F(i);
+                NewVector4F.Add(ref a, ref b, out result);
+            }
+        }
+
+        [Benchmark]
+        public unsafe void NewVector4F_SIMD()
+        {
+            NewVector4F a;
+            NewVector4F b;
+            for (int i = 0; i < ITERATIONS; i++)
+            {
+                a = new NewVector4F(85640.1F, 3560.2F, 248.5f, 19.8f);
+                b = new NewVector4F(i);
+                Sse.Store(a.Values, Sse.Add(Sse.LoadVector128(a.Values), Sse.LoadVector128(b.Values)));
             }
         }
     }

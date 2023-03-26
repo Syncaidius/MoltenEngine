@@ -16,7 +16,7 @@ namespace Molten.Graphics
         byte* _constData;
 
         internal ShaderConstantBuffer(DeviceDX11 device, ConstantBufferInfo desc)
-            : base(device, 
+            : base(device, GraphicsBufferType.ConstantBuffer,
                   GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.None | GraphicsResourceFlags.Discard, 
                   BindFlag.ConstantBuffer, 1, desc.Size)
         {

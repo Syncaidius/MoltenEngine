@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal class StructuredBufferDX11<T> : BufferDX11, IStructuredBuffer
+    internal class StructuredBufferDX11<T> : BufferDX11
         where T : unmanaged
     {
         /// <summary>Creates a new instance of <see cref="StagingBufferDX11"/>.</summary>
@@ -12,7 +12,8 @@ namespace Molten.Graphics
         /// <param name="shaderResource"></param>
         /// <param name="unorderedAccess"></param>
         internal unsafe StructuredBufferDX11(DeviceDX11 device, GraphicsResourceFlags flags, uint numElements, bool unorderedAccess, bool shaderResource, void* initialData = null)
-            : base(device,
+            : base(device, 
+                  GraphicsBufferType.StructuredBuffer,
                   flags,
                   (shaderResource ? BindFlag.ShaderResource : BindFlag.None) | (unorderedAccess ? BindFlag.UnorderedAccess : BindFlag.None),
                   (uint)sizeof(T),

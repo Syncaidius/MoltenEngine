@@ -10,10 +10,10 @@ namespace Molten.Graphics
 
         internal uint NumElements;
 
-        internal IStagingBuffer Staging;
+        internal GraphicsBuffer Staging;
 
         /// <summary>A callback to interact with the retrieved stream.</summary>
-        internal Action<IGraphicsBuffer, GraphicsStream> StreamCallback;
+        internal Action<GraphicsBuffer, GraphicsStream> StreamCallback;
 
         public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {

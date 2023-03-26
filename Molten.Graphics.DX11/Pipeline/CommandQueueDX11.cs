@@ -1,9 +1,6 @@
 ﻿using System;
-using Microsoft.VisualBasic.Devices;
-using Molten.IO;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
-using Silk.NET.DXGI;
 using Silk.NET.Maths;
 
 namespace Molten.Graphics
@@ -73,8 +70,8 @@ namespace Molten.Graphics
             _viewports = new ViewportF[maxRTs];
 
             uint maxVBuffers = Device.Adapter.Capabilities.VertexBuffers.MaxSlots;
-            VertexBuffers = RegisterSlotGroup<IVertexBuffer, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
-            IndexBuffer = RegisterSlot<IIndexBuffer, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
+            VertexBuffers = RegisterSlotGroup<GraphicsBuffer, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
+            IndexBuffer = RegisterSlot<GraphicsBuffer, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
             _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(GraphicsBindTypeFlags.Input, "Vertex Input Layout", 0);
             Shader = RegisterSlot<HlslShader, ShaderBinder>(GraphicsBindTypeFlags.Input, "Shader", 0);
 
@@ -125,7 +122,8 @@ namespace Molten.Graphics
                 }
                 else if (flags.Has(GraphicsResourceFlags.Ring))
                 {
-                    if (resource is IVertexBuffer || resource is IIndexBuffer)
+                    if (resource is GraphicsBuffer buffer && 
+                        (buffer.BufferType == GraphicsBufferType.VertexBuffer || buffer.BufferType == GraphicsBufferType.IndexBuffer))
                     {
                         if (streamOffset > 0)
                         {

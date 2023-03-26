@@ -3,7 +3,7 @@
     /// <summary>A base interface for mesh implementations.</summary>
     public abstract class Mesh : Renderable
     {
-        IIndexBuffer _iBuffer;
+        GraphicsBuffer _iBuffer;
 
         /// <summary>
         /// Creates a new instance of <see cref="Mesh"/>, but can only be called by derived mesh classes.
@@ -138,7 +138,7 @@
     public class Mesh<T> : Mesh
         where T : unmanaged, IVertexType
     {
-        IVertexBuffer _vb;
+        GraphicsBuffer _vb;
 
         internal Mesh(RenderService renderer, 
             GraphicsResourceFlags mode, ushort maxVertices, uint maxIndices,

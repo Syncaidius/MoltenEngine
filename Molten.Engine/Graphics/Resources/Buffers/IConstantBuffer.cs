@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public interface IConstantBuffer : IGraphicsBuffer
+    public interface IConstantBuffer : IGraphicsResource
     {
         string BufferName { get; }
     }

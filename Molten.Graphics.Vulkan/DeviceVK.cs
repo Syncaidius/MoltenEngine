@@ -134,27 +134,27 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override IVertexBuffer CreateVertexBuffer<T>(GraphicsResourceFlags mode, uint numVertices, T[] initialData = null)
+        public override GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags mode, uint numVertices, T[] initialData = null)
         {
             throw new NotImplementedException();
         }
 
-        public override IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags mode, uint numIndices, ushort[] initialData = null)
+        public override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags mode, uint numIndices, ushort[] initialData = null)
         {
             throw new NotImplementedException();
         }
 
-        public override IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags mode, uint numIndices, uint[] initialData = null)
+        public override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags mode, uint numIndices, uint[] initialData = null)
         {
             throw new NotImplementedException();
         }
 
-        public override IStructuredBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        public override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags mode, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
         {
             throw new NotImplementedException();
         }
 
-        public override IStagingBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity)
+        public override GraphicsBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity)
         {
             return new StagingBufferVK(this, 1, byteCapacity);
         }

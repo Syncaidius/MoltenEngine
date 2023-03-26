@@ -10,7 +10,7 @@ namespace Molten.Graphics
         ulong[] _expectedFormatIDs;
 
         internal VertexInputLayout(DeviceDX11 device, 
-            GraphicsSlotGroup<IVertexBuffer> vbSlots, 
+            GraphicsSlotGroup<GraphicsBuffer> vbSlots, 
             ID3D10Blob* vertexBytecode,
             ShaderIOStructure io) : 
             base(device, GraphicsBindTypeFlags.Input)
@@ -103,7 +103,7 @@ namespace Molten.Graphics
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }
 
-        public bool IsMatch(Logger log, GraphicsSlotGroup<IVertexBuffer> grp)
+        public bool IsMatch(Logger log, GraphicsSlotGroup<GraphicsBuffer> grp)
         {
             for (uint i = 0; i < grp.SlotCount; i++)
             {

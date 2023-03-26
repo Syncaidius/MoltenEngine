@@ -135,39 +135,39 @@ namespace Molten.Graphics
 
         protected abstract HlslPass OnCreateShaderPass(HlslShader shader, string name);
 
-        public IVertexBuffer CreateVertexBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
+        public GraphicsBuffer CreateVertexBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
             where T : unmanaged, IVertexType
         {
             return CreateVertexBuffer(flags, (uint)data.Length, data);
         }
 
-        public abstract IVertexBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
+        public abstract GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
             where T : unmanaged, IVertexType;
 
-        public IIndexBuffer CreateIndexBuffer(ushort[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
+        public GraphicsBuffer CreateIndexBuffer(ushort[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
         {
             return CreateIndexBuffer(flags, (uint)data.Length, data);
         }
 
-        public IIndexBuffer CreateIndexBuffer(uint[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
+        public GraphicsBuffer CreateIndexBuffer(uint[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
         {
             return CreateIndexBuffer(flags, (uint)data.Length, data);
         }
 
-        public abstract IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData);
+        public abstract GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData);
 
-        public abstract IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null);
+        public abstract GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null);
 
-        public IStructuredBuffer CreateStructuredBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
+        public GraphicsBuffer CreateStructuredBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
             where T : unmanaged
         {
             return CreateStructuredBuffer(flags, (uint)data.Length, false, true, data);
         }
 
-        public abstract IStructuredBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        public abstract GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
             where T : unmanaged;
 
-        public abstract IStagingBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity);
+        public abstract GraphicsBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity);
 
         /// <summary>
         /// Loads an embedded shader from the target assembly. If an assembly is not provided, the current renderer's assembly is used instead.

@@ -358,31 +358,31 @@ namespace Molten.Graphics
             return new ShaderSamplerDX11(this, ref parameters);
         }
 
-        public unsafe override IVertexBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
+        public unsafe override GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
         {
             fixed (T* ptr = initialData)
                 return new VertexBufferDX11<T>(this, flags | GraphicsResourceFlags.NoShaderAccess, numVertices, ptr);
         }
 
-        public unsafe override IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData = null)
+        public unsafe override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData = null)
         {
             fixed (ushort* ptr = initialData)
                 return new IndexBufferDX11(this, flags, IndexBufferFormat.UInt16, numIndices, ptr);
         }
 
-        public unsafe override IIndexBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null)
+        public unsafe override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null)
         {
             fixed (uint* ptr = initialData)
                 return new IndexBufferDX11(this, flags | GraphicsResourceFlags.NoShaderAccess, IndexBufferFormat.UInt32, numIndices, ptr);
         }
 
-        public unsafe override IStructuredBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        public unsafe override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
         {
             fixed (T* ptr = initialData)
                 return new StructuredBufferDX11<T>(this, flags, numElements, allowUnorderedAccess, isShaderResource, ptr);
         }
 
-        public override IStagingBuffer CreateStagingBuffer(bool allowRead, bool allowWrite, uint byteCapacity)
+        public override GraphicsBuffer CreateStagingBuffer(bool allowRead, bool allowWrite, uint byteCapacity)
         {
             GraphicsResourceFlags flags = GraphicsResourceFlags.None;
             if (allowRead)

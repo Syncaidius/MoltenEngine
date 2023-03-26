@@ -2,9 +2,9 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class VertexBufferGroupBinder : GraphicsGroupBinder<IVertexBuffer>
+    internal unsafe class VertexBufferGroupBinder : GraphicsGroupBinder<GraphicsBuffer>
     {
-        public override void Bind(GraphicsSlotGroup<IVertexBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<GraphicsBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             int iNumChanged = (int)numChanged;
 
@@ -37,11 +37,11 @@ namespace Molten.Graphics
             (grp.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(startIndex, numChanged, pBuffers, pStrides, pOffsets);
         }
 
-        public override void Bind(GraphicsSlot<IVertexBuffer> slot, IVertexBuffer value)
+        public override void Bind(GraphicsSlot<GraphicsBuffer> slot, GraphicsBuffer value)
         {
             VertexBufferDX11 buffer = slot.BoundValue as VertexBufferDX11;
 
-            if (!(buffer is IVertexBuffer))
+            if (buffer.BufferType != GraphicsBufferType.VertexBuffer)
                 throw new InvalidOperationException($"The buffer in vertex buffer slot {slot.SlotIndex} is not a vertex buffer.");
 
             ID3D11Buffer** pBuffers = stackalloc ID3D11Buffer*[1];
@@ -64,7 +64,7 @@ namespace Molten.Graphics
             (slot.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(slot.SlotIndex, 1, pBuffers, pStrides, pOffsets);
         }
 
-        public override void Unbind(GraphicsSlotGroup<IVertexBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<GraphicsBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             int iNumChanged = (int)numChanged;
 
@@ -85,7 +85,7 @@ namespace Molten.Graphics
             (grp.Cmd as CommandQueueDX11).Native->IASetVertexBuffers(startIndex, numChanged, pBuffers, pStrides, pOffsets);
         }
 
-        public override void Unbind(GraphicsSlot<IVertexBuffer> slot, IVertexBuffer value)
+        public override void Unbind(GraphicsSlot<GraphicsBuffer> slot, GraphicsBuffer value)
         {
             ID3D11Buffer** pBuffers = stackalloc ID3D11Buffer*[1];
             uint* pStrides = stackalloc uint[1];

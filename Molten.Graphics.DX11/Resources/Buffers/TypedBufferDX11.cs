@@ -6,7 +6,7 @@ namespace Molten.Graphics
 {
     /// <summary>A typed, structured buffer. This is the application-equivilent of a typed Buffer and RWBuffer in HLSL. </summary>
     /// <typeparam name="T"></typeparam>
-    internal unsafe class TypedBuffer : BufferDX11, ITypedBuffer
+    internal unsafe class TypedBuffer : BufferDX11
     {
         /// <summary>Creates a new instance of <see cref="TypedBuffer"/>.</summary>
         /// <param name="device">The graphics device to bind the buffer to.</param>
@@ -23,7 +23,7 @@ namespace Molten.Graphics
             bool unorderedAccess = false, 
             bool shaderResource = true,
             void* initialData = null)
-            : base(device, 
+            : base(device, GraphicsBufferType.StructuredBuffer,
                   flags,
                   (shaderResource ? BindFlag.ShaderResource : 0) | (unorderedAccess ? BindFlag.UnorderedAccess : 0), 
                   format switch

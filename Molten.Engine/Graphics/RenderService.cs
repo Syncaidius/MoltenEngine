@@ -20,7 +20,7 @@ namespace Molten.Graphics
         internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
         internal HlslShader FxStandardMesh;
         internal HlslShader FxStandardMesh_NoNormalMap;
-        internal IStagingBuffer StagingBuffer;
+        internal GraphicsBuffer StagingBuffer;
 
         /// <summary>
         /// Creates a new instance of a <see cref="RenderService"/> sub-type.
