@@ -108,7 +108,7 @@ namespace Molten.Graphics
             Native->ClearState();
         }
 
-        protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset, GraphicsMapType mapType)
+        protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
         {
             Map map = Map.None;
             GraphicsResourceFlags flags = resource.Flags;
@@ -124,9 +124,25 @@ namespace Molten.Graphics
                 {
                     if (resource is GraphicsBuffer buffer &&
                         (buffer.BufferType == GraphicsBufferType.Vertex || buffer.BufferType == GraphicsBufferType.Index))
+                    {
                         map = Map.WriteNoOverwrite;
+                        Profiler.Current.MapNoOverwriteCount++;
+                    }
                     else
-                        map = Map.Write;
+                    {
+                        if (resource.Flags.Has(GraphicsResourceFlags.CpuWrite) &&
+                            !resource.Flags.Has(GraphicsResourceFlags.CpuRead) &&
+                            !resource.Flags.Has(GraphicsResourceFlags.GpuWrite))
+                        {
+                            map = Map.WriteNoOverwrite;
+                            Profiler.Current.MapNoOverwriteCount++;
+                        }
+                        else
+                        {
+                            map = Map.Write;
+                            Profiler.Current.MapReadWriteCount++;
+                        }
+                    }
                 }
             }
             else

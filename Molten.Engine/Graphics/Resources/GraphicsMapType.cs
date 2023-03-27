@@ -12,6 +12,6 @@ namespace Molten.Graphics
 
         Write = 1,
 
-        Discard = 1,
+        Discard = 2,
     }
 }
