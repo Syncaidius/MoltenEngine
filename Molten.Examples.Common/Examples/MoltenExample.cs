@@ -72,8 +72,6 @@ namespace Molten.Examples
 
         private void _loader_OnCompleted(ContentLoadBatch loader)
         {
-            // TODO hide loading screen
-
             SpawnParentChild(TestMesh, Vector3F.Zero, out _parent, out _child);
             IsLoaded = true;
             UpdateUIRootBounds(Camera2D, Camera2D.Surface);
@@ -158,9 +156,15 @@ namespace Molten.Examples
         protected void DrawSprites(SpriteBatcher sb)
         {
             if (!IsLoaded)
-                return;
-
-            OnDrawSprites(sb);
+            {
+                string text = $"Loading {_loader.LoadedCount}/{_loader.Count}";
+                Vector2F pos = (Vector2F)Window.RenderBounds.Center - (Font.MeasureString(text) / 2);
+                sb.DrawString(Font, text, pos, Color.White);
+            }
+            else
+            {
+                OnDrawSprites(sb);
+            }
         }
 
         protected virtual void OnDrawSprites(SpriteBatcher sb) { }
