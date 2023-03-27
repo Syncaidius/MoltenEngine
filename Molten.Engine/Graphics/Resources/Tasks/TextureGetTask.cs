@@ -8,6 +8,8 @@ namespace Molten.Graphics
 
         public Action<TextureData> CompleteCallback;
 
+        public GraphicsMapType MapType;
+
         public unsafe bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
             ITexture texture = resource as ITexture;
@@ -54,7 +56,7 @@ namespace Molten.Graphics
                 for (uint i = 0; i < texture.MipMapCount; i++)
                 {
                     uint subID = (a * texture.MipMapCount) + i;
-                    data.Levels[subID] = TextureSlice.FromTextureSlice(cmd, texture, texStaging, i, a);
+                    data.Levels[subID] = TextureSlice.FromTextureSlice(cmd, texture, texStaging, i, a, MapType);
                 }
             }
 

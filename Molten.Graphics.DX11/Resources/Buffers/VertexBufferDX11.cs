@@ -10,7 +10,7 @@ namespace Molten.Graphics
     public abstract unsafe class VertexBufferDX11 : BufferDX11
     {
         protected VertexBufferDX11(DeviceDX11 device, GraphicsResourceFlags mode, uint stride, uint numElements, void* initialData = null) :
-            base(device, GraphicsBufferType.VertexBuffer, mode, BindFlag.VertexBuffer, stride, numElements, ResourceMiscFlag.None, initialData)
+            base(device, GraphicsBufferType.Vertex, mode, BindFlag.VertexBuffer, stride, numElements, ResourceMiscFlag.None, initialData)
         {
             
         }

@@ -6,9 +6,7 @@ namespace Molten.Graphics
     {
         internal uint ByteOffset;
 
-        internal uint Stride;
-
-        internal uint NumElements;
+        internal GraphicsMapType MapType;
 
         internal GraphicsBuffer Staging;
 
@@ -17,7 +15,9 @@ namespace Molten.Graphics
 
         public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
-            (resource as BufferDX11).GetStream(cmd as CommandQueueDX11, ByteOffset, Stride, NumElements, StreamCallback);
+            using (GraphicsStream stream = cmd.MapResource(resource, 0, ByteOffset, MapType))
+                StreamCallback?.Invoke(resource as GraphicsBuffer, stream);
+  
             return false;
         }
     }

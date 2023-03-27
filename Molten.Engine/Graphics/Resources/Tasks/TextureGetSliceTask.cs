@@ -10,6 +10,8 @@
 
         public uint ArrayIndex;
 
+        public GraphicsMapType MapType;
+
         public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
             ITexture texture = resource as ITexture;
@@ -43,7 +45,7 @@
                 Staging = null;
             }
 
-            TextureSlice slice = TextureSlice.FromTextureSlice(cmd, texture, Staging as ITexture, MipMapLevel, ArrayIndex);
+            TextureSlice slice = TextureSlice.FromTextureSlice(cmd, texture, Staging as ITexture, MipMapLevel, ArrayIndex, MapType);
 
             // Return resulting data
             CompleteCallback?.Invoke(slice);

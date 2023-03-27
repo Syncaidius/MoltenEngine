@@ -18,6 +18,7 @@
         {
             IndexFormat = maxIndices > 0 ? IndexBufferFormat.UInt16 : IndexBufferFormat.None;
             MaxVertices = maxVertices;
+            IsDiscard = mode.IsDiscard();
 
             if (IndexFormat != IndexBufferFormat.None)
             {
@@ -68,7 +69,7 @@
                 throw new InvalidOperationException($"Mesh is not indexed. Must be created with index format that isn't IndexBufferFormat.None.");
 
             IndexCount = count;
-            _iBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _iBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         protected virtual void OnApply(GraphicsCommandQueue cmd)
@@ -133,6 +134,8 @@
         public HlslShader Shader { get; set; }
 
         public float EmissivePower { get; set; } = 1.0f;
+
+        protected bool IsDiscard { get; }
     }
 
     public class Mesh<T> : Mesh
@@ -175,7 +178,7 @@
         public void SetVertices(T[] data, uint startIndex, uint count)
         {
             VertexCount = count;
-            _vb.SetData(GraphicsPriority.Apply, data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _vb.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)

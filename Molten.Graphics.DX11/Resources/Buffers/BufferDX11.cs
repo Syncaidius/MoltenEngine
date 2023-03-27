@@ -2,6 +2,7 @@
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Molten.Graphics
 {
@@ -139,104 +140,20 @@ namespace Molten.Graphics
             });
         }
 
-        public override void GetStream(GraphicsPriority priority, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null)
+        public override void GetStream(GraphicsPriority priority, GraphicsMapType mapType, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null)
         {
             QueueTask(priority, new BufferGetStreamTask()
             {
                 ByteOffset = 0,
-                NumElements = ElementCount,
                 Staging = staging,
                 StreamCallback = callback,
-                Stride = Stride
+                MapType = mapType,
             });
         }
 
-        internal void GetStream(CommandQueueDX11 cmd,
-            uint byteOffset,
-            uint stride,
-            uint elementCount,
-            Action<BufferDX11, GraphicsStream> callback,
-            StagingBufferDX11 staging = null)
+        public override void SetData<T>(GraphicsPriority priority, T[] data, bool discard, GraphicsBuffer staging = null, Action completeCallback = null)
         {
-            // Check buffer type.
-            bool isDynamic = Desc.Usage == Usage.Dynamic;
-            bool isStaged = Desc.Usage == Usage.Staging &&
-                (Desc.CPUAccessFlags & (uint)CpuAccessFlag.Write) == (uint)CpuAccessFlag.Write;
-
-            uint numBytes = stride * elementCount;
-            GraphicsStream stream;
-
-            // Check if the buffer is a dynamic-writable
-            if (isDynamic || isStaged)
-            {
-                if (Flags.Has(GraphicsResourceFlags.Discard))
-                {
-                    stream = cmd.MapResource(this, 0, byteOffset);
-                }
-                else if (Flags.Has(GraphicsResourceFlags.Ring))
-                {
-                    // NOTE: D3D11_MAP_WRITE_NO_OVERWRITE is only valid on vertex and index buffers. 
-                    // See: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476181(v=vs.85).aspx
-                    if (HasBindFlags(BindFlag.VertexBuffer) || HasBindFlags(BindFlag.IndexBuffer))
-                    {
-                        if (_ringPos > 0 && _ringPos + numBytes < Desc.ByteWidth)
-                        {
-                            stream = cmd.MapResource(this, 0, _ringPos);
-                            _ringPos += numBytes;
-                        }
-                        else
-                        {
-                            stream = cmd.MapResource(this, 0, 0);
-                            _ringPos = numBytes;
-                        }
-                    }
-                    else
-                    {
-                        stream = cmd.MapResource(this, 0, byteOffset);
-                    }
-                }
-                else
-                {
-                    stream = cmd.MapResource(this, 0, byteOffset);
-                }
-
-                callback(this, stream);
-                stream.Dispose();
-            }
-            else
-            {
-                // Write to the provided staging buffer instead.
-                if (staging == null)
-                    throw new GraphicsResourceException(this, "Staging buffer required. Non-dynamic/staged buffers require a staging buffer to access data.");
-
-                isDynamic = staging.Desc.Usage == Usage.Dynamic;
-                isStaged = staging.Desc.Usage == Usage.Staging;
-
-                if (!isDynamic && !isStaged)
-                    throw new GraphicsResourceException(this, "The provided staging buffer is invalid. Must be either dynamic or staged.");
-
-                if (staging.Desc.ByteWidth < numBytes)
-                    throw new GraphicsResourceException(this, $"The provided staging buffer is not large enough ({staging.Desc.ByteWidth} bytes) to fit the provided data ({numBytes} bytes).");
-
-                stream = cmd.MapResource(staging, 0, 0);
-                callback(staging, stream);
-                stream.Dispose();
-
-                ResourceRegion stagingRegion = new ResourceRegion()
-                {
-                    Left = 0,
-                    Right = numBytes,
-                    Back = 1,
-                    Bottom = 1,
-                };
-                cmd.CopyResourceRegion(staging, 0, &stagingRegion, this, 0, new Vector3UI(byteOffset, 0, 0));
-                cmd.Profiler.Current.CopySubresourceCount++;
-            }
-        }
-
-        public override void SetData<T>(GraphicsPriority priority, T[] data, GraphicsBuffer staging = null, Action completeCallback = null)
-        {
-            SetData(priority, data, 0, (uint)data.Length, 0, staging, completeCallback);
+            SetData(priority, data, 0, (uint)data.Length, discard, 0, staging, completeCallback);
         }
 
         /// <summary>
@@ -250,7 +167,7 @@ namespace Molten.Graphics
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
         /// <param name="staging"></param>
         /// <param name="completeCallback"></param>
-        public override void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, uint byteOffset = 0,
+        public override void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0,
             GraphicsBuffer staging = null, Action completeCallback = null)
         {
             BufferSetTask<T> op = new BufferSetTask<T>()
@@ -258,8 +175,8 @@ namespace Molten.Graphics
                 ByteOffset = byteOffset,
                 CompletionCallback = completeCallback,
                 DestBuffer = this,
+                MapType = discard ? GraphicsMapType.Discard : GraphicsMapType.Write,
                 ElementCount = elementCount,
-                Stride = (uint)sizeof(T),
                 Staging = staging as StagingBufferDX11,
             };
 
@@ -302,6 +219,7 @@ namespace Molten.Graphics
                 DestArray = destination,
                 DestIndex = startIndex,
                 Count = count,
+                MapType = GraphicsMapType.Read,
                 CompletionCallback = completionCallback,
             });
         }

@@ -10,19 +10,19 @@ namespace Molten.Graphics
     {
         Unknown = 0,
 
-        VertexBuffer = 1,
+        Vertex = 1,
 
-        IndexBuffer = 2,
+        Index = 2,
 
-        ByteAddressBuffer = 3,
+        ByteAddress = 3,
 
-        StructuredBuffer = 4,
+        Structured = 4,
 
-        StagingBuffer = 5,
+        Staging = 5,
 
         /// <summary>
         /// Constant or uniform buffer
         /// </summary>
-        ConstantBuffer = 6,
+        Constant = 6,
     }
 }

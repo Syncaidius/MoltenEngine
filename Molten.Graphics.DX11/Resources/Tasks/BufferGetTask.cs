@@ -14,6 +14,8 @@ namespace Molten.Graphics
         /// <summary>The first index at which to start placing the retrieved data within <see cref="DestArray"/>.</summary>
         internal uint DestIndex;
 
+        internal GraphicsMapType MapType;
+
         /// <summary>A callback to send the retrieved data to.</summary>
         internal Action<T[]> CompletionCallback;
 
@@ -26,7 +28,7 @@ namespace Molten.Graphics
             DestArray = DestArray ?? new T[Count];
 
             // Now set the structured variable's data
-            using (GraphicsStream stream = cmd.MapResource(srcBuffer, 0, ByteOffset))
+            using (GraphicsStream stream = cmd.MapResource(srcBuffer, 0, ByteOffset, MapType))
                 stream.ReadRange(DestArray, DestIndex, Count);
 
             CompletionCallback?.Invoke(DestArray);

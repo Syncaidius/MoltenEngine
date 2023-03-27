@@ -17,6 +17,8 @@ namespace Molten.Graphics
 
         public uint ArrayIndex;
 
+        public GraphicsMapType MapType;
+
         public uint NumElements { get; private set; }
 
         public uint NumBytes { get; private set; }
@@ -84,7 +86,7 @@ namespace Molten.Graphics
 
             if (texture.Flags.Has(GraphicsResourceFlags.CpuWrite))
             {
-                using (GraphicsStream stream = cmd.MapResource(resource, subLevel, 0))
+                using (GraphicsStream stream = cmd.MapResource(resource, subLevel, 0, MapType))
                 {
                     // Are we constrained to an area of the texture?
                     if (Area != null)

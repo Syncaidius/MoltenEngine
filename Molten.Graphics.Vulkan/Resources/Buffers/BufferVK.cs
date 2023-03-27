@@ -100,13 +100,12 @@ namespace Molten.Graphics
             }
         }
 
-        public override void SetData<T>(GraphicsPriority priority, T[] data, GraphicsBuffer staging = null, Action completeCallback = null) 
+        public override void SetData<T>(GraphicsPriority priority, T[] data, bool discard, GraphicsBuffer staging = null, Action completeCallback = null)
         {
             throw new NotImplementedException();
         }
 
-        public override void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, uint byteOffset = 0, GraphicsBuffer staging = null,
-            Action completeCallback = null) 
+        public override void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0, GraphicsBuffer staging = null, Action completeCallback = null)
         {
             throw new NotImplementedException();
         }
@@ -128,7 +127,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override void GetStream(GraphicsPriority priority, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null)
+        public override void GetStream(GraphicsPriority priority, GraphicsMapType mapType, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null)
         {
             throw new NotImplementedException();
         }

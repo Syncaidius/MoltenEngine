@@ -12,7 +12,7 @@ namespace Molten.Graphics
         {
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings
-            _lightBuffer = renderer.Device.CreateStructuredBuffer<LightData>(GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.Ring, maxLights, false, true);
+            _lightBuffer = renderer.Device.CreateStructuredBuffer<LightData>(GraphicsResourceFlags.CpuWrite, maxLights, false, true);
 
             // Load shaders
             ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "light_point.mfx");
@@ -63,7 +63,7 @@ namespace Molten.Graphics
                 scene.PointLights.Data[i] = ld;
             }
 
-            _lightBuffer.SetData(GraphicsPriority.Immediate, scene.PointLights.Data);
+            _lightBuffer.SetData(GraphicsPriority.Immediate, scene.PointLights.Data, true);
 
             // Set data buffer on domain and pixel shaders
             _matPoint.Light.Data.Value = _lightBuffer; // TODO Need to implement a dynamic structured buffer we can reuse here.

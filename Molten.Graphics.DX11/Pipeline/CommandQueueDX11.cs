@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.Maths;
@@ -107,46 +108,31 @@ namespace Molten.Graphics
             Native->ClearState();
         }
 
-        protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset)
+        protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset, GraphicsMapType mapType)
         {
             Map map = Map.None;
-            MapFlag mFlags = 0;
             GraphicsResourceFlags flags = resource.Flags;
 
             if (flags.Has(GraphicsResourceFlags.CpuWrite))
             {
-                if (flags.Has(GraphicsResourceFlags.Discard))
+                if (mapType == GraphicsMapType.Discard)
                 {
                     map = Map.WriteDiscard;
                     Profiler.Current.MapDiscardCount++;
                 }
-                else if (flags.Has(GraphicsResourceFlags.Ring))
-                {
-                    if (resource is GraphicsBuffer buffer && 
-                        (buffer.BufferType == GraphicsBufferType.VertexBuffer || buffer.BufferType == GraphicsBufferType.IndexBuffer))
-                    {
-                        if (streamOffset > 0)
-                        {
-                            map = Map.WriteNoOverwrite;
-                            Profiler.Current.MapNoOverwriteCount++;
-                        }
-                        else
-                        {
-                            map = Map.WriteDiscard;
-                            Profiler.Current.MapDiscardCount++;
-                        }
-                    }
-                    else
-                    {
-                        map = Map.WriteDiscard;
-                        Profiler.Current.MapDiscardCount++;
-                    }
-                }
                 else
                 {
-                    map = Map.Write;
-                    Profiler.Current.MapReadWriteCount++;
+                    if (resource is GraphicsBuffer buffer &&
+                        (buffer.BufferType == GraphicsBufferType.Vertex || buffer.BufferType == GraphicsBufferType.Index))
+                        map = Map.WriteNoOverwrite;
+                    else
+                        map = Map.Write;
                 }
+            }
+            else
+            {
+                if (mapType != GraphicsMapType.Read)
+                    throw new InvalidOperationException($"Cannot map a resource for writing without CPU write access");
             }
 
             if (flags.Has(GraphicsResourceFlags.CpuRead))
@@ -157,9 +143,14 @@ namespace Molten.Graphics
                 if (!flags.Has(GraphicsResourceFlags.CpuWrite))
                     Profiler.Current.MapReadWriteCount++;
             }
+            else
+            {
+                if (mapType == GraphicsMapType.Read)
+                    throw new InvalidOperationException($"Cannot map a resource for reading without CPU read access");
+            }
 
             MappedSubresource resMap = new MappedSubresource();
-            Native->Map((ID3D11Resource*)resource.Handle, subresource, map, (uint)mFlags, &resMap);
+            Native->Map((ID3D11Resource*)resource.Handle, subresource, map, 0, &resMap);
             return new ResourceMap(resMap.PData, resMap.RowPitch, resMap.DepthPitch);
         }
 

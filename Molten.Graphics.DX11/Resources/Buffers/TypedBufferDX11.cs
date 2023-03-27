@@ -23,7 +23,7 @@ namespace Molten.Graphics
             bool unorderedAccess = false, 
             bool shaderResource = true,
             void* initialData = null)
-            : base(device, GraphicsBufferType.StructuredBuffer,
+            : base(device, GraphicsBufferType.Structured,
                   flags,
                   (shaderResource ? BindFlag.ShaderResource : 0) | (unorderedAccess ? BindFlag.UnorderedAccess : 0), 
                   format switch

@@ -141,7 +141,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        protected override ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset)
+        protected override ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset, GraphicsMapType mapType)
         {
             throw new NotImplementedException();
         }

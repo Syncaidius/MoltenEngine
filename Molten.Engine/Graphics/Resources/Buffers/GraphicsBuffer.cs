@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     public abstract class GraphicsBuffer : GraphicsResource
     {
-        protected GraphicsBuffer(GraphicsDevice device, uint stride, uint numElements, GraphicsResourceFlags flags, GraphicsBufferType type) : 
+        protected GraphicsBuffer(GraphicsDevice device, uint stride, uint numElements, GraphicsResourceFlags flags, GraphicsBufferType type) :
             base(device, flags)
         {
             BufferType = type;
@@ -17,10 +17,10 @@ namespace Molten.Graphics
             SizeInBytes = stride * numElements;
         }
 
-        public abstract void SetData<T>(GraphicsPriority priority, T[] data, GraphicsBuffer staging = null, Action completeCallback = null)
+        public abstract void SetData<T>(GraphicsPriority priority, T[] data, bool discard, GraphicsBuffer staging = null, Action completeCallback = null)
     where T : unmanaged;
 
-        public abstract void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, uint byteOffset = 0, GraphicsBuffer staging = null, Action completeCallback = null)
+        public abstract void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0, GraphicsBuffer staging = null, Action completeCallback = null)
             where T : unmanaged;
 
         public abstract void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint elementOffset, Action<T[]> completionCallback = null)
@@ -30,7 +30,7 @@ namespace Molten.Graphics
 
         public abstract void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, Action<GraphicsResource> completionCallback = null);
 
-        public abstract void GetStream(GraphicsPriority priority, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null);
+        public abstract void GetStream(GraphicsPriority priority, GraphicsMapType mapType, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null);
 
         /// <summary>
         /// Gets the stride (byte size) of each element within the current <see cref="GraphicsBuffer"/>.
@@ -54,13 +54,13 @@ namespace Molten.Graphics
 
         /// <summary>
         /// Gets the vertex format of the current <see cref="GraphicsBuffer"/>, if any.
-        /// <para>This property is only set if the current <see cref="BufferType"/> is <see cref="GraphicsBufferType.VertexBuffer"/>.</para>
+        /// <para>This property is only set if the current <see cref="BufferType"/> is <see cref="GraphicsBufferType.Vertex"/>.</para>
         /// </summary>
         public VertexFormat VertexFormat { get; protected set; }
 
         /// <summary>
         /// Gets the <see cref="IndexBufferFormat"/> of the current <see cref="GraphicsBuffer"/>.
-        /// <para>This property is only set if the current <see cref="BufferType"/> is <see cref="GraphicsBufferType.IndexBuffer"/>.</para>
+        /// <para>This property is only set if the current <see cref="BufferType"/> is <see cref="GraphicsBufferType.Index"/>.</para>
         /// </summary>
         public IndexBufferFormat IndexFormat { get; protected set; }
     }

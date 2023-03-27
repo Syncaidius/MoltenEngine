@@ -97,7 +97,7 @@ namespace Molten.Graphics
             ClipStack = new Rectangle[256];
             Reset();
 
-            _buffer = renderer.Device.CreateStructuredBuffer<GpuData>(GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.Discard, dataCapacity, false, true);
+            _buffer = renderer.Device.CreateStructuredBuffer<GpuData>(GraphicsResourceFlags.CpuWrite, dataCapacity, false, true);
 
             ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "sprite.mfx");
             _matDefaultNoTexture = result["sprite-no-texture"];
@@ -526,7 +526,8 @@ namespace Molten.Graphics
 
         private void FlushBuffer(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data, uint rangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
         {
-            _buffer.GetStream(GraphicsPriority.Immediate, (buffer, stream) => stream.WriteRange(Data, vertexStartIndex, vertexCount));
+            using (GraphicsStream stream = cmd.MapResource(_buffer, 0, 0, GraphicsMapType.Discard))
+                stream.WriteRange(Data, vertexStartIndex, vertexCount);
 
             // Draw calls
             uint bufferOffset = 0;

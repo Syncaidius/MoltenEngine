@@ -92,7 +92,7 @@ namespace Molten.Graphics
         /// <param name="level">The mip-map level.</param>
         /// <param name="arraySlice">The array slice.</param>
         /// <returns></returns>
-        internal static unsafe TextureSlice FromTextureSlice(GraphicsCommandQueue cmd, ITexture tex, ITexture staging, uint level, uint arraySlice)
+        internal static unsafe TextureSlice FromTextureSlice(GraphicsCommandQueue cmd, ITexture tex, ITexture staging, uint level, uint arraySlice, GraphicsMapType mapType)
         {
             uint subID = (arraySlice * tex.MipMapCount) + level;
             uint subWidth = tex.Width >> (int)level;
@@ -118,7 +118,7 @@ namespace Molten.Graphics
             byte[] sliceData = new byte[expectedSlicePitch];
 
             // Now pull data from it
-            using (GraphicsStream stream = cmd.MapResource(resMap, subID, 0))
+            using (GraphicsStream stream = cmd.MapResource(resMap, subID, 0, mapType))
             {
                 // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
                 // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347

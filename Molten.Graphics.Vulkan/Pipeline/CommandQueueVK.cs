@@ -141,7 +141,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset)
+        protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, uint streamOffset,GraphicsMapType mapType)
         {
             ResourceMap map = new ResourceMap(null, resource.SizeInBytes, resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
             Result r = VK.MapMemory(_device, *(((ResourceHandleVK*)resource.Handle)->Memory), 0, resource.SizeInBytes, 0, &map.Ptr);

@@ -22,7 +22,7 @@ namespace Molten.Graphics
             bool shaderResource = true,
             void* initialData = null)
             : base(device,
-                  GraphicsBufferType.ByteAddressBuffer,
+                  GraphicsBufferType.ByteAddress,
                   flags,
                   (shaderResource ? BindFlag.ShaderResource : 0) | (unorderedAccess ? BindFlag.UnorderedAccess : 0),
                   sizeof(uint), numElements,

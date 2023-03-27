@@ -29,7 +29,7 @@ namespace Molten.Graphics
             base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
         {
             MaxInstances = maxInstances;
-            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.Discard, maxIndices, null);
+            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(GraphicsResourceFlags.CpuWrite, maxIndices, null);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Molten.Graphics
             base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
         {
             MaxInstances = maxInstances;
-            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.Discard, maxInstances, null);
+            _instanceBuffer = Renderer.Device.CreateVertexBuffer<I>(GraphicsResourceFlags.CpuWrite, maxInstances, null);
         }
 
         public void SetInstanceData(I[] data)
@@ -62,7 +62,7 @@ namespace Molten.Graphics
         public void SetInstanceData(I[] data, uint startIndex, uint count)
         {
             _instanceCount = count;
-            _instanceBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _instanceBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, true, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd)
@@ -99,14 +99,11 @@ namespace Molten.Graphics
                 uint start = 0;
                 uint byteOffset = 0;
 
-                _instanceBuffer.GetStream(GraphicsPriority.Immediate,
-                    (buffer, stream) =>
-                    {
-                        stream.Position += byteOffset;
-                        for (int i = (int)start; i < batch.Data.Count; i++)
-                            I.WriteBatchData(stream, batch.Data[i]);
-                    },
-                    Renderer.StagingBuffer);
+                using (GraphicsStream stream = cmd.MapResource(_instanceBuffer, 0, byteOffset, GraphicsMapType.Discard))
+                {
+                    for (int i = (int)start; i < batch.Data.Count; i++)
+                        I.WriteBatchData(stream, batch.Data[i]);
+                }
             }
 
             Shader.Scene.ViewProjection.Value = camera.ViewProjection;

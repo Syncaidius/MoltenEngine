@@ -16,8 +16,8 @@ namespace Molten.Graphics
         byte* _constData;
 
         internal ShaderConstantBuffer(DeviceDX11 device, ConstantBufferInfo desc)
-            : base(device, GraphicsBufferType.ConstantBuffer,
-                  GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.None | GraphicsResourceFlags.Discard, 
+            : base(device, GraphicsBufferType.Constant,
+                  GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite, 
                   BindFlag.ConstantBuffer, 1, desc.Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
@@ -80,7 +80,7 @@ namespace Molten.Graphics
                 foreach(ShaderConstantVariable v in Variables)
                     v.Write(_constData + v.ByteOffset);
 
-                using (GraphicsStream stream = dx11Cmd.MapResource(this, 0, 0))
+                using (GraphicsStream stream = dx11Cmd.MapResource(this, 0, 0, GraphicsMapType.Discard))
                     stream.WriteRange(_constData, Desc.ByteWidth);
             }
             else

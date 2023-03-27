@@ -13,7 +13,7 @@ namespace Molten.Graphics
         /// <param name="unorderedAccess"></param>
         internal unsafe StructuredBufferDX11(DeviceDX11 device, GraphicsResourceFlags flags, uint numElements, bool unorderedAccess, bool shaderResource, void* initialData = null)
             : base(device, 
-                  GraphicsBufferType.StructuredBuffer,
+                  GraphicsBufferType.Structured,
                   flags,
                   (shaderResource ? BindFlag.ShaderResource : BindFlag.None) | (unorderedAccess ? BindFlag.UnorderedAccess : BindFlag.None),
                   (uint)sizeof(T),

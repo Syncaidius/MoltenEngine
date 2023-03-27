@@ -10,7 +10,7 @@ namespace Molten.Graphics
     public class IndexBufferDX11 : BufferDX11
     {
         public unsafe IndexBufferDX11(DeviceDX11 device, GraphicsResourceFlags mode, IndexBufferFormat format, uint numElements, void* initialData) :
-            base(device, GraphicsBufferType.IndexBuffer, mode, BindFlag.IndexBuffer, (uint)format, numElements, ResourceMiscFlag.None, initialData)
+            base(device, GraphicsBufferType.Index, mode, BindFlag.IndexBuffer, (uint)format, numElements, ResourceMiscFlag.None, initialData)
         {
             IndexFormat = format;
 

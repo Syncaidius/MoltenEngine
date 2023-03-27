@@ -11,10 +11,7 @@ namespace Molten.Graphics
         /// <summary>The number of elements to be copied.</summary>
         internal uint ElementCount;
 
-        /// <summary>
-        /// Number of bytes per element.
-        /// </summary>
-        public uint Stride;
+        internal GraphicsMapType MapType;
 
         internal uint DataStartIndex;
 
@@ -29,15 +26,11 @@ namespace Molten.Graphics
 
         public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
-            DestBuffer.GetStream(cmd as CommandQueueDX11, ByteOffset, Stride, ElementCount, WriteDataCallback, Staging);
+            using(GraphicsStream stream = cmd.MapResource(resource, 0, ByteOffset, MapType))
+                stream.WriteRange(Data, DataStartIndex, ElementCount);
+
             CompletionCallback?.Invoke();
-
             return false;
-        }
-
-        private void WriteDataCallback(BufferDX11 buffer, RawStream stream)
-        {
-            stream.WriteRange(Data, DataStartIndex, ElementCount);
         }
     }
 }

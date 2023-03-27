@@ -25,7 +25,7 @@ namespace Molten.Graphics
                 throw new ResourceCopyException(resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");
 
             // If the current buffer is a staging buffer, initialize and apply all its pending changes.
-            if (resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.StagingBuffer)
+            if (resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
                 resource.Apply(cmd);
 
             if (SrcRegion.HasValue)
