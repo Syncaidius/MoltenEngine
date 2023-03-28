@@ -101,9 +101,39 @@ namespace Molten.Graphics
             });
         }
 
-        public abstract void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, Action<GraphicsResource> completionCallback = null);
+        /// <summary>Copies all the data in the current <see cref="GraphicsBuffer"/> to the destination <see cref="GraphicsBuffer"/>.</summary>
+        /// <param name="priority">The priority of the operation</param>
+        /// <param name="destination">The <see cref="GraphicsBuffer"/> to copy to.</param>
+        /// <param name="completionCallback">A callback to invoke once the operation is completed.</param>
+        public void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
+        {
+            if (destination.SizeInBytes < SizeInBytes)
+                throw new GraphicsResourceException(this, "The destination buffer is not large enough.");
 
-        public abstract void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, Action<GraphicsResource> completionCallback = null);
+            QueueTask(priority, new ResourceCopyTask()
+            {
+                Destination = destination,
+                CompletionCallback = completionCallback,
+            });
+        }
+
+        /// <summary>Copies all the data in the current <see cref="GraphicsBuffer"/> to the destination <see cref="GraphicsBuffer"/>.</summary>
+        /// <param name="priority">The priority of the operation</param>
+        /// <param name="destination">The <see cref="GraphicsBuffer"/> to copy to.</param>
+        /// <param name="sourceRegion"></param>
+        /// <param name="destByteOffset"></param>
+        /// <param name="completionCallback">A callback to invoke once the operation is completed.</param>
+        public void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0,
+            Action<GraphicsResource> completionCallback = null)
+        {
+            QueueTask(priority, new SubResourceCopyTask()
+            {
+                CompletionCallback = completionCallback,
+                DestResource = destination,
+                DestStart = new Vector3UI(destByteOffset, 0, 0),
+                SrcRegion = sourceRegion,
+            });
+        }
 
         public void GetStream(GraphicsPriority priority, GraphicsMapType mapType, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null)
         {

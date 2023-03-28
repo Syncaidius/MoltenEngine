@@ -39,7 +39,7 @@ namespace Molten.Graphics
 
         protected override void CreateResources()
         {
-            if (HasBindFlags(BindFlag.ShaderResource))
+            if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
             {
                 NativeSRV.Desc = new ShaderResourceViewDesc1()
                 {
@@ -57,7 +57,7 @@ namespace Molten.Graphics
             }
 
             // See UAV notes: https://docs.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-resources-intro#raw-views-of-buffers
-            if (HasBindFlags(BindFlag.UnorderedAccess))
+            if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
             {
                 NativeUAV.Desc = new UnorderedAccessViewDesc1()
                 {

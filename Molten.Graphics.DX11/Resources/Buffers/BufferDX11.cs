@@ -79,7 +79,7 @@ namespace Molten.Graphics
 
         protected virtual void CreateResources()
         {
-            if (HasBindFlags(BindFlag.ShaderResource))
+            if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
             {
                 NativeSRV.Desc = new ShaderResourceViewDesc1()
                 {
@@ -95,7 +95,7 @@ namespace Molten.Graphics
                 NativeSRV.Create();
             }
 
-            if (HasBindFlags(BindFlag.UnorderedAccess))
+            if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
             {
                 NativeUAV.Desc = new UnorderedAccessViewDesc1()
                 {
@@ -110,38 +110,6 @@ namespace Molten.Graphics
                 };
                 NativeUAV.Create();
             }
-        }
-
-        /// <summary>Copies all the data in the current <see cref="BufferDX11"/> to the destination <see cref="BufferDX11"/>.</summary>
-        /// <param name="cmd">The <see cref="CommandQueueDX11"/> that will perform the copy.</param>
-        /// <param name="destination">The <see cref="BufferDX11"/> to copy to.</param>
-        public override void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
-        {
-            if (SizeInBytes < Desc.ByteWidth)
-                throw new GraphicsResourceException(this, "The destination buffer is not large enough.");
-
-            QueueTask(priority, new ResourceCopyTask()
-            {
-                Destination = destination as BufferDX11,
-                CompletionCallback = completionCallback,
-            });
-        }
-
-        public override void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, 
-            Action<GraphicsResource> completionCallback = null)
-        {
-            QueueTask(priority, new SubResourceCopyTask()
-            {
-                CompletionCallback = completionCallback,
-                DestResource = destination as BufferDX11,
-                DestStart = new Vector3UI(destByteOffset, 0, 0),
-                SrcRegion = sourceRegion,
-            });
-        }
-
-        internal bool HasBindFlags(BindFlag flag)
-        {
-            return ((BindFlag)Desc.BindFlags & flag) == flag;
         }
 
         protected void SetDebugName(string debugName)
