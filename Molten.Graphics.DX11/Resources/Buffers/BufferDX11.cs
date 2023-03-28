@@ -2,7 +2,6 @@
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Molten.Graphics
 {
@@ -140,33 +139,6 @@ namespace Molten.Graphics
             });
         }
 
-        public override void GetStream(GraphicsPriority priority, GraphicsMapType mapType, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null)
-        {
-            QueueTask(priority, new BufferGetStreamTask()
-            {
-                ByteOffset = 0,
-                Staging = staging,
-                StreamCallback = callback,
-                MapType = mapType,
-            });
-        }
-
-        public override void SetData<T>(GraphicsPriority priority, T[] data, bool discard, GraphicsBuffer staging = null, Action completeCallback = null)
-        {
-            SetData(priority, data, 0, (uint)data.Length, discard, 0, staging, completeCallback);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="priority"></param>
-        /// <param name="data"></param>
-        /// <param name="startIndex">The start index within <paramref name="data"/> to copy.</param>
-        /// <param name="elementCount"></param>
-        /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        /// <param name="staging"></param>
-        /// <param name="completeCallback"></param>
         public override void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0,
             GraphicsBuffer staging = null, Action completeCallback = null)
         {
@@ -195,33 +167,6 @@ namespace Molten.Graphics
                 Array.Copy(data, (int)startIndex, op.Data, 0, elementCount);
                 QueueTask(priority, op);
             }
-        }
-
-        /// <summary>Retrieves data from a <see cref="BufferDX11"/>.</summary>
-        /// <param name="cmd">The <see cref="CommandQueueDX11"/> that will perform the 'get' operation.</param>
-        /// <param name="destination">The destination array. Must be big enough to contain the retrieved data.</param>
-        /// <param name="startIndex">The start index within the destination array at which to place the retrieved data.</param>
-        /// <param name="count">The number of elements to retrieve</param>
-        /// <param name="dataStride">The size of the data being retrieved. The default value is 0. 
-        /// A value of 0 will force the stride of <see cref="{T}"/> to be automatically calculated, which may cause a tiny performance hit.</param>
-        /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        public override void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint byteOffset, Action<T[]> completionCallback)
-        {
-            if ((Desc.CPUAccessFlags & (uint)CpuAccessFlag.Read) != (uint)CpuAccessFlag.Read)
-                throw new GraphicsResourceException(this, "Cannot use GetData() on a non-readable buffer.");
-
-            if (destination.Length < count)
-                throw new ArgumentException("The provided destination array is not large enough.");
-
-            QueueTask(priority, new BufferGetTask<T>()
-            {
-                ByteOffset = byteOffset,
-                DestArray = destination,
-                DestIndex = startIndex,
-                Count = count,
-                MapType = GraphicsMapType.Read,
-                CompletionCallback = completionCallback,
-            });
         }
 
         internal bool HasBindFlags(BindFlag flag)

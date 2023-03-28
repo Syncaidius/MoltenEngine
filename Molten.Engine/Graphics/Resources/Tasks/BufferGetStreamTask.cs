@@ -1,6 +1,4 @@
-﻿using Molten.IO;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     internal struct BufferGetStreamTask : IGraphicsResourceTask
     {

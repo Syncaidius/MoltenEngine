@@ -99,19 +99,7 @@ namespace Molten.Graphics
                 EngineUtil.Free(ref _desc.PQueueFamilyIndices);
             }
         }
-
-        public override void SetData<T>(GraphicsPriority priority, T[] data, bool discard, GraphicsBuffer staging = null, Action completeCallback = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0, GraphicsBuffer staging = null, Action completeCallback = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint elementOffset, 
-            Action<T[]> completionCallback = null) 
         {
             throw new NotImplementedException();
         }
@@ -123,11 +111,6 @@ namespace Molten.Graphics
 
         public override void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, 
             Action<GraphicsResource> completionCallback = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void GetStream(GraphicsPriority priority, GraphicsMapType mapType, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null)
         {
             throw new NotImplementedException();
         }

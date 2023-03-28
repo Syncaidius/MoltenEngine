@@ -1,7 +1,4 @@
-﻿using Molten.IO;
-using Silk.NET.Direct3D11;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     internal struct BufferGetTask<T> : IGraphicsResourceTask 
         where T : unmanaged
@@ -24,11 +21,11 @@ namespace Molten.Graphics
 
         public unsafe bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
-            BufferDX11 srcBuffer = resource as BufferDX11;
+            GraphicsBuffer buffer = resource as GraphicsBuffer;
             DestArray = DestArray ?? new T[Count];
 
             // Now set the structured variable's data
-            using (GraphicsStream stream = cmd.MapResource(srcBuffer, 0, ByteOffset, MapType))
+            using (GraphicsStream stream = cmd.MapResource(buffer, 0, ByteOffset, MapType))
                 stream.ReadRange(DestArray, DestIndex, Count);
 
             CompletionCallback?.Invoke(DestArray);
