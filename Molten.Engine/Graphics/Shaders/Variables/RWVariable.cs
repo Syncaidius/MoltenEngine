@@ -4,7 +4,7 @@
     {
         protected override bool ValidateResource(GraphicsResource res)
         {
-            if (res.IsUnorderedAccess && !(res is ISwapChainSurface))
+            if (res.Flags.Has(GraphicsResourceFlags.UnorderedAccess) && !(res is ISwapChainSurface))
                 return true;
             else
                 Parent.Device.Log.Warning($"Cannot use non-unordered-access or non-storage resource in ${nameof(RWVariable)}");

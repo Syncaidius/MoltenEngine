@@ -121,7 +121,5 @@ namespace Molten.Graphics
                 NewFormat = newFormat == GraphicsFormat.Unknown ? DataFormat : newFormat
             });
         }
-
-        public override bool IsUnorderedAccess => ((BindFlag)_desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
     }
 }

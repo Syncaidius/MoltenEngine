@@ -134,8 +134,6 @@ namespace Molten.Graphics
             }
         }
 
-        public override bool IsUnorderedAccess => ((BindFlag)Desc.BindFlags & BindFlag.UnorderedAccess) == BindFlag.UnorderedAccess;
-
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
         internal ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Desc.MiscFlags;
 

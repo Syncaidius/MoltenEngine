@@ -100,25 +100,12 @@ namespace Molten.Graphics
             }
         }
 
-        public override void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0, 
-            Action<GraphicsResource> completionCallback = null)
-        {
-            throw new NotImplementedException();
-        }
-
         internal bool HasFlags(BufferUsageFlags flags)
         {
             return (_desc.Usage & flags) == flags;
         }
 
         protected override void OnApply(GraphicsCommandQueue cmd) { }
-
-        public override bool IsUnorderedAccess => HasFlags(BufferUsageFlags.StorageBufferBit);
 
         public override unsafe void* Handle => _handle;
 

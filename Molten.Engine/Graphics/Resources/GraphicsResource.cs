@@ -85,11 +85,6 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Gets whether the current <see cref="GraphicsResource"/> is unordered-access, meaning it can be written to by certain shaders.
-        /// </summary>
-        public abstract bool IsUnorderedAccess { get; }
-
-        /// <summary>
         /// The total size of the resource, in bytes.
         /// </summary>
         public abstract uint SizeInBytes { get; }

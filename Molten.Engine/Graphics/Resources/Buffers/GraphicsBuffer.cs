@@ -84,7 +84,7 @@ namespace Molten.Graphics
         public void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint byteOffset, Action<T[]> completionCallback = null)
             where T : unmanaged
         {
-            if (Flags.Has(GraphicsResourceFlags.CpuRead))
+            if (!Flags.Has(GraphicsResourceFlags.CpuRead))
                 throw new GraphicsResourceException(this, "Cannot use GetData() on a non-readable buffer.");
 
             if (destination.Length < count)
