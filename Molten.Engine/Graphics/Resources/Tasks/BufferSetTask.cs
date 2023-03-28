@@ -18,11 +18,11 @@ namespace Molten.Graphics
         /// <summary>The data to be set.</summary>
         internal T[] Data;
 
-        internal BufferDX11 DestBuffer;
+        internal GraphicsBuffer DestBuffer;
 
         internal Action CompletionCallback;
 
-        internal StagingBufferDX11 Staging;
+        internal GraphicsBuffer Staging;
 
         public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {

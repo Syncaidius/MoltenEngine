@@ -139,36 +139,6 @@ namespace Molten.Graphics
             });
         }
 
-        public override void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0,
-            GraphicsBuffer staging = null, Action completeCallback = null)
-        {
-            BufferSetTask<T> op = new BufferSetTask<T>()
-            {
-                ByteOffset = byteOffset,
-                CompletionCallback = completeCallback,
-                DestBuffer = this,
-                MapType = discard ? GraphicsMapType.Discard : GraphicsMapType.Write,
-                ElementCount = elementCount,
-                Staging = staging as StagingBufferDX11,
-            };
-
-            // Custom handling of immediate command, so that we potentially avoid a data copy.
-            if(priority == GraphicsPriority.Immediate)
-            {
-                op.Data = data;
-                op.DataStartIndex = startIndex;
-                op.Process(Device.Cmd, this);
-            }
-            else
-            {
-                // Only copy the part we need from the source data, starting from startIndex.
-                op.Data = new T[data.Length];
-                op.DataStartIndex = 0;
-                Array.Copy(data, (int)startIndex, op.Data, 0, elementCount);
-                QueueTask(priority, op);
-            }
-        }
-
         internal bool HasBindFlags(BindFlag flag)
         {
             return ((BindFlag)Desc.BindFlags & flag) == flag;

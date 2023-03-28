@@ -99,10 +99,6 @@ namespace Molten.Graphics
                 EngineUtil.Free(ref _desc.PQueueFamilyIndices);
             }
         }
-        public override void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0, GraphicsBuffer staging = null, Action completeCallback = null)
-        {
-            throw new NotImplementedException();
-        }
 
         public override void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
         {
