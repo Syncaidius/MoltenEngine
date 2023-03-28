@@ -161,10 +161,10 @@ namespace Molten.Graphics
         public GraphicsBuffer CreateStructuredBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
             where T : unmanaged
         {
-            return CreateStructuredBuffer(flags, (uint)data.Length, false, true, data);
+            return CreateStructuredBuffer(flags, (uint)data.Length, data);
         }
 
-        public abstract GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        public abstract GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, T[] initialData = null)
             where T : unmanaged;
 
         public abstract GraphicsBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity);

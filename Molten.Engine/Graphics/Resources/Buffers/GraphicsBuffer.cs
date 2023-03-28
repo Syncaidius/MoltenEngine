@@ -48,6 +48,9 @@ namespace Molten.Graphics
             GraphicsBuffer staging = null, Action completeCallback = null)
             where T : unmanaged
         {
+            if (!Flags.Has(GraphicsResourceFlags.CpuWrite))
+                throw new GraphicsResourceException(this, "Cannot call SetData() on a buffer that does not have the GraphicsResourceFlags.CpuWrite flag.");
+
             BufferSetTask<T> op = new BufferSetTask<T>()
             {
                 ByteOffset = byteOffset,

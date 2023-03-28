@@ -5,7 +5,7 @@ namespace Molten.Graphics
     internal unsafe class SRView : ResourceView<ID3D11ShaderResourceView1, ShaderResourceViewDesc1>
     {
         internal SRView(GraphicsResource resource) : 
-            base(resource) { }
+            base(resource, GraphicsResourceFlags.None) { }
 
         protected override unsafe void OnCreateView(ID3D11Resource* resource, ref ShaderResourceViewDesc1 desc, ref ID3D11ShaderResourceView1* view)
         {

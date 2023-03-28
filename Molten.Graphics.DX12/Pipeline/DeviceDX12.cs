@@ -65,7 +65,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        public override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, T[] initialData = null)
         {
             throw new NotImplementedException();
         }

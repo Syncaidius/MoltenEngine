@@ -57,6 +57,9 @@ namespace Molten.Graphics
 
                 if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
                     Desc.BindFlags |= (uint)BindFlag.ShaderResource;
+
+                if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+                    Desc.BindFlags |= (uint)BindFlag.UnorderedAccess;
             }
 
             // Ensure structured buffers get the stride info.

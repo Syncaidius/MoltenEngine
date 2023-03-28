@@ -69,7 +69,7 @@ namespace Molten.Examples
                 GraphicsBuffer numBuffer1 = Engine.Renderer.Device.CreateStructuredBuffer(_values1);
 
                 // Setup one output buffer for results
-                GraphicsBuffer outBuffer = Engine.Renderer.Device.CreateStructuredBuffer<ComputeData>(GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.UnorderedAccess, NUM_SUMS, true, false);
+                GraphicsBuffer outBuffer = Engine.Renderer.Device.CreateStructuredBuffer<ComputeData>(GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.UnorderedAccess, NUM_SUMS);
 
                 // Staging buffer for transferring our compute result off the GPU
                 GraphicsBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(true, false, numBytes);

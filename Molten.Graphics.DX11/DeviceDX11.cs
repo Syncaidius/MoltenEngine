@@ -367,7 +367,7 @@ namespace Molten.Graphics
         public unsafe override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData = null)
         {
             fixed (ushort* ptr = initialData)
-                return new IndexBufferDX11(this, flags, IndexBufferFormat.UInt16, numIndices, ptr);
+                return new IndexBufferDX11(this, flags | GraphicsResourceFlags.NoShaderAccess, IndexBufferFormat.UInt16, numIndices, ptr);
         }
 
         public unsafe override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null)
@@ -376,10 +376,10 @@ namespace Molten.Graphics
                 return new IndexBufferDX11(this, flags | GraphicsResourceFlags.NoShaderAccess, IndexBufferFormat.UInt32, numIndices, ptr);
         }
 
-        public unsafe override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, bool allowUnorderedAccess, bool isShaderResource, T[] initialData = null)
+        public unsafe override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, T[] initialData = null)
         {
             fixed (T* ptr = initialData)
-                return new StructuredBufferDX11<T>(this, flags, numElements, allowUnorderedAccess, isShaderResource, ptr);
+                return new StructuredBufferDX11<T>(this, flags, numElements, ptr);
         }
 
         public override GraphicsBuffer CreateStagingBuffer(bool allowRead, bool allowWrite, uint byteCapacity)

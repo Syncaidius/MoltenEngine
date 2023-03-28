@@ -11,11 +11,11 @@ namespace Molten.Graphics
         /// <param name="numElements">The maximum number of elements that the buffer can store</param>
         /// <param name="shaderResource"></param>
         /// <param name="unorderedAccess"></param>
-        internal unsafe StructuredBufferDX11(DeviceDX11 device, GraphicsResourceFlags flags, uint numElements, bool unorderedAccess, bool shaderResource, void* initialData = null)
+        internal unsafe StructuredBufferDX11(DeviceDX11 device, GraphicsResourceFlags flags, uint numElements, void* initialData = null)
             : base(device, 
                   GraphicsBufferType.Structured,
                   flags,
-                  (shaderResource ? BindFlag.ShaderResource : BindFlag.None) | (unorderedAccess ? BindFlag.UnorderedAccess : BindFlag.None),
+                  BindFlag.None,
                   (uint)sizeof(T),
                   numElements,
                   ResourceMiscFlag.BufferStructured,

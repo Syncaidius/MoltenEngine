@@ -15,11 +15,13 @@ namespace Molten.Graphics
     {
         V* _native;
         D _desc;
+        GraphicsResourceFlags _requiredFlags;
 
-        internal ResourceView(GraphicsResource resource)
+        internal ResourceView(GraphicsResource resource, GraphicsResourceFlags requiredFlags)
         {
             Resource = resource;
             Device = resource.Device as DeviceDX11;
+            _requiredFlags = requiredFlags;
         }
 
         internal unsafe V* Ptr => _native;
@@ -30,15 +32,22 @@ namespace Molten.Graphics
 
         internal GraphicsResource Resource { get; }
 
-        internal void Create()
+        internal virtual void Create()
         {
+            if (!Resource.Flags.Has(_requiredFlags))
+                throw new InvalidOperationException($"Cannot create UAV for resource that does not have {_requiredFlags}");
+
             SilkUtil.ReleasePtr(ref _native);
             OnCreateView((ID3D11Resource*)Resource.Handle, ref _desc, ref _native);
+            Device.ProcessDebugLayerMessages();
             SetDebugName($"{Resource.Name}_{GetType().Name}");
         }
 
-        internal void Create(ID3D11Resource* resource)
+        internal virtual void Create(ID3D11Resource* resource)
         {
+            if (!Resource.Flags.Has(_requiredFlags))
+                throw new InvalidOperationException($"Cannot create UAV for resource that does not have {_requiredFlags}");
+
             SilkUtil.ReleasePtr(ref _native);
             OnCreateView(resource, ref _desc, ref _native);
             SetDebugName($"{Resource.Name}_{GetType().Name}");
