@@ -1,6 +1,4 @@
-﻿using System.IO;
-using Molten.IO;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {

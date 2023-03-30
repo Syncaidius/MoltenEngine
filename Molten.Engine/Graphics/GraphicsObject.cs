@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using Silk.NET.Core.Native;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public abstract class GraphicsObject : EngineObject, IGraphicsObject
     {

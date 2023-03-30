@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -7,8 +6,8 @@ using Molten.DoublePrecision;
 
 namespace Molten
 {
-	///<summary>Represents a four dimensional mathematical Rectangle.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = 4)]
+    ///<summary>Represents a four dimensional mathematical Rectangle.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Serializable]
 	public partial struct Rectangle : IFormattable, IEquatable<Rectangle>
 	{

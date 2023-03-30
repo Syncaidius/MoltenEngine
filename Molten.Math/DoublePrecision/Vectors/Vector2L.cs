@@ -1,15 +1,13 @@
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Molten.HalfPrecision;
-using Molten.DoublePrecision;
 
 namespace Molten.DoublePrecision
 {
-	///<summary>A <see cref="long"/> vector comprised of two components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=8)]
+    ///<summary>A <see cref="long"/> vector comprised of two components.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=8)]
     [Serializable]
 	public partial struct Vector2L : IFormattable, IVector<long>
 	{

@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace Molten.Graphics
 {

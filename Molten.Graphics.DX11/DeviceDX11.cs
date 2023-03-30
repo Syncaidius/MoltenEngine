@@ -1,10 +1,7 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
-using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Direct3D11;
-using Silk.NET.DXGI;
 using Message = Silk.NET.Direct3D11.Message;
 
 namespace Molten.Graphics

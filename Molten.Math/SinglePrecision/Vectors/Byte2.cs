@@ -1,15 +1,14 @@
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using Molten.HalfPrecision;
 using Molten.DoublePrecision;
+using Molten.HalfPrecision;
 
 namespace Molten
 {
-	///<summary>A <see cref="byte"/> vector comprised of two components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=1)]
+    ///<summary>A <see cref="byte"/> vector comprised of two components.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=1)]
     [Serializable]
 	public partial struct Byte2 : IFormattable, IVector<byte>
 	{

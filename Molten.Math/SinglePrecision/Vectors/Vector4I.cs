@@ -1,15 +1,14 @@
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using Molten.HalfPrecision;
 using Molten.DoublePrecision;
+using Molten.HalfPrecision;
 
 namespace Molten
 {
-	///<summary>A <see cref="int"/> vector comprised of four components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
+    ///<summary>A <see cref="int"/> vector comprised of four components.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack=4)]
     [Serializable]
 	public partial struct Vector4I : IFormattable, IVector<int>
 	{

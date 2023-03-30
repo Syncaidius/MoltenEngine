@@ -1,5 +1,4 @@
-﻿using System.Drawing.Drawing2D;
-using Silk.NET.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {

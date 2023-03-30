@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Molten.IO;
-using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {

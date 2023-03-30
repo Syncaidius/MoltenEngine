@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Molten.IO;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public class InstancedMesh<V, I> : Mesh<V>
         where V : unmanaged, IVertexType

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Molten.Collections;
+﻿using Molten.Collections;
 
 namespace Molten.Graphics
 {

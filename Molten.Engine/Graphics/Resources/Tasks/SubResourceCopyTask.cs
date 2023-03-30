@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public struct SubResourceCopyTask : IGraphicsResourceTask
     {

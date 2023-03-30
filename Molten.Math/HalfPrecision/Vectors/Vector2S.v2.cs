@@ -1,7 +1,7 @@
 namespace Molten.HalfPrecision
 {
-	///<summary>A <see cref = "short"/> vector comprised of 2 components.</summary>
-	public partial struct Vector2S
+    ///<summary>A <see cref = "short"/> vector comprised of 2 components.</summary>
+    public partial struct Vector2S
 	{
 #region Static Methods
         /// <summary>

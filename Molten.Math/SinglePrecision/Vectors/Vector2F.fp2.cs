@@ -2,8 +2,8 @@ using System.Runtime.CompilerServices;
 
 namespace Molten
 {
-	///<summary>A <see cref = "float"/> vector comprised of 2 components.</summary>
-	public partial struct Vector2F
+    ///<summary>A <see cref = "float"/> vector comprised of 2 components.</summary>
+    public partial struct Vector2F
 	{
 #region Instance methods
         public Vector2F GetOrthonormal(bool polarity = true, bool allowZero = false)

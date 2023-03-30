@@ -1,9 +1,7 @@
-using System;
-
 namespace Molten.DoublePrecision
 {
-	///<summary>A <see cref = "double"/> vector comprised of 3 components.</summary>
-	public partial struct Vector3D
+    ///<summary>A <see cref = "double"/> vector comprised of 3 components.</summary>
+    public partial struct Vector3D
 	{
     	/// <summary>
         /// Gets a value indicting whether this instance is normalized.
