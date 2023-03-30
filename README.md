@@ -64,7 +64,7 @@ Blank - Not Started\
 | Geometry Shaders       | ✔️         |         |        |             |       |
 | Tessellation           | 🚧         |         |        |             |       |
 | Hull & Domain Shaders  | ✔️         |         |        |             |       |
-| Compute Shaders        | 🚧         |         |        |             |       |
+| Compute Shaders        | ✔️         |         |        |             |       |
 | 2D Spite batching      | ✔️         |         |        |             |       |
 | 2D Primitive batching  | ✔️         |         |        |             |       |
 | Compressed textures    | ✔️         |         |        |             |       |
