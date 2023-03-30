@@ -140,12 +140,12 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void CopyTo(GraphicsPriority priority, ITexture destination, Action<GraphicsResource> completeCallback)
+        public void CopyTo(GraphicsPriority priority, GraphicsTexture destination, Action<GraphicsResource> completeCallback)
         {
             throw new NotImplementedException();
         }
 
-        public void CopyTo(GraphicsPriority priority, uint sourceLevel, uint sourceSlice, ITexture destination, uint destLevel, uint destSlice, Action<GraphicsResource> completeCallback)
+        public void CopyTo(GraphicsPriority priority, uint sourceLevel, uint sourceSlice, GraphicsTexture destination, uint destLevel, uint destSlice, Action<GraphicsResource> completeCallback)
         {
             throw new NotImplementedException();
         }

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
+using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Direct3D11;
 using Message = Silk.NET.Direct3D11.Message;
 
@@ -377,7 +378,7 @@ namespace Molten.Graphics
         public unsafe override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, T[] initialData = null)
         {
             fixed (T* ptr = initialData)
-                return new StructuredBufferDX11<T>(this, flags, numElements, ptr);
+                return new BufferDX11(this, GraphicsBufferType.Structured, flags, BindFlag.None, (uint)sizeof(T), numElements, ResourceMiscFlag.BufferStructured, ptr);
         }
 
         public override GraphicsBuffer CreateStagingBuffer(bool allowRead, bool allowWrite, uint byteCapacity)
