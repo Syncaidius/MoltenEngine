@@ -12,29 +12,29 @@ namespace Molten.Graphics
         /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="other"></param>
-        /// <param name="flags">A set of flags to override those of the provided texture.</param>
-        internal Texture3DDX11(Texture3DDX11 other, GraphicsResourceFlags flags)
-            : this(other.Renderer, other.Width, other.Height, other.Depth, flags, other.DxgiFormat, other.MipMapCount)
+        internal Texture3DDX11(Texture3DDX11 other)
+            : this(other, other.Flags)
         { }
-
+        
         /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="other"></param>
-        internal Texture3DDX11(Texture3DDX11 other)
-            : this(other.Renderer, other.Width, other.Height, other.Depth, other.Flags, other.DxgiFormat, other.MipMapCount, other.MipMapGenAllowed)
+        /// <param name="flags">A set of flags to override those of the provided texture.</param>
+        internal Texture3DDX11(Texture3DDX11 other, GraphicsResourceFlags flags)
+            : this(other.Device, other.Width, other.Height, other.Depth, flags, other.ResourceFormat, other.MipMapCount)
         { }
 
         internal Texture3DDX11(
-            RenderService renderer,
+            GraphicsDevice device,
             uint width,
             uint height,
             uint depth,
             GraphicsResourceFlags flags,
-            Format format = Format.FormatR8G8B8A8Unorm,
+            GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm,
             uint mipCount = 1,
             bool allowMipMapGen = false,
             string name = null)
-            : base(renderer, width, height, depth, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
+            : base(device, width, height, depth, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
         {
             _desc = new Texture3DDesc1()
             {
@@ -42,7 +42,7 @@ namespace Molten.Graphics
                 Height = Math.Max(height, 1),
                 Depth = Math.Max(depth, 1),
                 MipLevels = mipCount,
-                Format = format,
+                Format = format.ToApi(),
                 BindFlags = (uint)GetBindFlags(),
                 CPUAccessFlags = (uint)Flags.ToCpuFlags(),
                 Usage = Flags.ToUsageFlags(),

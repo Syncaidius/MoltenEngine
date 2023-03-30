@@ -294,13 +294,13 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void CopyTo(GraphicsPriority priority, ITexture destination, Action<GraphicsResource> completeCallback = null)
+        public void CopyTo(GraphicsPriority priority, GraphicsTexture destination, Action<GraphicsResource> completeCallback = null)
         {
             throw new NotImplementedException();
         }
 
         public void CopyTo(GraphicsPriority priority, uint sourceLevel, uint sourceSlice,
-            ITexture destination, uint destLevel, uint destSlice, 
+            GraphicsTexture destination, uint destLevel, uint destSlice, 
             Action<GraphicsResource> completeCallback = null)
         {
             throw new NotImplementedException();
@@ -391,8 +391,6 @@ namespace Molten.Graphics
         public AntiAliasLevel MultiSampleLevel => throw new NotImplementedException();
 
         public bool IsMultisampled => throw new NotImplementedException();
-
-        RenderService ITexture.Renderer => throw new NotImplementedException();
 
         public Rectangle RenderBounds => throw new NotImplementedException();
 

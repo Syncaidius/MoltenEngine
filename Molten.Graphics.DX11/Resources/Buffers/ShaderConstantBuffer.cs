@@ -61,8 +61,7 @@ namespace Molten.Graphics
 
         public override void GraphicsRelease()
         {
-            if(_constData != null)
-                EngineUtil.Free(ref _constData);
+            EngineUtil.Free(ref _constData);
             base.GraphicsRelease();
         }
 
@@ -73,7 +72,6 @@ namespace Molten.Graphics
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
             if (DirtyVariables)
             {
-                // Reset variable-specific dirty flag
                 DirtyVariables = false;
 
                 // Re-write all data to the variable buffer to maintain byte-ordering.

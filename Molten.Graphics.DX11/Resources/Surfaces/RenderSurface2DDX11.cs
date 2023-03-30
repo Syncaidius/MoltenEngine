@@ -9,18 +9,18 @@ namespace Molten.Graphics
         ViewportF _vp;
 
         internal RenderSurface2DDX11(
-            RenderService renderer,
+            GraphicsDevice device,
             uint width,
             uint height,
             GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
-            Format format = Format.FormatR8G8B8A8SNorm,
+            GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
             uint mipCount = 1,
             uint arraySize = 1,
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
             MSAAQuality msaa = MSAAQuality.Default,
             bool allowMipMapGen = false, 
             string name = null)
-            : base(renderer, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
+            : base(device, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
         {
             Viewport = new ViewportF(0, 0, width, height);
 

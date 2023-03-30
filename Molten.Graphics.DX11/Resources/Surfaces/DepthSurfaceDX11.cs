@@ -24,7 +24,7 @@ namespace Molten.Graphics
         /// <param name="aaLevel"></param>
         /// <param name="msaa"></param>
         /// <param name="flags">Texture flags</param>
-        internal DepthSurfaceDX11(RenderService renderer,
+        internal DepthSurfaceDX11(GraphicsDevice device,
             uint width, 
             uint height,
             GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
@@ -35,7 +35,7 @@ namespace Molten.Graphics
             MSAAQuality msaa = MSAAQuality.Default,
             bool allowMipMapGen = false,
             string name = "surface")
-            : base(renderer, width, height, flags, Format.FormatR24G8Typeless, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
+            : base(device, width, height, flags, GraphicsFormat.R24G8_Typeless, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
         {
             _depthFormat = format;
             _desc.ArraySize = arraySize;

@@ -10,15 +10,15 @@ namespace Molten.Graphics
         Texture1DDesc _desc;
 
         internal Texture1DDX11(
-            RenderService renderer, 
+            GraphicsDevice device, 
             uint width, 
             GraphicsResourceFlags flags,
-            Format format = Format.FormatR8G8B8A8Unorm, 
+            GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm, 
             uint mipCount = 1, 
             uint arraySize = 1,
             bool allowMipMapGen = false,
             string name = null)
-            : base(renderer, width, 1, 1, mipCount, arraySize, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
+            : base(device, width, 1, 1, mipCount, arraySize, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
         {
             if (IsBlockCompressed)
                 throw new NotSupportedException("1D textures do not supports block-compressed formats.");
@@ -28,7 +28,7 @@ namespace Molten.Graphics
                 Width = width,
                 MipLevels = mipCount,
                 ArraySize = Math.Max(1, arraySize),
-                Format = format,
+                Format = format.ToApi(),
                 BindFlags = (uint)GetBindFlags(),
                 CPUAccessFlags = (uint)Flags.ToCpuFlags(),
                 Usage = Flags.ToUsageFlags(),
@@ -77,6 +77,23 @@ namespace Molten.Graphics
             SubresourceData* subData = null;
             (Device as DeviceDX11).Ptr->CreateTexture1D(ref _desc, subData, ref NativeTexture);
             return (ID3D11Resource*)NativeTexture;
+        }
+
+        public void Resize(GraphicsPriority priority, uint newWidth)
+        {
+            Resize(priority, newWidth, MipMapCount, ResourceFormat);
+        }
+
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newMipMapCount, GraphicsFormat newFormat)
+        {
+            QueueTask(priority, new TextureResizeTask()
+            {
+                NewWidth = newWidth,
+                NewHeight = Height,
+                NewMipMapCount = newMipMapCount,
+                NewArraySize = ArraySize,
+                NewFormat = newFormat,
+            });
         }
 
         protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)

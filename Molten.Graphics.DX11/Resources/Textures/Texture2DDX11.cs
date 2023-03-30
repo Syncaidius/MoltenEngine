@@ -14,32 +14,32 @@ namespace Molten.Graphics
         /// <param name="descTexture">The <see cref="Texture2DDX11"/> to use as a template configuration for a new <see cref="Texture2DDX11"/> instance.</param>
         /// <param name="flags">A set of flags to override those of the provided template texture.</param>
         internal Texture2DDX11(Texture2DDX11 descTexture, GraphicsResourceFlags flags)
-            : this(descTexture.Renderer,
+            : this(descTexture.Device,
                   descTexture.Width,
                   descTexture.Height,
                   flags,
-                  descTexture.DxgiFormat,
+                  descTexture.ResourceFormat,
                   descTexture.MipMapCount,
                   descTexture.ArraySize,
                   descTexture.MultiSampleLevel,
                   descTexture.SampleQuality,
-                  descTexture.MipMapGenAllowed,
+                  descTexture.IsMipMapGenAllowed,
                   descTexture.Name)
         { }
 
         internal Texture2DDX11(
-            RenderService renderer,
+            GraphicsDevice device,
             uint width,
             uint height,
             GraphicsResourceFlags flags,
-            Format format = Format.FormatR8G8B8A8Unorm,
+            GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm,
             uint mipCount = 1,
             uint arraySize = 1,
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
             MSAAQuality msaa = MSAAQuality.Default,
             bool allowMipMapGen = false,
             string name = null)
-            : base(renderer, width, height, 1, mipCount, arraySize, aaLevel, msaa, format, flags, allowMipMapGen, name)
+            : base(device, width, height, 1, mipCount, arraySize, aaLevel, msaa, format, flags, allowMipMapGen, name)
         {
             _desc = new Texture2DDesc1()
             {
@@ -47,7 +47,7 @@ namespace Molten.Graphics
                 Height = Math.Max(height, 1),
                 MipLevels = mipCount,
                 ArraySize = Math.Max(arraySize, 1),
-                Format = format,
+                Format = format.ToApi(),
                 BindFlags = (uint)GetBindFlags(),
                 CPUAccessFlags = (uint)Flags.ToCpuFlags(),
                 SampleDesc = new SampleDesc((uint)aaLevel, (uint)msaa),

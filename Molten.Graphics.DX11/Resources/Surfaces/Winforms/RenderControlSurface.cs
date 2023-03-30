@@ -20,8 +20,8 @@
         IntPtr? _windowHandle;
         Control _parentWindow;
 
-        internal RenderControlSurface(RenderService renderer, string controlTitle, string controlName, uint mipCount = 1)
-            : base(renderer, controlTitle, controlName, mipCount) { }
+        internal RenderControlSurface(GraphicsDevice device, string controlTitle, string controlName, uint mipCount = 1)
+            : base(device, controlTitle, controlName, mipCount) { }
 
         protected override void CreateControl(string title, out RenderControl control, out IntPtr handle)
         {

@@ -20,6 +20,7 @@ namespace Molten.Graphics
             ResourceMiscFlag optionFlags = 0,
             void* initialData = null) : base(device, stride, numElements, flags, type)
         {
+            ResourceFormat = GraphicsFormat.Unknown;
             NativeSRV = new SRView(this);
             NativeUAV = new UAView(this);
 
@@ -149,5 +150,7 @@ namespace Molten.Graphics
         internal SRView NativeSRV { get; }
 
         internal UAView NativeUAV { get; }
+
+        public override GraphicsFormat ResourceFormat { get; protected set; }
     }
 }

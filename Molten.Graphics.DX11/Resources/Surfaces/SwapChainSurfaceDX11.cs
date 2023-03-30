@@ -18,8 +18,8 @@ namespace Molten.Graphics
         ThreadedQueue<Action> _dispatchQueue;
         uint _vsync;
 
-        internal SwapChainSurfaceDX11(RenderService renderer, uint mipCount, Format format = Format.FormatB8G8R8A8Unorm)
-            : base(renderer, 1, 1, 
+        internal SwapChainSurfaceDX11(GraphicsDevice device, uint mipCount, GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm)
+            : base(device, 1, 1, 
                   GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite,
                   format, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default)
         {
@@ -73,7 +73,7 @@ namespace Molten.Graphics
             }
             else
             {
-                Renderer.Log.Error($"Error creating resource for SwapChainSurface '{Name}': {err}");
+                Device.Log.Error($"Error creating resource for SwapChainSurface '{Name}': {err}");
             }
 
             return res;

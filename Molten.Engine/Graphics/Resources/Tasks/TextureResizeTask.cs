@@ -1,8 +1,7 @@
-﻿using Silk.NET.DXGI;
-
+﻿
 namespace Molten.Graphics
 {
-    internal struct TextureResizeTask : IGraphicsResourceTask
+    public struct TextureResizeTask : IGraphicsResourceTask
     {
         public uint NewWidth;
 
@@ -18,7 +17,7 @@ namespace Molten.Graphics
 
         public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
         {
-            TextureDX11 texture = resource as TextureDX11;
+            GraphicsTexture texture = resource as GraphicsTexture;
             texture.OnSetSize(ref this);
             return true;
         }

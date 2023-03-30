@@ -114,7 +114,7 @@
             _invViewProjection = Matrix4F.Invert(_viewProjection);
         }
 
-        private void _surface_OnResize(ITexture texture)
+        private void _surface_OnResize(GraphicsTexture texture)
         {
             CalculateProjection();
             OnSurfaceResized?.Invoke(this, texture as IRenderSurface2D);

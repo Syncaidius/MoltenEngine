@@ -35,6 +35,20 @@ namespace Molten.Graphics
                   ResourceMiscFlag.BufferStructured, initialData)
         {
             TypedFormat = format;
+            switch (format)
+            {
+                case TypedBufferFormat.Float:
+                    ResourceFormat = GraphicsFormat.R32_Float;
+                    break;
+
+                case TypedBufferFormat.Int32:
+                    ResourceFormat = GraphicsFormat.R32_SInt;
+                    break;
+
+                case TypedBufferFormat.UInt32:
+                    ResourceFormat = GraphicsFormat.R32_UInt;
+                    break;
+            }
         }
 
         protected override void CreateResources()
@@ -75,5 +89,7 @@ namespace Molten.Graphics
         }
 
         public TypedBufferFormat TypedFormat { get; }
+
+        public override GraphicsFormat ResourceFormat { get; protected set; }
     }
 }

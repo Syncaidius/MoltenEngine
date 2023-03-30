@@ -1,10 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    /// <summary>
-    /// A delegate for texture event handlers.
-    /// </summary>
-    /// <param name="texture">The texture instance that triggered the event.</param>
-    public delegate void TextureHandler(ITexture texture);
+
 
     /// <summary>Represents a 1D texture, while also acting as the base for all other texture implementations.</summary>
     /// <seealso cref="IDisposable" />
@@ -27,7 +23,7 @@
         /// <param name="priority">The priority of the copy operation.</param>
         /// <param name="destination">The destination texture.</param>
         /// <param name="completeCallback">A callback to run once the operation has completed.</param>
-        void CopyTo(GraphicsPriority priority, ITexture destination, Action<GraphicsResource> completeCallback = null);
+        void CopyTo(GraphicsPriority priority, GraphicsTexture destination, Action<GraphicsResource> completeCallback = null);
 
         /// <summary>
         /// Copies the current texture to the destination texture. Both texture levels must be of the same format and dimensions.
@@ -41,7 +37,7 @@
         /// <param name="completeCallback">A callback to run once the operation has completed.</param>
         void CopyTo(GraphicsPriority priority,
             uint sourceLevel, uint sourceSlice,
-            ITexture destination, uint destLevel, uint destSlice,
+            GraphicsTexture destination, uint destLevel, uint destSlice,
             Action<GraphicsResource> completeCallback = null);
 
         /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>
@@ -139,8 +135,8 @@
         bool IsMultisampled { get; }
 
         /// <summary>
-        /// Gets the renderer that the texture is bound to.
+        /// Gets the <see cref="GraphicsDevice"/> that the texture is bound to.
         /// </summary>
-        RenderService Renderer { get; }
+        GraphicsDevice Device { get; }
     }
 }

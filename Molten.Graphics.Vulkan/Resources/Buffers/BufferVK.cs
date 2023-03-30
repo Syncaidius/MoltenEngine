@@ -112,5 +112,7 @@ namespace Molten.Graphics
         public override unsafe void* UAV => throw new NotImplementedException();
 
         public override unsafe void* SRV => throw new NotImplementedException();
+
+        public override GraphicsFormat ResourceFormat { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
     }
 }

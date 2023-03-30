@@ -332,7 +332,7 @@ namespace Molten.Examples
             UpdateGamepadUI();
         }
 
-        private void Window_OnResize(ITexture texture)
+        private void Window_OnResize(GraphicsTexture texture)
         {
             if (_baseContentLoaded)
                 UpdateUIlayout(UI);

@@ -29,8 +29,8 @@
         /// <param name="renderer"></param>
         /// <param name="mipCount"></param>
         /// <param name="sampleCount"></param>
-        internal RenderFormSurface(RenderService renderer, string formTitle, string formName, uint mipCount = 1)
-            : base(renderer, formTitle, formName, mipCount) { }
+        internal RenderFormSurface(GraphicsDevice device, string formTitle, string formName, uint mipCount = 1)
+            : base(device, formTitle, formName, mipCount) { }
 
         protected override void CreateControl(string title, out RenderForm control, out IntPtr handle)
         {

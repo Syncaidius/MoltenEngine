@@ -106,5 +106,10 @@ namespace Molten.Graphics
 
         /// <summary>Gets the native unordered-acess/storage view attached to the object.</summary>
         public abstract unsafe void* UAV { get; }
+
+        /// <summary>
+        /// Gets or [protected] sets the <see cref="GraphicsFormat"/> of the resource.
+        /// </summary>
+        public abstract GraphicsFormat ResourceFormat { get; protected set; }
     }
 }
