@@ -204,7 +204,7 @@ namespace Molten.Graphics
             if (src.Handle == null)
                 src.Apply(this);
 
-            if(dest is StagingBufferDX11)
+            if(dest is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
                 dest.Apply(this);
 
             Native->CopyResource((ID3D11Resource*)dest.Handle, (ID3D11Resource*)src.Handle);

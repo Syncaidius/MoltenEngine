@@ -2,6 +2,7 @@
 using System.Reflection;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
+using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 using Message = Silk.NET.Direct3D11.Message;
@@ -391,7 +392,7 @@ namespace Molten.Graphics
             if (allowWrite)
                 flags |= GraphicsResourceFlags.CpuWrite;
 
-            return new StagingBufferDX11(this, flags, byteCapacity);
+            return new BufferDX11(this, GraphicsBufferType.Staging, flags | GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.NoShaderAccess, BindFlag.None, 1, byteCapacity, ResourceMiscFlag.None);
         }
 
         public override DisplayManagerDXGI DisplayManager => _displayManager;

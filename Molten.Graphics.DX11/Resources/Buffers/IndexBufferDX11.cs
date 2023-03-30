@@ -24,8 +24,13 @@ namespace Molten.Graphics
                     D3DFormat = Format.FormatR16Uint;
                     break;
             }
+
+
+            ResourceFormat = D3DFormat.FromApi();
         }
 
         internal Format D3DFormat { get; }
+
+        public override GraphicsFormat ResourceFormat { get; protected set; }
     }
 }

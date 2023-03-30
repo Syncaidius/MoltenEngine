@@ -5,7 +5,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    public abstract unsafe class BufferDX11 : GraphicsBuffer
+    public unsafe class BufferDX11 : GraphicsBuffer
     {
         ID3D11Buffer* _native;
         uint _ringPos;
