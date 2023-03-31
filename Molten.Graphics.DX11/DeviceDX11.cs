@@ -359,26 +359,30 @@ namespace Molten.Graphics
 
         public unsafe override GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
         {
+            uint numBytes = numVertices * (uint)sizeof(T);
             fixed (T* ptr = initialData)
-                return new VertexBufferDX11<T>(this, flags | GraphicsResourceFlags.NoShaderAccess, numVertices, ptr);
+                return new VertexBufferDX11<T>(this, flags | GraphicsResourceFlags.NoShaderAccess, numVertices, ptr, numBytes);
         }
 
         public unsafe override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData = null)
         {
+            uint numBytes = numIndices * sizeof(ushort);
             fixed (ushort* ptr = initialData)
-                return new IndexBufferDX11(this, flags | GraphicsResourceFlags.NoShaderAccess, IndexBufferFormat.UInt16, numIndices, ptr);
+                return new IndexBufferDX11(this, flags | GraphicsResourceFlags.NoShaderAccess, IndexBufferFormat.UInt16, numIndices, ptr, numIndices);
         }
 
         public unsafe override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null)
         {
+            uint numBytes = numIndices * sizeof(uint);
             fixed (uint* ptr = initialData)
-                return new IndexBufferDX11(this, flags | GraphicsResourceFlags.NoShaderAccess, IndexBufferFormat.UInt32, numIndices, ptr);
+                return new IndexBufferDX11(this, flags | GraphicsResourceFlags.NoShaderAccess, IndexBufferFormat.UInt32, numIndices, ptr, numIndices);
         }
 
         public unsafe override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, T[] initialData = null)
         {
+            uint numBytes = numElements * sizeof(uint);
             fixed (T* ptr = initialData)
-                return new BufferDX11(this, GraphicsBufferType.Structured, flags, BindFlag.None, (uint)sizeof(T), numElements, ResourceMiscFlag.BufferStructured, ptr);
+                return new BufferDX11(this, GraphicsBufferType.Structured, flags, (uint)sizeof(T), numElements, ptr, numBytes);
         }
 
         public override GraphicsBuffer CreateStagingBuffer(bool allowRead, bool allowWrite, uint byteCapacity)
@@ -390,7 +394,7 @@ namespace Molten.Graphics
             if (allowWrite)
                 flags |= GraphicsResourceFlags.CpuWrite;
 
-            return new BufferDX11(this, GraphicsBufferType.Staging, flags | GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.NoShaderAccess, BindFlag.None, 1, byteCapacity, ResourceMiscFlag.None);
+            return new BufferDX11(this, GraphicsBufferType.Staging, flags | GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.NoShaderAccess, 1, byteCapacity, null, 0);
         }
 
         public override DisplayManagerDXGI DisplayManager => _displayManager;

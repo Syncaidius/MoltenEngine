@@ -20,19 +20,16 @@ namespace Molten.Graphics
             GraphicsResourceFlags flags, 
             TypedBufferFormat format,
             uint numElements,
-            bool unorderedAccess = false, 
-            bool shaderResource = true,
-            void* initialData = null)
+            void* initialData,
+            uint initialBytes)
             : base(device, GraphicsBufferType.Structured,
                   flags,
-                  (shaderResource ? BindFlag.ShaderResource : 0) | (unorderedAccess ? BindFlag.UnorderedAccess : 0), 
                   format switch
                   {
                       TypedBufferFormat.UInt32 => sizeof(uint),
                       TypedBufferFormat.Int32 => sizeof(int),
                       TypedBufferFormat.Float => sizeof(float)
-                  }, numElements, 
-                  ResourceMiscFlag.BufferStructured, initialData)
+                  }, numElements, initialData, initialBytes)
         {
             TypedFormat = format;
             switch (format)

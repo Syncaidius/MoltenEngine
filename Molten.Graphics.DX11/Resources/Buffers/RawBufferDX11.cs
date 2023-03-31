@@ -18,15 +18,9 @@ namespace Molten.Graphics
             DeviceDX11 device,
             GraphicsResourceFlags flags,
             uint numElements,
-            bool unorderedAccess = false,
-            bool shaderResource = true,
-            void* initialData = null)
-            : base(device,
-                  GraphicsBufferType.ByteAddress,
-                  flags,
-                  (shaderResource ? BindFlag.ShaderResource : 0) | (unorderedAccess ? BindFlag.UnorderedAccess : 0),
-                  sizeof(uint), numElements,
-                  ResourceMiscFlag.BufferStructured | ResourceMiscFlag.BufferAllowRawViews, initialData)
+            void* initialData,
+            uint initialBytes)
+            : base(device, GraphicsBufferType.ByteAddress, flags, sizeof(uint), numElements, initialData, initialBytes)
         {
             
         }

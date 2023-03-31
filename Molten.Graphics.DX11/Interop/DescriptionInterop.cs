@@ -60,5 +60,31 @@ namespace Molten.Graphics
 
             return result;
         }
+
+        internal static BindFlag ToBindFlags(this GraphicsBufferType type)
+        {
+            BindFlag result = 0;
+
+            switch (type)
+            {
+                case GraphicsBufferType.Constant: result |= BindFlag.ConstantBuffer; break;
+                case GraphicsBufferType.Index: result |= BindFlag.IndexBuffer; break;
+                case GraphicsBufferType.Vertex: result |= BindFlag.VertexBuffer; break;
+            }
+
+            return result;
+        }
+
+        internal static ResourceMiscFlag ToMiscFlags(this GraphicsBufferType type)
+        {
+            ResourceMiscFlag result = 0;
+
+            if (type == GraphicsBufferType.ByteAddress)
+                result = ResourceMiscFlag.BufferStructured | ResourceMiscFlag.BufferAllowRawViews;
+            else if (type == GraphicsBufferType.Structured)
+                result = ResourceMiscFlag.BufferStructured;
+
+            return result;
+        }
     }
 }

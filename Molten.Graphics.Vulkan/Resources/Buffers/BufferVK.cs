@@ -19,24 +19,24 @@ namespace Molten.Graphics
         {
             _handle = EngineUtil.Alloc<ResourceHandleVK>();
 
-            MemoryPropertyFlags memFlags = BuildDescription(flags, usageFlags);
+            MemoryPropertyFlags memFlags = BuildDescription(usageFlags);
             InitializeBuffer(memFlags, initialData);
         }
 
-        private MemoryPropertyFlags BuildDescription(GraphicsResourceFlags bufferFlags, BufferUsageFlags usage)
+        private MemoryPropertyFlags BuildDescription(BufferUsageFlags usage)
         {
             MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
 
             // Does the memory need to be host-visible?
-            if(bufferFlags.Has(GraphicsResourceFlags.CpuRead) || bufferFlags.Has(GraphicsResourceFlags.CpuWrite))
+            if(Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
                 memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
             else
                 memFlags |= MemoryPropertyFlags.DeviceLocalBit;
 
-            if (bufferFlags.Has(GraphicsResourceFlags.None))
+            if (Flags.Has(GraphicsResourceFlags.None))
                 usage |= BufferUsageFlags.TransferSrcBit;
 
-            if (bufferFlags.Has(GraphicsResourceFlags.GpuWrite))
+            if (Flags.Has(GraphicsResourceFlags.GpuWrite))
                 usage |= BufferUsageFlags.TransferDstBit;
 
             _desc.SType = StructureType.BufferCreateInfo;

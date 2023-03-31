@@ -13,17 +13,16 @@ namespace Molten.Graphics
         internal BufferDX11(DeviceDX11 device,
             GraphicsBufferType type,
             GraphicsResourceFlags flags,
-            BindFlag bindFlags,
             uint stride,
             uint numElements,
-            ResourceMiscFlag optionFlags = 0,
-            void* initialData = null) : base(device, stride, numElements, flags, type)
+            void* initialData,
+            uint initialBytes) : base(device, stride, numElements, flags, type)
         {
             ResourceFormat = GraphicsFormat.Unknown;
             NativeSRV = new SRView(this);
             NativeUAV = new UAView(this);
 
-            InitializeBuffer( bindFlags, optionFlags, initialData);
+            InitializeBuffer(initialData, initialBytes);
             device.ProcessDebugLayerMessages();
         }
 
@@ -31,7 +30,7 @@ namespace Molten.Graphics
         /// 
         /// </summary>
         /// <param name="initialDataPtr">A pointer to data that the buffer should initially be populated with.</param>
-        protected virtual void InitializeBuffer(BindFlag bindFlags, ResourceMiscFlag opFlags, void* initialData)
+        protected virtual void InitializeBuffer(void* initialData, uint initialBytes)
         {
             DeviceDX11 nDevice = Device as DeviceDX11;
             if (Flags.IsImmutable() && initialData == null)
@@ -52,8 +51,8 @@ namespace Molten.Graphics
             }
             else
             {
-                Desc.BindFlags = (uint)bindFlags;
-                Desc.MiscFlags = (uint)opFlags;
+                Desc.BindFlags = (uint)(Flags.ToBindFlags() | BufferType.ToBindFlags());
+                Desc.MiscFlags = (uint)BufferType.ToMiscFlags();
 
                 if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
                     Desc.BindFlags |= (uint)BindFlag.ShaderResource;
@@ -68,7 +67,7 @@ namespace Molten.Graphics
 
             if (initialData != null)
             {
-                SubresourceData srd = new SubresourceData(initialData, SizeInBytes, SizeInBytes);
+                SubresourceData srd = new SubresourceData(initialData, initialBytes, SizeInBytes);
                 nDevice.Ptr->CreateBuffer(ref Desc, ref srd, ref _native);
             }
             else
