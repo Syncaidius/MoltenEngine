@@ -1,11 +1,9 @@
 ﻿namespace Molten.Input
 {
+    /// <summary>
+    /// Represents a key on a keyboard.
+    /// </summary>
     public enum KeyCode
-    {
-/// <summary>
-/// Represents a key on a keyboard.
-/// </summary>
-public enum KeyCode
     {
         /// <summary>
         /// The "Cancel" key.
