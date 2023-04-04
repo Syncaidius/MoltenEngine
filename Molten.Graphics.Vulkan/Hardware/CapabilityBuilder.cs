@@ -11,7 +11,7 @@ namespace Molten.Graphics
             public void* PNext;
         }
 
-        internal unsafe GraphicsCapabilities Build(PhysicalDevice device, RendererVK renderer, ref PhysicalDeviceProperties2 properties, ref PhysicalDeviceMemoryProperties2 mem)
+        internal unsafe GraphicsCapabilities Build(DeviceVK device, RendererVK renderer, ref PhysicalDeviceProperties2 properties, ref PhysicalDeviceMemoryProperties2 mem)
         {
             PhysicalDeviceFeatures2 dFeatures = new PhysicalDeviceFeatures2(StructureType.PhysicalDeviceFeatures2);
             renderer.VK.GetPhysicalDeviceFeatures2(device, &dFeatures);
@@ -31,7 +31,7 @@ namespace Molten.Graphics
             cap.BlendLogicOp = features.LogicOp;
             cap.MaxAllocatedSamplers = limits.MaxSamplerAllocationCount;
 
-            GetMemoryProperties(cap, ref mem);
+            GetMemoryProperties(device, ref mem);
 
             uint variant, major, minor, patch;
             UnpackVersion(properties.Properties.ApiVersion, out variant, out major, out minor, out patch);
@@ -101,7 +101,7 @@ namespace Molten.Graphics
             return cap;
         }
 
-        private void GetMemoryProperties(GraphicsCapabilities cap, ref PhysicalDeviceMemoryProperties2 mem)
+        private void GetMemoryProperties(DeviceVK device, ref PhysicalDeviceMemoryProperties2 mem)
         {
             Dictionary<uint, MemoryPropertyFlags> heapFlags = new Dictionary<uint, MemoryPropertyFlags>();
 
@@ -123,15 +123,15 @@ namespace Molten.Graphics
                 double heapSize = ByteMath.ToMegabytes(mHeap.Size);
 
                 if ((flags & MemoryPropertyFlags.DeviceLocalBit) == MemoryPropertyFlags.DeviceLocalBit)
-                    cap.DedicatedVideoMemory += heapSize;
+                    device.Capabilities.DedicatedVideoMemory += heapSize;
 
                 MemoryPropertyFlags hostFlags = MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
                 if ((flags & hostFlags) == hostFlags)
-                    cap.DedicatedSystemMemory += heapSize;
+                    device.Capabilities.DedicatedSystemMemory += heapSize;
 
                 MemoryPropertyFlags sharedFlags = hostFlags | MemoryPropertyFlags.DeviceLocalBit;
                 if ((flags & sharedFlags) == sharedFlags)
-                    cap.SharedVideoMemory += heapSize;
+                    device.Capabilities.SharedVideoMemory += heapSize;
             }
         }
 

@@ -51,7 +51,7 @@ namespace Molten.Graphics
             Vendor = ParseVendorID(p.Properties.VendorID);
             Type = (GraphicsDeviceType)p.Properties.DeviceType;
 
-            Capabilities = _manager.CapBuilder.Build(Adapter, _manager.Renderer, ref p, ref mem);
+            Capabilities = _manager.CapBuilder.Build(this, _manager.Renderer, ref p, ref mem);
 
 #if DEBUG
             _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &p);
@@ -410,5 +410,7 @@ namespace Molten.Graphics
         internal Vk VK => _renderer.VK;
 
         internal Glfw GLFW => _renderer.GLFW;
+
+        internal ref PhysicalDeviceMemoryProperties Memory => ref _memProperties.MemoryProperties;
     }
 }
