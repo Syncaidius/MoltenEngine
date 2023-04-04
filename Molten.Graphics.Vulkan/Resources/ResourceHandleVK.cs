@@ -6,6 +6,6 @@ namespace Molten.Graphics
     {
         public void* Ptr;
 
-        public DeviceMemory* Memory;
+        public DeviceMemory Memory;
     }
 }

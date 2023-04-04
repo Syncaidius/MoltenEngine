@@ -7,6 +7,7 @@ namespace Molten.Graphics
     {
         BufferCreateInfo _desc;
         ResourceHandleVK* _handle;
+        MemoryAllocationVK _memory;
 
         protected BufferVK(GraphicsDevice device,
             GraphicsBufferType type,
@@ -54,7 +55,6 @@ namespace Molten.Graphics
         private void InitializeBuffer(MemoryPropertyFlags memFlags, void* initialData)
         {
             _handle->Ptr = EngineUtil.Alloc<Buffer>();
-            _handle->Memory = EngineUtil.Alloc<DeviceMemory>();
 
             DeviceVK device = Device as DeviceVK;
             Result r = device.VK.CreateBuffer(device, in _desc, null, (Buffer*)_handle->Ptr);
@@ -63,19 +63,19 @@ namespace Molten.Graphics
 
             MemoryRequirements memRequirements;
             device.VK.GetBufferMemoryRequirements(device, *(Buffer*)_handle->Ptr, &memRequirements);
-
-            MemoryAllocateInfo memInfo = new MemoryAllocateInfo();
-            memInfo.SType = StructureType.MemoryAllocateInfo;
-            memInfo.AllocationSize = memRequirements.Size;
-            memInfo.MemoryTypeIndex = device.GetMemoryTypeIndex(ref memRequirements, memFlags);
-
-            r = device.VK.AllocateMemory(device, &memInfo, null, _handle->Memory);
-            if (!r.Check(device))
+           _memory = device.Memory.Allocate(ref memRequirements, memFlags);
+            if (_memory != null)
+            {
+                _handle->Memory = _memory;
+                r = device.VK.BindBufferMemory(device, *(Buffer*)_handle->Ptr, _handle->Memory, 0);
+                if (!r.Check(device))
+                    return;
+            }
+            else
+            {
+                device.Log.Error($"Unable to allocate memory for buffer of size {_desc.Size} bytes.");
                 return;
-
-            r = device.VK.BindBufferMemory(device, *(Buffer*)_handle->Ptr, *_handle->Memory, 0);
-            if (!r.Check(device))
-                return;
+            }
         }
 
         public override void GraphicsRelease()
@@ -85,9 +85,8 @@ namespace Molten.Graphics
             if (_handle->Ptr != null)
             {
                 device.VK.DestroyBuffer(device, *(Buffer*)_handle->Ptr, null);
-                device.VK.FreeMemory(device, *_handle->Memory, null);
+                device.VK.FreeMemory(device, _handle->Memory, null);
 
-                EngineUtil.Free(ref _handle->Memory);
                 EngineUtil.Free(ref _handle->Ptr);
                 EngineUtil.Free(ref _handle);
                 EngineUtil.Free(ref _desc.PQueueFamilyIndices);

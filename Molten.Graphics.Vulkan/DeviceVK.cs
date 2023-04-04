@@ -1,4 +1,5 @@
-﻿using Silk.NET.Core;
+﻿using System;
+using Silk.NET.Core;
 using Silk.NET.Core.Native;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
@@ -13,7 +14,6 @@ namespace Molten.Graphics
         public event DisplayOutputChanged OnOutputDeactivated;
 
         DisplayManagerVK _manager;
-
         List<DisplayOutputVK> _outputs;
         List<DisplayOutputVK> _activeOutputs;
 
@@ -24,6 +24,7 @@ namespace Molten.Graphics
         List<CommandQueueVK> _queues;
         CommandQueueVK _gfxQueue;
         DeviceLoaderVK _loader;
+        MemoryManagerVK _memory;
         Device* _native;
 
         /// <summary>
@@ -39,19 +40,17 @@ namespace Molten.Graphics
             _vkInstance = instance;
             _manager = manager;
             Adapter = pDevice;
+            _memory = new MemoryManagerVK(this);
+
             PhysicalDeviceProperties2 p = new PhysicalDeviceProperties2(StructureType.PhysicalDeviceProperties2);
             _manager.Renderer.VK.GetPhysicalDeviceProperties2(Adapter, &p);
-
-            PhysicalDeviceMemoryProperties2 mem = new PhysicalDeviceMemoryProperties2(StructureType.PhysicalDeviceMemoryProperties2);
-            _manager.Renderer.VK.GetPhysicalDeviceMemoryProperties2(Adapter, &mem);
-            _memProperties = mem;
 
             Name = SilkMarshal.PtrToString((nint)p.Properties.DeviceName, NativeStringEncoding.UTF8);
             ID = ParseDeviceID(p.Properties.DeviceID);
             Vendor = ParseVendorID(p.Properties.VendorID);
             Type = (GraphicsDeviceType)p.Properties.DeviceType;
 
-            Capabilities = _manager.CapBuilder.Build(this, _manager.Renderer, ref p, ref mem);
+            Capabilities = _manager.CapBuilder.Build(this, _manager.Renderer, ref p);
 
 #if DEBUG
             _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &p);
@@ -68,18 +67,6 @@ namespace Molten.Graphics
             _native = EngineUtil.Alloc<Device>();
             _queues = new List<CommandQueueVK>();
             _loader = new DeviceLoaderVK(_renderer, this, capFlags);
-        }
-
-        internal uint GetMemoryTypeIndex(ref MemoryRequirements requirements, MemoryPropertyFlags flags)
-        {
-            for (int i = 0; i < _memProperties.MemoryProperties.MemoryTypeCount; i++)
-            {
-                ref MemoryType mType = ref _memProperties.MemoryProperties.MemoryTypes[i];
-                if ((requirements.MemoryTypeBits & (1U << i)) == (1U << i) && (mType.PropertyFlags & flags) == flags)
-                    return (uint)i;
-            }
-
-            throw new NotSupportedException("Failed to find matching memory type.");
         }
 
         private DeviceVendor ParseVendorID(uint vendorID)
@@ -411,6 +398,6 @@ namespace Molten.Graphics
 
         internal Glfw GLFW => _renderer.GLFW;
 
-        internal ref PhysicalDeviceMemoryProperties Memory => ref _memProperties.MemoryProperties;
+        internal MemoryManagerVK Memory => _memory;
     }
 }

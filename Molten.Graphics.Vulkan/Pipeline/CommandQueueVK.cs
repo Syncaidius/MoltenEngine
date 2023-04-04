@@ -142,7 +142,7 @@ namespace Molten.Graphics
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource,GraphicsMapType mapType)
         {
             ResourceMap map = new ResourceMap(null, resource.SizeInBytes, resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
-            Result r = VK.MapMemory(_device, *(((ResourceHandleVK*)resource.Handle)->Memory), 0, resource.SizeInBytes, 0, &map.Ptr);
+            Result r = VK.MapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory), 0, resource.SizeInBytes, 0, &map.Ptr);
 
             if (!r.Check(_device))
                 return new ResourceMap();
@@ -152,7 +152,7 @@ namespace Molten.Graphics
 
         protected override unsafe void OnUnmapResource(GraphicsResource resource, uint subresource)
         {
-            VK.UnmapMemory(_device, *(((ResourceHandleVK*)resource.Handle)->Memory));
+            VK.UnmapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory));
         }
 
         protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)

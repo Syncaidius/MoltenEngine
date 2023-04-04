@@ -11,7 +11,7 @@ namespace Molten.Graphics
             public void* PNext;
         }
 
-        internal unsafe GraphicsCapabilities Build(DeviceVK device, RendererVK renderer, ref PhysicalDeviceProperties2 properties, ref PhysicalDeviceMemoryProperties2 mem)
+        internal unsafe GraphicsCapabilities Build(DeviceVK device, RendererVK renderer, ref PhysicalDeviceProperties2 properties)
         {
             PhysicalDeviceFeatures2 dFeatures = new PhysicalDeviceFeatures2(StructureType.PhysicalDeviceFeatures2);
             renderer.VK.GetPhysicalDeviceFeatures2(device, &dFeatures);
@@ -30,8 +30,6 @@ namespace Molten.Graphics
             cap.PixelShader.MaxOutputTargets = limits.MaxFragmentOutputAttachments;
             cap.BlendLogicOp = features.LogicOp;
             cap.MaxAllocatedSamplers = limits.MaxSamplerAllocationCount;
-
-            GetMemoryProperties(device, ref mem);
 
             uint variant, major, minor, patch;
             UnpackVersion(properties.Properties.ApiVersion, out variant, out major, out minor, out patch);
@@ -101,36 +99,29 @@ namespace Molten.Graphics
             return cap;
         }
 
-        private void GetMemoryProperties(DeviceVK device, ref PhysicalDeviceMemoryProperties2 mem)
+        private void GetMemoryProperties(DeviceVK device)
         {
-            Dictionary<uint, MemoryPropertyFlags> heapFlags = new Dictionary<uint, MemoryPropertyFlags>();
+            //Dictionary<uint, MemoryPropertyFlags> heapFlags = new Dictionary<uint, MemoryPropertyFlags>();
 
             // Search here for device spec references: http://vulkan.gpuinfo.org/listdevices.php
-            for (int i = 0; i < mem.MemoryProperties.MemoryTypeCount; i++)
+            /*for (int i = 0; i < device.Memory.MemoryTypeCount; i++)
             {
-                ref MemoryType mType = ref mem.MemoryProperties.MemoryTypes[i];
+                ref MemoryType mType = ref device.Memory.MemoryTypes[i];
                 if (!heapFlags.ContainsKey(mType.HeapIndex))
                     heapFlags[mType.HeapIndex] = mType.PropertyFlags;
                 else
                     heapFlags[mType.HeapIndex] |= mType.PropertyFlags; 
-            }
+            }*/
 
-            foreach(uint heapIndex in heapFlags.Keys)
+            for(uint i = 0; i < device.Memory.HeapCount; i++)
             {
-                ref MemoryHeap mHeap = ref mem.MemoryProperties.MemoryHeaps[(int)heapIndex];
-                MemoryPropertyFlags flags = heapFlags[heapIndex];
+                MemoryHeapVK heap = device.Memory[i];;
 
-                double heapSize = ByteMath.ToMegabytes(mHeap.Size);
+                double heapSize = ByteMath.ToMegabytes(heap.Size);
 
-                if ((flags & MemoryPropertyFlags.DeviceLocalBit) == MemoryPropertyFlags.DeviceLocalBit)
+                if (heap.HasFlags(MemoryHeapFlags.DeviceLocalBit))
                     device.Capabilities.DedicatedVideoMemory += heapSize;
-
-                MemoryPropertyFlags hostFlags = MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
-                if ((flags & hostFlags) == hostFlags)
-                    device.Capabilities.DedicatedSystemMemory += heapSize;
-
-                MemoryPropertyFlags sharedFlags = hostFlags | MemoryPropertyFlags.DeviceLocalBit;
-                if ((flags & sharedFlags) == sharedFlags)
+                else
                     device.Capabilities.SharedVideoMemory += heapSize;
             }
         }

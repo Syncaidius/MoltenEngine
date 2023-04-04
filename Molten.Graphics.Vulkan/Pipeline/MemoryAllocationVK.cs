@@ -25,6 +25,11 @@ namespace Molten.Graphics
             _heap.Free(this);
         }
 
+        public static implicit operator DeviceMemory(MemoryAllocationVK allocation)
+        {
+            return allocation._memory;
+        }
+
         internal ref DeviceMemory Handle => ref _memory;
 
         internal ulong Size { get; }
