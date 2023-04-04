@@ -33,14 +33,14 @@ namespace Molten.Graphics
             return flags;
         }
 
-        internal HResult CreateDevice(GraphicsDeviceDXGI adapter, out ID3D11Device5* device)
+        internal HResult CreateDevice(DeviceDXGI adapter, out ID3D11Device5* device)
         {
             ID3D11DeviceContext4* nullContext = null;
             return CreateDevice(adapter, out device, out nullContext, true);
         }
 
         internal HResult CreateDevice(
-            GraphicsDeviceDXGI adapter,
+            DeviceDXGI adapter,
             out ID3D11Device5* device,
             out ID3D11DeviceContext4* context, bool headless = false)
         {
@@ -90,7 +90,7 @@ namespace Molten.Graphics
             return r;
         }
 
-        internal void GetCapabilities(GraphicsSettings settings, GraphicsDeviceDXGI adapter)
+        internal void GetCapabilities(GraphicsSettings settings, DeviceDXGI adapter)
         {
             // DX11 resource limits: https://msdn.microsoft.com/en-us/library/windows/desktop/ff819065%28v=vs.85%29.aspx
             GraphicsCapabilities cap = adapter.Capabilities;

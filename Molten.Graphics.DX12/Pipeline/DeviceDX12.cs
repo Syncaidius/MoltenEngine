@@ -5,14 +5,14 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    internal unsafe class DeviceDX12 : GraphicsDeviceDXGI
+    internal unsafe class DeviceDX12 : DeviceDXGI
     {
         ID3D12Device10* _native;
         IDXGIAdapter4* _adapter;
         DeviceBuilderDX12 _builder;
         CommandQueueDX12 _cmdDirect;
 
-        public DeviceDX12(RenderService renderer, DisplayManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) : 
+        public DeviceDX12(RenderService renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) : 
             base(renderer, manager, adapter)
         {
             _builder = deviceBuilder;

@@ -46,7 +46,7 @@ namespace Molten.Graphics
             return (((variant) << 29) | ((major) << 22) | ((minor) << 12) | (patch));
         }
 
-        protected override GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings)
+        protected override GraphicsManager OnInitializeDisplayManager(GraphicsSettings settings)
         {
             // TODO Store baseline profiles for each OS/platform where possible, or default to Moltens own.
             // For android see: https://developer.android.com/ndk/guides/graphics/android-baseline-profile
@@ -75,7 +75,7 @@ namespace Molten.Graphics
             return _displayManager;
         }
 
-        protected override GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
+        protected override GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsManager manager)
         {
             NativeDevice = _displayManager.SelectedDevice as DeviceVK;
             NativeDevice.Initialize(CommandSetCapabilityFlags.Graphics);

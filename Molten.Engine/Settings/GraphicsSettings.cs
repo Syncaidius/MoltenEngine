@@ -41,7 +41,7 @@ namespace Molten
             return backBufferSize;
         }
 
-        /// <summary>Gets or sets the UID of the <see cref="IDisplayAdapter"/> that was last used.</summary>
+        /// <summary>Gets or sets the UID of the <see cref="GraphicsDevice"/> that was last used.</summary>
         [DataMember]
         public SettingValue<DeviceID> AdapterID { get; }
 

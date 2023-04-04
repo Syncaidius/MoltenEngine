@@ -81,34 +81,62 @@ namespace Molten
             return false;
         }
 
+        /// <summary>
+        /// Logs a message
+        /// </summary>
+        /// <param name="msg">The message text.</param>
         public void LogMessage(string msg)
         {
             Manager.Log.WriteLine($"[Content][{HandleType}] {RelativePath}: {msg}");
         }
 
+        /// <summary>
+        /// Logs an error message.
+        /// </summary>
+        /// <param name="msg">The message text.</param>
         public void LogError(string msg)
         {
             Manager.Log.Error($"[Content][{HandleType}] {RelativePath}: {msg}");
         }
 
+        /// <summary>
+        /// Logs a warning.
+        /// </summary>
+        /// <param name="msg">The message text.</param>
         public void LogWarning(string msg)
         {
             Manager.Log.Warning($"[Content][{HandleType}] {RelativePath}: {msg}");
         }
 
+        /// <summary>
+        /// Logs the details <see cref="Exception"/>.
+        /// </summary>
+        /// <param name="ex">The exeption</param>
         public void LogError(Exception ex)
         {
             Manager.Log.Error($"[Content][{HandleType}] {RelativePath}: {ex.Message}");
             Manager.Log.Error(ex);
         }
 
+        /// <summary>
+        /// Gets the underlying content asset, if any.
+        /// </summary>
+        /// <typeparam name="T">The type to cast the asset to, if any.</typeparam>
+        /// <returns></returns>
         public T Get<T>()
         {
             return Asset != null ? (T)Asset : default(T);
         }
 
+        /// <summary>
+        /// Invoked when is being freed for reuse by a <see cref="ContentManager"/>.
+        /// </summary>
         protected override void OnFree() { }
 
+        /// <summary>
+        /// Invoked when the current <see cref="ContentHandle"/> is being processed by a <see cref="ContentManager"/>.
+        /// </summary>
+        /// <returns></returns>
         protected abstract ContentHandleStatus OnProcess();
 
         /// <summary>
@@ -121,8 +149,14 @@ namespace Molten
         /// </summary>
         public ContentManager Manager { get; }
 
+        /// <summary>
+        /// Gets the underlying content type, if any.
+        /// </summary>
         public Type ContentType { get; }
 
+        /// <summary>
+        /// Gets information about the source file that the asset was loaded from.
+        /// </summary>
         public FileInfo Info { get; internal set; }
 
         /// <summary>
@@ -135,10 +169,19 @@ namespace Molten
         /// </summary>
         internal ref object Asset => ref _asset;
 
+        /// <summary>
+        /// The <see cref="IContentProcessor"/> that will be used to process the current <see cref="ContentHandle"/>, if any.
+        /// </summary>
         internal IContentProcessor Processor { get; }
 
+        /// <summary>
+        /// The <see cref="ContentParameters"/> that will be used when processing the current <see cref="ContentHandle"/>.
+        /// </summary>
         internal ContentParameters Parameters { get; set; }
 
+        /// <summary>
+        /// The type of the current <see cref="ContentHandle"/>.
+        /// </summary>
         public ContentHandleType HandleType { get;  }
     }
 }

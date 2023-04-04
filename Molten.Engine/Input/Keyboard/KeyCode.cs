@@ -2,58 +2,144 @@
 {
     public enum KeyCode
     {
+/// <summary>
+/// Represents a key on a keyboard.
+/// </summary>
+public enum KeyCode
+    {
+        /// <summary>
+        /// The "Cancel" key.
+        /// </summary>
         Cancel = 0x03,
 
+        /// <summary>
+        /// The "Backspace" key.
+        /// </summary>
         Backspace = 0x08,
 
+        /// <summary>
+        /// The "Clear" key.
+        /// </summary>
         Clear = 0x0C,
 
+        /// <summary>
+        /// The "Return" key.
+        /// </summary>
         Return = 0x0D,
 
+        /// <summary>
+        /// The "Shift" key.
+        /// </summary>
         Shift = 0x10,
 
+        /// <summary>
+        /// The "Control" key.
+        /// </summary>
         Control = 0x11,
 
+        /// <summary>
+        /// The "Menu" key.
+        /// </summary>
         Menu = 0x12,
 
+        /// <summary>
+        /// The "Pause" key.
+        /// </summary>
         Pause = 0x13,
 
+        /// <summary>
+        /// The "Capital" key.
+        /// </summary>
         Capital = 0x14,
 
+        /// <summary>
+        /// The "Kana" key.
+        /// </summary>
         Kana = 0x15,
 
+        /// <summary>
+        /// The "Hangeul" key.
+        /// </summary>
         Hangeul = 0x15,
 
+        /// <summary>
+        /// The "Hangul" key.
+        /// </summary>
         Hangul = 0x15,
 
+        /// <summary>
+        /// The "Junja" key.
+        /// </summary>
         Junja = 0x17,
 
+        /// <summary>
+        /// The "Final" key.
+        /// </summary>
         Final = 0x18,
 
+        /// <summary>
+        /// The "Hanja" key.
+        /// </summary>
         Hanja = 0x19,
 
+        /// <summary>
+        /// The "Kanji" key.
+        /// </summary>
         Kanji = 0x19,
 
+        /// <summary>
+        /// The "Escape" key.
+        /// </summary>
         Escape = 0x1B,
 
+        /// <summary>
+        /// The "Convert" key.
+        /// </summary>
         Convert = 0x1C,
 
+        /// <summary>
+        /// The "NonConvert" key.
+        /// </summary>
         NonConvert = 0x1D,
 
+        /// <summary>
+        /// The "Accept" key.
+        /// </summary>
         Accept = 0x1E,
 
+        /// <summary>
+        /// The "ModeChange" key.
+        /// </summary>
         ModeChange = 0x1F,
 
+        /// <summary>
+        /// The "Space" key.
+        /// </summary>
         Space = 0x20,
 
+        /// <summary>
+        /// The "Prior" key.
+        /// </summary>
         Prior = 0x21,
 
+        /// <summary>
+        /// The "Next" key.
+        /// </summary>
         Next = 0x22,
 
+        /// <summary>
+        /// The "End" key.
+        /// </summary>
         End = 0x23,
 
+        /// <summary>
+        /// The "Home" key.
+        /// </summary>
         Home = 0x24,
 
+        /// <summary>
+        /// The "Left" key.
+        /// </summary>
         Left = 0x25,
 
         Up = 0x26,
@@ -96,56 +182,134 @@
 
         Num9 = 0x39,
 
+        /// <summary>
+        /// Represents the letter 'A' key.
+        /// </summary>
         A = 0x41,
 
+        /// <summary>
+        /// Represents the letter 'B' key.
+        /// </summary>
         B = 0x42,
 
+        /// <summary>
+        /// Represents the letter 'C' key.
+        /// </summary>
         C = 0x43,
 
+        /// <summary>
+        /// Represents the letter 'D' key.
+        /// </summary>
         D = 0x44,
 
+        /// <summary>
+        /// Represents the letter 'E' key.
+        /// </summary>
         E = 0x45,
 
+        /// <summary>
+        /// Represents the letter 'F' key.
+        /// </summary>
         F = 0x46,
 
+        /// <summary>
+        /// Represents the letter 'G' key.
+        /// </summary>
         G = 0x47,
 
+        /// <summary>
+        /// Represents the letter 'H' key.
+        /// </summary>
         H = 0x48,
 
+        /// <summary>
+        /// Represents the letter 'I' key.
+        /// </summary>
         I = 0x49,
 
+        /// <summary>
+        /// Represents the letter 'J' key.
+        /// </summary>
         J = 0x4A,
 
+        /// <summary>
+        /// Represents the letter 'K' key.
+        /// </summary>
         K = 0x4B,
 
+        /// <summary>
+        /// Represents the letter 'L' key.
+        /// </summary>
         L = 0x4C,
 
+        /// <summary>
+        /// Represents the letter 'M' key.
+        /// </summary>
         M = 0x4D,
 
+        /// <summary>
+        /// Represents the letter 'N' key.
+        /// </summary>
         N = 0x4E,
 
+        /// <summary>
+        /// Represents the letter 'O' key.
+        /// </summary>
         O = 0x4F,
 
+        /// <summary>
+        /// Represents the letter 'P' key.
+        /// </summary>
         P = 0x50,
 
+        /// <summary>
+        /// Represents the letter 'Q' key.
+        /// </summary>
         Q = 0x51,
 
+        /// <summary>
+        /// Represents the letter 'R' key.
+        /// </summary>
         R = 0x52,
 
+        /// <summary>
+        /// Represents the letter 'S' key.
+        /// </summary>
         S = 0x53,
 
+        /// <summary>
+        /// Represents the letter 'T' key.
+        /// </summary>
         T = 0x54,
 
+        /// <summary>
+        /// Represents the letter 'U' key.
+        /// </summary>
         U = 0x55,
 
+        /// <summary>
+        /// Represents the letter 'V' key.
+        /// </summary>
         V = 0x56,
 
+        /// <summary>
+        /// Represents the letter 'W' key.
+        /// </summary>
         W = 0x57,
 
+        /// <summary>
+        /// Represents the letter 'X' key.
+        /// </summary>
         X = 0x58,
 
+        /// <summary>
+        /// Represents the letter 'Y' key.
+        /// </summary>
         Y = 0x59,
 
+        /// <summary>
+        /// Represents the letter 'Z' key.
+        /// </summary>
         Z = 0x5A,
 
         LWindows = 0x5B,

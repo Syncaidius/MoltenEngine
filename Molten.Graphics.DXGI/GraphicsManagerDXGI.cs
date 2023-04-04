@@ -4,31 +4,31 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics.Dxgi
 {
-    public unsafe delegate GraphicsDeviceDXGI DXGICreateDeviceCallback(GraphicsSettings settings, DisplayManagerDXGI manager, IDXGIAdapter4* adapter);
+    public unsafe delegate DeviceDXGI DXGICreateDeviceCallback(GraphicsSettings settings, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter);
 
-    public unsafe delegate void DXGIDetectCapabilitiesCallback(GraphicsSettings settings, GraphicsDeviceDXGI device);
+    public unsafe delegate void DXGIDetectCapabilitiesCallback(GraphicsSettings settings, DeviceDXGI device);
 
-    public unsafe class DisplayManagerDXGI : GraphicsDisplayManager
+    public unsafe class GraphicsManagerDXGI : GraphicsManager
     {
         const uint DXGI_CREATE_FACTORY_NODEBUG = 0x0;
         const uint DXGI_CREATE_FACTORY_DEBUG = 0x01;
 
         DXGI _api;
         IDXGIFactory7* _dxgiFactory;
-        List<GraphicsDeviceDXGI> _devices;
+        List<DeviceDXGI> _devices;
 
-        GraphicsDeviceDXGI _defaultDevice;
-        GraphicsDeviceDXGI _selectedAdapter;
+        DeviceDXGI _defaultDevice;
+        DeviceDXGI _selectedAdapter;
 
         DXGIDetectCapabilitiesCallback _capabilitiesCallback;
         DXGICreateDeviceCallback _createCallback;
 
-        public DisplayManagerDXGI(DXGICreateDeviceCallback createCallback, DXGIDetectCapabilitiesCallback capabilitiesCallback)
+        public GraphicsManagerDXGI(DXGICreateDeviceCallback createCallback, DXGIDetectCapabilitiesCallback capabilitiesCallback)
         {
             _api = DXGI.GetApi();
             _createCallback = createCallback;
             _capabilitiesCallback = capabilitiesCallback; 
-            _devices = new List<GraphicsDeviceDXGI>();
+            _devices = new List<DeviceDXGI>();
             Devices = _devices.AsReadOnly();
         }
 
@@ -78,7 +78,7 @@ namespace Molten.Graphics.Dxgi
 
             for (int i = 0; i < detected.Length; i++)
             {
-                GraphicsDeviceDXGI device = _createCallback?.Invoke(settings, this, detected[i]);
+                DeviceDXGI device = _createCallback?.Invoke(settings, this, detected[i]);
                 _capabilitiesCallback(settings, device);
                 _devices.Add(device);
 
@@ -156,10 +156,10 @@ namespace Molten.Graphics.Dxgi
         }
 
         /// <inheritdoc/>
-        public override IReadOnlyList<GraphicsDeviceDXGI> Devices { get; }
+        public override IReadOnlyList<DeviceDXGI> Devices { get; }
 
         /// <inheritdoc/>
-        public override GraphicsDeviceDXGI DefaultDevice => _defaultDevice;
+        public override DeviceDXGI DefaultDevice => _defaultDevice;
 
         /// <inheritdoc/>
         public override GraphicsDevice SelectedDevice
@@ -169,7 +169,7 @@ namespace Molten.Graphics.Dxgi
             {
                 if (value != null)
                 {
-                    if (value is not GraphicsDeviceDXGI dxgiDevice)
+                    if (value is not DeviceDXGI dxgiDevice)
                         throw new GraphicsDeviceException(value, "The device is not a valid DXGI device.");
 
                     if (value.Manager != this)

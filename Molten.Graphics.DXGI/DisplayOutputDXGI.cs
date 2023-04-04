@@ -7,9 +7,9 @@ namespace Molten.Graphics.Dxgi
     {
         internal IDXGIOutput6* Native;
         OutputDesc1* _desc;
-        GraphicsDeviceDXGI _device;
+        DeviceDXGI _device;
 
-        internal DisplayOutputDXGI(GraphicsDeviceDXGI device, IDXGIOutput6* output)
+        internal DisplayOutputDXGI(DeviceDXGI device, IDXGIOutput6* output)
         {
             _device = device;
             Native = output;

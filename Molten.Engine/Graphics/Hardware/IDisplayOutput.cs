@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    /// <summary>An interface for a display device, usually attached to a <see cref="IDisplayAdapter"/> device.</summary>
+    /// <summary>An interface for a display device, usually attached to a <see cref="GraphicsDevice"/> device.</summary>
     public interface IDisplayOutput
     {
         /// <summary>

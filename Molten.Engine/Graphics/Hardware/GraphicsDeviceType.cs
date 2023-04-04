@@ -1,9 +1,9 @@
 ﻿namespace Molten.Graphics
 {
     /// <summary>
-    /// Represents the type or category of a <see cref="IDisplayAdapter"/>.
+    /// Represents the type or category of a <see cref="GraphicsDevice"/>.
     /// </summary>
-    public enum DisplayAdapterType
+    public enum GraphicsDeviceType
     {
         /// <summary>
         /// The device does not match any other available types.

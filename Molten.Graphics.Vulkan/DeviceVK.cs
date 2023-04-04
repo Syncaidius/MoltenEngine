@@ -49,7 +49,7 @@ namespace Molten.Graphics
             Name = SilkMarshal.PtrToString((nint)p.Properties.DeviceName, NativeStringEncoding.UTF8);
             ID = ParseDeviceID(p.Properties.DeviceID);
             Vendor = ParseVendorID(p.Properties.VendorID);
-            Type = (DisplayAdapterType)p.Properties.DeviceType;
+            Type = (GraphicsDeviceType)p.Properties.DeviceType;
 
             Capabilities = _manager.CapBuilder.Build(Adapter, _manager.Renderer, ref p, ref mem);
 
@@ -375,7 +375,7 @@ namespace Molten.Graphics
         public override DeviceVendor Vendor { get; }
 
         /// <inheritdoc/>
-        public override DisplayAdapterType Type { get; }
+        public override GraphicsDeviceType Type { get; }
 
         /// <inheritdoc/>
         public override IReadOnlyList<IDisplayOutput> Outputs { get; }

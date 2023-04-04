@@ -328,9 +328,9 @@ namespace Molten.Graphics
         /// Invoked during the first stage of service initialization to allow any api-related objects to be created/initialized prior to renderer initialization.
         /// </summary>
         /// <param name="settings">The <see cref="GraphicsSettings"/> bound to the current engine instance.</param>
-        protected abstract GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings);
+        protected abstract GraphicsManager OnInitializeDisplayManager(GraphicsSettings settings);
 
-        protected abstract GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsDisplayManager manager);
+        protected abstract GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsManager manager);
 
         /// <summary>
         /// Occurs before the render engine begins rendering all of the active scenes to the active output(s).
@@ -382,7 +382,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the display manager bound to the renderer.
         /// </summary>
-        public GraphicsDisplayManager DisplayManager { get; private set; }
+        public GraphicsManager DisplayManager { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="GraphicsDevice"/> bound to the current <see cref="RenderService"/>.

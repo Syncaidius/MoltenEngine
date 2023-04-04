@@ -42,7 +42,7 @@ namespace Molten.Graphics
         }
 
         internal  HResult CreateDevice(
-            GraphicsDeviceDXGI device,
+            DeviceDXGI device,
             out ID3D12Device10* d3dDevice)
         {
             d3dDevice = null;
@@ -59,7 +59,7 @@ namespace Molten.Graphics
             return r;
         }
 
-        internal void GetCapabilities(GraphicsSettings settings, GraphicsDeviceDXGI device)
+        internal void GetCapabilities(GraphicsSettings settings, DeviceDXGI device)
         {
             GraphicsCapabilities cap = device.Capabilities;
             ID3D12Device10* ptrDevice = null;

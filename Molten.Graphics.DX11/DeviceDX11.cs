@@ -11,11 +11,11 @@ namespace Molten.Graphics
 {
     /// <summary>A Direct3D 11 graphics device.</summary>
     /// <seealso cref="CommandQueueDX11" />
-    public unsafe class DeviceDX11 : GraphicsDeviceDXGI
+    public unsafe class DeviceDX11 : DeviceDXGI
     {
         ID3D11Device5* _native;
         DeviceBuilderDX11 _builder;
-        DisplayManagerDXGI _displayManager;
+        GraphicsManagerDXGI _displayManager;
 
         CommandQueueDX11 CmdList;
         List<CommandQueueDX11> _deferredContexts;
@@ -25,7 +25,7 @@ namespace Molten.Graphics
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The physical display adapter to bind the new device to.</param>
-        internal DeviceDX11(RenderService renderer, DisplayManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX11 builder) :
+        internal DeviceDX11(RenderService renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX11 builder) :
             base(renderer, manager, adapter)
         {
             _builder = builder;

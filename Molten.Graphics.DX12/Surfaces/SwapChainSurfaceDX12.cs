@@ -15,7 +15,7 @@ namespace Molten.Graphics
 
         protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)
         {
-            NativeSwapChain = (Device.Manager as DisplayManagerDXGI).CreateSwapChain(mode, Device.Settings, Device.Log, (IUnknown*)Device.Ptr, controlHandle);
+            NativeSwapChain = (Device.Manager as GraphicsManagerDXGI).CreateSwapChain(mode, Device.Settings, Device.Log, (IUnknown*)Device.Ptr, controlHandle);
         }
 
         internal DeviceDX12 Device { get; }

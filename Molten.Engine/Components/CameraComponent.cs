@@ -457,7 +457,7 @@ namespace Molten
         public Rectangle? InputConstraintBounds { get; set; }
 
         /// <summary>
-        /// Gets the currently-focused <see cref="IPickable<Vector2F>"/>.
+        /// Gets the currently-focused <see cref="IPickable{Vector2F}"/>.
         /// </summary>
         public IPickable<Vector2F> FocusedPickable
         {

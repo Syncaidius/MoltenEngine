@@ -8,7 +8,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics.Dxgi
 {
-    public abstract unsafe class GraphicsDeviceDXGI : GraphicsDevice
+    public abstract unsafe class DeviceDXGI : GraphicsDevice
     {
         /// <summary>Gets the native DXGI adapter that this instance represents.</summary>
         public IDXGIAdapter4* _adapter;
@@ -16,7 +16,7 @@ namespace Molten.Graphics.Dxgi
         List<DisplayOutputDXGI> _outputs;
         List<DisplayOutputDXGI> _activeOutputs;
 
-        protected GraphicsDeviceDXGI(RenderService renderer, DisplayManagerDXGI manager, IDXGIAdapter4* adapter) : 
+        protected DeviceDXGI(RenderService renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter) : 
             base(renderer, manager)
         {
             _adapter = adapter;
@@ -60,24 +60,24 @@ namespace Molten.Graphics.Dxgi
             }
         }
 
-        private DisplayAdapterType GetAdapterType(GraphicsCapabilities cap, AdapterFlag3 flags)
+        private GraphicsDeviceType GetAdapterType(GraphicsCapabilities cap, AdapterFlag3 flags)
         {
             if ((flags & AdapterFlag3.Software) == AdapterFlag3.Software)
-                return DisplayAdapterType.Cpu;
+                return GraphicsDeviceType.Cpu;
 
             if (cap.DedicatedVideoMemory > 0)
-                return DisplayAdapterType.DiscreteGpu;
+                return GraphicsDeviceType.DiscreteGpu;
 
             if (cap.DedicatedSystemMemory > 0 || cap.SharedSystemMemory > 0)
-                return DisplayAdapterType.IntegratedGpu;
+                return GraphicsDeviceType.IntegratedGpu;
 
-            return DisplayAdapterType.Other;
+            return GraphicsDeviceType.Other;
         }
 
         public override void AddActiveOutput(IDisplayOutput output)
         {
             if (output.Device != this)
-                throw new AdapterOutputException(output, "Cannot add active output: Bound to another adapter.");
+                throw new DisplayOutputException(output, "Cannot add active output: Bound to another adapter.");
 
             if (!_activeOutputs.Contains(output))
             {
@@ -89,7 +89,7 @@ namespace Molten.Graphics.Dxgi
         public override void RemoveActiveOutput(IDisplayOutput output)
         {
             if (output.Device != this)
-                throw new AdapterOutputException(output, "Cannot remove active output: Bound to another adapter.");
+                throw new DisplayOutputException(output, "Cannot remove active output: Bound to another adapter.");
 
             if (_activeOutputs.Remove(output as DisplayOutputDXGI))
                 InvokeOutputDeactivated(output);
@@ -116,7 +116,7 @@ namespace Molten.Graphics.Dxgi
         public override DeviceVendor Vendor { get;  }
 
         /// <inheritdoc/>
-        public override DisplayAdapterType Type { get; }
+        public override GraphicsDeviceType Type { get; }
 
         internal AdapterDesc3* Description => _adapterDesc;
 

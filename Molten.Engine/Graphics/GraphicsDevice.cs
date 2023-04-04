@@ -10,10 +10,10 @@ namespace Molten.Graphics
     /// </summary>
     public abstract partial class GraphicsDevice : EngineObject
     {
-        /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is activated on the current <see cref="IDisplayAdapter"/>.</summary>
+        /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is activated on the current <see cref="GraphicsDevice"/>.</summary>
         public event DisplayOutputChanged OnOutputActivated;
 
-        /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is deactivated on the current <see cref="IDisplayAdapter"/>.</summary>
+        /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is deactivated on the current <see cref="GraphicsDevice"/>.</summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
         long _allocatedVRAM;
@@ -24,7 +24,7 @@ namespace Molten.Graphics
         /// Creates a new instance of <see cref="GraphicsDevice"/>.
         /// </summary>
         /// <param name="renderer">The <see cref="RenderService"/> that the new graphics device will be bound to.</param>
-        protected GraphicsDevice(RenderService renderer, GraphicsDisplayManager manager)
+        protected GraphicsDevice(RenderService renderer, GraphicsManager manager)
         {
             Settings = renderer.Settings.Graphics;
             Renderer = renderer;
@@ -45,19 +45,19 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Activates a <see cref="IDisplayOutput"/> on the current <see cref="IDisplayAdapter"/>.
+        /// Activates a <see cref="IDisplayOutput"/> on the current <see cref="GraphicsDevice"/>.
         /// </summary>
         /// <param name="output">The output to be activated.</param>
         public abstract void AddActiveOutput(IDisplayOutput output);
 
         /// <summary>
-        /// Deactivates a <see cref="IDisplayOutput"/> from the current <see cref="IDisplayAdapter"/>. It will still be listed in <see cref="Outputs"/>, if attached.
+        /// Deactivates a <see cref="IDisplayOutput"/> from the current <see cref="GraphicsDevice"/>. It will still be listed in <see cref="Outputs"/>, if attached.
         /// </summary>
         /// <param name="output">The output to be deactivated.</param>
         public abstract void RemoveActiveOutput(IDisplayOutput output);
 
         /// <summary>
-        /// Removes all active <see cref="IDisplayOutput"/> from the current <see cref="IDisplayAdapter"/>. They will still be listed in <see cref="Outputs"/>, if attached.
+        /// Removes all active <see cref="IDisplayOutput"/> from the current <see cref="GraphicsDevice"/>. They will still be listed in <see cref="Outputs"/>, if attached.
         /// </summary>
         public abstract void RemoveAllActiveOutputs();
 
@@ -256,9 +256,9 @@ namespace Molten.Graphics
         public GraphicsSettings Settings { get; }
 
         /// <summary>
-        /// Gets the <see cref="GraphicsDisplayManager"/> that owns the current <see cref="GraphicsDevice"/>.
+        /// Gets the <see cref="GraphicsManager"/> that owns the current <see cref="GraphicsDevice"/>.
         /// </summary>
-        public GraphicsDisplayManager Manager { get; }
+        public GraphicsManager Manager { get; }
 
         /// <summary>
         /// The main <see cref="GraphicsCommandQueue"/> of the current <see cref="GraphicsDevice"/>. This is used for issuing immediate commands to the GPU.
@@ -277,9 +277,9 @@ namespace Molten.Graphics
         public abstract DeviceVendor Vendor { get; }
 
         /// <summary>
-        /// Gets the <see cref="DisplayAdapterType"/> of the current <see cref="GraphicsDevice"/>.
+        /// Gets the <see cref="GraphicsDeviceType"/> of the current <see cref="GraphicsDevice"/>.
         /// </summary>
-        public abstract DisplayAdapterType Type { get; }
+        public abstract GraphicsDeviceType Type { get; }
 
         /// <summary>Gets a list of all <see cref="IDisplayOutput"/> devices attached to the current <see cref="GraphicsDevice"/>.</summary>
         public abstract IReadOnlyList<IDisplayOutput> Outputs { get; }
