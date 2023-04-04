@@ -4,28 +4,28 @@ namespace Molten.Graphics
 {
     internal unsafe class DeviceLoaderVK : ExtensionLoaderVK<Device>
     {
-        DisplayAdapterVK _adapter;
+        DeviceVK _device;
         Instance* _vkInstance;
         CommandSetCapabilityFlags _cap;
         DeviceQueueCreateInfo* _queueInfo;
         uint _queueCount = 0;
 
-        public DeviceLoaderVK(RendererVK renderer, DisplayAdapterVK adapter, CommandSetCapabilityFlags requiredCap) : base(renderer)
+        public DeviceLoaderVK(RendererVK renderer, DeviceVK device, CommandSetCapabilityFlags requiredCap) : base(renderer)
         {
-            _adapter = adapter;
+            _device = device;
             _vkInstance = renderer.Instance;
             _cap = requiredCap;
         }
 
         protected override unsafe Result GetLayers(uint* count, LayerProperties* items)
         {
-            return Renderer.VK.EnumerateDeviceLayerProperties(_adapter.Native, count, items);
+            return Renderer.VK.EnumerateDeviceLayerProperties(_device.Adapter, count, items);
         }
 
         protected override unsafe Result GetExtensions(uint* count, ExtensionProperties* items)
         {
             byte* nullptr = null;
-            return Renderer.VK.EnumerateDeviceExtensionProperties(_adapter.Native, nullptr, count, items);
+            return Renderer.VK.EnumerateDeviceExtensionProperties(_device.Adapter, nullptr, count, items);
         }
 
         protected override bool LoadExtension(RendererVK renderer, VulkanExtension ext, Device* obj)
@@ -35,7 +35,7 @@ namespace Molten.Graphics
 
         protected override unsafe Result OnBuild(RendererVK renderer, VersionVK apiVersion, TempData tmp, ExtensionBinding binding, Device* obj)
         {
-            List<SupportedCommandSet> sets = _adapter.Capabilities.CommandSets;
+            List<SupportedCommandSet> sets = _device.Capabilities.CommandSets;
             if (_queueInfo != null)
                 EngineUtil.Free(ref _queueInfo);
 
@@ -97,8 +97,8 @@ namespace Molten.Graphics
                 };
 
                 // Create the instance
-                r = renderer.VK.CreateDevice(_adapter, &createInfo, null, obj);
-                r.Check(renderer, () => $"Failed to create logical device on '{_adapter.Name}' adapter");
+                r = renderer.VK.CreateDevice(_device, &createInfo, null, obj);
+                r.Check(renderer, () => $"Failed to create logical device on '{_device.Name}' adapter");
             }
             return r;
         }

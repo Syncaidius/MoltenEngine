@@ -42,13 +42,13 @@ namespace Molten.Graphics
 
         public DisplayOrientation Orientation => throw new NotImplementedException();
 
-        public IDisplayAdapter Adapter => Adapter;
+        internal DeviceVK AssociatedDevice { get; set; }
+
+        public GraphicsDevice Device => AssociatedDevice;
 
         internal Monitor* Ptr => _monitor;
 
         public Rectangle DesktopBounds => _bounds;
-
-        internal DisplayAdapterVK AssociatedAdapter { get; set; }
 
         internal DisplayManagerVK Manager { get; }
     }

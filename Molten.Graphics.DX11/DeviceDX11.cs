@@ -1,18 +1,20 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 using Message = Silk.NET.Direct3D11.Message;
 
 namespace Molten.Graphics
 {
     /// <summary>A Direct3D 11 graphics device.</summary>
     /// <seealso cref="CommandQueueDX11" />
-    public unsafe class DeviceDX11 : GraphicsDevice<ID3D11Device5>
+    public unsafe class DeviceDX11 : GraphicsDeviceDXGI
     {
+        ID3D11Device5* _native;
         DeviceBuilderDX11 _builder;
-        DisplayAdapterDXGI _adapter;
         DisplayManagerDXGI _displayManager;
 
         CommandQueueDX11 CmdList;
@@ -23,12 +25,11 @@ namespace Molten.Graphics
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The physical display adapter to bind the new device to.</param>
-        internal DeviceDX11(RenderService renderer, GraphicsSettings settings, DeviceBuilderDX11 builder, IDisplayAdapter adapter) :
-            base(renderer, settings, false)
+        internal DeviceDX11(RenderService renderer, DisplayManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX11 builder) :
+            base(renderer, manager, adapter)
         {
             _builder = builder;
-            _displayManager = adapter.Manager as DisplayManagerDXGI;
-            _adapter = adapter as DisplayAdapterDXGI;
+            _displayManager = manager;
             _deferredContexts = new List<CommandQueueDX11>();
 
             VertexFormatCache = new VertexFormatCache<ShaderIOStructureDX11>(
@@ -73,9 +74,10 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnInitialize()
+        internal void Initialize()
         {
-            HResult r = _builder.CreateDevice(_adapter, out PtrRef, out ID3D11DeviceContext4* deviceContext);
+            HResult r = _builder.CreateDevice(this, out PtrRef, out ID3D11DeviceContext4* deviceContext);
+
             if (r.IsFailure)
             {
                 Log.Error($"Failed to initialize {nameof(DeviceDX11)}. Code: {r}");
@@ -397,9 +399,28 @@ namespace Molten.Graphics
             return new BufferDX11(this, GraphicsBufferType.Staging, flags | GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.NoShaderAccess, 1, byteCapacity, null, 0);
         }
 
-        public override DisplayManagerDXGI DisplayManager => _displayManager;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator ID3D11Device5(DeviceDX11 device)
+        {
+            return *device._native;
+        }
 
-        public override DisplayAdapterDXGI Adapter => _adapter;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator ID3D11Device5*(DeviceDX11 device)
+        {
+            return device._native;
+        }
+
+        /// <summary>
+        /// The underlying, native device pointer.
+        /// </summary>
+        internal ID3D11Device5* Ptr => _native;
+
+        /// <summary>
+        /// Gets a protected reference to the underlying device pointer.
+        /// </summary>
+        protected ref ID3D11Device5* PtrRef => ref _native;
 
         internal VertexFormatCache<ShaderIOStructureDX11> VertexFormatCache { get; }
 

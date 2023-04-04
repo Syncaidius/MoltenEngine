@@ -6,20 +6,20 @@ namespace Molten.Graphics
 {
     internal unsafe class DisplayManagerVK : GraphicsDisplayManager
     {
-        List<DisplayAdapterVK> _adapters;
-        DisplayAdapterVK _defaultAdapter;
-        DisplayAdapterVK _selectedAdapter;
+        List<DeviceVK> _devices;
+        DeviceVK _defaultAdapter;
+        DeviceVK _selectedAdapter;
 
         internal DisplayManagerVK(RendererVK renderer)
         {
             Renderer = renderer;
             CapBuilder = new CapabilityBuilder();
-            _adapters = new List<DisplayAdapterVK>();
-            Adapters = _adapters.AsReadOnly();
+            _devices = new List<DeviceVK>();
+            Devices = _devices.AsReadOnly();
             Outputs = new List<DisplayOutputVK>();
         }
 
-        protected override void OnInitialize(Logger log, GraphicsSettings settings)
+        protected override void OnInitialize(GraphicsSettings settings)
         {
             uint deviceCount = 0;
             Result r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Instance, &deviceCount, null);
@@ -33,8 +33,8 @@ namespace Molten.Graphics
                 {
                     for (int i = 0; i < deviceCount; i++)
                     {
-                        DisplayAdapterVK adapter = new DisplayAdapterVK(this, devices[0]);
-                        _adapters.Add(adapter);
+                        DeviceVK adapter = new DeviceVK(Renderer, this, devices[0], Renderer.Instance);
+                        _devices.Add(adapter);
                     }
                 }
 
@@ -45,9 +45,9 @@ namespace Molten.Graphics
 
             DetectOutputs();
 
-            if (_adapters.Count > 0)
+            if (_devices.Count > 0)
             {
-                _defaultAdapter = _adapters[0];
+                _defaultAdapter = _devices[0];
 
                 // TODO improve this.
                 // For now, associate all detected outputs with the default adapter.
@@ -95,7 +95,7 @@ namespace Molten.Graphics
                         {
                             if (vkOutput.Ptr == monitor)
                             {
-                                vkOutput.AssociatedAdapter?.UnassociateOutput(vkOutput);
+                                vkOutput.AssociatedDevice?.UnassociateOutput(vkOutput);
                                 Outputs.Remove(vkOutput);
                                 Renderer.Log.WriteLine($"Display output '{vkOutput.Name}' disconnected");
                             }
@@ -110,29 +110,29 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override void GetCompatibleAdapters(GraphicsCapabilities capabilities, List<IDisplayAdapter> adapters)
+        public override void GetCompatibleAdapters(GraphicsCapabilities capabilities, List<GraphicsDevice> adapters)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public override IDisplayAdapter DefaultAdapter => _defaultAdapter;
+        public override GraphicsDevice DefaultDevice => _defaultAdapter;
 
         /// <inheritdoc/>
-        public override IDisplayAdapter SelectedAdapter
+        public override GraphicsDevice SelectedDevice
         {
             get => _selectedAdapter;
             set
             {
                 if (value != null)
                 {
-                    if (value is not DisplayAdapterVK vkAdapter)
-                        throw new AdapterException(value, "The adapter is not a valid Vulkan adapter.");
+                    if (value is not DeviceVK vkDevice)
+                        throw new GraphicsDeviceException(value, "The adapter is not a valid Vulkan device.");
 
                     if (value.Manager != this)
-                        throw new AdapterException(value, "The adapter not owned by the current display manager.");
+                        throw new GraphicsDeviceException(value, "The adapter not owned by the current display manager.");
 
-                    _selectedAdapter = vkAdapter;
+                    _selectedAdapter = vkDevice;
                 }
                 else
                 {
@@ -146,7 +146,7 @@ namespace Molten.Graphics
         internal DisplayOutputVK PrimaryOutput { get; private set; }
 
         /// <inheritdoc/>
-        public override IReadOnlyList<IDisplayAdapter> Adapters { get; }
+        public override IReadOnlyList<GraphicsDevice> Devices { get; }
 
         internal RendererVK Renderer { get; }
 

@@ -53,7 +53,7 @@ namespace Molten.Graphics
         {
             _format = format.ToApi();
             Device = device;
-            RendererVK renderer = Device.Renderer;
+            RendererVK renderer = Device.Renderer as RendererVK;
             _title = title;
             _width = width;
             _height = height;
@@ -146,7 +146,9 @@ namespace Molten.Graphics
 
         private BackBuffer[] GetBackBufferImages()
         {
-            Image[] images = Device.Renderer.Enumerate<Image>((count, items) =>
+            RendererVK renderer = Device.Renderer as RendererVK;
+
+            Image[] images = renderer.Enumerate<Image>((count, items) =>
             {
                 return _extSwapChain.GetSwapchainImages(Device, _swapChain, count, items);
             }, "Swapchain image");
@@ -178,7 +180,7 @@ namespace Molten.Graphics
             {
                 buffer[i].Texture = images[i];
                 createInfo.Image = images[i];
-                Result r = Device.Renderer.VK.CreateImageView(Device, &createInfo, null, out buffer[i].View);
+                Result r = renderer.VK.CreateImageView(Device, &createInfo, null, out buffer[i].View);
                 if (!r.Check(Device, () => $"Failed to create image view for back-buffer image {i}"))
                     break;
             }
@@ -188,7 +190,7 @@ namespace Molten.Graphics
 
         private bool IsFormatSupported(KhrSurface extSurface, GraphicsFormat format, ColorSpaceKHR colorSpace)
         {
-            SurfaceFormatKHR[] supportedFormats = Device.Renderer.Enumerate<SurfaceFormatKHR>((count, items) =>
+            SurfaceFormatKHR[] supportedFormats = (Device.Renderer as RendererVK).Enumerate<SurfaceFormatKHR>((count, items) =>
             {
                 return extSurface.GetPhysicalDeviceSurfaceFormats(Device.Adapter, Native, count, items);
             }, "surface format");
@@ -206,7 +208,7 @@ namespace Molten.Graphics
 
         private PresentModeKHR ValidatePresentMode(KhrSurface extSurface, PresentModeKHR requested)
         {
-            PresentModeKHR[] supportedModes = Device.Renderer.Enumerate<PresentModeKHR>((count, items) =>
+            PresentModeKHR[] supportedModes = (Device.Renderer as RendererVK).Enumerate<PresentModeKHR>((count, items) =>
             {
                 return extSurface.GetPhysicalDeviceSurfacePresentModes(Device.Adapter, Native, count, items);
             }, "present mode");
@@ -246,17 +248,17 @@ namespace Molten.Graphics
             {
                 // Clean up image view handles
                 for (int i = 0; i < _backBuffer.Length; i++)
-                    Device.Renderer.VK.DestroyImageView(Device, _backBuffer[i].View, null);
+                    (Device.Renderer as RendererVK).VK.DestroyImageView(Device, _backBuffer[i].View, null);
 
                 KhrSwapchain extSwapchain = Device.GetExtension<KhrSwapchain>();
                 extSwapchain?.DestroySwapchain(Device, _swapChain, null);
             }
 
-            KhrSurface extSurface = Device.Renderer.GetInstanceExtension<KhrSurface>();
-            extSurface?.DestroySurface(*Device.Renderer.Instance, Native, null);
+            KhrSurface extSurface = (Device.Renderer as RendererVK).GetInstanceExtension<KhrSurface>();
+            extSurface?.DestroySurface(*(Device.Renderer as RendererVK).Instance, Native, null);
 
             if (_window != null)
-                Device.Renderer.GLFW.DestroyWindow(_window);
+                (Device.Renderer as RendererVK).GLFW.DestroyWindow(_window);
         }
 
         public void Present()
@@ -344,7 +346,7 @@ namespace Molten.Graphics
         public void Close()
         {
             if(_window != null)
-                Device.Renderer.GLFW.SetWindowShouldClose(_window, true);
+                (Device.Renderer as RendererVK).GLFW.SetWindowShouldClose(_window, true);
         }
 
         protected override void OnApply(GraphicsCommandQueue context)
@@ -401,7 +403,7 @@ namespace Molten.Graphics
             set
             {
                 if (_window != null)
-                    Device.Renderer.GLFW.SetWindowTitle(_window, _title);
+                    (Device.Renderer as RendererVK).GLFW.SetWindowTitle(_window, _title);
             }
         }
         public bool IsVisible { get; set; }

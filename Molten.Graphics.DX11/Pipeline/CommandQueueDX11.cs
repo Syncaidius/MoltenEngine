@@ -64,11 +64,11 @@ namespace Molten.Graphics
             _context->QueryInterface(ref debugGuid, &ptrDebug);
             _debugAnnotation = (ID3DUserDefinedAnnotation*)ptrDebug;
 
-            uint maxRTs = Device.Adapter.Capabilities.PixelShader.MaxOutputTargets;
+            uint maxRTs = Device.Capabilities.PixelShader.MaxOutputTargets;
             _scissorRects = new Rectangle[maxRTs];
             _viewports = new ViewportF[maxRTs];
 
-            uint maxVBuffers = Device.Adapter.Capabilities.VertexBuffers.MaxSlots;
+            uint maxVBuffers = Device.Capabilities.VertexBuffers.MaxSlots;
             VertexBuffers = RegisterSlotGroup<GraphicsBuffer, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
             IndexBuffer = RegisterSlot<GraphicsBuffer, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
             _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(GraphicsBindTypeFlags.Input, "Vertex Input Layout", 0);
@@ -89,7 +89,7 @@ namespace Molten.Graphics
             _stateDepth = RegisterSlot<DepthStateDX11, DepthStencilBinder>(GraphicsBindTypeFlags.Input, "Depth-Stencil State", 0);
             _stateRaster = RegisterSlot<RasterizerStateDX11, RasterizerBinder>(GraphicsBindTypeFlags.Input, "Rasterizer State", 0);
 
-            uint numRenderUAVs = Device.Adapter.Capabilities.VertexShader.MaxUnorderedAccessSlots;
+            uint numRenderUAVs = Device.Capabilities.VertexShader.MaxUnorderedAccessSlots;
             _renderUAVs = RegisterSlotGroup(GraphicsBindTypeFlags.Output, "UAV", numRenderUAVs, new UavGroupBinderOM());
 
             RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
@@ -672,7 +672,7 @@ namespace Molten.Graphics
 
         private GraphicsBindResult CheckComputeGroups()
         {
-            ComputeCapabilities comCap = Device.Adapter.Capabilities.Compute;
+            ComputeCapabilities comCap = Device.Capabilities.Compute;
             Vector3UI groups = DrawInfo.ComputeGroups;
 
             if (groups.Z > comCap.MaxGroupCountZ)

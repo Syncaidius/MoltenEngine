@@ -2,6 +2,7 @@
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
@@ -22,14 +23,20 @@ namespace Molten.Graphics
                 D3DFeatureLevel.Level110, 
                 D3DFeatureLevel.Level101, 
                 D3DFeatureLevel.Level100);
-            _displayManager = new DisplayManagerDXGI(_deviceBuilder.GetCapabilities);
+            _displayManager = new DisplayManagerDXGI(CreateDevice, _deviceBuilder.GetCapabilities);
 
             return _displayManager;
         }
 
-        protected override GraphicsDevice OnCreateDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
+        private unsafe GraphicsDeviceDXGI CreateDevice(GraphicsSettings settings, DisplayManagerDXGI manager, IDXGIAdapter4* adapter)
         {
-            NativeDevice = new DeviceDX11(this, settings, _deviceBuilder, _displayManager.SelectedAdapter);
+            return new DeviceDX11(this, manager, adapter, _deviceBuilder);
+        }
+
+        protected override GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
+        {
+            NativeDevice = _displayManager.SelectedDevice as DeviceDX11;
+            NativeDevice.Initialize();
             return NativeDevice;
         }
 

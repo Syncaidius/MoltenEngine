@@ -16,7 +16,7 @@
         /// <param name="slot">The slot ID.</param>
         public void SetResource(IGraphicsResource resource, uint slot)
         {
-            if (slot >= Renderer.Device.Adapter.Capabilities.PixelShader.MaxInResources)
+            if (slot >= Renderer.Device.Capabilities.PixelShader.MaxInResources)
                 throw new IndexOutOfRangeException("The maximum slot number must be less than the maximum supported by the graphics device.");
 
             if (slot >= _resources.Length)

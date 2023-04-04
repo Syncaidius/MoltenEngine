@@ -16,8 +16,8 @@
         /// <summary>Gets the orientation of the current <see cref="IDisplayOutput"/>.</summary>
         DisplayOrientation Orientation { get; }
 
-        /// <summary>Gets the <see cref="IDisplayAdapter"/> the <see cref="IDisplayOutput"/> is attached to.</summary>
-        IDisplayAdapter Adapter { get; }
+        /// <summary>Gets the <see cref="GraphicsDevice"/> the <see cref="IDisplayOutput"/> is attached to.</summary>
+        GraphicsDevice Device { get; }
 
         /// <summary>
         /// Gets the desktop bounds of the display.

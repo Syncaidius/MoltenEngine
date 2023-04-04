@@ -42,29 +42,29 @@ namespace Molten.Graphics
         }
 
         internal  HResult CreateDevice(
-            DisplayAdapterDXGI adapter,
-            out ID3D12Device10* device)
+            GraphicsDeviceDXGI device,
+            out ID3D12Device10* d3dDevice)
         {
-            device = null;
+            d3dDevice = null;
 
-            IUnknown* ptrAdapter = (IUnknown*)adapter.Native;
-            void* ptrDevice = null;
+            IUnknown* ptrAdapter = (IUnknown*)device.Adapter;
+            void* ptr = null;
 
             Guid guidDevice = ID3D12Device.Guid;
-            HResult r = _api.CreateDevice(ptrAdapter, _featureLevels.Last(), &guidDevice, &ptrDevice);
+            HResult r = _api.CreateDevice(ptrAdapter, _featureLevels.Last(), &guidDevice, &ptr);
 
             if (!r.IsFailure)
-                device = (ID3D12Device10*)ptrDevice;
+                d3dDevice = (ID3D12Device10*)ptr;
 
             return r;
         }
 
-        internal void GetCapabilities(GraphicsSettings settings, DisplayAdapterDXGI adapter)
+        internal void GetCapabilities(GraphicsSettings settings, GraphicsDeviceDXGI device)
         {
-            GraphicsCapabilities cap = adapter.Capabilities;
-            ID3D12Device10* device = null;
-            HResult r = CreateDevice(adapter, out device);
-            if(!CheckResult(r, () => $"Failed to detect capabilities for adapter '{adapter.Name}'"))
+            GraphicsCapabilities cap = device.Capabilities;
+            ID3D12Device10* ptrDevice = null;
+            HResult r = CreateDevice(device, out ptrDevice);
+            if(!CheckResult(r, () => $"Failed to detect capabilities for adapter '{device.Name}'"))
                 return;
 
             FeatureDataFeatureLevels dataFeatures = new FeatureDataFeatureLevels();
@@ -72,7 +72,7 @@ namespace Molten.Graphics
             {
                 dataFeatures.NumFeatureLevels = (uint)_featureLevels.Length;
                 dataFeatures.PFeatureLevelsRequested = ptrLevels;
-                GetFeatureSupport(device, Feature.FeatureLevels, &dataFeatures);
+                GetFeatureSupport(ptrDevice, Feature.FeatureLevels, &dataFeatures);
             }
 
             switch (dataFeatures.MaxSupportedFeatureLevel)
@@ -110,23 +110,23 @@ namespace Molten.Graphics
 
             // Check if a lower shader model is supported instead of API's model.
             FeatureDataShaderModel maxSM = new FeatureDataShaderModel(cap.MaxShaderModel.ToApi());
-            GetFeatureSupport(device, Feature.ShaderModel, &maxSM);
+            GetFeatureSupport(ptrDevice, Feature.ShaderModel, &maxSM);
             cap.MaxShaderModel = maxSM.HighestShaderModel.FromApi();
 
-            FeatureDataD3D12Options features12_0 = GetFeatureSupport<FeatureDataD3D12Options>(device, Feature.D3D12Options);
-            FeatureDataD3D12Options1 features12_1 = GetFeatureSupport<FeatureDataD3D12Options1>(device, Feature.D3D12Options1);
-            FeatureDataD3D12Options2 features12_2 = GetFeatureSupport<FeatureDataD3D12Options2>(device, Feature.D3D12Options2);
-            FeatureDataD3D12Options3 features12_3 = GetFeatureSupport<FeatureDataD3D12Options3>(device, Feature.D3D12Options3);
-            FeatureDataD3D12Options4 features12_4 = GetFeatureSupport<FeatureDataD3D12Options4>(device, Feature.D3D12Options4);
-            FeatureDataD3D12Options5 features12_5 = GetFeatureSupport<FeatureDataD3D12Options5>(device, Feature.D3D12Options5); // Raytracing starts here.
-            FeatureDataD3D12Options6 features12_6 = GetFeatureSupport<FeatureDataD3D12Options6>(device, Feature.D3D12Options6);
-            FeatureDataD3D12Options7 features12_7 = GetFeatureSupport<FeatureDataD3D12Options7>(device, Feature.D3D12Options7); // Variable shading rate starts here.
-            FeatureDataD3D12Options8 features12_8 = GetFeatureSupport<FeatureDataD3D12Options8>(device, Feature.D3D12Options8);
-            FeatureDataD3D12Options9 features12_9 = GetFeatureSupport<FeatureDataD3D12Options9>(device, Feature.D3D12Options9);
-            FeatureDataD3D12Options10 features12_10 = GetFeatureSupport<FeatureDataD3D12Options10>(device, Feature.D3D12Options10);
-            FeatureDataD3D12Options11 features12_11 = GetFeatureSupport<FeatureDataD3D12Options11>(device, Feature.D3D12Options11);
-            FeatureDataD3D12Options12 features12_12 = GetFeatureSupport<FeatureDataD3D12Options12>(device, Feature.D3D12Options12);
-            FeatureDataD3D12Options13 features12_13 = GetFeatureSupport<FeatureDataD3D12Options13>(device, Feature.D3D12Options13);
+            FeatureDataD3D12Options features12_0 = GetFeatureSupport<FeatureDataD3D12Options>(ptrDevice, Feature.D3D12Options);
+            FeatureDataD3D12Options1 features12_1 = GetFeatureSupport<FeatureDataD3D12Options1>(ptrDevice, Feature.D3D12Options1);
+            FeatureDataD3D12Options2 features12_2 = GetFeatureSupport<FeatureDataD3D12Options2>(ptrDevice, Feature.D3D12Options2);
+            FeatureDataD3D12Options3 features12_3 = GetFeatureSupport<FeatureDataD3D12Options3>(ptrDevice, Feature.D3D12Options3);
+            FeatureDataD3D12Options4 features12_4 = GetFeatureSupport<FeatureDataD3D12Options4>(ptrDevice, Feature.D3D12Options4);
+            FeatureDataD3D12Options5 features12_5 = GetFeatureSupport<FeatureDataD3D12Options5>(ptrDevice, Feature.D3D12Options5); // Raytracing starts here.
+            FeatureDataD3D12Options6 features12_6 = GetFeatureSupport<FeatureDataD3D12Options6>(ptrDevice, Feature.D3D12Options6);
+            FeatureDataD3D12Options7 features12_7 = GetFeatureSupport<FeatureDataD3D12Options7>(ptrDevice, Feature.D3D12Options7); // Variable shading rate starts here.
+            FeatureDataD3D12Options8 features12_8 = GetFeatureSupport<FeatureDataD3D12Options8>(ptrDevice, Feature.D3D12Options8);
+            FeatureDataD3D12Options9 features12_9 = GetFeatureSupport<FeatureDataD3D12Options9>(ptrDevice, Feature.D3D12Options9);
+            FeatureDataD3D12Options10 features12_10 = GetFeatureSupport<FeatureDataD3D12Options10>(ptrDevice, Feature.D3D12Options10);
+            FeatureDataD3D12Options11 features12_11 = GetFeatureSupport<FeatureDataD3D12Options11>(ptrDevice, Feature.D3D12Options11);
+            FeatureDataD3D12Options12 features12_12 = GetFeatureSupport<FeatureDataD3D12Options12>(ptrDevice, Feature.D3D12Options12);
+            FeatureDataD3D12Options13 features12_13 = GetFeatureSupport<FeatureDataD3D12Options13>(ptrDevice, Feature.D3D12Options13);
 
             cap.MaxTexture1DSize = 16384;
             cap.MaxTexture2DSize = 16384;
@@ -149,12 +149,12 @@ namespace Molten.Graphics
             cap.VertexBuffers.MaxElementsPerVertex = 32;    // D3D11_STANDARD_VERTEX_ELEMENT_COUNT = 32;
             cap.VertexBuffers.MaxElements = uint.MaxValue;  // (2^32) – 1 = uint.maxValue (4,294,967,295)
 
-            DetectShaderStages(device, cap, 
+            DetectShaderStages(ptrDevice, cap, 
                 features12_0.MinPrecisionSupport, 
                 features12_0.DoublePrecisionFloatShaderOps != 0, 
                 features12_1.Int64ShaderOps != 0);
 
-            SilkUtil.ReleasePtr(ref device);
+            SilkUtil.ReleasePtr(ref ptrDevice);
         }
 
         private void DetectShaderStages(ID3D12Device10* device, GraphicsCapabilities cap, 

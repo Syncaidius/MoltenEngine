@@ -1,42 +1,40 @@
 ﻿using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
-    internal unsafe class DeviceDX12 : GraphicsDevice<ID3D12Device10>
+    internal unsafe class DeviceDX12 : GraphicsDeviceDXGI
     {
+        ID3D12Device10* _native;
+        IDXGIAdapter4* _adapter;
         DeviceBuilderDX12 _builder;
-        DisplayAdapterDXGI _adapter;
-        DisplayManagerDXGI _displayManager;
+        CommandQueueDX12 _cmdDirect;
 
-        CommandQueueDX12 _qDirect;
-
-        public DeviceDX12(RenderService renderer, GraphicsSettings settings, DeviceBuilderDX12 deviceBuilder, IDisplayAdapter adapter) : 
-            base(renderer, settings, false)
+        public DeviceDX12(RenderService renderer, DisplayManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) : 
+            base(renderer, manager, adapter)
         {
             _builder = deviceBuilder;
-            _adapter = adapter as DisplayAdapterDXGI;
-            _displayManager = _adapter.Manager as DisplayManagerDXGI;
         }
 
-        protected override void OnInitialize()
+        internal void Initialize()
         {
-            HResult r = _builder.CreateDevice(_adapter, out PtrRef);
+            HResult r = _builder.CreateDevice(this, out PtrRef);
             if (!_builder.CheckResult(r, () => $"Failed to initialize {nameof(DeviceDX12)}"))
                 return;
 
             CommandQueueDesc cmdDesc = new CommandQueueDesc()
             {
-                Type = CommandListType.Direct
+                Type = CommandListType.Direct,
             };
 
-            _qDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
+            _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         }
 
         protected override void OnDispose()
         {
-            _qDirect.Dispose();
+            _cmdDirect.Dispose();
             base.OnDispose();
         }
 
@@ -145,10 +143,16 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override DisplayManagerDXGI DisplayManager => _displayManager;
+        /// <summary>
+        /// The underlying, native device pointer.
+        /// </summary>
+        internal ID3D12Device10* Ptr => _native;
 
-        public override DisplayAdapterDXGI Adapter => _adapter;
+        /// <summary>
+        /// Gets a protected reference to the underlying device pointer.
+        /// </summary>
+        protected ref ID3D12Device10* PtrRef => ref _native;
 
-        public override CommandQueueDX12 Cmd => _qDirect;
+        public override CommandQueueDX12 Cmd => _cmdDirect;
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace Molten.Graphics
 {
-    public class AdapterOutputException : AdapterException
+    public class AdapterOutputException : GraphicsDeviceException
     {
-        public AdapterOutputException(IDisplayOutput output, string message) : base(output.Adapter, message)
+        public AdapterOutputException(IDisplayOutput output, string message) : base(output.Device, message)
         {
             Output = output;
         }

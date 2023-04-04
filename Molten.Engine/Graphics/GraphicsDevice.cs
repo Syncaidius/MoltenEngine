@@ -10,6 +10,12 @@ namespace Molten.Graphics
     /// </summary>
     public abstract partial class GraphicsDevice : EngineObject
     {
+        /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is activated on the current <see cref="IDisplayAdapter"/>.</summary>
+        public event DisplayOutputChanged OnOutputActivated;
+
+        /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is deactivated on the current <see cref="IDisplayAdapter"/>.</summary>
+        public event DisplayOutputChanged OnOutputDeactivated;
+
         long _allocatedVRAM;
         ThreadedQueue<GraphicsObject> _objectsToDispose;
         Dictionary<Type, Dictionary<StructKey, GraphicsObject>> _objectCache;
@@ -17,25 +23,43 @@ namespace Molten.Graphics
         /// <summary>
         /// Creates a new instance of <see cref="GraphicsDevice"/>.
         /// </summary>
-        /// <param name="settings">The <see cref="GraphicsSettings"/> to bind to the device.</param>
-        /// <param name="log">The <see cref="Logger"/> to use for outputting information.</param>
-        protected GraphicsDevice(RenderService renderer, GraphicsSettings settings)
+        /// <param name="renderer">The <see cref="RenderService"/> that the new graphics device will be bound to.</param>
+        protected GraphicsDevice(RenderService renderer, GraphicsDisplayManager manager)
         {
-            Settings = settings;
+            Settings = renderer.Settings.Graphics;
             Renderer = renderer;
+            Manager = manager;
             Log = renderer.Log;
             _objectsToDispose = new ThreadedQueue<GraphicsObject>();
             _objectCache = new Dictionary<Type, Dictionary<StructKey, GraphicsObject>>();
         }
 
-        internal void Initialize()
+        protected void InvokeOutputActivated(IDisplayOutput output)
         {
-            OnInitialize();
-
-            ShaderSamplerParameters samplerParams = new ShaderSamplerParameters(SamplerPreset.Default);
+            OnOutputActivated?.Invoke(output);
         }
 
-        protected abstract void OnInitialize();
+        protected void InvokeOutputDeactivated(IDisplayOutput output)
+        {
+            OnOutputDeactivated?.Invoke(output);
+        }
+
+        /// <summary>
+        /// Activates a <see cref="IDisplayOutput"/> on the current <see cref="IDisplayAdapter"/>.
+        /// </summary>
+        /// <param name="output">The output to be activated.</param>
+        public abstract void AddActiveOutput(IDisplayOutput output);
+
+        /// <summary>
+        /// Deactivates a <see cref="IDisplayOutput"/> from the current <see cref="IDisplayAdapter"/>. It will still be listed in <see cref="Outputs"/>, if attached.
+        /// </summary>
+        /// <param name="output">The output to be deactivated.</param>
+        public abstract void RemoveActiveOutput(IDisplayOutput output);
+
+        /// <summary>
+        /// Removes all active <see cref="IDisplayOutput"/> from the current <see cref="IDisplayAdapter"/>. They will still be listed in <see cref="Outputs"/>, if attached.
+        /// </summary>
+        public abstract void RemoveAllActiveOutputs();
 
         internal void DisposeMarkedObjects()
         {
@@ -232,14 +256,9 @@ namespace Molten.Graphics
         public GraphicsSettings Settings { get; }
 
         /// <summary>
-        /// Gets the <see cref="IDisplayAdapter"/> that the current <see cref="GraphicsDevice"/> is bound to.
-        /// </summary>
-        public abstract IDisplayAdapter Adapter { get; }
-
-        /// <summary>
         /// Gets the <see cref="GraphicsDisplayManager"/> that owns the current <see cref="GraphicsDevice"/>.
         /// </summary>
-        public abstract GraphicsDisplayManager DisplayManager { get; }
+        public GraphicsDisplayManager Manager { get; }
 
         /// <summary>
         /// The main <see cref="GraphicsCommandQueue"/> of the current <see cref="GraphicsDevice"/>. This is used for issuing immediate commands to the GPU.
@@ -250,50 +269,29 @@ namespace Molten.Graphics
         /// Gets the <see cref="RenderService"/> that created and owns the current <see cref="GraphicsDevice"/> instance.
         /// </summary>
         public RenderService Renderer { get; }
-    }
 
-    /// <summary>
-    /// A more advanced version of <see cref="GraphicsDevice"/> which manages the allocation and releasing of an unsafe object pointer, exposed via <see cref="Ptr"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public unsafe abstract class GraphicsDevice<T> : GraphicsDevice
-        where T : unmanaged
-    {
-        T* _ptr;
+        /// <summary>Gets the machine-local device ID of the current <see cref="GraphicsDevice"/>.</summary>
+        public abstract DeviceID ID { get; }
 
-        protected GraphicsDevice(RenderService renderer, GraphicsSettings settings, bool allocate) :
-            base(renderer, settings)
-        {
-            if (allocate)
-                _ptr = EngineUtil.Alloc<T>();
-        }
-
-        protected override void OnDispose()
-        {
-            EngineUtil.Free(ref _ptr);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator T(GraphicsDevice<T> device)
-        {
-            return *device.Ptr;
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator T*(GraphicsDevice<T> device)
-        {
-            return device._ptr;
-        }
+        /// <summary>The hardware vendor.</summary>
+        public abstract DeviceVendor Vendor { get; }
 
         /// <summary>
-        /// The underlying, native device pointer.
+        /// Gets the <see cref="DisplayAdapterType"/> of the current <see cref="GraphicsDevice"/>.
         /// </summary>
-        public T* Ptr => _ptr;
+        public abstract DisplayAdapterType Type { get; }
+
+        /// <summary>Gets a list of all <see cref="IDisplayOutput"/> devices attached to the current <see cref="GraphicsDevice"/>.</summary>
+        public abstract IReadOnlyList<IDisplayOutput> Outputs { get; }
+
+        /// <summary>Gets a list of all active <see cref="IDisplayOutput"/> devices attached to the current <see cref="GraphicsDevice"/>.
+        /// <para>Active outputs are added via <see cref="AddActiveOutput(IDisplayOutput)"/>.</para></summary>
+        public abstract IReadOnlyList<IDisplayOutput> ActiveOutputs { get; }
+
 
         /// <summary>
-        /// Gets a protected reference to the underlying device pointer.
+        /// Gets the capabilities of the current <see cref="GraphicsDevice"/>.
         /// </summary>
-        protected ref T* PtrRef => ref _ptr;
+        public GraphicsCapabilities Capabilities { get; protected set; }
     }
 }

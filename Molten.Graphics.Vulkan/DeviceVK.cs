@@ -7,13 +7,24 @@ using Queue = Silk.NET.Vulkan.Queue;
 
 namespace Molten.Graphics
 {
-    internal unsafe class DeviceVK : GraphicsDevice<Device>
+    internal unsafe class DeviceVK : GraphicsDevice
     {
+        public event DisplayOutputChanged OnOutputActivated;
+        public event DisplayOutputChanged OnOutputDeactivated;
+
+        DisplayManagerVK _manager;
+
+        List<DisplayOutputVK> _outputs;
+        List<DisplayOutputVK> _activeOutputs;
+
+        PhysicalDeviceMemoryProperties2 _memProperties;
+
         Instance* _vkInstance;
         RendererVK _renderer;
         List<CommandQueueVK> _queues;
         CommandQueueVK _gfxQueue;
         DeviceLoaderVK _loader;
+        Device* _native;
 
         /// <summary>
         /// 
@@ -21,20 +32,130 @@ namespace Molten.Graphics
         /// <param name="renderer"></param>
         /// <param name="adapter"></param>
         /// <param name="instance"></param>
-        /// <param name="requiredCap">Required capabilities</param>
-        internal DeviceVK(RendererVK renderer, DisplayAdapterVK adapter, Instance* instance, CommandSetCapabilityFlags requiredCap) :
-            base(renderer, renderer.Settings.Graphics, true)
+        internal DeviceVK(RendererVK renderer, DisplayManagerVK manager, PhysicalDevice pDevice, Instance* instance) :
+            base(renderer, manager)
         {
-            _queues = new List<CommandQueueVK>();
             _renderer = renderer;
             _vkInstance = instance;
-            Adapter = adapter;
-            _loader = new DeviceLoaderVK(renderer, adapter, requiredCap);
+            _manager = manager;
+            Adapter = pDevice;
+            PhysicalDeviceProperties2 p = new PhysicalDeviceProperties2(StructureType.PhysicalDeviceProperties2);
+            _manager.Renderer.VK.GetPhysicalDeviceProperties2(Adapter, &p);
+
+            PhysicalDeviceMemoryProperties2 mem = new PhysicalDeviceMemoryProperties2(StructureType.PhysicalDeviceMemoryProperties2);
+            _manager.Renderer.VK.GetPhysicalDeviceMemoryProperties2(Adapter, &mem);
+            _memProperties = mem;
+
+            Name = SilkMarshal.PtrToString((nint)p.Properties.DeviceName, NativeStringEncoding.UTF8);
+            ID = ParseDeviceID(p.Properties.DeviceID);
+            Vendor = ParseVendorID(p.Properties.VendorID);
+            Type = (DisplayAdapterType)p.Properties.DeviceType;
+
+            Capabilities = _manager.CapBuilder.Build(Adapter, _manager.Renderer, ref p, ref mem);
+
+#if DEBUG
+            _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &p);
+#endif
+
+            _outputs = new List<DisplayOutputVK>();
+            _activeOutputs = new List<DisplayOutputVK>();
+            Outputs = _outputs.AsReadOnly();
+            ActiveOutputs = _activeOutputs.AsReadOnly();
         }
 
-        protected override void OnInitialize()
+        internal void Initialize(CommandSetCapabilityFlags capFlags)
         {
+            _native = EngineUtil.Alloc<Device>();
+            _queues = new List<CommandQueueVK>();
+            _loader = new DeviceLoaderVK(_renderer, this, capFlags);
+        }
 
+        internal uint GetMemoryTypeIndex(ref MemoryRequirements requirements, MemoryPropertyFlags flags)
+        {
+            for (int i = 0; i < _memProperties.MemoryProperties.MemoryTypeCount; i++)
+            {
+                ref MemoryType mType = ref _memProperties.MemoryProperties.MemoryTypes[i];
+                if ((requirements.MemoryTypeBits & (1U << i)) == (1U << i) && (mType.PropertyFlags & flags) == flags)
+                    return (uint)i;
+            }
+
+            throw new NotSupportedException("Failed to find matching memory type.");
+        }
+
+        private DeviceVendor ParseVendorID(uint vendorID)
+        {
+            // From docs: If the vendor has a PCI vendor ID, the low 16 bits of vendorID must contain that PCI vendor ID, and the remaining bits must be set to zero. 
+            if ((vendorID & 0xFFFF0000) == 0)
+                return EngineUtil.VendorFromPCI(vendorID & 0x0000FFFF); // PCI vendor ID
+            else
+                return (DeviceVendor)(vendorID & 0xFFFF0000); // Vulkan Vendor ID
+        }
+
+        private DeviceID ParseDeviceID(uint deviceID)
+        {
+            // Docs: The vendor is also responsible for the value returned in deviceID. If the implementation is driven primarily by a PCI device with a PCI device ID,
+            //      the low 16 bits of deviceID must contain that PCI device ID, and the remaining bits must be set to zero. 
+            if ((deviceID & 0xFFFF0000) == 0)
+                return new DeviceID((deviceID & 0x0000FFFF)); // PCI device ID.
+            else
+                return new DeviceID(deviceID); // OS/Platform-based device ID.
+        }
+
+        internal bool AssociateOutput(DisplayOutputVK output)
+        {
+            if (output.AssociatedDevice == this)
+                return true;
+
+            output.AssociatedDevice?.UnassociateOutput(output);
+
+            _outputs.Add(output);
+            output.AssociatedDevice = this;
+
+            return false;
+        }
+
+        internal void UnassociateOutput(DisplayOutputVK output)
+        {
+            if (output.AssociatedDevice != this)
+                return;
+
+            int index = _activeOutputs.IndexOf(output);
+            if (index > -1)
+                _activeOutputs.RemoveAt(index);
+
+            _outputs.Remove(output);
+            output.AssociatedDevice = null;
+        }
+
+        /// <inheritdoc/>
+        public override void AddActiveOutput(IDisplayOutput output)
+        {
+            if (output is DisplayOutputVK vkOutput)
+            {
+                if (vkOutput.AssociatedDevice != this)
+                    return;
+
+                if (!_activeOutputs.Contains(vkOutput))
+                    _activeOutputs.Add(vkOutput);
+            }
+        }
+
+        /// <inheritdoc/>
+        public override void RemoveActiveOutput(IDisplayOutput output)
+        {
+            if (output is DisplayOutputVK vkOutput)
+            {
+                if (vkOutput.AssociatedDevice != this)
+                    return;
+
+                _activeOutputs.Remove(vkOutput);
+            }
+        }
+
+        /// <inheritdoc/>
+        public override void RemoveAllActiveOutputs()
+        {
+            throw new NotImplementedException();
         }
 
         internal void AddExtension<E>(Action<E> loadCallback = null, Action<E> destroyCallback = null)
@@ -61,7 +182,7 @@ namespace Molten.Graphics
                     {
                         Queue q = new Queue();
                         _renderer.VK.GetDeviceQueue(*Ptr, qi.QueueFamilyIndex, index, &q);
-                        SupportedCommandSet set = Adapter.Capabilities.CommandSets[(int)qi.QueueFamilyIndex];
+                        SupportedCommandSet set = Capabilities.CommandSets[(int)qi.QueueFamilyIndex];
                         CommandQueueVK queue = new CommandQueueVK(_renderer, this, qi.QueueFamilyIndex, q, index, set);
                         _queues.Add(queue);
 
@@ -91,7 +212,7 @@ namespace Molten.Graphics
 
             foreach (CommandQueueVK queue in _queues)
             {
-                Result r = extSurface.GetPhysicalDeviceSurfaceSupport(Adapter.Native, queue.FamilyIndex, surface.Native, &presentSupported);
+                Result r = extSurface.GetPhysicalDeviceSurfaceSupport(Adapter, queue.FamilyIndex, surface.Native, &presentSupported);
                 if (r.Check(_renderer) && presentSupported)
                     return queue;
             }
@@ -120,6 +241,7 @@ namespace Molten.Graphics
         {
             _loader.Dispose();
             _renderer.VK.DestroyDevice(*Ptr, null);
+            EngineUtil.Free(ref _native);
 
             base.OnDispose();
         }
@@ -236,17 +358,49 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Gets the underlying <see cref="DisplayAdapterVK"/> that the current <see cref="DeviceVK"/> is bound to.
-        /// </summary>
-        public override DisplayAdapterVK Adapter { get; }
+        public static implicit operator PhysicalDevice(DeviceVK device)
+        {
+            return device.Adapter;
+        }
 
-        public override GraphicsDisplayManager DisplayManager => _renderer.DisplayManager;
+        public static implicit operator Device(DeviceVK device)
+        {
+            return *device._native;
+        }
+
+        /// <inheritdoc/>
+        public override DeviceID ID { get; }
+
+        /// <inheritdoc/>
+        public override DeviceVendor Vendor { get; }
+
+        /// <inheritdoc/>
+        public override DisplayAdapterType Type { get; }
+
+        /// <inheritdoc/>
+        public override IReadOnlyList<IDisplayOutput> Outputs { get; }
+
+        /// <inheritdoc/>
+        public override IReadOnlyList<IDisplayOutput> ActiveOutputs { get; }
+
+        internal PhysicalDevice Adapter { get; private set; }
+
+        internal ref PhysicalDeviceMemoryProperties2 MemoryProperties => ref _memProperties;
 
         /// <summary>
         /// Gets the <see cref="Instance"/> that the current <see cref="DeviceVK"/> is bound to.
         /// </summary>
         internal Instance* Instance => _vkInstance;
+
+        /// <summary>
+        /// The underlying, native device pointer.
+        /// </summary>
+        internal Device* Ptr => _native;
+
+        /// <summary>
+        /// Gets a protected reference to the underlying device pointer.
+        /// </summary>
+        protected ref Device* PtrRef => ref _native;
 
         /// <summary>
         /// Gets the underlying <see cref="CommandQueueVK"/> that should execute graphics commands.
@@ -256,7 +410,5 @@ namespace Molten.Graphics
         internal Vk VK => _renderer.VK;
 
         internal Glfw GLFW => _renderer.GLFW;
-
-        internal RendererVK Renderer => _renderer;
     }
 }

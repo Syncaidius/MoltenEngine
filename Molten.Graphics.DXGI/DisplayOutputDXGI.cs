@@ -7,11 +7,11 @@ namespace Molten.Graphics.Dxgi
     {
         internal IDXGIOutput6* Native;
         OutputDesc1* _desc;
-        DisplayAdapterDXGI _adapter;
+        GraphicsDeviceDXGI _device;
 
-        internal DisplayOutputDXGI(DisplayAdapterDXGI adapter, IDXGIOutput6* output)
+        internal DisplayOutputDXGI(GraphicsDeviceDXGI device, IDXGIOutput6* output)
         {
-            _adapter = adapter;
+            _device = device;
             Native = output;
 
             _desc = EngineUtil.Alloc<OutputDesc1>();
@@ -54,6 +54,6 @@ namespace Molten.Graphics.Dxgi
         public DisplayOrientation Orientation => (DisplayOrientation)_desc->Rotation;
 
         /// <summary>Gets the adapter that the display device is connected to.</summary>
-        public IDisplayAdapter Adapter => _adapter;
+        public GraphicsDevice Device => _device;
     }
 }

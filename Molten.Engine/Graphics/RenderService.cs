@@ -230,7 +230,7 @@ namespace Molten.Graphics
 
             try
             {
-                DisplayManager.Initialize(Log, settings.Graphics);
+                DisplayManager.Initialize(this, settings.Graphics);
                 Log.WriteLine($"Initialized display manager");
             }
             catch (Exception ex)
@@ -245,8 +245,7 @@ namespace Molten.Graphics
 
             try
             {
-                Device = OnCreateDevice(settings.Graphics, DisplayManager);
-                Device.Initialize();
+                Device = OnInitializeDevice(settings.Graphics, DisplayManager);
                 Log.WriteLine("Initialized graphics device");
             }
             catch (Exception ex)
@@ -331,7 +330,7 @@ namespace Molten.Graphics
         /// <param name="settings">The <see cref="GraphicsSettings"/> bound to the current engine instance.</param>
         protected abstract GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings);
 
-        protected abstract GraphicsDevice OnCreateDevice(GraphicsSettings settings, GraphicsDisplayManager manager);
+        protected abstract GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsDisplayManager manager);
 
         /// <summary>
         /// Occurs before the render engine begins rendering all of the active scenes to the active output(s).

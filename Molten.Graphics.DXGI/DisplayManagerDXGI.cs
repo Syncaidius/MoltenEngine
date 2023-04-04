@@ -4,7 +4,9 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics.Dxgi
 {
-    public unsafe delegate void DXGIDetectCapabilitiesCallback(GraphicsSettings settings, DisplayAdapterDXGI adapter);
+    public unsafe delegate GraphicsDeviceDXGI DXGICreateDeviceCallback(GraphicsSettings settings, DisplayManagerDXGI manager, IDXGIAdapter4* adapter);
+
+    public unsafe delegate void DXGIDetectCapabilitiesCallback(GraphicsSettings settings, GraphicsDeviceDXGI device);
 
     public unsafe class DisplayManagerDXGI : GraphicsDisplayManager
     {
@@ -13,18 +15,21 @@ namespace Molten.Graphics.Dxgi
 
         DXGI _api;
         IDXGIFactory7* _dxgiFactory;
-        List<DisplayAdapterDXGI> _adapters;
+        List<GraphicsDeviceDXGI> _devices;
 
-        DisplayAdapterDXGI _defaultAdapter;
-        DisplayAdapterDXGI _selectedAdapter;
+        GraphicsDeviceDXGI _defaultDevice;
+        GraphicsDeviceDXGI _selectedAdapter;
+
         DXGIDetectCapabilitiesCallback _capabilitiesCallback;
+        DXGICreateDeviceCallback _createCallback;
 
-        public DisplayManagerDXGI(DXGIDetectCapabilitiesCallback capabilitiesCallback)
+        public DisplayManagerDXGI(DXGICreateDeviceCallback createCallback, DXGIDetectCapabilitiesCallback capabilitiesCallback)
         {
             _api = DXGI.GetApi();
+            _createCallback = createCallback;
             _capabilitiesCallback = capabilitiesCallback; 
-            _adapters = new List<DisplayAdapterDXGI>();
-            Adapters = _adapters.AsReadOnly();
+            _devices = new List<GraphicsDeviceDXGI>();
+            Devices = _devices.AsReadOnly();
         }
 
         protected override void OnDispose()
@@ -34,7 +39,7 @@ namespace Molten.Graphics.Dxgi
         }
 
         /// <inheritdoc/>
-        protected override void OnInitialize(Logger log, GraphicsSettings settings)
+        protected override void OnInitialize(GraphicsSettings settings)
         {
             // Create factory
             Guid factoryGuid = IDXGIFactory2.Guid;
@@ -45,7 +50,7 @@ namespace Molten.Graphics.Dxgi
             DxgiError err = DXGIHelper.ErrorFromResult(r);
             if (err != DxgiError.Ok)
             {
-                log.Error($"Failed to initialize DXGI: {err}");
+                Log.Error($"Failed to initialize DXGI: {err}");
                 return;
             }
 
@@ -56,7 +61,7 @@ namespace Molten.Graphics.Dxgi
             err = DXGIHelper.ErrorFromResult(r);
             if (err != DxgiError.Ok)
             {
-                log.Error($"Failed to query DXGI 1.6 factory: {err}");
+                Log.Error($"Failed to query DXGI 1.6 factory: {err}");
                 return;
             }
 
@@ -68,44 +73,43 @@ namespace Molten.Graphics.Dxgi
                 IDXGIAdapter1* ptr1 = null;
                 int r = _dxgiFactory->EnumAdapters1(index, ref ptr1);
                 ptrOutput = (IDXGIAdapter4*)ptr1;
-
                 return r;
             });
 
             for (int i = 0; i < detected.Length; i++)
             {
-                DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, detected[i]);
-                _capabilitiesCallback(settings, adapter);
-                _adapters.Add(adapter);
+                GraphicsDeviceDXGI device = _createCallback?.Invoke(settings, this, detected[i]);
+                _capabilitiesCallback(settings, device);
+                _devices.Add(device);
 
-                if (adapter.Outputs.Count > 0)
+                if (device.Outputs.Count > 0)
                 {
                     // Set default if needed
-                    if (_defaultAdapter == null && adapter.Capabilities.Api != GraphicsApi.Unsupported)
+                    if (_defaultDevice == null && device.Capabilities.Api != GraphicsApi.Unsupported)
                     {
-                        _defaultAdapter = adapter;
-                        _selectedAdapter = adapter;
+                        _defaultDevice = device;
+                        _selectedAdapter = device;
                     }
                 }
             }
 
             // If no adapter with outputs was found, use the first detected adapter.
-            if (_defaultAdapter == null && _adapters.Count > 0)
+            if (_defaultDevice == null && _devices.Count > 0)
             {
-                for(int i = 0; i < _adapters.Count; i++)
+                for(int i = 0; i < _devices.Count; i++)
                 {
-                    if (_adapters[i].Capabilities.Api != GraphicsApi.Unsupported)
+                    if (_devices[i].Capabilities.Api != GraphicsApi.Unsupported)
                     {
-                        _defaultAdapter = _adapters[i];
-                        _selectedAdapter = _defaultAdapter;
+                        _defaultDevice = _devices[i];
+                        _selectedAdapter = _defaultDevice;
                         break;
                     }
                 }
             }
 
             // Do we still not have an adapter? Unsupported.
-            if(_defaultAdapter == null)
-                Log.Error($"No supported GPU adapter found.");
+            if(_defaultDevice == null)
+                base.Log.Error($"No supported GPU adapter found.");
         }
 
         public IDXGISwapChain4* CreateSwapChain(DisplayModeDXGI mode, GraphicsSettings settings, Logger log, IUnknown* ptrDevice, IntPtr windowHandle)
@@ -142,36 +146,36 @@ namespace Molten.Graphics.Dxgi
         }
 
         /// <inheritdoc/>
-        public override void GetCompatibleAdapters(GraphicsCapabilities cap, List<IDisplayAdapter> adapters)
+        public override void GetCompatibleAdapters(GraphicsCapabilities cap, List<GraphicsDevice> devices)
         {
-            for (int i = 0; i < _adapters.Count; i++)
+            for (int i = 0; i < _devices.Count; i++)
             {
-                if (_adapters[i].Capabilities.IsCompatible(cap))
-                    adapters.Add(_adapters[i]);
+                if (_devices[i].Capabilities.IsCompatible(cap))
+                    devices.Add(_devices[i]);
             }
         }
 
         /// <inheritdoc/>
-        public override IReadOnlyList<IDisplayAdapter> Adapters { get; }
+        public override IReadOnlyList<GraphicsDeviceDXGI> Devices { get; }
 
         /// <inheritdoc/>
-        public override IDisplayAdapter DefaultAdapter => _defaultAdapter;
+        public override GraphicsDeviceDXGI DefaultDevice => _defaultDevice;
 
         /// <inheritdoc/>
-        public override IDisplayAdapter SelectedAdapter
+        public override GraphicsDevice SelectedDevice
         {
             get => _selectedAdapter;
             set
             {
                 if (value != null)
                 {
-                    if (value is not DisplayAdapterDXGI dxgiAdapter)
-                        throw new AdapterException(value, "The adapter is not a valid DXGI adapter.");
+                    if (value is not GraphicsDeviceDXGI dxgiDevice)
+                        throw new GraphicsDeviceException(value, "The device is not a valid DXGI device.");
 
                     if (value.Manager != this)
-                        throw new AdapterException(value, "The adapter not owned by the current display manager.");
+                        throw new GraphicsDeviceException(value, "The device not owned by the current display manager.");
 
-                    _selectedAdapter = dxgiAdapter;
+                    _selectedAdapter = dxgiDevice;
                 }
                 else
                 {

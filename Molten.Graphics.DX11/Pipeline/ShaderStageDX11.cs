@@ -9,7 +9,7 @@ namespace Molten.Graphics
             Cmd = queue;
             Type = type;
 
-            GraphicsCapabilities cap = Cmd.Device.Adapter.Capabilities;
+            GraphicsCapabilities cap = Cmd.Device.Capabilities;
             ShaderStageCapabilities shaderCap = cap[type];
             
             Samplers = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Input, $"{type}_Sampler", cap.MaxShaderSamplers, new SamplerGroupBinder(this));

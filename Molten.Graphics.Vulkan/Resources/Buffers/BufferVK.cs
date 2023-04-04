@@ -67,7 +67,7 @@ namespace Molten.Graphics
             MemoryAllocateInfo memInfo = new MemoryAllocateInfo();
             memInfo.SType = StructureType.MemoryAllocateInfo;
             memInfo.AllocationSize = memRequirements.Size;
-            memInfo.MemoryTypeIndex = device.Adapter.GetMemoryTypeIndex(ref memRequirements, memFlags);
+            memInfo.MemoryTypeIndex = device.GetMemoryTypeIndex(ref memRequirements, memFlags);
 
             r = device.VK.AllocateMemory(device, &memInfo, null, _handle->Memory);
             if (!r.Check(device))

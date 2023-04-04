@@ -1,5 +1,6 @@
 ﻿using Molten.Graphics.Dxgi;
 using Silk.NET.Direct3D12;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
@@ -13,18 +14,24 @@ namespace Molten.Graphics
             
         }
 
-        protected override GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings)
+        protected override unsafe GraphicsDisplayManager OnInitializeDisplayManager(GraphicsSettings settings)
         {
             _api = D3D12.GetApi();
             Builder = new DeviceBuilderDX12(_api, this);
-            _displayManager = new DisplayManagerDXGI(Builder.GetCapabilities);
+            _displayManager = new DisplayManagerDXGI(CreateDevice, Builder.GetCapabilities);
             return _displayManager;
         }
 
-
-        protected override GraphicsDevice OnCreateDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
+        private unsafe GraphicsDeviceDXGI CreateDevice(GraphicsSettings settings, DisplayManagerDXGI manager, IDXGIAdapter4* adapter)
         {
-            NativeDevice = new DeviceDX12(this, settings, Builder, _displayManager.SelectedAdapter);
+            return new DeviceDX12(this, _displayManager, adapter, Builder);
+        }
+
+
+        protected override GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsDisplayManager manager)
+        {
+            NativeDevice = _displayManager.SelectedDevice as DeviceDX12;
+            NativeDevice.Initialize();
             return NativeDevice;
         }
 
