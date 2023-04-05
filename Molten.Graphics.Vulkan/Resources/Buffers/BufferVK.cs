@@ -3,25 +3,26 @@ using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class BufferVK : GraphicsBuffer
+    internal unsafe class BufferVK : GraphicsBuffer
     {
         BufferCreateInfo _desc;
         ResourceHandleVK* _handle;
         MemoryAllocationVK _memory;
 
-        protected BufferVK(GraphicsDevice device,
+        internal BufferVK(GraphicsDevice device,
             GraphicsBufferType type,
             GraphicsResourceFlags flags,
             BufferUsageFlags usageFlags,
             uint stride,
             uint numElements,
-            void* initialData = null) :
+            void* initialData,
+            uint initialBytes) :
             base(device, stride, numElements, flags, type)
         {
             _handle = EngineUtil.Alloc<ResourceHandleVK>();
 
             MemoryPropertyFlags memFlags = BuildDescription(usageFlags);
-            InitializeBuffer(memFlags, initialData);
+            InitializeBuffer(memFlags, initialData, initialBytes);
         }
 
         private MemoryPropertyFlags BuildDescription(BufferUsageFlags usage)
@@ -52,7 +53,7 @@ namespace Molten.Graphics
             return memFlags;
         }
 
-        private void InitializeBuffer(MemoryPropertyFlags memFlags, void* initialData)
+        private void InitializeBuffer(MemoryPropertyFlags memFlags, void* initialData, uint initialBytes)
         {
             _handle->Ptr = EngineUtil.Alloc<Buffer>();
 
@@ -75,6 +76,13 @@ namespace Molten.Graphics
             {
                 device.Log.Error($"Unable to allocate memory for buffer of size {_desc.Size} bytes.");
                 return;
+            }
+
+            // Write initial data to buffer
+            if(initialData != null && initialBytes > 0)
+            {
+                using (GraphicsStream stream = device.Cmd.MapResource(this, 0, 0, GraphicsMapType.Write))
+                    stream.Write(initialData, initialBytes);
             }
         }
 

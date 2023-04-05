@@ -11,7 +11,7 @@ namespace Molten.Graphics
         None = 0,
 
         /// <summary>
-        /// Allow the CPU to read from the resource. Generally, only staging resources allow the CPU to map and read them.
+        /// Allow the CPU to read/copy from the resource.
         /// </summary>
         CpuRead = 1,
 
@@ -21,26 +21,31 @@ namespace Molten.Graphics
         CpuWrite = 1 << 1,
 
         /// <summary>
+        /// Allow the GPU to read/copy from the resource.
+        /// </summary>
+        GpuRead = 1 << 4,
+
+        /// <summary>
         /// Allow the GPU to write to the resource.
         /// </summary>
-        GpuWrite = 1 << 2,
+        GpuWrite = 1 << 3,
 
         /// <summary>
         /// Allow unordered/storage access from supported shader stages.
         /// <para>These are UAV resources in DX11 and DX12.</para>
         /// <para>These are Shader Storage Objects (SSO) resources in OpenGL and Vulkan.</para>
         /// </summary>
-        UnorderedAccess = 1 << 3,
+        UnorderedAccess = 1 << 4,
 
         /// <summary>
         /// Do not allow shader access. For example in DX11 this would prevent a shader resource view (SRV) from being bound to the resource.
         /// </summary>
-        NoShaderAccess = 1 << 4,
+        NoShaderAccess = 1 << 5,
 
         /// <summary>
         /// Allows the resource to be shared between logical devices, such as ID3D11Device, ID3D12Device or vkDevice instances.
         /// </summary>
-        Shared = 1 << 5,
+        Shared = 1 << 6,
 
         /// <summary>
         /// All of the GPU and CPU read/write flags. Generally used by staging resources.

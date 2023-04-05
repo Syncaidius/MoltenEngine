@@ -8,6 +8,9 @@
         /// <param name="cmd">The <see cref="GraphicsCommandQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
         void Apply(GraphicsCommandQueue cmd);
 
+        /// <summary>
+        /// Invoked when the current <see cref="IGraphicsObject"/> should release any resources that are bound to the GPU.
+        /// </summary>
         void GraphicsRelease();
 
         /// <summary>

@@ -101,18 +101,6 @@ namespace Molten.Graphics
 
         private void GetMemoryProperties(DeviceVK device)
         {
-            //Dictionary<uint, MemoryPropertyFlags> heapFlags = new Dictionary<uint, MemoryPropertyFlags>();
-
-            // Search here for device spec references: http://vulkan.gpuinfo.org/listdevices.php
-            /*for (int i = 0; i < device.Memory.MemoryTypeCount; i++)
-            {
-                ref MemoryType mType = ref device.Memory.MemoryTypes[i];
-                if (!heapFlags.ContainsKey(mType.HeapIndex))
-                    heapFlags[mType.HeapIndex] = mType.PropertyFlags;
-                else
-                    heapFlags[mType.HeapIndex] |= mType.PropertyFlags; 
-            }*/
-
             for(uint i = 0; i < device.Memory.HeapCount; i++)
             {
                 MemoryHeapVK heap = device.Memory[i];;

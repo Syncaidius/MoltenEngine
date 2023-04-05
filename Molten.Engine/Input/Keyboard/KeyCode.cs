@@ -480,12 +480,24 @@
         /// </summary>
         F1 = 0x70,
 
+        /// <summary>
+        /// The "F2" key.
+        /// </summary>
         F2 = 0x71,
 
+        /// <summary>
+        /// The "F3" key.
+        /// </summary>
         F3 = 0x72,
 
+        /// <summary>
+        /// The "F4" key.
+        /// </summary>
         F4 = 0x73,
 
+        /// <summary>
+        /// The "F5" key.
+        /// </summary>
         F5 = 0x74,
 
         /// <summary>

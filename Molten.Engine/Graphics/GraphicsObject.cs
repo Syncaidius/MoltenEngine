@@ -27,6 +27,9 @@
             Device.MarkForRelease(this);
         }
 
+        /// <summary>
+        /// Invoked when the object should release any graphics resources.
+        /// </summary>
         public abstract void GraphicsRelease();
 
         /// <summary>

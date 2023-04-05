@@ -1,6 +1,7 @@
 ﻿using System;
 using Silk.NET.Core;
 using Silk.NET.Core.Native;
+using Silk.NET.Direct3D.Compilers;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
@@ -258,14 +259,18 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags mode, uint numElements, T[] initialData = null)
+        public override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, T[] initialData = null)
         {
-            throw new NotImplementedException();
+            uint stride = (uint)sizeof(T);
+            uint totalBytes = stride * numElements;
+            fixed(T* ptrData = initialData)
+                return new BufferVK(this, GraphicsBufferType.Structured, flags, BufferUsageFlags.None, stride, numElements, ptrData, totalBytes);
         }
 
         public override GraphicsBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity)
         {
-            return new StagingBufferVK(this, 1, byteCapacity);
+            return new BufferVK(this, GraphicsBufferType.Staging, GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuWrite,
+                BufferUsageFlags.None, 1, byteCapacity, null, 0);
         }
 
         public override INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1)

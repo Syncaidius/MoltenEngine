@@ -4,19 +4,32 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
+    /// <summary>
+    /// The standard implementation of <see cref="GraphicsBuffer"/> for DirectX 11. Also acts as a base class for other buffer types.
+    /// </summary>
     public unsafe class BufferDX11 : GraphicsBuffer
     {
         ID3D11Buffer* _native;
         uint _ringPos;
         internal BufferDesc Desc;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="BufferDX11"/> with the specified parameters.
+        /// </summary>
+        /// <param name="device">The <see cref="DeviceDX11"/> that the buffer will be bound to.</param>
+        /// <param name="type">The buffer type.</param>
+        /// <param name="flags">The flags to use during initialization.</param>
+        /// <param name="stride">The stride or bytes-per-element of the buffer.</param>
+        /// <param name="numElements">The maximum number of elements that the buffer can hold.</param>
+        /// <param name="initialData">An optional pointer to data to be copied to the buffer during initialization. If <paramref name="initialBytes"/> is 0, this parameter is ignored.</param>
+        /// <param name="initialBytes">The initial size of <paramref name="initialData"/>, in bytes. If <paramref name="initialData"/> is null, this parameter is ignored.</param>
         internal BufferDX11(DeviceDX11 device,
             GraphicsBufferType type,
             GraphicsResourceFlags flags,
             uint stride,
             uint numElements,
             void* initialData,
-            uint initialBytes) : base(device, stride, numElements, flags, type)
+            uint initialBytes) : base(device, stride, numElements, flags | GraphicsResourceFlags.GpuRead, type)
         {
             ResourceFormat = GraphicsFormat.Unknown;
             NativeSRV = new SRView(this);
@@ -27,7 +40,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// 
+        /// Initializes the current instance of <see cref="BufferDX11"/>.
         /// </summary>
         /// <param name="initialDataPtr">A pointer to data that the buffer should initially be populated with.</param>
         protected virtual void InitializeBuffer(void* initialData, uint initialBytes)
@@ -65,7 +78,7 @@ namespace Molten.Graphics
             if (Desc.MiscFlags == (uint)ResourceMiscFlag.BufferStructured)
                 Desc.StructureByteStride = Stride;
 
-            if (initialData != null)
+            if (initialData != null && initialBytes > 0)
             {
                 SubresourceData srd = new SubresourceData(initialData, initialBytes, SizeInBytes);
                 nDevice.Ptr->CreateBuffer(ref Desc, ref srd, ref _native);
@@ -124,6 +137,7 @@ namespace Molten.Graphics
             }
         }
 
+        /// <inheritdoc/>
         public override void GraphicsRelease()
         {
             NativeSRV.Release();
@@ -139,16 +153,20 @@ namespace Molten.Graphics
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
         internal ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Desc.MiscFlags;
 
+        /// <inheritdoc/>
         public override unsafe void* Handle => _native;
 
+        /// <inheritdoc/>
         public override unsafe void* SRV => NativeSRV.Ptr;
 
+        /// <inheritdoc/>
         public override unsafe void* UAV => NativeUAV.Ptr;
 
         internal SRView NativeSRV { get; }
 
         internal UAView NativeUAV { get; }
 
+        /// <inheritdoc/>
         public override GraphicsFormat ResourceFormat { get; protected set; }
     }
 }
