@@ -23,7 +23,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Allow the GPU to read/copy from the resource.
         /// </summary>
-        GpuRead = 1 << 4,
+        GpuRead = 1 << 2,
 
         /// <summary>
         /// Allow the GPU to write to the resource.
