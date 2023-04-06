@@ -34,7 +34,7 @@
                 return;
 
             Rectangle bounds = (Rectangle)camera.Surface.Viewport.Bounds;
-            GraphicsCommandQueue cmd = renderer.Device.Cmd;
+            GraphicsCommandQueue cmd = renderer.Device.Queue;
 
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 
@@ -47,10 +47,10 @@
             cmd.SetViewports(camera.Surface.Viewport);
             cmd.SetScissorRectangle(bounds);
 
-            cmd.BeginDraw();
+            cmd.Begin();
             _skyboxData.RenderTransform = Matrix4F.Scaling(camera.MaxDrawDistance) * Matrix4F.CreateTranslation(camera.Position);
             _sphereMesh.Render(cmd, renderer, camera, _skyboxData);
-            cmd.EndDraw();
+            cmd.End();
         }
 
         private void MakeSphere(uint latLines, uint longLines, out Vertex[] vertices, out uint[] indices)

@@ -29,8 +29,8 @@ namespace Molten.Graphics
             uint subDest = (Destination.MipMapCount * DestArraySlice) + DestMipLevel;
 
             RendererDX11 dx11Renderer = renderer as RendererDX11;
-            Destination.Apply(dx11Renderer.NativeDevice.Cmd);
-            dx11Renderer.NativeDevice.Cmd.Native->ResolveSubresource((ID3D11Resource*)Destination.Handle, subDest,
+            Destination.Apply(dx11Renderer.NativeDevice.Queue);
+            dx11Renderer.NativeDevice.Queue.Native->ResolveSubresource((ID3D11Resource*)Destination.Handle, subDest,
                 (ID3D11Resource*)Source.Handle, subSource, Source.DxgiFormat);
             Recycle(this);
         }

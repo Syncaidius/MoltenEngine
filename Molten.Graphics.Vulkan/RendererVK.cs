@@ -173,12 +173,13 @@ namespace Molten.Graphics
             return _instanceLoader.GetExtension<E>();
         }
 
-        protected override void OnPostPresent(Timing time)
+        protected override void OnPrePresent(Timing time)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < _devices.Count; i++)
+                _devices[i].ProcessFences();
         }
 
-        protected override void OnPrePresent(Timing time)
+        protected override void OnPostPresent(Timing time)
         {
             throw new NotImplementedException();
         }

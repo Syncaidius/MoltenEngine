@@ -2,17 +2,18 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class CommandListVK
+    internal unsafe class CommandListVK : GraphicsCommandList
     {
         CommandPoolAllocation _allocation;
         CommandBuffer _cmdBuffer;
         Vk _vk;
 
-        internal CommandListVK(CommandPoolAllocation allocation, CommandBuffer cmdBuffer)
+        internal CommandListVK(CommandPoolAllocation allocation, CommandBuffer cmdBuffer) : 
+            base(allocation.Pool.Queue)
         {
             _allocation = allocation;
             _cmdBuffer = cmdBuffer;
-            _vk = allocation.Pool.Device.VK;
+            _vk = allocation.Pool.Queue.VK;
         }
 
         internal void Free()
@@ -24,15 +25,12 @@ namespace Molten.Graphics
             _allocation.Free(this);
         }
 
-        internal unsafe void Begin()
+        public override void Begin()
         {
+            base.Begin();
+
             if (IsFree)
                 throw new InvalidOperationException("Cannot use a freed command list");
-
-            if (HasBegun)
-                throw new InvalidOperationException("Cannot call Begin() again before End() has been called");
-
-            HasBegun = true;
 
             CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
             if (_allocation.Pool.IsTransient)
@@ -41,25 +39,34 @@ namespace Molten.Graphics
             _vk.BeginCommandBuffer(_cmdBuffer, &beginInfo);
         }
 
-        internal void End()
+        public override void End()
         {
-            if (!HasBegun)
-                throw new InvalidOperationException("Cannot call End() before Begin() has been called");
-
+            base.End();
             _vk.EndCommandBuffer(_cmdBuffer);
-            HasBegun = false;
         }
 
-        internal unsafe void Submit()
+        protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
         {
-            SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
-            submit.CommandBufferCount = 1;
+            ResourceMap map = new ResourceMap(null, resource.SizeInBytes, resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
+            Result r = VK.MapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory), 0, resource.SizeInBytes, 0, &map.Ptr);
 
-            CommandBuffer* ptrBuffer = stackalloc CommandBuffer[] { _cmdBuffer };
-            submit.PCommandBuffers = ptrBuffer;
+            if (!r.Check(_device))
+                return new ResourceMap();
+
+            return map;
         }
 
-        internal void CopyResource(GraphicsResource src, GraphicsResource dest)
+        protected override unsafe void OnUnmapResource(GraphicsResource resource, uint subresource)
+        {
+            VK.UnmapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory));
+        }
+
+        protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
         {
             /*switch (src.ResourceType) {
                 case GraphicsResourceType.Buffer:
@@ -72,10 +79,45 @@ namespace Molten.Graphics
             }*/
         }
 
+        public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnDispose()
+        {
+            throw new NotImplementedException();
+        }
+
         // TODO implement command buffer commands - CmdDraw, CmdCopyBuffer, etc
 
         internal bool IsFree { get; set; }
 
-        internal bool HasBegun { get; private set; }
+        internal CommandBuffer Native => _cmdBuffer;
     }
 }

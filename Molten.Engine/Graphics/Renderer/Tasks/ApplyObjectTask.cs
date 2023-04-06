@@ -12,7 +12,7 @@
 
         public override void Process(RenderService renderer)
         {
-            Object.Apply(renderer.Device.Cmd);
+            Object.Apply(renderer.Device.Queue);
             Recycle(this);
         }
     }

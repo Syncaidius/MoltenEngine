@@ -47,7 +47,7 @@ namespace Molten.Graphics
             _desc.Flags = BufferCreateFlags.None;
             _desc.Size = Stride * ElementCount;
             _desc.PQueueFamilyIndices = EngineUtil.AllocArray<uint>(1);
-            _desc.PQueueFamilyIndices[0] = (Device.Cmd as CommandQueueVK).Index;
+            _desc.PQueueFamilyIndices[0] = (Device.Queue as CommandQueueVK).Index;
             _desc.QueueFamilyIndexCount = 1;
 
             return memFlags;
@@ -81,7 +81,7 @@ namespace Molten.Graphics
             // Write initial data to buffer
             if(initialData != null && initialBytes > 0)
             {
-                using (GraphicsStream stream = device.Cmd.MapResource(this, 0, 0, GraphicsMapType.Write))
+                using (GraphicsStream stream = device.Queue.MapResource(this, 0, 0, GraphicsMapType.Write))
                     stream.Write(initialData, initialBytes);
             }
         }

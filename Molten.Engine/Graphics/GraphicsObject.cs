@@ -7,7 +7,7 @@
             Device = device; 
             BoundTo = new List<GraphicsSlot>();
             BindFlags = bindFlags;
-            LastUsedFrameID = device.Cmd.Profiler.FrameID;
+            LastUsedFrameID = device.Queue.Profiler.FrameID;
         }
 
         /// <summary>

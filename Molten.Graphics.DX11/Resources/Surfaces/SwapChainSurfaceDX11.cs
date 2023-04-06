@@ -88,7 +88,7 @@ namespace Molten.Graphics
 
         public void Present()
         {
-            OnApply(Device.Cmd);
+            OnApply(Device.Queue);
 
             if (OnPresent() && NativeSwapChain != null)
             {

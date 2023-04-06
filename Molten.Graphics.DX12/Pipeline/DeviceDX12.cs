@@ -153,6 +153,6 @@ namespace Molten.Graphics
         /// </summary>
         protected ref ID3D12Device10* PtrRef => ref _native;
 
-        public override CommandQueueDX12 Cmd => _cmdDirect;
+        public override CommandQueueDX12 Queue => _cmdDirect;
     }
 }

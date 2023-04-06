@@ -14,7 +14,7 @@
 
         public override void Process(RenderService renderer)
         {
-            if (Task.Process(renderer.Device.Cmd, Resource))
+            if (Task.Process(renderer.Device.Queue, Resource))
                 Resource.Version++;
 
             Recycle(this);

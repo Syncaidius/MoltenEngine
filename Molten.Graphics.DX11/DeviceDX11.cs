@@ -17,7 +17,7 @@ namespace Molten.Graphics
         DeviceBuilderDX11 _builder;
         GraphicsManagerDXGI _displayManager;
 
-        CommandQueueDX11 CmdList;
+        CommandQueueDX11 _cmdQueue;
         List<CommandQueueDX11> _deferredContexts;
 
         ID3D11Debug* _debug;
@@ -67,7 +67,7 @@ namespace Molten.Graphics
                     _debugInfo->GetMessageA(i, msg, &msgSize);
 
                     string desc = SilkMarshal.PtrToString((nint)msg->PDescription, NativeStringEncoding.LPStr);
-                    Log.Error($"[DX11 DEBUG] [Frame {Cmd.Profiler.FrameID}] [{msg->Severity}] [{msg->Category}] {desc}");
+                    Log.Error($"[DX11 DEBUG] [Frame {Queue.Profiler.FrameID}] [{msg->Severity}] [{msg->Category}] {desc}");
                 }
 
                 _debugInfo->ClearStoredMessages();
@@ -97,7 +97,7 @@ namespace Molten.Graphics
                 _debugInfo->PushEmptyStorageFilter();
             }
 
-            CmdList = new CommandQueueDX11(this, deviceContext);
+            _cmdQueue = new CommandQueueDX11(this, deviceContext);
         }
 
         /// <summary>Queries the underlying texture's interface.</summary>
@@ -425,6 +425,6 @@ namespace Molten.Graphics
         internal VertexFormatCache<ShaderIOStructureDX11> VertexFormatCache { get; }
 
         /// <inheritdoc/>
-        public override CommandQueueDX11 Cmd => CmdList;
+        public override CommandQueueDX11 Queue => _cmdQueue;
     }
 }

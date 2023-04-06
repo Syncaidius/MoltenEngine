@@ -10,24 +10,23 @@ namespace Molten.Graphics
 
         internal CommandPoolVK(CommandQueueVK queue, CommandPoolCreateFlags flags, uint allocationSize)
         {
-            Device = queue.VKDevice;
+            Queue = queue;
             _allocSize = allocationSize;
-
 
             CommandPoolCreateInfo info = new CommandPoolCreateInfo(StructureType.CommandPoolCreateInfo);
             info.Flags = flags;
             info.QueueFamilyIndex = queue.FamilyIndex;
 
             CommandPool pool = new CommandPool();
-            Result r = Device.VK.CreateCommandPool(Device, &info, null, &pool);
-            if (!r.Check(Device, ()=> "Failed to create command buffer pool"))
+            Result r = Queue.VK.CreateCommandPool(Queue.VKDevice, &info, null, &pool);
+            if (!r.Check(Queue.VKDevice, ()=> "Failed to create command buffer pool"))
                 return;
 
             IsTransient = (flags & CommandPoolCreateFlags.TransientBit) == CommandPoolCreateFlags.TransientBit;
             _allocations = new List<CommandPoolAllocation>();
         }
 
-        internal CommandListVK Allocate(CommandBufferLevel level = CommandBufferLevel.Primary)
+        internal CommandListVK Allocate(CommandBufferLevel level)
         {
             foreach(CommandPoolAllocation a in _allocations)
             {
@@ -46,10 +45,10 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            Device.VK.DestroyCommandPool(Device, _pool, null);
+            Queue.VK.DestroyCommandPool(Queue.VKDevice, _pool, null);
         }
 
-        internal DeviceVK Device { get; }
+        internal CommandQueueVK Queue { get; }
 
         internal CommandPool Native => _pool;
 

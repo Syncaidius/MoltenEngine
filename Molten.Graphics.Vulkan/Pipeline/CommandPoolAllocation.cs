@@ -21,8 +21,8 @@ namespace Molten.Graphics
             info.CommandBufferCount = 1;
 
             CommandBuffer* cbs = EngineUtil.AllocArray<CommandBuffer>(count);
-            Result r = pool.Device.VK.AllocateCommandBuffers(pool.Device, null, cbs);
-            if (!r.Check(pool.Device, () => "Failed to allocate command buffers"))
+            Result r = pool.Queue.VK.AllocateCommandBuffers(pool.Queue.VKDevice, null, cbs);
+            if (!r.Check(pool.Queue.VKDevice, () => "Failed to allocate command buffers"))
                 _freeCount = 0;
 
             _free = new CommandListVK[count];
@@ -51,7 +51,7 @@ namespace Molten.Graphics
         {
             _freeCount = 0;
 
-            Pool.Device.VK.FreeCommandBuffers(Pool.Device, Pool.Native, (uint)_lists.Length, _ptrBuffers);
+            Pool.Queue.VK.FreeCommandBuffers(Pool.Queue.VKDevice, Pool.Native, (uint)_lists.Length, _ptrBuffers);
             EngineUtil.Free(ref _ptrBuffers);
         }
 

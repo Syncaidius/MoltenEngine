@@ -32,7 +32,7 @@ namespace Molten.Graphics
             IRenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
             IDepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            GraphicsCommandQueue cmd = renderer.Device.Cmd;
+            GraphicsCommandQueue cmd = renderer.Device.Queue;
 
             _surfaceLighting.Clear(GraphicsPriority.Immediate, context.Scene.AmbientLightColor);
             cmd.ResetRenderSurfaces();
@@ -84,14 +84,14 @@ namespace Molten.Graphics
             cmd.IndexBuffer.Value = null;
             uint pointCount = scene.PointLights.ElementCount * 2;
 
-            cmd.BeginDraw();
+            cmd.Begin();
             cmd.Draw(_matPoint, pointCount, 0);
-            cmd.EndDraw();
+            cmd.End();
 
             // Draw debug light volumes
-            cmd.BeginDraw();
+            cmd.Begin();
             cmd.Draw(_matDebugPoint, pointCount, 0);
-            cmd.EndDraw();
+            cmd.End();
         }
     }
 }

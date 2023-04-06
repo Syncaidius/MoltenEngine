@@ -127,7 +127,7 @@ namespace Molten.Graphics
             };
 
             // Detect swap-chain sharing mode.
-            (createInfo.ImageSharingMode, CommandQueueVK[] sharingWith) = Device.GetSharingMode(Device.Cmd, _presentQueue);
+            (createInfo.ImageSharingMode, CommandQueueVK[] sharingWith) = Device.GetSharingMode(Device.Queue, _presentQueue);
             uint* familyIndices = stackalloc uint[sharingWith.Length];
 
             for (int i = 0; i < sharingWith.Length; i++)

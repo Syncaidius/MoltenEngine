@@ -51,10 +51,10 @@ namespace Molten.Graphics
         private void ProcessTasks(RenderTaskPriority priority)
         {
             ThreadedQueue<RenderTask> queue = _tasks[priority];
-            Device.Cmd.BeginEvent($"Process '{priority}' tasks");
+            Device.Queue.BeginEvent($"Process '{priority}' tasks");
             while (queue.TryDequeue(out RenderTask task))
                 task.Process(this);
-            Device.Cmd.EndEvent();
+            Device.Queue.EndEvent();
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace Molten.Graphics
                 if (!sceneData.IsVisible)
                     continue;
 
-                Device.Cmd.BeginEvent("Draw Scene");
+                Device.Queue.BeginEvent("Draw Scene");
                 sceneData.PreRenderInvoke(this);
                 sceneData.Profiler.Begin();
 
@@ -169,18 +169,18 @@ namespace Molten.Graphics
                     if (camera.Skip)
                         continue;
 
-                    Device.Cmd.Profiler = camera.Profiler;
+                    Device.Queue.Profiler = camera.Profiler;
                     camera.Profiler.Begin();
                     _chain.Render(sceneData, camera, time);
                     camera.Profiler.End(time);
                     Profiler.Accumulate(camera.Profiler.Previous);
                     sceneData.Profiler.Accumulate(camera.Profiler.Previous);
-                    Device.Cmd.Profiler = null;
+                    Device.Queue.Profiler = null;
                 }
 
                 sceneData.Profiler.End(time);
                 sceneData.PostRenderInvoke(this);
-                Device.Cmd.EndEvent();
+                Device.Queue.EndEvent();
             }
 
             Surfaces.ResetFirstCleared();

@@ -7,7 +7,6 @@ namespace Molten.Graphics
         DeviceVK _device;
         CommandPoolVK _cmdPool;
         CommandPoolVK _cmdTransientPool;
-
         CommandListVK _cmdMain;
 
         internal CommandQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
@@ -23,8 +22,44 @@ namespace Molten.Graphics
 
             _cmdPool = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
             _cmdTransientPool = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit | CommandPoolCreateFlags.TransientBit, 5);
-
             _cmdMain = _cmdPool.Allocate(CommandBufferLevel.Primary);
+        }
+
+        public override GraphicsCommandList GetList(GraphicsCommandListType type)
+        {
+            CommandListVK cmd = null;
+
+            switch (type)
+            {
+                case GraphicsCommandListType.Frame:
+                    cmd = _cmdPool.Allocate(CommandBufferLevel.Secondary);
+                    break;
+
+                case GraphicsCommandListType.Temp:
+                    cmd = _cmdTransientPool.Allocate(CommandBufferLevel.Secondary);
+                    break;
+            }
+
+            return cmd;
+        }
+
+        public override unsafe void Submit(Action CompletionCallback, params GraphicsCommandList[] cmd)
+        {
+            SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
+            submit.CommandBufferCount = (uint)cmd.Length;
+
+            CommandBuffer* ptrBuffers = stackalloc CommandBuffer[cmd.Length];
+            for (int i = 0; i < cmd.Length; i++)
+            {
+                if (cmd[i].ListType != GraphicsCommandListType.Secondary)
+                    throw new InvalidOperationException($"Cannot submit a secondary command list directly to a command queue.");
+
+                ptrBuffers[i] = (cmd[i] as CommandListVK).Native;
+            }
+
+            submit.PCommandBuffers = ptrBuffers;
+            FenceVK fence = _device.GetFence(CompletionCallback);
+            VK.QueueSubmit(Native, 1, &submit, fence);
         }
 
         internal bool HasFlags(CommandSetCapabilityFlags flags)
@@ -37,31 +72,6 @@ namespace Molten.Graphics
             _cmdMain.Free();
             _cmdPool.Dispose();
             _cmdTransientPool.Dispose();
-        }
-
-        public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
-        {
-            throw new NotImplementedException();
         }
 
         public override void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count)
@@ -139,39 +149,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource,GraphicsMapType mapType)
-        {
-            ResourceMap map = new ResourceMap(null, resource.SizeInBytes, resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
-            Result r = VK.MapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory), 0, resource.SizeInBytes, 0, &map.Ptr);
-
-            if (!r.Check(_device))
-                return new ResourceMap();
-
-            return map;
-        }
-
-        protected override unsafe void OnUnmapResource(GraphicsResource resource, uint subresource)
-        {
-            VK.UnmapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory));
-        }
-
-        protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
-        {
-            _cmdMain.Begin();
-            _cmdMain.CopyResource(src, dest);
-            _cmdMain.End();
-        }
-
-        public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
-        {
-            throw new NotImplementedException();
-        }
-
         internal Vk VK { get; }
 
         internal Logger Log { get; }
@@ -193,6 +170,9 @@ namespace Molten.Graphics
         /// </summary>
         internal SupportedCommandSet Set { get; }
 
+        /// <summary>
+        /// Gets flags representing the available API command sets.
+        /// </summary>
         internal CommandSetCapabilityFlags Flags { get; }
 
         internal Queue Native { get; private set; }

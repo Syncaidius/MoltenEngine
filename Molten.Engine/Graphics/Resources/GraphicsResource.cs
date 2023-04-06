@@ -25,7 +25,7 @@ namespace Molten.Graphics
             {
                 default:
                 case GraphicsPriority.Immediate:
-                    if (op.Process(Device.Cmd, this))
+                    if (op.Process(Device.Queue, this))
                         Version++;
                     break;
 

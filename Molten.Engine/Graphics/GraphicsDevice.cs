@@ -78,7 +78,7 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             DisposeMarkedObjects();
-            Cmd?.Dispose();
+            Queue?.Dispose();
         }
 
         /// <summary>
@@ -263,7 +263,7 @@ namespace Molten.Graphics
         /// <summary>
         /// The main <see cref="GraphicsCommandQueue"/> of the current <see cref="GraphicsDevice"/>. This is used for issuing immediate commands to the GPU.
         /// </summary>
-        public abstract GraphicsCommandQueue Cmd { get; }
+        public abstract GraphicsCommandQueue Queue { get; }
 
         /// <summary>
         /// Gets the <see cref="RenderService"/> that created and owns the current <see cref="GraphicsDevice"/> instance.

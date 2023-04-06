@@ -7,7 +7,7 @@ namespace Molten.Graphics
     /// </summary>
     public class GraphicsStream : RawStream
     {
-        public unsafe GraphicsStream(GraphicsCommandQueue cmd, GraphicsResource resource, ref ResourceMap map) : 
+        public unsafe GraphicsStream(GraphicsCommandList cmd, GraphicsResource resource, ref ResourceMap map) : 
             base(map.Ptr, 
                 map.DepthPitch, 
                 resource.Flags.Has(GraphicsResourceFlags.CpuRead), 
@@ -25,9 +25,9 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Gets the <see cref="GraphicsCommandQueue"/> that the current <see cref="GraphicsStream"/> is bound to.
+        /// Gets the <see cref="GraphicsCommandList"/> that the current <see cref="GraphicsStream"/> is bound to.
         /// </summary>
-        public GraphicsCommandQueue Cmd { get; }
+        public GraphicsCommandList Cmd { get; }
 
         /// <summary>
         /// Gets the <see cref="GraphicsResource"/> that the current <see cref="GraphicsStream"/> points to.

@@ -59,7 +59,7 @@
             {
                 op.Data = data;
                 op.DataStartIndex = startIndex;
-                op.Process(Device.Cmd, this);
+                op.Process(Device.Queue, this);
             }
             else
             {

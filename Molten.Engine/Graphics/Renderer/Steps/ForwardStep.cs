@@ -13,16 +13,16 @@
             if (context.Layer.Renderables.Count == 0)
                 return;
 
-            GraphicsCommandQueue cmd = renderer.Device.Cmd;
+            GraphicsCommandQueue cmd = renderer.Device.Queue;
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             cmd.SetRenderSurface(sScene, 0);
             cmd.DepthSurface.Value = renderer.Surfaces.GetDepth();
             cmd.SetViewports(camera.Surface.Viewport);
             cmd.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
 
-            cmd.BeginDraw();
+            cmd.Begin();
             renderer.RenderSceneLayer(cmd, context.Layer, camera);
-            cmd.EndDraw();
+            cmd.End();
         }
     }
 }

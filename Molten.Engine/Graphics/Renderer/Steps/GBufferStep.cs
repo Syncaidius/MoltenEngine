@@ -10,7 +10,7 @@
             IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
             IRenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
 
-            GraphicsCommandQueue cmd = renderer.Device.Cmd;
+            GraphicsCommandQueue cmd = renderer.Device.Queue;
 
             cmd.SetRenderSurface(sScene, 0);
             cmd.SetRenderSurface(sNormals, 1);
@@ -25,9 +25,9 @@
 
             cmd.SetViewports(camera.Surface.Viewport);
 
-            cmd.BeginDraw();
+            cmd.Begin();
             renderer.RenderSceneLayer(cmd, context.Layer, camera);
-            cmd.EndDraw();
+            cmd.End();
         }
 
         private void SetShaderCommon(HlslShader shader, RenderCamera camera, IRenderSurface2D gBufferScene)

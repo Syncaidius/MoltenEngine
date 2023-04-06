@@ -1,7 +1,5 @@
-﻿using System;
-using Silk.NET.Core;
+﻿using Silk.NET.Core;
 using Silk.NET.Core.Native;
-using Silk.NET.Direct3D.Compilers;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
@@ -28,6 +26,12 @@ namespace Molten.Graphics
         MemoryManagerVK _memory;
         Device* _native;
 
+
+        Stack<FenceVK> _freeFences;
+        List<FenceVK> _fences;
+
+        internal readonly Fence NullFence = new Fence(0);
+
         /// <summary>
         /// 
         /// </summary>
@@ -37,6 +41,9 @@ namespace Molten.Graphics
         internal DeviceVK(RendererVK renderer, DisplayManagerVK manager, PhysicalDevice pDevice, Instance* instance) :
             base(renderer, manager)
         {
+            _freeFences = new Stack<FenceVK>();
+            _fences = new List<FenceVK>();
+
             _renderer = renderer;
             _vkInstance = instance;
             _manager = manager;
@@ -234,6 +241,33 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
+        internal FenceVK GetFence(Action callback, FenceCreateFlags flags = FenceCreateFlags.None)
+        {
+            if (_freeFences.Count > 0)
+                return _freeFences.Pop();
+
+            FenceVK fence = new FenceVK(this, callback, flags);
+            _fences.Add(fence);
+            return fence;
+        }
+
+        internal void ProcessFences()
+        {
+            Span<Fence> f = stackalloc Fence[1];
+
+            for (int i = _fences.Count -1; i >= 0; i--)
+            {
+                FenceVK fence = _fences[i];
+                if (fence.CheckStatus())
+                {
+                    f[0] = fence.Ptr;
+                    VK.ResetFences(*_native, f);
+                    _fences.RemoveAt(i);
+                    _freeFences.Push(fence);
+                }
+            }
+        }
+
         protected override HlslPass OnCreateShaderPass(HlslShader shader, string name)
         {
             return new MaterialPassVK(shader, name);
@@ -397,7 +431,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the underlying <see cref="CommandQueueVK"/> that should execute graphics commands.
         /// </summary>
-        public override CommandQueueVK Cmd => _gfxQueue;
+        public override CommandQueueVK Queue => _gfxQueue;
 
         internal Vk VK => _renderer.VK;
 
