@@ -24,19 +24,19 @@ namespace Molten
             DisplayOutputIds = AddSettingList<int>("display_id");
             VSync = AddSetting("vsync", true);
             MSAA = AddSetting<AntiAliasLevel>("msaa", 0);
-            BackBufferSize = AddSetting<BackBufferMode>("back_buffer_size", BackBufferMode.Double);
+            BufferingMode = AddSetting<BackBufferMode>("back_buffer_size", BackBufferMode.Double);
             EnableDebugLayer = AddSetting<bool>("renderer_debug");
         }
 
         /// <summary>
-        /// Gets <see cref="BackBufferSize"/> as a <see cref="uint"/> value.
+        /// Gets <see cref="BufferingMode"/> as a <see cref="uint"/> value.
         /// </summary>
         /// <returns></returns>
         public uint GetBackBufferSize()
         {
             uint backBufferSize = 1;
-            if (BackBufferSize.Value != BackBufferMode.Default)
-                backBufferSize = (uint)BackBufferSize.Value;
+            if (BufferingMode.Value != BackBufferMode.Default)
+                backBufferSize = (uint)BufferingMode.Value;
 
             return backBufferSize;
         }
@@ -59,7 +59,7 @@ namespace Molten
 
         /// <summary>Gets or sets the number of back-buffer surfaces. A larger back-buffer tends to increase performance, but also consumes more video memory.</summary>
         [DataMember]
-        public SettingValue<BackBufferMode> BackBufferSize { get; }
+        public SettingValue<BackBufferMode> BufferingMode { get; }
 
         /// <summary>Gets or sets whether to enable a renderer's debug layer, if available.</summary>
         [DataMember]

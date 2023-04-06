@@ -53,14 +53,23 @@
             _defaultProfiler = _profiler = new RenderProfiler();
         }
 
-        public unsafe GraphicsStream MapResource(GraphicsResource resource, uint subresource, uint streamOffset, GraphicsMapType mapType)
+        /// <summary>
+        /// Maps a resource to provide a <see cref="GraphicsStream"/> for reading or writing.
+        /// </summary>
+        /// <param name="resource">The resource to be mapped.</param>
+        /// <param name="subresource">The sub-resource to be mapped. e.g. mip-map level or array slice.</param>
+        /// <param name="offsetBytes">The number of bytes to offset the mapping. This sets the position of the returned <see cref="GraphicsStream"/>.</param>
+        /// <param name="mapType">The type of mapping to perform.</param>
+        /// <returns></returns>
+        /// <exception cref="GraphicsResourceException"></exception>
+        public unsafe GraphicsStream MapResource(GraphicsResource resource, uint subresource, uint offsetBytes, GraphicsMapType mapType)
         {
             if (resource.Stream != null)
                 throw new GraphicsResourceException(resource, $"Cannot map a resource that is already mapped. Dispose of the provided {nameof(GraphicsStream)} first");
 
             ResourceMap map = GetResourcePtr(resource, subresource, mapType);
             resource.Stream = new GraphicsStream(this, resource, ref map);
-            resource.Stream.Position = streamOffset;
+            resource.Stream.Position = offsetBytes;
             return resource.Stream;
         }
 

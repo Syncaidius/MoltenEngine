@@ -64,8 +64,6 @@ namespace Molten.Graphics
 
         protected override void OnApply(GraphicsCommandQueue cmd)
         {
-            CommandQueueDX11 dx11Cmd = cmd as CommandQueueDX11;
-
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
             if (DirtyVariables)
             {
@@ -75,7 +73,7 @@ namespace Molten.Graphics
                 foreach(ShaderConstantVariable v in Variables)
                     v.Write(_constData + v.ByteOffset);
 
-                using (GraphicsStream stream = dx11Cmd.MapResource(this, 0, 0, GraphicsMapType.Discard))
+                using (GraphicsStream stream = cmd.MapResource(this, 0, 0, GraphicsMapType.Discard))
                     stream.WriteRange(_constData, Desc.ByteWidth);
             }
             else

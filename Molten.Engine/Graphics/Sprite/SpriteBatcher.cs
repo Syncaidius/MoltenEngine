@@ -65,6 +65,7 @@ namespace Molten.Graphics
         ushort _curClipID;
         uint _curRange;
         uint _dataCount;
+        uint _flushIndex;
 
         GraphicsBuffer _buffer;
 
@@ -286,7 +287,7 @@ namespace Molten.Graphics
         /// <param name="texture"></param>
         /// <param name="destination"></param>
         /// <param name="color">Sets the color of the sprite. This overrides <see cref="SpriteStyle.PrimaryColor"/> of the active <see cref="SpriteStyle"/>.</param>
-        /// <param name="material"></param>
+        /// <param name="shader">The shader to use when rendering the sprite.</param>
         /// <param name="arraySlice"></param>
         public void Draw(RectangleF destination, Color color, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
@@ -310,7 +311,7 @@ namespace Molten.Graphics
         /// <param name="source"></param>
         /// <param name="destination"></param>
         /// <param name="color">Sets the color of the sprite. This overrides <see cref="SpriteStyle.PrimaryColor"/> of the active <see cref="SpriteStyle"/>.</param>
-        /// <param name="material"></param>
+        /// <param name="shader">The shader to use when rendering the sprite.</param>
         /// <param name="arraySlice"></param>
         public void Draw(RectangleF source, RectangleF destination, Color color, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
@@ -336,7 +337,7 @@ namespace Molten.Graphics
         /// <param name="destination"></param>
         /// <param name="style"></param>
         /// <param name="texture"></param>
-        /// <param name="material"></param>
+        /// <param name="shader">The shader to use when rendering the sprite.</param>
         /// <param name="arraySlice"></param>
         /// <param name="surfaceSlice"></param>
         public void Draw(RectangleF source, RectangleF destination, ref RectStyle style, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
@@ -357,7 +358,7 @@ namespace Molten.Graphics
         /// <param name="destination"></param>
         /// <param name="style"></param>
         /// <param name="texture"></param>
-        /// <param name="material"></param>
+        /// <param name="shader"></param>
         /// <param name="arraySlice"></param>
         public void Draw(RectangleF destination, ref RectStyle style, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
         {
@@ -371,8 +372,8 @@ namespace Molten.Graphics
         /// <param name="origin"></param>
         /// <param name="style"></param>
         /// <param name="texture"></param>
-        /// <param name="material"></param>
-        /// <param name="arraySlice"></param><
+        /// <param name="shader">The shader to use when rendering the sprite.</param>
+        /// <param name="arraySlice"></param>
         public void Draw(RectangleF destination, float rotation, Vector2F origin, 
             ref RectStyle style, 
             ITexture2D texture = null, 
@@ -388,7 +389,7 @@ namespace Molten.Graphics
         /// <param name="position"></param>
         /// <param name="style"></param>
         /// <param name="texture"></param>
-        /// <param name="material"></param>
+        /// <param name="shader">The shader to use when rendering the sprite.</param>
         /// <param name="arraySlice"></param>
         /// <param name="surfaceSlice"></param>
         public void Draw(Vector2F position, ref RectStyle style, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
@@ -420,7 +421,7 @@ namespace Molten.Graphics
         /// <param name="rotation">Rotation in radians.</param>
         /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
-        /// <param name="material">The material to use when rendering the sprite.</param>
+        /// <param name="shader">The shader to use when rendering the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
         /// <param name="surfaceSlice">The destination slice of a bound <see cref="IRenderSurface"/>. This is only used when rendering to a render surface array.</param>
         public void Draw(Vector2F position, float rotation, Vector2F origin, ITexture2D texture, ref RectStyle style, HlslShader shader = null, float arraySlice = 0, uint surfaceSlice = 0)
@@ -440,7 +441,7 @@ namespace Molten.Graphics
         /// <param name="rotation">Rotation in radians.</param>
         /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
-        /// <param name="material">The material to use when rendering the sprite.</param>
+        /// <param name="shader">The shader to use when rendering the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
         public unsafe void Draw(ITexture2D texture,
             RectangleF source,
@@ -523,14 +524,29 @@ namespace Molten.Graphics
             Reset();
         }
 
-        private void FlushBuffer(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data, uint rangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
+        private unsafe void FlushBuffer(GraphicsCommandQueue cmd, RenderCamera camera, ObjectRenderData data, uint rangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
         {
-            using (GraphicsStream stream = cmd.MapResource(_buffer, 0, 0, GraphicsMapType.Discard))
+            GraphicsMapType map = GraphicsMapType.Discard;
+            uint flushByteOffset = 0;
+
+            // Check if we actually need to discard. If we have enough space in the buffer, we can just write to it.
+            if(vertexCount <= (FlushCapacity - _flushIndex))
+            {
+                map = GraphicsMapType.Write;
+                flushByteOffset = _flushIndex * (uint)sizeof(GpuData);
+            }
+            else
+            {
+                _flushIndex = 0;
+            }
+
+            using (GraphicsStream stream = cmd.MapResource(_buffer, 0, flushByteOffset, map))
                 stream.WriteRange(Data, vertexStartIndex, vertexCount);
 
-            // Draw calls
-            uint bufferOffset = 0;
+            uint bufferOffset = _flushIndex;
+            _flushIndex += vertexCount;
 
+            // Draw calls
             for (uint i = 0; i < rangeCount; i++)
             {
                 ref SpriteRange range = ref Ranges[rangeID++];

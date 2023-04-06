@@ -224,7 +224,7 @@ namespace Molten.Graphics
 
         private void ValidateBackBufferSize()
         {
-            BackBufferMode mode = Device.Renderer.Settings.Graphics.BackBufferSize;
+            BackBufferMode mode = Device.Renderer.Settings.Graphics.BufferingMode;
             if (mode == BackBufferMode.Default)
                 _backBufferSize = _cap.MinImageCount + 1;
             else
