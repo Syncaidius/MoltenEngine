@@ -29,7 +29,7 @@ namespace Molten.Graphics
             _lists = new CommandListVK[count];
             for (int i = 0; i < _lists.Length; i++)
             {
-                _lists[i] = new CommandListVK(this, _ptrBuffers[i]);
+                _lists[i] = new CommandListVK(this, _ptrBuffers[i], pool.ListType);
                 _free[i] = _lists[i];
             }
         }

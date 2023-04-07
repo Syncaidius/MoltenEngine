@@ -7,12 +7,14 @@ namespace Molten.Graphics
         CommandPoolAllocation _allocation;
         CommandBuffer _cmdBuffer;
         Vk _vk;
+        DeviceVK _device;
 
-        internal CommandListVK(CommandPoolAllocation allocation, CommandBuffer cmdBuffer) : 
-            base(allocation.Pool.Queue)
+        internal CommandListVK(CommandPoolAllocation allocation, CommandBuffer cmdBuffer, GraphicsCommandListType type) : 
+            base(allocation.Pool.Queue, type)
         {
             _allocation = allocation;
             _cmdBuffer = cmdBuffer;
+            _device = allocation.Pool.Queue.VKDevice;
             _vk = allocation.Pool.Queue.VK;
         }
 
@@ -25,7 +27,7 @@ namespace Molten.Graphics
             _allocation.Free(this);
         }
 
-        public override void Begin()
+        public override void Begin(bool singleUse)
         {
             base.Begin();
 
@@ -33,7 +35,7 @@ namespace Molten.Graphics
                 throw new InvalidOperationException("Cannot use a freed command list");
 
             CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
-            if (_allocation.Pool.IsTransient)
+            if (singleUse)
                 beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
 
             _vk.BeginCommandBuffer(_cmdBuffer, &beginInfo);
@@ -48,7 +50,7 @@ namespace Molten.Graphics
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
         {
             ResourceMap map = new ResourceMap(null, resource.SizeInBytes, resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
-            Result r = VK.MapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory), 0, resource.SizeInBytes, 0, &map.Ptr);
+            Result r = _vk.MapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory), 0, resource.SizeInBytes, 0, &map.Ptr);
 
             if (!r.Check(_device))
                 return new ResourceMap();
@@ -58,7 +60,7 @@ namespace Molten.Graphics
 
         protected override unsafe void OnUnmapResource(GraphicsResource resource, uint subresource)
         {
-            VK.UnmapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory));
+            _vk.UnmapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory));
         }
 
         protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
@@ -119,5 +121,7 @@ namespace Molten.Graphics
         internal bool IsFree { get; set; }
 
         internal CommandBuffer Native => _cmdBuffer;
+
+        internal CommandBufferLevel Level => _allocation.Level;
     }
 }

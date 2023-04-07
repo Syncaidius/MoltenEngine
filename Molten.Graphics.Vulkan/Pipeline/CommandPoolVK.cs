@@ -57,5 +57,7 @@ namespace Molten.Graphics
         /// <para>Transient buffers will automatically free themselves once submitted to their parent queue.</para>
         /// </summary>
         internal bool IsTransient { get; }
+
+        internal GraphicsCommandListType ListType { get; }
     }
 }

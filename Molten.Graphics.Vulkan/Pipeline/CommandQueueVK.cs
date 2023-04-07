@@ -35,7 +35,7 @@ namespace Molten.Graphics
                     cmd = _cmdPool.Allocate(CommandBufferLevel.Secondary);
                     break;
 
-                case GraphicsCommandListType.Temp:
+                case GraphicsCommandListType.Short:
                     cmd = _cmdTransientPool.Allocate(CommandBufferLevel.Secondary);
                     break;
             }
@@ -43,7 +43,7 @@ namespace Molten.Graphics
             return cmd;
         }
 
-        public override unsafe void Submit(Action CompletionCallback, params GraphicsCommandList[] cmd)
+        public override unsafe FenceVK Submit(Action CompletionCallback, params GraphicsCommandList[] cmd)
         {
             SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
             submit.CommandBufferCount = (uint)cmd.Length;
@@ -60,6 +60,8 @@ namespace Molten.Graphics
             submit.PCommandBuffers = ptrBuffers;
             FenceVK fence = _device.GetFence(CompletionCallback);
             VK.QueueSubmit(Native, 1, &submit, fence);
+
+            return fence;
         }
 
         internal bool HasFlags(CommandSetCapabilityFlags flags)

@@ -54,7 +54,13 @@ namespace Molten.Graphics
             ListType = listType;
         }
 
-        public virtual void Begin()
+        /// <summary>
+        /// Starts recording commands in the current <see cref="GraphicsCommandList"/>.
+        /// </summary>
+        /// <param name="singleUse">If true, the command list can only be submitted once before being reset for reuse. 
+        /// If false, the command list can be submitted more than once during the current frame. This is useful if you wish to reuse a set of recorded commands for multiple passes.</param>
+        /// <exception cref="GraphicsCommandListException"></exception>
+        public virtual void Begin(bool singleUse = true)
         {
 #if DEBUG
             if (DrawInfo.Began)

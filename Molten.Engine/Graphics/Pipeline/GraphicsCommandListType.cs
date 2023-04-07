@@ -8,8 +8,14 @@ namespace Molten.Graphics
 {
     public enum GraphicsCommandListType
     {
-        Primary = 0,
+        /// <summary>
+        /// A command list that is intended to for use over the span of a single frame.
+        /// </summary>
+        Frame = 0,
 
-        Secondary = 1,
+        /// <summary>
+        /// A command list intended for short, successive submissions within the same frame.
+        /// </summary>
+        Short = 1,
     }
 }
