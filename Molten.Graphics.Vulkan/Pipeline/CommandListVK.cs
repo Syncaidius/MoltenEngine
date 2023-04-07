@@ -5,7 +5,7 @@ namespace Molten.Graphics
     internal unsafe class CommandListVK : GraphicsCommandList
     {
         CommandPoolAllocation _allocation;
-        CommandBuffer _cmdBuffer;
+        CommandBuffer _native;
         Vk _vk;
         DeviceVK _device;
 
@@ -13,7 +13,7 @@ namespace Molten.Graphics
             base(allocation.Pool.Queue, type)
         {
             _allocation = allocation;
-            _cmdBuffer = cmdBuffer;
+            _native = cmdBuffer;
             _device = allocation.Pool.Queue.VKDevice;
             _vk = allocation.Pool.Queue.VK;
         }
@@ -38,13 +38,19 @@ namespace Molten.Graphics
             if (singleUse)
                 beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
 
-            _vk.BeginCommandBuffer(_cmdBuffer, &beginInfo);
+            _vk.BeginCommandBuffer(_native, &beginInfo);
         }
 
         public override void End()
         {
             base.End();
-            _vk.EndCommandBuffer(_cmdBuffer);
+            _vk.EndCommandBuffer(_native);
+        }
+
+        public override void Execute(params GraphicsCommandList[] list)
+        {
+            CommandBuffer* cmdBuffers = stackalloc CommandBuffer[list.Length];
+            _vk.CmdExecuteCommands(_native, (uint)list.Length, cmdBuffers);
         }
 
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
@@ -90,32 +96,39 @@ namespace Molten.Graphics
         {
             // TODO apply state
 
-            _vk.CmdDraw(_cmdBuffer, vertexCount, 1, vertexStartIndex, 0);
+            _vk.CmdDraw(_native, vertexCount, 1, vertexStartIndex, 0);
             return GraphicsBindResult.Successful;
         }
 
         public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
         {
+            // TODO apply state
 
-            _vk.CmdDraw(_cmdBuffer, vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
+            _vk.CmdDraw(_native, vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
             return GraphicsBindResult.Successful;
         }
 
         public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
         {
-            _vk.CmdDrawIndexed(_cmdBuffer, indexCount, 1, startIndex, vertexIndexOffset, 0);
+            // TODO apply state
+
+            _vk.CmdDrawIndexed(_native, indexCount, 1, startIndex, vertexIndexOffset, 0);
             return GraphicsBindResult.Successful;
         }
 
         public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
         {
-            _vk.CmdDrawIndexed(_cmdBuffer, indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex);
+            // TODO apply state
+
+            _vk.CmdDrawIndexed(_native, indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex);
             return GraphicsBindResult.Successful;
         }
 
         public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
         {
-            _vk.CmdDispatch(_cmdBuffer, groups.X, groups.Y, groups.Z);
+            // TODO apply state
+
+            _vk.CmdDispatch(_native, groups.X, groups.Y, groups.Z);
             return GraphicsBindResult.Successful;
         }
 
@@ -128,7 +141,7 @@ namespace Molten.Graphics
 
         internal bool IsFree { get; set; }
 
-        internal CommandBuffer Native => _cmdBuffer;
+        internal CommandBuffer Native => _native;
 
         internal CommandBufferLevel Level => _allocation.Level;
     }

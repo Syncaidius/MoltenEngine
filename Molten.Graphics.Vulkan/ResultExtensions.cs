@@ -25,5 +25,19 @@ namespace Molten.Graphics
         {
             return Check(r, device.Renderer, getMessageCallback);
         }
+
+        public static void Throw(this Result r, DeviceVK device, Func<string> getMessageCallback = null)
+        {
+            if (r != Result.Success)
+            {
+                string msg;
+                if (getMessageCallback == null)
+                    msg = "API operation failed";
+                else
+                    msg = getMessageCallback();
+
+                throw new Exception(msg);
+            }
+        }
     }
 }

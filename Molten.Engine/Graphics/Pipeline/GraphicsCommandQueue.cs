@@ -17,6 +17,8 @@
 
         public abstract GraphicsFence Submit(Action CompletionCallback, params GraphicsCommandList[] cmd);
 
+        public abstract void Submit(params GraphicsCommandList[] cmd);
+
         public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
 where T : class, IGraphicsObject
 where B : GraphicsSlotBinder<T>, new()

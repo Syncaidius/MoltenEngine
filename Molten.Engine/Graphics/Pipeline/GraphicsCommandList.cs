@@ -81,6 +81,12 @@ namespace Molten.Graphics
         }
 
         /// <summary>
+        /// Adds a <see cref="GraphicsCommandList"/> to the current <see cref="GraphicsCommandList"/>.
+        /// </summary>
+        /// <param name="list">The command list to be added.</param>
+        public abstract void Execute(params GraphicsCommandList[] list);
+
+        /// <summary>
         /// Maps a resource to provide a <see cref="GraphicsStream"/> for reading or writing.
         /// </summary>
         /// <param name="resource">The resource to be mapped.</param>

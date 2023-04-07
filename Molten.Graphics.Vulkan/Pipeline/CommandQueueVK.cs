@@ -45,23 +45,35 @@ namespace Molten.Graphics
 
         public override unsafe FenceVK Submit(Action CompletionCallback, params GraphicsCommandList[] cmd)
         {
+            FenceVK fence = _device.GetFence(CompletionCallback);
+            SubmitCommandLists(cmd, fence.Ptr);
+            return fence;
+        }
+
+        public override void Submit(params GraphicsCommandList[] cmd)
+        {
+            SubmitCommandLists(cmd, new Fence());
+        }
+
+        private unsafe void SubmitCommandLists(GraphicsCommandList[] cmd, Fence fence)
+        {
             SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
             submit.CommandBufferCount = (uint)cmd.Length;
 
             CommandBuffer* ptrBuffers = stackalloc CommandBuffer[cmd.Length];
             for (int i = 0; i < cmd.Length; i++)
             {
-                if (cmd[i].ListType != GraphicsCommandListType.Secondary)
+                CommandListVK list = cmd[i] as CommandListVK;
+
+                if (list.Level != CommandBufferLevel.Primary)
                     throw new InvalidOperationException($"Cannot submit a secondary command list directly to a command queue.");
 
-                ptrBuffers[i] = (cmd[i] as CommandListVK).Native;
+                ptrBuffers[i] = list.Native;
             }
 
             submit.PCommandBuffers = ptrBuffers;
-            FenceVK fence = _device.GetFence(CompletionCallback);
-            VK.QueueSubmit(Native, 1, &submit, fence);
-
-            return fence;
+            Result r = VK.QueueSubmit(Native, 1, &submit, fence);
+            r.Throw(_device, () => $"Failed to submit {cmd.Length} command lists");
         }
 
         internal bool HasFlags(CommandSetCapabilityFlags flags)
