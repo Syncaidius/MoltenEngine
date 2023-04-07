@@ -13,5 +13,10 @@ namespace Molten.Graphics
         {
             return new Rectangle(rect.Origin.X, rect.Origin.Y, rect.Size.X, rect.Size.Y);
         }
+
+        public static Rectangle FromApi(this Box2D<int> r)
+        {
+            return new Rectangle(r.Min.X, r.Min.Y, r.Size.X, r.Size.Y);
+        }
     }
 }

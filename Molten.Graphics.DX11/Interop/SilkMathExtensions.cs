@@ -128,19 +128,9 @@ namespace Molten.Graphics
             return (ConstantBufferType)type;
         }
 
-        public static Rectangle FromApi(this Rectangle<int> r)
-        {
-            return new Rectangle(r.Origin.X, r.Origin.Y, r.Size.X, r.Size.Y);
-        }
-
         public static ViewportF ToApi(this Silk.NET.Direct3D11.Viewport r)
         {
             return new ViewportF(r.TopLeftX, r.TopLeftY, r.Width, r.Height, r.MinDepth, r.MaxDepth);
-        }
-
-        public static Rectangle<int> ToApi(this Rectangle r)
-        {
-            return new Rectangle<int>(r.X, r.Y, r.Width, r.Height);
         }
     }
 }

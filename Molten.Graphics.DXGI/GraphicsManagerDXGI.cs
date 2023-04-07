@@ -130,7 +130,7 @@ namespace Molten.Graphics.Dxgi
             };
 
             IDXGISwapChain1* ptrSwap1 = null;
-            WinHResult hr = DxgiFactory->CreateSwapChainForHwnd(ptrDevice, windowHandle, ref desc, null, null, ref ptrSwap1);
+            WinHResult hr = DxgiFactory->CreateSwapChainForHwnd(ptrDevice, windowHandle, &desc, null, null, &ptrSwap1);
             DxgiError de = hr.ToEnum<DxgiError>();
 
             if (de != DxgiError.Ok)
