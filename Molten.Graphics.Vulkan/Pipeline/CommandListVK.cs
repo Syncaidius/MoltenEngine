@@ -83,32 +83,40 @@ namespace Molten.Graphics
 
         public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
         {
-            throw new NotImplementedException();
+            // TODO apply state
+
+            _vk.CmdDraw(_cmdBuffer, vertexCount, 1, vertexStartIndex, 0);
+            return GraphicsBindResult.Successful;
         }
 
         public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
         {
-            throw new NotImplementedException();
+
+            _vk.CmdDraw(_cmdBuffer, vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
+            return GraphicsBindResult.Successful;
         }
 
         public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
         {
-            throw new NotImplementedException();
+            _vk.CmdDrawIndexed(_cmdBuffer, indexCount, 1, startIndex, vertexIndexOffset, 0);
+            return GraphicsBindResult.Successful;
         }
 
         public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
         {
-            throw new NotImplementedException();
+            _vk.CmdDrawIndexed(_cmdBuffer, indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex);
+            return GraphicsBindResult.Successful;
         }
 
         public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
         {
-            throw new NotImplementedException();
+            _vk.CmdDispatch(_cmdBuffer, groups.X, groups.Y, groups.Z);
+            return GraphicsBindResult.Successful;
         }
 
         protected override void OnDispose()
