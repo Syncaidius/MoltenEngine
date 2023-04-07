@@ -5,9 +5,11 @@ namespace Molten.Graphics
     internal class CommandQueueVK : GraphicsCommandQueue
     {
         DeviceVK _device;
-        CommandPoolVK _cmdPool;
-        CommandPoolVK _cmdTransientPool;
-        CommandListVK _cmdMain;
+        CommandPoolVK _poolFrame;
+        CommandPoolVK _poolTransient;
+
+        uint _cmdFrameID;
+        CommandListVK[] _cmdFrame;
 
         internal CommandQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
             base(device)
@@ -20,9 +22,46 @@ namespace Molten.Graphics
             Native = queue;
             Set = set;
 
-            _cmdPool = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
-            _cmdTransientPool = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit | CommandPoolCreateFlags.TransientBit, 5);
-            _cmdMain = _cmdPool.Allocate(CommandBufferLevel.Primary);
+            _poolFrame = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
+            _poolTransient = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit | CommandPoolCreateFlags.TransientBit, 5);
+
+            InitFrameLists();
+            Device.Settings.BufferingMode.OnChanged += BufferingMode_OnChanged;
+        }
+
+        private void BufferingMode_OnChanged(BackBufferMode oldValue, BackBufferMode newValue)
+        {
+            InitFrameLists();
+        }
+
+        private void InitFrameLists()
+        {
+            int numBuffers = (int)Device.Settings.BufferingMode.Value;
+            if (_cmdFrame.Length < numBuffers)
+            {
+                Array.Resize(ref _cmdFrame, numBuffers);
+                for (int i = 0; i < numBuffers; i++)
+                    _cmdFrame[i] = _cmdFrame[i] ?? _poolFrame.Allocate(CommandBufferLevel.Primary);
+            }
+            else
+            {
+                // Free excess buffers and downsize buffer array.
+                for (int i = numBuffers; i < _cmdFrame.Length; i++)
+                    _cmdFrame[i].Free();
+
+                Array.Resize(ref _cmdFrame, numBuffers);
+            }
+        }
+
+        public GraphicsCommandList StartFrame()
+        {
+            CommandListVK list = _cmdFrame[_cmdFrameID];
+
+            // TODO if we hit a frame command list that isn't finished yet, we need to wait to prevent the CPU from getting too far ahead.
+            // list.Fence.Wait(); -- A wait period of 0 should equate to "wait until done, no timeout", across all APIs.
+
+            _cmdFrameID = (_cmdFrameID + 1U) % (uint)_cmdFrame.Length;
+            return list;
         }
 
         public override GraphicsCommandList GetList(GraphicsCommandListType type)
@@ -32,11 +71,11 @@ namespace Molten.Graphics
             switch (type)
             {
                 case GraphicsCommandListType.Frame:
-                    cmd = _cmdPool.Allocate(CommandBufferLevel.Secondary);
+                    cmd = _poolFrame.Allocate(CommandBufferLevel.Secondary);
                     break;
 
                 case GraphicsCommandListType.Short:
-                    cmd = _cmdTransientPool.Allocate(CommandBufferLevel.Secondary);
+                    cmd = _poolTransient.Allocate(CommandBufferLevel.Secondary);
                     break;
             }
 
@@ -83,9 +122,9 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            _cmdMain.Free();
-            _cmdPool.Dispose();
-            _cmdTransientPool.Dispose();
+            
+            _poolFrame.Dispose();
+            _poolTransient.Dispose();
         }
 
         public override void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count)

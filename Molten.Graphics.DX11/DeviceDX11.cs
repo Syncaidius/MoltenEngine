@@ -215,7 +215,6 @@ namespace Molten.Graphics
             return new RenderSurface2DDX11(this, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name);
         }
 
-
         public override ITexture CreateTexture1D(Texture1DProperties properties, bool allowMipMapGen = false, string name = null)
         {
             return new Texture1DDX11(this, properties.Width, properties.Flags, properties.Format, properties.MipMapLevels, properties.ArraySize, allowMipMapGen, name);
