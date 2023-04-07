@@ -234,6 +234,14 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
+            // Dispose of fences
+            for(int i = 0; i < _fences.Count; i++)
+                _fences[i].Dispose();
+
+            _fences.Clear();
+            while(_freeFences.Count > 0)
+                _freeFences.Pop().Dispose();   
+
             _loader.Dispose();
             _renderer.VK.DestroyDevice(*Ptr, null);
             EngineUtil.Free(ref _native);

@@ -15,7 +15,7 @@
 
         public abstract GraphicsCommandList GetList(GraphicsCommandListType type);
 
-        public abstract void Submit(bool waitForCompletion, Action CompletionCallback, params GraphicsCommandList[] cmd);
+        public abstract void Submit(Action CompletionCallback, params GraphicsCommandList[] cmd);
 
         public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
 where T : class, IGraphicsObject

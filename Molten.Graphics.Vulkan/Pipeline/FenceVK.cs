@@ -7,7 +7,7 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics
 {
-    internal class FenceVK : IDisposable
+    internal class FenceVK : GraphicsFence, IDisposable
     {
         Fence _fence;
         DeviceVK _device;
@@ -33,11 +33,18 @@ namespace Molten.Graphics
             Result r = _device.VK.GetFenceStatus(_device, _fence);
             if(r == Result.Success)
             {
-                _callback.Invoke();
+                _callback?.Invoke();
                 return true;
             }
 
             return false;
+        }
+
+        public override bool Wait(ulong nsTimeout = 0)
+        {
+            Span<Fence> f = stackalloc Fence[] { _fence };
+            Result r = _device.VK.WaitForFences(_device, 1, f, true, nsTimeout);
+            return r == Result.Success;
         }
 
         public unsafe void Dispose()
