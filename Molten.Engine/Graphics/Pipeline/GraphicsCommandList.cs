@@ -47,11 +47,10 @@ namespace Molten.Graphics
             }
         }
 
-        protected GraphicsCommandList(GraphicsCommandQueue queue, GraphicsCommandListType listType)
+        protected GraphicsCommandList(GraphicsCommandQueue queue)
         {
             DrawInfo = new BatchDrawInfo();
             Queue = queue;
-            ListType = listType;
         }
 
         /// <summary>
@@ -190,6 +189,6 @@ namespace Molten.Graphics
 
         protected BatchDrawInfo DrawInfo { get; }
 
-        public GraphicsCommandListType ListType { get; }
+        public GraphicsFence Fence { get; set; }
     }
 }

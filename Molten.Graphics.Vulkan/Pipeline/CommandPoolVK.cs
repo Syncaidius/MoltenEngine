@@ -58,6 +58,6 @@ namespace Molten.Graphics
         /// </summary>
         internal bool IsTransient { get; }
 
-        internal GraphicsCommandListType ListType { get; }
+        internal GraphicsCommandListFlags ListType { get; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Vulkan;
+using Semaphore = Silk.NET.Vulkan.Semaphore;
 
 namespace Molten.Graphics
 {
@@ -8,8 +9,10 @@ namespace Molten.Graphics
         CommandPoolVK _poolFrame;
         CommandPoolVK _poolTransient;
 
-        uint _cmdFrameID;
-        CommandListVK[] _cmdFrame;
+        uint _cmdIndex;
+        FrameTrackerVK[] _frames;
+        int _frameCount;
+        ulong _frameID;
 
         internal CommandQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
             base(device)
@@ -36,83 +39,80 @@ namespace Molten.Graphics
 
         private void InitFrameLists()
         {
-            int numBuffers = (int)Device.Settings.BufferingMode.Value;
-            if (_cmdFrame.Length < numBuffers)
+            _frameCount = (int)Device.Settings.BufferingMode.Value;
+            if (_frames.Length < _frameCount)
             {
-                Array.Resize(ref _cmdFrame, numBuffers);
-                for (int i = 0; i < numBuffers; i++)
-                    _cmdFrame[i] = _cmdFrame[i] ?? _poolFrame.Allocate(CommandBufferLevel.Primary);
-            }
-            else
-            {
-                // Free excess buffers and downsize buffer array.
-                for (int i = numBuffers; i < _cmdFrame.Length; i++)
-                    _cmdFrame[i].Free();
-
-                Array.Resize(ref _cmdFrame, numBuffers);
+                Array.Resize(ref _frames, _frameCount);
+                for (int i = 0; i < _frameCount; i++)
+                    _frames[i] = _frames[i] ?? new FrameTrackerVK(_device);
             }
         }
 
-        public GraphicsCommandList StartFrame()
+        internal void StartFrame()
         {
-            CommandListVK list = _cmdFrame[_cmdFrameID];
+            if (_frameID == _device.Renderer.Profiler.FrameID)
+                throw new InvalidOperationException("Cannot start a new frame before the previous frame has completed.");
+
+            _frameID = _device.Renderer.Profiler.FrameID;
 
             // TODO if we hit a frame command list that isn't finished yet, we need to wait to prevent the CPU from getting too far ahead.
-            // list.Fence.Wait(); -- A wait period of 0 should equate to "wait until done, no timeout", across all APIs.
+            // FrameTrackerVK.Wait() needs to be added to wait for the last fence of each branch to finish.
 
-            _cmdFrameID = (_cmdFrameID + 1U) % (uint)_cmdFrame.Length;
+            _cmdIndex = (_cmdIndex + 1U) % (uint)_frames.Length;
+        }
+
+        /// <summary>
+        /// Starts a new branch of command lists for the current frame. The command lists of each branch are kept sequentially in sync via semaphores.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public GraphicsCommandList StartBranch(GraphicsCommandListFlags flags)
+        {
+            FrameTrackerVK tracker = _frames[_cmdIndex];
+            CommandListVK list = _poolFrame.Allocate(CommandBufferLevel.Primary);
+            list.Index = 0;
+            list.BranchIndex = tracker.BranchCount;
+            tracker.Track(list);
+            tracker.BranchCount++;
+
+
+
             return list;
         }
 
-        public override GraphicsCommandList GetList(GraphicsCommandListType type)
+        public unsafe GraphicsCommandList Submit(GraphicsCommandList cmd, GraphicsCommandListFlags flags)
         {
-            CommandListVK cmd = null;
+            CommandListVK vkCmd = cmd as CommandListVK;
 
-            switch (type)
+            if (vkCmd.Level != CommandBufferLevel.Primary)
+                throw new InvalidOperationException($"Cannot submit a secondary command list directly to a command queue.");
+
+            Fence f = new Fence();
+            if(flags.Has(GraphicsCommandListFlags.CpuSyncable))
             {
-                case GraphicsCommandListType.Frame:
-                    cmd = _poolFrame.Allocate(CommandBufferLevel.Secondary);
-                    break;
-
-                case GraphicsCommandListType.Short:
-                    cmd = _poolTransient.Allocate(CommandBufferLevel.Secondary);
-                    break;
+                FenceVK fence = _device.GetFence();
+                vkCmd.Fence = fence;
+                f = fence.Ptr;
+            }
+            else
+            {
+                vkCmd.Fence = null;
             }
 
-            return cmd;
-        }
-
-        public override unsafe FenceVK Submit(Action CompletionCallback, params GraphicsCommandList[] cmd)
-        {
-            FenceVK fence = _device.GetFence(CompletionCallback);
-            SubmitCommandLists(cmd, fence.Ptr);
-            return fence;
-        }
-
-        public override void Submit(params GraphicsCommandList[] cmd)
-        {
-            SubmitCommandLists(cmd, new Fence());
-        }
-
-        private unsafe void SubmitCommandLists(GraphicsCommandList[] cmd, Fence fence)
-        {
+            vkCmd.Semaphore.Start(SemaphoreCreateFlags.None);
+            Semaphore* semaphore = stackalloc Semaphore[] { vkCmd.Semaphore.Ptr };
             SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
-            submit.CommandBufferCount = (uint)cmd.Length;
+            submit.CommandBufferCount = 1;
+            submit.PSignalSemaphores = semaphore;
+            submit.SignalSemaphoreCount = 1;
 
-            CommandBuffer* ptrBuffers = stackalloc CommandBuffer[cmd.Length];
-            for (int i = 0; i < cmd.Length; i++)
-            {
-                CommandListVK list = cmd[i] as CommandListVK;
-
-                if (list.Level != CommandBufferLevel.Primary)
-                    throw new InvalidOperationException($"Cannot submit a secondary command list directly to a command queue.");
-
-                ptrBuffers[i] = list.Native;
-            }
-
+            CommandBuffer* ptrBuffers = stackalloc CommandBuffer[] { vkCmd.Native };
             submit.PCommandBuffers = ptrBuffers;
-            Result r = VK.QueueSubmit(Native, 1, &submit, fence);
-            r.Throw(_device, () => $"Failed to submit {cmd.Length} command lists");
+
+            Result r = VK.QueueSubmit(Native, 1, &submit, f);
+            r.Throw(_device, () => "Failed to submit command list");
+
+            // TODO allocate next command buffer
         }
 
         internal bool HasFlags(CommandSetCapabilityFlags flags)

@@ -11,12 +11,10 @@ namespace Molten.Graphics
     {
         Fence _fence;
         DeviceVK _device;
-        Action _callback;
 
-        internal unsafe FenceVK(DeviceVK device, Action callback, FenceCreateFlags flags)
+        internal unsafe FenceVK(DeviceVK device, FenceCreateFlags flags)
         {
             _device = device;
-            _callback = callback;
 
             _fence = new Fence();
             FenceCreateInfo fInfo = new FenceCreateInfo(StructureType.FenceCreateInfo, null, flags);
@@ -32,15 +30,12 @@ namespace Molten.Graphics
             // See: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceStatus.html
             Result r = _device.VK.GetFenceStatus(_device, _fence);
             if(r == Result.Success)
-            {
-                _callback?.Invoke();
                 return true;
-            }
 
             return false;
         }
 
-        public override bool Wait(ulong nsTimeout = 0)
+        public override bool Wait(ulong nsTimeout = ulong.MaxValue)
         {
             Span<Fence> f = stackalloc Fence[] { _fence };
             Result r = _device.VK.WaitForFences(_device, 1, f, true, nsTimeout);

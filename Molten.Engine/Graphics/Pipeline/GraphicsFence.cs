@@ -11,8 +11,8 @@ namespace Molten.Graphics
         /// <summary>
         /// Halts execution on the current thread until the fence is signaled by the GPU.
         /// </summary>
-        /// <param name="nsTimeout">A timeout, in nanoseconds. If set to 0, </param>
+        /// <param name="nsTimeout">A timeout, in nanoseconds. If set to 0, the call will immediately return the fence status as a bool without waiting.</param>
         /// <returns>True if the wait was succesful, or false if the timeout was reached.</returns>
-        public abstract bool Wait(ulong nsTimeout = 0);
+        public abstract bool Wait(ulong nsTimeout = ulong.MaxValue);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Vulkan;
+using Semaphore = Silk.NET.Vulkan.Semaphore;
 
 namespace Molten.Graphics
 {
@@ -9,13 +10,14 @@ namespace Molten.Graphics
         Vk _vk;
         DeviceVK _device;
 
-        internal CommandListVK(CommandPoolAllocation allocation, CommandBuffer cmdBuffer, GraphicsCommandListType type) : 
-            base(allocation.Pool.Queue, type)
+        internal CommandListVK(CommandPoolAllocation allocation, CommandBuffer cmdBuffer) : 
+            base(allocation.Pool.Queue)
         {
             _allocation = allocation;
             _native = cmdBuffer;
             _device = allocation.Pool.Queue.VKDevice;
             _vk = allocation.Pool.Queue.VK;
+            Semaphore = new SemaphoreVK(_device);
         }
 
         internal void Free()
@@ -144,5 +146,11 @@ namespace Molten.Graphics
         internal CommandBuffer Native => _native;
 
         internal CommandBufferLevel Level => _allocation.Level;
+
+        internal SemaphoreVK Semaphore { get; }
+
+        internal uint BranchIndex { get; set; }
+
+        internal uint Index { get; set; }
     }
 }

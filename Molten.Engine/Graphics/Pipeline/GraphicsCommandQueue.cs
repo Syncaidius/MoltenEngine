@@ -13,8 +13,6 @@
             _defaultProfiler = _profiler = new RenderProfiler();
         }
 
-        public abstract GraphicsCommandList GetList(GraphicsCommandListType type);
-
         public abstract GraphicsFence Submit(Action CompletionCallback, params GraphicsCommandList[] cmd);
 
         public abstract void Submit(params GraphicsCommandList[] cmd);

@@ -249,12 +249,12 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        internal FenceVK GetFence(Action callback, FenceCreateFlags flags = FenceCreateFlags.None)
+        internal FenceVK GetFence(FenceCreateFlags flags = FenceCreateFlags.None)
         {
             if (_freeFences.Count > 0)
                 return _freeFences.Pop();
 
-            FenceVK fence = new FenceVK(this, callback, flags);
+            FenceVK fence = new FenceVK(this, flags);
             _fences.Add(fence);
             return fence;
         }
