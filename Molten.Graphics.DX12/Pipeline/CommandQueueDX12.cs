@@ -22,7 +22,7 @@ namespace Molten.Graphics
         {
             Guid cmdGuid = ID3D12CommandQueue.Guid;
             void* cmdQueue = null;
-            HResult r = Device.Ptr->CreateCommandQueue(ref _desc, &cmdGuid, &cmdQueue);
+            HResult r = Device.Ptr->CreateCommandQueue(_desc, &cmdGuid, &cmdQueue);
             if (!builder.CheckResult(r))
             {
                 Log.Error($"Failed to initialize '{_desc.Type}' command queue");
@@ -36,9 +36,19 @@ namespace Molten.Graphics
             _ptr = (ID3D12CommandQueue*)cmdQueue;
         }
 
-        protected override void OnDispose()
+        public override void Execute(GraphicsCommandList list)
         {
-            SilkUtil.ReleasePtr(ref _ptr);
+            throw new NotImplementedException();
+        }
+
+        public override GraphicsCommandList Record(Action<GraphicsQueue> callback, GraphicsCommandListFlags flags)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Submit(GraphicsCommandListFlags flags)
+        {
+            throw new NotImplementedException();
         }
 
         public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
@@ -164,6 +174,11 @@ namespace Molten.Graphics
         public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
         {
             throw new NotImplementedException();
+        }
+
+        protected override void OnDispose()
+        {
+            SilkUtil.ReleasePtr(ref _ptr);
         }
 
         internal DeviceDX12 Device { get; }

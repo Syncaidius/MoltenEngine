@@ -108,7 +108,7 @@ namespace Molten.Graphics
 
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
         {
-            Map map = Map.None;
+            Map map = 0;
             GraphicsResourceFlags flags = resource.Flags;
 
             if (flags.Has(GraphicsResourceFlags.CpuWrite))
@@ -266,7 +266,7 @@ namespace Molten.Graphics
             if (_scissorRectsDirty)
             {
                 fixed (Rectangle* ptrRect = _scissorRects)
-                    Native->RSSetScissorRects((uint)_scissorRects.Length, (Rectangle<int>*)ptrRect);
+                    Native->RSSetScissorRects((uint)_scissorRects.Length, (Box2D<int>*)ptrRect);
 
                 _scissorRectsDirty = false;
             }
