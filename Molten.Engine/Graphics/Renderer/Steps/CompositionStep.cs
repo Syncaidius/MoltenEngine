@@ -37,7 +37,7 @@
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF vpBounds = camera.Surface.Viewport.Bounds;
-            GraphicsCommandQueue cmd = renderer.Device.Queue;
+            GraphicsQueue cmd = renderer.Device.Queue;
 
             context.CompositionSurface.Clear(GraphicsPriority.Immediate, camera.BackgroundColor);
             cmd.ResetRenderSurfaces();

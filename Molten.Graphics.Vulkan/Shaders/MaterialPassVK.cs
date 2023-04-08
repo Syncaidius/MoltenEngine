@@ -115,6 +115,6 @@ namespace Molten.Graphics
             EngineUtil.Free(ref _info.PStages);
         }
 
-        protected override void OnApply(GraphicsCommandQueue cmd) { }
+        protected override void OnApply(GraphicsQueue cmd) { }
     }
 }

@@ -48,6 +48,6 @@ namespace Molten.Graphics
             Desc.Dispose();
         }
 
-        protected override void OnApply(GraphicsCommandQueue cmd) { }
+        protected override void OnApply(GraphicsQueue cmd) { }
     }
 }

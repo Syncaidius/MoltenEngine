@@ -19,7 +19,7 @@
         /// <summary>The destination array to store the retrieved data.</summary>
         internal T[] DestArray;
 
-        public unsafe bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             GraphicsBuffer buffer = resource as GraphicsBuffer;
             DestArray = DestArray ?? new T[Count];

@@ -34,7 +34,7 @@
                 return;
 
             Rectangle bounds = (Rectangle)camera.Surface.Viewport.Bounds;
-            GraphicsCommandQueue cmd = renderer.Device.Queue;
+            GraphicsQueue cmd = renderer.Device.Queue;
 
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 

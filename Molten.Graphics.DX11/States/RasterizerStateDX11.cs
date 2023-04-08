@@ -37,7 +37,7 @@ namespace Molten.Graphics
             device.Ptr->CreateRasterizerState2(ref raDesc, ref _native);
         }
 
-        protected override void OnApply(GraphicsCommandQueue cmd) { }
+        protected override void OnApply(GraphicsQueue cmd) { }
 
         public override void GraphicsRelease()
         {

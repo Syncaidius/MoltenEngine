@@ -12,7 +12,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="pass">The pass that was completed.</param>
         /// <param name="customInfo">Custom information that can be passed between shader passes.</param>
-        public delegate void OnCompletedCallback(HlslPass pass, GraphicsCommandQueue.CustomDrawInfo customInfo);
+        public delegate void OnCompletedCallback(HlslPass pass, GraphicsQueue.CustomDrawInfo customInfo);
 
         /// <summary>
         /// The texture samplers to be used with the shader/component.
@@ -64,7 +64,7 @@ namespace Molten.Graphics
 
         protected abstract void OnInitialize(ref ShaderPassParameters parameters);
 
-        public void InvokeCompleted(GraphicsCommandQueue.CustomDrawInfo customInfo)
+        public void InvokeCompleted(GraphicsQueue.CustomDrawInfo customInfo)
         {
             OnCompleted?.Invoke(this, customInfo);
         }

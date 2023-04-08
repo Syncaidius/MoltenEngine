@@ -34,6 +34,6 @@ namespace Molten.Graphics
             EngineUtil.Free(ref dPtr);
         }
 
-        protected override void OnApply(GraphicsCommandQueue cmd) { }
+        protected override void OnApply(GraphicsQueue cmd) { }
     }
 }

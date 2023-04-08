@@ -46,22 +46,22 @@
                 shader.Resources[i].Value = shader.DefaultResources[i];
         }
 
-        internal bool BatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
+        internal bool BatchRender(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
         {
             return OnBatchRender(cmd, renderer, camera, batch);
         }
 
-        internal void Render(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+        internal void Render(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             OnRender(cmd, renderer, camera, data);
         }
 
-        protected virtual bool OnBatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
+        protected virtual bool OnBatchRender(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
         {
             return false;
         }
 
-        protected abstract void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data);
+        protected abstract void OnRender(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data);
 
         /// <summary>Gets or sets whether or not the renderable should be drawn.</summary>
         public bool IsVisible { get; set; }

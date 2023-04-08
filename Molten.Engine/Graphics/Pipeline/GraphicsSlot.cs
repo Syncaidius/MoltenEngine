@@ -2,7 +2,7 @@
 {
     public abstract class GraphicsSlot : EngineObject
     {
-        internal GraphicsSlot(GraphicsCommandQueue cmd, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
+        internal GraphicsSlot(GraphicsQueue cmd, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
         {
             Cmd = cmd; 
             BindType = bindType;
@@ -20,7 +20,7 @@
 
         public uint SlotIndex { get; }
 
-        public GraphicsCommandQueue Cmd { get; }
+        public GraphicsQueue Cmd { get; }
 
         public uint PendingID { get; internal set; }
 
@@ -38,7 +38,7 @@
 
         uint _boundVersion;
 
-        public GraphicsSlot(GraphicsCommandQueue queue, GraphicsSlotBinder<T> binder, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
+        public GraphicsSlot(GraphicsQueue queue, GraphicsSlotBinder<T> binder, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
             base(queue, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = false;
@@ -46,7 +46,7 @@
             _binder = binder;
         }
 
-        public GraphicsSlot(GraphicsCommandQueue queue, GraphicsSlotGroup<T> grp, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) :
+        public GraphicsSlot(GraphicsQueue queue, GraphicsSlotGroup<T> grp, GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex) :
             base(queue, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = true;

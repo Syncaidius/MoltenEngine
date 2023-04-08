@@ -92,7 +92,7 @@ namespace Molten.Graphics
         /// <param name="level">The mip-map level.</param>
         /// <param name="arraySlice">The array slice.</param>
         /// <returns></returns>
-        internal static unsafe TextureSlice FromTextureSlice(GraphicsCommandQueue cmd, ITexture tex, ITexture staging, uint level, uint arraySlice, GraphicsMapType mapType)
+        internal static unsafe TextureSlice FromTextureSlice(GraphicsQueue cmd, ITexture tex, ITexture staging, uint level, uint arraySlice, GraphicsMapType mapType)
         {
             uint subID = (arraySlice * tex.MipMapCount) + level;
             uint subWidth = tex.Width >> (int)level;

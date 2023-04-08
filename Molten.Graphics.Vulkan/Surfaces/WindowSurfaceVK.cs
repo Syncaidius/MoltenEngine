@@ -349,7 +349,7 @@ namespace Molten.Graphics
                 (Device.Renderer as RendererVK).GLFW.SetWindowShouldClose(_window, true);
         }
 
-        protected override void OnApply(GraphicsCommandQueue context)
+        protected override void OnApply(GraphicsQueue context)
         {
             throw new NotImplementedException();
         }

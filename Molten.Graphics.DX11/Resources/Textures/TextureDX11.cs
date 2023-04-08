@@ -226,7 +226,7 @@ namespace Molten.Graphics
         /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the
         /// GPU may be using the texture will cause unexpected behaviour.</summary>
         /// <param name="cmd"></param>
-        protected override void OnApply(GraphicsCommandQueue cmd)
+        protected override void OnApply(GraphicsQueue cmd)
         {
             if (IsDisposed)
                 return;

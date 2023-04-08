@@ -8,6 +8,6 @@
         /// <param name="cmd"></param>
         /// <param name="resource"></param>
         /// <returns>True if the <see cref="GraphicsResource"/> was altered.</returns>
-        bool Process(GraphicsCommandQueue cmd, GraphicsResource resource);
+        bool Process(GraphicsQueue cmd, GraphicsResource resource);
     }
 }

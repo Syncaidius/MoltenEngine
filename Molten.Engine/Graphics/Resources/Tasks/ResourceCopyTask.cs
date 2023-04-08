@@ -6,7 +6,7 @@
 
         public Action<GraphicsResource> CompletionCallback;
 
-        public unsafe bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             // If the current buffer is a staging buffer, initialize and apply all its pending changes.
             if (resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)

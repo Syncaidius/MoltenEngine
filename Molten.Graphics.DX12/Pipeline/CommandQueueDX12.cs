@@ -3,7 +3,7 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics
 {
-    internal unsafe class CommandQueueDX12 : GraphicsCommandQueue
+    internal unsafe class CommandQueueDX12 : GraphicsQueue
     {
         CommandQueueDesc _desc;
         ID3D12CommandQueue* _ptr;

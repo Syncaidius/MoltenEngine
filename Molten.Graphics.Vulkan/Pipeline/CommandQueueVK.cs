@@ -1,11 +1,13 @@
 ﻿using Silk.NET.Vulkan;
+using Buffer = Silk.NET.Vulkan.Buffer;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 
 namespace Molten.Graphics
 {
-    internal class CommandQueueVK : GraphicsCommandQueue
+    internal class CommandQueueVK : GraphicsQueue
     {
         DeviceVK _device;
+        Vk _vk;
         CommandPoolVK _poolFrame;
         CommandPoolVK _poolTransient;
 
@@ -14,13 +16,16 @@ namespace Molten.Graphics
         int _frameCount;
         ulong _frameID;
 
+        CommandListVK _cmd;
+
         internal CommandQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
             base(device)
         {
-            VK = renderer.VK;
+            _vk = renderer.VK;
             Log = renderer.Log;
             Flags = set.CapabilityFlags;
             _device = device;
+            FamilyIndex = familyIndex;
             Index = queueIndex;
             Native = queue;
             Set = set;
@@ -44,7 +49,7 @@ namespace Molten.Graphics
             {
                 Array.Resize(ref _trackers, _frameCount);
                 for (int i = 0; i < _frameCount; i++)
-                    _trackers[i] = _trackers[i] ?? new FrameTrackerVK(_device);
+                    _trackers[i] = _trackers[i] ?? new FrameTrackerVK();
             }
         }
 
@@ -61,40 +66,56 @@ namespace Molten.Graphics
             _trackerIndex = (_trackerIndex + 1U) % (uint)_trackers.Length;
         }
 
-        /// <summary>
-        /// Starts a new branch of command lists for the current frame. The command lists of each branch are kept sequentially in sync via semaphores.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        public GraphicsCommandList StartBranch(GraphicsCommandListFlags flags)
+        public override unsafe void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
         {
-            FrameTrackerVK tracker = _trackers[_trackerIndex];
-            CommandListVK list = _poolFrame.Allocate(CommandBufferLevel.Primary, 0, tracker.BranchCount, flags);
-            tracker.BranchCount++;
-            tracker.Track(list);
+            base.Begin(flags);
 
-            return list;
+            CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
+            beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
+
+            FrameTrackerVK tracker = _trackers[_trackerIndex];
+            _cmd = _poolFrame.Allocate(CommandBufferLevel.Primary, 0, tracker.BranchCount, flags);
+            tracker.BranchCount++;
+            tracker.Track(_cmd);
+
+            _vk.BeginCommandBuffer(_cmd, &beginInfo);
         }
 
-        public unsafe GraphicsCommandList Submit(GraphicsCommandList cmd, GraphicsCommandListFlags flags)
+        public override void End()
         {
-            CommandListVK vkCmd = cmd as CommandListVK;
+            base.End();
+            _vk.EndCommandBuffer(_cmd);
+        }
 
-            if (vkCmd.Level != CommandBufferLevel.Primary)
+        /// <inheritdoc/>
+        public override unsafe void Execute(GraphicsCommandList list)
+        {
+            CommandListVK vkList = list as CommandListVK;
+            if (vkList.Level != CommandBufferLevel.Secondary)
+                throw new InvalidOperationException("Cannot submit a queue-level command list to a queue");
+
+            CommandBuffer* cmdBuffers = stackalloc CommandBuffer[1] { vkList.Ptr };
+            _vk.CmdExecuteCommands(_cmd, 1, cmdBuffers);
+        }
+
+        /// <inheritdoc/>
+        public override unsafe void Submit(GraphicsCommandListFlags flags)
+        {
+            if (_cmd.Level != CommandBufferLevel.Primary)
                 throw new InvalidOperationException($"Cannot submit a secondary command list directly to a command queue.");
 
             // Use empty fence handle if the CPU doesn't need to wait for the command list to finish.
             Fence fence = new Fence();
-            if (cmd.Fence != null)
-                fence = (cmd.Fence as FenceVK).Ptr;            
+            if (_cmd.Fence != null)
+                fence = (_cmd.Fence as FenceVK).Ptr;            
 
             // We're only submitting the current command buffer.
-            CommandBuffer* ptrBuffers = stackalloc CommandBuffer[] { vkCmd.Native };
+            CommandBuffer* ptrBuffers = stackalloc CommandBuffer[] { _cmd.Ptr };
             SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
             submit.PCommandBuffers = ptrBuffers;
 
             // We want to wait on the previous command list's semaphore before executing this one, if any.
-            CommandListVK prev = _trackers[_trackerIndex].GetPrevious(vkCmd);
+            CommandListVK prev = _trackers[_trackerIndex].GetPrevious(_cmd);
             if(prev != null)
             {
                 Semaphore* waitSemaphores = stackalloc Semaphore[] { prev.Semaphore.Ptr };
@@ -108,8 +129,8 @@ namespace Molten.Graphics
             }
 
             // We want to signal the command list's own semaphore so that the next command list can wait on it, if needed.
-            vkCmd.Semaphore.Start(SemaphoreCreateFlags.None);
-            Semaphore* semaphore = stackalloc Semaphore[] { vkCmd.Semaphore.Ptr };
+            _cmd.Semaphore.Start(SemaphoreCreateFlags.None);
+            Semaphore* semaphore = stackalloc Semaphore[] { _cmd.Semaphore.Ptr };
             submit.CommandBufferCount = 1;
             submit.SignalSemaphoreCount = 1;
             submit.PSignalSemaphores = semaphore;
@@ -119,10 +140,23 @@ namespace Molten.Graphics
 
             // Allocate next command buffer
             FrameTrackerVK tracker = _trackers[_trackerIndex];
-            CommandListVK cmdNext = _poolFrame.Allocate(CommandBufferLevel.Primary, vkCmd.Index + 1, vkCmd.BranchIndex, flags);
-            tracker.Track(cmdNext);
+            _cmd = _poolFrame.Allocate(CommandBufferLevel.Primary, _cmd.Index + 1, _cmd.BranchIndex, flags);
+            tracker.Track(_cmd);
+        }
 
-            return cmdNext;
+        public override GraphicsCommandList Record(Action<GraphicsQueue> callback, GraphicsCommandListFlags flags)
+        {
+            CommandListVK tmpCmd = _cmd;
+            FrameTrackerVK tmpTracker = _trackers[_trackerIndex];
+            _trackers[_trackerIndex] = new FrameTrackerVK();
+            Begin(flags);
+            callback.Invoke(this);
+            End();
+
+            CommandListVK result = _cmd;
+            _cmd = tmpCmd;
+            _trackers[_trackerIndex] = tmpTracker;
+            return result;
         }
 
         internal bool HasFlags(CommandSetCapabilityFlags flags)
@@ -212,7 +246,87 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        internal Vk VK { get; }
+        protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
+        {
+            ResourceMap map = new ResourceMap(null, resource.SizeInBytes, resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
+            Result r = _vk.MapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory), 0, resource.SizeInBytes, 0, &map.Ptr);
+
+            if (!r.Check(_device))
+                return new ResourceMap();
+
+            return map;
+        }
+
+        protected override unsafe void OnUnmapResource(GraphicsResource resource, uint subresource)
+        {
+            _vk.UnmapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory));
+        }
+
+        protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override unsafe void CopyResource(GraphicsResource src, GraphicsResource dest)
+        {
+            switch (src) {
+                case GraphicsBuffer buffer:
+                    Span<BufferCopy> copy = stackalloc BufferCopy[] { new BufferCopy(0, 0, src.SizeInBytes) };
+                    _vk.CmdCopyBuffer(_cmd, *(Buffer*)src.Handle, *(Buffer*)dest.Handle, copy);
+                    break;
+
+                case GraphicsTexture tex:
+                    // _vk.CmdCopyImage();
+                    break;
+            }
+        }
+
+        public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
+        {
+
+        }
+
+        public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
+        {
+            // TODO apply state
+
+            _vk.CmdDraw(_cmd, vertexCount, 1, vertexStartIndex, 0);
+            return GraphicsBindResult.Successful;
+        }
+
+        public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
+        {
+            // TODO apply state
+
+            _vk.CmdDraw(_cmd, vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
+            return GraphicsBindResult.Successful;
+        }
+
+        public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
+        {
+            // TODO apply state
+
+            _vk.CmdDrawIndexed(_cmd, indexCount, 1, startIndex, vertexIndexOffset, 0);
+            return GraphicsBindResult.Successful;
+        }
+
+        public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
+        {
+            // TODO apply state
+
+            _vk.CmdDrawIndexed(_cmd, indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex);
+            return GraphicsBindResult.Successful;
+        }
+
+        public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
+        {
+            // TODO apply state
+
+            _vk.CmdDispatch(_cmd, groups.X, groups.Y, groups.Z);
+            return GraphicsBindResult.Successful;
+        }
+
+        internal Vk VK => _vk;
 
         internal Logger Log { get; }
 

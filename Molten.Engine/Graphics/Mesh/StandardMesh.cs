@@ -12,7 +12,7 @@
             base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
         { }
 
-        protected override void OnApply(GraphicsCommandQueue cmd)
+        protected override void OnApply(GraphicsQueue cmd)
         {
             base.OnApply(cmd);
             GraphicsResource normal = GetResource(1);

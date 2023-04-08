@@ -17,7 +17,7 @@
 
         public Action<GraphicsResource> CompletionCallback;
 
-        public unsafe bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             if (DestResource.Flags.Has(GraphicsResourceFlags.GpuWrite))
                 throw new ResourceCopyException(resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");

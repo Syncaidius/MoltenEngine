@@ -13,7 +13,7 @@
             if (context.Layer.Renderables.Count == 0)
                 return;
 
-            GraphicsCommandQueue cmd = renderer.Device.Queue;
+            GraphicsQueue cmd = renderer.Device.Queue;
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             cmd.SetRenderSurface(sScene, 0);
             cmd.DepthSurface.Value = renderer.Surfaces.GetDepth();

@@ -12,7 +12,7 @@
 
         public GraphicsMapType MapType;
 
-        public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             ITexture texture = resource as ITexture;
             ITexture texStaging = Staging as ITexture;

@@ -72,17 +72,17 @@
             _iBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        protected virtual void OnApply(GraphicsCommandQueue cmd)
+        protected virtual void OnApply(GraphicsQueue cmd)
         {
             cmd.IndexBuffer.Value = _iBuffer;
         }
 
-        protected virtual void OnPostDraw(GraphicsCommandQueue cmd)
+        protected virtual void OnPostDraw(GraphicsQueue cmd)
         {
             cmd.IndexBuffer.Value = null;
         }
 
-        protected virtual void OnDraw(GraphicsCommandQueue cmd)
+        protected virtual void OnDraw(GraphicsQueue cmd)
         {
             if(_iBuffer != null)
                 cmd.DrawIndexed(Shader, IndexCount);
@@ -90,7 +90,7 @@
                 cmd.Draw(Shader, VertexCount);
         }
 
-        protected override sealed void OnRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+        protected override sealed void OnRender(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (Shader == null)
                 return;
@@ -181,13 +181,13 @@
             _vb.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        protected override void OnApply(GraphicsCommandQueue cmd)
+        protected override void OnApply(GraphicsQueue cmd)
         {
             base.OnApply(cmd);
             cmd.VertexBuffers[0].Value = _vb;
         }
 
-        protected override void OnPostDraw(GraphicsCommandQueue cmd)
+        protected override void OnPostDraw(GraphicsQueue cmd)
         {
             base.OnPostDraw(cmd);
             cmd.VertexBuffers[0].Value = null;

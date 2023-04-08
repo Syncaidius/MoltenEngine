@@ -10,7 +10,7 @@ namespace Molten.Graphics
 
         public GraphicsMapType MapType;
 
-        public unsafe bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             ITexture texture = resource as ITexture;
             ITexture texStaging = Staging as ITexture;

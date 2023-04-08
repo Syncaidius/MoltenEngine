@@ -57,19 +57,19 @@
             _instanceBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, true, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        protected override void OnApply(GraphicsCommandQueue cmd)
+        protected override void OnApply(GraphicsQueue cmd)
         {
             base.OnApply(cmd);
             cmd.VertexBuffers[1].Value = _instanceBuffer;
         }
 
-        protected override void OnPostDraw(GraphicsCommandQueue cmd)
+        protected override void OnPostDraw(GraphicsQueue cmd)
         {
             base.OnPostDraw(cmd);
             cmd.VertexBuffers[1].Value = null;
         }
 
-        protected override void OnDraw(GraphicsCommandQueue cmd)
+        protected override void OnDraw(GraphicsQueue cmd)
         {
             if (MaxIndices > 0)
                 cmd.DrawIndexedInstanced(Shader, IndexCount, _instanceCount);
@@ -77,7 +77,7 @@
                 cmd.DrawInstanced(Shader, VertexCount, _instanceCount, 0, 0);
         }
 
-        protected override bool OnBatchRender(GraphicsCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
+        protected override bool OnBatchRender(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
         {
             _instanceCount = (uint)batch.Data.Count;
 

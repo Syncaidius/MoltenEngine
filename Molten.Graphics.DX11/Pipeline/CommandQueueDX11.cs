@@ -8,7 +8,7 @@ namespace Molten.Graphics
     internal delegate void CmdQueueDrawFailCallback(ShaderPassDX11 pass, uint passNumber, GraphicsBindResult result);
 
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="CommandQueueDX11"/>.</summary>
-    public unsafe partial class CommandQueueDX11 : GraphicsCommandQueue
+    public unsafe partial class CommandQueueDX11 : GraphicsQueue
     {
         internal const uint D3D11_KEEP_UNORDERED_ACCESS_VIEWS = 0xffffffff;
 

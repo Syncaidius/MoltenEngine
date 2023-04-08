@@ -185,7 +185,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void Apply(GraphicsCommandQueue cmd)
+        public void Apply(GraphicsQueue cmd)
         {
             throw new NotImplementedException();
         }

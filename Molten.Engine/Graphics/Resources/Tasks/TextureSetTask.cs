@@ -41,7 +41,7 @@ namespace Molten.Graphics
             Buffer.MemoryCopy(ptrStart, Data, NumBytes, NumBytes);
         }
 
-        public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             ITexture2D texture = resource as ITexture2D;
 

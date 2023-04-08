@@ -62,7 +62,7 @@ namespace Molten.Graphics
             base.GraphicsRelease();
         }
 
-        protected override void OnApply(GraphicsCommandQueue cmd)
+        protected override void OnApply(GraphicsQueue cmd)
         {
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
             if (DirtyVariables)

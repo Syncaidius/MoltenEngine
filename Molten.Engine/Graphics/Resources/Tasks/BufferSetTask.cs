@@ -22,7 +22,7 @@
 
         internal GraphicsBuffer Staging;
 
-        public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             using(GraphicsStream stream = cmd.MapResource(resource, 0, ByteOffset, MapType))
                 stream.WriteRange(Data, DataStartIndex, ElementCount);

@@ -30,7 +30,7 @@
             Type = type;
         }
 
-        protected override void OnApply(GraphicsCommandQueue context) { }
+        protected override void OnApply(GraphicsQueue context) { }
 
         public override void GraphicsRelease() { }
 

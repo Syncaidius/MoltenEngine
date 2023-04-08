@@ -198,7 +198,7 @@ namespace Molten.Graphics
             Profiler.End(time);
         }
 
-        internal void RenderSceneLayer(GraphicsCommandQueue cmd, LayerRenderData layerData, RenderCamera camera)
+        internal void RenderSceneLayer(GraphicsQueue cmd, LayerRenderData layerData, RenderCamera camera)
         {
             // TODO To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later

@@ -2,11 +2,11 @@
 {
     public class GraphicsCommandQueueException : Exception
     {
-        public GraphicsCommandQueueException(GraphicsCommandQueue queue, string message) : base(message)
+        public GraphicsCommandQueueException(GraphicsQueue queue, string message) : base(message)
         {
             Queue = queue;
         }
 
-        public GraphicsCommandQueue Queue { get; }
+        public GraphicsQueue Queue { get; }
     }
 }

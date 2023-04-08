@@ -7,7 +7,7 @@ namespace Molten.Graphics
     {
         GraphicsSlot<T>[] _slots;
 
-        public GraphicsSlotGroup(GraphicsCommandQueue queue, GraphicsGroupBinder<T> binder, GraphicsSlot<T>[] slots, GraphicsBindTypeFlags bindType, string namePrefix)
+        public GraphicsSlotGroup(GraphicsQueue queue, GraphicsGroupBinder<T> binder, GraphicsSlot<T>[] slots, GraphicsBindTypeFlags bindType, string namePrefix)
         {
             _slots = slots;
             Binder = binder;
@@ -99,9 +99,9 @@ namespace Molten.Graphics
         public GraphicsBindTypeFlags BindType { get; }
 
         /// <summary>
-        /// Gets the <see cref="GraphicsCommandQueue"/> that the current <see cref="GraphicsSlotGroup{T}"/> is bound to.
+        /// Gets the <see cref="GraphicsQueue"/> that the current <see cref="GraphicsSlotGroup{T}"/> is bound to.
         /// </summary>
-        public GraphicsCommandQueue Cmd { get; }
+        public GraphicsQueue Cmd { get; }
 
         /// <summary>
         /// Gets the number of <see cref="GraphicsSlot{T}"/> in the current <see cref="GraphicsSlotGroup{T}"/>.

@@ -2,7 +2,7 @@
 {
     internal struct BufferSetTask : IGraphicsResourceTask
     {
-        public bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             throw new NotImplementedException();
         }

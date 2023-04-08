@@ -55,7 +55,7 @@ namespace Molten.Graphics
 
         /// <summary>Applies any pending changes to the resource, from the specified priority queue.</summary>
         /// <param name="context">The graphics pipe to use when process changes.</param>
-        protected void ApplyChanges(GraphicsCommandQueue context)
+        protected void ApplyChanges(GraphicsQueue context)
         {
             if (_applyTaskQueue.Count > 0)
             {
@@ -70,7 +70,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnApply(GraphicsCommandQueue cmd)
+        protected override void OnApply(GraphicsQueue cmd)
         {
             ApplyChanges(cmd);
             _applyTaskQueue.Clear();

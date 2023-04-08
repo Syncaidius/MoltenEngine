@@ -11,13 +11,11 @@ namespace Molten.Graphics
         const int INITIAL_BRANCH_COUNT = 3;
         const int INITIAL_COMMAND_COUNT = 10;
 
-        DeviceVK _device;
         CommandListVK[][] _cmds;
         uint _index;
 
-        public FrameTrackerVK(DeviceVK device)
+        public FrameTrackerVK()
         {
-            _device = device;
             _cmds = new CommandListVK[INITIAL_BRANCH_COUNT][];
             for(int branchID = 0; branchID < _cmds.Length; branchID++)
                 _cmds[branchID] = new CommandListVK[INITIAL_COMMAND_COUNT];

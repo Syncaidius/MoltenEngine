@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal struct GenerateMipMapsTask : IGraphicsResourceTask
     {
-        public unsafe bool Process(GraphicsCommandQueue cmd, GraphicsResource resource)
+        public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             if (resource.SRV != null)
                 (cmd as CommandQueueDX11).Native->GenerateMips((ID3D11ShaderResourceView*)resource.SRV);

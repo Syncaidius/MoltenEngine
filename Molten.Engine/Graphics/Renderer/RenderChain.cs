@@ -66,7 +66,7 @@ namespace Molten.Graphics
 
         internal void Render(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
-            GraphicsCommandQueue cmd = Renderer.Device.Queue;
+            GraphicsQueue cmd = Renderer.Device.Queue;
             RenderChainContext context = ContextPool.GetInstance();
             Renderer.Surfaces.MultiSampleLevel = camera.MultiSampleLevel;
             context.Scene = sceneData;

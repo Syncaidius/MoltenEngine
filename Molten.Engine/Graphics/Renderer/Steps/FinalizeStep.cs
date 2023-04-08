@@ -21,7 +21,7 @@
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF bounds = new RectangleF(0, 0, camera.Surface.Width, camera.Surface.Height);
-            GraphicsCommandQueue cmd = renderer.Device.Queue;
+            GraphicsQueue cmd = renderer.Device.Queue;
 
             if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
                 renderer.Surfaces.ClearIfFirstUse(camera.Surface, camera.BackgroundColor);

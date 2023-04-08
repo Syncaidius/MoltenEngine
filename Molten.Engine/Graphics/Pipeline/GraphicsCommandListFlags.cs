@@ -28,6 +28,11 @@ namespace Molten.Graphics
         /// The current command list will wait for all previously-submitted command lists in the current frame, which had the <see cref="CpuSyncable"/> flag set.
         /// </summary>
         CpuWait = 1 << 2,
+
+        /// <summary>
+        /// The current command list list can only be submitted once.
+        /// </summary>
+        SingleSubmit = 1 << 3,
     }
 
     public static class GraphicsCommandListFlagsExtensions
