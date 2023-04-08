@@ -13,9 +13,7 @@
             _defaultProfiler = _profiler = new RenderProfiler();
         }
 
-        public abstract GraphicsFence Submit(Action CompletionCallback, params GraphicsCommandList[] cmd);
-
-        public abstract void Submit(params GraphicsCommandList[] cmd);
+        public abstract GraphicsCommandList Submit(GraphicsCommandList cmd, GraphicsCommandListFlags flags);
 
         public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
 where T : class, IGraphicsObject

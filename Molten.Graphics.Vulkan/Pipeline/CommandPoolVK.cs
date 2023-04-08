@@ -26,8 +26,9 @@ namespace Molten.Graphics
             _allocations = new List<CommandPoolAllocation>();
         }
 
-        internal CommandListVK Allocate(CommandBufferLevel level)
+        internal CommandListVK Allocate(CommandBufferLevel level, uint branchIndex, uint listIndex, GraphicsCommandListFlags flags)
         {
+            CommandListVK result = null;
             foreach(CommandPoolAllocation a in _allocations)
             {
                 if (a.Level != level)
@@ -35,12 +36,28 @@ namespace Molten.Graphics
 
                 CommandListVK list = a.Get();
                 if (list != null)
-                    return list;
+                {
+                    result = list;
+                    break;
+                }
             }
 
-            CommandPoolAllocation allocation = new CommandPoolAllocation(this, level, _allocSize);
-            _allocations.Add(allocation);
-            return allocation.Get();
+            // If no free command buffers were found, allocate more before retrieving one.
+            if (result == null)
+            {
+                CommandPoolAllocation allocation = new CommandPoolAllocation(this, level, _allocSize);
+                _allocations.Add(allocation);
+                result = allocation.Get();
+            }
+
+            if (flags.Has(GraphicsCommandListFlags.CpuSyncable))
+                result.Fence = Queue.VKDevice.GetFence();
+            else
+                result.Fence = null;
+
+            result.BranchIndex = branchIndex;
+            result.Index = listIndex;
+            return result;
         }
 
         protected override void OnDispose()

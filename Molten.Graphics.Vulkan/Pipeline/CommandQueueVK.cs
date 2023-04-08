@@ -9,8 +9,8 @@ namespace Molten.Graphics
         CommandPoolVK _poolFrame;
         CommandPoolVK _poolTransient;
 
-        uint _cmdIndex;
-        FrameTrackerVK[] _frames;
+        uint _trackerIndex;
+        FrameTrackerVK[] _trackers;
         int _frameCount;
         ulong _frameID;
 
@@ -40,11 +40,11 @@ namespace Molten.Graphics
         private void InitFrameLists()
         {
             _frameCount = (int)Device.Settings.BufferingMode.Value;
-            if (_frames.Length < _frameCount)
+            if (_trackers.Length < _frameCount)
             {
-                Array.Resize(ref _frames, _frameCount);
+                Array.Resize(ref _trackers, _frameCount);
                 for (int i = 0; i < _frameCount; i++)
-                    _frames[i] = _frames[i] ?? new FrameTrackerVK(_device);
+                    _trackers[i] = _trackers[i] ?? new FrameTrackerVK(_device);
             }
         }
 
@@ -58,7 +58,7 @@ namespace Molten.Graphics
             // TODO if we hit a frame command list that isn't finished yet, we need to wait to prevent the CPU from getting too far ahead.
             // FrameTrackerVK.Wait() needs to be added to wait for the last fence of each branch to finish.
 
-            _cmdIndex = (_cmdIndex + 1U) % (uint)_frames.Length;
+            _trackerIndex = (_trackerIndex + 1U) % (uint)_trackers.Length;
         }
 
         /// <summary>
@@ -68,14 +68,10 @@ namespace Molten.Graphics
         /// <exception cref="InvalidOperationException"></exception>
         public GraphicsCommandList StartBranch(GraphicsCommandListFlags flags)
         {
-            FrameTrackerVK tracker = _frames[_cmdIndex];
-            CommandListVK list = _poolFrame.Allocate(CommandBufferLevel.Primary);
-            list.Index = 0;
-            list.BranchIndex = tracker.BranchCount;
-            tracker.Track(list);
+            FrameTrackerVK tracker = _trackers[_trackerIndex];
+            CommandListVK list = _poolFrame.Allocate(CommandBufferLevel.Primary, 0, tracker.BranchCount, flags);
             tracker.BranchCount++;
-
-
+            tracker.Track(list);
 
             return list;
         }
@@ -87,32 +83,46 @@ namespace Molten.Graphics
             if (vkCmd.Level != CommandBufferLevel.Primary)
                 throw new InvalidOperationException($"Cannot submit a secondary command list directly to a command queue.");
 
-            Fence f = new Fence();
-            if(flags.Has(GraphicsCommandListFlags.CpuSyncable))
+            // Use empty fence handle if the CPU doesn't need to wait for the command list to finish.
+            Fence fence = new Fence();
+            if (cmd.Fence != null)
+                fence = (cmd.Fence as FenceVK).Ptr;            
+
+            // We're only submitting the current command buffer.
+            CommandBuffer* ptrBuffers = stackalloc CommandBuffer[] { vkCmd.Native };
+            SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
+            submit.PCommandBuffers = ptrBuffers;
+
+            // We want to wait on the previous command list's semaphore before executing this one, if any.
+            CommandListVK prev = _trackers[_trackerIndex].GetPrevious(vkCmd);
+            if(prev != null)
             {
-                FenceVK fence = _device.GetFence();
-                vkCmd.Fence = fence;
-                f = fence.Ptr;
+                Semaphore* waitSemaphores = stackalloc Semaphore[] { prev.Semaphore.Ptr };
+                submit.WaitSemaphoreCount = 1;
+                submit.PWaitSemaphores = waitSemaphores;
             }
             else
             {
-                vkCmd.Fence = null;
+                submit.WaitSemaphoreCount = 0;
+                submit.PWaitSemaphores = null;
             }
 
+            // We want to signal the command list's own semaphore so that the next command list can wait on it, if needed.
             vkCmd.Semaphore.Start(SemaphoreCreateFlags.None);
             Semaphore* semaphore = stackalloc Semaphore[] { vkCmd.Semaphore.Ptr };
-            SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
             submit.CommandBufferCount = 1;
-            submit.PSignalSemaphores = semaphore;
             submit.SignalSemaphoreCount = 1;
+            submit.PSignalSemaphores = semaphore;
 
-            CommandBuffer* ptrBuffers = stackalloc CommandBuffer[] { vkCmd.Native };
-            submit.PCommandBuffers = ptrBuffers;
-
-            Result r = VK.QueueSubmit(Native, 1, &submit, f);
+            Result r = VK.QueueSubmit(Native, 1, &submit, fence);
             r.Throw(_device, () => "Failed to submit command list");
 
-            // TODO allocate next command buffer
+            // Allocate next command buffer
+            FrameTrackerVK tracker = _trackers[_trackerIndex];
+            CommandListVK cmdNext = _poolFrame.Allocate(CommandBufferLevel.Primary, vkCmd.Index + 1, vkCmd.BranchIndex, flags);
+            tracker.Track(cmdNext);
+
+            return cmdNext;
         }
 
         internal bool HasFlags(CommandSetCapabilityFlags flags)

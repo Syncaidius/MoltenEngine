@@ -39,6 +39,14 @@ namespace Molten.Graphics
             branch[cmd.Index] = cmd;
         }
 
+        public CommandListVK GetPrevious(CommandListVK cmd)
+        {
+            if (cmd.Index == 0 || _cmds.Length < cmd.BranchIndex)
+                return null;
+
+            return _cmds[cmd.BranchIndex][cmd.Index - 1];
+        }
+
         internal void Reset()
         {
             _index = 0;

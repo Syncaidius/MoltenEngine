@@ -259,6 +259,7 @@ namespace Molten.Graphics
             return fence;
         }
 
+        // TODO scrap this and properly wait on fences where needed. Recycle once we know they're done.
         internal void ProcessFences()
         {
             Span<Fence> f = stackalloc Fence[1];
