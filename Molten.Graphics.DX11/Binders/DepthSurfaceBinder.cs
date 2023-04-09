@@ -15,7 +15,7 @@ namespace Molten.Graphics
 
             uint maxRTs = cmd.Device.Capabilities.PixelShader.MaxOutputTargets;
             cmd.DSV = null;
-            cmd.Native->OMSetRenderTargets(maxRTs, (ID3D11RenderTargetView**)cmd.RTVs, cmd.DSV);
+            cmd.Ptr->OMSetRenderTargets(maxRTs, (ID3D11RenderTargetView**)cmd.RTVs, cmd.DSV);
         }
     }
 }

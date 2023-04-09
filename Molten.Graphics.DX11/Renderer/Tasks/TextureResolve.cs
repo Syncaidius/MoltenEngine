@@ -30,7 +30,7 @@ namespace Molten.Graphics
 
             RendererDX11 dx11Renderer = renderer as RendererDX11;
             Destination.Apply(dx11Renderer.NativeDevice.Queue);
-            dx11Renderer.NativeDevice.Queue.Native->ResolveSubresource((ID3D11Resource*)Destination.Handle, subDest,
+            dx11Renderer.NativeDevice.Queue.Ptr->ResolveSubresource((ID3D11Resource*)Destination.Handle, subDest,
                 (ID3D11Resource*)Source.Handle, subSource, Source.DxgiFormat);
             Recycle(this);
         }

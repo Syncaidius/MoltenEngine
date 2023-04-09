@@ -168,7 +168,7 @@ namespace Molten.Graphics
             if (_depthView == null)
                 CreateTexture(false);
 
-            cmd.Native->ClearDepthStencilView(_depthView, (uint)task.Flags, task.DepthClearValue, task.StencilClearValue);
+            cmd.Ptr->ClearDepthStencilView(_depthView, (uint)task.Flags, task.DepthClearValue, task.StencilClearValue);
         }
 
         public void Clear(GraphicsPriority priority, DepthClearFlags flags, float depth = 1.0f, byte stencil = 0)

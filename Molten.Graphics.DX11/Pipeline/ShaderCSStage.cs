@@ -38,27 +38,27 @@ namespace Molten.Graphics
 
         internal override unsafe void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** buffers)
         {
-            Cmd.Native->CSSetConstantBuffers(startSlot, numBuffers, buffers);
+            Cmd.Ptr->CSSetConstantBuffers(startSlot, numBuffers, buffers);
         }
 
         internal override unsafe void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView1** views)
         {
-            Cmd.Native->CSSetShaderResources(startSlot, numViews, (ID3D11ShaderResourceView**)views);
+            Cmd.Ptr->CSSetShaderResources(startSlot, numViews, (ID3D11ShaderResourceView**)views);
         }
 
         internal override unsafe void SetSamplers(uint startSlot, uint numSamplers, ID3D11SamplerState** states)
         {
-            Cmd.Native->CSSetSamplers(startSlot, numSamplers, states);
+            Cmd.Ptr->CSSetSamplers(startSlot, numSamplers, states);
         }
 
         internal override unsafe void SetShader(void* shader, ID3D11ClassInstance** classInstances, uint numClassInstances)
         {
-            Cmd.Native->CSSetShader((ID3D11ComputeShader*)shader, classInstances, numClassInstances);
+            Cmd.Ptr->CSSetShader((ID3D11ComputeShader*)shader, classInstances, numClassInstances);
         }
 
         internal unsafe void SetUnorderedAccessViews(uint startSlot, uint numUAVs, ID3D11UnorderedAccessView1** ppUnorderedAccessViews, uint* pUAVInitialCounts)
         {
-            Cmd.Native->CSSetUnorderedAccessViews(startSlot, numUAVs, (ID3D11UnorderedAccessView**)ppUnorderedAccessViews, pUAVInitialCounts);
+            Cmd.Ptr->CSSetUnorderedAccessViews(startSlot, numUAVs, (ID3D11UnorderedAccessView**)ppUnorderedAccessViews, pUAVInitialCounts);
         }
 
         internal GraphicsSlotGroup<GraphicsResource> UAVs { get; }

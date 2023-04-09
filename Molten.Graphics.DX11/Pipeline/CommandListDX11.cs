@@ -9,45 +9,19 @@ namespace Molten.Graphics
 {
     public unsafe class CommandListDX11 : GraphicsCommandList
     {
-        ID3D11DeviceContext4* _native;
-        ID3DUserDefinedAnnotation* _debugAnnotation;
+        ID3D11CommandList* _native;
 
-        public CommandListDX11(GraphicsQueueDX11 queue, ID3D11DeviceContext4* context) : 
+        public CommandListDX11(GraphicsQueueDX11 queue, ID3D11CommandList* cmd) : 
             base(queue)
         {
-            _native = context;
-
-            if (_native->GetType() == DeviceContextType.Immediate)
-                Type = CommandQueueType.Immediate;
-            else
-                Type = CommandQueueType.Deferred;
-
-            Guid debugGuid = ID3DUserDefinedAnnotation.Guid;
-            void* ptrDebug = null;
-            _native->QueryInterface(ref debugGuid, &ptrDebug);
-            _debugAnnotation = (ID3DUserDefinedAnnotation*)ptrDebug;
+            _native = cmd;
         }
 
-        internal void Clear()
-        {
-            _native->ClearState();
-        }
+        public override void Free() { }
 
         protected override void OnDispose()
         {
-            SilkUtil.ReleasePtr(ref _native);
-            SilkUtil.ReleasePtr(ref _debugAnnotation);
-
-            // Dispose context.
-            if (Type != CommandQueueType.Immediate)
-                (Queue as GraphicsQueueDX11).RemoveDeferredContext(this);
+            EngineUtil.Free(ref _native);
         }
-
-        /// <summary>Gets the current <see cref="GraphicsQueueDX11"/> type. This value will not change during the context's life.</summary>
-        internal CommandQueueType Type { get; private set; }
-
-        internal ID3D11DeviceContext4* Ptr => _native;
-
-        internal ID3DUserDefinedAnnotation* Debug => _debugAnnotation;
     }
 }

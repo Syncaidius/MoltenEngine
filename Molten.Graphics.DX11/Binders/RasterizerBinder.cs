@@ -4,12 +4,12 @@
     {
         public override void Bind(GraphicsSlot<RasterizerStateDX11> slot, RasterizerStateDX11 value)
         {
-            (slot.Cmd as GraphicsQueueDX11).Native->RSSetState(value);
+            (slot.Cmd as GraphicsQueueDX11).Ptr->RSSetState(value);
         }
 
         public override void Unbind(GraphicsSlot<RasterizerStateDX11> slot, RasterizerStateDX11 value)
         {
-            (slot.Cmd as GraphicsQueueDX11).Native->RSSetState(null);
+            (slot.Cmd as GraphicsQueueDX11).Ptr->RSSetState(null);
         }
     }
 }

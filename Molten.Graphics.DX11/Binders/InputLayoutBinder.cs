@@ -6,14 +6,14 @@
         {
             GraphicsQueueDX11 cmd = (slot.Cmd as GraphicsQueueDX11);
             if (value == null || value.IsNullBuffer)
-                cmd.Native->IASetInputLayout(null);
+                cmd.Ptr->IASetInputLayout(null);
             else
-                cmd.Native->IASetInputLayout(value);
+                cmd.Ptr->IASetInputLayout(value);
         }
 
         public override void Unbind(GraphicsSlot<VertexInputLayout> slot, VertexInputLayout value)
         {
-            (slot.Cmd as GraphicsQueueDX11).Native->IASetInputLayout(null);
+            (slot.Cmd as GraphicsQueueDX11).Ptr->IASetInputLayout(null);
         }
     }
 }

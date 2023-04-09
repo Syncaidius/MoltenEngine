@@ -23,7 +23,7 @@ namespace Molten.Graphics
             for (uint i = 0; i < numRTs; i++)
                 rtvs[i] = null;
 
-            cmd.Native->OMSetRenderTargets(numRTs, (ID3D11RenderTargetView**)rtvs, cmd.DSV);
+            cmd.Ptr->OMSetRenderTargets(numRTs, (ID3D11RenderTargetView**)rtvs, cmd.DSV);
         }
 
         public override void Unbind(GraphicsSlot<IRenderSurface2D> slot, IRenderSurface2D value)
@@ -32,7 +32,7 @@ namespace Molten.Graphics
 
             var rtvs = cmd.RTVs;
             rtvs[slot.SlotIndex] = null;
-            cmd.Native->OMSetRenderTargets(1, (ID3D11RenderTargetView**)rtvs, cmd.DSV);
+            cmd.Ptr->OMSetRenderTargets(1, (ID3D11RenderTargetView**)rtvs, cmd.DSV);
         }
     }
 }

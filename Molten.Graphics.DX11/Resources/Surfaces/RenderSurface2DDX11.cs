@@ -82,7 +82,7 @@ namespace Molten.Graphics
             if (RTV.Ptr != null)
             {
                 Color4 c4 = color;
-                cmd.Native->ClearRenderTargetView((ID3D11RenderTargetView*)RTV.Ptr, (float*)&c4);
+                cmd.Ptr->ClearRenderTargetView((ID3D11RenderTargetView*)RTV.Ptr, (float*)&c4);
             }
         }
 

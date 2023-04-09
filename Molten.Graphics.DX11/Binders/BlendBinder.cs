@@ -6,12 +6,12 @@
         {
             GraphicsQueueDX11 cmd = slot.Cmd as GraphicsQueueDX11;
             Color4 tmp = value.BlendFactor;
-            cmd.Native->OMSetBlendState(value, (float*)&tmp, value.BlendSampleMask);
+            cmd.Ptr->OMSetBlendState(value, (float*)&tmp, value.BlendSampleMask);
         }
 
         public override void Unbind(GraphicsSlot<BlendStateDX11> slot, BlendStateDX11 value)
         {
-            (slot.Cmd as GraphicsQueueDX11).Native->OMSetBlendState(null, null, 0);
+            (slot.Cmd as GraphicsQueueDX11).Ptr->OMSetBlendState(null, null, 0);
         }
     }
 }

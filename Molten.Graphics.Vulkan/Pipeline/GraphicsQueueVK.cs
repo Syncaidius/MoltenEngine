@@ -45,6 +45,7 @@ namespace Molten.Graphics
             CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
             beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
             _cmd = _poolFrame.Allocate(level, Tracker.Frame.BranchCount++, flags);
+            Tracker.Track(_cmd);
             _vk.BeginCommandBuffer(_cmd, &beginInfo);
         }
 

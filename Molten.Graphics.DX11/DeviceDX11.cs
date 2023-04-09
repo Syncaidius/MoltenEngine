@@ -17,7 +17,8 @@ namespace Molten.Graphics
         DeviceBuilderDX11 _builder;
         GraphicsManagerDXGI _displayManager;
 
-        GraphicsQueueDX11 _cmdQueue;
+        GraphicsQueueDX11 _queue;
+        List<GraphicsQueueDX11> _cmdDeferred;
 
         ID3D11Debug* _debug;
         ID3D11InfoQueue* _debugInfo;
@@ -29,6 +30,7 @@ namespace Molten.Graphics
         {
             _builder = builder;
             _displayManager = manager;
+            _cmdDeferred = new List<GraphicsQueueDX11>();
 
             VertexFormatCache = new VertexFormatCache<ShaderIOStructureDX11>(
                 (elementCount) => new ShaderIOStructureDX11(elementCount),
@@ -95,7 +97,7 @@ namespace Molten.Graphics
                 _debugInfo->PushEmptyStorageFilter();
             }
 
-            _cmdQueue = new GraphicsQueueDX11(this, deviceContext);
+            _queue = new GraphicsQueueDX11(this, deviceContext);
         }
 
         /// <summary>Queries the underlying texture's interface.</summary>
@@ -121,19 +123,37 @@ namespace Molten.Graphics
             return null;
         }
 
-        internal void SubmitContext(GraphicsQueueDX11 context)
+        /// <summary>Gets a new deferred <see cref="GraphicsQueueDX11"/>.</summary>
+        /// <returns></returns>
+        internal GraphicsQueueDX11 GetDeferredContext()
         {
-            if (context.Type != CommandQueueType.Deferred)
-                throw new Exception("Cannot submit immediate graphics contexts, only deferred.");
+            ID3D11DeviceContext3* dc = null;
+            _native->CreateDeferredContext3(0, &dc);
 
-            // TODO take the underlying DX context from the GraphicsContext and give it a new/recycled one to work with.
-            // TODO add the context's profiler stats to the device's main profiler.
+            Guid cxt4Guid = ID3D11DeviceContext4.Guid;
+            void* ptr4 = null;
+            dc->QueryInterface(&cxt4Guid, &ptr4);
+
+            GraphicsQueueDX11 context = new GraphicsQueueDX11(this, (ID3D11DeviceContext4*)ptr4);
+            _cmdDeferred.Add(context);
+            return context;
+        }
+
+        internal void RemoveDeferredContext(GraphicsQueueDX11 queue)
+        {
+            if (queue.Device != this)
+                throw new GraphicsCommandQueueException(queue, "Command list is owned by another graphics queue.");
+
+            if (!queue.IsDisposed)
+                queue.Dispose();
+
+            _cmdDeferred.Remove(queue);
         }
 
         /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
-            _cmdQueue.Dispose();
+            _queue.Dispose();
 
             // TODO dispose of all bound IGraphicsResource
             VertexFormatCache.Dispose();
@@ -394,6 +414,6 @@ namespace Molten.Graphics
         internal VertexFormatCache<ShaderIOStructureDX11> VertexFormatCache { get; }
 
         /// <inheritdoc/>
-        public override GraphicsQueueDX11 Queue => _cmdQueue;
+        public override GraphicsQueueDX11 Queue => _queue;
     }
 }

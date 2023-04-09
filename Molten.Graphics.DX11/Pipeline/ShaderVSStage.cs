@@ -10,22 +10,22 @@ namespace Molten.Graphics
 
         internal override unsafe void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** buffers)
         {
-            Cmd.Native->VSSetConstantBuffers(startSlot, numBuffers, buffers);
+            Cmd.Ptr->VSSetConstantBuffers(startSlot, numBuffers, buffers);
         }
 
         internal override unsafe void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView1** views)
         {
-            Cmd.Native->VSSetShaderResources(startSlot, numViews, (ID3D11ShaderResourceView**)views);
+            Cmd.Ptr->VSSetShaderResources(startSlot, numViews, (ID3D11ShaderResourceView**)views);
         }
 
         internal override unsafe void SetSamplers(uint startSlot, uint numSamplers, ID3D11SamplerState** states)
         {
-            Cmd.Native->VSSetSamplers(startSlot, numSamplers, states);
+            Cmd.Ptr->VSSetSamplers(startSlot, numSamplers, states);
         }
 
         internal override unsafe void SetShader(void* shader, ID3D11ClassInstance** classInstances, uint numClassInstances)
         {
-            Cmd.Native->VSSetShader((ID3D11VertexShader*)shader, classInstances, numClassInstances);
+            Cmd.Ptr->VSSetShader((ID3D11VertexShader*)shader, classInstances, numClassInstances);
         }
     }
 }
