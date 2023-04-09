@@ -23,5 +23,7 @@ namespace Molten.Graphics
         {
             EngineUtil.Free(ref _native);
         }
+
+        public ID3D11CommandList* Ptr => _native;
     }
 }

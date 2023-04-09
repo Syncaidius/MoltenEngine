@@ -129,7 +129,8 @@ namespace Molten.Graphics
             if (!list.Flags.Has(GraphicsCommandListFlags.Deferred))
                 throw new GraphicsCommandQueueException(this, "Cannot execute an immediate-mode command list. Use Submit() instead.");
 
-            // TODO call _context.Ptr->ExecuteCommandList();
+            CommandListDX11 cmd = list as CommandListDX11;
+            _native->ExecuteCommandList(cmd.Ptr, false);
         }
 
         public override void Submit(GraphicsCommandListFlags flags)
