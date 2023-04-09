@@ -8,7 +8,7 @@ namespace Molten.Graphics
 
         ID3D11SamplerState* _native;
 
-        internal ShaderSamplerDX11(DeviceDX11 device, ref ShaderSamplerParameters parameters) : 
+        internal unsafe ShaderSamplerDX11(DeviceDX11 device, ref ShaderSamplerParameters parameters) : 
             base(device, ref parameters)
         {
             SamplerDesc desc = new SamplerDesc()
@@ -30,7 +30,7 @@ namespace Molten.Graphics
             desc.BorderColor[2] = bColor.B;
             desc.BorderColor[3] = bColor.A;
 
-            device.Ptr->CreateSamplerState(ref desc, ref _native);
+            device.Ptr->CreateSamplerState(&desc, ref _native);
         }
 
         public override void GraphicsRelease()

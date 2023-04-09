@@ -41,11 +41,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public override GraphicsCommandList Record(Action<GraphicsQueue> callback, GraphicsCommandListFlags flags)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Submit(GraphicsCommandListFlags flags)
         {
             throw new NotImplementedException();
@@ -184,5 +179,6 @@ namespace Molten.Graphics
         internal DeviceDX12 Device { get; }
 
         internal Logger Log { get; }
+        protected override GraphicsCommandList Cmd { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

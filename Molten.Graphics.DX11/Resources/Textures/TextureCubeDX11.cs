@@ -25,7 +25,7 @@ namespace Molten.Graphics
                 SampleDesc = new SampleDesc(1, 0),
                 Usage = Flags.ToUsageFlags(),
                 MiscFlags = (uint)(Flags.ToMiscFlags(allowMipMapGen) | ResourceMiscFlag.Texturecube),
-                TextureLayout = TextureLayout.None
+                TextureLayout = 0U, // TextureLayout.None
             };
         }
 

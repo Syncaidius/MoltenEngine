@@ -11,7 +11,7 @@ namespace Molten.Graphics
     {
         ID3D11Buffer* _native;
         uint _ringPos;
-        internal BufferDesc Desc;
+        protected BufferDesc Desc;
 
         /// <summary>
         /// Creates a new instance of <see cref="BufferDX11"/> with the specified parameters.
@@ -81,11 +81,13 @@ namespace Molten.Graphics
             if (initialData != null && initialBytes > 0)
             {
                 SubresourceData srd = new SubresourceData(initialData, initialBytes, SizeInBytes);
-                nDevice.Ptr->CreateBuffer(ref Desc, ref srd, ref _native);
+                fixed(BufferDesc* pDesc = &Desc)
+                    nDevice.Ptr->CreateBuffer(pDesc, &srd, ref _native);
             }
             else
             {
-                nDevice.Ptr->CreateBuffer(ref Desc, null, ref _native);
+                fixed (BufferDesc* pDesc = &Desc)
+                    nDevice.Ptr->CreateBuffer(pDesc, null, ref _native);
             }
 
             Device.AllocateVRAM(SizeInBytes);

@@ -54,16 +54,8 @@ namespace Molten.Graphics
             Device = device;
             _slots = new List<GraphicsSlot>();
             _defaultProfiler = _profiler = new RenderProfiler();
-
-            _tracker.SetFrameCount((uint)Device.Settings.BufferingMode.Value);
-            Device.Settings.BufferingMode.OnChanged += BufferingMode_OnChanged;
+            _tracker = new GraphicsFrameTracker(this);
         }
-
-        private void BufferingMode_OnChanged(BackBufferMode oldValue, BackBufferMode newValue)
-        {
-            _tracker.SetFrameCount((uint)Device.Settings.BufferingMode.Value);
-        }
-
 
         public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
 where T : class, IGraphicsObject

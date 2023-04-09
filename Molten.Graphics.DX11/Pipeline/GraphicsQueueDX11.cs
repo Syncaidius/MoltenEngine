@@ -48,10 +48,11 @@ namespace Molten.Graphics
 
         CommandListDX11 _cmd;
 
-        internal GraphicsQueueDX11(DeviceDX11 device, ID3D11DeviceContext4* immediateContext) :
+        internal GraphicsQueueDX11(DeviceDX11 device, ID3D11DeviceContext4* context) :
             base(device)
         {      
             DXDevice = device;
+            _native = context;
 
             if (_native->GetType() == DeviceContextType.Immediate)
                 Type = CommandQueueType.Immediate;

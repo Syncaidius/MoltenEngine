@@ -53,7 +53,7 @@ namespace Molten.Graphics
                 SampleDesc = new SampleDesc((uint)aaLevel, (uint)msaa),
                 Usage = Flags.ToUsageFlags(),
                 MiscFlags = (uint)Flags.ToMiscFlags(allowMipMapGen),
-                TextureLayout = TextureLayout.None,
+                TextureLayout = TextureLayout.LayoutUndefined,
             };
         }
 
@@ -75,7 +75,9 @@ namespace Molten.Graphics
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
             SubresourceData* subData = null;
-            (Device as DeviceDX11).Ptr->CreateTexture2D1(ref _desc, subData, ref NativeTexture);
+            fixed (Texture2DDesc1* pDesc = &_desc)
+                (Device as DeviceDX11).Ptr->CreateTexture2D1(pDesc, subData, ref NativeTexture);
+
             return (ID3D11Resource*)NativeTexture;
         }
 

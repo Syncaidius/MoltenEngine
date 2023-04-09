@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,16 +25,26 @@ namespace Molten.Graphics
         uint _frameID;
         uint _frameIndex;
 
-        internal GraphicsFrameTracker(GraphicsQueue queue, Action<TrackedFrame> waitCallback)
+        internal GraphicsFrameTracker(GraphicsQueue queue)
         {
             Queue = queue;
-            SetFrameCount((uint)queue.Device.Settings.BufferingMode.Value);
+            SetFrameCount((uint)Queue.Device.Settings.BufferingMode.Value);
+            Queue.Device.Settings.BufferingMode.OnChanged += BufferingMode_OnChanged;
         }
 
-        internal void SetFrameCount(uint frameCount)
+        private void BufferingMode_OnChanged(BackBufferMode oldValue, BackBufferMode newValue)
         {
-            if(_frames == null || _frames.Length < frameCount)
-                _frames = new TrackedFrame[frameCount];
+            SetFrameCount((uint)Queue.Device.Settings.BufferingMode.Value);
+        }
+
+        private void SetFrameCount(uint frameCount)
+        {
+            if (frameCount != _frameCount)
+            {
+                _frameCount = frameCount;
+                if (_frames == null || _frames.Length < _frameCount)
+                    _frames = new TrackedFrame[_frameCount];
+            }
         }
 
         internal void StartFrame()

@@ -14,22 +14,22 @@ namespace Molten.Graphics
         {
             Desc = new StructKey<BlendDesc1>();
             ref BlendDesc1 bDesc = ref Desc.Value;
-            bDesc.IndependentBlendEnable = parameters.IndependentBlendEnable ? 1 : 0;
-            bDesc.AlphaToCoverageEnable = parameters.AlphaToCoverageEnable ? 1 : 0;
+            bDesc.IndependentBlendEnable = parameters.IndependentBlendEnable;
+            bDesc.AlphaToCoverageEnable = parameters.AlphaToCoverageEnable;
 
             for (int i = 0; i < ShaderPassParameters.MAX_SURFACES; i++)
             {
                 ref RenderTargetBlendDesc1 sBlend = ref bDesc.RenderTarget[i];
                 ShaderPassParameters.SurfaceBlend pBlend = parameters[i];
 
-                sBlend.BlendEnable = pBlend.BlendEnable ? 1 : 0;
+                sBlend.BlendEnable = pBlend.BlendEnable;
                 sBlend.SrcBlend = pBlend.SrcBlend.ToApi();
                 sBlend.SrcBlendAlpha = pBlend.SrcBlendAlpha.ToApi();
                 sBlend.DestBlend = pBlend.DestBlend.ToApi();
                 sBlend.DestBlendAlpha = pBlend.DestBlendAlpha.ToApi();
                 sBlend.RenderTargetWriteMask = (byte)pBlend.RenderTargetWriteMask;
                 sBlend.LogicOp = (LogicOp)pBlend.LogicOp;
-                sBlend.LogicOpEnable = pBlend.LogicOpEnable ? 1 : 0;
+                sBlend.LogicOpEnable = pBlend.LogicOpEnable;
                 sBlend.BlendOp = (BlendOp)pBlend.BlendOp;
                 sBlend.BlendOpAlpha = (BlendOp)pBlend.BlendOpAlpha;
 
@@ -38,7 +38,7 @@ namespace Molten.Graphics
 
             BlendFactor = parameters.BlendFactor;
             BlendSampleMask = parameters.BlendSampleMask;
-            device.Ptr->CreateBlendState1(ref Desc.Value, ref _native);
+            device.Ptr->CreateBlendState1(Desc, ref _native);
         }
 
         protected override void OnApply(GraphicsQueue cmd) { }

@@ -60,16 +60,20 @@ namespace Molten.Graphics
             if (adapter.Vendor == DeviceVendor.Intel)
                 type = D3DDriverType.Hardware;
 
-            HResult r = _api.CreateDevice(ptrAdapter,
-                type,
-                0,
-                (uint)flags,
-                ref _featureLevels[0],
-                (uint)_featureLevels.Length,
-                D3D11.SdkVersion,
-                &ptrDevice,
-                null,
-                ptrContextRef);
+            HResult r;
+            fixed (D3DFeatureLevel* ptrFeatureLevels = &_featureLevels[0])
+            {
+                r = _api.CreateDevice(ptrAdapter,
+                    type,
+                    0,
+                    (uint)flags,
+                    ptrFeatureLevels,
+                    (uint)_featureLevels.Length,
+                    D3D11.SdkVersion,
+                    &ptrDevice,
+                    null,
+                    ptrContextRef);
+            }
 
             if (!r.IsFailure)
             {

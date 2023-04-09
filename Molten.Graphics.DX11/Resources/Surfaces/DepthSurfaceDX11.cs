@@ -145,12 +145,15 @@ namespace Molten.Graphics
             ID3D11Resource* res = (ID3D11Resource*)NativeTexture;
 
             DeviceDX11 device = Device as DeviceDX11;
-            device.Ptr->CreateDepthStencilView(res, ref _depthDesc, ref _depthView);
+
+            fixed(DepthStencilViewDesc* pDesc = &_depthDesc)
+                device.Ptr->CreateDepthStencilView(res, pDesc, ref _depthView);
 
             // Create read-only depth view for passing to shaders.
             _depthDesc.Flags = (uint)GetReadOnlyFlags();
-            device.Ptr->CreateDepthStencilView(res, ref _depthDesc, ref _readOnlyView);
-            _depthDesc.Flags = (uint)DsvFlag.None;
+            fixed (DepthStencilViewDesc* pDesc = &_depthDesc)
+                device.Ptr->CreateDepthStencilView(res, pDesc, ref _readOnlyView);
+            _depthDesc.Flags = 0U; // (uint)DsvFlag.None;
 
             return res;
         }

@@ -21,10 +21,10 @@ namespace Molten.Graphics
         {
             Desc = new StructKey<RasterizerDesc2>();
             ref RasterizerDesc2 raDesc = ref Desc.Value;
-            raDesc.MultisampleEnable = parameters.IsMultisampleEnabled ? 1 : 0;
-            raDesc.DepthClipEnable = parameters.IsDepthClipEnabled ? 1 : 0;
-            raDesc.AntialiasedLineEnable = parameters.IsAALineEnabled ? 1 : 0;
-            raDesc.ScissorEnable = parameters.IsScissorEnabled ? 1 : 0;
+            raDesc.MultisampleEnable = parameters.IsMultisampleEnabled;
+            raDesc.DepthClipEnable = parameters.IsDepthClipEnabled;
+            raDesc.AntialiasedLineEnable = parameters.IsAALineEnabled;
+            raDesc.ScissorEnable = parameters.IsScissorEnabled;
             raDesc.FillMode = parameters.Fill.ToApi();
             raDesc.CullMode = parameters.Cull.ToApi();
             raDesc.DepthBias = parameters.DepthBiasEnabled ? parameters.DepthBias : 0;
@@ -32,9 +32,9 @@ namespace Molten.Graphics
             raDesc.SlopeScaledDepthBias = parameters.SlopeScaledDepthBias;
             raDesc.ConservativeRaster = (ConservativeRasterizationMode)parameters.ConservativeRaster;
             raDesc.ForcedSampleCount = parameters.ForcedSampleCount;
-            raDesc.FrontCounterClockwise = parameters.IsFrontCounterClockwise ? 1 : 0;
+            raDesc.FrontCounterClockwise = parameters.IsFrontCounterClockwise;
 
-            device.Ptr->CreateRasterizerState2(ref raDesc, ref _native);
+            device.Ptr->CreateRasterizerState2(Desc, ref _native);
         }
 
         protected override void OnApply(GraphicsQueue cmd) { }

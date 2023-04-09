@@ -37,7 +37,10 @@ namespace Molten.Graphics
                 throw new InvalidOperationException($"Cannot create UAV for resource that does not have {_requiredFlags}");
 
             SilkUtil.ReleasePtr(ref _native);
-            OnCreateView((ID3D11Resource*)Resource.Handle, ref _desc, ref _native);
+
+            fixed (D* ptrDesc = &_desc)
+                OnCreateView((ID3D11Resource*)Resource.Handle, ptrDesc, ref _native);
+
             Device.ProcessDebugLayerMessages();
             SetDebugName($"{Resource.Name}_{GetType().Name}");
         }
@@ -48,7 +51,9 @@ namespace Molten.Graphics
                 throw new InvalidOperationException($"Cannot create UAV for resource that does not have {_requiredFlags}");
 
             SilkUtil.ReleasePtr(ref _native);
-            OnCreateView(resource, ref _desc, ref _native);
+
+            fixed(D* ptrDesc = &_desc)
+                OnCreateView(resource, ptrDesc, ref _native);
             SetDebugName($"{Resource.Name}_{GetType().Name}");
         }
 
@@ -62,7 +67,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected abstract void OnCreateView(ID3D11Resource* resource, ref D desc, ref V* view);
+        protected abstract void OnCreateView(ID3D11Resource* resource, D* desc, ref V* view);
 
         public static implicit operator V*(ResourceView<V, D> view)
         {

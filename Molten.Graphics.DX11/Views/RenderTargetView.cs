@@ -7,9 +7,9 @@ namespace Molten.Graphics
         internal RenderTargetView(GraphicsResource resource) :
             base(resource, GraphicsResourceFlags.None) { }
 
-        protected override unsafe void OnCreateView(ID3D11Resource* resource, ref RenderTargetViewDesc1 desc, ref ID3D11RenderTargetView1* view)
+        protected override unsafe void OnCreateView(ID3D11Resource* resource, RenderTargetViewDesc1* desc, ref ID3D11RenderTargetView1* view)
         {
-            Device.Ptr->CreateRenderTargetView1(resource, ref desc, ref view);
+            Device.Ptr->CreateRenderTargetView1(resource, desc, ref view);
         }
     }
 }

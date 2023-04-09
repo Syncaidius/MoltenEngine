@@ -16,7 +16,7 @@ namespace Molten.Graphics
             Desc = new StructKey<DepthStencilDesc>();
 
             ref DepthStencilDesc dDesc = ref Desc.Value;
-            dDesc.DepthEnable = parameters.IsDepthEnabled ? 1 : 0;
+            dDesc.DepthEnable = parameters.IsDepthEnabled;
             dDesc.DepthFunc = (ComparisonFunc)parameters.DepthComparison;
             dDesc.DepthWriteMask = parameters.DepthWriteEnabled ? DepthWriteMask.All : DepthWriteMask.Zero;
             dDesc.StencilWriteMask = parameters.StencilWriteMask;
@@ -38,7 +38,7 @@ namespace Molten.Graphics
                 StencilPassOp = (StencilOp)parameters.DepthBackFace.StencilPass,
             };
 
-            device.Ptr->CreateDepthStencilState(ref Desc.Value, ref _native);
+            device.Ptr->CreateDepthStencilState(Desc, ref _native);
         }
 
         protected override void OnApply(GraphicsQueue cmd) { }

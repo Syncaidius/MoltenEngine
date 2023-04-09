@@ -78,7 +78,7 @@ namespace Molten.Graphics
                     {
                         NumElements = ElementCount,
                         FirstElement = 0,
-                        Flags = (uint)BufferUavFlag.None,
+                        Flags = 0U, // (uint)BufferUavFlag.None,
                     }
                 };
                 NativeUAV.Create();

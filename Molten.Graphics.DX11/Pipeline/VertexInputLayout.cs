@@ -67,8 +67,9 @@ namespace Molten.Graphics
             {
                 void* ptrByteCode = vertexBytecode->GetBufferPointer();
                 nuint numBytes = vertexBytecode->GetBufferSize();
-                device.Ptr->CreateInputLayout(ref finalElements[0], (uint)finalElements.Length,
-                    ptrByteCode, numBytes, ref _native);
+
+                fixed(InputElementDesc* ptrElements = &finalElements[0])
+                    device.Ptr->CreateInputLayout(ptrElements, (uint)finalElements.Length, ptrByteCode, numBytes, ref _native);
 
                 if(_native == null)
                 {

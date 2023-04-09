@@ -75,7 +75,10 @@ namespace Molten.Graphics
         protected override ID3D11Resource* CreateResource(bool resize)
         {
             SubresourceData* subData = null;
-            (Device as DeviceDX11).Ptr->CreateTexture1D(ref _desc, subData, ref NativeTexture);
+
+            fixed(Texture1DDesc* pDesc = &_desc)
+                (Device as DeviceDX11).Ptr->CreateTexture1D(pDesc, subData, ref NativeTexture);
+
             return (ID3D11Resource*)NativeTexture;
         }
 
