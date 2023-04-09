@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using Molten.Graphics;
 
@@ -226,6 +227,22 @@ namespace Molten
             {
                 handle.Free();
             }
+        }
+
+        public static unsafe byte* StringToPtr(string str, Encoding encoding)
+        {
+            return StringToPtr(str, encoding, out ulong byteCount);
+        }
+
+        public static unsafe byte* StringToPtr(string str, Encoding encoding, out ulong byteCount)
+        {
+            byte[] bytes = encoding.GetBytes(str);
+            byteCount = (ulong)bytes.LongLength;
+            byte* ptrMem = (byte*)Alloc((nuint)bytes.Length);
+
+            fixed (byte* ptrBytes = bytes)
+                Buffer.MemoryCopy(ptrBytes, ptrMem, (nuint)bytes.Length, (nuint)bytes.Length);
+            return ptrMem;
         }
 
         /// <summary>

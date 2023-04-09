@@ -1,16 +1,16 @@
 struct SpriteData
 {
-	float4 uv;
-	float4 col;
-	float4 col2;
+    float4 uv;
+    float4 col;
+    float4 col2;
     float4 data;
 
-	float2 pos;
-	float2 size;
+    float2 pos;
+    float2 size;
 
-	float2 origin;
-	float rotation;
-	float arraySlice;
+    float2 origin;
+    float rotation;
+    float arraySlice;
     uint surfaceSlice;
 };
 
@@ -21,8 +21,8 @@ struct VS_GS
 
 struct PS_IN
 {
-	float4 pos      : SV_POSITION;
-	float3 uv       : TEXCOORD0;
+    float4 pos      : SV_POSITION;
+    float3 uv       : TEXCOORD0;
     float2 uvLocal  : TEXCOORD1;      //UV Relative to top left of sprite (0 - 1 range)
     uint id         : VERTEXID;
     uint surfID     : SV_RenderTargetArrayIndex;
@@ -46,22 +46,22 @@ VS_GS VS(uint vID : SV_VertexID)
     VS_GS output;
 
     output.vID = vID;
-	return output;
+    return output;
 }
 
 const static float2 spriteCorners[4] = {
-	float2(0,-1),
-	float2(0, 0),
-	float2(1,-1),
-	float2(1,0),
+    float2(0,-1),
+    float2(0, 0),
+    float2(1,-1),
+    float2(1,0),
 };
 
 // 0 = left, 1 = top, 2 = right, 3 = bottom
 const static int2 uvTable[4] = {
-	int2(0,3), // Bottom left
-	int2(0,1), // Top left
-	int2(2,3), // Bottom right
-	int2(2,1), // Top right
+    int2(0,3), // Bottom left
+    int2(0,1), // Top left
+    int2(2,3), // Bottom right
+    int2(2,1), // Top right
 };
 
 static float4 baseUV = float4(0,0,1,1);
@@ -70,44 +70,44 @@ static const float PI = 3.14159265;
 
 float2x2 GetRotation(float angle)
 {
-	// Compute a 2x2 rotation matrix.
-	float c = cos(angle);
-	float s = sin(angle);
+    // Compute a 2x2 rotation matrix.
+    float c = cos(angle);
+    float s = sin(angle);
 
-	return float2x2(c, -s, s, c);
+    return float2x2(c, -s, s, c);
 }
 
 [maxvertexcount(4)]
 void GS(point VS_GS input[1], uint pID : SV_PrimitiveID, inout TriangleStream<PS_IN> spriteStream)
 {
-	PS_IN v;
+    PS_IN v;
     v.id = vertexOffset + input[0].vID;
     SpriteData sv = spriteData[v.id];
     float4 uv = sv.uv;
     v.surfID = sv.surfaceSlice;
 
     uv.xz /= textureSize.x; // scale left (x) and right(z) to 0 - 1.0 range.
-	uv.yw /= textureSize.y; // Scale top (y) and bottom(w) to 0 - 1.0 range.
+    uv.yw /= textureSize.y; // Scale top (y) and bottom(w) to 0 - 1.0 range.
 
-	float2x2 rot = GetRotation(sv.rotation);
-	float2 origin = float2(sv.origin.x, -sv.origin.y);  // Invert y origin
-	float2 pos = float2(sv.pos.x, -sv.pos.y);           // Invert y axis
-	float2 p;
+    float2x2 rot = GetRotation(sv.rotation);
+    float2 origin = float2(sv.origin.x, -sv.origin.y);  // Invert y origin
+    float2 pos = float2(sv.pos.x, -sv.pos.y);           // Invert y axis
+    float2 p;
 
-	[unroll]
-	for (int i = 0; i < 4; i++)
-	{
-		p = mul(sv.size.xy * (spriteCorners[i] - origin), rot);
-		p += pos;
-		v.pos = float4(p, 0, 1);
-		v.pos = mul(v.pos, wvp);
-		v.uv.x = uv[uvTable[i].x];
-		v.uv.y = uv[uvTable[i].y];
-		v.uv.z = sv.arraySlice;
+    [unroll]
+    for (int i = 0; i < 4; i++)
+    {
+        p = mul(sv.size.xy * (spriteCorners[i] - origin), rot);
+        p += pos;
+        v.pos = float4(p, 0, 1);
+        v.pos = mul(v.pos, wvp);
+        v.uv.x = uv[uvTable[i].x];
+        v.uv.y = uv[uvTable[i].y];
+        v.uv.z = sv.arraySlice;
         v.uvLocal.x = baseUV[uvTable[i].x];
         v.uvLocal.y = baseUV[uvTable[i].y];
-		spriteStream.Append(v);
-	}
+        spriteStream.Append(v);
+    }
 }
 
 float isRectBorder(float2 uv, float2 thickness)
@@ -127,8 +127,8 @@ float4 PS( PS_IN input ) : SV_Target
 
     float isBorder = isRectBorder(input.uvLocal, sd.data.xy);
 
-	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv) * sd.col;
-	return (col * (1 - isBorder)) + (sd.col2 * isBorder);
+    float4 col = mapDiffuse.Sample(diffuseSampler, input.uv) * sd.col;
+    return (col * (1 - isBorder)) + (sd.col2 * isBorder);
 }
 
 float4 PS_NoTexture(PS_IN input) : SV_Target
@@ -137,7 +137,7 @@ float4 PS_NoTexture(PS_IN input) : SV_Target
 
     SpriteData sd = spriteData[input.id];
     float isBorder = isRectBorder(input.uvLocal, sd.data.xy);
-	return (sd.col * (1 - isBorder)) + (sd.col2 * isBorder);
+    return (sd.col * (1 - isBorder)) + (sd.col2 * isBorder);
 }
 
 float4 PS_Circle(PS_IN input) : SV_Target
@@ -226,5 +226,5 @@ float4 PS_Grid( PS_IN input ) : SV_Target
         result += 1.0 - smoothstep(0.0, thickness, abs(input.uvLocal.y - iy));
     }
 
-	return (sd.col * (1-result)) + (sd.col2 * result);
+    return (sd.col * (1-result)) + (sd.col2 * result);
 }
