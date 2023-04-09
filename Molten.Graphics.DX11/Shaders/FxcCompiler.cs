@@ -196,23 +196,25 @@ namespace Molten.Graphics
         public override bool CompileSource(string entryPoint, ShaderType type, 
             ShaderCompilerContext context, out ShaderCodeResult result)
         {
+            NativeStringEncoding encoding = NativeStringEncoding.LPStr;
+
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
             if (!context.Shaders.TryGetValue(entryPoint, out result))
             {
                 string shaderProfile = ShaderModel.Model5_0.ToProfile(type, ShaderLanguage.Hlsl);
 
-                byte* pSourceName = (byte*)SilkMarshal.StringToPtr(context.Source.Filename, NativeStringEncoding.LPStr);
-                byte* pEntryPoint = (byte*)SilkMarshal.StringToPtr(entryPoint, NativeStringEncoding.LPStr);
-                byte* pTarget = (byte*)SilkMarshal.StringToPtr(shaderProfile, NativeStringEncoding.LPStr);
-                void* pSrc = (void*)SilkMarshal.StringToPtr(context.Source.SourceCode, NativeStringEncoding.LPStr);
+                byte* pSourceName = (byte*)SilkMarshal.StringToPtr(context.Source.Filename, encoding);
+                byte* pEntryPoint = (byte*)SilkMarshal.StringToPtr(entryPoint, encoding);
+                byte* pTarget = (byte*)SilkMarshal.StringToPtr(shaderProfile, encoding);
+                void* pSrc = (void*)SilkMarshal.StringToPtr(context.Source.SourceCode, encoding);
                 FxcCompileFlags compileFlags = context.Flags.Translate();
 
                 ID3D10Blob* pByteCode = null;
                 ID3D10Blob* pErrors = null;
                 ID3D10Blob* pProcessedSrc = null;
 
-                uint numBytes = (uint)SilkMarshal.GetMaxSizeOf(context.Source.SourceCode, NativeStringEncoding.LPStr);
+                uint numBytes = (uint)SilkMarshal.GetMaxSizeOf(context.Source.SourceCode, encoding);
 
                 // Preprocess and check for errors
                 HResult hr = _d3dCompiler.Preprocess(pSrc, numBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
@@ -238,10 +240,10 @@ namespace Molten.Graphics
 
                 SilkUtil.ReleasePtr(ref pProcessedSrc);
                 SilkUtil.ReleasePtr(ref pErrors);
-                SilkMarshal.Free((nint)pSrc);
-                SilkMarshal.Free((nint)pSourceName);
-                SilkMarshal.Free((nint)pEntryPoint);
-                SilkMarshal.Free((nint)pTarget);
+                SilkMarshal.FreeString((nint)pSrc, encoding);
+                SilkMarshal.FreeString((nint)pSourceName, encoding);
+                SilkMarshal.FreeString((nint)pEntryPoint, encoding);
+                SilkMarshal.FreeString((nint)pTarget, encoding);
             }
 
             return !context.HasErrors;
