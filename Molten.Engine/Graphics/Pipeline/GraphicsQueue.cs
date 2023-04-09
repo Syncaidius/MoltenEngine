@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics
+﻿using System.Diagnostics;
+
+namespace Molten.Graphics
 {
     public abstract class GraphicsQueue : EngineObject
     {
@@ -44,6 +46,7 @@
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
         List<GraphicsSlot> _slots;
+        GraphicsFrameTracker _tracker;
 
         protected GraphicsQueue(GraphicsDevice device)
         {
@@ -51,7 +54,16 @@
             Device = device;
             _slots = new List<GraphicsSlot>();
             _defaultProfiler = _profiler = new RenderProfiler();
+
+            _tracker.SetFrameCount((uint)Device.Settings.BufferingMode.Value);
+            Device.Settings.BufferingMode.OnChanged += BufferingMode_OnChanged;
         }
+
+        private void BufferingMode_OnChanged(BackBufferMode oldValue, BackBufferMode newValue)
+        {
+            _tracker.SetFrameCount((uint)Device.Settings.BufferingMode.Value);
+        }
+
 
         public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
 where T : class, IGraphicsObject
@@ -91,6 +103,11 @@ where B : GraphicsSlotBinder<T>, new()
             return grp;
         }
 
+        internal void StartFrame()
+        {
+            _tracker.StartFrame();
+        }
+
         /// <summary>
         /// Starts recording commands in the current <see cref="GraphicsCommandList"/>.
         /// </summary>
@@ -104,7 +121,7 @@ where B : GraphicsSlotBinder<T>, new()
                 throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsCommandList)}: EndDraw() must be called before the next BeginDraw() call.");
 #endif
 
-            DrawInfo.Began = true;
+            DrawInfo.Began = true; 
         }
 
         /// <summary>
@@ -120,7 +137,7 @@ where B : GraphicsSlotBinder<T>, new()
         /// <param name="list"></param>
         public abstract void Execute(GraphicsCommandList list);
 
-        public virtual void End()
+        public virtual GraphicsCommandList End()
         {
 #if DEBUG
             if (!DrawInfo.Began)
@@ -128,9 +145,8 @@ where B : GraphicsSlotBinder<T>, new()
 #endif
 
             DrawInfo.Reset();
+            return Cmd;
         }
-
-        public abstract GraphicsCommandList Record(Action<GraphicsQueue> callback, GraphicsCommandListFlags flags);
 
         /// <summary>Sets a list of render surfaces.</summary>
         /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
@@ -338,5 +354,9 @@ where B : GraphicsSlotBinder<T>, new()
         public GraphicsSlotGroup<IRenderSurface2D> Surfaces { get; protected set; }
 
         protected BatchDrawInfo DrawInfo { get; }
+
+        protected GraphicsFrameTracker Tracker => _tracker;
+
+        protected abstract GraphicsCommandList Cmd { get; set; }
     }
 }

@@ -26,7 +26,7 @@ namespace Molten.Graphics
             _allocations = new List<CommandPoolAllocation>();
         }
 
-        internal CommandListVK Allocate(CommandBufferLevel level, uint branchIndex, uint listIndex, GraphicsCommandListFlags flags)
+        internal CommandListVK Allocate(CommandBufferLevel level, uint branchIndex, GraphicsCommandListFlags flags)
         {
             CommandListVK result = null;
             foreach(CommandPoolAllocation a in _allocations)
@@ -55,8 +55,8 @@ namespace Molten.Graphics
             else
                 result.Fence = null;
 
+            result.Flags = flags;
             result.BranchIndex = branchIndex;
-            result.Index = listIndex;
             return result;
         }
 

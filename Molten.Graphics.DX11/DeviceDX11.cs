@@ -18,7 +18,6 @@ namespace Molten.Graphics
         GraphicsManagerDXGI _displayManager;
 
         GraphicsQueueDX11 _cmdQueue;
-        List<CommandListDX11> _cmdLists;
 
         ID3D11Debug* _debug;
         ID3D11InfoQueue* _debugInfo;
@@ -30,7 +29,6 @@ namespace Molten.Graphics
         {
             _builder = builder;
             _displayManager = manager;
-            _cmdLists = new List<CommandListDX11>();
 
             VertexFormatCache = new VertexFormatCache<ShaderIOStructureDX11>(
                 (elementCount) => new ShaderIOStructureDX11(elementCount),
@@ -123,33 +121,6 @@ namespace Molten.Graphics
             return null;
         }
 
-        /// <summary>Gets a new deferred <see cref="GraphicsQueueDX11"/>.</summary>
-        /// <returns></returns>
-        internal GraphicsQueueDX11 GetDeferredContext()
-        {
-            ID3D11DeviceContext3* dc = null;
-            Ptr->CreateDeferredContext3(0, &dc);
-
-            Guid cxt4Guid = ID3D11DeviceContext4.Guid;
-            void* ptr4 = null;
-            dc->QueryInterface(&cxt4Guid, &ptr4);
-
-            GraphicsQueueDX11 context = new GraphicsQueueDX11(this, (ID3D11DeviceContext4*)ptr4);
-            _cmdLists.Add(context);
-            return context;
-        }
-
-        internal void RemoveDeferredContext(CommandListDX11 cmd)
-        {
-            if (cmd.Device != this)
-                throw new GraphicsCommandListException(cmd, "Command list is owned by another device.");
-
-            if (!cmd.IsDisposed)
-                cmd.Dispose();
-
-            _cmdLists.Remove(cmd);
-        }
-
         internal void SubmitContext(GraphicsQueueDX11 context)
         {
             if (context.Type != CommandQueueType.Deferred)
@@ -162,8 +133,7 @@ namespace Molten.Graphics
         /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
-            for (int i = _cmdLists.Count - 1; i >= 0; i--)
-                RemoveDeferredContext(_cmdLists[i]);
+            _cmdQueue.Dispose();
 
             // TODO dispose of all bound IGraphicsResource
             VertexFormatCache.Dispose();

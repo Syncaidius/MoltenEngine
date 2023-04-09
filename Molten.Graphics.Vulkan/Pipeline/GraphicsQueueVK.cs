@@ -1,4 +1,6 @@
-﻿using Silk.NET.Vulkan;
+﻿using System.Diagnostics;
+using System.Globalization;
+using Silk.NET.Vulkan;
 using Buffer = Silk.NET.Vulkan.Buffer;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 
@@ -10,12 +12,6 @@ namespace Molten.Graphics
         Vk _vk;
         CommandPoolVK _poolFrame;
         CommandPoolVK _poolTransient;
-
-        uint _trackerIndex;
-        FrameTrackerVK[] _trackers;
-        int _frameCount;
-        ulong _frameID;
-
         CommandListVK _cmd;
 
         internal GraphicsQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
@@ -32,59 +28,31 @@ namespace Molten.Graphics
 
             _poolFrame = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
             _poolTransient = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit | CommandPoolCreateFlags.TransientBit, 5);
-
-            InitFrameLists();
-            Device.Settings.BufferingMode.OnChanged += BufferingMode_OnChanged;
         }
 
-        private void BufferingMode_OnChanged(BackBufferMode oldValue, BackBufferMode newValue)
+        public override unsafe void Begin(GraphicsCommandListFlags flags)
         {
-            InitFrameLists();
-        }
+            base.Begin();
 
-        private void InitFrameLists()
-        {
-            _frameCount = (int)Device.Settings.BufferingMode.Value;
-            if (_trackers.Length < _frameCount)
-            {
-                Array.Resize(ref _trackers, _frameCount);
-                for (int i = 0; i < _frameCount; i++)
-                    _trackers[i] = _trackers[i] ?? new FrameTrackerVK();
-            }
-        }
+            // TODO refactor FrameTracker to track only the latest command list of each branch.
+            // CommandList should have a 'Previous' property so we can back-track to the beginning when cleaning up/recycling command lists.
+            // Implement a Begin-End stack, so we can push and pop DrawInfo objects for each nested-begin
 
-        internal void StartFrame()
-        {
-            if (_frameID == _device.Renderer.Profiler.FrameID)
-                throw new InvalidOperationException("Cannot start a new frame before the previous frame has completed.");
-
-            _frameID = _device.Renderer.Profiler.FrameID;
-
-            // TODO if we hit a frame command list that isn't finished yet, we need to wait to prevent the CPU from getting too far ahead.
-            // FrameTrackerVK.Wait() needs to be added to wait for the last fence of each branch to finish.
-
-            _trackerIndex = (_trackerIndex + 1U) % (uint)_trackers.Length;
-        }
-
-        public override unsafe void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
-        {
-            base.Begin(flags);
+            CommandBufferLevel level = flags.Has(GraphicsCommandListFlags.Deferred) ?
+                CommandBufferLevel.Secondary :
+                CommandBufferLevel.Primary;
 
             CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
             beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
-
-            FrameTrackerVK tracker = _trackers[_trackerIndex];
-            _cmd = _poolFrame.Allocate(CommandBufferLevel.Primary, 0, tracker.BranchCount, flags);
-            tracker.BranchCount++;
-            tracker.Track(_cmd);
-
+            _cmd = _poolFrame.Allocate(level, Tracker.Frame.BranchCount++, flags);
             _vk.BeginCommandBuffer(_cmd, &beginInfo);
         }
 
-        public override void End()
+        public override GraphicsCommandList End()
         {
             base.End();
             _vk.EndCommandBuffer(_cmd);
+            return _cmd;
         }
 
         /// <inheritdoc/>
@@ -107,18 +75,18 @@ namespace Molten.Graphics
             // Use empty fence handle if the CPU doesn't need to wait for the command list to finish.
             Fence fence = new Fence();
             if (_cmd.Fence != null)
-                fence = (_cmd.Fence as FenceVK).Ptr;            
+                fence = (_cmd.Fence as FenceVK).Ptr;
 
             // We're only submitting the current command buffer.
+            _vk.EndCommandBuffer(_cmd);
             CommandBuffer* ptrBuffers = stackalloc CommandBuffer[] { _cmd.Ptr };
             SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
             submit.PCommandBuffers = ptrBuffers;
 
             // We want to wait on the previous command list's semaphore before executing this one, if any.
-            CommandListVK prev = _trackers[_trackerIndex].GetPrevious(_cmd);
-            if(prev != null)
+            if(_cmd.Previous != null)
             {
-                Semaphore* waitSemaphores = stackalloc Semaphore[] { prev.Semaphore.Ptr };
+                Semaphore* waitSemaphores = stackalloc Semaphore[] { (_cmd.Previous as CommandListVK).Semaphore.Ptr };
                 submit.WaitSemaphoreCount = 1;
                 submit.PWaitSemaphores = waitSemaphores;
             }
@@ -139,24 +107,15 @@ namespace Molten.Graphics
             r.Throw(_device, () => "Failed to submit command list");
 
             // Allocate next command buffer
-            FrameTrackerVK tracker = _trackers[_trackerIndex];
-            _cmd = _poolFrame.Allocate(CommandBufferLevel.Primary, _cmd.Index + 1, _cmd.BranchIndex, flags);
-            tracker.Track(_cmd);
-        }
+            if (!flags.Has(GraphicsCommandListFlags.Last))
+            {
+                _cmd = _poolFrame.Allocate(CommandBufferLevel.Primary, _cmd.BranchIndex, flags);
+                CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
+                beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
 
-        public override GraphicsCommandList Record(Action<GraphicsQueue> callback, GraphicsCommandListFlags flags)
-        {
-            CommandListVK tmpCmd = _cmd;
-            FrameTrackerVK tmpTracker = _trackers[_trackerIndex];
-            _trackers[_trackerIndex] = new FrameTrackerVK();
-            Begin(flags);
-            callback.Invoke(this);
-            End();
-
-            CommandListVK result = _cmd;
-            _cmd = tmpCmd;
-            _trackers[_trackerIndex] = tmpTracker;
-            return result;
+                _vk.BeginCommandBuffer(_cmd, &beginInfo);
+                Tracker.Track(_cmd);
+            }
         }
 
         internal bool HasFlags(CommandSetCapabilityFlags flags)
@@ -353,5 +312,11 @@ namespace Molten.Graphics
         internal CommandSetCapabilityFlags Flags { get; }
 
         internal Queue Native { get; private set; }
+
+        protected override GraphicsCommandList Cmd
+        {
+            get => _cmd;
+            set => _cmd = value as CommandListVK;
+        }
     }
 }

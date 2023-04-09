@@ -12,11 +12,10 @@ namespace Molten.Graphics
         ID3D11DeviceContext4* _native;
         ID3DUserDefinedAnnotation* _debugAnnotation;
 
-        public CommandListDX11(GraphicsQueue queue, ID3D11DeviceContext4* context) : 
+        public CommandListDX11(GraphicsQueueDX11 queue, ID3D11DeviceContext4* context) : 
             base(queue)
         {
             _native = context;
-            Device = queue.Device as DeviceDX11;
 
             if (_native->GetType() == DeviceContextType.Immediate)
                 Type = CommandQueueType.Immediate;
@@ -41,7 +40,7 @@ namespace Molten.Graphics
 
             // Dispose context.
             if (Type != CommandQueueType.Immediate)
-                Device.RemoveDeferredContext(this);
+                (Queue as GraphicsQueueDX11).RemoveDeferredContext(this);
         }
 
         /// <summary>Gets the current <see cref="GraphicsQueueDX11"/> type. This value will not change during the context's life.</summary>
@@ -50,7 +49,5 @@ namespace Molten.Graphics
         internal ID3D11DeviceContext4* Ptr => _native;
 
         internal ID3DUserDefinedAnnotation* Debug => _debugAnnotation;
-
-        internal DeviceDX11 Device { get; }
     }
 }

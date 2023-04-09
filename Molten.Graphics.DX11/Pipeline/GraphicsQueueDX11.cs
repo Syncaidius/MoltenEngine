@@ -43,18 +43,22 @@ namespace Molten.Graphics
         GraphicsSlot<DepthStateDX11> _stateDepth;
         GraphicsSlotGroup<GraphicsResource> _renderUAVs;
 
+        List<CommandListDX11> _cmdLists;
+        CommandListDX11 _cmdImmediate;
         CommandListDX11 _cmd;
 
         internal GraphicsQueueDX11(DeviceDX11 device, ID3D11DeviceContext4* immediateContext) :
             base(device)
         {      
             DXDevice = device;
-            _cmd = new CommandListDX11(this, immediateContext);
-            _nullViewport = new ViewportF[1];
+            _cmdLists = new List<CommandListDX11>();
+            _cmdImmediate = new CommandListDX11(this, immediateContext);
+            _cmd = _cmdImmediate;
 
             uint maxRTs = Device.Capabilities.PixelShader.MaxOutputTargets;
             _scissorRects = new Rectangle[maxRTs];
             _viewports = new ViewportF[maxRTs];
+            _nullViewport = new ViewportF[1];
 
             uint maxVBuffers = Device.Capabilities.VertexBuffers.MaxSlots;
             VertexBuffers = RegisterSlotGroup<GraphicsBuffer, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
@@ -87,6 +91,43 @@ namespace Molten.Graphics
 
             // Apply the surface of the graphics device's output initialally.
             SetRenderSurfaces(null);
+        }
+
+        /// <summary>Gets a new deferred <see cref="GraphicsQueueDX11"/>.</summary>
+        /// <returns></returns>
+        internal CommandListDX11 GetDeferredContext()
+        {
+            ID3D11DeviceContext3* dc = null;
+            DXDevice.Ptr->CreateDeferredContext3(0, &dc);
+
+            Guid cxt4Guid = ID3D11DeviceContext4.Guid;
+            void* ptr4 = null;
+            dc->QueryInterface(&cxt4Guid, &ptr4);
+
+            CommandListDX11 context = new CommandListDX11(this, (ID3D11DeviceContext4*)ptr4);
+            _cmdLists.Add(context);
+            return context;
+        }
+
+        internal void RemoveDeferredContext(CommandListDX11 cmd)
+        {
+            if (cmd.Queue != this)
+                throw new GraphicsCommandListException(cmd, "Command list is owned by another graphics queue.");
+
+            if (!cmd.IsDisposed)
+                cmd.Dispose();
+
+            _cmdLists.Remove(cmd);
+        }
+
+        public override void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
+        {
+            base.Begin(flags);
+
+            if (flags.Has(GraphicsCommandListFlags.Deferred))
+            {
+                _cmd = GetDeferredContext();
+            }
         }
 
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
@@ -712,11 +753,19 @@ namespace Molten.Graphics
         /// <summary>Dispoes of the current <see cref="Graphics.GraphicsQueueDX11"/> instance.</summary>
         protected override void OnDispose()
         {
+            for (int i = _cmdLists.Count - 1; i >= 0; i--)
+                RemoveDeferredContext(_cmdLists[i]);
+
             EngineUtil.FreePtrArray(ref RTVs);
             _cmd.Dispose();
         }
 
-
         internal DeviceDX11 DXDevice { get; private set; }
+
+        protected override GraphicsCommandList Cmd
+        {
+            get => _cmd;
+            set => _cmd = value as CommandListDX11;
+        }
     }
 }

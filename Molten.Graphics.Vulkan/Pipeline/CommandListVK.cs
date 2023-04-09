@@ -19,7 +19,7 @@ namespace Molten.Graphics
             Semaphore = new SemaphoreVK(_device);
         }
 
-        internal void Free()
+        public override void Free()
         {
             if (IsFree)
                 return;
@@ -38,8 +38,6 @@ namespace Molten.Graphics
             return list._native;
         }
 
-        // TODO implement command buffer commands - CmdDraw, CmdCopyBuffer, etc
-
         internal bool IsFree { get; set; }
 
         internal CommandBuffer Ptr => _native;
@@ -47,9 +45,5 @@ namespace Molten.Graphics
         internal CommandBufferLevel Level => _allocation.Level;
 
         internal SemaphoreVK Semaphore { get; }
-
-        internal uint BranchIndex { get; set; }
-
-        internal uint Index { get; set; }
     }
 }
